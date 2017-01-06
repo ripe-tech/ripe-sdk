@@ -95,8 +95,9 @@ Ripe.prototype.getDefaults = function(callback) {
     var defaultsURL = this._getDefaultsURL();
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {
+        var isValid = this.status == 200;
         var result = JSON.parse(this.responseText);
-        callback.call(context, result.parts);
+        callback.call(context, isValid ? result.parts : null);
     });
     request.open("GET", defaultsURL);
     request.send();
