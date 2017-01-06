@@ -10,6 +10,8 @@ Ripe.prototype.init = function(url, model, parts, options) {
     this.parts = parts || {};
     this.options = options || {};
     this.binds = {};
+    this.callbacks = {};
+    this.ready = false;
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
@@ -17,8 +19,20 @@ Ripe.prototype.init = function(url, model, parts, options) {
     var loadDefaults = !hasParts && !options.noDefaults;
     loadDefaults && this.getDefaults(function(result) {
         this.parts = result;
+        this.ready = true;
+        this.update();
     });
+
+    // in case the current instance already contains configured parts
+    // the instance is marked as ready (for complex resolution like price)
+    this.ready = hasParts;
 };
+
+Ripe.prototype.load = function() {
+    this.update();
+};
+
+Ripe.prototype.unload = function() {};
 
 Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     var parts = this.parts || {};
@@ -35,13 +49,21 @@ Ripe.prototype.bind = function(target, frame) {
     this.binds[frame] = bind;
 };
 
+Ripe.prototype.addPriceCallback = function(callback) {
+    this._addCallback("price", callback);
+};
+
+Ripe.prototype.removePriceCallback = function(callback) {
+    this._removeCallback("price", callback);
+};
+
 Ripe.prototype.render = function(target, frame, options) {
     var target = target || this.options.target;
     var element = target;
     element.src = this._getImageURL(frame, null, null, options);
 };
 
-Ripe.prototype.update = function() {
+Ripe.prototype.update = function(price) {
     for (var frame in this.binds) {
         var bind = this.binds[frame];
         for (var index = 0; index < bind.length; index++) {
@@ -49,6 +71,10 @@ Ripe.prototype.update = function() {
             this.render(target, frame);
         }
     }
+
+    this.ready && this.getPrice(function(value) {
+        this._runCallbacks("price", value);
+    });
 };
 
 Ripe.prototype.getPrice = function(callback) {
@@ -56,8 +82,9 @@ Ripe.prototype.getPrice = function(callback) {
     var priceURL = this._getPriceURL();
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {
+        var isValid = this.status == 200;
         var result = JSON.parse(this.responseText);
-        callback.call(context, result);
+        callback.call(context, isValid ? result : null);
     });
     request.open("GET", priceURL);
     request.send();
@@ -127,4 +154,28 @@ Ripe.prototype._getQuery = function(model, frame, parts, engraving, options) {
     options.background && buffer.push("background=" + options.background);
 
     return buffer.join("&");
+};
+
+Ripe.prototype._addCallback = function(name, callback) {
+    var callbacks = this.callbacks[name] || [];
+    callbacks.push(callback);
+    this.callbacks[name] = callbacks;
+};
+
+Ripe.prototype._removeCallback = function(name, callback) {
+    var callbacks = this.callbacks[name] || [];
+    var index = array.indexOf(callback);
+    if (index == -1) {
+        return;
+    }
+    callbacks.splice(index, 1);
+    this.callbacks[name] = callbacks;
+};
+
+Ripe.prototype._runCallbacks = function(name) {
+    var callbacks = this.callbacks[name] || [];
+    for (var index = 0; index < callbacks.length; index++) {
+        var callback = callbacks[index];
+        callback.apply(this, Array.prototype.slice.call(arguments, 1));
+    }
 };

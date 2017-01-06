@@ -7,7 +7,11 @@ window.onload = function() {
     ripe.bind(document.getElementById("frame-0"), "0");
     ripe.bind(document.getElementById("frame-6"), "6");
     ripe.bind(document.getElementById("frame-top"), "top");
-    ripe.update();
+    ripe.addPriceCallback(function(value) {
+        console.info(value.total.price_final);
+    });
+
+    ripe.load();
 
     var setPart = document.getElementById("set-part");
     var getPrice = document.getElementById("get-price");
