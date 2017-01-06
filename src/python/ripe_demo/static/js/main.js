@@ -1,7 +1,13 @@
 window.onload = function() {
-    var ripe = new Ripe("https://www.my-swear.com/", "vyner", {}, {
-        currency: "EUR",
-        country: "PT"
+    var element = document.getElementById("canvas");
+    var url = element.dataset.url || "https://www.my-swear.com/";
+    var model = element.dataset.model || "vyner";
+    var currency = element.dataset.currency || "EUR";
+    var country = element.dataset.country || "US";
+
+    var ripe = new Ripe(url, model, {}, {
+        currency: currency,
+        country: country
     });
 
     ripe.bind(document.getElementById("frame-0"), "0");
