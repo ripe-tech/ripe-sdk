@@ -16,11 +16,10 @@
     <body class="ux wait-load">
         <div id="header" class="header">
             {% block header %}
-                <div class="header-container">
-                </div>
+                <div class="header-container"></div>
             {% endblock %}
         </div>
-        <div id="content" class="content {{ mode }}">{% block content %}{% endblock %}</div>
+        <div id="content" class="content">{% block content %}{% endblock %}</div>
         <div id="footer" class="footer">
             {% block footer %}
                 <div class="footer-container">
