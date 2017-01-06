@@ -1,7 +1,6 @@
-{% extends "partials/base.html.tpl" %}
 {% block html %}
     <!DOCTYPE html>
-    <html lang="en">
+    <html>
     <head>
         {% block head scoped %}
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -14,19 +13,18 @@
             <title>{{ title }}{% block title %}{% endblock %}</title>
         {% endblock %}
     </head>
-    <body class="ux wait-load {{ mode }} {% if own.config.colors %}dark{% endif %} {% block body_extras %}{% endblock %}" data-locale="en-us">
-        <div id="header" class="header replace">
+    <body class="ux wait-load">
+        <div id="header" class="header">
             {% block header %}
-                {% include "partials/header.html.tpl" with context %}
+                <div class="header-container">
+                </div>
             {% endblock %}
         </div>
         <div id="content" class="content {{ mode }}">{% block content %}{% endblock %}</div>
         <div id="footer" class="footer">
             {% block footer %}
                 <div class="footer-container">
-                    {% if own.config.footer %}
-                        <span>&copy; 2008-2017 PLATFORME</span>
-                    {% endif %}
+                    <span>&copy; 2008-2017 PLATFORME</span>
                 </div>
             {% endblock %}
         </div>
