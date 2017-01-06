@@ -9,8 +9,8 @@ window.onload = function() {
     var frame1 = document.getElementById("frame-1");
     var frame2 = document.getElementById("frame-2");
     var frame3 = document.getElementById("frame-3");
+    var setPart = document.getElementById("set-part");
     var getPrice = document.getElementById("get-price");
-    var getDefaults = document.getElementById("get-defaults");
 
     frame1.addEventListener("click", function() {
         ripe.render(null, 1);
@@ -21,6 +21,11 @@ window.onload = function() {
     });
 
     frame3.addEventListener("click", function() {
+        ripe.render(null, 3);
+    });
+
+    setPart.addEventListener("click", function() {
+        ripe.setPart("side", "suede", "navy")
         ripe.render(null, 3);
     });
 

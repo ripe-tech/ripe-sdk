@@ -12,14 +12,16 @@ Ripe.prototype.init = function(url, model, parts, options) {
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
-    var loadDefaults = !this.parts && !options.noDefaults;
+    var hasParts = this.parts && Object.keys(this.parts).length != 0;
+    var loadDefaults = !hasParts && !options.noDefaults;
     loadDefaults && this.getDefaults(function(result) {
         this.parts = result;
     });
 };
 
 Ripe.prototype.setPart = function(part, material, color, noUpdate) {
-    var value = this.parts[part] || {};
+    var parts = this.parts || {};
+    var value = parts[part];
     value.material = material;
     value.color = color;
     this.parts[part] = value;
