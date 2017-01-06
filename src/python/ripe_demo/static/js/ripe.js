@@ -18,6 +18,18 @@ Ripe.prototype.init = function(url, model, parts, options) {
     });
 };
 
+Ripe.prototype.setPart = function(part, material, color, noUpdate) {
+    var value = this.parts[part] || {};
+    value.material = material;
+    value.color = color;
+    this.parts[part] = value;
+    !noUpdate && this.update();
+};
+
+Ripe.prototype.update = function() {
+    console.info("update");
+};
+
 Ripe.prototype.render = function(target, frame, options) {
     var target = target || this.options.target;
     var element = target;
