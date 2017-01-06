@@ -7,6 +7,5 @@ from . import util
 from . import main
 
 from .controllers import *
-from .models import *
 from .util import *
-from .main import RipeCoreApp
+from .main import RipeDemoApp
