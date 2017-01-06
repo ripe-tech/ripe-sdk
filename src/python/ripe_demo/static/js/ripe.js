@@ -3,13 +3,19 @@ var Ripe = function(url, model, parts, options) {
 };
 
 Ripe.prototype.init = function(url, model, parts, options) {
+    // sets the various value in the instance taking into
+    // account the default values
     this.url = url;
     this.model = model;
     this.parts = parts || {};
     this.options = options || {};
-    this.getDefaults(function(result) {
-                this.parts = result;
-            });
+
+    // determines if the defaults for the selected model should
+    // be loaded so that the parts structure is initially populated
+    var loadDefaults = !this.parts && !options.noDefaults;
+    loadDefaults && this.getDefaults(function(result) {
+        this.parts = result;
+    });
 };
 
 Ripe.prototype.render = function(target, frame, options) {
@@ -23,9 +29,9 @@ Ripe.prototype.getPrice = function(callback) {
     var priceURL = this.getPriceURL();
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {
-                var result = JSON.parse(this.responseText);
-                callback.call(context, result);
-            });
+        var result = JSON.parse(this.responseText);
+        callback.call(context, result);
+    });
     request.open("GET", priceURL);
     request.send();
 };
@@ -35,9 +41,9 @@ Ripe.prototype.getDefaults = function(callback) {
     var defaultsURL = this.getDefaultsURL();
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {
-                var result = JSON.parse(this.responseText);
-                callback.call(context, result.parts);
-            });
+        var result = JSON.parse(this.responseText);
+        callback.call(context, result.parts);
+    });
     request.open("GET", defaultsURL);
     request.send();
 };
