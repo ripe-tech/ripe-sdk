@@ -28,7 +28,7 @@ window.onload = function() {
 
     getPrice.addEventListener("click", function() {
         ripe.getPrice(function(result) {
-            alert(result.total.price_final);
+            alert(String(result.total.price_final) + " " + result.total.currency);
         });
     });
 };
