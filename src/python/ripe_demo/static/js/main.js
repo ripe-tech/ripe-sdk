@@ -14,7 +14,8 @@ window.onload = function() {
     ripe.bind(document.getElementById("frame-6"), "6");
     ripe.bind(document.getElementById("frame-top"), "top");
     ripe.addPriceCallback(function(value) {
-        console.info(value.total.price_final);
+        var price = document.getElementById("price");
+        price.innerHTML = value.total.price_final + " " + value.total.currency;
     });
 
     ripe.load();
@@ -27,8 +28,8 @@ window.onload = function() {
     });
 
     getPrice.addEventListener("click", function() {
-        ripe.getPrice(function(result) {
-            alert(String(result.total.price_final) + " " + result.total.currency);
+        ripe.getPrice(function(value) {
+            alert(String(value.total.price_final) + " " + value.total.currency);
         });
     });
 };
