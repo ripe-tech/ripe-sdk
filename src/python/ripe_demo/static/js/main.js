@@ -2,16 +2,16 @@ window.onload = function() {
     var element = document.getElementById("canvas");
     var url = element.dataset.url || "https://www.my-swear.com/";
     var model = element.dataset.model || "vyner";
-    var currency = element.dataset.currency || "EUR";
+    var currency = element.dataset.currency || "USD";
     var country = element.dataset.country || "US";
 
     var parts = [
-    	["side", "suede", "navy"],
-    	["side", "nappa", "beige"],
-    	["side", "crocodile", "silver"],
-    	["side", "nappa", "white"]
-   	]
-   	var index = 0;
+        ["side", "suede", "navy"],
+        ["side", "nappa", "beige"],
+        ["side", "crocodile", "silver"],
+        ["side", "nappa", "white"]
+    ];
+    var index = 0;
 
     var ripe = new Ripe(url, model, {}, {
         currency: currency,
@@ -32,8 +32,8 @@ window.onload = function() {
     var getPrice = document.getElementById("get-price");
 
     setPart.addEventListener("click", function() {
-    	var target = index % parts.length;
-    	var part = parts[target]; 
+        var target = index % parts.length;
+        var part = parts[target];
         ripe.setPart(part[0], part[1], part[2])
         index++;
     });
