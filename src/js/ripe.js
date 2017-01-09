@@ -49,6 +49,14 @@ Ripe.prototype.bind = function(target, frame) {
     this.binds[frame] = bind;
 };
 
+Ripe.prototype.addUpdateCallback = function(callback) {
+    this._addCallback("update", callback);
+};
+
+Ripe.prototype.removeUpdateCallback = function(callback) {
+    this._removeCallback("update", callback);
+};
+
 Ripe.prototype.addPriceCallback = function(callback) {
     this._addCallback("price", callback);
 };
@@ -71,6 +79,8 @@ Ripe.prototype.update = function(price) {
             this.render(target, frame);
         }
     }
+
+    this.ready && this._runCallbacks("update");
 
     this.ready && this.getPrice(function(value) {
         this._runCallbacks("price", value);
