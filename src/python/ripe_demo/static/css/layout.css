@@ -3,3 +3,7 @@
 img {
     width: 600px;
 }
+
+.price {
+	font-weight: bold;
+}
