@@ -5,6 +5,14 @@ window.onload = function() {
     var currency = element.dataset.currency || "EUR";
     var country = element.dataset.country || "US";
 
+    var parts = [
+    	["side", "suede", "navy"],
+    	["side", "nappa", "beige"],
+    	["side", "crocodile", "silver"],
+    	["side", "nappa", "white"]
+   	]
+   	var index = 0;
+
     var ripe = new Ripe(url, model, {}, {
         currency: currency,
         country: country
@@ -24,7 +32,10 @@ window.onload = function() {
     var getPrice = document.getElementById("get-price");
 
     setPart.addEventListener("click", function() {
-        ripe.setPart("side", "suede", "navy")
+    	var target = index % parts.length;
+    	var part = parts[target]; 
+        ripe.setPart(part[0], part[1], part[2])
+        index++;
     });
 
     getPrice.addEventListener("click", function() {
