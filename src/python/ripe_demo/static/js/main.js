@@ -29,6 +29,7 @@ window.onload = function() {
     ripe.load();
 
     var setPart = document.getElementById("set-part");
+    var setMessage = document.getElementById("set-message");
     var getPrice = document.getElementById("get-price");
 
     setPart.addEventListener("click", function() {
@@ -36,6 +37,10 @@ window.onload = function() {
         var part = parts[target];
         ripe.setPart(part[0], part[1], part[2]);
         index++;
+    });
+
+    setMessage.addEventListener("click", function() {
+        alert("Not implemented");
     });
 
     getPrice.addEventListener("click", function() {
