@@ -34,7 +34,7 @@ window.onload = function() {
     setPart.addEventListener("click", function() {
         var target = index % parts.length;
         var part = parts[target];
-        ripe.setPart(part[0], part[1], part[2])
+        ripe.setPart(part[0], part[1], part[2]);
         index++;
     });
 
