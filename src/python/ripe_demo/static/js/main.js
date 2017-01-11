@@ -8,8 +8,7 @@ window.onload = function() {
     var parts = [
         ["side", "suede", "navy"],
         ["side", "nappa", "beige"],
-        ["side", "crocodile", "silver"],
-        ["side", "nappa", "white"]
+        ["side", "crocodile", "silver"]
     ];
     var index = 0;
 
@@ -26,7 +25,7 @@ window.onload = function() {
         price.innerHTML = value.total.price_final + " " + value.total.currency;
     });
     ripe.addCombinationsCallback(function(value) {
-        for (var index = 0; inde < value.length; index++) {
+        for (var index = 0; index < value.length; index++) {
             var triplet = value[index];
             parts.push(triplet);
         }
