@@ -3,7 +3,7 @@ var Ripe = function(url, model, parts, options) {
 };
 
 Ripe.prototype.init = function(url, model, parts, options) {
-    // sets the various value in the instance taking into
+    // sets the various values in the instance taking into
     // account the default values
     this.url = url;
     this.model = model;
