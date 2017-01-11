@@ -25,6 +25,9 @@ window.onload = function() {
         var price = document.getElementById("price");
         price.innerHTML = value.total.price_final + " " + value.total.currency;
     });
+    ripe.addCombinationsCallback(function(value) {
+    	console.info(value);
+    });
 
     ripe.load();
 
