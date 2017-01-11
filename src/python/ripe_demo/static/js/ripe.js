@@ -175,9 +175,10 @@ Ripe.prototype._getDefaultsURL = function(model) {
     return this.url + "api/models/" + model + "/defaults";
 };
 
-Ripe.prototype._getCombinationsURL = function(model) {
+Ripe.prototype._getCombinationsURL = function(model, useName) {
     var model = model || this.model;
-    return this.url + "api/models/" + model + "/combinations";
+    var useNameS = useName ? "1" : "0";
+    return this.url + "api/models/" + model + "/combinations?" + "use_name=" + useNameS;
 };
 
 Ripe.prototype._getQuery = function(model, frame, parts, engraving, options) {

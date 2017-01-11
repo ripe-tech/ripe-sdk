@@ -26,7 +26,10 @@ window.onload = function() {
         price.innerHTML = value.total.price_final + " " + value.total.currency;
     });
     ripe.addCombinationsCallback(function(value) {
-    	console.info(value);
+        for (var index = 0; inde < value.length; index++) {
+            var triplet = value[index];
+            parts.push(triplet);
+        }
     });
 
     ripe.load();
