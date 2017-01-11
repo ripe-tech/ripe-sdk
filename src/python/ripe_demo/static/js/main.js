@@ -56,15 +56,15 @@ window.onload = function() {
     var setMessage = document.getElementById("set-message");
     var getPrice = document.getElementById("get-price");
 
-    setPart.addEventListener("click", function() {
+    setPart && setPart.addEventListener("click", function() {
         randomize();
     });
 
-    setMessage.addEventListener("click", function() {
+    setMessage && setMessage.addEventListener("click", function() {
         alert("Not implemented");
     });
 
-    getPrice.addEventListener("click", function() {
+    getPrice && getPrice.addEventListener("click", function() {
         ripe.getPrice(function(value) {
             alert(String(value.total.price_final) + " " + value.total.currency);
         });
