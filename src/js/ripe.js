@@ -21,6 +21,7 @@ Ripe.prototype.init = function(url, model, parts, options) {
         this.parts = result;
         this.ready = true;
         this.update();
+        this._runCallbacks("parts", this.parts);
     });
 
     // tries to determine if the combinations available should be
@@ -29,6 +30,7 @@ Ripe.prototype.init = function(url, model, parts, options) {
     var loadCombinations = !options.noCombinations;
     loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
+        this._runCallbacks("combinations", this.combinations);
     });
 
     // in case the current instance already contains configured parts
@@ -71,6 +73,22 @@ Ripe.prototype.addPriceCallback = function(callback) {
 
 Ripe.prototype.removePriceCallback = function(callback) {
     this._removeCallback("price", callback);
+};
+
+Ripe.prototype.addPartsCallback = function(callback) {
+    this._addCallback("parts", callback);
+};
+
+Ripe.prototype.removePartsCallback = function(callback) {
+    this._removeCallback("parts", callback);
+};
+
+Ripe.prototype.addCombinationsCallback = function(callback) {
+    this._addCallback("combinations", callback);
+};
+
+Ripe.prototype.removeCombinationsCallback = function(callback) {
+    this._removeCallback("combinations", callback);
 };
 
 Ripe.prototype.render = function(target, frame, options) {
@@ -128,7 +146,7 @@ Ripe.prototype.getCombinations = function(callback) {
     request.addEventListener("load", function() {
         var isValid = this.status == 200;
         var result = JSON.parse(this.responseText);
-        callback.call(context, isValid ? result.parts : null);
+        callback.call(context, isValid ? result.combinations : null);
     });
     request.open("GET", combinationsURL);
     request.send();
@@ -157,9 +175,10 @@ Ripe.prototype._getDefaultsURL = function(model) {
     return this.url + "api/models/" + model + "/defaults";
 };
 
-Ripe.prototype._getCombinationsURL = function(model) {
+Ripe.prototype._getCombinationsURL = function(model, useName) {
     var model = model || this.model;
-    return this.url + "api/models/" + model + "/combinations";
+    var useNameS = useName ? "1" : "0";
+    return this.url + "api/models/" + model + "/combinations?" + "use_name=" + useNameS;
 };
 
 Ripe.prototype._getQuery = function(model, frame, parts, engraving, options) {
