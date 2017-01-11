@@ -5,17 +5,32 @@ window.onload = function() {
     var currency = element.dataset.currency || "USD";
     var country = element.dataset.country || "US";
 
-    var parts = [
-        ["side", "suede", "navy"],
-        ["side", "nappa", "beige"],
-        ["side", "crocodile", "silver"]
-    ];
+    var parts = [];
+    var partsMap = {};
     var index = 0;
 
     var ripe = new Ripe(url, model, {}, {
         currency: currency,
         country: country
     });
+
+    var randomize = function() {
+        var parts = [];
+        for (var key in partsMap) {
+            var triplets = partsMap[key];
+            var index = Math.floor(Math.random() * triplets.length);
+            var triplet = triplets[index];
+            parts.push(triplet);
+        }
+        ripe.setParts(parts);
+    };
+
+    var sequence = function() {
+        var target = index % parts.length;
+        var part = parts[target];
+        ripe.setPart(part[0], part[1], part[2]);
+        index++;
+    };
 
     ripe.bind(document.getElementById("frame-0"), "0");
     ripe.bind(document.getElementById("frame-6"), "6");
@@ -27,6 +42,10 @@ window.onload = function() {
     ripe.addCombinationsCallback(function(value) {
         for (var index = 0; index < value.length; index++) {
             var triplet = value[index];
+            var part = triplet[0];
+            var triplets = partsMap[part] || [];
+            triplets.push(triplet);
+            partsMap[part] = triplets;
             parts.push(triplet);
         }
     });
@@ -38,10 +57,7 @@ window.onload = function() {
     var getPrice = document.getElementById("get-price");
 
     setPart.addEventListener("click", function() {
-        var target = index % parts.length;
-        var part = parts[target];
-        ripe.setPart(part[0], part[1], part[2]);
-        index++;
+        randomize();
     });
 
     setMessage.addEventListener("click", function() {
