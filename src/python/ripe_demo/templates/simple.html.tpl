@@ -7,7 +7,7 @@
     </ul>
     <div id="price" class="price"></div>
     <div class="input">
-    	<input type="text" id="message" placeholder="New message" />
+        <input type="text" id="message" placeholder="New message" />
     </div>
     <div id="canvas" class="canvas" data-model="{{ model|default('', True) }}">
         <img id="frame-0" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" />
