@@ -2,13 +2,17 @@
 {% block content %}
     <ul class="operations">
         <li id="set-part">Set Part</li>
-        <li id="set-message">Set Message</li>
+        {% if message %}
+            <li id="set-message">Set Message</li>
+           {% endif %}
         <li id="get-price">Get Price</li>
     </ul>
     <div id="price" class="price"></div>
-    <div class="input">
-        <input type="text" id="message" placeholder="New message" />
-    </div>
+    {% if message %}
+        <div class="input">
+            <input type="text" id="message" placeholder="New message" />
+        </div>
+    {% endif %}
     <div id="canvas" class="canvas" data-model="{{ model|default('', True) }}">
         <img id="frame-0" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" />
         <img id="frame-6" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" />
