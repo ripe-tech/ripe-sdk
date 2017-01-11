@@ -1,6 +1,6 @@
 window.onload = function() {
     var element = document.getElementById("canvas");
-    var url = element.dataset.url || "https://www.my-swear.com/";
+    var url = element.dataset.url || "https://myswear-test.platforme.com/";
     var model = element.dataset.model || "vyner";
     var currency = element.dataset.currency || "USD";
     var country = element.dataset.country || "US";
