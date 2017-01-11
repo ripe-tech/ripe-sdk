@@ -23,6 +23,14 @@ Ripe.prototype.init = function(url, model, parts, options) {
         this.update();
     });
 
+    // tries to determine if the combinations available should be
+    // loaded for the current model and if that's the case start the
+    // loading process for them, setting then the result in the instance
+    var loadCombinations = !options.noCombinations;
+    loadCombinations && this.getCombinations(function(result) {
+        this.combinations = result;
+    });
+
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
     this.ready = hasParts;
@@ -113,6 +121,19 @@ Ripe.prototype.getDefaults = function(callback) {
     request.send();
 };
 
+Ripe.prototype.getCombinations = function(callback) {
+    var context = this;
+    var combinationsURL = this._getCombinationsURL();
+    var request = new XMLHttpRequest();
+    request.addEventListener("load", function() {
+        var isValid = this.status == 200;
+        var result = JSON.parse(this.responseText);
+        callback.call(context, isValid ? result.parts : null);
+    });
+    request.open("GET", combinationsURL);
+    request.send();
+};
+
 Ripe.prototype._getImageURL = function(frame, parts, model, engraving, options) {
     var frame = frame || "0";
     var parts = parts || this.parts;
@@ -133,7 +154,12 @@ Ripe.prototype._getPriceURL = function(parts, model, engraving) {
 
 Ripe.prototype._getDefaultsURL = function(model) {
     var model = model || this.model;
-    return this.url + "api/config/get_defaults/" + model;
+    return this.url + "api/models/" + model + "/defaults";
+};
+
+Ripe.prototype._getCombinationsURL = function(model) {
+    var model = model || this.model;
+    return this.url + "api/models/" + model + "/combinations";
 };
 
 Ripe.prototype._getQuery = function(model, frame, parts, engraving, options) {
