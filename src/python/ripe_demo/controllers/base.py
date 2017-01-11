@@ -16,5 +16,6 @@ class BaseController(appier.Controller):
     def simple(self):
         return self.template(
             "simple.html.tpl",
+            url = self.field("url"),
             model = self.field("model")
         )

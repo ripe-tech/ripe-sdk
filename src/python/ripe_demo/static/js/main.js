@@ -1,6 +1,6 @@
 window.onload = function() {
     var element = document.getElementById("canvas");
-    var url = element.dataset.url || "https://myswear-test.platforme.com/";
+    var url = element.dataset.url || "https://demo.platforme.com/";
     var model = element.dataset.model || "vyner";
     var currency = element.dataset.currency || "USD";
     var country = element.dataset.country || "US";
@@ -23,6 +23,15 @@ window.onload = function() {
             parts.push(triplet);
         }
         ripe.setParts(parts);
+    };
+
+    var unique = function() {
+        var count = 1;
+        for (var key in partsMap) {
+            var triplets = partsMap[key];
+            count *= triplets.length;
+        }
+        return count;
     };
 
     var sequence = function() {
@@ -55,6 +64,7 @@ window.onload = function() {
     var setPart = document.getElementById("set-part");
     var setMessage = document.getElementById("set-message");
     var getPrice = document.getElementById("get-price");
+    var getCombinations = document.getElementById("get-combinations");
 
     setPart && setPart.addEventListener("click", function() {
         randomize();
@@ -67,6 +77,14 @@ window.onload = function() {
     getPrice && getPrice.addEventListener("click", function() {
         ripe.getPrice(function(value) {
             alert(String(value.total.price_final) + " " + value.total.currency);
+        });
+    });
+
+    getCombinations && getCombinations.addEventListener("click", function() {
+        ripe.getCombinations(function(value) {
+            alert("There are <strong>" + String(value.length) +
+                "</strong> combinations with <strong>" + String(unique()) +
+                "</strong> possible compositions");
         });
     });
 };
