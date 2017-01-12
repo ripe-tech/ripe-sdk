@@ -4,6 +4,10 @@ img {
     width: 600px;
 }
 
+ul li {
+    cursor: pointer;
+}
+
 .price {
     font-weight: bold;
 }
