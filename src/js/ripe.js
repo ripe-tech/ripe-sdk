@@ -61,6 +61,16 @@ Ripe.prototype.setParts = function(update, noUpdate) {
 };
 
 Ripe.prototype.bind = function(target, frame) {
+    // validates that the provided target element is a
+    // valid one and if that's not the case returns the
+    // control flow immediately to the caller
+    if (!target) {
+        return;
+    }
+
+    // tries to retrieve the set of binds to the target
+    // frame, then adds the target to that list and re-sets
+    // the list in the binds map
     var bind = this.binds[frame] || [];
     bind.push(target);
     this.binds[frame] = bind;

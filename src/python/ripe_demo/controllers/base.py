@@ -19,3 +19,11 @@ class BaseController(appier.Controller):
             url = self.field("url"),
             model = self.field("model")
         )
+
+    @appier.route("/gucci", "GET")
+    def gucci(self):
+        return self.template(
+            "gucci.html.tpl",
+            url = self.field("url"),
+            model = self.field("model")
+        )
