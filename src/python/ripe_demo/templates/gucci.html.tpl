@@ -1,4 +1,5 @@
 {% extends "partials/layout.demo.html.tpl" %}
+{% block body_class %}{{ super() }} uwide{% endblock %}
 {% block canvas %}
     <div id="canvas" class="canvas" data-url="{{ url|default('', True) }}"
          data-model="{{ model|default('dionysus', True) }}">

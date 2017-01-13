@@ -20,7 +20,7 @@
             <title>{{ title }}{% block title %}{% endblock %}</title>
         {% endblock %}
     </head>
-    <body class="ux wait-load">
+    <body class="{% block body_class %}ux wait-load{% endblock %}">
         <div id="header" class="header">
             {% block header %}
                 <div class="header-container"></div>
