@@ -15,7 +15,7 @@ Ripe.prototype.init = function(url, model, parts, options) {
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
-    var hasParts = this.parts && Object.keys(this.parts).length != 0;
+    var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && !options.noDefaults;
     loadDefaults && this.getDefaults(function(result) {
         this.parts = result;
@@ -109,7 +109,7 @@ Ripe.prototype.removeCombinationsCallback = function(callback) {
 };
 
 Ripe.prototype.render = function(target, frame, options) {
-    var target = target || this.options.target;
+    target = target || this.options.target;
     var element = target;
     element.src = this._getImageURL(frame, null, null, options);
 };
@@ -170,30 +170,30 @@ Ripe.prototype.getCombinations = function(callback) {
 };
 
 Ripe.prototype._getImageURL = function(frame, parts, model, engraving, options) {
-    var frame = frame || "0";
-    var parts = parts || this.parts;
-    var model = model || this.model;
-    var options = options || this.options || {};
+    frame = frame || "0";
+    parts = parts || this.parts;
+    model = model || this.model;
+    options = options || this.options || {};
     var query = this._getQuery(model, frame, parts, engraving, options);
     return this.url + "compose?" + query;
 };
 
-Ripe.prototype._getPriceURL = function(parts, model, engraving) {
-    var parts = parts || this.parts;
-    var model = model || this.model;
-    var engraving = engraving || this.options.engraving;
-    var options = options || this.options || {};
+Ripe.prototype._getPriceURL = function(parts, model, engraving, options) {
+    parts = parts || this.parts;
+    model = model || this.model;
+    engraving = engraving || this.options.engraving;
+    options = options || this.options || {};
     var query = this._getQuery(model, null, parts, engraving, options);
     return this.url + "api/config/price" + "?" + query;
 };
 
 Ripe.prototype._getDefaultsURL = function(model) {
-    var model = model || this.model;
+    model = model || this.model;
     return this.url + "api/models/" + model + "/defaults";
 };
 
 Ripe.prototype._getCombinationsURL = function(model, useName) {
-    var model = model || this.model;
+    model = model || this.model;
     var useNameS = useName ? "1" : "0";
     return this.url + "api/models/" + model + "/combinations?" + "use_name=" + useNameS;
 };
