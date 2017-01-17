@@ -135,7 +135,7 @@ Ripe.prototype.getPrice = function(callback) {
     var priceURL = this._getPriceURL();
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {
-        var isValid = this.status == 200;
+        var isValid = this.status === 200;
         var result = JSON.parse(this.responseText);
         callback.call(context, isValid ? result : null);
     });
@@ -148,7 +148,7 @@ Ripe.prototype.getDefaults = function(callback) {
     var defaultsURL = this._getDefaultsURL();
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {
-        var isValid = this.status == 200;
+        var isValid = this.status === 200;
         var result = JSON.parse(this.responseText);
         callback.call(context, isValid ? result.parts : null);
     });
@@ -161,7 +161,7 @@ Ripe.prototype.getCombinations = function(callback) {
     var combinationsURL = this._getCombinationsURL();
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {
-        var isValid = this.status == 200;
+        var isValid = this.status === 200;
         var result = JSON.parse(this.responseText);
         callback.call(context, isValid ? result.combinations : null);
     });
@@ -238,7 +238,7 @@ Ripe.prototype._addCallback = function(name, callback) {
 Ripe.prototype._removeCallback = function(name, callback) {
     var callbacks = this.callbacks[name] || [];
     var index = array.indexOf(callback);
-    if (index == -1) {
+    if (index === -1) {
         return;
     }
     callbacks.splice(index, 1);
