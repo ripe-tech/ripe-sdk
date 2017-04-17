@@ -5,7 +5,7 @@
         {% block head scoped %}
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
             <link rel="stylesheet" type="text/css" href="{{ touch('//libs.platforme.com/uxf/css/ux-min.css') }}" />
-            <link rel="stylesheet" type="text/css" href="{{ touch('//libs.platforme.com/layout/css/layout.modern.css') }}" />
+            <link rel="stylesheet" type="text/css" href="{{ touch('//libs.platforme.com/layout/css/layout.flat.css') }}" />
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/layout.css') }}" />
             <link rel="shortcut icon" href="{{ url_for('static', filename = 'images/favicon.ico') }}" />
             <script type="text/javascript" src="{{ touch('//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js') }}"></script>
