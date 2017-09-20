@@ -1,12 +1,14 @@
-var Ripe = function(url, model, parts, options) {
-    this.init(url, model, parts, options);
+var Ripe = function(url, brand, model, variant, parts, options) {
+    this.init(url, brand, model, variant, parts, options);
 };
 
-Ripe.prototype.init = function(url, model, parts, options) {
+Ripe.prototype.init = function(url, brand, model, variant, parts, options) {
     // sets the various values in the instance taking into
     // account the default values
     this.url = url;
+    this.brand = brand;
     this.model = model;
+    this.variant = variant;
     this.parts = parts || {};
     this.options = options || {};
     this.binds = {};
@@ -111,7 +113,7 @@ Ripe.prototype.removeCombinationsCallback = function(callback) {
 Ripe.prototype.render = function(target, frame, options) {
     target = target || this.options.target;
     var element = target;
-    element.src = this._getImageURL(frame, null, null, options);
+    element.src = this._getImageURL(frame, null, null, null, null, null, options);
 };
 
 Ripe.prototype.update = function(price) {
@@ -169,39 +171,50 @@ Ripe.prototype.getCombinations = function(callback) {
     request.send();
 };
 
-Ripe.prototype._getImageURL = function(frame, parts, model, engraving, options) {
+Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engraving, options) {
     frame = frame || "0";
     parts = parts || this.parts;
+    brand = brand || this.brand;
     model = model || this.model;
+    variant = variant || this.variant;
+    engraving = engraving || this.engraving;
     options = options || this.options || {};
-    var query = this._getQuery(model, frame, parts, engraving, options);
+    var query = this._getQuery(brand, model, variant, frame, parts, engraving, options);
     return this.url + "compose?" + query;
 };
 
-Ripe.prototype._getPriceURL = function(parts, model, engraving, options) {
+Ripe.prototype._getPriceURL = function(parts, brand, model, variant, engraving, options) {
     parts = parts || this.parts;
+    brand = brand || this.brand;
     model = model || this.model;
-    engraving = engraving || this.options.engraving;
+    variant = variant || this.variant;
     options = options || this.options || {};
-    var query = this._getQuery(model, null, parts, engraving, options);
+    var query = this._getQuery(brand, model, variant, null, parts, engraving, options);
     return this.url + "api/config/price" + "?" + query;
 };
 
-Ripe.prototype._getDefaultsURL = function(model) {
+Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
+    brand = brand || this.brand;
     model = model || this.model;
-    return this.url + "api/models/" + model + "/defaults";
+    variant = variant || this.variant;
+    return this.url + "api/brands/" + brand + "/models/" + model + "/defaults?variant=" + variant;
 };
 
-Ripe.prototype._getCombinationsURL = function(model, useName) {
+Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
+    brand = brand || this.brand;
     model = model || this.model;
+    variant = variant || this.variant;
     var useNameS = useName ? "1" : "0";
-    return this.url + "api/models/" + model + "/combinations?" + "use_name=" + useNameS;
+    var query = "variant=" + variant + "&use_name=" + useNameS;
+    return this.url + "api/brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
 };
 
-Ripe.prototype._getQuery = function(model, frame, parts, engraving, options) {
+Ripe.prototype._getQuery = function(brand, model, variant, frame, parts, engraving, options) {
     var buffer = [];
 
+    brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
+    variant && buffer.push("variant=" + variant);
     frame && buffer.push("frame=" + frame);
 
     for (var part in parts) {
@@ -221,9 +234,6 @@ Ripe.prototype._getQuery = function(model, frame, parts, engraving, options) {
 
     options.currency && buffer.push("currency=" + options.currency);
     options.country && buffer.push("country=" + options.country);
-
-    options.brand && buffer.push("brand=" + options.brand);
-    options.variant && buffer.push("variant=" + options.variant);
 
     options.format && buffer.push("format=" + options.format);
     options.size && buffer.push("size=" + options.size);
