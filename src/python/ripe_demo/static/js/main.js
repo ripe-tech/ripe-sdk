@@ -13,9 +13,7 @@ window.onload = function() {
 
     var ripe = new Ripe(url, brand, model, variant, {}, {
         currency: currency,
-        country: country,
-        brand: brand,
-        variant: variant
+        country: country
     });
 
     var randomize = function() {
