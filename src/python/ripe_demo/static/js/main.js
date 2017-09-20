@@ -4,6 +4,8 @@ window.onload = function() {
     var model = element.dataset.model || "vyner";
     var currency = element.dataset.currency || "USD";
     var country = element.dataset.country || "US";
+    var brand = element.dataset.brand || "swear";
+    var variant = element.dataset.variant || "";
 
     var parts = [];
     var partsMap = {};
@@ -11,7 +13,9 @@ window.onload = function() {
 
     var ripe = new Ripe(url, model, {}, {
         currency: currency,
-        country: country
+        country: country,
+        brand: brand,
+        variant: variant
     });
 
     var randomize = function() {

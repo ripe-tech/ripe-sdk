@@ -222,6 +222,9 @@ Ripe.prototype._getQuery = function(model, frame, parts, engraving, options) {
     options.currency && buffer.push("currency=" + options.currency);
     options.country && buffer.push("country=" + options.country);
 
+    options.brand && buffer.push("brand=" + options.brand);
+    options.variant && buffer.push("variant=" + options.variant);
+
     options.format && buffer.push("format=" + options.format);
     options.size && buffer.push("size=" + options.size);
     options.background && buffer.push("background=" + options.background);
