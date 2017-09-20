@@ -179,6 +179,7 @@ Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engr
     variant = variant || this.variant;
     engraving = engraving || this.engraving;
     options = options || this.options || {};
+    engraving = engraving || this.options.engraving;
     var query = this._getQuery(brand, model, variant, frame, parts, engraving, options);
     return this.url + "compose?" + query;
 };
@@ -188,7 +189,9 @@ Ripe.prototype._getPriceURL = function(parts, brand, model, variant, engraving, 
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
+    engraving = engraving || this.engraving;
     options = options || this.options || {};
+    engraving = engraving || this.options.engraving;
     var query = this._getQuery(brand, model, variant, null, parts, engraving, options);
     return this.url + "api/config/price" + "?" + query;
 };
