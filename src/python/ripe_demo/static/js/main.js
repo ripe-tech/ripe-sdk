@@ -1,7 +1,9 @@
 window.onload = function() {
     var element = document.getElementById("canvas");
     var url = element.dataset.url || "https://demo.platforme.com/";
+    var brand = element.dataset.brand || "swear";
     var model = element.dataset.model || "vyner";
+    var variant = element.dataset.variant || "";
     var currency = element.dataset.currency || "USD";
     var country = element.dataset.country || "US";
 
@@ -9,7 +11,7 @@ window.onload = function() {
     var partsMap = {};
     var index = 0;
 
-    var ripe = new Ripe(url, model, {}, {
+    var ripe = new Ripe(url, brand, model, variant, {}, {
         currency: currency,
         country: country
     });
