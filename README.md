@@ -69,19 +69,27 @@ ripe.getPrice(function(value) {
 ```
 
 ## Product interaction
-To provide an interactive product visualization you simply need to pass a `<div>` element to the method `bindDrag`. You may also pass the size of the frames (in pixels), which is 1000px by default.
+To provide an interactive product visualization you simply need to pass a `<div>` element to the method `bindDrag`. You may also pass the size of the frames (1000px by default) and the maximum frame size.
 
 ```javascript
-ripe.bindDrag(document.getElementById("product-container"), 640);
+ripe.bindDrag(document.getElementById("product-container"), 640, 1000);
 ```
 
 This element reacts to the following events:
 - `change_to_frame`: it displays a single frame you pass by.
     - parameter: `frame` (numeric _([0...n]) or string (named frame)
 - `animate_to_frame`: it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds.
-    - parameter: `from` (numeric _([0...n]) or string (named frame)), the starting frame
-    - parameter: `to` (numeric _([0...n]) or string (named frame)), the final frame
-    - parameter: `step` (numeric _([0...n])) the duration, in milliseconds, of each transition between frames.
-- `max_frame_size`: sets the frame size to the maximum value allowed (1000px x 1000px).
-    - parameter: `size` (numeric _([0...1000])
-- `default_frame_size` sets the frame size to a default value (1000px x 1000px).
+    - parameter: `from` (numeric _([0...n]) or string), the starting frame
+    - parameter: `to` (numeric _([0...n]) or string), the final frame
+    - parameter: `step` (numeric _([0...n])), the duration, in milliseconds, of each transition between frames.
+- `fullscreen`: sets the frame size to the maximum value.
+- `exit_fullscreen` sets the frame size to the initial value.
+- `highlight_part` highlights a part.
+    - parameter: `part` (string), named part
+
+Additionally, that same element may trigger the next set of events:
+- `selected_part`: triggered when a part is selected.
+    - parameter: `part` (string), named part
+- `highlighted_part`: triggered when a part is highlighted.
+    - parameter: `part` (string), named part
+- `loaded`: triggered when the initial loading finishes.
