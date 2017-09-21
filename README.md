@@ -18,11 +18,9 @@ ripe.addCombinationsCallback(function(value) {
     for (var index = 0; index < value.length; index++) {
         var triplet = value[index];
         var part = triplet[0];
-        var triplets = partsMap[part] || [];
-        triplets.push(triplet);
-        partsMap[part] = triplets;
-        parts.push(triplet);
-        updateOptions(parts);
+        var material = triplet[1];
+        var color = triplet[2];
+        addOption(part, material, color);
     }
 });
 ```
@@ -38,7 +36,8 @@ ripe.addPriceCallback(function(value) {
 
 ## Product visualization
 Usually the product has 24 lateral frames, plus a top and bottom view.
-To present a frame of the product you should use the `bindFrame` function to automatically update an `<img>` element when there is a customization change. After the initial binding of the frames you should call the `load` function for the initial update.
+To present a frame of the product you can use the `bindFrame` function to automatically update an `<img>` element when there is a customization change.
+After the initial binding of the frames you should call the `load` function for the initial update.
 
 ```javascript
 ripe.bindFrame(document.getElementById("frame-0"), "0");
@@ -49,9 +48,6 @@ ripe.load();
 ```
 
 ## Product customization
-To retrieve the possible
-
-
 You can change a part of your product by using the `setPart` function. Alternatively, all the parts can be changed at once with `setParts`
 
 ```javascript
