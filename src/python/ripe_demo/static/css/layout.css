@@ -16,7 +16,10 @@ ul {
 ul li {
     cursor: pointer;
     user-select: none;
+    -o-user-select: none;
+    -ms-user-select: none;
     -moz-user-select: none;
+    -khtml-user-select: none;
     -webkit-user-select: none;
 }
 
