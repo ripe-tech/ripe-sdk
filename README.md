@@ -12,7 +12,7 @@ var ripe = new Ripe(url, brand, model, variant, parts, {
 ```
 
 ## Events
-After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI whenever changes occur. Each combination of a product is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
+After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI. Each combination of a product is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
 
 ```javascript
 ripe.addCombinationsCallback(function(value) {
