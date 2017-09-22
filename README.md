@@ -1,7 +1,7 @@
 # RIPE SDK
 The public SDK for usage of [ripe-core](https://github.com/ripe-tech/ripe-core).
 
-## Getting started
+## Initialization
 As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product. You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
 ```javascript
@@ -11,6 +11,7 @@ var ripe = new Ripe(url, brand, model, variant, parts, {
 });
 ```
 
+## Events
 After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI whenever changes occur. Each combination of a product is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
 
 ```javascript
