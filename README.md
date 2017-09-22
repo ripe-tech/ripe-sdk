@@ -2,7 +2,8 @@
 The public SDK for usage of [ripe-core](https://github.com/ripe-tech/ripe-core).
 
 ## Initialization
-As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product. You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
+As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product.  
+You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
 ```javascript
 var ripe = new Ripe(url, brand, model, variant, parts, {
@@ -73,9 +74,10 @@ ripe.setParts(parts);
 
 ## Getters
 If you need to explicitly retrieve the product's customization information you can use the following methods:
-    - `getPrice`: to get the product's pricing information.
-    - `getCombinations`: to get all the the available customization options for products.
-    - `getDefaults`: to get the product's default customization.
+
+- `getPrice`: to get the product's pricing information.
+- `getCombinations`: to get all the the available customization options for products.
+- `getDefaults`: to get the product's default customization.
 
 ```javascript
 ripe.getPrice(function(value) {
