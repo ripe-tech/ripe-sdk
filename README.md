@@ -12,7 +12,30 @@ var ripe = new Ripe(url, brand, model, variant, parts, {
 ```
 
 ## Events
-After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI. Each combination of a product is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
+After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI.
+
+### Update
+
+Triggered whenever there is a customization change.
+
+```javascript
+ripe.addUpdateCallback(function() {
+    updateUI();
+});
+```
+
+### Price
+Notifies you when the price of the customization changes.
+
+```javascript
+ripe.addPriceCallback(function(value) {
+    var price = document.getElementById("price");
+    price.innerHTML = value.total.price_final + " " + value.total.currency;
+});
+```
+
+### Combinations
+Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
 
 ```javascript
 ripe.addCombinationsCallback(function(value) {
@@ -23,15 +46,6 @@ ripe.addCombinationsCallback(function(value) {
         var color = triplet[2];
         addOption(part, material, color);
     }
-});
-```
-
-On the next example you can see how to update the price of the product:
-
-```javascript
-ripe.addPriceCallback(function(value) {
-    var price = document.getElementById("price");
-    price.innerHTML = value.total.price_final + " " + value.total.currency;
 });
 ```
 
@@ -49,7 +63,7 @@ ripe.load();
 ```
 
 ## Product customization
-You can change a part of your product by using the `setPart` function. 
+You can change a part of your product by using the `setPart` function.
 Alternatively, all the parts can be changed at once with `setParts`.
 
 ```javascript
