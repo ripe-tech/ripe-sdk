@@ -76,34 +76,19 @@ ripe.bindDrag(document.getElementById("product-container"), 640, 1000);
 ```
 
 This element reacts to the following events:
-- `change_to_frame`: it displays a single frame you pass by.
-    - parameter: `frame` (numeric _([0...n]) or string (named frame)
-- `animate_to_frame`: it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds.
-    - parameter: `from` (numeric _([0...n]) or string), the starting frame
-    - parameter: `to` (numeric _([0...n]) or string), the final frame
-    - parameter: `step` (numeric _([0...n])), the duration, in milliseconds, of each transition between frames.
-- `fullscreen`: sets the frame size to the maximum value.
-- `exit_fullscreen` sets the frame size to the initial value.
-- `highlight_part` highlights a part.
-    - parameter: `part` (string), named part
-
-Additionally, that same element may trigger the next set of events:
-- `selected_part`: triggered when a part is selected.
-    - parameter: `part` (string), named part
-- `highlighted_part`: triggered when a part is highlighted.
-    - parameter: `part` (string), named part
-- `loaded`: triggered when the initial loading finishes.
 
 | Event | Params | Description |
 | --- | --- | --- |
-| `change_to_frame` | - `frame` (numeric _([0...n]) or string (named frame) | it displays a single frame you pass by |
-| `animate_to_frame` | - `from` (numeric _([0...n]) or string), the starting frame; - `to` (numeric _([0...n]) or string), the final frame; - `step` (numeric _([0...n])), the duration, in milliseconds, of each transition between frames. | it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds |
-| `fullscreen` | sets the frame size to the maximum value |
-| `exit_fullscreen` | sets the frame size to the initial value |
-| `highlight_part` | highlights a part |
+| `change_to_frame` |*`frame` (numeric _([0...n]) or string (named frame)* | it displays a single frame you pass by |
+| `animate_to_frame` |`from` *(numeric _([0...n]) or string), the starting frame;* `to` *(numeric _([0...n]) or string), the final frame;* `step` *(numeric _([0...n])), the duration, in milliseconds, of each transition between frames.* | it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds |
+| `fullscreen` | | sets the frame size to the maximum value |
+| `exit_fullscreen` | | sets the frame size to the initial value |
+| `highlight_part` | `part` *(string), named part* | highlights a part |
 
-| Event | Description |
-| --- | --- |
-| `selected_part` | triggered when a part is selected |
-| `highlighted_part` | triggered when a part is highlighted |
-| `loaded` | triggered when the initial loading finishes |
+Additionally, that same element may trigger the next set of events:
+
+| Event | Params | Description |
+| --- | --- | --- |
+| `selected_part` | `part` *(string), named part* | triggered when a part is selected |
+| `highlighted_part` | `part` *(string), named part* | triggered when a part is highlighted |
+| `loaded` | | triggered when the initial loading finishes |
