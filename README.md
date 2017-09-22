@@ -50,7 +50,6 @@ ripe.load();
 
 ## Product customization
 You can change a part of your product by using the `setPart` function. 
-
 Alternatively, all the parts can be changed at once with `setParts`.
 
 ```javascript
