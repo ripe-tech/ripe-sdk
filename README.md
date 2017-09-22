@@ -2,7 +2,7 @@
 The public SDK for usage of [ripe-core](https://github.com/ripe-tech/ripe-core).
 
 ## Getting started
-As a starting point, you need to provide the base `url` as well as the `brand` and `model` of your customizable product. You may also give other options as shown below.
+As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product. You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
 ```javascript
 var ripe = new Ripe(url, brand, model, variant, parts, {
@@ -11,7 +11,7 @@ var ripe = new Ripe(url, brand, model, variant, parts, {
 });
 ```
 
-After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI whenever occur changes. The combinations of a product are the complete set of options for all its parts. You should use this to populate the customization options on your UI.
+After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI whenever changes occur. Each combination of a product is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
 
 ```javascript
 ripe.addCombinationsCallback(function(value) {
@@ -56,7 +56,11 @@ ripe.setParts(parts);
 ```
 
 ## Getters
-If you need to explicitly retrieve the product's customization information you can use the following methods: `getPrice`, `getCombinations`, `getDefaults`.
+If you need to explicitly retrieve the product's customization information you can use the following methods:
+    - `getPrice`: to get the product's pricing information.
+    - `getCombinations`: to get all the the available customization options for products.
+    - `getDefaults`: to get the product's default customization.
+
 ```javascript
 ripe.getPrice(function(value) {
     var price = document.getElementById("price");
@@ -89,3 +93,17 @@ Additionally, that same element may trigger the next set of events:
 - `highlighted_part`: triggered when a part is highlighted.
     - parameter: `part` (string), named part
 - `loaded`: triggered when the initial loading finishes.
+
+| Event | Description |
+| --- | --- |
+| `change_to_frame` | it displays a single frame you pass by |
+| `animate_to_frame` | it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds |
+| `fullscreen` | sets the frame size to the maximum value |
+| `exit_fullscreen` | sets the frame size to the initial value |
+| `highlight_part` | highlights a part |
+
+| Event | Description |
+| --- | --- |
+| `selected_part` | triggered when a part is selected |
+| `highlighted_part` | triggered when a part is highlighted |
+| `loaded` | triggered when the initial loading finishes |
