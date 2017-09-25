@@ -62,7 +62,7 @@ Ripe.prototype.setParts = function(update, noUpdate) {
     }!noUpdate && this.update();
 };
 
-Ripe.prototype.bind = function(target, frame) {
+Ripe.prototype.bindFrame = function(target, frame) {
     // validates that the provided target element is a
     // valid one and if that's not the case returns the
     // control flow immediately to the caller
@@ -76,6 +76,77 @@ Ripe.prototype.bind = function(target, frame) {
     var bind = this.binds[frame] || [];
     bind.push(target);
     this.binds[frame] = bind;
+};
+
+Ripe.prototype.bindDrag = function(target, size, maxSize, frames) {
+    // validates that the provided target element is a
+    // valid one and if that's not the case returns the
+    // control flow immediately to the caller
+    if (!target) {
+        return;
+    }
+
+    size = size || 1000;
+    maxSize = maxSize || 1000;
+
+
+    target.classList.add("product-drag");
+
+    var area = document.createElement("canvas");
+    area.className = "area";
+    area.width = size;
+    area.height = size;
+    var context = area.getContext("2d");
+    context.globalCompositeOperation = "multiply";
+    target.appendChild(area);
+
+    var back = document.createElement("canvas");
+    back.className = "back";
+    back.width = size;
+    back.height = size;
+    var context = back.getContext("2d");
+    context.globalCompositeOperation = "multiply";
+    target.appendChild(back);
+
+    var backs = document.createElement("div");
+    backs.className = "backs";
+    backs.style.display = "hidden";
+    
+    var frames = frames || this.options.frames;
+    for (var index = 0; index < frames; index++) {
+        var backImg = document.createElement("img");
+        backImg.dataset.frame = index;
+        backs.appendChild(backImg);
+    }
+    var topImg = document.createElement("img");
+    topImg.dataset.frame = "top";
+    backs.appendChild(topImg);
+    var bottomImg = document.createElement("img");
+    bottomImg.dataset.frame = "bottom";
+    backs.appendChild(bottomImg);
+    target.appendChild(backs);
+
+    var frontMask = document.createElement("img");
+    backs.className = "front-mask";
+    target.appendChild(frontMask);
+
+    var mask = document.createElement("canvas");
+    mask.className = "mask";
+    mask.width = size;
+    mask.height = size;
+
+    for (var index = 0; index < frames; index++) {
+        var maskImg = document.createElement("img");
+        maskImg.dataset.frame = index;
+        mask.appendChild(maskkImg);
+    }
+    var topImg = document.createElement("img");
+    topImg.dataset.frame = "top";
+    mask.appendChild(topImg);
+    var bottomImg = document.createElement("img");
+    bottomImg.dataset.frame = "bottom";
+    mask.appendChild(bottomImg);
+    target.appendChild(mask);
 };
 
 Ripe.prototype.addUpdateCallback = function(callback) {

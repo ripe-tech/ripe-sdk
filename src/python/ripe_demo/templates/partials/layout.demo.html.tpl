@@ -14,6 +14,9 @@
             <input type="text" id="message" placeholder="New message" />
         </div>
     {% endif %}
+    {% block drag %}
+        <div id="product-drag" class="product-drag"></div>
+    {% endblock %}
     {% block canvas %}
         <div id="canvas" class="canvas" data-url="{{ url|default('', True) }}"
              data-model="{{ model|default('', True) }}">
