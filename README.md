@@ -102,6 +102,7 @@ This element reacts to the following events:
 | `fullscreen` | | sets the frame size to the maximum value |
 | `exit_fullscreen` | | sets the frame size to the initial value |
 | `highlight_part` | `part` *(string), named part* | highlights a part |
+| |  <ul><li>item1</li><li>item2</li></ul> | |
 
 Additionally, that same element may trigger the next set of events:
 
