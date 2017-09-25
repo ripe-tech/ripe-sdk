@@ -98,11 +98,10 @@ This element reacts to the following events:
 | Event | Params | Description |
 | --- | --- | --- |
 | `change_to_frame` | *`frame` (numeric ([0...n]) or string (named frame)* | it displays a single frame you pass by |
-| `animate_to_frame` |`from` *(numeric ([0...n]) or string), the starting frame;* `to` *(numeric ([0...n]) or string), the final frame;* `step` *(numeric ([0...n])), the duration, in milliseconds, of each transition between frames * | it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds |
+| `animate_to_frame` |  <ul><li>`from` *(numeric ([0...n]) or string), the starting frame</li><li>`to` *(numeric ([0...n]) or string), the final frame</li><li>`step` *(numeric ([0...n])), the duration, in milliseconds, of each transition between frames *</li></ul> | it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds |
 | `fullscreen` | | sets the frame size to the maximum value |
 | `exit_fullscreen` | | sets the frame size to the initial value |
 | `highlight_part` | `part` *(string), named part* | highlights a part |
-| |  <ul><li>item1</li><li>item2</li></ul> | |
 
 Additionally, that same element may trigger the next set of events:
 
