@@ -97,16 +97,16 @@ This element reacts to the following events:
 
 | Event | Params | Description |
 | --- | --- | --- |
-| `change_to_frame` | *`frame` (numeric ([0...n]) or string (named frame)* | it displays a single frame you pass by |
-| `animate_to_frame` |  <ul><li>`from` *(numeric ([0...n]) or string), the starting frame</li><li>`to` *(numeric ([0...n]) or string), the final frame</li><li>`step` *(numeric ([0...n])), the duration, in milliseconds, of each transition between frames *</li></ul> | it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds |
+| `change_to_frame` | <ul><li>`frame` *(numeric ([0...n]) or string (named frame)*</li></ul> | it displays a single frame you pass by |
+| `animate_to_frame` |  <ul><li>`from` *(numeric ([0...n]) or string), the starting frame*</li><li>`to` *(numeric ([0...n]) or string), the final frame*</li><li>`step` *(numeric ([0...n])), the duration, in milliseconds, of each transition between frames*</li></ul> | it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds |
 | `fullscreen` | | sets the frame size to the maximum value |
 | `exit_fullscreen` | | sets the frame size to the initial value |
-| `highlight_part` | `part` *(string), named part* | highlights a part |
+| `highlight_part` | <ul><li>`part` *(string), named part*</li></ul> | highlights a part |
 
 Additionally, that same element may trigger the next set of events:
 
 | Event | Params | Description |
 | --- | --- | --- |
-| `selected_part` | `part` *(string), named part* | triggered when a part is selected |
-| `highlighted_part` | `part` *(string), named part* | triggered when a part is highlighted |
+| `selected_part` | <ul><li>`part` *(string), named part*</li></ul> | triggered when a part is selected |
+| `highlighted_part` | <ul><li>`part` *(string), named part*</li></ul> | triggered when a part is highlighted |
 | `loaded` | | triggered when the initial loading finishes |
