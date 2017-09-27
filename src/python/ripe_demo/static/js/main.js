@@ -48,7 +48,7 @@ window.onload = function() {
     ripe.bindFrame(document.getElementById("frame-6"), "6");
     ripe.bindFrame(document.getElementById("frame-top"), "top");
 
-    ripe.bindDrag(document.getElementById("product-drag"));
+    ripe.bindDrag(document.getElementById("product-drag"), 620);
 
     ripe.addPriceCallback(function(value) {
         var price = document.getElementById("price");

@@ -11,7 +11,8 @@ Ripe.prototype.init = function(url, brand, model, variant, parts, options) {
     this.variant = variant;
     this.parts = parts || {};
     this.options = options || {};
-    this.binds = {};
+    this.frameBinds = {};
+    this.dragBinds = [];
     this.callbacks = {};
     this.ready = false;
 
@@ -32,6 +33,20 @@ Ripe.prototype.init = function(url, brand, model, variant, parts, options) {
     var loadCombinations = !options.noCombinations;
     loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
+        this.combinationsMap = {};
+        for (var index = 0; index < this.combinations.length; index++) {
+            var combination = this.combinations[index];
+            var part = combination[0];
+            var material = combination[1];
+            var color = combination[2];
+            var partMaterials = this.combinationsMap[part] || {};
+            var materialColors = partMaterials[material] || [];
+            color && materialColors.push(color);
+            partMaterials[material] = materialColors;
+            this.combinationsMap[part] = partMaterials;
+        }
+
+        this.update();
         this._runCallbacks("combinations", this.combinations);
     });
 
@@ -73,12 +88,12 @@ Ripe.prototype.bindFrame = function(target, frame) {
     // tries to retrieve the set of binds to the target
     // frame, then adds the target to that list and re-sets
     // the list in the binds map
-    var bind = this.binds[frame] || [];
+    var bind = this.frameBinds[frame] || [];
     bind.push(target);
-    this.binds[frame] = bind;
+    this.frameBinds[frame] = bind;
 };
 
-Ripe.prototype.bindDrag = function(target, size, maxSize, frames) {
+Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
     // validates that the provided target element is a
     // valid one and if that's not the case returns the
     // control flow immediately to the caller
@@ -89,13 +104,15 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, frames) {
     size = size || 1000;
     maxSize = maxSize || 1000;
 
-
     target.classList.add("product-drag");
+    target.style.fontSize = "0px";
+    target.style.whiteSpace = "nowrap";
 
     var area = document.createElement("canvas");
     area.className = "area";
     area.width = size;
     area.height = size;
+    area.style.display = "inline-block";
     var context = area.getContext("2d");
     context.globalCompositeOperation = "multiply";
     target.appendChild(area);
@@ -104,16 +121,18 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, frames) {
     back.className = "back";
     back.width = size;
     back.height = size;
-    var context = back.getContext("2d");
-    context.globalCompositeOperation = "multiply";
+    back.style.display = "inline-block";
+    back.style.marginLeft = "-" + String(size) + "px";
+    var backContext = back.getContext("2d");
+    backContext.globalCompositeOperation = "multiply";
     target.appendChild(back);
 
     var backs = document.createElement("div");
     backs.className = "backs";
-    backs.style.display = "hidden";
+    backs.style.display = "none";
     
     var frames = frames || this.options.frames;
-    for (var index = 0; index < frames; index++) {
+    for (var index = 0; index < 24; index++) {
         var backImg = document.createElement("img");
         backImg.dataset.frame = index;
         backs.appendChild(backImg);
@@ -127,13 +146,15 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, frames) {
     target.appendChild(backs);
 
     var frontMask = document.createElement("img");
-    backs.className = "front-mask";
+    frontMask.className = "front-mask";
+    frontMask.style.display = "none";
     target.appendChild(frontMask);
 
     var mask = document.createElement("canvas");
     mask.className = "mask";
     mask.width = size;
     mask.height = size;
+    mask.style.display = "none";
 
     for (var index = 0; index < frames; index++) {
         var maskImg = document.createElement("img");
@@ -147,7 +168,125 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, frames) {
     bottomImg.dataset.frame = "bottom";
     mask.appendChild(bottomImg);
     target.appendChild(mask);
+
+    this.dragBinds.push(target);
+
+    target.draggable = true;
+    var mousePostSamples = [];
+    target.addEventListener("dragstart", function( event ) {
+        var position = target.dataset.position || 0;
+        target.dataset.down = true;
+        target.dataset.referenceX = event.pageX;
+        target.dataset.referenceY = event.pageY;
+        target.dataset.percent = 0;
+        target.dataset.base = position;
+        target.dataset.accumulatedRotation = 0;
+        target.classList.add("drag");
+    }, false);
+  
+    target.addEventListener("dragend", function( event ) {
+        var percent = target.dataset.percent;
+        target.dataset.down = false;
+        target.dataset.percent = 0;
+        target.dataset.previous = percent;
+        target.classList.remove("drag");
+    }, false);
+
+    target.addEventListener("drag", function( event ) {
+        var down = target.dataset.down;
+        target.dataset.mousePosX = event.pageX;
+        target.dataset.mousePosY = event.pageY;
+        updatePosition(target, 24);
+    });
+
+    var self = this;
+    var updatePosition = function(element, frames) {
+        var child = element.querySelector("*:first-child");
+        var referenceX = element.dataset.referenceX;
+        var referenceY = element.dataset.referenceY;
+        var mousePosX = element.dataset.mousePosX;
+        var mousePosY = element.dataset.mousePosY;
+        var base = element.dataset.base;
+        var isMobile = false;//_body.hasClass("mobile-s") || _body.hasClass("tablet-s");
+        var rate = isMobile ? 40 : 60;
+        var deltaX = referenceX - mousePosX;
+        var deltaY = referenceY - mousePosY;
+        var elementWidth = element.clientWidth;
+        var elementHeight = element.clientHeight || child.clientHeight;
+        var percentX = deltaX / elementWidth;
+        var percentY = deltaY / elementHeight;
+        var next = parseInt(base - (rate * percentX)) % frames;
+        next = next >= 0 ? next : frames + next;
+        Math.abs(percentX) > 0.02 && element.classList.add("move");
+        Math.abs(percentY) > 0.02 && element.classList.add("move");
+        element.dataset.percent = percentX;
+        element.dataset.position = next;
+
+        self._updateDrag(element, next);
+        //element.triggerHandler("position", next);
+        if (rate * percentY > 15) {
+            console.log("something here")
+            //matchedObject.triggerHandler("side");
+            //element.data("referenceY", mousePosY);
+        } else if (rate * percentY < -15) {
+            console.log("and here")
+            //matchedObject.triggerHandler("top");
+            //element.data("referenceY", mousePosY);
+        }
+    };
+}; 
+
+Ripe.prototype._updateDrag = function(target, position) {
+    var hasCombinations = this.combinations && Object.keys(this.combinations).length !== 0;
+    var hasParts = this.parts && Object.keys(this.parts).length !== 0;
+    if (!hasParts || !hasCombinations) {
+        return;
+    }
+
+    position = position || 0;
+    var backs = target.querySelector(".backs");
+    var area = target.querySelector(".area");
+    var url = this._getImageURL(position);
+
+    var image = backs.querySelector("img[data-frame='" + String(position) + "']")
+    var front = area.querySelector("img[data-frame='" + String(position) + "']")
+    image = image || front;
+    var isRedundant = image.dataset.src === url;
+    if (isRedundant) {
+        var isReady = image.dataset.loaded;
+        isReady && this._drawDrag(target, image, false);
+        return;
+    }
+
+    for (var loadBind in image.load) {
+        var events = getEventListeners(loadBind.listener)
+        image.removeEventListener("load", events);
+    }
+
+    var self = this;
+    image.addEventListener('load', function() {
+        image.dataset.loaded = true;
+        image.dataset.src = url;
+        self._drawDrag(target, image);
+    });
+
+    image.src = url;
+    image.dataset.src = url;
+    image.dataset.loaded = false;
 };
+
+Ripe.prototype._drawDrag = function(target, image, animate) {
+    var area = target.querySelector(".area");
+    var back = target.querySelector(".back");
+    var context = area.getContext("2d");
+    var backContext = back.getContext("2d");
+
+    var visible = area.dataset.visible;
+    var targetCanvas = visible ? area : back;
+    var context = targetCanvas.getContext("2d");
+    context.clearRect(0, 0, targetCanvas.clientWidth, targetCanvas.clientHeight);
+    context.drawImage(image, 0, 0, targetCanvas.clientWidth, targetCanvas.clientHeight);
+}
 
 Ripe.prototype.addUpdateCallback = function(callback) {
     this._addCallback("update", callback);
@@ -188,12 +327,18 @@ Ripe.prototype.render = function(target, frame, options) {
 };
 
 Ripe.prototype.update = function(price) {
-    for (var frame in this.binds) {
-        var bind = this.binds[frame];
+    for (var frame in this.frameBinds) {
+        var bind = this.frameBinds[frame];
         for (var index = 0; index < bind.length; index++) {
             var target = bind[index];
             this.render(target, frame);
         }
+    }
+
+    
+    for (var index = 0; index < this.dragBinds.length; index++) {
+        var bind = this.dragBinds[index];
+        this._updateDrag(bind);
     }
 
     this.ready && this._runCallbacks("update");
@@ -338,4 +483,13 @@ Ripe.prototype._runCallbacks = function(name) {
         var callback = callbacks[index];
         callback.apply(this, Array.prototype.slice.call(arguments, 1));
     }
+};
+
+Ripe.prototype._applyStyles = function(element, styles) {
+    for (var key in styles) {
+        if (styles.hasOwnProperty(key)) {
+            var style = styles[key];
+            element.style[key] = style;
+        }
+      }
 };
