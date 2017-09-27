@@ -3,6 +3,7 @@ The public SDK for usage of [ripe-core](https://github.com/ripe-tech/ripe-core).
 
 ## Initialization
 As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product. You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
+As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product. You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
 ```javascript
 var ripe = new Ripe(url, brand, model, variant, parts, {
@@ -108,3 +109,20 @@ Additionally, that same element may trigger the next set of events:
 | `selected_part` | `part` *(string), named part* | triggered when a part is selected |
 | `highlighted_part` | `part` *(string), named part* | triggered when a part is highlighted |
 | `loaded` | | triggered when the initial loading finishes |
+
+
+### Appendix
+
+## Options
+| Name | Type | Description |
+| --- | --- | --- | --- |
+| `background` | *string* | RGB format color value of the background. No background by default. Example: "#cccccc" |
+| `country` | *string* | Two letters standard country codes defined in *ISO 3166-1 alpha-2* codes. "US" by default. Example: "PT" |
+| `currency` | *string* | Standard currency codes defined in *ISO 4217* codes. "USD" by default. Example: "EUR" |
+| `engraving` | *string* | Material name of the engraved object. Example: "metal" |
+| `format` | *string* | One of the valid image formats: 'jpeg', 'webp', 'sgi' or 'png' |
+| `frames` | *array of strings* | All the frames to be used in the customization. Example: ["top", "bottom", "1", "2"] |
+| `noCombinations` | *boolean* | Defines if the combinations are loaded or not. False (loading) by default |
+| `noDefaults` | *boolean* | Defines if the defaults are loaded or not. False (loading) by default |
+| `size` | *number* | Size of an image that is going to be composed. By default is 1000 |
+| `target` | *HTML <img> element* | Target image element that will be updated when a customization change happens |
