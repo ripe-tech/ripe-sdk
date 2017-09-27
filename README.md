@@ -97,8 +97,7 @@ This element reacts to the following events:
 
 | Event | Params | Description |
 | --- | --- | --- |
-| `change_to_frame` | <ul><li>`frame` *(numeric ([0...n]) or string (named frame)*</li></ul> | it displays a single frame you pass by |
-| `animate_to_frame` |  <ul><li>`from` *(numeric ([0...n]) or string), the starting frame*</li><li>`to` *(numeric ([0...n]) or string), the final frame*</li><li>`step` *(numeric ([0...n])), the duration, in milliseconds, of each transition between frames*</li></ul> | it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds |
+| `change_frame` | <ul><li>`frame` *(numeric ([0...n]) or string (named frame)*</li><li>`animated` *(boolean), animation state</li><li>`[step]` *(numeric ([0...n])), the duration, in milliseconds, of each transition between frames (optional)*</li></ul> | it displays a frame you pass by with or without animation. If animated, it will display starting from the current frame to the given one, taking `step` milliseconds |
 | `fullscreen` | | sets the frame size to the maximum value |
 | `exit_fullscreen` | | sets the frame size to the initial value |
 | `highlight_part` | <ul><li>`part` *(string), named part*</li></ul> | highlights a part |
