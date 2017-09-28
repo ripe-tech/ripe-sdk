@@ -130,7 +130,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
     var backs = document.createElement("div");
     backs.className = "backs";
     backs.style.display = "none";
-    
+
     var frames = frames || this.options.frames;
     for (var index = 0; index < 24; index++) {
         var backImg = document.createElement("img");
@@ -171,9 +171,8 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
 
     this.dragBinds.push(target);
 
-    target.draggable = true;
     var mousePostSamples = [];
-    target.addEventListener("dragstart", function( event ) {
+    target.addEventListener("mousedown", function(event) {
         var position = target.dataset.position || 0;
         target.dataset.down = true;
         target.dataset.referenceX = event.pageX;
@@ -182,22 +181,30 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
         target.dataset.base = position;
         target.dataset.accumulatedRotation = 0;
         target.classList.add("drag");
-    }, false);
-  
-    target.addEventListener("dragend", function( event ) {
+    }, true);
+
+    target.addEventListener("mouseup", function(event) {
         var percent = target.dataset.percent;
         target.dataset.down = false;
         target.dataset.percent = 0;
         target.dataset.previous = percent;
         target.classList.remove("drag");
-    }, false);
+    }, true);
 
-    target.addEventListener("drag", function( event ) {
-        var down = target.dataset.down;
+    target.addEventListener("mouseleave", function(event) {
+        var percent = target.dataset.percent;
+        target.dataset.down = false;
+        target.dataset.percent = 0;
+        target.dataset.previous = percent;
+        target.classList.remove("drag");
+    }, true);
+
+    target.addEventListener("mousemove", function(event) {
+        var down = target.dataset.down
         target.dataset.mousePosX = event.pageX;
         target.dataset.mousePosY = event.pageY;
-        updatePosition(target, 24);
-    });
+        down === "true" && updatePosition(target, 24);
+    }, true);
 
     var self = this;
     var updatePosition = function(element, frames) {
@@ -207,7 +214,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
         var mousePosX = element.dataset.mousePosX;
         var mousePosY = element.dataset.mousePosY;
         var base = element.dataset.base;
-        var isMobile = false;//_body.hasClass("mobile-s") || _body.hasClass("tablet-s");
+        var isMobile = false; //_body.hasClass("mobile-s") || _body.hasClass("tablet-s");
         var rate = isMobile ? 40 : 60;
         var deltaX = referenceX - mousePosX;
         var deltaY = referenceY - mousePosY;
@@ -220,6 +227,12 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
         Math.abs(percentX) > 0.02 && element.classList.add("move");
         Math.abs(percentY) > 0.02 && element.classList.add("move");
         element.dataset.percent = percentX;
+
+
+        var diff = Math.abs(next - element.dataset.position);
+        if (diff > 1 && diff != 23) {
+            console.log("here");
+        }
         element.dataset.position = next;
 
         self._updateDrag(element, next);
@@ -234,7 +247,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
             //element.data("referenceY", mousePosY);
         }
     };
-}; 
+};
 
 Ripe.prototype._updateDrag = function(target, position) {
     var hasCombinations = this.combinations && Object.keys(this.combinations).length !== 0;
@@ -335,7 +348,7 @@ Ripe.prototype.update = function(price) {
         }
     }
 
-    
+
     for (var index = 0; index < this.dragBinds.length; index++) {
         var bind = this.dragBinds[index];
         this._updateDrag(bind);
@@ -491,5 +504,5 @@ Ripe.prototype._applyStyles = function(element, styles) {
             var style = styles[key];
             element.style[key] = style;
         }
-      }
+    }
 };
