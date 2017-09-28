@@ -1,6 +1,6 @@
 # RIPE SDK
 
-The public SDK for usage of [ripe-core](https://github.com/ripe-tech/ripe-core).
+The public SDK for usage of [RIPE-Core](https://github.com/ripe-tech/ripe-core).
 
 ## Initialization
 As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product.  
