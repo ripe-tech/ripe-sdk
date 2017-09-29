@@ -1,0 +1,24 @@
+{
+    "name": "ripe-sdk",
+    "version": "1.0.0",
+    "description": "The public SDK for usage of RIPE Core.",
+    "main": "index.js",
+    "scripts": {
+        "test": ""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ripe-tech/ripe-sdk.git"
+    },
+    "keywords": [
+        "ripe",
+        "sdk",
+        "js"
+    ],
+    "author": "Platforme",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/ripe-tech/ripe-sdk/issues"
+    },
+    "homepage": "https://github.com/ripe-tech/ripe-sdk#readme"
+}
