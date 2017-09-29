@@ -110,3 +110,7 @@ Additionally, that same element may trigger the next set of events:
 | `selected_part` | <ul><li>`part` *(string), named part*</li></ul> | triggered when a part is selected |
 | `highlighted_part` | <ul><li>`part` *(string), named part*</li></ul> | triggered when a part is highlighted |
 | `loaded` | | triggered when the initial loading finishes |
+
+## License
+
+RIPE SDK is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
