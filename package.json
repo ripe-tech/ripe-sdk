@@ -19,7 +19,7 @@
         "name": "Platforme",
         "url": "https://www.platforme.com"
     },
-    "license": "ISC",
+    "license": "Apache-2.0",
     "bugs": {
         "url": "https://github.com/ripe-tech/ripe-sdk/issues"
     },
