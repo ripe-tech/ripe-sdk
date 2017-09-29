@@ -2,7 +2,7 @@
     "name": "ripe-sdk",
     "version": "1.0.0",
     "description": "The public SDK for usage of RIPE Core.",
-    "main": "index.js",
+    "main": "src/js/ripe.js",
     "scripts": {
         "test": ""
     },
@@ -15,7 +15,10 @@
         "sdk",
         "js"
     ],
-    "author": "Platforme",
+    "author": {
+        "name": "Platforme",
+        "url": "https://www.platforme.com"
+    },
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/ripe-tech/ripe-sdk/issues"
