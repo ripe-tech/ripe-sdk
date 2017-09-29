@@ -1,5 +1,6 @@
 *.py
 *.pyc
+*.log
 
 .project
 .pydevproject
