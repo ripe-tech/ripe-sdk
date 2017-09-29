@@ -268,3 +268,6 @@ Ripe.prototype._runCallbacks = function(name) {
         callback.apply(this, Array.prototype.slice.call(arguments, 1));
     }
 };
+
+var exports = typeof exports === "undefined" ? {} : exports;
+exports.Ripe = Ripe;
