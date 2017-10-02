@@ -253,44 +253,144 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
     };
 };
 
-Ripe.prototype._updateDrag = function(target, position, frames) {
+Ripe.prototype._updateDrag = function(target, position) {
     var hasCombinations = this.combinations && Object.keys(this.combinations).length !== 0;
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     if (!hasParts || !hasCombinations) {
         return;
     }
 
-    frames = frames || this.frames;
-    position = position || 0;
-    var backs = target.querySelector(".backs");
-    var area = target.querySelector(".area");
-    var url = this._getImageURL(position);
-    var image = backs.querySelector("img[data-frame='" + String(position) + "']")
-    var front = area.querySelector("img[data-frame='" + String(position) + "']")
-    image = image || front;
+    var self = this;
+    var load = function(position, drawFrame, callback) {
 
-    var isRedundant = image.dataset.src === url;
-    if (isRedundant) {
-        var isReady = image.dataset.loaded;
-        isReady && this._drawDrag(target, image, false);
+        position = position || 0;
+        drawFrame = drawFrame === undefined ? true : false;
+        var backs = target.querySelector(".backs");
+        var area = target.querySelector(".area");
+        var url = self._getImageURL(position);
+        var image = backs.querySelector("img[data-frame='" + String(position) + "']")
+        var front = area.querySelector("img[data-frame='" + String(position) + "']")
+        image = image || front;
+
+        var isRedundant = image.dataset.src === url;
+        if (isRedundant) {
+            callback && callback();
+            if (!drawFrame) {
+                return;
+            }
+
+            var isReady = image.dataset.loaded;
+            isReady && self._drawDrag(target, image, false);
+            return;
+        }
+
+        for (var loadBind in image.load) {
+            var events = getEventListeners(loadBind.listener)
+            image.removeEventListener("load", events);
+        }
+
+        image.addEventListener('load', function() {
+            image.dataset.loaded = true;
+            image.dataset.src = url;
+            console.log("loading ", position);
+            callback && callback();
+            if (!drawFrame) {
+                return;
+            }
+            self._drawDrag(target, image);
+        });
+
+        image.src = url;
+        image.dataset.src = url;
+        image.dataset.loaded = false;
+    };
+
+    var preload = function() {
+        var index = target.dataset.index || 0;
+        index++;
+        target.dataset.index = index;
+        target.classList.add("preload");
+        var work = [];
+        var view = target.dataset.view || "side";
+        var viewFrames = self.frames[view];
+
+        //for (var _index = 0; _index < frames; _index++) {
+        for (var _index = 0; _index < viewFrames.length; _index++) {
+            if (_index === position) {
+                continue;
+            }
+            work.push(_index);
+        }
+        //position !== "top" && work.push("top");
+        //view !== "top" && work.push("top");
+        work.reverse();
+
+        var mark = function(element) {
+            var _index = parseInt(target.dataset.index); //TODO top, bottom
+            if (index !== _index) {
+                return;
+            }
+            element.classList.remove("preloading");
+            var backs = target.querySelector(".backs");
+            var pending = backs.querySelector("img.preloading") || [];
+            if (pending.length > 0) {
+                target.classList.add("preloading")
+            } else {
+                target.classList.remove("preloading");
+            }
+        };
+
+        var render = function() {
+            var _index = parseInt(target.dataset.index); //TODO top, bottom
+
+            if (index !== _index) {
+                return;
+            }
+            if (work.length === 0) {
+
+                return;
+            }
+            var element = work.pop();
+            var backs = target.querySelector(".backs");
+            var reference = backs.querySelector("img[data-frame='" + String(element) + "']");
+            reference.classList.add("preloading");
+            var callbackChain = function() {
+                console.log(_index, work.length);
+                mark(reference);
+                render();
+            };
+            var callbackMark = function() {
+                console.log(_index, work.length);
+                mark(reference);
+            };
+
+            // determines if a chain based loading should be used for the pre-loading
+            // process of the various image resources to be loaded
+            //var useChain = structure.attr("data-chain") || "0";
+            //useChain = parseInt(useChain);
+            //TODO:
+            var useChain = false;
+            load(element, false, useChain ? callbackChain : callbackMark);
+            !useChain && render();
+        };
+        work.length > 0 && target.classList.add("preloading");
+        work.length > 0 && setTimeout(function() {
+            render();
+        }, 250);
+    }
+
+    load(position);
+
+    var preloaded = target.classList.contains("preload");
+    if (preloaded) {
         return;
     }
 
-    for (var loadBind in image.load) {
-        var events = getEventListeners(loadBind.listener)
-        image.removeEventListener("load", events);
-    }
-
-    var self = this;
-    image.addEventListener('load', function() {
-        image.dataset.loaded = true;
-        image.dataset.src = url;
-        self._drawDrag(target, image);
-    });
-
-    image.src = url;
-    image.dataset.src = url;
-    image.dataset.loaded = false;
+    //var mustPreload = !single && (changed || !preloaded);
+    //single && matchedObject.removeClass("preload");
+    //target.classList.remove("preload");
+    //mustPreload && preload(position);
+    preload(target);
 };
 
 Ripe.prototype._drawDrag = function(target, image, animate) {
