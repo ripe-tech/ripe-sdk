@@ -253,7 +253,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
     };
 };
 
-Ripe.prototype._updateDrag = function(target, position) {
+Ripe.prototype._updateDrag = function(target, position, single) {
     var hasCombinations = this.combinations && Object.keys(this.combinations).length !== 0;
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     if (!hasParts || !hasCombinations) {
@@ -292,7 +292,6 @@ Ripe.prototype._updateDrag = function(target, position) {
         image.addEventListener('load', function() {
             image.dataset.loaded = true;
             image.dataset.src = url;
-            console.log("loading ", position);
             callback && callback();
             if (!drawFrame) {
                 return;
@@ -305,43 +304,44 @@ Ripe.prototype._updateDrag = function(target, position) {
         image.dataset.loaded = false;
     };
 
-    var preload = function() {
+    var preload = function(useChain) {
         var index = target.dataset.index || 0;
         index++;
         target.dataset.index = index;
         target.classList.add("preload");
         var work = [];
-        var view = target.dataset.view || "side";
-        var viewFrames = self.frames[view];
-
-        //for (var _index = 0; _index < frames; _index++) {
-        for (var _index = 0; _index < viewFrames.length; _index++) {
+        var sideFrames = self.frames["side"];
+        for (var _index = 0; _index < sideFrames.length; _index++) {
             if (_index === position) {
                 continue;
             }
             work.push(_index);
+        }   
+
+        for (var view in self.frames) {
+            view !== "side" && work.push(view);
         }
-        //position !== "top" && work.push("top");
-        //view !== "top" && work.push("top");
         work.reverse();
 
         var mark = function(element) {
-            var _index = parseInt(target.dataset.index); //TODO top, bottom
+            var _index = parseInt(target.dataset.index);
             if (index !== _index) {
                 return;
             }
             element.classList.remove("preloading");
             var backs = target.querySelector(".backs");
-            var pending = backs.querySelector("img.preloading") || [];
+            var pending = backs.querySelectorAll("img.preloading") || [];
             if (pending.length > 0) {
                 target.classList.add("preloading")
+                target.style.pointerEvents = "none";
             } else {
                 target.classList.remove("preloading");
+                target.style.pointerEvents = "all";
             }
         };
 
         var render = function() {
-            var _index = parseInt(target.dataset.index); //TODO top, bottom
+            var _index = parseInt(target.dataset.index);
 
             if (index !== _index) {
                 return;
@@ -355,25 +355,22 @@ Ripe.prototype._updateDrag = function(target, position) {
             var reference = backs.querySelector("img[data-frame='" + String(element) + "']");
             reference.classList.add("preloading");
             var callbackChain = function() {
-                console.log(_index, work.length);
                 mark(reference);
                 render();
             };
             var callbackMark = function() {
-                console.log(_index, work.length);
                 mark(reference);
             };
 
             // determines if a chain based loading should be used for the pre-loading
             // process of the various image resources to be loaded
-            //var useChain = structure.attr("data-chain") || "0";
-            //useChain = parseInt(useChain);
-            //TODO:
-            var useChain = false;
             load(element, false, useChain ? callbackChain : callbackMark);
             !useChain && render();
         };
         work.length > 0 && target.classList.add("preloading");
+        if(work.length > 0) {
+            target.style.pointerEvents = "none";
+        }
         work.length > 0 && setTimeout(function() {
             render();
         }, 250);
@@ -386,11 +383,15 @@ Ripe.prototype._updateDrag = function(target, position) {
         return;
     }
 
-    //var mustPreload = !single && (changed || !preloaded);
-    //single && matchedObject.removeClass("preload");
-    //target.classList.remove("preload");
-    //mustPreload && preload(position);
-    preload(target);
+    var previous = target.dataset.signature || "";
+    var signature = self._getQuery(null, null, null, null, self.parts);
+    var changed = signature !== previous;
+    target.dataset.signature = signature;
+
+    var preloaded = target.classList.contains("preload");
+    var mustPreload = !single && (changed || !preloaded);
+    single && target.classList.remove("preload");
+    mustPreload && preload(this.options.useChain);
 };
 
 Ripe.prototype._drawDrag = function(target, image, animate) {
@@ -569,6 +570,7 @@ Ripe.prototype._getQuery = function(brand, model, variant, frame, parts, engravi
 
     engraving && buffer.push("engraving=" + engraving);
 
+    options = options || {};
     options.currency && buffer.push("currency=" + options.currency);
     options.country && buffer.push("country=" + options.country);
 
@@ -611,3 +613,25 @@ Ripe.prototype._applyStyles = function(element, styles) {
         }
     }
 };
+
+Ripe.prototype._fadeAnimation = function(element, initial, final, callback) {
+    element.style.opacity = initial;
+    var last = new Date();
+    var tick = function() {
+        var opacity = parseFloat(element.style.opacity);
+        element.style.opacity = opacity + (new Date() - last) / 400;
+        last = new Date();
+        
+        opacity = parseFloat(element.style.opacity);
+        var fadeIn = final > initial && opacity < final;
+        var fadeOut = final < initial && opacity > final;
+
+        if (fadeIn || fadeOut) {
+            requestAnimationFrame(tick);
+        } else {
+            callback && callback();
+        }
+    };
+  
+    tick();
+  }
