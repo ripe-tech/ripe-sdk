@@ -183,7 +183,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
         target.dataset.view = view;
         target.dataset.accumulatedRotation = 0;
         target.classList.add("drag");
-    }, true);
+    });
 
     target.addEventListener("mouseup", function(event) {
         var percent = target.dataset.percent;
@@ -191,7 +191,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
         target.dataset.percent = 0;
         target.dataset.previous = percent;
         target.classList.remove("drag");
-    }, true);
+    });
 
     target.addEventListener("mouseleave", function(event) {
         var percent = target.dataset.percent;
@@ -199,14 +199,14 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
         target.dataset.percent = 0;
         target.dataset.previous = percent;
         target.classList.remove("drag");
-    }, true);
+    });
 
     target.addEventListener("mousemove", function(event) {
         var down = target.dataset.down
         target.dataset.mousePosX = event.pageX;
         target.dataset.mousePosY = event.pageY;
         down === "true" && updatePosition(target);
-    }, true);
+    });
 
     var self = this;
     var updatePosition = function(element) {
@@ -217,7 +217,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
         var mousePosY = element.dataset.mousePosY;
         var base = element.dataset.base;
         var isMobile = false; //TODO: _body.hasClass("mobile-s") || _body.hasClass("tablet-s");
-        var rate = isMobile ? 40 : 60;
+        var rate = isMobile ? 40 : 40;
         var deltaX = referenceX - mousePosX;
         var deltaY = referenceY - mousePosY;
         var elementWidth = element.clientWidth;
@@ -228,7 +228,6 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
         var viewFrames = frames[view];
         var next = parseInt(base - (rate * percentX)) % viewFrames.length;
         next = next >= 0 ? next : viewFrames.length + next;
-        next = next || 0;
         Math.abs(percentX) > 0.02 && element.classList.add("move");
         Math.abs(percentY) > 0.02 && element.classList.add("move");
         element.dataset.percent = percentX;
@@ -240,20 +239,26 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, views) {
             nextView = view === "bottom" ? "side" : "top";
         }
 
+        var animate = false;
         if (view !== nextView && frames[nextView]) {
             element.dataset.referenceY = mousePosY;
             view = nextView;
+            animate = "cross";
         }
 
         element.dataset.view = view;
-        element.dataset.position = next;
+        if (!isNaN(next)) {
+            element.dataset.position = next;
+        } else {
+            next = parseInt(element.dataset.position);
+        }
         viewFrames = frames[view];
         next = viewFrames.length === 0 ? view : next;
-        self._updateDrag(element, next);
+        self._updateDrag(element, next, false, animate);
     };
 };
 
-Ripe.prototype._updateDrag = function(target, position, single) {
+Ripe.prototype._updateDrag = function(target, position, single, animate) {
     var hasCombinations = this.combinations && Object.keys(this.combinations).length !== 0;
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     if (!hasParts || !hasCombinations) {
@@ -261,10 +266,9 @@ Ripe.prototype._updateDrag = function(target, position, single) {
     }
 
     var self = this;
-    var load = function(position, drawFrame, callback) {
-
+    var load = function(position, drawFrame, animate, callback) {
         position = position || 0;
-        drawFrame = drawFrame === undefined ? true : false;
+        drawFrame = drawFrame === undefined || drawFrame ? true : false;
         var backs = target.querySelector(".backs");
         var area = target.querySelector(".area");
         var url = self._getImageURL(position);
@@ -280,7 +284,7 @@ Ripe.prototype._updateDrag = function(target, position, single) {
             }
 
             var isReady = image.dataset.loaded;
-            isReady && self._drawDrag(target, image, false);
+            isReady && self._drawDrag(target, image, animate);
             return;
         }
 
@@ -296,7 +300,7 @@ Ripe.prototype._updateDrag = function(target, position, single) {
             if (!drawFrame) {
                 return;
             }
-            self._drawDrag(target, image);
+            self._drawDrag(target, image, animate);
         });
 
         image.src = url;
@@ -364,7 +368,7 @@ Ripe.prototype._updateDrag = function(target, position, single) {
 
             // determines if a chain based loading should be used for the pre-loading
             // process of the various image resources to be loaded
-            load(element, false, useChain ? callbackChain : callbackMark);
+            load(element, false, false, useChain ? callbackChain : callbackMark);
             !useChain && render();
         };
         work.length > 0 && target.classList.add("preloading");
@@ -376,17 +380,25 @@ Ripe.prototype._updateDrag = function(target, position, single) {
         }, 250);
     }
 
-    load(position);
+    var previous = target.dataset.signature || "";
+    var signature = self._getQuery(null, null, null, null, self.parts);
+    var changed = signature !== previous;
+    var animate = animate || (changed && "simple");
+    target.dataset.signature = signature;
+
+    var previous = target.dataset.unique;
+    var unique = signature + "&position=" + String(position) + "&single=" + String(single);
+    if (previous === unique) {
+        return false;
+    }
+    target.dataset.unique = unique;
+
+    load(position, true, animate);
 
     var preloaded = target.classList.contains("preload");
     if (preloaded) {
         return;
     }
-
-    var previous = target.dataset.signature || "";
-    var signature = self._getQuery(null, null, null, null, self.parts);
-    var changed = signature !== previous;
-    target.dataset.signature = signature;
 
     var preloaded = target.classList.contains("preload");
     var mustPreload = !single && (changed || !preloaded);
@@ -400,11 +412,44 @@ Ripe.prototype._drawDrag = function(target, image, animate) {
     var context = area.getContext("2d");
     var backContext = back.getContext("2d");
 
-    var visible = area.dataset.visible;
-    var targetCanvas = visible ? area : back;
-    var context = targetCanvas.getContext("2d");
-    context.clearRect(0, 0, targetCanvas.clientWidth, targetCanvas.clientHeight);
-    context.drawImage(image, 0, 0, targetCanvas.clientWidth, targetCanvas.clientHeight);
+    var visible = area.dataset.visible === "true";
+    var current = visible ? area : back
+    var target = visible ? back : area;
+    var context = target.getContext("2d");
+    context.clearRect(0, 0, target.clientWidth, target.clientHeight);
+    context.drawImage(image, 0, 0, target.clientWidth, target.clientHeight);
+
+    if (!animate) {
+        current.style.zIndex = 1;
+        current.style.opacity = 0;
+        target.style.zIndex = 1;
+        target.style.opacity = 1;
+        return;
+    }
+
+    var currentId = current.dataset.id;
+    var targetId = target.dataset.id;
+    cancelAnimationFrame(currentId);
+    cancelAnimationFrame(targetId);
+
+    //target.style.opacity = 0;
+    //target.style.zIndex = 2;
+    var timeout = animate === "immediate" ? 0 : 500;
+    if (animate === "cross") {
+        this._fadeAnimation(current, "opacity", 1, 0, timeout);
+    }
+
+    this._fadeAnimation(target, "opacity", 0, 1, timeout, function() {
+        current.style.opacity = 0;
+        current.style.zIndex = 1;
+        target.style.zIndex = 1;
+        /*if (isMobile) {
+            target.css("display", "inline-block");
+            current.css("display", "none");
+        }*/
+    });
+    target.dataset.visible = true;
+    current.dataset.visible = false;
 }
 
 Ripe.prototype.addUpdateCallback = function(callback) {
@@ -614,24 +659,30 @@ Ripe.prototype._applyStyles = function(element, styles) {
     }
 };
 
-Ripe.prototype._fadeAnimation = function(element, initial, final, callback) {
-    element.style.opacity = initial;
+Ripe.prototype._fadeAnimation = function(element, property, initial, final, duration, callback) {
+    element.style[property] = initial;
     var last = new Date();
-    var tick = function() {
-        var opacity = parseFloat(element.style.opacity);
-        element.style.opacity = opacity + (new Date() - last) / 400;
-        last = new Date();
+    var frame = function() {
+        var current = new Date();
+        var timeDelta = current - last;
+        var animationDelta = timeDelta * (final - initial) / duration;
+
+        var value = parseFloat(element.style[property]);
+        value += animationDelta;
+        value = final > initial ? Math.min(value, final) : Math.max(value, final);
+        element.style[property] = value;
+        last = current;
         
-        opacity = parseFloat(element.style.opacity);
-        var fadeIn = final > initial && opacity < final;
-        var fadeOut = final < initial && opacity > final;
+        var fadeIn = final > initial && value < final;
+        var fadeOut = final < initial && value > final;
 
         if (fadeIn || fadeOut) {
-            requestAnimationFrame(tick);
+            var id = requestAnimationFrame(frame);
+            element.dataset.id = id;
         } else {
             callback && callback();
         }
     };
   
-    tick();
+    frame();
   }
