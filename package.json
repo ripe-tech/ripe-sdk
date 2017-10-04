@@ -1,0 +1,27 @@
+{
+    "name": "ripe-sdk",
+    "version": "1.0.3",
+    "description": "The public SDK for RIPE Core",
+    "main": "src/js/ripe.js",
+    "scripts": {
+        "test": ""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ripe-tech/ripe-sdk.git"
+    },
+    "keywords": [
+        "ripe",
+        "sdk",
+        "js"
+    ],
+    "author": {
+        "name": "Platforme",
+        "url": "https://www.platforme.com"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/ripe-tech/ripe-sdk/issues"
+    },
+    "homepage": "https://github.com/ripe-tech/ripe-sdk#readme"
+}

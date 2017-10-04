@@ -1,8 +1,10 @@
 # RIPE SDK
-The public SDK for usage of [ripe-core](https://github.com/ripe-tech/ripe-core).
+
+The public SDK for [RIPE Core](https://github.com/ripe-tech/ripe-core).
 
 ## Initialization
-As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand`, `model`, `parts` and `frames` of your customizable product. You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
+As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product.
+You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
 ```javascript
 var ripe = new Ripe(url, brand, model, variant, parts, frames, {
@@ -73,9 +75,10 @@ ripe.setParts(parts);
 
 ## Getters
 If you need to explicitly retrieve the product's customization information you can use the following methods:
-    - `getPrice`: to get the product's pricing information.
-    - `getCombinations`: to get all the the available customization options for products.
-    - `getDefaults`: to get the product's default customization.
+
+- `getPrice`: to get the product's pricing information.
+- `getCombinations`: to get all the the available customization options for products.
+- `getDefaults`: to get the product's default customization.
 
 ```javascript
 ripe.getPrice(function(value) {
@@ -95,16 +98,19 @@ This element reacts to the following events:
 
 | Event | Params | Description |
 | --- | --- | --- |
-| `change_to_frame` |*`frame` (numeric _([0...n]) or string (named frame)* | it displays a single frame you pass by |
-| `animate_to_frame` |`from` *(numeric _([0...n]) or string), the starting frame;* `to` *(numeric _([0...n]) or string), the final frame;* `step` *(numeric _([0...n])), the duration, in milliseconds, of each transition between frames * | it allows you to gradually display from a starting frame to another. Between each frame the animation takes `step` milliseconds |
+| `change_frame` | <ul><li>`frame` *(numeric ([0...n]) or string (named frame)*</li><li>`animated` *(boolean), animation state*</li><li>`step` *[optional] (numeric ([0...n])), the duration, in milliseconds, of each transition between frames*</li></ul> | it displays a frame you pass by with or without animation. If animated, it will gradually display from the current frame to the given one, taking `step` milliseconds |
 | `fullscreen` | | sets the frame size to the maximum value |
 | `exit_fullscreen` | | sets the frame size to the initial value |
-| `highlight_part` | `part` *(string), named part* | highlights a part |
+| `highlight_part` | <ul><li>`part` *(string), named part*</li></ul> | highlights a part |
 
 Additionally, that same element may trigger the next set of events:
 
 | Event | Params | Description |
 | --- | --- | --- |
-| `selected_part` | `part` *(string), named part* | triggered when a part is selected |
-| `highlighted_part` | `part` *(string), named part* | triggered when a part is highlighted |
+| `selected_part` | <ul><li>`part` *(string), named part*</li></ul> | triggered when a part is selected |
+| `highlighted_part` | <ul><li>`part` *(string), named part*</li></ul> | triggered when a part is highlighted |
 | `loaded` | | triggered when the initial loading finishes |
+
+## License
+
+RIPE SDK is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).

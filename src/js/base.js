@@ -20,7 +20,7 @@ Ripe.prototype.init = function(url, brand, model, variant, parts, frames, option
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    var loadDefaults = !hasParts && options && !options.noDefaults;
+    var loadDefaults = !hasParts && !this.options.noDefaults;
     loadDefaults && this.getDefaults(function(result) {
         this.parts = result;
         this.ready = true;
@@ -328,3 +328,6 @@ Ripe.prototype._fadeAnimation = function(element, property, initial, final, dura
 
     frame();
 };
+
+var exports = typeof exports === "undefined" ? {} : exports;
+exports.Ripe = Ripe;
