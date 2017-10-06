@@ -29,8 +29,9 @@ Ripe.prototype.init = function(url, brand, model, variant, parts, frames, option
     });
 
     // tries to determine if the combinations available should be
-    // loaded for the current model and if that's the case start the
-    // loading process for them, setting then the result in the instance
+    // loaded for the current model and if that's the case start
+    // the loading process for them, setting then the result in
+    // the instance and builds a combinations map for easier use
     var loadCombinations = !options.noCombinations;
     loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
@@ -301,32 +302,60 @@ Ripe.prototype._applyStyles = function(element, styles) {
     }
 };
 
-Ripe.prototype._fadeAnimation = function(element, property, initial, final, duration, callback) {
+Ripe.prototype._animateProperty = function(element, property, initial, final, duration, callback) {
+    // sets the initial value for the property
     element.style[property] = initial;
     var last = new Date();
     var frame = function() {
+        // checks how much time has passed
+        // since the last animation frame
         var current = new Date();
         var timeDelta = current - last;
         var animationDelta = timeDelta * (final - initial) / duration;
 
+        // adjusts the value by the correspondent amount
+        // making sure it doens't surpass the final value
         var value = parseFloat(element.style[property]);
         value += animationDelta;
         value = final > initial ? Math.min(value, final) : Math.max(value, final);
         element.style[property] = value;
         last = current;
 
-        var fadeIn = final > initial && value < final;
-        var fadeOut = final < initial && value > final;
-
-        if (fadeIn || fadeOut) {
+        // checks if the animation has finished and if it is then
+        // fires the callback if it's set. Otherwise, requests a
+        // new animation frame to proceed with the animation
+        var incrementAnimation = final > initial && value < final;
+        var decrementAnimation = final < initial && value > final;
+        if (incrementAnimation || decrementAnimation) {
+            // sets the id of the animation frame on the element
+            // so that it can be canceled if necessary
             var id = requestAnimationFrame(frame);
-            element.dataset.id = id;
+            element.dataset.animationId = id;
         } else {
             callback && callback();
         }
     };
 
+    // starts the animation
     frame();
+};
+
+Ripe.prototype._createEvent = function(name, detail, bubbles, cancelable) {
+    bubbles = bubbles || false;
+    cancelable = cancelable || false;
+    var params = {
+        detail: detail,
+        bubbles: bubbles,
+        cancelable: cancelable
+    };
+
+    if (typeof window.CustomEvent === "function") {
+        return new CustomEvent(name, params);
+    }
+
+    var event = document.createEvent("CustomEvent");
+    event.initCustomEvent(name, bubbles, cancelable, detail);
+    return event;
 };
 
 var exports = typeof exports === "undefined" ? {} : exports;

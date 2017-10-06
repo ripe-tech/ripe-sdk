@@ -1,6 +1,6 @@
 window.onload = function() {
     var element = document.getElementById("frames");
-    var url = element.dataset.url || "https://demo.platforme.com/";
+    var url = element.dataset.url || "http://localhost:8181/";
     var brand = element.dataset.brand || "swear";
     var model = element.dataset.model || "vyner";
     var variant = element.dataset.variant || "";
@@ -52,7 +52,16 @@ window.onload = function() {
     ripe.bindFrame(document.getElementById("frame-6"), "6");
     ripe.bindFrame(document.getElementById("frame-top"), "top");
 
-    ripe.bindDrag(document.getElementById("product-drag"), 620);
+    var dragElement = document.getElementById("product-drag");
+    ripe.bindDrag(dragElement, frames, 620);
+    ripe.addDragLoadedCallback(dragElement, function() {
+        setTimeout(function() {
+            ripe.changeDragFrame(dragElement, [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0]);
+        }, 1000);
+    });
+    ripe.addDragFrameCallback(dragElement, function(frame) {
+        console.log("frame", frame);
+    });
 
     ripe.addPriceCallback(function(value) {
         var price = document.getElementById("price");
