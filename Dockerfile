@@ -1,5 +1,5 @@
 FROM hivesolutions/python:latest
-MAINTAINER Platforme
+LABEL maintainer="Platforme <development@platforme.com>"
 
 EXPOSE 8080
 
