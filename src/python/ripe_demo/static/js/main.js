@@ -59,9 +59,6 @@ window.onload = function() {
             ripe.changeDragFrame(dragElement, [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0]);
         }, 1000);
     });
-    ripe.addDragFrameCallback(dragElement, function(frame) {
-        console.log("frame", frame);
-    });
 
     ripe.addPriceCallback(function(value) {
         var price = document.getElementById("price");

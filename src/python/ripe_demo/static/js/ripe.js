@@ -398,6 +398,9 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     frontMask.style.display = "none";
     frontMask.style.width = size + "px";
     frontMask.style.position = "relative";
+    frontMask.style.pointerEvents = "none";
+    frontMask.style.zIndex = 2;
+    frontMask.style.opacity = 0.4;
     frontMask.width = size;
     frontMask.height = size;
     frontMask.style.marginLeft = "-" + String(size) + "px";
@@ -611,16 +614,6 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
             return;
         }
 
-        // tries to retrieve a possible callback associated with the highlight
-        // operation, that may be used to validate it's highlight in case the
-        // return value of such callback is negative avoids the current highlight
-        // var callback = matchedObject.data("highlight_callback");
-        // var result = callback ? callback(part, format, color) : true;
-        // if (result === false) {
-        //     lowlightPart(target);
-        //     return;
-        // }
-
         // runs the highlight part operation with the provided format and
         // color values, this will run the proper operation
         highlightPart(target, part, format, color);
@@ -654,7 +647,7 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         // set for the current highlight operation (to be determined)
         //TODO: data-mask
         var url = self.url + "mask";
-        var query = "?model=marshall&frame=" + position + "&part=" + part;
+        var query = "?model=" + self.model + "&frame=" + position + "&part=" + part;
         var fullUrl = url + query + "&format=" + format;
         fullUrl += color ? "&background=" + color : "";
         fullUrl += size ? "&size=" + String(size) : "";
@@ -668,6 +661,10 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         var frontMaskLoad = function() {
             this.classList.add("loaded");
             this.style.display = "inline-block";
+            var event = self._createEvent("highlighted_part", {
+                part: part
+            });
+            target.dispatchEvent(event);
         };
         frontMask.removeEventListener("load", frontMaskLoad);
         frontMask.addEventListener("load", frontMaskLoad);
@@ -675,10 +672,13 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
             this.setAttribute("src", "");
         });
         frontMask.setAttribute("src", fullUrl);
+
+        var animationId = frontMask.dataset.animationId;
+        cancelAnimationFrame(animationId);
+        self._animateProperty(frontMask, "opacity", 0, 0.4, 250);
     };
 
     var select = function(canvas, x, y) {
-        //TODO: same as highlight? extract
         var canvasRealWidth = canvas.clientWidth;
         var target = canvas.parentElement;
         var mask = target.querySelector(".mask");
@@ -694,17 +694,15 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
             return false;
         }
 
-        //TODO: extract this
         var partsList = [];
-        for (part in parts) {
-            var name = part.dataset.name;
-            partsList.push(name);
-        }
+        var partsList = Object.keys(self.parts);
         partsList.sort();
         var part = partsList[index - 1];
 
-        target.addEventListener("part", [part]);
-
+        var event = self._createEvent("selected_part", {
+            part: part
+        });
+        target.dispatchEvent(event);
         return true;
     };
 
@@ -789,12 +787,11 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             var touch = "0";
             touch = parseInt(touch);
             var _url = self.url + "mask";
-            var _query = "?model=marshall&frame=" + position;
+            var _query = "?model=" + self.model + "&frame=" + position;
             var _fullUrl = _url + _query + "&format=" + format;
             _fullUrl += color ? "&background=" + color : "";
             _fullUrl += size ? "&size=" + String(size) : "";
             _fullUrl += touch ? "&t=" + String(touch) : "";
-            console.log(_fullUrl)
             var maskImageLoad = function() {
                 var self = this;
                 isFront && setTimeout(function() {
@@ -1008,6 +1005,20 @@ Ripe.prototype.addDragFrameCallback = function(target, callback) {
     target.addEventListener("changed_frame", function(event) {
         var frame = event.detail["frame"];
         callback(frame);
+    });
+};
+
+Ripe.prototype.addHighlightedPartCallback = function(target, callback) {
+    target.addEventListener("highlighted_part", function(event) {
+        var part = event.detail["part"];
+        callback(part);
+    });
+};
+
+Ripe.prototype.addSelectedPartCallback = function(target, callback) {
+    target.addEventListener("selected_part", function(event) {
+        var part = event.detail["part"];
+        callback(part);
     });
 };
 
