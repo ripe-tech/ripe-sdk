@@ -111,7 +111,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, frames) {
     var backs = document.createElement("div");
     backs.className = "backs";
     backs.style.display = "hidden";
-    
+
     var frames = frames || this.options.frames;
     for (var index = 0; index < frames; index++) {
         var backImg = document.createElement("img");
