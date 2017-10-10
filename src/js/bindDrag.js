@@ -1,4 +1,4 @@
-Ripe.prototype.bindDrag = function(target, frames, size, maxSize, options) {
+Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     // validates that the provided target element is a
     // valid one and if that's not the case returns the
     // control flow immediately to the caller
@@ -7,11 +7,10 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, options) {
     }
 
     // sets sane defaults for the optional parameters
-    size = size || 1000;
-    maxSize = maxSize || 1000;
-    frames = frames || this.frames;
+    size = size || this.options.size;
+    maxSize = maxSize || this.options.maxSize;
     options = options || {};
-    rate = options.rate || 40;
+    var sensitivity = options.sensitivity || this.options.sensitivity;
 
     // sets the target element's style so that it supports two canvas
     // on top of each other so that double buffering can be used
@@ -43,7 +42,7 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, options) {
 
     // adds the backs placeholder element that will be used to
     // temporarily store the images of the product's frames
-    var sideFrames = frames["side"];
+    var sideFrames = this.frames["side"];
     var backs = document.createElement("div");
     backs.className = "backs";
     backs.style.display = "none";
@@ -74,7 +73,7 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, options) {
     mask.width = size;
     mask.height = size;
     mask.style.display = "none";
-    for (var index = 0; index < frames; index++) {
+    for (var index = 0; index < this.frames; index++) {
         var maskImg = document.createElement("img");
         maskImg.dataset.frame = index;
         mask.appendChild(maskkImg);
@@ -157,7 +156,6 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, options) {
         var mousePosX = element.dataset.mousePosX;
         var mousePosY = element.dataset.mousePosY;
         var base = element.dataset.base;
-        var rate = rate || 40;
         var deltaX = referenceX - mousePosX;
         var deltaY = referenceY - mousePosY;
         var elementWidth = element.clientWidth;
@@ -169,8 +167,8 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, options) {
         // retrieves the current view and its frames
         // and determines which one is the next frame
         var view = element.dataset.view;
-        var viewFrames = frames[view];
-        var next = parseInt(base - (rate * percentX)) % viewFrames.length;
+        var viewFrames = self.frames[view];
+        var next = parseInt(base - (sensitivity * percentX)) % viewFrames.length;
         next = next >= 0 ? next : viewFrames.length + next;
 
         // if the movement was big enough then
@@ -181,16 +179,16 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, options) {
         // if the drag was vertical then alters the view
         var animate = false;
         var nextView = view;
-        if (rate * percentY > 15) {
+        if (sensitivity * percentY > 15) {
             nextView = view === "top" ? "side" : "bottom";
-        } else if (rate * percentY < -15) {
+        } else if (sensitivity * percentY < -15) {
             nextView = view === "bottom" ? "side" : "top";
         }
 
         // if there is a new view and the product supports
         // it then animates the transition with a crossfade
         // and ignores all drag movements while it lasts
-        if (view !== nextView && frames[nextView]) {
+        if (view !== nextView && this.frames[nextView]) {
             element.dataset.referenceY = mousePosY;
             view = nextView;
             animate = "cross";
@@ -208,7 +206,7 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, options) {
 
         // if the new view doens't have multiple frames
         // then ignores the index of the new frame
-        viewFrames = frames[view];
+        viewFrames = self.frames[view];
         next = viewFrames.length === 0 ? view : next;
 
         // updates the image of the drag element

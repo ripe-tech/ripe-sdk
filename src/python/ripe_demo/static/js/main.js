@@ -53,7 +53,7 @@ window.onload = function() {
     ripe.bindFrame(document.getElementById("frame-top"), "top");
 
     var dragElement = document.getElementById("product-drag");
-    ripe.bindDrag(dragElement, frames, 620);
+    ripe.bindDrag(dragElement, 620);
 
     var firstLoad = false;
     ripe.addDragLoadedCallback(dragElement, function() {
