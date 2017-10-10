@@ -130,4 +130,3 @@ Additionally, that same element may trigger the next set of events:
 ## License
 
 RIPE SDK is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
-

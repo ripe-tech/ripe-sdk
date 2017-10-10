@@ -1,0 +1,16 @@
+*.py
+*.pyc
+*.log
+
+.project
+.pydevproject
+
+extra.txt
+requirements.txt
+Dockerfile
+Dockerfile.demo
+
+/.git
+/.settings
+
+/src/python
