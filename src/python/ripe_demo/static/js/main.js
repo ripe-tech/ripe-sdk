@@ -1,5 +1,5 @@
 window.onload = function() {
-    var element = document.getElementById("canvas");
+    var element = document.getElementById("frames");
     var url = element.dataset.url || "http://localhost:8181/";
     var brand = element.dataset.brand || "swear";
     var model = element.dataset.model || "vyner";
@@ -10,8 +10,12 @@ window.onload = function() {
     var parts = [];
     var partsMap = {};
     var index = 0;
+    var frames = {
+        side: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 16, 19, 20, 21, 22, 23],
+        top: []
+    };
 
-    var ripe = new Ripe(url, brand, model, variant, {}, {
+    var ripe = new Ripe(url, brand, model, variant, {}, frames, {
         currency: currency,
         country: country
     });
@@ -48,7 +52,16 @@ window.onload = function() {
     ripe.bindFrame(document.getElementById("frame-6"), "6");
     ripe.bindFrame(document.getElementById("frame-top"), "top");
 
-    ripe.bindDrag(document.getElementById("product-drag"));
+    var dragElement = document.getElementById("product-drag");
+    ripe.bindDrag(dragElement, frames, 620);
+    ripe.addDragLoadedCallback(dragElement, function() {
+        setTimeout(function() {
+            ripe.changeDragFrame(dragElement, [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0]);
+        }, 1000);
+    });
+    ripe.addDragFrameCallback(dragElement, function(frame) {
+        console.log("frame", frame);
+    });
 
     ripe.addPriceCallback(function(value) {
         var price = document.getElementById("price");
