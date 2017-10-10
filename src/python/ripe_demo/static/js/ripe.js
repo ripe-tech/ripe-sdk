@@ -391,6 +391,18 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     context.globalCompositeOperation = "multiply";
     target.appendChild(area);
 
+    // adds the front mask element to the target,
+    // this will be used to highlight parts
+    var frontMask = document.createElement("img");
+    frontMask.className = "front-mask";
+    frontMask.style.display = "none";
+    frontMask.style.width = size + "px";
+    frontMask.style.position = "relative";
+    frontMask.width = size;
+    frontMask.height = size;
+    frontMask.style.marginLeft = "-" + String(size) + "px";
+    target.appendChild(frontMask);
+
     // creates the back canvas and adds it to the target,
     // placing it on top of the area canvas
     var back = document.createElement("canvas");
@@ -422,13 +434,6 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     backs.appendChild(bottomImg);
     target.appendChild(backs);
 
-    // adds the front mask element to the target,
-    // this will be used to highlight parts
-    var frontMask = document.createElement("img");
-    frontMask.className = "front-mask";
-    frontMask.style.display = "none";
-    target.appendChild(frontMask);
-
     // creates a masks element that will be used to store the various
     // mask images to be used during highlight and select operation
     var mask = document.createElement("canvas");
@@ -459,6 +464,7 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     // adds the target to the drag binds array so
     // that it can be updated when changes occur
     this.dragBinds.push(target);
+    target.dataset.position = 0;
 
     target.addEventListener("mousedown", function(event) {
         var position = target.dataset.position || 0;
@@ -574,28 +580,6 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     };
 
     var highlight = function(canvas, x, y, format, color) {
-        // var canvasRealWidth = canvas.clientWidth;
-        // var target = canvas.parentElement;
-        // var mask = target.querySelector(".mask");
-        // var ratio = mask.width / canvasRealWidth;
-        // var maskContext = mask.getContext("2d");
-        // x = parseInt(x * ratio);
-        // y = parseInt(y * ratio);
-        // var maskData = maskContext.getImageData(x, y, 1, 1);
-        // var r = maskData.data[0];
-        // var index = parseInt(r);
-
-        //server
-        // var targetRealWidth = target.width();
-        // var ratio = maskWidth / targetRealWidth;
-
-        // x = parseInt(x * ratio);
-        // y = parseInt(y * ratio);
-
-        // var maskData = maskContext.getImageData(x, y, 1, 1);
-        // var r = maskData.data[0];
-        // var index = parseInt(r);
-        
         var canvasRealWidth = canvas.getBoundingClientRect().width;
         var mask = target.querySelector(".mask");
         var ratio = mask.width / canvasRealWidth; //TODO: canvas.width
@@ -617,27 +601,25 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         // iterates over the complete set of parts in the current structure
         // to process them and create the list of parts as names, sorted by
         // the internal (and reference) name value
-
-        var partsList = [];
-        for (part in self.parts) {
-            var name = part.dataset.name;
-            partsList.push(name);
-        }
+        var partsList = Object.keys(self.parts);
         partsList.sort();
 
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         var part = partsList[index - 1];
+        if(part === undefined) {
+            return;
+        }
 
         // tries to retrieve a possible callback associated with the highlight
         // operation, that may be used to validate it's highlight in case the
         // return value of such callback is negative avoids the current highlight
-        var callback = matchedObject.data("highlight_callback");
-        var result = callback ? callback(part, format, color) : true;
-        if (result === false) {
-            lowlightPart(target);
-            return;
-        }
+        // var callback = matchedObject.data("highlight_callback");
+        // var result = callback ? callback(part, format, color) : true;
+        // if (result === false) {
+        //     lowlightPart(target);
+        //     return;
+        // }
 
         // runs the highlight part operation with the provided format and
         // color values, this will run the proper operation
@@ -645,6 +627,8 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     };
 
     var lowlightPart = function(element) {
+        var frontMask = element.querySelector(".front-mask");
+        frontMask.style.display = "none";
         element && element.classList.remove("highlight");
     };
 
@@ -670,24 +654,27 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         // set for the current highlight operation (to be determined)
         //TODO: data-mask
         var url = self.url + "mask";
-        var query = "?model=marshall&frame=" + position;
+        var query = "?model=marshall&frame=" + position + "&part=" + part;
         var fullUrl = url + query + "&format=" + format;
         fullUrl += color ? "&background=" + color : "";
         fullUrl += size ? "&size=" + String(size) : "";
-        fullUrl += touch ? "&t=" + String(touch) : "";
+
+        var frontMask = target.querySelector(".front-mask");
+        var src = frontMask.getAttribute("src");
         if (src === fullUrl) {
             return;
         }
 
-        var frontMask = target.querySelector(".front-mask");
         var frontMaskLoad = function() {
             this.classList.add("loaded");
-        }
+            this.style.display = "inline-block";
+        };
         frontMask.removeEventListener("load", frontMaskLoad);
         frontMask.addEventListener("load", frontMaskLoad);
         frontMask.addEventListener("error", function() {
-            this.setAttribute("src", null);
+            this.setAttribute("src", "");
         });
+        frontMask.setAttribute("src", fullUrl);
     };
 
     var select = function(canvas, x, y) {
@@ -820,6 +807,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
                 this.setAttribute("src", null);
             });
             maskImage.setAttribute("src", _fullUrl);
+            maskImage.crossOrigin = "Anonymous"; //TODO: ?
         }
 
         var drawCallback = function(callback) {
@@ -870,8 +858,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         var mask = target.querySelector(".mask");
         maskContext = mask.getContext("2d");
         mask.dataset.position = position;
-        //TODO: //canvas.width, canvas.height
-        maskContext.clearRect(0, 0, 1000, 1000);
+        maskContext.clearRect(0, 0, mask.width, mask.height);
         maskContext.drawImage(image, 0, 0, mask.width, mask.height);
     };
 
