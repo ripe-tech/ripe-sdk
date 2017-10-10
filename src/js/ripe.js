@@ -391,6 +391,21 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     context.globalCompositeOperation = "multiply";
     target.appendChild(area);
 
+    // adds the front mask element to the target,
+    // this will be used to highlight parts
+    var frontMask = document.createElement("img");
+    frontMask.className = "front-mask";
+    frontMask.style.display = "none";
+    frontMask.style.width = size + "px";
+    frontMask.style.position = "relative";
+    frontMask.style.pointerEvents = "none";
+    frontMask.style.zIndex = 2;
+    frontMask.style.opacity = 0.4;
+    frontMask.width = size;
+    frontMask.height = size;
+    frontMask.style.marginLeft = "-" + String(size) + "px";
+    target.appendChild(frontMask);
+
     // creates the back canvas and adds it to the target,
     // placing it on top of the area canvas
     var back = document.createElement("canvas");
@@ -422,13 +437,6 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     backs.appendChild(bottomImg);
     target.appendChild(backs);
 
-    // adds the front mask element to the target,
-    // this will be used to highlight parts
-    var frontMask = document.createElement("img");
-    frontMask.className = "front-mask";
-    frontMask.style.display = "none";
-    target.appendChild(frontMask);
-
     // creates a masks element that will be used to store the various
     // mask images to be used during highlight and select operation
     var mask = document.createElement("canvas");
@@ -436,22 +444,30 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     mask.width = size;
     mask.height = size;
     mask.style.display = "none";
-    for (var index = 0; index < frames; index++) {
+    target.appendChild(mask);
+
+    var masks = document.createElement("div");
+    masks.className = "masks";
+    masks.style.display = "none";
+
+    for (var i = 0, length = sideFrames.length; i < length; i++) {
         var maskImg = document.createElement("img");
-        maskImg.dataset.frame = index;
-        mask.appendChild(maskkImg);
+        maskImg.dataset.frame = i;
+        masks.appendChild(maskImg);
     }
+
     var topImg = document.createElement("img");
     topImg.dataset.frame = "top";
-    mask.appendChild(topImg);
+    masks.appendChild(topImg);
     var bottomImg = document.createElement("img");
     bottomImg.dataset.frame = "bottom";
-    mask.appendChild(bottomImg);
-    target.appendChild(mask);
+    masks.appendChild(bottomImg);
+    target.appendChild(masks);
 
     // adds the target to the drag binds array so
     // that it can be updated when changes occur
     this.dragBinds.push(target);
+    target.dataset.position = 0;
 
     target.addEventListener("mousedown", function(event) {
         var position = target.dataset.position || 0;
@@ -541,6 +557,184 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
             }
         });
     };
+
+    var _fixEvent = function(event) {
+        if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
+            return event;
+        }
+
+        var _target = event.target || event.srcElement;
+        var rect = _target.getBoundingClientRect();
+        event.offsetX = event.clientX - rect.left;
+        event.offsetY = event.clientY - rect.top;
+        return event;
+    };
+
+    var canvasClick = function(element) {
+        var move = element.classList.contains("move");
+        if (move) {
+            return;
+        }
+        event = _fixEvent(event);
+        var x = event.offsetX;
+        var y = event.offsetY;
+        var result = select(element, x, y);
+        result && event.stopPropagation();
+    };
+
+    var highlight = function(canvas, x, y, format, color) {
+        var canvasRealWidth = canvas.getBoundingClientRect().width;
+        var mask = target.querySelector(".mask");
+        var ratio = mask.width / canvasRealWidth; //TODO: canvas.width
+        x = parseInt(x * ratio);
+        y = parseInt(y * ratio);
+
+        var maskContext = mask.getContext("2d");
+        var maskData = maskContext.getImageData(x, y, 1, 1);
+        var r = maskData.data[0];
+        var index = parseInt(r);
+
+        // in case the index that was found is the zero one this is a special
+        // position and the associated operation is the removal of the highlight
+        if (index === 0) {
+            lowlightPart(target);
+            return;
+        }
+
+        // retrieves the reference to the part name by using the index
+        // extracted from the masks image (typical strategy for retrieval)
+        var part = self.partsList[index - 1];
+        if (part === undefined) {
+            return;
+        }
+
+        // runs the highlight part operation with the provided format and
+        // color values, this will run the proper operation
+        highlightPart(target, part, format, color);
+    };
+
+    var lowlightPart = function(element) {
+        var frontMask = element.querySelector(".front-mask");
+        frontMask.style.display = "none";
+        element && element.classList.remove("highlight");
+    };
+
+    var highlightPart = function(target, part, format, color) {
+        // adds the highlight class to the current target configurator meaning
+        // that the front mask is currently active and showing info
+        target.classList.add("highlight");
+
+        // determines the current position of the configurator so that
+        // the proper mask url may be created and properly loaded
+        var view = target.dataset.view;
+        var position = target.dataset.position;
+        position = (view && view !== "side") ? view : position;
+
+        // runs the default operation in the various elements that are
+        // going to be used in the retrieval of the image
+        //TODO: format = format || (isMobile ? defaultFormat : baseFormat);
+        //TODO: color = color || (hasColor(format) ? backgroundColor : null);
+        format = format || "webp";
+        color = color || self.options.background;
+
+        // constructs the full url of the mask image that is going to be
+        // set for the current highlight operation (to be determined)
+        //TODO: data-mask
+        var url = self.url + "mask";
+        var query = "?model=" + self.model + "&frame=" + position + "&part=" + part;
+        var fullUrl = url + query + "&format=" + format;
+        fullUrl += color ? "&background=" + color : "";
+        fullUrl += size ? "&size=" + String(size) : "";
+
+        var frontMask = target.querySelector(".front-mask");
+        var src = frontMask.getAttribute("src");
+        if (src === fullUrl) {
+            return;
+        }
+
+        var frontMaskLoad = function() {
+            this.classList.add("loaded");
+            this.style.display = "inline-block";
+            var event = self._createEvent("highlighted_part", {
+                part: part
+            });
+            target.dispatchEvent(event);
+        };
+        frontMask.removeEventListener("load", frontMaskLoad);
+        frontMask.addEventListener("load", frontMaskLoad);
+        frontMask.addEventListener("error", function() {
+            this.setAttribute("src", "");
+        });
+        frontMask.setAttribute("src", fullUrl);
+
+        var animationId = frontMask.dataset.animationId;
+        cancelAnimationFrame(animationId);
+        self._animateProperty(frontMask, "opacity", 0, 0.4, 250);
+    };
+
+    var select = function(canvas, x, y) {
+        var canvasRealWidth = canvas.clientWidth;
+        var target = canvas.parentElement;
+        var mask = target.querySelector(".mask");
+        var ratio = mask.width / canvasRealWidth;
+        var maskContext = mask.getContext("2d");
+        x = parseInt(x * ratio);
+        y = parseInt(y * ratio);
+        var maskData = maskContext.getImageData(x, y, 1, 1);
+        var r = maskData.data[0];
+        var index = parseInt(r);
+
+        if (index === 0) {
+            return false;
+        }
+
+        var part = self.partsList[index - 1];
+        var event = self._createEvent("selected_part", {
+            part: part
+        });
+        target.dispatchEvent(event);
+        return true;
+    };
+
+    area.addEventListener("click", function(event) {
+        canvasClick(this, event);
+    });
+
+    area.addEventListener("mousemove", function() {
+        var element = this;
+        var drag = element.classList.contains("drag");
+        if (drag) {
+            return;
+        }
+        event = _fixEvent(event);
+        var x = event.offsetX;
+        var y = event.offsetY;
+        highlight(element, x, y);
+    });
+
+    area.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
+
+    back.addEventListener("click", function(event) {
+        canvasClick(this, event);
+    });
+
+    back.addEventListener("mousemove", function() {
+        var element = this;
+        var drag = element.classList.contains("drag");
+        if (drag) {
+            return;
+        }
+        event = _fixEvent(event);
+        var x = event.offsetX;
+        var y = event.offsetY;
+        highlight(element, x, y);
+    });
+
+    back.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
 };
 
 Ripe.prototype._updateDrag = function(target, position, animate, single, callback) {
@@ -550,16 +744,69 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         return;
     }
 
+    // iterates over the complete set of parts in the current structure
+    // to process them and create the list of parts as names, sorted by
+    // the internal (and reference) name value
+    this.partsList = [];
+    for (var part in this.parts) {
+        var partValue = this.parts[part];
+        var material = partValue["material"];
+        material !== undefined && this.partsList.push(part)
+    }
+    this.partsList.sort();
+
     var self = this;
     var load = function(position, drawFrame, animate, callback) {
+        //TODO: isFront, color, format, ismobile, touch, isFront, _url (data-mask), query()
         position = position || target.dataset.position || 0;
         drawFrame = drawFrame === undefined || drawFrame ? true : false;
         var backs = target.querySelector(".backs");
         var area = target.querySelector(".area");
+        var masks = target.querySelector(".masks");
         var url = self._getImageURL(position);
         var image = backs.querySelector("img[data-frame='" + String(position) + "']")
         var front = area.querySelector("img[data-frame='" + String(position) + "']")
+        var maskImage = masks.querySelector("img[data-frame='" + String(position) + "']");
         image = image || front;
+        var isFront = true; //TODO:
+
+        // constructs the url for the mask and then at the end of the
+        // mask loading process runs the final update of the mask canvas
+        // operation that will allow new highlight and selection operation
+        // to be performed according to the new frame value
+        var src = maskImage.getAttribute("src");
+        if (src) {
+            isFront && setTimeout(function() {
+                updateMask(maskImage, position);
+            }, 150);
+        } else {
+            var format = "webp";
+            var color = null;
+            var isMobile = false;
+            var size = area.getAttribute("height");
+            size = isMobile ? parseInt(size) : null;
+            var touch = "0";
+            touch = parseInt(touch);
+            var _url = self.url + "mask";
+            var _query = "?model=" + self.model + "&frame=" + position;
+            var _fullUrl = _url + _query + "&format=" + format;
+            _fullUrl += color ? "&background=" + color : "";
+            _fullUrl += size ? "&size=" + String(size) : "";
+            _fullUrl += touch ? "&t=" + String(touch) : "";
+            var maskImageLoad = function() {
+                var self = this;
+                isFront && setTimeout(function() {
+                    updateMask(self, position);
+                }, 150);
+            }
+            maskImage.removeEventListener("load", maskImageLoad);
+            maskImage.addEventListener("load", maskImageLoad);
+            maskImage.addEventListener("error", function() {
+                this.setAttribute("src", null);
+            });
+            maskImage.setAttribute("src", _fullUrl);
+            maskImage.crossOrigin = "Anonymous"; //TODO: ?
+        }
 
         var drawCallback = function(callback) {
             var event = self._createEvent("changed_frame", {
@@ -581,12 +828,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             return;
         }
 
-        for (var loadBind in image.load) {
-            var events = getEventListeners(loadBind.listener)
-            image.removeEventListener("load", events);
-        }
-
-        image.addEventListener('load', function() {
+        var imageLoad = function() {
             image.dataset.loaded = true;
             image.dataset.src = url;
             callback && callback();
@@ -594,11 +836,28 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
                 return;
             }
             drawDrag(target, image, animate, drawCallback);
-        });
+        }
+        image.removeEventListener("load", imageLoad);
+        image.addEventListener('load', imageLoad);
 
         image.src = url;
         image.dataset.src = url;
         image.dataset.loaded = false;
+    };
+
+    var updateMask = function(image, position) {
+        var _position = target.dataset.position;
+        var view = target.dataset.view;
+        position = position !== undefined && position.toString();
+        if (position !== _position && position !== view) {
+            return;
+        }
+
+        var mask = target.querySelector(".mask");
+        maskContext = mask.getContext("2d");
+        mask.dataset.position = position;
+        maskContext.clearRect(0, 0, mask.width, mask.height);
+        maskContext.drawImage(image, 0, 0, mask.width, mask.height);
     };
 
     var preload = function(useChain) {
@@ -747,6 +1006,20 @@ Ripe.prototype.addDragFrameCallback = function(target, callback) {
     target.addEventListener("changed_frame", function(event) {
         var frame = event.detail["frame"];
         callback(frame);
+    });
+};
+
+Ripe.prototype.addHighlightedPartCallback = function(target, callback) {
+    target.addEventListener("highlighted_part", function(event) {
+        var part = event.detail["part"];
+        callback(part);
+    });
+};
+
+Ripe.prototype.addSelectedPartCallback = function(target, callback) {
+    target.addEventListener("selected_part", function(event) {
+        var part = event.detail["part"];
+        callback(part);
     });
 };
 
