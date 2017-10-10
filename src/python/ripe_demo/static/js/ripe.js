@@ -574,13 +574,35 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     };
 
     var highlight = function(canvas, x, y, format, color) {
-        var canvasRealWidth = canvas.clientWidth;
-        var target = canvas.parentElement;
+        // var canvasRealWidth = canvas.clientWidth;
+        // var target = canvas.parentElement;
+        // var mask = target.querySelector(".mask");
+        // var ratio = mask.width / canvasRealWidth;
+        // var maskContext = mask.getContext("2d");
+        // x = parseInt(x * ratio);
+        // y = parseInt(y * ratio);
+        // var maskData = maskContext.getImageData(x, y, 1, 1);
+        // var r = maskData.data[0];
+        // var index = parseInt(r);
+
+        //server
+        // var targetRealWidth = target.width();
+        // var ratio = maskWidth / targetRealWidth;
+
+        // x = parseInt(x * ratio);
+        // y = parseInt(y * ratio);
+
+        // var maskData = maskContext.getImageData(x, y, 1, 1);
+        // var r = maskData.data[0];
+        // var index = parseInt(r);
+        
+        var canvasRealWidth = canvas.getBoundingClientRect().width;
         var mask = target.querySelector(".mask");
-        var ratio = mask.width / canvasRealWidth;
-        var maskContext = mask.getContext("2d");
+        var ratio = mask.width / canvasRealWidth; //TODO: canvas.width
         x = parseInt(x * ratio);
         y = parseInt(y * ratio);
+
+        var maskContext = mask.getContext("2d");
         var maskData = maskContext.getImageData(x, y, 1, 1);
         var r = maskData.data[0];
         var index = parseInt(r);
@@ -597,7 +619,7 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         // the internal (and reference) name value
 
         var partsList = [];
-        for (part in parts) {
+        for (part in self.parts) {
             var name = part.dataset.name;
             partsList.push(name);
         }
