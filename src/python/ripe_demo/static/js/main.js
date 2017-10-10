@@ -54,13 +54,17 @@ window.onload = function() {
 
     var dragElement = document.getElementById("product-drag");
     ripe.bindDrag(dragElement, frames, 620);
+
+    var firstLoad = false;
     ripe.addDragLoadedCallback(dragElement, function() {
+        if (firstLoad) {
+            return;
+        }
+        firstLoad = true;
+
         setTimeout(function() {
             ripe.changeDragFrame(dragElement, [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0]);
         }, 1000);
-    });
-    ripe.addDragFrameCallback(dragElement, function(frame) {
-        console.log("frame", frame);
     });
 
     ripe.addPriceCallback(function(value) {
