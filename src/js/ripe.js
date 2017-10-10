@@ -18,7 +18,7 @@ Ripe.prototype.init = function(url, brand, model, variant, parts, options) {
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    var loadDefaults = !hasParts && !options.noDefaults;
+    var loadDefaults = !hasParts && !this.options.noDefaults;
     loadDefaults && this.getDefaults(function(result) {
         this.parts = result;
         this.ready = true;
@@ -29,7 +29,7 @@ Ripe.prototype.init = function(url, brand, model, variant, parts, options) {
     // tries to determine if the combinations available should be
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
-    var loadCombinations = !options.noCombinations;
+    var loadCombinations = !this.options.noCombinations;
     loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
         this._runCallbacks("combinations", this.combinations);
@@ -268,3 +268,6 @@ Ripe.prototype._runCallbacks = function(name) {
         callback.apply(this, Array.prototype.slice.call(arguments, 1));
     }
 };
+
+var exports = typeof exports === "undefined" ? {} : exports;
+exports.Ripe = Ripe;
