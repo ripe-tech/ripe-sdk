@@ -11,6 +11,7 @@ Ripe.prototype.init = function(url, brand, model, variant, frames, options) {
     this.variant = variant;
     this.frames = frames || {};
     this.options = options || {};
+    this.options.backgroundColor = options.backgroundColor ? options.backgroundColor.replace("#", "") : "";
     this.parts = options.parts || {};
     this.options.size = this.options.size || 1000;
     this.options.maxSize = this.options.maxSize || 1000;
@@ -267,7 +268,7 @@ Ripe.prototype._getQuery = function(brand, model, variant, frame, parts, engravi
 
     options.format && buffer.push("format=" + options.format);
     options.size && buffer.push("size=" + options.size);
-    options.background && buffer.push("background=" + options.background);
+    options.backgroundColor && buffer.push("background=" + options.backgroundColor);
 
     return buffer.join("&");
 };

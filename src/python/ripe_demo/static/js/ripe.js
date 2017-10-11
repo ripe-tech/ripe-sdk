@@ -11,6 +11,7 @@ Ripe.prototype.init = function(url, brand, model, variant, frames, options) {
     this.variant = variant;
     this.frames = frames || {};
     this.options = options || {};
+    this.options.backgroundColor = options.backgroundColor ? options.backgroundColor.replace("#", "") : "";
     this.parts = options.parts || {};
     this.options.size = this.options.size || 1000;
     this.options.maxSize = this.options.maxSize || 1000;
@@ -267,7 +268,7 @@ Ripe.prototype._getQuery = function(brand, model, variant, frame, parts, engravi
 
     options.format && buffer.push("format=" + options.format);
     options.size && buffer.push("size=" + options.size);
-    options.background && buffer.push("background=" + options.background);
+    options.backgroundColor && buffer.push("background=" + options.backgroundColor);
 
     return buffer.join("&");
 };
@@ -677,7 +678,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         // runs the default operation in the various elements that are
         // going to be used in the retrieval of the image
         format = format || self.options.format;
-        color = color || self.options.background;
+        color = color || self.options.backgroundColor;
 
         // constructs the full url of the mask image that is going to be
         // set for the current highlight operation (to be determined)

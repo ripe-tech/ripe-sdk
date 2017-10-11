@@ -311,7 +311,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         // runs the default operation in the various elements that are
         // going to be used in the retrieval of the image
         format = format || self.options.format;
-        color = color || self.options.background;
+        color = color || self.options.backgroundColor;
 
         // constructs the full url of the mask image that is going to be
         // set for the current highlight operation (to be determined)
