@@ -1,6 +1,6 @@
 window.onload = function() {
     var element = document.getElementById("frames");
-    var url = element.dataset.url || "http://localhost:8181/";
+    var url = element.dataset.url || "https://demo.platforme.com/";
     var brand = element.dataset.brand || "swear";
     var model = element.dataset.model || "vyner";
     var variant = element.dataset.variant || "";
