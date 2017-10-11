@@ -229,7 +229,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     // sets sane defaults for the optional parameters
     size = size || this.options.size;
     maxSize = maxSize || this.options.maxSize;
-    options = options || {};
+    options = options || this.options
     var sensitivity = options.sensitivity || this.options.sensitivity;
 
     // sets the target element's style so that it supports two canvas
@@ -498,9 +498,10 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             if (!drawFrame) {
                 return;
             }
+            animate === "simple" && console.log("simple");
             drawDrag(target, image, animate, drawCallback);
         };
-
+        console.log("simpleeee");
         // removes previous load callbacks and
         // adds one for the current frame
         image.removeEventListener("load", loadCallback);
