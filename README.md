@@ -124,6 +124,7 @@ Additionally, that same element may trigger the next set of events:
 | `frames` | *array of strings* | All the frames to be used in the customization. Example: ["top", "bottom", "1", "2"] |
 | `noCombinations` | *boolean* | Defines if the combinations are loaded or not. False (loading) by default |
 | `noDefaults` | *boolean* | Defines if the defaults are loaded or not. False (loading) by default |
+| `parts` | *JSON Object* | Defines the product parts. Each key is a part's name built with color and material information. Example: var parts = { "sole": { "material": "nappa", "color": "white" }, ... } |
 | `sensitivity` | *string* | Defines the degree of sensitivity of the dragging interaction. 40 by default. |
 | `size` | *number* | Size of an image that is going to be composed. By default is 1000 |
 | `target` | *HTML <img> element* | Target image element that will be updated when a customization change happens |
