@@ -602,25 +602,9 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
             return;
         }
 
-        // iterates over the complete set of parts in the current structure
-        // to process them and create the list of parts as names, sorted by
-        // the internal (and reference) name value
-        var partsList = Object.keys(self.parts);
-        partsList.sort();
-        partsList = [
-            "front",
-            "hardware",
-            "laces",
-            "lining",
-            "logo",
-            "shadow",
-            "side",
-            "sole"
-        ]
-
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
-        var part = partsList[index - 1];
+        var part = self.partsList[index - 1];
         if (part === undefined) {
             return;
         }
@@ -705,21 +689,7 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
             return false;
         }
 
-        var partsList = [];
-        var partsList = Object.keys(self.parts);
-        partsList.sort();
-        partsList = [
-            "front",
-            "hardware",
-            "laces",
-            "lining",
-            "logo",
-            "shadow",
-            "side",
-            "sole"
-        ]
-        var part = partsList[index - 1];
-
+        var part = self.partsList[index - 1];
         var event = self._createEvent("selected_part", {
             part: part
         });
@@ -774,6 +744,17 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     if (!hasParts || !hasCombinations) {
         return;
     }
+
+    // iterates over the complete set of parts in the current structure
+    // to process them and create the list of parts as names, sorted by
+    // the internal (and reference) name value
+    this.partsList = [];
+    for (var part in this.parts) {
+        var partValue = this.parts[part];
+        var material = partValue["material"];
+        material !== undefined && this.partsList.push(part)
+    }
+    this.partsList.sort();
 
     var self = this;
     var load = function(position, drawFrame, animate, callback) {
