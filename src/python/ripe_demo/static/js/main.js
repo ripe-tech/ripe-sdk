@@ -14,8 +14,8 @@ window.onload = function() {
         side: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 16, 19, 20, 21, 22, 23],
         top: []
     };
-
-    var ripe = new Ripe(url, brand, model, variant, {}, frames, {
+    url, brand, model, variant, parts, frames, options
+    var ripe = new Ripe(url, brand, model, variant, frames, {
         currency: currency,
         country: country
     });
@@ -53,8 +53,15 @@ window.onload = function() {
     ripe.bindFrame(document.getElementById("frame-top"), "top");
 
     var dragElement = document.getElementById("product-drag");
-    ripe.bindDrag(dragElement, frames, 620);
+    ripe.bindDrag(dragElement, 620);
+
+    var firstLoad = false;
     ripe.addDragLoadedCallback(dragElement, function() {
+        if (firstLoad) {
+            return;
+        }
+        firstLoad = true;
+
         setTimeout(function() {
             ripe.changeDragFrame(dragElement, [0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0]);
         }, 1000);
