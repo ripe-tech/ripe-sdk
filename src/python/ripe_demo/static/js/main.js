@@ -1,11 +1,11 @@
 window.onload = function() {
     var element = document.getElementById("frames");
-    var url = element.dataset.url || "http://localhost:8181/";
-    var brand = element.dataset.brand || "swear";
-    var model = element.dataset.model || "vyner";
-    var variant = element.dataset.variant || "";
-    var currency = element.dataset.currency || "USD";
-    var country = element.dataset.country || "US";
+    var url = element.getAttribute("data-url") || "http://localhost:8181/";
+    var brand = element.getAttribute("data-brand") || "swear";
+    var model = element.getAttribute("data-model") || "vyner";
+    var variant = element.getAttribute("data-variant") || "";
+    var currency = element.getAttribute("data-currency") || "USD";
+    var country = element.getAttribute("data-country") || "US";
 
     var parts = [];
     var partsMap = {};
