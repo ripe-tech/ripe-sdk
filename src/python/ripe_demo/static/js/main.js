@@ -15,7 +15,7 @@ window.onload = function() {
         top: []
     };
 
-    var ripe = new Ripe(url, brand, model, variant, {}, frames, {
+    var ripe = new Ripe(url, brand, model, variant, frames, {
         currency: currency,
         country: country
     });

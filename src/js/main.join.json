@@ -1,14 +1,16 @@
 {
     "ripe.js": {
         "files": [
-            "base.js",
-            "bind_drag.js"
+            "base.part.js",
+            "bind_drag.part.js",
+            "remote.part.js"
         ]
     },
     "ripe-min.js": {
         "files": [
-            "base.js",
-            "bind_drag.js"
+            "base.part.js",
+            "bind_drag.part.js",
+            "remote.part.js"
         ],
         "minify": "javascript"
     }
