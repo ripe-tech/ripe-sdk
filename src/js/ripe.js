@@ -16,7 +16,6 @@ Ripe.prototype.init = function(url, brand, model, variant, frames, options) {
     this.options.maxSize = this.options.maxSize || 1000;
     this.options.sensitivity = this.options.sensitivity || 40;
     this.frameBinds = {};
-    this.dragBinds = [];
     this.callbacks = {};
     this.ready = false;
 
@@ -145,92 +144,13 @@ Ripe.prototype.update = function(price) {
         }
     }
 
-
-    for (var index = 0; index < this.dragBinds.length; index++) {
-        var bind = this.dragBinds[index];
-        this._updateDrag(bind);
-    }
+    this.dragBind && this._updateDrag(this.dragBind);
 
     this.ready && this._runCallbacks("update");
 
     this.ready && this.getPrice(function(value) {
         this._runCallbacks("price", value);
     });
-};
-
-Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engraving, options) {
-    frame = frame || "0";
-    parts = parts || this.parts;
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
-    engraving = engraving || this.engraving;
-    options = options || this.options || {};
-    engraving = engraving || this.options.engraving;
-    var query = this._getQuery(brand, model, variant, frame, parts, engraving, options);
-    return this.url + "compose?" + query;
-};
-
-Ripe.prototype._getPriceURL = function(parts, brand, model, variant, engraving, options) {
-    parts = parts || this.parts;
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
-    engraving = engraving || this.engraving;
-    options = options || this.options || {};
-    engraving = engraving || this.options.engraving;
-    var query = this._getQuery(brand, model, variant, null, parts, engraving, options);
-    return this.url + "api/config/price" + "?" + query;
-};
-
-Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
-    return this.url + "api/brands/" + brand + "/models/" + model + "/defaults?variant=" + variant;
-};
-
-Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
-    var useNameS = useName ? "1" : "0";
-    var query = "variant=" + variant + "&use_name=" + useNameS;
-    return this.url + "api/brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
-};
-
-Ripe.prototype._getQuery = function(brand, model, variant, frame, parts, engraving, options) {
-    var buffer = [];
-
-    brand && buffer.push("brand=" + brand);
-    model && buffer.push("model=" + model);
-    variant && buffer.push("variant=" + variant);
-    frame && buffer.push("frame=" + frame);
-
-    for (var part in parts) {
-        var value = parts[part];
-        var material = value.material;
-        var color = value.color;
-        if (!material) {
-            continue;
-        }
-        if (!color) {
-            continue;
-        }
-        buffer.push("p=" + part + ":" + material + ":" + color);
-    }
-
-    engraving && buffer.push("engraving=" + engraving);
-
-    options = options || {};
-    options.currency && buffer.push("currency=" + options.currency);
-    options.country && buffer.push("country=" + options.country);
-
-    options.format && buffer.push("format=" + options.format);
-    options.size && buffer.push("size=" + options.size);
-    options.background && buffer.push("background=" + options.background);
-
-    return buffer.join("&");
 };
 
 Ripe.prototype._addCallback = function(name, callback) {
@@ -254,15 +174,6 @@ Ripe.prototype._runCallbacks = function(name) {
     for (var index = 0; index < callbacks.length; index++) {
         var callback = callbacks[index];
         callback.apply(this, Array.prototype.slice.call(arguments, 1));
-    }
-};
-
-Ripe.prototype._applyStyles = function(element, styles) {
-    for (var key in styles) {
-        if (styles.hasOwnProperty(key)) {
-            var style = styles[key];
-            element.style[key] = style;
-        }
     }
 };
 
@@ -302,24 +213,6 @@ Ripe.prototype._animateProperty = function(element, property, initial, final, du
 
     // starts the animation
     frame();
-};
-
-Ripe.prototype._createEvent = function(name, detail, bubbles, cancelable) {
-    bubbles = bubbles || false;
-    cancelable = cancelable || false;
-    var params = {
-        detail: detail,
-        bubbles: bubbles,
-        cancelable: cancelable
-    };
-
-    if (typeof window.CustomEvent === "function") {
-        return new CustomEvent(name, params);
-    }
-
-    var event = document.createEvent("CustomEvent");
-    event.initCustomEvent(name, bubbles, cancelable, detail);
-    return event;
 };
 
 var exports = typeof exports === "undefined" ? {} : exports;
@@ -373,7 +266,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     var backs = document.createElement("div");
     backs.className = "backs";
     backs.style.display = "none";
-    for (var index = 0; index < sideFrames.length; index++) {
+    for (var index = 0; index < sideFrames; index++) {
         var backImg = document.createElement("img");
         backImg.dataset.frame = index;
         backs.appendChild(backImg);
@@ -413,14 +306,15 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     mask.appendChild(bottomImg);
     target.appendChild(mask);
 
-    // adds the target to the drag binds array so
-    // that it can be updated when changes occur
-    this.dragBinds.push(target);
+    // sets the target as the drag bind so that
+    // it can be updated when changes occur
+    this.dragBind = target;
+    target.setAttribute("data-position", 0);
 
     // binds the mousedown event on the target element
     // to prepare the element for drag movements
     target.addEventListener("mousedown", function(event) {
-        var position = target.dataset.position || 0;
+        var position = target.getAttribute("data-position") || 0;
         var view = target.dataset.view || "side";
         target.dataset.view = view;
         target.dataset.base = position;
@@ -495,8 +389,8 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         // and determines which one is the next frame
         var view = element.dataset.view;
         var viewFrames = self.frames[view];
-        var next = parseInt(base - (sensitivity * percentX)) % viewFrames.length;
-        next = next >= 0 ? next : viewFrames.length + next;
+        var next = parseInt(base - (sensitivity * percentX)) % viewFrames;
+        next = next >= 0 ? next : viewFrames + next;
 
         // if the movement was big enough then
         // adds the move class to the element
@@ -534,7 +428,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         // if the new view doens't have multiple frames
         // then ignores the index of the new frame
         viewFrames = self.frames[view];
-        next = viewFrames.length === 0 ? view : next;
+        next = viewFrames === 1 ? view : next;
 
         // updates the image of the drag element
         self._updateDrag(element, next, animate, false, function() {
@@ -574,10 +468,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         // is drawn to trigger the changed_frame event and
         // the callback passed to this function if it's set
         var drawCallback = function() {
-            var event = self._createEvent("changed_frame", {
-                frame: position
-            });
-            target.dispatchEvent(event);
+            self._runCallbacks("changed_frame", position);
             callback && callback();
         };
 
@@ -633,16 +524,15 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         var work = [];
         for (var view in self.frames) {
             var viewFrames = self.frames[view];
-            if (viewFrames.length === 0) {
+            if (viewFrames === 0) {
                 work.push(view);
                 continue;
             }
-            for (var _index = 0; _index < viewFrames.length; _index++) {
-                var frame = viewFrames[_index];
-                if (frame === position) {
+            for (var _index = 0; _index < viewFrames; _index++) {
+                if (_index === position) {
                     continue;
                 }
-                work.push(frame);
+                work.push(_index);
             }
         }
         work.reverse();
@@ -675,8 +565,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             else if (work.length === 0) {
                 target.classList.remove("preloading");
                 target.dataset.preventDrag = false;
-                var event = self._createEvent("loaded");
-                target.dispatchEvent(event);
+                self._runCallbacks("loaded");
             }
         };
 
@@ -805,33 +694,64 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     mustPreload && preload(this.options.useChain);
 };
 
-Ripe.prototype.addDragLoadedCallback = function(target, callback) {
-    target.addEventListener("loaded", callback);
+Ripe.prototype.addLoadedCallback = function(callback) {
+    this._addCallback("loaded", callback);
 };
 
-Ripe.prototype.addDragFrameCallback = function(target, callback) {
-    target.addEventListener("changed_frame", function(event) {
-        var frame = event.detail["frame"];
-        callback(frame);
-    });
+Ripe.prototype.removeLoadedCallback = function(callback) {
+    this._removeCallback("loaded", callback);
 };
 
-Ripe.prototype.changeDragFrame = function(target, frame, animate, step, callback) {
-    if (Array.isArray(frame) === false) {
-        return this._updateDrag(target, frame, animate, false, callback);
+Ripe.prototype.addChangedFrameCallback = function(callback) {
+    this._addCallback("changed_frame", callback);
+};
+
+Ripe.prototype.removeChangedFrameCallback = function(callback) {
+    this._removeCallback("changed_frame", callback);
+};
+
+Ripe.prototype.changeFrame = function(frame, animate, step, interval, preventDrag, callback) {
+    if (this.dragBind === undefined) {
+        return;
+    }
+    if (animate === false) {
+        return this._updateDrag(this.dragBind, frame, false, false, callback);
     };
 
     var self = this;
-    step = step || 100;
-    var id = setInterval(function() {
-        var nextFrame = frame.pop();
-        if (nextFrame !== undefined) {
-            self._updateDrag(target, nextFrame, animate, false);
-        } else {
-            clearInterval(id);
+    step = step || 1;
+    interval = interval || 100;
+    var current = this.dragBind.getAttribute("data-position") || 0;
+    current = parseInt(current);
+    var steps = [];
+    var sideFrames = this.frames["side"];
+    for (var index = current; index <= frame; index += step) {
+        var stepFrame = index % sideFrames;
+        steps.push(stepFrame);
+    }
+    steps.includes(frame) === false && steps.push(frame);
+
+    preventDrag = preventDrag === false ? false : true;
+    this.dragBind.setAttribute("data-prevent-drag", preventDrag);
+
+    var nextFrame = function(frames, callback) {
+        var next = frames.shift();
+        if (next === undefined) {
             callback && callback();
+            return;
         }
-    }, step);
+        self._updateDrag(self.dragBind, next, animate, false, function() {
+            setTimeout(function() {
+                nextFrame(frames, callback);
+            }, interval);
+        });
+    };
+
+    nextFrame(steps, function() {
+        self.dragBind.setAttribute("data-prevent-drag", false);
+        self.dragBind.setAttribute("data-position", frame);
+        callback && callback();
+    });
 };
 
 Ripe.prototype.getPrice = function(callback) {
@@ -871,4 +791,80 @@ Ripe.prototype.getCombinations = function(callback) {
     });
     request.open("GET", combinationsURL);
     request.send();
+};
+
+
+Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engraving, options) {
+    frame = frame || "0";
+    parts = parts || this.parts;
+    brand = brand || this.brand;
+    model = model || this.model;
+    variant = variant || this.variant;
+    engraving = engraving || this.engraving;
+    options = options || this.options || {};
+    engraving = engraving || this.options.engraving;
+    var query = this._getQuery(brand, model, variant, frame, parts, engraving, options);
+    return this.url + "compose?" + query;
+};
+
+Ripe.prototype._getPriceURL = function(parts, brand, model, variant, engraving, options) {
+    parts = parts || this.parts;
+    brand = brand || this.brand;
+    model = model || this.model;
+    variant = variant || this.variant;
+    engraving = engraving || this.engraving;
+    options = options || this.options || {};
+    engraving = engraving || this.options.engraving;
+    var query = this._getQuery(brand, model, variant, null, parts, engraving, options);
+    return this.url + "api/config/price" + "?" + query;
+};
+
+Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
+    brand = brand || this.brand;
+    model = model || this.model;
+    variant = variant || this.variant;
+    return this.url + "api/brands/" + brand + "/models/" + model + "/defaults?variant=" + variant;
+};
+
+Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
+    brand = brand || this.brand;
+    model = model || this.model;
+    variant = variant || this.variant;
+    var useNameS = useName ? "1" : "0";
+    var query = "variant=" + variant + "&use_name=" + useNameS;
+    return this.url + "api/brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
+};
+
+Ripe.prototype._getQuery = function(brand, model, variant, frame, parts, engraving, options) {
+    var buffer = [];
+
+    brand && buffer.push("brand=" + brand);
+    model && buffer.push("model=" + model);
+    variant && buffer.push("variant=" + variant);
+    frame && buffer.push("frame=" + frame);
+
+    for (var part in parts) {
+        var value = parts[part];
+        var material = value.material;
+        var color = value.color;
+        if (!material) {
+            continue;
+        }
+        if (!color) {
+            continue;
+        }
+        buffer.push("p=" + part + ":" + material + ":" + color);
+    }
+
+    engraving && buffer.push("engraving=" + engraving);
+
+    options = options || {};
+    options.currency && buffer.push("currency=" + options.currency);
+    options.country && buffer.push("country=" + options.country);
+
+    options.format && buffer.push("format=" + options.format);
+    options.size && buffer.push("size=" + options.size);
+    options.background && buffer.push("background=" + options.background);
+
+    return buffer.join("&");
 };
