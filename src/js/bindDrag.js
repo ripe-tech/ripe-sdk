@@ -223,7 +223,7 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     var highlight = function(canvas, x, y, format, color) {
         var canvasRealWidth = canvas.getBoundingClientRect().width;
         var mask = target.querySelector(".mask");
-        var ratio = mask.width / canvasRealWidth; //TODO: canvas.width
+        var ratio = mask.width / canvasRealWidth;
         x = parseInt(x * ratio);
         y = parseInt(y * ratio);
 
@@ -232,9 +232,11 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         var r = maskData.data[0];
         var index = parseInt(r);
 
+        var down = target.getAttribute("data-down");
         // in case the index that was found is the zero one this is a special
         // position and the associated operation is the removal of the highlight
-        if (index === 0) {
+        // also if the target is being dragged the highlight should be removed
+        if (index === 0 || down === "true") {
             lowlightPart(target);
             return;
         }
@@ -270,14 +272,11 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
 
         // runs the default operation in the various elements that are
         // going to be used in the retrieval of the image
-        //TODO: format = format || (isMobile ? defaultFormat : baseFormat);
-        //TODO: color = color || (hasColor(format) ? backgroundColor : null);
-        format = format || "webp";
+        format = format || self.options.format;
         color = color || self.options.background;
 
         // constructs the full url of the mask image that is going to be
         // set for the current highlight operation (to be determined)
-        //TODO: data-mask
         var url = self.url + "mask";
         var query = "?model=" + self.model + "&frame=" + position + "&part=" + part;
         var fullUrl = url + query + "&format=" + format;
@@ -394,7 +393,6 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
 
     var self = this;
     var load = function(position, drawFrame, animate, callback) {
-        //TODO: isFront, color, format, ismobile, touch, isFront, _url (data-mask), query()
         position = position || target.getAttribute("data-position") || 0;
         drawFrame = drawFrame === undefined || drawFrame ? true : false;
         var backs = target.querySelector(".backs");
@@ -405,7 +403,6 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         var front = area.querySelector("img[data-frame='" + String(position) + "']")
         var maskImage = masks.querySelector("img[data-frame='" + String(position) + "']");
         image = image || front;
-        var isFront = true; //TODO:
 
         // constructs the url for the mask and then at the end of the
         // mask loading process runs the final update of the mask canvas
@@ -413,26 +410,21 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         // to be performed according to the new frame value
         var src = maskImage.getAttribute("src");
         if (src) {
-            isFront && setTimeout(function() {
+            setTimeout(function() {
                 updateMask(maskImage, position);
             }, 150);
         } else {
-            var format = "webp";
-            var color = null;
-            var isMobile = false;
-            var size = area.getAttribute("height");
-            size = isMobile ? parseInt(size) : null;
-            var touch = "0";
-            touch = parseInt(touch);
+            var format = format || self.options.format;
+            var color = color || self.options.backgroundColor;
+            var size = area.height;
             var _url = self.url + "mask";
             var _query = "?model=" + self.model + "&frame=" + position;
             var _fullUrl = _url + _query + "&format=" + format;
             _fullUrl += color ? "&background=" + color : "";
             _fullUrl += size ? "&size=" + String(size) : "";
-            _fullUrl += touch ? "&t=" + String(touch) : "";
             var maskImageLoad = function() {
                 var self = this;
-                isFront && setTimeout(function() {
+                setTimeout(function() {
                     updateMask(self, position);
                 }, 150);
             }
@@ -441,8 +433,8 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             maskImage.addEventListener("error", function() {
                 this.setAttribute("src", null);
             });
+            maskImage.crossOrigin = "Anonymous";
             maskImage.setAttribute("src", _fullUrl);
-            maskImage.crossOrigin = "Anonymous"; //TODO: ?
         }
 
         var drawCallback = function(callback) {
