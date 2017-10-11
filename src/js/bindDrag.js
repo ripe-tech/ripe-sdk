@@ -188,7 +188,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         // if there is a new view and the product supports
         // it then animates the transition with a crossfade
         // and ignores all drag movements while it lasts
-        if (view !== nextView && this.frames[nextView]) {
+        if (view !== nextView && self.frames[nextView]) {
             element.dataset.referenceY = mousePosY;
             view = nextView;
             animate = "cross";
