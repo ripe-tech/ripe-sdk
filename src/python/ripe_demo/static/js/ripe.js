@@ -510,8 +510,8 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         var child = element.querySelector("*:first-child");
         var referenceX = element.getAttribute("data-reference-x");
         var referenceY = element.getAttribute("data-reference-y");
-        var mousePosX = element.getAttribute("data-mouse-x");
-        var mousePosY = element.getAttribute("data-mouse-y");
+        var mousePosX = element.getAttribute("data-mouse-pos-x");
+        var mousePosY = element.getAttribute("data-mouse-pos-y");
         var base = element.getAttribute("data-base");
         var rate = rate || 40;
         var deltaX = referenceX - mousePosX;
@@ -552,6 +552,7 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         }
         viewFrames = frames[view];
         next = viewFrames.length === 0 ? view : next;
+        console.log(next)
         self._updateDrag(element, next, animate, false, function() {
             if (animate === "cross") {
                 element.style.pointerEvents = "all";

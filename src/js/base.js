@@ -330,7 +330,7 @@ Ripe.prototype._animateProperty = function(element, property, initial, final, du
             // sets the id of the animation frame on the element
             // so that it can be canceled if necessary
             var id = requestAnimationFrame(frame);
-            element.dataset.animationId = id;
+            element.setAttribute("data-animation-id", id);
         } else {
             callback && callback();
         }

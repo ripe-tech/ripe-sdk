@@ -361,6 +361,7 @@ Ripe.prototype._createEvent = function(name, detail, bubbles, cancelable) {
 var exports = typeof exports === "undefined" ? {} : exports;
 exports.Ripe = Ripe;
 
+
 Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     // validates that the provided target element is a
     // valid one and if that's not the case returns the
@@ -426,14 +427,14 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
     backs.style.display = "none";
     for (var index = 0; index < sideFrames.length; index++) {
         var backImg = document.createElement("img");
-        backImg.dataset.frame = index;
+        backImg.setAttribute("data-frame", index);
         backs.appendChild(backImg);
     }
     var topImg = document.createElement("img");
-    topImg.dataset.frame = "top";
+    topImg.setAttribute("data-frame", "top");
     backs.appendChild(topImg);
     var bottomImg = document.createElement("img");
-    bottomImg.dataset.frame = "bottom";
+    bottomImg.setAttribute("data-frame", "bottom");
     backs.appendChild(bottomImg);
     target.appendChild(backs);
 
@@ -452,67 +453,67 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
 
     for (var i = 0, length = sideFrames.length; i < length; i++) {
         var maskImg = document.createElement("img");
-        maskImg.dataset.frame = i;
+        maskImg.setAttribute("data-frame", i);
         masks.appendChild(maskImg);
     }
 
     var topImg = document.createElement("img");
-    topImg.dataset.frame = "top";
+    topImg.setAttribute("data-frame", "top");
     masks.appendChild(topImg);
     var bottomImg = document.createElement("img");
-    bottomImg.dataset.frame = "bottom";
+    bottomImg.setAttribute("data-frame", "bottom");
     masks.appendChild(bottomImg);
     target.appendChild(masks);
 
     // adds the target to the drag binds array so
     // that it can be updated when changes occur
     this.dragBinds.push(target);
-    target.dataset.position = 0;
+    target.setAttribute("data-position", 0);
 
     target.addEventListener("mousedown", function(event) {
-        var position = target.dataset.position || 0;
-        var view = target.dataset.view || "side";
-        target.dataset.view = view;
-        target.dataset.base = position;
-        target.dataset.down = true;
-        target.dataset.referenceX = event.pageX;
-        target.dataset.referenceY = event.pageY;
-        target.dataset.percent = 0;
-        target.dataset.accumulatedRotation = 0;
+        var position = target.getAttribute("data-position") || 0;
+        var view = target.getAttribute("data-view") || "side";
+        target.setAttribute("data-view", view);
+        target.setAttribute("data-base", position);
+        target.setAttribute("data-down", true);
+        target.setAttribute("data-reference-x", event.pageX);
+        target.setAttribute("data-reference-y", event.pageY);
+        target.setAttribute("data-percent", 0);
+        target.setAttribute("data-accumulated-totation", 0);
         target.classList.add("drag");
     });
 
     target.addEventListener("mouseup", function(event) {
-        var percent = target.dataset.percent;
-        target.dataset.down = false;
-        target.dataset.percent = 0;
-        target.dataset.previous = percent;
+        var percent = target.getAttribute("data-percent");
+        target.setAttribute("data-down", false);
+        target.setAttribute("data-percent", 0);
+        target.setAttribute("data-previous", percent);
         target.classList.remove("drag");
     });
 
     target.addEventListener("mouseleave", function(event) {
-        var percent = target.dataset.percent;
-        target.dataset.down = false;
-        target.dataset.percent = 0;
-        target.dataset.previous = percent;
+        var percent = target.getAttribute("data-percent");
+        target.setAttribute("data-down", false);
+        target.setAttribute("data-percent", 0);
+        target.setAttribute("data-previous", percent);
         target.classList.remove("drag");
     });
 
     target.addEventListener("mousemove", function(event) {
-        var down = target.dataset.down
-        target.dataset.mousePosX = event.pageX;
-        target.dataset.mousePosY = event.pageY;
+        var down = target.getAttribute("data-down");
+        target.setAttribute("data-mouse-pos-x", event.pageX);
+        target.setAttribute("data-mouse-pos-y", event.pageY);
         down === "true" && updatePosition(target);
     });
 
     var self = this;
     var updatePosition = function(element) {
         var child = element.querySelector("*:first-child");
-        var referenceX = element.dataset.referenceX;
-        var referenceY = element.dataset.referenceY;
-        var mousePosX = element.dataset.mousePosX;
-        var mousePosY = element.dataset.mousePosY;
-        var base = element.dataset.base;
+        var referenceX = element.getAttribute("data-reference-x");
+        var referenceY = element.getAttribute("data-reference-y");
+        var mousePosX = element.getAttribute("data-mouse-x");
+        var mousePosY = element.getAttribute("data-mouse-y");
+        var base = element.getAttribute("data-base");
         var rate = rate || 40;
         var deltaX = referenceX - mousePosX;
         var deltaY = referenceY - mousePosY;
@@ -520,13 +521,13 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         var elementHeight = element.clientHeight || child.clientHeight;
         var percentX = deltaX / elementWidth;
         var percentY = deltaY / elementHeight;
-        var view = element.dataset.view;
+        var view = element.getAttribute("data-view");
         var viewFrames = frames[view];
         var next = parseInt(base - (rate * percentX)) % viewFrames.length;
         next = next >= 0 ? next : viewFrames.length + next;
         Math.abs(percentX) > 0.02 && element.classList.add("move");
         Math.abs(percentY) > 0.02 && element.classList.add("move");
-        element.dataset.percent = percentX;
+        element.setAttribute("data-percent", percentX);
 
         var nextView = view;
         if (rate * percentY > 15) {
@@ -537,17 +538,18 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
 
         var animate = false;
         if (view !== nextView && frames[nextView]) {
-            element.dataset.referenceY = mousePosY;
+            element.setAttribute("data-reference-y", mousePosY);
             view = nextView;
             animate = "cross";
             element.style.pointerEvents = "none";
         }
 
-        element.dataset.view = view;
+        element.setAttribute("data-view", view);
         if (!isNaN(next)) {
-            element.dataset.position = next;
+            element.setAttribute("data-position", next);
         } else {
-            next = parseInt(element.dataset.position);
+            var pos = element.getAttribute("data-position");
+            next = parseInt(pos);
         }
         viewFrames = frames[view];
         next = viewFrames.length === 0 ? view : next;
@@ -626,8 +628,8 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
 
         // determines the current position of the configurator so that
         // the proper mask url may be created and properly loaded
-        var view = target.dataset.view;
-        var position = target.dataset.position;
+        var view = target.getAttribute("data-view");
+        var position = target.getAttribute("data-position");
         position = (view && view !== "side") ? view : position;
 
         // runs the default operation in the various elements that are
@@ -667,7 +669,7 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         });
         frontMask.setAttribute("src", fullUrl);
 
-        var animationId = frontMask.dataset.animationId;
+        var animationId = frontMask.getAttribute("data-animation-id");
         cancelAnimationFrame(animationId);
         self._animateProperty(frontMask, "opacity", 0, 0.4, 250);
     };
@@ -736,7 +738,6 @@ Ripe.prototype.bindDrag = function(target, frames, size, maxSize, rate) {
         event.preventDefault();
     });
 };
-
 Ripe.prototype._updateDrag = function(target, position, animate, single, callback) {
     var hasCombinations = this.combinations && Object.keys(this.combinations).length !== 0;
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
@@ -758,7 +759,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     var self = this;
     var load = function(position, drawFrame, animate, callback) {
         //TODO: isFront, color, format, ismobile, touch, isFront, _url (data-mask), query()
-        position = position || target.dataset.position || 0;
+        position = position || target.getAttribute("data-position") || 0;
         drawFrame = drawFrame === undefined || drawFrame ? true : false;
         var backs = target.querySelector(".backs");
         var area = target.querySelector(".area");
@@ -816,21 +817,21 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             callback && callback();
         }
 
-        var isRedundant = image.dataset.src === url;
+        var isRedundant = image.getAttribute("data-src") === url;
         if (isRedundant) {
             if (!drawFrame) {
                 callback && callback();
                 return;
             }
 
-            var isReady = image.dataset.loaded;
+            var isReady = image.getAttribute("data-loaded");
             isReady && drawDrag(target, image, animate, drawCallback);
             return;
         }
 
         var imageLoad = function() {
-            image.dataset.loaded = true;
-            image.dataset.src = url;
+            image.setAttribute("data-loaded", true);
+            image.setAttribute("data-src", url);
             callback && callback();
             if (!drawFrame) {
                 return;
@@ -841,13 +842,14 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         image.addEventListener('load', imageLoad);
 
         image.src = url;
-        image.dataset.src = url;
-        image.dataset.loaded = false;
+        image.setAttribute("data-src", url);
+        image.setAttribute("data-loaded", false);
+
     };
 
     var updateMask = function(image, position) {
-        var _position = target.dataset.position;
-        var view = target.dataset.view;
+        var _position = target.getAttribute("data-position");
+        var view = target.getAttribute("data-view");
         position = position !== undefined && position.toString();
         if (position !== _position && position !== view) {
             return;
@@ -855,15 +857,15 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
 
         var mask = target.querySelector(".mask");
         maskContext = mask.getContext("2d");
-        mask.dataset.position = position;
+        mask.setAttribute("data-position", position);
         maskContext.clearRect(0, 0, mask.width, mask.height);
         maskContext.drawImage(image, 0, 0, mask.width, mask.height);
     };
 
     var preload = function(useChain) {
-        var index = target.dataset.index || 0;
+        var index = target.getAttribute("data-index") || 0;
         index++;
-        target.dataset.index = index;
+        target.setAttribute("data-index", index);
         target.classList.add("preload");
         var work = [];
         var sideFrames = self.frames["side"];
@@ -880,7 +882,8 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         work.reverse();
 
         var mark = function(element) {
-            var _index = parseInt(target.dataset.index);
+            var _index = target.getAttribute("data-index");
+            _index = parseInt(_index);
             if (index !== _index) {
                 return;
             }
@@ -899,7 +902,8 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         };
 
         var render = function() {
-            var _index = parseInt(target.dataset.index);
+            var _index = target.getAttribute("data-index");
+            _index = parseInt(_index);
 
             if (index !== _index) {
                 return;
@@ -934,13 +938,12 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         }, 250);
     };
 
-    var previous = target.dataset.signature || "";
+    var previous = target.getAttribute("data-signature") || "";
     var signature = self._getQuery(null, null, null, null, self.parts);
     var changed = signature !== previous;
     var animate = animate || (changed && "simple");
-    target.dataset.signature = signature;
-
-    var previous = target.dataset.unique;
+    target.setAttribute("data-signature", signature);
+    var previous = target.getAttribute("data-unique");
     var unique = signature + "&position=" + String(position) + "&single=" + String(single);
     if (previous === unique) {
         return false;
@@ -952,7 +955,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         var context = area.getContext("2d");
         var backContext = back.getContext("2d");
 
-        var visible = area.dataset.visible === "true";
+        var visible = area.getAttribute("data-visible") === "true";
         var current = visible ? area : back
         var target = visible ? back : area;
         var context = target.getContext("2d");
@@ -968,8 +971,8 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             return;
         }
 
-        var currentId = current.dataset.animationId;
-        var targetId = target.dataset.animationId;
+        var currentId = current.getAttribute("data-animation-id");
+        var targetId = target.getAttribute("data-animation-id");
         currentId && cancelAnimationFrame(parseInt(currentId));
         targetId && cancelAnimationFrame(parseInt(targetId));
 
@@ -984,11 +987,12 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             target.style.zIndex = 1;
             callback && callback();
         });
-        target.dataset.visible = true;
-        current.dataset.visible = false;
+
+        target.setAttribute("data-visible", true);
+        current.setAttribute("data-visible", false);
     };
 
-    target.dataset.unique = unique;
+    target.setAttribute("data-unique", unique);
 
     load(position, true, animate, callback);
 
