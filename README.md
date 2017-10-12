@@ -98,8 +98,13 @@ This element can call the following methods:
 
 | Method | Params | Description |
 | --- | --- | --- |
-| `changeFrame` | <ul><li>`frame` *(numeric ([0...n]) or string (named frame)*</li><li>`animate` *[optional] *(boolean), animation state. "True" by default*</li><li>`step` *[optional] (numeric ([0...n])), number of frames it iterates on each transition. "1" by default*</li><li>`interval` *[optional] (numeric ([0...n])), the duration, in milliseconds, of each transition between frames. 100ms by default.*</li><li>`preventDrag` *[optional] (boolean), it allows to prevent drag actions during an animated change of frames. "True" by default. *</li><li> `callback` *[optional] *(string), named function expression to use as a callback function* | it displays a frame you pass by with or without animation. If animated, it will gradually display `step` frames from the current one, taking `interval` milliseconds |
-
+| `changeFrame` | <ul><li>`frame` *(numeric ([0...n]) or string (named frame)*</li><li>`animate` *[optional] *(boolean), animation state. "True" by default*</li><li>`step` *[optional] (numeric ([0...n])), number of frames it iterates on each transition. "1" by default*</li><li>`interval` *[optional] (numeric ([0...n])), the duration, in milliseconds, of each transition between frames. 100ms by default.*</li><li>`preventDrag` *[optional] (boolean), it allows to prevent drag actions during an animated change of frames. "True" by default. *</li><li> `callback` *[optional] *(string), named function expression to use as a callback function*</li></ul>| it displays a frame you pass by with or without animation. If animated, it will gradually display `step` frames from the current one, taking `interval` milliseconds |
+| `highlightPart`| <ul><li>`part` *(string), named part*</li></ul> | it highlights a part |
+| `lowlightPart` | <ul><li>`part` *(string), named part*</li></ul > | it lowlights a part |
+| `selectPart` | <ul><li>`part` *(string), named part*</li></ul > |  it selects a part |
+| `resize` | |  |
+| `fullscreen` | | sets the frame to the maximum size value ( `options.maxSize` ) |
+| `exitFullscreen` | | sets the frame size to the initial value ( `options.size` ) |
 
 <!--
 This element reacts to the following events:
