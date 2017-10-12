@@ -129,7 +129,7 @@ Additionally, that same element may trigger the next set of events:
 ## Options
 | Name | Type | Description |
 | --- | --- | --- |
-| `backgroundColor` | *string* | RGB format color value of the background. No background by default. Example: "#cccccc" |
+| `backgroundColor` | *string* | RGB format color value of the background, with no need to pass tge "#" signal. No background by default. Example: "cccccc" |
 | `country` | *string* | Two letters standard country codes defined in *ISO 3166-1 alpha-2* codes. "US" by default. Example: "PT" |
 | `currency` | *string* | Standard currency codes defined in *ISO 4217* codes. "USD" by default. Example: "EUR" |
 | `engraving` | *string* | Material name of the engraved object. Example: "metal" |
