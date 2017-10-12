@@ -498,10 +498,8 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             if (!drawFrame) {
                 return;
             }
-            animate === "simple" && console.log("simple");
             drawDrag(target, image, animate, drawCallback);
         };
-        console.log("simpleeee");
         // removes previous load callbacks and
         // adds one for the current frame
         image.removeEventListener("load", loadCallback);
