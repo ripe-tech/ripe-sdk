@@ -88,6 +88,7 @@ window.onload = function() {
     var setMessage = document.getElementById("set-message");
     var getPrice = document.getElementById("get-price");
     var getCombinations = document.getElementById("get-combinations");
+    var toggleFullscreen = document.getElementById("toggle-fullscreen");
 
     setPart && setPart.addEventListener("click", function() {
         randomize();
@@ -109,5 +110,9 @@ window.onload = function() {
                 "</strong> combinations with <strong>" + String(unique()) +
                 "</strong> possible compositions");
         });
+    });
+
+    toggleFullscreen && toggleFullscreen.addEventListener("click", function() {
+        this.classList.toggle("fullscreen") ? ripe.fullscreen() : ripe.exitFullscreen();
     });
 };

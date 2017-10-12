@@ -1021,6 +1021,53 @@ Ripe.prototype.changeFrame = function(frame, animate, step, interval, preventDra
     });
 };
 
+Ripe.prototype.resize = function(size) {
+    if (this.dragBind === undefined) {
+        return;
+    }
+    size = size || this.options.size;
+    var area = this.dragBind.querySelector(".area");
+    var frontMask = this.dragBind.querySelector(".front-mask");
+    var back = this.dragBind.querySelector(".back");
+    var mask = this.dragBind.querySelector(".mask");
+    area.width = size;
+    area.height = size;
+    frontMask.width = size;
+    frontMask.height = size;
+    frontMask.style.width = size + "px";
+    frontMask.style.marginLeft = "-" + String(size) + "px";
+    back.width = size;
+    back.height = size;
+    back.style.marginLeft = "-" + String(size) + "px";
+    mask.width = size;
+    mask.height = size;
+    this._updateDrag(this.dragBind);
+};
+
+Ripe.prototype.fullscreen = function() {
+    if (this.dragBind === undefined) {
+        return;
+    }
+    this.dragBind.style.position = "fixed";
+    this.dragBind.style.top = "0px";
+    this.dragBind.style.bottom = "0px";
+    this.dragBind.style.left = "0px";
+    this.dragBind.style.right = "0px";
+    this.resize(this.options.maxSize);
+};
+
+Ripe.prototype.exitFullscreen = function() {
+    if (this.dragBind === undefined) {
+        return;
+    }
+    this.dragBind.style.position = null;
+    this.dragBind.style.top = null;
+    this.dragBind.style.bottom = null;
+    this.dragBind.style.left = null;
+    this.dragBind.style.right = null;
+    this.resize();
+};
+
 Ripe.prototype.getPrice = function(callback) {
     var context = this;
     var priceURL = this._getPriceURL();
