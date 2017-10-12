@@ -5,7 +5,12 @@ The public SDK for [RIPE Core](https://github.com/ripe-tech/ripe-core).
 ## Initialization
 As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product. The `frames` parameters is a map with the number of frames for each view, for example: 
 
-´´´{"side" : 24, "top": 1}´´´.
+```javascript
+{ 
+    "side" : 24,
+    "top": 1
+}
+```
 
 You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
