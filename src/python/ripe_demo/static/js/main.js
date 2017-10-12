@@ -17,7 +17,8 @@ window.onload = function() {
 
     var ripe = new Ripe(url, brand, model, variant, frames, {
         currency: currency,
-        country: country
+        country: country,
+        size: 620
     });
 
     var randomize = function() {
@@ -53,7 +54,7 @@ window.onload = function() {
     ripe.bindFrame(document.getElementById("frame-top"), "top");
 
     var dragElement = document.getElementById("product-drag");
-    ripe.bindDrag(dragElement, 620);
+    ripe.bindDrag(dragElement);
 
     var firstLoad = false;
     ripe.addLoadedCallback(function() {

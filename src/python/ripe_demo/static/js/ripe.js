@@ -223,7 +223,7 @@ Ripe.prototype._animateProperty = function(element, property, initial, final, du
 var exports = typeof exports === "undefined" ? {} : exports;
 exports.Ripe = Ripe;
 
-Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
+Ripe.prototype.bindDrag = function(target) {
     // validates that the provided target element is a
     // valid one and if that's not the case returns the
     // control flow immediately to the caller
@@ -238,11 +238,10 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         return;
     }
 
-    // sets sane defaults for the optional parameters
-    size = size || this.options.size;
-    maxSize = maxSize || this.options.maxSize;
-    options = options || this.options
-    var sensitivity = options.sensitivity || this.options.sensitivity;
+    // retrieves the the parameters that will be used to
+    // set up the drag element from the options object
+    var size = this.options.size;
+    var sensitivity = this.options.sensitivity;
 
     // sets the target element's style so that it supports two canvas
     // on top of each other so that double buffering can be used
