@@ -7,7 +7,7 @@ As a starting point, you need to provide the base `url` of the server where the 
 You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
 ```javascript
-var ripe = new Ripe(url, brand, model, variant, parts, frames, {
+var ripe = new Ripe(url, brand, model, variant, frames, {
     currency: currency,
     country: country
 });
