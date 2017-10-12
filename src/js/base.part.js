@@ -19,6 +19,11 @@ Ripe.prototype.init = function(url, brand, model, variant, frames, options) {
     this.callbacks = {};
     this.ready = false;
 
+    // retrieves the configuration information for this product
+    this.getConfig(function(config) {
+        this.config = config;
+    });
+
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;

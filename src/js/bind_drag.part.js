@@ -6,6 +6,13 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         return;
     }
 
+    if (this.frames === undefined) {
+        this.getFrames(function() {
+            this.bindDrag(target, size, maxSize, options);
+        });
+        return;
+    }
+
     // sets sane defaults for the optional parameters
     size = size || this.options.size;
     maxSize = maxSize || this.options.maxSize;
@@ -471,6 +478,26 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     var mustPreload = !single && (changed || !preloaded);
     single && target.classList.remove("preload");
     mustPreload && preload(this.options.useChain);
+};
+
+Ripe.prototype.getFrames = function(callback) {
+    if (this.config === undefined) {
+        this.getConfig(function(config) {
+            this.config = config;
+            this.getFrames(callback);
+        });
+    }
+
+    var frames = {};
+    var faces = config["faces"];
+    for (var face in faces) {
+        frames[face] = 1;
+    };
+
+    var sideFrames = config["frames"];
+    frames["side"] = sideFrames;
+    this.frames = frames;
+    callback && callback(frames);
 };
 
 Ripe.prototype.addLoadedCallback = function(callback) {

@@ -1,3 +1,16 @@
+Ripe.prototype.getConfig = function(callback) {
+    var context = this;
+    var configURL = this._getConfigURL();
+    var request = new XMLHttpRequest();
+    request.addEventListener("load", function() {
+        var isValid = this.status === 200;
+        var result = JSON.parse(this.responseText);
+        callback.call(context, isValid ? result : null);
+    });
+    request.open("GET", configURL);
+    request.send();
+};
+
 Ripe.prototype.getPrice = function(callback) {
     var context = this;
     var priceURL = this._getPriceURL();
@@ -49,6 +62,12 @@ Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engr
     engraving = engraving || this.options.engraving;
     var query = this._getQuery(brand, model, variant, frame, parts, engraving, options);
     return this.url + "compose?" + query;
+};
+
+Ripe.prototype._getConfigURL = function(brand, model) {
+    brand = brand || this.brand;
+    model = model || this.model;
+    return this.url + "api/brands/" + brand + "/models/" + model + "/config";
 };
 
 Ripe.prototype._getPriceURL = function(parts, brand, model, variant, engraving, options) {

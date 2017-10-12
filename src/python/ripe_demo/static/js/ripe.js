@@ -19,6 +19,11 @@ Ripe.prototype.init = function(url, brand, model, variant, frames, options) {
     this.callbacks = {};
     this.ready = false;
 
+    // retrieves the configuration information for this product
+    this.getConfig(function(config) {
+        this.config = config;
+    });
+
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
@@ -223,6 +228,13 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     // valid one and if that's not the case returns the
     // control flow immediately to the caller
     if (!target) {
+        return;
+    }
+
+    if (this.frames === undefined) {
+        this.getFrames(function() {
+            this.bindDrag(target, size, maxSize, options);
+        });
         return;
     }
 
@@ -498,10 +510,8 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             if (!drawFrame) {
                 return;
             }
-            animate === "simple" && console.log("simple");
             drawDrag(target, image, animate, drawCallback);
         };
-        console.log("simpleeee");
         // removes previous load callbacks and
         // adds one for the current frame
         image.removeEventListener("load", loadCallback);
@@ -695,6 +705,26 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     mustPreload && preload(this.options.useChain);
 };
 
+Ripe.prototype.getFrames = function(callback) {
+    if (this.config === undefined) {
+        this.getConfig(function(config) {
+            this.config = config;
+            this.getFrames(callback);
+        });
+    }
+
+    var frames = {};
+    var faces = config["faces"];
+    for (var face in faces) {
+        frames[face] = 1;
+    };
+
+    var sideFrames = config["frames"];
+    frames["side"] = sideFrames;
+    this.frames = frames;
+    callback && callback(frames);
+};
+
 Ripe.prototype.addLoadedCallback = function(callback) {
     this._addCallback("loaded", callback);
 };
@@ -755,6 +785,19 @@ Ripe.prototype.changeFrame = function(frame, animate, step, interval, preventDra
     });
 };
 
+Ripe.prototype.getConfig = function(callback) {
+    var context = this;
+    var configURL = this._getConfigURL();
+    var request = new XMLHttpRequest();
+    request.addEventListener("load", function() {
+        var isValid = this.status === 200;
+        var result = JSON.parse(this.responseText);
+        callback.call(context, isValid ? result : null);
+    });
+    request.open("GET", configURL);
+    request.send();
+};
+
 Ripe.prototype.getPrice = function(callback) {
     var context = this;
     var priceURL = this._getPriceURL();
@@ -806,6 +849,12 @@ Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engr
     engraving = engraving || this.options.engraving;
     var query = this._getQuery(brand, model, variant, frame, parts, engraving, options);
     return this.url + "compose?" + query;
+};
+
+Ripe.prototype._getConfigURL = function(brand, model) {
+    brand = brand || this.brand;
+    model = model || this.model;
+    return this.url + "api/brands/" + brand + "/models/" + model + "/config";
 };
 
 Ripe.prototype._getPriceURL = function(parts, brand, model, variant, engraving, options) {
