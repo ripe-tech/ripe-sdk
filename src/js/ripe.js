@@ -1067,6 +1067,7 @@ Ripe.prototype.exitFullscreen = function() {
     this.dragBind.style.right = null;
     this.resize();
 };
+
 Ripe.prototype.getPrice = function(callback) {
     var context = this;
     var priceURL = this._getPriceURL();
