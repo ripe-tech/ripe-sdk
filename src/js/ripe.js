@@ -496,7 +496,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         // position and the associated operation is the removal of the highlight
         // also if the target is being dragged the highlight should be removed
         if (index === 0 || down === "true") {
-            lowlightPart(target);
+            self.lowlightPart();
             return;
         }
 
@@ -509,60 +509,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
 
         // runs the highlight part operation with the provided format and
         // color values, this will run the proper operation
-        highlightPart(target, part, format, color);
-    };
-
-    var lowlightPart = function(element) {
-        var frontMask = element.querySelector(".front-mask");
-        frontMask.style.display = "none";
-        element && element.classList.remove("highlight");
-    };
-
-    var highlightPart = function(target, part, format, color) {
-        // adds the highlight class to the current target configurator meaning
-        // that the front mask is currently active and showing info
-        target.classList.add("highlight");
-
-        // determines the current position of the configurator so that
-        // the proper mask url may be created and properly loaded
-        var view = target.getAttribute("data-view");
-        var position = target.getAttribute("data-position");
-        position = (view && view !== "side") ? view : position;
-
-        // runs the default operation in the various elements that are
-        // going to be used in the retrieval of the image
-        format = format || self.options.format;
-        color = color || self.options.backgroundColor;
-
-        // constructs the full url of the mask image that is going to be
-        // set for the current highlight operation (to be determined)
-        var url = self.url + "mask";
-        var query = "?model=" + self.model + "&frame=" + position + "&part=" + part;
-        var fullUrl = url + query + "&format=" + format;
-        fullUrl += color ? "&background=" + color : "";
-        fullUrl += size ? "&size=" + String(size) : "";
-
-        var frontMask = target.querySelector(".front-mask");
-        var src = frontMask.getAttribute("src");
-        if (src === fullUrl) {
-            return;
-        }
-
-        var frontMaskLoad = function() {
-            this.classList.add("loaded");
-            this.style.display = "inline-block";
-            self._runCallbacks("highlighted_part", part);
-        };
-        frontMask.removeEventListener("load", frontMaskLoad);
-        frontMask.addEventListener("load", frontMaskLoad);
-        frontMask.addEventListener("error", function() {
-            this.setAttribute("src", "");
-        });
-        frontMask.setAttribute("src", fullUrl);
-
-        var animationId = frontMask.getAttribute("data-animation-id");
-        cancelAnimationFrame(animationId);
-        self._animateProperty(frontMask, "opacity", 0, 0.4, 250);
+        self.highlightPart(part, format, color);
     };
 
     var select = function(canvas, x, y) {
@@ -625,6 +572,70 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     back.addEventListener("dragstart", function(event) {
         event.preventDefault();
     });
+};
+
+Ripe.prototype.highlightPart = function(part, format, color) {
+    if (this.dragBind === undefined) {
+        return;
+    }
+
+    // adds the highlight class to the current target configurator meaning
+    // that the front mask is currently active and showing info
+    this.dragBind.classList.add("highlight");
+
+    // determines the current position of the configurator so that
+    // the proper mask url may be created and properly loaded
+    var view = this.dragBind.getAttribute("data-view");
+    var position = this.dragBind.getAttribute("data-position");
+    position = (view && view !== "side") ? view : position;
+
+    // runs the default operation in the various elements that are
+    // going to be used in the retrieval of the image
+    format = format || this.options.format;
+    color = color || this.options.backgroundColor;
+    var size = this.options.size;
+
+    // constructs the full url of the mask image that is going to be
+    // set for the current highlight operation (to be determined)
+    var url = this.url + "mask";
+    var query = "?model=" + this.model + "&frame=" + position + "&part=" + part;
+    var fullUrl = url + query;
+    fullUrl += format ? "&format=" + format : "";
+    fullUrl += color ? "&background=" + color : "";
+    fullUrl += size ? "&size=" + String(size) : "";
+
+    var frontMask = this.dragBind.querySelector(".front-mask");
+    var src = frontMask.getAttribute("src");
+    if (src === fullUrl) {
+        return;
+    }
+
+    var self = this;
+    var frontMaskLoad = function() {
+        this.classList.add("loaded");
+        this.style.display = "inline-block";
+        self._runCallbacks("highlighted_part", part);
+    };
+    frontMask.removeEventListener("load", frontMaskLoad);
+    frontMask.addEventListener("load", frontMaskLoad);
+    frontMask.addEventListener("error", function() {
+        this.setAttribute("src", "");
+    });
+    frontMask.setAttribute("src", fullUrl);
+
+    var animationId = frontMask.getAttribute("data-animation-id");
+    cancelAnimationFrame(animationId);
+    this._animateProperty(frontMask, "opacity", 0, 0.4, 250);
+};
+
+Ripe.prototype.lowlightPart = function() {
+    if (this.dragBind === undefined) {
+        return;
+    }
+    var frontMask = this.dragBind.querySelector(".front-mask");
+    frontMask.style.display = "none";
+    frontMask.setAttribute("src", "");
+    this.dragBind.classList.remove("highlight");
 };
 
 Ripe.prototype._updateDrag = function(target, position, animate, single, callback, options) {
