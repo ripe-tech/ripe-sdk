@@ -98,31 +98,13 @@ This element can call the following methods:
 
 | Method | Params | Description |
 | --- | --- | --- |
-| `changeFrame` | <ul><li>`frame` *(numeric ([0...n]) or string (named frame)*</li><li>`animate` *[optional] (boolean), animation state. "True" by default*</li><li>`step` *[optional] (numeric ([0...n])), number of frames it iterates on each transition. "1" by default*</li><li>`interval` *[optional] (numeric ([0...n])), the duration, in milliseconds, of each transition between frames. 100ms by default*</li><li>`preventDrag` *[optional] (boolean), it allows to prevent drag actions during an animated change of frames. "True" by default*</li><li> `callback` *[optional] (string), named function expression to use as a callback function*</li></ul> | displays a frame you pass by, with or without animation. If animated, it will gradually display `step` frames from the current one, taking `interval` milliseconds |
+| `changeFrame` | <ul><li>`frame` *(number ([0...n]) or string (named frame)*</li><li>`animate` *[optional] (boolean), animation state. "True" by default*</li><li>`step` *[optional] (number ([0...n])), number of frames it iterates on each transition. "1" by default*</li><li>`interval` *[optional] (number ([0...n])), the duration, in milliseconds, of each transition between frames. 100ms by default*</li><li>`preventDrag` *[optional] (boolean), it allows to prevent drag actions during an animated change of frames. "True" by default*</li><li> `callback` *[optional] (string), named function expression to use as a callback function*</li></ul> | displays a frame you pass by, with or without animation. If animated, it will gradually display `step` frames from the current one, taking `interval` milliseconds |
 | `highlightPart`| <ul><li>`part` *(string), named part*</li></ul> | highlights a part |
-| `lowlightPart` | <ul><li>`part` *(string), named part*</li></ul > | lowlights a part |
-| `selectPart` | <ul><li>`part` *(string), named part*</li></ul > | selects a part |
-| `resize` | | |
-| `fullscreen` | | sets the frame to the maximum size value ( `options.maxSize` ) |
-| `exitFullscreen` | | sets the frame size to the initial value ( `options.size` ) |
-
-<!--
-This element reacts to the following events:
-| Event | Params | Description |
-| --- | --- | --- |
-| `change_frame` | <ul><li>`frame` *(numeric ([0...n]) or string (named frame)*</li><li>`animate` *(boolean), animation state*</li><li>`step` *[optional] (numeric ([0...n])), the duration, in milliseconds, of each transition between frames*</li></ul> | it displays a frame you pass by with or without animation. If animated, it will gradually display from the current frame to the given one, taking `step` milliseconds |
-| `fullscreen` | | sets the frame size to the maximum value |
-| `exit_fullscreen` | | sets the frame size to the initial value |
-| `highlight_part` | <ul><li>`part` *(string), named part*</li></ul> | highlights a part |
-
-Additionally, that same element may trigger the next set of events:
-
-| Event | Params | Description |
-| --- | --- | --- |
-| `selected_part` | <ul><li>`part` *(string), named part*</li></ul> | triggered when a part is selected |
-| `highlighted_part` | <ul><li>`part` *(string), named part*</li></ul> | triggered when a part is highlighted |
-| `loaded` | | triggered when the initial loading finishes |
--->
+| `lowlightPart` | <ul><li>`part` *(string), named part*</li></ul> | lowlights a part |
+| `selectPart` | <ul><li>`part` *(string), named part*</li></ul> | selects a part |
+| `resize` | <ul><li>`size` *(number ([0...n])), new size value in px*</li></ul> | sets the current frame size to a new given value |
+| `fullscreen` | | sets the frame to the maximum allowed size value (`options.maxSize`) |
+| `exitFullscreen` | | sets the frame size to the initial value (`options.size`) |
 
 ### Appendix
 
@@ -139,7 +121,7 @@ Additionally, that same element may trigger the next set of events:
 | `noDefaults` | *boolean* | Defines if the defaults are loaded or not. False (loading) by default |
 | `parts` | *JSON Object* | Defines the product parts. Each key is a part's name built with color and material information. Example: `var parts = { "sole": { "material": "nappa", "color": "white" }, ... }` |
 | `sensitivity` | *string* | Defines the degree of sensitivity of the dragging interaction. 40 by default. |
-| `size` | *number* | Size of an image that is going to be composed. By default is 1000 |
+| `size` | *number* | Size of an image that is going to be composed. By default is 1000px |
 | `target` | *HTML <img> element* | Target image element that will be updated when a customization change happens |
 | `useChain` | *boolean* | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default. |
 
