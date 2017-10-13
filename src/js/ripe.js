@@ -59,7 +59,8 @@ Ripe.prototype.setParts = function(update, noUpdate) {
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
         this.setPart(part[0], part[1], part[2], true);
-    }!noUpdate && this.update();
+    }
+    !noUpdate && this.update();
 };
 
 Ripe.prototype.bind = function(target, frame) {
