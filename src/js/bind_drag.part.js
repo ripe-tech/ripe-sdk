@@ -244,8 +244,8 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         drawFrame = drawFrame === undefined || drawFrame ? true : false;
         var backs = target.querySelector(".backs");
         var area = target.querySelector(".area");
-        var image = backs.querySelector("img[data-frame='" + String(position) + "']")
-        var front = area.querySelector("img[data-frame='" + String(position) + "']")
+        var image = backs.querySelector("img[data-frame='" + String(position) + "']");
+        var front = area.querySelector("img[data-frame='" + String(position) + "']");
         image = image || front;
 
         // builds the url that will be set on the image
