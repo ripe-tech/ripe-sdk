@@ -340,7 +340,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             // preloading class to the target element and
             // prevents drag movements to avoid flickering
             if (pending.length > 0) {
-                target.classList.add("preloading")
+                target.classList.add("preloading");
                 target.dataset.preventDrag = true;
             }
 
