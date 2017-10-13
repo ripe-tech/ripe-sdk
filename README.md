@@ -14,10 +14,9 @@ var ripe = new Ripe(url, brand, model, variant, frames, {
 ```
 
 ## Events
-After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI.
+After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI. Likewise, you may subscribe events of parts being highlighted (`highlighted_part`), selected (`selected_part`) or frames being changed (`changed_frame`).
 
 ### Update
-
 Triggered whenever there is a customization change.
 
 ```javascript
@@ -48,6 +47,32 @@ ripe.addCombinationsCallback(function(value) {
         var color = triplet[2];
         addOption(part, material, color);
     }
+});
+```
+
+### Parts
+Notifies you when any part was highlighted.
+
+```javascript
+ripe.addHighlightedPartCallback(function(part) {
+    part === "lining" && view("top");
+});
+```
+
+Same when some part was selected.
+
+```javascript
+ripe.addSelectedPartCallback(function(part) {
+    part && showMaterialsPicker(part);
+});
+```
+
+### Frame
+Triggered whenever there is a frame change.
+
+```javascript
+ripe.addChangedFrameCallback(function(frame) {
+    frame === "top" && disableButton("top-view-button");
 });
 ```
 
