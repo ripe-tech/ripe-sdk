@@ -142,7 +142,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         if (preventDrag === "true") {
             return;
         }
-        var down = target.dataset.down
+        var down = target.dataset.down;
         target.dataset.mousePosX = event.pageX;
         target.dataset.mousePosY = event.pageY;
         down === "true" && updatePosition(target);
