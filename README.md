@@ -154,6 +154,7 @@ This element can call the following methods:
 
 ## Events list
 | Name | Subscription | Unsubscription |
+| --- | --- | --- |
 | `update` | addUpdateCallback(calback){...} | removeUpdateCallback(calback){...} |
 | `price` | addPriceCallback(calback){...} | removePriceCallback(calback){...} |
 | `combinations` | addCombinationsCallback(calback){...} | removeCombinationsCallback(calback){...} |
