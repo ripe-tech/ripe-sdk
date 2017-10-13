@@ -99,7 +99,7 @@ ripe.setPart(part, material, color);
 ripe.setParts(parts);
 ```
 
-## 5. Getters
+### Getters
 If you need to explicitly retrieve the product's customization information you can use the following methods:
 
 - `getPrice`: to get the product's pricing information.
@@ -113,7 +113,7 @@ ripe.getPrice(function(value) {
 });
 ```
 
-## 6. Product interaction
+## 5. Product interaction
 To provide an interactive product visualization you simply need to pass a `<div>` element to the method `bindDrag`. You may also pass the size of the frames (1000px by default) and the maximum frame size.
 
 ```javascript
