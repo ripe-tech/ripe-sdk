@@ -14,7 +14,8 @@ var ripe = new Ripe(url, brand, model, variant, frames, {
 ```
 
 ## Events
-After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI. Likewise, you may subscribe events of parts being highlighted (`highlighted_part`), selected (`selected_part`) or frames being changed (`changed_frame`).
+After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI. You may also subscribe to events of parts being highlighted (`highlighted_part`), selected (`selected_part`) or frames being changed (`changed_frame`).
+Check all the available events and related subscription/unsubscription method calls [here](#events-list).
 
 ### Update
 Triggered whenever there is a customization change.
@@ -150,6 +151,15 @@ This element can call the following methods:
 | `size` | *number* | Initial size value of a frame image that is going to be composed. By default is 1000px |
 | `target` | *HTML <img> element* | Target image element that will be updated when a customization change happens |
 | `useChain` | *boolean* | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default. |
+
+## Events list
+| Name | Subscription | Unsubscription |
+| `update` | addUpdateCallback(calback){...} | removeUpdateCallback(calback){...} |
+| `price` | addPriceCallback(calback){...} | removePriceCallback(calback){...} |
+| `combinations` | addCombinationsCallback(calback){...} | removeCombinationsCallback(calback){...} |
+| `highlighted_part` | addHighlightedPartCallback(calback){...} | removeHighlightedPartCallback(calback){...} |
+| `selected_part` | addSelectedPartCallback(calback){...} | removeSelectedPartCallback(calback){...} |
+| `changed_frame` | addChangedFrameCallback(calback){...} | removeChangedFrameCallback(calback){...} |
 
 ## License
 
