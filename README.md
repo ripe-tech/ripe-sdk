@@ -60,7 +60,7 @@ ripe.addHighlightedPartCallback(function(part) {
 });
 ```
 
-Same when some part was selected.
+Triggered when some part was selected.
 
 ```javascript
 ripe.addSelectedPartCallback(function(part) {
@@ -120,15 +120,15 @@ To provide an interactive product visualization you simply need to pass a `<div>
 ripe.bindDrag(document.getElementById("product-container"), 640, 1000);
 ```
 
-This element can call the following methods:
+This element supports the following methods:
 
 | Method | Params | Description |
 | --- | --- | --- |
-| `changeFrame` | <ul><li>`frame` *(number ([0...n]) or string (named frame)*</li><li>`animate` *[optional] (boolean), animation state. "True" by default*</li><li>`step` *[optional] (number ([0...n])), number of frames it iterates on each transition. "1" by default*</li><li>`interval` *[optional] (number ([0...n])), the duration, in milliseconds, of each transition between frames. 100ms by default*</li><li>`preventDrag` *[optional] (boolean), it allows to prevent drag actions during an animated change of frames. "True" by default*</li><li> `callback` *[optional] (string), named function expression to use as a callback function*</li></ul> | displays a frame you pass by, with or without animation. If animated, it will gradually display `step` frames from the current one, taking `interval` milliseconds |
+| `changeFrame` | <ul><li>`frame` *(number or string (named frame)*</li><li>`animate` *[optional] (boolean), if the transition should be animated, from the current frame to the frame provided. "True" by default*</li><li>`step` *[optional] (number), number of frames it iterates on each transition. "1" by default*</li><li>`interval` *[optional] (number), the duration, in milliseconds, of each transition between frames. 100ms by default*</li><li>`preventDrag` *[optional] (boolean), if drag actions during an animated change of frames should be ignored. "True" by default*</li><li> `callback` *[optional] (string), function to be called when the transition finishes*</li></ul> | displays a frame you pass by, with or without animation. If animated, it will gradually display `step` frames from the current one, taking `interval` milliseconds |
 | `highlightPart`| <ul><li>`part` *(string), named part*</li></ul> | highlights a part |
 | `lowlightPart` | <ul><li>`part` *(string), named part*</li></ul> | lowlights a part |
 | `selectPart` | <ul><li>`part` *(string), named part*</li></ul> | selects a part |
-| `resize` | <ul><li>`size` *(number ([0...n])), new size value in px*</li></ul> | sets the current frame size to a new given value |
+| `resize` | <ul><li>`size` *(number), new size value in px*</li></ul> | sets the current frame size to a new given value |
 | `fullscreen` | | sets the frame to the maximum allowed size value (`options.maxSize`) |
 | `exitFullscreen` | | sets the frame size to the initial value (`options.size`) |
 
