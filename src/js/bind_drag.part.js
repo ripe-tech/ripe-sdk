@@ -6,9 +6,14 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         return;
     }
 
+    // saves a reference to this object so that it
+    // can be accessed inside private functions
+    var self = this;
+
+
     if (this.frames === undefined) {
         this.getFrames(function() {
-            this.bindDrag(target, size, maxSize, options);
+            self.bindDrag(target, size, maxSize, options);
         });
         return;
     }
@@ -147,10 +152,6 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         target.dataset.mousePosY = event.pageY;
         down === "true" && updatePosition(target);
     });
-
-    // saves a reference to this object so that it
-    // can be accessed inside private functions
-    var self = this;
 
     // updates the position of the element
     // according to the current drag movement
@@ -481,20 +482,22 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
 };
 
 Ripe.prototype.getFrames = function(callback) {
+    var self = this;
     if (this.config === undefined) {
         this.getConfig(function(config) {
-            this.config = config;
-            this.getFrames(callback);
+            self.config = config;
+            self.getFrames(callback);
         });
+        return;
     }
 
     var frames = {};
-    var faces = config["faces"];
+    var faces = this.config["faces"];
     for (var face in faces) {
         frames[face] = 1;
     };
 
-    var sideFrames = config["frames"];
+    var sideFrames = this.config["frames"];
     frames["side"] = sideFrames;
     this.frames = frames;
     callback && callback(frames);

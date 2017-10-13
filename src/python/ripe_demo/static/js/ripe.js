@@ -1,17 +1,17 @@
-var Ripe = function(url, brand, model, variant, frames, options) {
-    this.init(url, brand, model, variant, frames, options);
+var Ripe = function(url, brand, model, variant, options) {
+    this.init(url, brand, model, variant, options);
 };
 
-Ripe.prototype.init = function(url, brand, model, variant, frames, options) {
+Ripe.prototype.init = function(url, brand, model, variant, options) {
     // sets the various values in the instance taking into
     // account the default values
     this.url = url;
     this.brand = brand;
     this.model = model;
     this.variant = variant;
-    this.frames = frames || {};
     this.options = options || {};
-    this.parts = options.parts || {};
+    this.frames = options.frames;
+    this.parts = options.parts;
     this.options.size = this.options.size || 1000;
     this.options.maxSize = this.options.maxSize || 1000;
     this.options.sensitivity = this.options.sensitivity || 40;
@@ -223,7 +223,7 @@ Ripe.prototype._animateProperty = function(element, property, initial, final, du
 var exports = typeof exports === "undefined" ? {} : exports;
 exports.Ripe = Ripe;
 
-Ripe.prototype.bindDrag = function(target) {
+Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     // validates that the provided target element is a
     // valid one and if that's not the case returns the
     // control flow immediately to the caller
@@ -231,17 +231,23 @@ Ripe.prototype.bindDrag = function(target) {
         return;
     }
 
+    // saves a reference to this object so that it
+    // can be accessed inside private functions
+    var self = this;
+
+
     if (this.frames === undefined) {
         this.getFrames(function() {
-            this.bindDrag(target, size, maxSize, options);
+            self.bindDrag(target, size, maxSize, options);
         });
         return;
     }
 
-    // retrieves the the parameters that will be used to
-    // set up the drag element from the options object
-    var size = this.options.size;
-    var sensitivity = this.options.sensitivity;
+    // sets sane defaults for the optional parameters
+    size = size || this.options.size;
+    maxSize = maxSize || this.options.maxSize;
+    options = options || this.options;
+    var sensitivity = options.sensitivity || this.options.sensitivity;
 
     // sets the target element's style so that it supports two canvas
     // on top of each other so that double buffering can be used
@@ -366,15 +372,11 @@ Ripe.prototype.bindDrag = function(target) {
         if (preventDrag === "true") {
             return;
         }
-        var down = target.dataset.down
+        var down = target.dataset.down;
         target.dataset.mousePosX = event.pageX;
         target.dataset.mousePosY = event.pageY;
         down === "true" && updatePosition(target);
     });
-
-    // saves a reference to this object so that it
-    // can be accessed inside private functions
-    var self = this;
 
     // updates the position of the element
     // according to the current drag movement
@@ -468,8 +470,8 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         drawFrame = drawFrame === undefined || drawFrame ? true : false;
         var backs = target.querySelector(".backs");
         var area = target.querySelector(".area");
-        var image = backs.querySelector("img[data-frame='" + String(position) + "']")
-        var front = area.querySelector("img[data-frame='" + String(position) + "']")
+        var image = backs.querySelector("img[data-frame='" + String(position) + "']");
+        var front = area.querySelector("img[data-frame='" + String(position) + "']");
         image = image || front;
 
         // builds the url that will be set on the image
@@ -492,7 +494,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
                 callback && callback();
                 return;
             }
-            var isReady = image.dataset.loaded == "true";
+            var isReady = image.dataset.loaded === "true";
             isReady && drawDrag(target, image, animate, drawCallback);
             return;
         }
@@ -564,7 +566,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             // preloading class to the target element and
             // prevents drag movements to avoid flickering
             if (pending.length > 0) {
-                target.classList.add("preloading")
+                target.classList.add("preloading");
                 target.dataset.preventDrag = true;
             }
 
@@ -705,20 +707,22 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
 };
 
 Ripe.prototype.getFrames = function(callback) {
+    var self = this;
     if (this.config === undefined) {
         this.getConfig(function(config) {
-            this.config = config;
-            this.getFrames(callback);
+            self.config = config;
+            self.getFrames(callback);
         });
+        return;
     }
 
     var frames = {};
-    var faces = config["faces"];
+    var faces = this.config["faces"];
     for (var face in faces) {
         frames[face] = 1;
     };
 
-    var sideFrames = config["frames"];
+    var sideFrames = this.config["frames"];
     frames["side"] = sideFrames;
     this.frames = frames;
     callback && callback(frames);

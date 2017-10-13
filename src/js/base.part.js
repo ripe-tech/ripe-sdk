@@ -1,17 +1,17 @@
-var Ripe = function(url, brand, model, variant, frames, options) {
-    this.init(url, brand, model, variant, frames, options);
+var Ripe = function(url, brand, model, variant, options) {
+    this.init(url, brand, model, variant, options);
 };
 
-Ripe.prototype.init = function(url, brand, model, variant, frames, options) {
+Ripe.prototype.init = function(url, brand, model, variant, options) {
     // sets the various values in the instance taking into
     // account the default values
     this.url = url;
     this.brand = brand;
     this.model = model;
     this.variant = variant;
-    this.frames = frames || {};
     this.options = options || {};
-    this.parts = options.parts || {};
+    this.frames = options.frames;
+    this.parts = options.parts;
     this.options.size = this.options.size || 1000;
     this.options.maxSize = this.options.maxSize || 1000;
     this.options.sensitivity = this.options.sensitivity || 40;

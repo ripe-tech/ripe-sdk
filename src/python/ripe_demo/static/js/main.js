@@ -1,6 +1,6 @@
 window.onload = function() {
     var element = document.getElementById("frames");
-    var url = element.dataset.url || "https://demo.platforme.com/";
+    var url = element.dataset.url || "http://localhost:8181/";
     var brand = element.dataset.brand || "swear";
     var model = element.dataset.model || "vyner";
     var variant = element.dataset.variant || "";
@@ -10,12 +10,8 @@ window.onload = function() {
     var parts = [];
     var partsMap = {};
     var index = 0;
-    var frames = {
-        side: 24,
-        top: 1
-    };
 
-    var ripe = new Ripe(url, brand, model, variant, frames, {
+    var ripe = new Ripe(url, brand, model, variant, {
         currency: currency,
         country: country,
         size: 620
