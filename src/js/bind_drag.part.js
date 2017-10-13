@@ -268,7 +268,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
                 callback && callback();
                 return;
             }
-            var isReady = image.dataset.loaded == "true";
+            var isReady = image.dataset.loaded === "true";
             isReady && drawDrag(target, image, animate, drawCallback);
             return;
         }
