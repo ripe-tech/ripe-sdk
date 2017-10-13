@@ -2,7 +2,7 @@
 
 The public SDK for [RIPE Core](https://github.com/ripe-tech/ripe-core).
 
-## Initialization
+## 1. Initialization
 As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product.
 You may also pass an [`options`](#options) map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
@@ -13,11 +13,11 @@ var ripe = new Ripe(url, brand, model, variant, frames, {
 });
 ```
 
-## Events
+## 2. Events
 After initializing the ripe library you should subscribe to the available events (`update`, `price` and `combinations`) so you can easily respond and update your UI. You may also subscribe to events of parts being highlighted (`highlighted_part`), selected (`selected_part`) or frames being changed (`changed_frame`).
 Check all the available events and related subscription/unsubscription method calls [here](#events-list).
 
-### Update
+### 2.1. Update
 Triggered whenever there is a customization change.
 
 ```javascript
@@ -26,7 +26,7 @@ ripe.addUpdateCallback(function() {
 });
 ```
 
-### Price
+### 2.2. Price
 Notifies you when the price of the customization changes.
 
 ```javascript
@@ -36,7 +36,7 @@ ripe.addPriceCallback(function(value) {
 });
 ```
 
-### Combinations
+### 2.3. Combinations
 Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
 
 ```javascript
@@ -51,7 +51,7 @@ ripe.addCombinationsCallback(function(value) {
 });
 ```
 
-### Parts
+### 2.4. Parts
 Notifies you when any part was highlighted.
 
 ```javascript
@@ -68,7 +68,7 @@ ripe.addSelectedPartCallback(function(part) {
 });
 ```
 
-### Frame
+### 2.5. Frames
 Triggered whenever there is a frame change.
 
 ```javascript
@@ -77,7 +77,7 @@ ripe.addChangedFrameCallback(function(frame) {
 });
 ```
 
-## Product visualization
+## 3. Product visualization
 Usually the product has 24 lateral frames, plus a top and bottom view.
 To present a frame of the product you can use the `bindFrame` function to automatically update an `<img>` element when there is a customization change.
 After the initial binding of the frames you should call the `load` function for the initial update.
@@ -90,7 +90,7 @@ ripe.bindFrame(document.getElementById("frame-top"), "top");
 ripe.load();
 ```
 
-## Product customization
+## 4. Product customization
 You can change a part of your product by using the `setPart` function.
 Alternatively, all the parts can be changed at once with `setParts`.
 
@@ -99,7 +99,7 @@ ripe.setPart(part, material, color);
 ripe.setParts(parts);
 ```
 
-## Getters
+## 5. Getters
 If you need to explicitly retrieve the product's customization information you can use the following methods:
 
 - `getPrice`: to get the product's pricing information.
@@ -113,7 +113,7 @@ ripe.getPrice(function(value) {
 });
 ```
 
-## Product interaction
+## 6. Product interaction
 To provide an interactive product visualization you simply need to pass a `<div>` element to the method `bindDrag`. You may also pass the size of the frames (1000px by default) and the maximum frame size.
 
 ```javascript
@@ -132,9 +132,9 @@ This element can call the following methods:
 | `fullscreen` | | sets the frame to the maximum allowed size value (`options.maxSize`) |
 | `exitFullscreen` | | sets the frame size to the initial value (`options.size`) |
 
-### Appendix
+## Appendix
 
-## Options
+### Options
 | Name | Type | Description |
 | --- | --- | --- |
 | `backgroundColor` | *string* | RGB format color value of the background, with no need to pass the "#" signal. No background by default. Example: "cccccc" |
@@ -152,7 +152,7 @@ This element can call the following methods:
 | `target` | *HTML <img> element* | Target image element that will be updated when a customization change happens |
 | `useChain` | *boolean* | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default. |
 
-## Events list
+### Events list
 | Name | Subscription | Unsubscription |
 | --- | --- | --- |
 | `update` | `addUpdateCallback(calback){...}` | `removeUpdateCallback(calback){...}` |
