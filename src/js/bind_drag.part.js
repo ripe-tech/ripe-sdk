@@ -458,7 +458,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     for (var part in this.parts) {
         var partValue = this.parts[part];
         var material = partValue["material"];
-        material !== undefined && this.partsList.push(part)
+        material !== undefined && this.partsList.push(part);
     }
     this.partsList.sort();
 
