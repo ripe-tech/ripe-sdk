@@ -257,6 +257,8 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     frontMask.style.width = size + "px";
     frontMask.style.position = "relative";
     frontMask.style.pointerEvents = "none";
+    frontMask.style.userSelect = "none";
+    frontMask.style.msUserSelect = "none";
     frontMask.style.zIndex = 2;
     frontMask.style.opacity = 0.4;
     frontMask.width = size;
@@ -375,6 +377,31 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         down === "true" && updatePosition(target);
     });
 
+    // ignores mouse events on the front mask, this is done for
+    // browsers that don't support pointer events (like IE 10)
+    var ignoreEvent = function(event) {
+        var originalDisplay = this.style.display;
+        this.style.display = "none";
+        var targetElement = document.elementFromPoint(event.clientX, event.clientY);
+        this.style.display = originalDisplay;
+
+        var newEvent = document.createEvent("MouseEvent");
+        newEvent.initMouseEvent(
+            event.type, event.bubbles, event.cancelable,
+            event.view, event.detail, event.screenX,
+            event.screenY, event.clientX, event.clientY,
+            event.ctrlKey, event.altKey, event.shiftKey,
+            event.metaKey, event.button, event.relatedTarget
+        );
+        targetElement.dispatchEvent(newEvent);
+        event.preventDefault();
+        event.stopPropagation();
+    };
+    frontMask.addEventListener("mousedown", ignoreEvent);
+    frontMask.addEventListener("mouseup", ignoreEvent);
+    frontMask.addEventListener("mouseleave", ignoreEvent);
+    frontMask.addEventListener("mousemove", ignoreEvent);
+
     // saves a reference to this object so that it
     // can be accessed inside private functions
     var self = this;
@@ -449,14 +476,12 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         self._updateDrag(element, next, animate, false, function() {
             // if a crossfade animation finishes
             // then stops ignoring drag movements
-            if (animate === "cross") {
-                target.dataset.preventDrag = false;
-            }
+            animate === "cross" && this.dragBind.setAttribute("data-prevent-drag", false);
         }, options);
     };
 
     var _fixEvent = function(event) {
-        if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
+        if (event.offsetX !== undefined) {
             return event;
         }
 
@@ -467,7 +492,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         return event;
     };
 
-    var canvasClick = function(element) {
+    var canvasClick = function(element, event) {
         var move = element.classList.contains("move");
         if (move) {
             return;
@@ -537,7 +562,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         canvasClick(this, event);
     });
 
-    area.addEventListener("mousemove", function() {
+    area.addEventListener("mousemove", function(event) {
         var element = this;
         var drag = element.classList.contains("drag");
         if (drag) {
@@ -557,7 +582,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         canvasClick(this, event);
     });
 
-    back.addEventListener("mousemove", function() {
+    back.addEventListener("mousemove", function(event) {
         var element = this;
         var drag = element.classList.contains("drag");
         if (drag) {
@@ -814,7 +839,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             // prevents drag movements to avoid flickering
             if (pending.length > 0) {
                 target.classList.add("preloading")
-                target.dataset.preventDrag = true;
+                self.dragBind.setAttribute("data-prevent-drag", true);
             }
 
             // if there are no images preloading and no
@@ -823,7 +848,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             // allowed again and the loaded event is triggered
             else if (work.length === 0) {
                 target.classList.remove("preloading");
-                target.dataset.preventDrag = false;
+                self.dragBind.setAttribute("data-prevent-drag", false);
                 self._runCallbacks("loaded");
             }
         };
@@ -873,7 +898,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         // starts the render process after a timeout
         work.length > 0 && target.classList.add("preloading");
         if (work.length > 0) {
-            target.dataset.preventDrag = true;
+            self.dragBind.setAttribute("data-prevent-drag", true);
             setTimeout(function() {
                 render();
             }, 250);
@@ -1007,7 +1032,9 @@ Ripe.prototype.changeFrame = function(frame, animate, step, interval, preventDra
         var stepFrame = index % sideFrames;
         steps.push(stepFrame);
     }
-    steps.includes(frame) === false && steps.push(frame);
+
+    var lastStep = steps[steps.length - 1];
+    lastStep !== frame && steps.push(frame);
 
     preventDrag = preventDrag === false ? false : true;
     this.dragBind.setAttribute("data-prevent-drag", preventDrag);
