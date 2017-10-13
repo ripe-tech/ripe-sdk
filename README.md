@@ -4,7 +4,7 @@ The public SDK for [RIPE Core](https://github.com/ripe-tech/ripe-core).
 
 ## Initialization
 As a starting point, you need to provide the base `url` of the server where the product is configured, as well as the `brand` and `model` of your customizable product.
-You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
+You may also pass an [`options`](#options) map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
 ```javascript
 var ripe = new Ripe(url, brand, model, variant, frames, {
@@ -155,12 +155,12 @@ This element can call the following methods:
 ## Events list
 | Name | Subscription | Unsubscription |
 | --- | --- | --- |
-| `update` | addUpdateCallback(calback){...} | removeUpdateCallback(calback){...} |
-| `price` | addPriceCallback(calback){...} | removePriceCallback(calback){...} |
-| `combinations` | addCombinationsCallback(calback){...} | removeCombinationsCallback(calback){...} |
-| `highlighted_part` | addHighlightedPartCallback(calback){...} | removeHighlightedPartCallback(calback){...} |
-| `selected_part` | addSelectedPartCallback(calback){...} | removeSelectedPartCallback(calback){...} |
-| `changed_frame` | addChangedFrameCallback(calback){...} | removeChangedFrameCallback(calback){...} |
+| `update` | `addUpdateCallback(calback){...}` | `removeUpdateCallback(calback){...}` |
+| `price` | `addPriceCallback(calback){...}` | `removePriceCallback(calback){...}` |
+| `combinations` | `addCombinationsCallback(calback){...}` | `removeCombinationsCallback(calback){...}` |
+| `highlighted_part` | `addHighlightedPartCallback(calback){...}` | `removeHighlightedPartCallback(calback){...}` |
+| `selected_part` | `addSelectedPartCallback(calback){...}` | `removeSelectedPartCallback(calback){...}` |
+| `changed_frame` | `addChangedFrameCallback(calback){...}` | `removeChangedFrameCallback(calback){...}` |
 
 ## License
 
