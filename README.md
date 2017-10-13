@@ -14,7 +14,7 @@ var ripe = new Ripe(url, brand, model, variant, frames, {
 ```
 
 ## Events
-After initializing the ripe library you should subscribe to the available events (`update`, `price`, `parts` and `combinations`) so you can easily respond and update your UI. You may also subscribe to events of parts being highlighted (`highlighted_part`), selected (`selected_part`) or frames being changed (`changed_frame`).
+After initializing the ripe library you should subscribe to the available events (`update`, `price` and `combinations`) so you can easily respond and update your UI. You may also subscribe to events of parts being highlighted (`highlighted_part`), selected (`selected_part`) or frames being changed (`changed_frame`).
 Check all the available events and related subscription/unsubscription method calls [here](#events-list).
 
 ### Update
