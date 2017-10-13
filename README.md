@@ -17,7 +17,7 @@ var ripe = new Ripe(url, brand, model, variant, frames, {
 After initializing the ripe library you should subscribe to the available events (`update`, `price` and `combinations`) so you can easily respond and update your UI. You may also subscribe to events of parts being highlighted (`highlighted_part`), selected (`selected_part`) or frames being changed (`changed_frame`).
 Check all the available events and related subscription/unsubscription method calls [here](#events-list).
 
-### 2.1. Update
+### Update
 Triggered whenever there is a customization change.
 
 ```javascript
@@ -26,7 +26,7 @@ ripe.addUpdateCallback(function() {
 });
 ```
 
-### 2.2. Price
+### Price
 Notifies you when the price of the customization changes.
 
 ```javascript
@@ -36,7 +36,7 @@ ripe.addPriceCallback(function(value) {
 });
 ```
 
-### 2.3. Combinations
+### Combinations
 Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
 
 ```javascript
@@ -51,7 +51,7 @@ ripe.addCombinationsCallback(function(value) {
 });
 ```
 
-### 2.4. Parts
+### Parts
 Notifies you when any part was highlighted.
 
 ```javascript
@@ -68,7 +68,7 @@ ripe.addSelectedPartCallback(function(part) {
 });
 ```
 
-### 2.5. Frames
+### Frames
 Triggered whenever there is a frame change.
 
 ```javascript
