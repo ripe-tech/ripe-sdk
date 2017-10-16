@@ -242,8 +242,6 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     // creates the area canvas and adds it to the target
     var area = document.createElement("canvas");
     area.className = "area";
-    area.width = size;
-    area.height = size;
     area.style.display = "inline-block";
     var context = area.getContext("2d");
     context.globalCompositeOperation = "multiply";
@@ -254,24 +252,17 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     var frontMask = document.createElement("img");
     frontMask.className = "front-mask";
     frontMask.style.display = "none";
-    frontMask.style.width = size + "px";
     frontMask.style.position = "relative";
     frontMask.style.pointerEvents = "none";
     frontMask.style.zIndex = 2;
     frontMask.style.opacity = 0.4;
-    frontMask.width = size;
-    frontMask.height = size;
-    frontMask.style.marginLeft = "-" + String(size) + "px";
     target.appendChild(frontMask);
 
     // creates the back canvas and adds it to the target,
     // placing it on top of the area canvas
     var back = document.createElement("canvas");
     back.className = "back";
-    back.width = size;
-    back.height = size;
     back.style.display = "inline-block";
-    back.style.marginLeft = "-" + String(size) + "px";
     var backContext = back.getContext("2d");
     backContext.globalCompositeOperation = "multiply";
     target.appendChild(back);
@@ -299,8 +290,6 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     // mask images to be used during highlight and select operation
     var mask = document.createElement("canvas");
     mask.className = "mask";
-    mask.width = size;
-    mask.height = size;
     mask.style.display = "none";
     target.appendChild(mask);
     var masks = document.createElement("div");
@@ -324,6 +313,10 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     // it can be updated when changes occur
     this.dragBind = target;
     target.setAttribute("data-position", 0);
+
+    // after set the dragBind,
+    // the size of area, frontMask, back and mask is set too
+    this.resize(size);
 
     // binds the mousedown event on the target element
     // to prepare the element for drag movements
@@ -1067,6 +1060,7 @@ Ripe.prototype.exitFullscreen = function() {
     this.dragBind.style.right = null;
     this.resize();
 };
+
 Ripe.prototype.getPrice = function(callback) {
     var context = this;
     var priceURL = this._getPriceURL();
