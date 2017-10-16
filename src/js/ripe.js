@@ -1,24 +1,29 @@
-var Ripe = function(url, brand, model, variant, frames, options) {
-    this.init(url, brand, model, variant, frames, options);
+var Ripe = function(url, brand, model, variant, options) {
+    this.init(url, brand, model, variant, options);
 };
 
-Ripe.prototype.init = function(url, brand, model, variant, frames, options) {
+Ripe.prototype.init = function(url, brand, model, variant, options) {
     // sets the various values in the instance taking into
     // account the default values
     this.url = url;
     this.brand = brand;
     this.model = model;
     this.variant = variant;
-    this.frames = frames || {};
     this.options = options || {};
     this.options.backgroundColor = options.backgroundColor ? options.backgroundColor.replace("#", "") : "";
     this.parts = options.parts || {};
+    this.frames = options.frames;
     this.options.size = this.options.size || 1000;
     this.options.maxSize = this.options.maxSize || 1000;
     this.options.sensitivity = this.options.sensitivity || 40;
     this.frameBinds = {};
     this.callbacks = {};
     this.ready = false;
+
+    // retrieves the configuration information for this product
+    this.getConfig(function(config) {
+        this.config = config;
+    });
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
@@ -227,10 +232,22 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         return;
     }
 
+    // saves a reference to this object so that it
+    // can be accessed inside private functions
+    var self = this;
+
+
+    if (this.frames === undefined) {
+        this.getFrames(function() {
+            self.bindDrag(target, size, maxSize, options);
+        });
+        return;
+    }
+
     // sets sane defaults for the optional parameters
     size = size || this.options.size;
     maxSize = maxSize || this.options.maxSize;
-    options = options || this.options
+    options = options || this.options;
     var sensitivity = options.sensitivity || this.options.sensitivity;
 
     // sets the target element's style so that it supports two canvas
@@ -367,10 +384,6 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         target.setAttribute("data-mouse-pos-y", event.pageY);
         down === "true" && updatePosition(target);
     });
-
-    // saves a reference to this object so that it
-    // can be accessed inside private functions
-    var self = this;
 
     // updates the position of the element
     // according to the current drag movement
@@ -795,7 +808,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             // preloading class to the target element and
             // prevents drag movements to avoid flickering
             if (pending.length > 0) {
-                target.classList.add("preloading")
+                target.classList.add("preloading");
                 target.dataset.preventDrag = true;
             }
 
@@ -938,6 +951,28 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     mustPreload && preload(this.options.useChain);
 };
 
+Ripe.prototype.getFrames = function(callback) {
+    var self = this;
+    if (this.config === undefined) {
+        this.getConfig(function(config) {
+            self.config = config;
+            self.getFrames(callback);
+        });
+        return;
+    }
+
+    var frames = {};
+    var faces = this.config["faces"];
+    for (var face in faces) {
+        frames[face] = 1;
+    };
+
+    var sideFrames = this.config["frames"];
+    frames["side"] = sideFrames;
+    this.frames = frames;
+    callback && callback(frames);
+};
+
 Ripe.prototype.addLoadedCallback = function(callback) {
     this._addCallback("loaded", callback);
 };
@@ -1061,6 +1096,19 @@ Ripe.prototype.exitFullscreen = function() {
     this.resize();
 };
 
+Ripe.prototype.getConfig = function(callback) {
+    var context = this;
+    var configURL = this._getConfigURL();
+    var request = new XMLHttpRequest();
+    request.addEventListener("load", function() {
+        var isValid = this.status === 200;
+        var result = JSON.parse(this.responseText);
+        callback.call(context, isValid ? result : null);
+    });
+    request.open("GET", configURL);
+    request.send();
+};
+
 Ripe.prototype.getPrice = function(callback) {
     var context = this;
     var priceURL = this._getPriceURL();
@@ -1112,6 +1160,12 @@ Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engr
     engraving = engraving || this.options.engraving;
     var query = this._getQuery(brand, model, variant, frame, parts, engraving, options);
     return this.url + "compose?" + query;
+};
+
+Ripe.prototype._getConfigURL = function(brand, model) {
+    brand = brand || this.brand;
+    model = model || this.model;
+    return this.url + "api/brands/" + brand + "/models/" + model + "/config";
 };
 
 Ripe.prototype._getPriceURL = function(parts, brand, model, variant, engraving, options) {

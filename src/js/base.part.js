@@ -1,24 +1,29 @@
-var Ripe = function(url, brand, model, variant, frames, options) {
-    this.init(url, brand, model, variant, frames, options);
+var Ripe = function(url, brand, model, variant, options) {
+    this.init(url, brand, model, variant, options);
 };
 
-Ripe.prototype.init = function(url, brand, model, variant, frames, options) {
+Ripe.prototype.init = function(url, brand, model, variant, options) {
     // sets the various values in the instance taking into
     // account the default values
     this.url = url;
     this.brand = brand;
     this.model = model;
     this.variant = variant;
-    this.frames = frames || {};
     this.options = options || {};
     this.options.backgroundColor = options.backgroundColor ? options.backgroundColor.replace("#", "") : "";
     this.parts = options.parts || {};
+    this.frames = options.frames;
     this.options.size = this.options.size || 1000;
     this.options.maxSize = this.options.maxSize || 1000;
     this.options.sensitivity = this.options.sensitivity || 40;
     this.frameBinds = {};
     this.callbacks = {};
     this.ready = false;
+
+    // retrieves the configuration information for this product
+    this.getConfig(function(config) {
+        this.config = config;
+    });
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated

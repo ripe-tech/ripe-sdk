@@ -6,10 +6,22 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         return;
     }
 
+    // saves a reference to this object so that it
+    // can be accessed inside private functions
+    var self = this;
+
+
+    if (this.frames === undefined) {
+        this.getFrames(function() {
+            self.bindDrag(target, size, maxSize, options);
+        });
+        return;
+    }
+
     // sets sane defaults for the optional parameters
     size = size || this.options.size;
     maxSize = maxSize || this.options.maxSize;
-    options = options || this.options
+    options = options || this.options;
     var sensitivity = options.sensitivity || this.options.sensitivity;
 
     // sets the target element's style so that it supports two canvas
@@ -146,10 +158,6 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         target.setAttribute("data-mouse-pos-y", event.pageY);
         down === "true" && updatePosition(target);
     });
-
-    // saves a reference to this object so that it
-    // can be accessed inside private functions
-    var self = this;
 
     // updates the position of the element
     // according to the current drag movement
@@ -574,7 +582,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
             // preloading class to the target element and
             // prevents drag movements to avoid flickering
             if (pending.length > 0) {
-                target.classList.add("preloading")
+                target.classList.add("preloading");
                 target.dataset.preventDrag = true;
             }
 
@@ -715,6 +723,28 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     var mustPreload = !single && (changed || !preloaded);
     single && target.classList.remove("preload");
     mustPreload && preload(this.options.useChain);
+};
+
+Ripe.prototype.getFrames = function(callback) {
+    var self = this;
+    if (this.config === undefined) {
+        this.getConfig(function(config) {
+            self.config = config;
+            self.getFrames(callback);
+        });
+        return;
+    }
+
+    var frames = {};
+    var faces = this.config["faces"];
+    for (var face in faces) {
+        frames[face] = 1;
+    };
+
+    var sideFrames = this.config["frames"];
+    frames["side"] = sideFrames;
+    this.frames = frames;
+    callback && callback(frames);
 };
 
 Ripe.prototype.addLoadedCallback = function(callback) {
