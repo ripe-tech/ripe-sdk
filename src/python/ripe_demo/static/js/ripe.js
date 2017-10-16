@@ -718,7 +718,8 @@ Ripe.prototype.getFrames = function(callback) {
 
     var frames = {};
     var faces = this.config["faces"];
-    for (var face in faces) {
+    for (var index = 0; index < faces.length; index++) {
+        var face = faces[index];
         frames[face] = 1;
     };
 
