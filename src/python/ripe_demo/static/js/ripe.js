@@ -162,7 +162,7 @@ Ripe.prototype._addCallback = function(name, callback) {
 
 Ripe.prototype._removeCallback = function(name, callback) {
     var callbacks = this.callbacks[name] || [];
-    var index = array.indexOf(callback);
+    var index = callbacks.indexOf(callback);
     if (index === -1) {
         return;
     }
