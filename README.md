@@ -103,9 +103,11 @@ ripe.setParts(parts);
 If you need to explicitly retrieve the product's customization information you can use the following methods:
 
 - `getPrice`: to get the product's pricing information.
-- `getCombinations`: to get all the the available customization options for products.
+- `getCombinations`: to get all the customization options for products without any restrictions applied.
 - `getDefaults`: to get the product's default customization.
+- `getValidOptions`: to get the product's allowed choices, taking into account the product's restrictions;
 
+Next, the example of how to get the price of the customizable product.
 ```javascript
 ripe.getPrice(function(value) {
     var price = document.getElementById("price");
