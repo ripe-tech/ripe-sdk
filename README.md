@@ -7,7 +7,7 @@ As a starting point, you need to provide the base `url` of the server where the 
 You may also pass an `options` map to override parameters like `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
 ```javascript
-var ripe = new Ripe(url, brand, model, variant, parts, {
+var ripe = new Ripe(url, brand, model, variant, frames, {
     currency: currency,
     country: country
 });
@@ -98,7 +98,7 @@ This element reacts to the following events:
 
 | Event | Params | Description |
 | --- | --- | --- |
-| `change_frame` | <ul><li>`frame` *(numeric ([0...n]) or string (named frame)*</li><li>`animated` *(boolean), animation state*</li><li>`step` *[optional] (numeric ([0...n])), the duration, in milliseconds, of each transition between frames*</li></ul> | it displays a frame you pass by with or without animation. If animated, it will gradually display from the current frame to the given one, taking `step` milliseconds |
+| `change_frame` | <ul><li>`frame` *(numeric ([0...n]) or string (named frame)*</li><li>`animate` *(boolean), animation state*</li><li>`step` *[optional] (numeric ([0...n])), the duration, in milliseconds, of each transition between frames*</li></ul> | it displays a frame you pass by with or without animation. If animated, it will gradually display from the current frame to the given one, taking `step` milliseconds |
 | `fullscreen` | | sets the frame size to the maximum value |
 | `exit_fullscreen` | | sets the frame size to the initial value |
 | `highlight_part` | <ul><li>`part` *(string), named part*</li></ul> | highlights a part |

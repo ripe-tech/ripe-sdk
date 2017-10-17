@@ -14,8 +14,11 @@
             <input type="text" id="message" placeholder="New message" />
         </div>
     {% endif %}
-    {% block canvas %}
-        <div id="canvas" class="canvas" data-url="{{ url|default('', True) }}"
+    {% block drag %}
+        <div id="product-drag" class="product-drag"></div>
+    {% endblock %}
+    {% block frames %}
+        <div id="frames" class="frames" data-url="{{ url|default('', True) }}"
              data-model="{{ model|default('', True) }}">
             <img id="frame-0" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
             <img id="frame-6" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
