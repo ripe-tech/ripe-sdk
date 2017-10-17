@@ -452,6 +452,9 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
             }
         }, options);
     };
+
+    // draws the drag element for the first time
+    self._updateDrag(target);
 };
 
 Ripe.prototype._updateDrag = function(target, position, animate, single, callback, options) {
