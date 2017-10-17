@@ -150,8 +150,8 @@ Ripe.prototype.getOptions = function(callback) {
             if (materialRestrictions === true) {
                 continue;
             } else if (materialRestrictions) {
-                for (var index = 0; index < materialRestrictions.length; index++) {
-                    var restriction = materialRestrictions[index];
+                for (var _index = 0; _index < materialRestrictions.length; _index++) {
+                    var restriction = materialRestrictions[_index];
                     if (keysList.indexOf(restriction) > -1) {
                         continue;
                     }
@@ -169,8 +169,8 @@ Ripe.prototype.getOptions = function(callback) {
                 if (colorRestrictions === true) {
                     return false;
                 } else if (colorRestrictions) {
-                    for (var index = 0; index < colorRestrictions.length; index++) {
-                        var restriction = colorRestrictions[index];
+                    for (var _index = 0; _index < colorRestrictions.length; _index++) {
+                        var restriction = colorRestrictions[_index];
                         if (keysList.indexOf(restriction) > -1) {
                             return;
                         }
@@ -190,10 +190,13 @@ Ripe.prototype.getOptions = function(callback) {
 
                 // checks if any of the combination's
                 // restrictions are active
-                var invalidKeys = keyRestrictions.map(keyRestrictions, function(restriction) {
-                    return keysList.indexOf(restriction) < 0 ? null : restriction;
-                });
-                return invalidKeys.length === 0;
+                for(var _index = 0; _index < keyRestrictions.length; _index++) {
+                    var restriction = keyRestrictions[_index];
+                    if (keysList.indexOf(restriction) > -1) {
+                        return false;
+                    }
+                }
+                return true;
             });
 
             // updates the valid colors
@@ -1012,26 +1015,24 @@ Ripe.prototype.getRestrictions = function(callback) {
         // be treated as such (true value set in the map value)
         if (restriction.length === 1) {
             var _restriction = restriction[0];
-            var key = _getTupleKey(_restriction.part, _restriction.material, _restriction.color);
+            var key = this._getTupleKey(_restriction.part, _restriction.material, _restriction.color);
             restrictions[key] = true;
-            return;
+            continue;
         }
 
         // iterates over all the items in the restriction to correctly
         // populate the restrictions map with the restrictive values
-        for (var index = 0; index < restriction.length; index++) {
-            var item = restriction[index];
-
+        for (var _index = 0; _index < restriction.length; _index++) {
+            var item = restriction[_index];
             var material = item.material;
             var color = item.color;
-            var materialColorKey = _getTupleKey(null, material, color);
+            var materialColorKey = this._getTupleKey(null, material, color);
 
-            for (var _index = 0; _index < restriction.length; _index++) {
-                var _item = restriction[_index];
-
+            for (var __index = 0; __index < restriction.length; __index++) {
+                var _item = restriction[__index];
                 var _material = _item.material;
                 var _color = _item.color;
-                var _key = _getTupleKey(null, _material, _color);
+                var _key = this._getTupleKey(null, _material, _color);
 
                 if (_key === materialColorKey) {
                     continue;
