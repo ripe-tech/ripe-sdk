@@ -7,7 +7,7 @@
            {% endif %}
         <li id="get-price">Get Price</li>
         <li id="get-combinations">Get Combinations</li>
-        <li id="toggle-fullscreen">Toggle Fullscreen</li>
+        <li id="toggle-fullscreen" style="position:relative;z-index:10" >Toggle Fullscreen</li>
     </ul>
     <div id="price" class="price"></div>
     {% if message %}

@@ -13,7 +13,8 @@ window.onload = function() {
     var ripe = new Ripe(url, brand, model, variant, {
         currency: currency,
         country: country,
-        size: 620
+        size: 620,
+        useChain: true
     });
 
     var randomize = function() {
@@ -48,9 +49,6 @@ window.onload = function() {
     ripe.bindFrame(document.getElementById("frame-6"), "6");
     ripe.bindFrame(document.getElementById("frame-top"), "top");
 
-    var dragElement = document.getElementById("product-drag");
-    ripe.bindDrag(dragElement);
-
     var firstLoad = false;
     ripe.addLoadedCallback(function() {
         if (firstLoad) {
@@ -62,6 +60,9 @@ window.onload = function() {
             ripe.changeFrame(5);
         }, 500);
     });
+
+    var dragElement = document.getElementById("product-drag");
+    ripe.bindDrag(dragElement);
 
     ripe.addPriceCallback(function(value) {
         var price = document.getElementById("price");
@@ -108,7 +109,30 @@ window.onload = function() {
         });
     });
 
+    var _setFullscreenDisplay = function(fullscreen) {
+        var operations = document.getElementsByClassName("operations")[0];
+        var price = document.getElementById("price");
+        var footer = document.getElementById("footer");
+        var frames = document.getElementById("frames");
+        price.style.display = fullscreen ? "none" : "block";
+        footer.style.display = fullscreen ? "none" : "block";
+        frames.style.display = fullscreen ? "none" : "block";
+        var _element;
+
+        for (var i = 0, j = operations.childElementCount; i < j; i++) {
+            _element = operations.children[i];
+            _element.style.display = (_element.id !== "toggle-fullscreen" && fullscreen) ? "none" : "block";
+        }
+    };
+
     toggleFullscreen && toggleFullscreen.addEventListener("click", function() {
-        this.classList.toggle("fullscreen") ? ripe.fullscreen() : ripe.exitFullscreen();
+        if (this.classList.toggle("fullscreen")) {
+            ripe.fullscreen()
+            _setFullscreenDisplay(true);
+        } else {
+            ripe.exitFullscreen();
+            _setFullscreenDisplay(false);
+        }
     });
+
 };

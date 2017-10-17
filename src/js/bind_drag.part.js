@@ -407,7 +407,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
     });
 };
 
-Ripe.prototype._updateDrag = function(target, position, animate, single, callback, options) {
+Ripe.prototype._updateDrag = function(target, position, animate, single, callback) {
     // if product's combinations and parts haven't
     // been loaded yet then returns immediately
     var hasCombinations = this.combinations && Object.keys(this.combinations).length !== 0;
@@ -703,8 +703,11 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     // if the parts and the position haven't changed
     // since the last frame load then ignores the
     // load request and returns immediately
+    position = position === undefined || position === null ? target.getAttribute("data-position") : position;
+    var currentSize = target.getAttribute("data-current-size");
     var previous = target.getAttribute("data-unique");
-    var unique = signature + "&position=" + String(position) + "&single=" + String(single);
+    var unique = signature + "&position=" + String(position) + "&single=" + String(single) + "&size=" + String(
+        currentSize);
     if (previous === unique) {
         callback && callback();
         return false;
@@ -843,7 +846,8 @@ Ripe.prototype.resize = function(size) {
     back.style.marginLeft = "-" + String(size) + "px";
     mask.width = size;
     mask.height = size;
-    this._updateDrag(this.dragBind);
+    this.dragBind.setAttribute("data-current-size", size);
+    this._updateDrag(this.dragBind, null, false, true);
 };
 
 Ripe.prototype.fullscreen = function() {
