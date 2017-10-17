@@ -481,29 +481,6 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     mustPreload && preload(this.options.useChain);
 };
 
-Ripe.prototype.getFrames = function(callback) {
-    var self = this;
-    if (this.config === undefined) {
-        this.getConfig(function(config) {
-            self.config = config;
-            self.getFrames(callback);
-        });
-        return;
-    }
-
-    var frames = {};
-    var faces = this.config["faces"];
-    for (var index = 0; index < faces.length; index++) {
-        var face = faces[index];
-        frames[face] = 1;
-    };
-
-    var sideFrames = this.config["frames"];
-    frames["side"] = sideFrames;
-    this.frames = frames;
-    callback && callback(frames);
-};
-
 Ripe.prototype.addLoadedCallback = function(callback) {
     this._addCallback("loaded", callback);
 };

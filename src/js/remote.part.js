@@ -50,6 +50,95 @@ Ripe.prototype.getCombinations = function(callback) {
     request.send();
 };
 
+Ripe.prototype.getFrames = function(callback) {
+    var self = this;
+    if (this.config === undefined) {
+        this.getConfig(function(config) {
+            self.config = config;
+            self.getFrames(callback);
+        });
+        return;
+    }
+
+    var frames = {};
+    var faces = this.config["faces"];
+    for (var index = 0; index < faces.length; index++) {
+        var face = faces[index];
+        frames[face] = 1;
+    };
+
+    var sideFrames = this.config["frames"];
+    frames["side"] = sideFrames;
+    this.frames = frames;
+    callback && callback(frames);
+};
+
+Ripe.prototype.getRestrictions = function(callback) {
+    var self = this;
+    if (this.config === undefined) {
+        this.getConfig(function(config) {
+            self.config = config;
+            self.getRestrictions(callback);
+        });
+        return;
+    }
+
+    // iterates over the complete set of restrictions in the restrictions
+    // list to process them and populate the restrictions map with a single
+    // key to "restricted keys" association
+    var restrictions = {};
+    var restrictionsList = this.config["restrictions"];
+    for (var index = 0; index < restrictionsList.length; index++) {
+        var restriction = restrictionsList[index];
+
+        // in case the restriction is considered to be a single one
+        // then this is a special (all cases excluded one) and must
+        // be treated as such (true value set in the map value)
+        if (restriction.length === 1) {
+            var _restriction = restriction[0];
+            var key = _getTupleKey(_restriction.part, _restriction.material, _restriction.color);
+            restrictions[key] = true;
+            return;
+        }
+
+        // iterates over all the items in the restriction to correctly
+        // populate the restrictions map with the restrictive values
+        for (var index = 0; index < restriction.length; index++) {
+            var item = restriction[index];
+
+            var material = item.material;
+            var color = item.color;
+            var materialColorKey = _getTupleKey(null, material, color);
+
+            for (var _index = 0; _index < restriction.length; _index++) {
+                var _item = restriction[_index];
+
+                var _material = _item.material;
+                var _color = _item.color;
+                var _key = _getTupleKey(null, _material, _color);
+
+                if (_key === materialColorKey) {
+                    continue;
+                }
+
+                var sequence = restrictions[materialColorKey] || [];
+                sequence.push(_key);
+                restrictions[materialColorKey] = sequence;
+            }
+        }
+    };
+
+    this.restrictions = restrictions;
+    callback && callback(restrictions);
+};
+
+Ripe.prototype._getTupleKey = function(part, material, color, token) {
+    var token = token || ":"
+    part = part || "";
+    material = material || "";
+    color = color || "";
+    return part + token + material + token + color;
+};
 
 Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engraving, options) {
     frame = frame || "0";

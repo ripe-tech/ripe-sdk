@@ -53,6 +53,7 @@ window.onload = function() {
     ripe.bindDrag(dragElement);
 
     var firstLoad = false;
+
     ripe.addLoadedCallback(function() {
         if (firstLoad) {
             return;
@@ -61,6 +62,9 @@ window.onload = function() {
 
         setTimeout(function() {
             ripe.changeFrame(5);
+            ripe.getOptions(function(options) {
+                console.info(options)
+            });
         }, 500);
     });
 
