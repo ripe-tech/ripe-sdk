@@ -90,14 +90,14 @@ Ripe.prototype.setParts = function(update, noUpdate) {
     }!noUpdate && this.update();
 };
 
-Ripe.prototype.getOptions = function(callback) {
+Ripe.prototype.getValidParts = function(callback) {
     var self = this;
     var callbacks = [];
     this.combinationsMap === undefined && callbacks.push(this.loadCombinations.bind(this));
     this.restrictions === undefined && callbacks.push(this.getRestrictions.bind(this));
     if (callbacks.length > 0) {
         this._waitCallbacks(callbacks, function() {
-            self.getOptions(callback);
+            self.getValidParts(callback);
         });
         return;
     }
@@ -197,7 +197,11 @@ Ripe.prototype.getOptions = function(callback) {
             });
 
             // updates the valid colors
-            unrestrictedMaterials[materialName] = newColors;
+            var newMaterial = {
+                name: materialName,
+                colors: newColors
+            };
+            unrestrictedMaterials.push(newMaterial);
         };
         return unrestrictedMaterials;
     };

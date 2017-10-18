@@ -62,8 +62,8 @@ window.onload = function() {
 
         setTimeout(function() {
             ripe.changeFrame(5);
-            ripe.getOptions(function(options) {
-                console.info(options)
+            ripe.getValidParts(function(parts) {
+                console.info(parts)
             });
         }, 500);
     });
