@@ -493,7 +493,7 @@ Ripe.prototype.bindDrag = function(target, size, maxSize, options) {
         self._updateDrag(element, next, animate, false, function() {
             // if a crossfade animation finishes
             // then stops ignoring drag movements
-            animate === "cross" && this.dragBind.setAttribute("data-prevent-drag", false);
+            animate === "cross" && self.dragBind.setAttribute("data-prevent-drag", false);
         }, options);
     };
 
@@ -683,12 +683,11 @@ Ripe.prototype.lowlightPart = function() {
     this.dragBind.classList.remove("highlight");
 };
 
-Ripe.prototype._updateDrag = function(target, position, animate, single, callback, options) {
+Ripe.prototype._updateDrag = function(target, position, animate, single, callback) {
     // if product's combinations and parts haven't
     // been loaded yet then returns immediately
-    var hasCombinations = this.combinations && Object.keys(this.combinations).length !== 0;
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    if (!hasParts || !hasCombinations) {
+    if (!hasParts) {
         return;
     }
 
@@ -750,7 +749,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
         }
 
         // builds the url that will be set on the image
-        var url = self._getImageURL(position, null, null, null, null, null, options);
+        var url = self._getImageURL(position, null, null, null, null, null, self.options);
 
         // creates a callback to be called when the frame
         // is drawn to trigger the changed_frame event and
@@ -969,7 +968,7 @@ Ripe.prototype._updateDrag = function(target, position, animate, single, callbac
     };
 
     // checks if the parts drawed on the target have
-    // changed and animates the transition it they did
+    // changed and animates the transition if they did
     var previous = target.getAttribute("data-signature") || "";
     var signature = self._getQuery(null, null, null, null, self.parts);
     var changed = signature !== previous;
