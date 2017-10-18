@@ -1,19 +1,20 @@
 window.onload = function() {
-    var element = document.getElementById("canvas");
-    var url = element.dataset.url || "https://demo.platforme.com/";
-    var brand = element.dataset.brand || "swear";
-    var model = element.dataset.model || "vyner";
-    var variant = element.dataset.variant || "";
-    var currency = element.dataset.currency || "USD";
-    var country = element.dataset.country || "US";
+    var element = document.getElementById("frames");
+    var url = element.getAttribute("data-url") || "http://localhost:8181/";
+    var brand = element.getAttribute("data-brand") || "swear";
+    var model = element.getAttribute("data-model") || "vyner";
+    var variant = element.getAttribute("data-variant") || "";
+    var currency = element.getAttribute("data-currency") || "USD";
+    var country = element.getAttribute("data-country") || "US";
 
     var parts = [];
     var partsMap = {};
     var index = 0;
 
-    var ripe = new Ripe(url, brand, model, variant, {}, {
+    var ripe = new Ripe(url, brand, model, variant, {
         currency: currency,
-        country: country
+        country: country,
+        size: 620
     });
 
     var randomize = function() {
@@ -43,10 +44,26 @@ window.onload = function() {
         index++;
     };
 
-    ripe.bind(document.getElementById("frame-0"), "0");
-    ripe.bind(document.getElementById("frame-1"), "1");
-    ripe.bind(document.getElementById("frame-6"), "6");
-    ripe.bind(document.getElementById("frame-top"), "top");
+    ripe.bindFrame(document.getElementById("frame-0"), "0");
+    ripe.bindFrame(document.getElementById("frame-1"), "1");
+    ripe.bindFrame(document.getElementById("frame-6"), "6");
+    ripe.bindFrame(document.getElementById("frame-top"), "top");
+
+    var dragElement = document.getElementById("product-drag");
+    ripe.bindDrag(dragElement);
+
+    var firstLoad = false;
+    ripe.addLoadedCallback(function() {
+        if (firstLoad) {
+            return;
+        }
+        firstLoad = true;
+
+        setTimeout(function() {
+            ripe.changeFrame(5);
+        }, 500);
+    });
+
     ripe.addPriceCallback(function(value) {
         var price = document.getElementById("price");
         price.innerHTML = value.total.price_final + " " + value.total.currency;
