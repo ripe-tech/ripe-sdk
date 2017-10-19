@@ -1,6 +1,6 @@
 window.onload = function() {
     var element = document.getElementById("canvas");
-    var url = element.dataset.url || "https://demo.platforme.com/api";
+    var url = element.dataset.url || "https://demo.platforme.com/api/";
     var brand = element.dataset.brand || "swear";
     var model = element.dataset.model || "vyner";
     var variant = element.dataset.variant || "";
@@ -45,9 +45,15 @@ window.onload = function() {
         index++;
     };
 
-    var image = ripe.bindImage(document.getElementById("frame-0"), {frame: "0"});
-    ripe.bindImage(document.getElementById("frame-6"), {frame: "6"});
-    ripe.bindImage(document.getElementById("frame-top"), {frame: "top"});
+    var image = ripe.bindImage(document.getElementById("frame-0"), {
+        frame: "0"
+    });
+    ripe.bindImage(document.getElementById("frame-6"), {
+        frame: "6"
+    });
+    ripe.bindImage(document.getElementById("frame-top"), {
+        frame: "top"
+    });
 
     image.bind("loaded", function() {
         console.log("frame-0 loaded")
@@ -90,7 +96,7 @@ window.onload = function() {
     });
 
     getCombinations && getCombinations.addEventListener("click", function() {
-        ripe.getCombinations(function(value) {
+        ripe.getCombinations({}, function(value) {
             alert("There are <strong>" + String(value.length) +
                 "</strong> combinations with <strong>" + String(unique()) +
                 "</strong> possible compositions");

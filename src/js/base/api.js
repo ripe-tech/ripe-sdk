@@ -1,4 +1,4 @@
-ripe.Ripe.prototype.getPrice = function(callback) {
+ripe.Ripe.prototype.getPrice = function(options, callback) {
     var context = this;
     var priceURL = this._getPriceURL();
     var request = new XMLHttpRequest();
@@ -11,7 +11,7 @@ ripe.Ripe.prototype.getPrice = function(callback) {
     request.send();
 };
 
-ripe.Ripe.prototype.getDefaults = function(callback) {
+ripe.Ripe.prototype.getDefaults = function(options, callback) {
     var context = this;
     var defaultsURL = this._getDefaultsURL();
     var request = new XMLHttpRequest();
@@ -24,7 +24,7 @@ ripe.Ripe.prototype.getDefaults = function(callback) {
     request.send();
 };
 
-ripe.Ripe.prototype.getCombinations = function(callback) {
+ripe.Ripe.prototype.getCombinations = function(options, callback) {
     var context = this;
     var combinationsURL = this._getCombinationsURL();
     var request = new XMLHttpRequest();
@@ -47,6 +47,8 @@ ripe.Ripe.prototype._getQuery = function(options) {
     var frame = options.frame || this.frame;
     var parts = options.parts || this.parts;
     var engraving = options.engraving || this.engraving;
+    var country = options.country || this.country;
+    var currency = options.currency || this.currency;
 
     brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
@@ -67,13 +69,13 @@ ripe.Ripe.prototype._getQuery = function(options) {
     }
 
     engraving && buffer.push("engraving=" + engraving);
+    country && buffer.push("country=" + country);
+    currency && buffer.push("currency=" + currency);
 
-    options.currency && buffer.push("currency=" + options.currency);
-    options.country && buffer.push("country=" + options.country);
-
-    options.format && buffer.push("format=" + options.format);
-    options.size && buffer.push("size=" + options.size);
-    options.background && buffer.push("background=" + options.background);
+    // TODO: move this to another place
+    options.format && buffer.push("format=" + format);
+    options.size && buffer.push("size=" + size);
+    options.background && buffer.push("background=" + background);
 
     return buffer.join("&");
 };

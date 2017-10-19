@@ -39,6 +39,9 @@ ripe.Observable.prototype._runCallbacks = function(event) {
     }
 };
 
+ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
+ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
+
 ripe.Ripe = function(brand, model, options) {
     ripe.Observable.call(this);
     ripe.Ripe.prototype.init.call(this, brand, model, options);
@@ -53,8 +56,10 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.model = model;
     this.options = options || {};
     this.variant = this.options.variant || null;
-    this.url = this.options.url || "https://demo.platforme.com";
+    this.url = this.options.url || "https://demo.platforme.com/api";
     this.parts = this.options.parts || {};
+    this.country = this.options.country || null;
+    this.currency = this.options.currency || null;
     this.children = [];
     this.ready = false;
 
@@ -62,7 +67,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && !this.options.noDefaults;
-    loadDefaults && this.getDefaults(function(result) {
+    loadDefaults && this.getDefaults({}, function(result) {
         this.parts = result;
         this.ready = true;
         this.update();
@@ -73,7 +78,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
     var loadCombinations = !this.options.noCombinations;
-    loadCombinations && this.getCombinations(function(result) {
+    loadCombinations && this.getCombinations({}, function(result) {
         this.combinations = result;
         this._runCallbacks("combinations", this.combinations);
     }.bind(this));
@@ -132,7 +137,7 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this._runCallbacks("update");
 
-    this.ready && this.getPrice(function(value) {
+    this.ready && this.getPrice({}, function(value) {
         this._runCallbacks("price", value);
     }.bind(this));
 };
@@ -149,7 +154,7 @@ ripe.Ripe.prototype._removeCallback = function(name, callback) {
 
 var Ripe = ripe.Ripe;
 
-ripe.Ripe.prototype.getPrice = function(callback) {
+ripe.Ripe.prototype.getPrice = function(options, callback) {
     var context = this;
     var priceURL = this._getPriceURL();
     var request = new XMLHttpRequest();
@@ -162,7 +167,7 @@ ripe.Ripe.prototype.getPrice = function(callback) {
     request.send();
 };
 
-ripe.Ripe.prototype.getDefaults = function(callback) {
+ripe.Ripe.prototype.getDefaults = function(options, callback) {
     var context = this;
     var defaultsURL = this._getDefaultsURL();
     var request = new XMLHttpRequest();
@@ -175,7 +180,7 @@ ripe.Ripe.prototype.getDefaults = function(callback) {
     request.send();
 };
 
-ripe.Ripe.prototype.getCombinations = function(callback) {
+ripe.Ripe.prototype.getCombinations = function(options, callback) {
     var context = this;
     var combinationsURL = this._getCombinationsURL();
     var request = new XMLHttpRequest();
@@ -198,6 +203,8 @@ ripe.Ripe.prototype._getQuery = function(options) {
     var frame = options.frame || this.frame;
     var parts = options.parts || this.parts;
     var engraving = options.engraving || this.engraving;
+    var country = options.country || this.country;
+    var currency = options.currency || this.currency;
 
     brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
@@ -218,27 +225,27 @@ ripe.Ripe.prototype._getQuery = function(options) {
     }
 
     engraving && buffer.push("engraving=" + engraving);
+    country && buffer.push("country=" + country);
+    currency && buffer.push("currency=" + currency);
 
-    options.currency && buffer.push("currency=" + options.currency);
-    options.country && buffer.push("country=" + options.country);
-
-    options.format && buffer.push("format=" + options.format);
-    options.size && buffer.push("size=" + options.size);
-    options.background && buffer.push("background=" + options.background);
+    // TODO: move this to another place
+    options.format && buffer.push("format=" + format);
+    options.size && buffer.push("size=" + size);
+    options.background && buffer.push("background=" + background);
 
     return buffer.join("&");
 };
 
 ripe.Ripe.prototype._getPriceURL = function(options) {
     var query = this._getQuery(options);
-    return this.url + "api/config/price" + "?" + query;
+    return this.url + "config/price" + "?" + query;
 };
 
 ripe.Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
-    return this.url + "api/brands/" + brand + "/models/" + model + "/defaults?variant=" + variant;
+    return this.url + "brands/" + brand + "/models/" + model + "/defaults?variant=" + variant;
 };
 
 ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
@@ -247,7 +254,7 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
     variant = variant || this.variant;
     var useNameS = useName ? "1" : "0";
     var query = "variant=" + variant + "&use_name=" + useNameS;
-    return this.url + "api/brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
+    return this.url + "brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
 };
 
 ripe.Ripe.prototype._getImageURL = function(options) {

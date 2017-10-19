@@ -14,6 +14,8 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.variant = this.options.variant || null;
     this.url = this.options.url || "https://demo.platforme.com/api";
     this.parts = this.options.parts || {};
+    this.country = this.options.country || null;
+    this.currency = this.options.currency || null;
     this.children = [];
     this.ready = false;
 
@@ -21,7 +23,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && !this.options.noDefaults;
-    loadDefaults && this.getDefaults(function(result) {
+    loadDefaults && this.getDefaults({}, function(result) {
         this.parts = result;
         this.ready = true;
         this.update();
@@ -32,7 +34,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
     var loadCombinations = !this.options.noCombinations;
-    loadCombinations && this.getCombinations(function(result) {
+    loadCombinations && this.getCombinations({}, function(result) {
         this.combinations = result;
         this._runCallbacks("combinations", this.combinations);
     }.bind(this));
@@ -91,7 +93,7 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this._runCallbacks("update");
 
-    this.ready && this.getPrice(function(value) {
+    this.ready && this.getPrice({}, function(value) {
         this._runCallbacks("price", value);
     }.bind(this));
 };

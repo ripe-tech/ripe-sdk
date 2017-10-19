@@ -17,7 +17,11 @@ class BaseController(appier.Controller):
         return self.template(
             "simple.html.tpl",
             url = self.field("url"),
-            model = self.field("model")
+            brand = self.field("brand"),
+            model = self.field("model"),
+            variant = self.field("variant"),
+            country = self.field("country"),
+            currency = self.field("currency")
         )
 
     @appier.route("/gucci", "GET")
@@ -25,5 +29,9 @@ class BaseController(appier.Controller):
         return self.template(
             "gucci.html.tpl",
             url = self.field("url"),
-            model = self.field("model")
+            brand = self.field("brand"),
+            model = self.field("model"),
+            variant = self.field("variant"),
+            country = self.field("country"),
+            currency = self.field("currency")
         )
