@@ -1,12 +1,12 @@
-Ripe.Visual = function(owner, element, options) {
-    Ripe.Interactable.call(this, owner, options);
-    Ripe.Observable.call(this);
+ripe.Visual = function(owner, element, options) {
+    ripe.Interactable.call(this, owner, options);
+    ripe.Observable.call(this);
 
     this.element = element;
-    this.init();
+    ripe.Visual.prototype.init.call(this);
 };
 
-Ripe.Visual.prototype.init = function() { };
+ripe.Visual.prototype = Object.create(ripe.Interactable.prototype);
+ripe.Visual.prototype = Object.create(ripe.Observable.prototype);
 
-Ripe.Visual.prototype = Object.create(Ripe.Interactable.prototype);
-Ripe.Visual.prototype = Object.create(Ripe.Observable.prototype);
+ripe.Visual.prototype.init = function() {};

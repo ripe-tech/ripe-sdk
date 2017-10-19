@@ -1,22 +1,22 @@
-Ripe.Config = function(owner, element, options) {
-    Ripe.Visual.call(this, owner, element, options);
-    this.init();
+ripe.Config = function(owner, element, options) {
+    ripe.Visual.call(this, owner, element, options);
+    ripe.Config.prototype.init.call(this);
 };
 
-Ripe.Config.prototype = Object.create(Ripe.Visual.prototype);
+ripe.Config.prototype = Object.create(ripe.Visual.prototype);
 
-Ripe.Config.prototype.init = function() {
+ripe.Config.prototype.init = function() {
     this.owner.addSelectedPartCallback(function(part) {
         this.highlightPart(part);
     });
 };
 
-Ripe.Config.prototype.changeFrame = function(frame, options) {};
+ripe.Config.prototype.changeFrame = function(frame, options) {};
 
-Ripe.Config.prototype.highlight = function(part, options) {};
+ripe.Config.prototype.highlight = function(part, options) {};
 
-Ripe.Config.prototype.lowlight = function(options) {};
+ripe.Config.prototype.lowlight = function(options) {};
 
-Ripe.Config.prototype.enterFullscreen = function(options) {};
+ripe.Config.prototype.enterFullscreen = function(options) {};
 
-Ripe.Config.prototype.exitFullscreen = function(options) {};
+ripe.Config.prototype.exitFullscreen = function(options) {};

@@ -1,4 +1,4 @@
-Ripe.prototype.getPrice = function(callback) {
+ripe.Ripe.prototype.getPrice = function(callback) {
     var context = this;
     var priceURL = this._getPriceURL();
     var request = new XMLHttpRequest();
@@ -11,7 +11,7 @@ Ripe.prototype.getPrice = function(callback) {
     request.send();
 };
 
-Ripe.prototype.getDefaults = function(callback) {
+ripe.Ripe.prototype.getDefaults = function(callback) {
     var context = this;
     var defaultsURL = this._getDefaultsURL();
     var request = new XMLHttpRequest();
@@ -24,7 +24,7 @@ Ripe.prototype.getDefaults = function(callback) {
     request.send();
 };
 
-Ripe.prototype.getCombinations = function(callback) {
+ripe.Ripe.prototype.getCombinations = function(callback) {
     var context = this;
     var combinationsURL = this._getCombinationsURL();
     var request = new XMLHttpRequest();
@@ -37,8 +37,16 @@ Ripe.prototype.getCombinations = function(callback) {
     request.send();
 };
 
-Ripe.prototype._getQuery = function(brand, model, variant, frame, parts, engraving, options) {
+ripe.Ripe.prototype._getQuery = function(options) {
     var buffer = [];
+
+    var options = options || {};
+    var brand = options.brand || this.brand;
+    var model = options.model || this.model;
+    var variant = options.variant || this.variant;
+    var frame = options.frame || this.frame;
+    var parts = options.parts || this.parts;
+    var engraving = options.engraving || this.engraving;
 
     brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
@@ -70,26 +78,19 @@ Ripe.prototype._getQuery = function(brand, model, variant, frame, parts, engravi
     return buffer.join("&");
 };
 
-Ripe.prototype._getPriceURL = function(parts, brand, model, variant, engraving, options) {
-    parts = parts || this.parts;
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
-    engraving = engraving || this.engraving;
-    options = options || this.options || {};
-    engraving = engraving || this.options.engraving;
-    var query = this._getQuery(brand, model, variant, null, parts, engraving, options);
+ripe.Ripe.prototype._getPriceURL = function(options) {
+    var query = this._getQuery(options);
     return this.url + "api/config/price" + "?" + query;
 };
 
-Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
+ripe.Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
     return this.url + "api/brands/" + brand + "/models/" + model + "/defaults?variant=" + variant;
 };
 
-Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
+ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
@@ -98,15 +99,7 @@ Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
     return this.url + "api/brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
 };
 
-Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engraving, options) {
-    frame = frame || "0";
-    parts = parts || this.parts;
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
-    engraving = engraving || this.engraving;
-    options = options || this.options || {};
-    engraving = engraving || this.options.engraving;
-    var query = this._getQuery(brand, model, variant, frame, parts, engraving, options);
+ripe.Ripe.prototype._getImageURL = function(options) {
+    var query = this._getQuery(options);
     return this.url + "compose?" + query;
 };

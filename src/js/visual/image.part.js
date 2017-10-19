@@ -1,19 +1,19 @@
-Ripe.Image = function(owner, element, frame, options) {
-    Ripe.Visual.call(this, owner, element, options);
-
-    this.frame = frame;
-    this.init();
+ripe.Image = function(owner, element, options) {
+    ripe.Visual.call(this, owner, element, options);
+    ripe.Image.prototype.init.call(this);
 };
 
-Ripe.Image.prototype = Object.create(Ripe.Visual.prototype);
+ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 
-Ripe.Image.prototype.init = function() {
+ripe.Image.prototype.init = function() {
+    this.frame = this.options.frame || 0;
+
     this.element.addEventListener("load", function() {
         this._runCallbacks("loaded");
     }.bind(this));
 };
 
-Ripe.Image.prototype.update = function(state) {
+ripe.Image.prototype.update = function(state) {
     var url = this.owner._getImageURL({
         frame: this.frame
     });
@@ -23,7 +23,7 @@ Ripe.Image.prototype.update = function(state) {
     this.element.src = url;
 };
 
-Ripe.Image.prototype.setFrame = function(frame, options) {
+ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
-    this.update();    
+    this.update();
 };

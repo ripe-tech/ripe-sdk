@@ -1,6 +1,6 @@
 window.onload = function() {
     var element = document.getElementById("canvas");
-    var url = element.dataset.url || "https://demo.platforme.com/";
+    var url = element.dataset.url || "http://localhost:8181/";
     var brand = element.dataset.brand || "swear";
     var model = element.dataset.model || "vyner";
     var variant = element.dataset.variant || "";
@@ -11,7 +11,9 @@ window.onload = function() {
     var partsMap = {};
     var index = 0;
 
-    var ripe = new Ripe(url, brand, model, variant, {}, {
+    var ripe = new Ripe(brand, model, {
+        variant: variant,
+        url: url,
         currency: currency,
         country: country
     });
@@ -43,16 +45,15 @@ window.onload = function() {
         index++;
     };
 
-    var frame0 = ripe.bindFrame(document.getElementById("frame-0"), "0");
-    var frame1 = ripe.bindFrame(document.getElementById("frame-1"), "1");
-    var frame6 = ripe.bindFrame(document.getElementById("frame-6"), "6");
-    var frameTop = ripe.bindFrame(document.getElementById("frame-top"), "top");
+    var frame0 = ripe.bindImage(document.getElementById("frame-0"), {frame: "0"});
+    var frame6 = ripe.bindImage(document.getElementById("frame-6"), {frame: "6"});
+    var frameTop = ripe.bindImage(document.getElementById("frame-top"), {frame: "top"});
 
-    ripe.addPriceCallback(function(value) {
+    ripe.addCallback("price", function(value) {
         var price = document.getElementById("price");
         price.innerHTML = value.total.price_final + " " + value.total.currency;
     });
-    ripe.addCombinationsCallback(function(value) {
+    ripe.addCallback("combinations", function(value) {
         for (var index = 0; index < value.length; index++) {
             var triplet = value[index];
             var part = triplet[0];
