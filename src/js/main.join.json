@@ -2,9 +2,9 @@
     "ripe.js": {
         "files": [
             "base.js",
-            "interactive/base.part.js",
-            "interactive/config.part.js",
-            "interactive/frame.part.js",
+            "interactable/base.part.js",
+            "interactable/config.part.js",
+            "interactable/frame.part.js",
             "export.js",
             "ripe_api.js"
         ]
@@ -12,9 +12,9 @@
     "ripe-min.js": {
         "files": [
             "base.js",
-            "interactive/base.part.js",
-            "interactive/config.part.js",
-            "interactive/frame.part.js",
+            "interactable/base.part.js",
+            "interactable/config.part.js",
+            "interactable/frame.part.js",
             "export.js",
             "ripe_api.js"
         ],

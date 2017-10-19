@@ -11,7 +11,7 @@ Ripe.prototype.init = function(url, brand, model, variant, parts, options) {
     this.variant = variant;
     this.parts = parts || {};
     this.options = options || {};
-    this.interactives = [];
+    this.interactables = [];
     this.callbacks = {};
     this.ready = false;
 
@@ -73,9 +73,9 @@ Ripe.prototype.bindFrame = function(element, frame, options) {
     // tries to retrieve the set of binds to the target
     // frame, then adds the target to that list and re-sets
     // the list in the binds map
-    var interactiveFrame = new Ripe.InteractiveFrame(this, element, frame, options);
-    this.interactives.push(interactiveFrame);
-    return interactiveFrame;
+    var interactableFrame = new Ripe.InteractableFrame(this, element, frame, options);
+    this.interactables.push(interactableFrame);
+    return interactableFrame;
 };
 
 Ripe.prototype.selectPart = function(part) {
@@ -114,16 +114,10 @@ Ripe.prototype.removeCombinationsCallback = function(callback) {
     this._removeCallback("combinations", callback);
 };
 
-Ripe.prototype.render = function(target, frame, options) {
-    target = target || this.options.target;
-    var element = target;
-    element.src = this._getImageURL(frame, null, null, null, null, null, options);
-};
-
 Ripe.prototype.update = function(price) {
-    for (var index = 0; index < this.interactives.length; index++) {
-        var interactive = this.interactives[index];
-        interactive.update();
+    for (var index = 0; index < this.interactables.length; index++) {
+        var interactable = this.interactables[index];
+        interactable.update();
     }
 
     this.ready && this._runCallbacks("update");
@@ -157,7 +151,7 @@ Ripe.prototype._runCallbacks = function(name) {
     }
 };
 
-Ripe.Interactive = function(ripe, element, options) {
+Ripe.Interactable = function(ripe, element, options) {
     if (!element) {
         return;
     }
@@ -169,24 +163,24 @@ Ripe.Interactive = function(ripe, element, options) {
     this.init();
 };
 
-Ripe.Interactive.prototype.init = function() {
+Ripe.Interactable.prototype.init = function() {
     this.callbacks = {};
     this.size = this.element.getAttribute("data-size") || options.size || 1000;
 };
 
-Ripe.Interactive.prototype.update = function() {};
+Ripe.Interactable.prototype.update = function() {};
 
-Ripe.Interactive.prototype.mergeOptions = function(baseOptions, options) {};
+Ripe.Interactable.prototype.mergeOptions = function(baseOptions, options) {};
 
-Ripe.Interactive.prototype.changeFrame = function(frame, options) {};
+Ripe.Interactable.prototype.changeFrame = function(frame, options) {};
 
-Ripe.Interactive.prototype._addCallback = function(event, callback) {
+Ripe.Interactable.prototype._addCallback = function(event, callback) {
     var callbacks = this.callbacks[event] || [];
     callbacks.push(callback);
     this.callbacks[event] = callbacks;
 };
 
-Ripe.Interactive.prototype._runCallbacks = function(event) {
+Ripe.Interactable.prototype._runCallbacks = function(event) {
     var callbacks = this.callbacks[event] || [];
     for (var index = 0; index < callbacks.length; index++) {
         var callback = callbacks[index];
@@ -194,54 +188,54 @@ Ripe.Interactive.prototype._runCallbacks = function(event) {
     }
 };
 
-Ripe.Interactive.prototype.addLoadedCallback = function(callback) {
+Ripe.Interactable.prototype.addLoadedCallback = function(callback) {
     this._addCallback("loaded", callback);
 };
 
-Ripe.Interactive.prototype.addUpdatedCallback = function(callback) {};
+Ripe.Interactable.prototype.addUpdatedCallback = function(callback) {};
 
-Ripe.Interactive.prototype.addChangedFrameCallback = function(callback) {};
+Ripe.Interactable.prototype.addChangedFrameCallback = function(callback) {};
 
-Ripe.InteractiveConfig = function(ripe, element, options) {
-    Ripe.Interactive.call(this, ripe, element, options);
-    Ripe.Interactive.prototype.init.call(this);
+Ripe.InteractableConfig = function(ripe, element, options) {
+    Ripe.Interactable.call(this, ripe, element, options);
+    Ripe.Interactable.prototype.init.call(this);
 
     this.init();
 };
 
-Ripe.InteractiveConfig.prototype = Object.create(Ripe.Interactive.prototype);
+Ripe.InteractableConfig.prototype = Object.create(Ripe.Interactable.prototype);
 
-Ripe.InteractiveConfig.prototype.init = function() {
+Ripe.InteractableConfig.prototype.init = function() {
     this.ripe.addSelectedPartCallback(function(part) {
         this.highlightPart(part);
     });
 };
 
-Ripe.InteractiveConfig.prototype.highlightPart = function(part, options) {};
+Ripe.InteractableConfig.prototype.highlightPart = function(part, options) {};
 
-Ripe.InteractiveConfig.prototype.lowlight = function(options) {};
+Ripe.InteractableConfig.prototype.lowlight = function(options) {};
 
-Ripe.InteractiveConfig.prototype.enterFullscreen = function(options) {};
+Ripe.InteractableConfig.prototype.enterFullscreen = function(options) {};
 
-Ripe.InteractiveConfig.prototype.exitFullscreen = function(options) {};
+Ripe.InteractableConfig.prototype.exitFullscreen = function(options) {};
 
-Ripe.InteractiveFrame = function(ripe, element, frame, options) {
-    Ripe.Interactive.call(this, ripe, element, options);
-    Ripe.Interactive.prototype.init.call(this);
+Ripe.InteractableFrame = function(ripe, element, frame, options) {
+    Ripe.Interactable.call(this, ripe, element, options);
+    Ripe.Interactable.prototype.init.call(this);
 
     this.frame = frame;
     this.init();
 };
 
-Ripe.InteractiveFrame.prototype = Object.create(Ripe.Interactive.prototype);
+Ripe.InteractableFrame.prototype = Object.create(Ripe.Interactable.prototype);
 
-Ripe.InteractiveFrame.prototype.init = function() {
+Ripe.InteractableFrame.prototype.init = function() {
     this.element.addEventListener("load", function() {
         this._runCallbacks("loaded");
     }.bind(this));
 };
 
-Ripe.InteractiveFrame.prototype.update = function() {
+Ripe.InteractableFrame.prototype.update = function() {
     var url = this.ripe._getImageURL(this.frame, null, null, null, null, null, this.options);
     if (this.element.src === url) {
         return;

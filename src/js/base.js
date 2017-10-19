@@ -11,7 +11,7 @@ Ripe.prototype.init = function(url, brand, model, variant, parts, options) {
     this.variant = variant;
     this.parts = parts || {};
     this.options = options || {};
-    this.interactives = [];
+    this.interactables = [];
     this.callbacks = {};
     this.ready = false;
 
@@ -73,9 +73,9 @@ Ripe.prototype.bindFrame = function(element, frame, options) {
     // tries to retrieve the set of binds to the target
     // frame, then adds the target to that list and re-sets
     // the list in the binds map
-    var interactiveFrame = new Ripe.InteractiveFrame(this, element, frame, options);
-    this.interactives.push(interactiveFrame);
-    return interactiveFrame;
+    var interactableFrame = new Ripe.InteractableFrame(this, element, frame, options);
+    this.interactables.push(interactableFrame);
+    return interactableFrame;
 };
 
 Ripe.prototype.selectPart = function(part) {
@@ -114,16 +114,10 @@ Ripe.prototype.removeCombinationsCallback = function(callback) {
     this._removeCallback("combinations", callback);
 };
 
-Ripe.prototype.render = function(target, frame, options) {
-    target = target || this.options.target;
-    var element = target;
-    element.src = this._getImageURL(frame, null, null, null, null, null, options);
-};
-
 Ripe.prototype.update = function(price) {
-    for (var index = 0; index < this.interactives.length; index++) {
-        var interactive = this.interactives[index];
-        interactive.update();
+    for (var index = 0; index < this.interactables.length; index++) {
+        var interactable = this.interactables[index];
+        interactable.update();
     }
 
     this.ready && this._runCallbacks("update");
