@@ -5,7 +5,8 @@
             "interactive/base.part.js",
             "interactive/config.part.js",
             "interactive/frame.part.js",
-            "export.js"
+            "export.js",
+            "ripe_api.js"
         ]
     },
     "ripe-min.js": {
@@ -14,7 +15,8 @@
             "interactive/base.part.js",
             "interactive/config.part.js",
             "interactive/frame.part.js",
-            "export.js"
+            "export.js",
+            "ripe_api.js"
         ],
         "minify": "javascript"
     }
