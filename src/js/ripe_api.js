@@ -71,28 +71,28 @@ Ripe.prototype._getQuery = function(brand, model, variant, frame, parts, engravi
 };
 
 Ripe.prototype._getPriceURL = function(parts, brand, model, variant, engraving, options) {
-    parts = parts || this.ripe.parts;
-    brand = brand || this.ripe.brand;
-    model = model || this.ripe.model;
-    variant = variant || this.ripe.variant;
-    engraving = engraving || this.ripe.engraving;
-    options = options || this.ripe.options || {};
-    engraving = engraving || this.ripe.options.engraving;
+    parts = parts || this.parts;
+    brand = brand || this.brand;
+    model = model || this.model;
+    variant = variant || this.variant;
+    engraving = engraving || this.engraving;
+    options = options || this.options || {};
+    engraving = engraving || this.options.engraving;
     var query = this._getQuery(brand, model, variant, null, parts, engraving, options);
     return this.url + "api/config/price" + "?" + query;
 };
 
 Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
-    brand = brand || this.ripe.brand;
-    model = model || this.ripe.model;
-    variant = variant || this.ripe.variant;
+    brand = brand || this.brand;
+    model = model || this.model;
+    variant = variant || this.variant;
     return this.url + "api/brands/" + brand + "/models/" + model + "/defaults?variant=" + variant;
 };
 
 Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
-    brand = brand || this.ripe.brand;
-    model = model || this.ripe.model;
-    variant = variant || this.ripe.variant;
+    brand = brand || this.brand;
+    model = model || this.model;
+    variant = variant || this.variant;
     var useNameS = useName ? "1" : "0";
     var query = "variant=" + variant + "&use_name=" + useNameS;
     return this.url + "api/brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
@@ -100,13 +100,13 @@ Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
 
 Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engraving, options) {
     frame = frame || "0";
-    parts = parts || this.ripe.parts;
-    brand = brand || this.ripe.brand;
-    model = model || this.ripe.model;
-    variant = variant || this.ripe.variant;
-    engraving = engraving || this.ripe.engraving;
-    options = options || this.ripe.options || {};
-    engraving = engraving || this.ripe.options.engraving;
+    parts = parts || this.parts;
+    brand = brand || this.brand;
+    model = model || this.model;
+    variant = variant || this.variant;
+    engraving = engraving || this.engraving;
+    options = options || this.options || {};
+    engraving = engraving || this.options.engraving;
     var query = this._getQuery(brand, model, variant, frame, parts, engraving, options);
     return this.url + "compose?" + query;
 };
