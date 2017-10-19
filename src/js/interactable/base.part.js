@@ -1,26 +1,21 @@
-Ripe.Interactable = function(ripe, element, options) {
+Ripe.Interactable = function(owner, options) {
     if (!element) {
         return;
     }
 
-    this.ripe = ripe;
-    this.element = element;
+    this.owner = owner;
     this.options = options || {};
 
     this.init();
 };
 
-Ripe.Interactable.prototype.init = function() {
-    this.callbacks = {};
-    this.size = this.element.getAttribute("data-size") || options.size || 1000;
-};
+Ripe.Interactable.prototype.init = function() { };
 
-Ripe.Interactable.prototype.update = function() {};
+Ripe.Interactable.prototype.update = function(state) {};
 
-Ripe.Interactable.prototype.mergeOptions = function(baseOptions, options) {};
 
-Ripe.Interactable.prototype.changeFrame = function(frame, options) {};
 
+/* move this to the observable things */
 Ripe.Interactable.prototype._addCallback = function(event, callback) {
     var callbacks = this.callbacks[event] || [];
     callbacks.push(callback);

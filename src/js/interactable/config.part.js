@@ -6,6 +6,7 @@ Ripe.InteractableConfig = function(ripe, element, options) {
 };
 
 Ripe.InteractableConfig.prototype = Object.create(Ripe.Interactable.prototype);
+Ripe.InteractableConfig.prototype = Object.create(Ripe.Observable.prototype);
 
 Ripe.InteractableConfig.prototype.init = function() {
     this.ripe.addSelectedPartCallback(function(part) {
