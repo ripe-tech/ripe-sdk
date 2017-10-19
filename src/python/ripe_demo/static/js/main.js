@@ -45,9 +45,13 @@ window.onload = function() {
         index++;
     };
 
-    var frame0 = ripe.bindImage(document.getElementById("frame-0"), {frame: "0"});
-    var frame6 = ripe.bindImage(document.getElementById("frame-6"), {frame: "6"});
-    var frameTop = ripe.bindImage(document.getElementById("frame-top"), {frame: "top"});
+    var image = ripe.bindImage(document.getElementById("frame-0"), {frame: "0"});
+    ripe.bindImage(document.getElementById("frame-6"), {frame: "6"});
+    ripe.bindImage(document.getElementById("frame-top"), {frame: "top"});
+
+    image.bind("loaded", function() {
+        console.log("frame-0 loaded")
+    });
 
     ripe.addCallback("price", function(value) {
         var price = document.getElementById("price");
