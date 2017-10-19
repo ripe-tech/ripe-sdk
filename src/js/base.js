@@ -1,18 +1,18 @@
-var Ripe = function(url, brand, model, variant, parts, options) {
-    this.init(url, brand, model, variant, parts, options);
+var Ripe = function(brand, model, options) {
+    this.init(brand, model, options);
 };
 
-Ripe.prototype.init = function(url, brand, model, variant, parts, options) {
+Ripe.prototype.init = function(brand, model, options) {
     // sets the various values in the instance taking into
     // account the default values
-    this.url = url;
     this.brand = brand;
     this.model = model;
-    this.variant = variant;
-    this.parts = parts || {};
+    this.variant = options.variant || null;
+    this.url = option.url || "https://demo.platforme.com/api";
+    this.parts = options.parts || {};
     this.options = options || {};
     this.interactables = [];
-    this.callbacks = {};
+    this.callbacks = {}; //TODO: must inherit from Observable
     this.ready = false;
 
     // determines if the defaults for the selected model should
