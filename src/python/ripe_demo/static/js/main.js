@@ -53,11 +53,11 @@ window.onload = function() {
         console.log("frame-0 loaded")
     });
 
-    ripe.addCallback("price", function(value) {
+    ripe.bind("price", function(value) {
         var price = document.getElementById("price");
         price.innerHTML = value.total.price_final + " " + value.total.currency;
     });
-    ripe.addCallback("combinations", function(value) {
+    ripe.bind("combinations", function(value) {
         for (var index = 0; index < value.length; index++) {
             var triplet = value[index];
             var part = triplet[0];
