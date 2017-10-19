@@ -1,0 +1,15 @@
+{
+    "ripe.js": {
+        "files": [
+            "interactive.js",
+            "image.js"
+        ]
+    },
+    "ripe-min.js": {
+        "files": [
+            "interactive.js",
+            "image.js"
+        ],
+        "minify": "javascript"
+    }
+}
