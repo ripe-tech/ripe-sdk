@@ -14,7 +14,6 @@ Ripe.prototype.init = function(url, brand, model, variant, parts, options) {
     this.interactives = [];
     this.callbacks = {};
     this.ready = false;
-    this.ripeAPI = new Ripe.RipeAPI(this, url);
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
@@ -134,10 +133,6 @@ Ripe.prototype.update = function(price) {
     }.bind(this));
 };
 
-Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engraving, options) {
-    return this.ripeAPI._getImageURL(frame, parts, brand, model, variant, engraving, options);
-};
-
 Ripe.prototype._addCallback = function(name, callback) {
     var callbacks = this.callbacks[name] || [];
     callbacks.push(callback);
@@ -160,16 +155,4 @@ Ripe.prototype._runCallbacks = function(name) {
         var callback = callbacks[index];
         callback.apply(this, Array.prototype.slice.call(arguments, 1));
     }
-};
-
-Ripe.prototype.getPrice = function(callback) {
-    return this.ripeAPI.getPrice(callback);
-};
-
-Ripe.prototype.getCombinations = function(callback) {
-    return this.ripeAPI.getCombinations(callback);
-};
-
-Ripe.prototype.getDefaults = function(callback) {
-    this.ripeAPI.getDefaults(callback);
 };

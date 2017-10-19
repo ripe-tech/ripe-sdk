@@ -1,9 +1,4 @@
-Ripe.RipeAPI = function(ripe, url) {
-    this.ripe = ripe;
-    this.url = url;
-};
-
-Ripe.RipeAPI.prototype.getPrice = function(callback) {
+Ripe.prototype.getPrice = function(callback) {
     var context = this;
     var priceURL = this._getPriceURL();
     var request = new XMLHttpRequest();
@@ -16,7 +11,7 @@ Ripe.RipeAPI.prototype.getPrice = function(callback) {
     request.send();
 };
 
-Ripe.RipeAPI.prototype.getDefaults = function(callback) {
+Ripe.prototype.getDefaults = function(callback) {
     var context = this;
     var defaultsURL = this._getDefaultsURL();
     var request = new XMLHttpRequest();
@@ -29,7 +24,7 @@ Ripe.RipeAPI.prototype.getDefaults = function(callback) {
     request.send();
 };
 
-Ripe.RipeAPI.prototype.getCombinations = function(callback) {
+Ripe.prototype.getCombinations = function(callback) {
     var context = this;
     var combinationsURL = this._getCombinationsURL();
     var request = new XMLHttpRequest();
@@ -42,7 +37,7 @@ Ripe.RipeAPI.prototype.getCombinations = function(callback) {
     request.send();
 };
 
-Ripe.RipeAPI.prototype._getQuery = function(brand, model, variant, frame, parts, engraving, options) {
+Ripe.prototype._getQuery = function(brand, model, variant, frame, parts, engraving, options) {
     var buffer = [];
 
     brand && buffer.push("brand=" + brand);
@@ -75,7 +70,7 @@ Ripe.RipeAPI.prototype._getQuery = function(brand, model, variant, frame, parts,
     return buffer.join("&");
 };
 
-Ripe.RipeAPI.prototype._getPriceURL = function(parts, brand, model, variant, engraving, options) {
+Ripe.prototype._getPriceURL = function(parts, brand, model, variant, engraving, options) {
     parts = parts || this.ripe.parts;
     brand = brand || this.ripe.brand;
     model = model || this.ripe.model;
@@ -87,14 +82,14 @@ Ripe.RipeAPI.prototype._getPriceURL = function(parts, brand, model, variant, eng
     return this.url + "api/config/price" + "?" + query;
 };
 
-Ripe.RipeAPI.prototype._getDefaultsURL = function(brand, model, variant) {
+Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
     brand = brand || this.ripe.brand;
     model = model || this.ripe.model;
     variant = variant || this.ripe.variant;
     return this.url + "api/brands/" + brand + "/models/" + model + "/defaults?variant=" + variant;
 };
 
-Ripe.RipeAPI.prototype._getCombinationsURL = function(brand, model, variant, useName) {
+Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
     brand = brand || this.ripe.brand;
     model = model || this.ripe.model;
     variant = variant || this.ripe.variant;
@@ -103,7 +98,7 @@ Ripe.RipeAPI.prototype._getCombinationsURL = function(brand, model, variant, use
     return this.url + "api/brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
 };
 
-Ripe.RipeAPI.prototype._getImageURL = function(frame, parts, brand, model, variant, engraving, options) {
+Ripe.prototype._getImageURL = function(frame, parts, brand, model, variant, engraving, options) {
     frame = frame || "0";
     parts = parts || this.ripe.parts;
     brand = brand || this.ripe.brand;
