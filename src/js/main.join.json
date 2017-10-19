@@ -1,14 +1,20 @@
 {
     "ripe.js": {
         "files": [
-            "interactive.js",
-            "image.js"
+            "base.js",
+            "interactive/base.part.js",
+            "interactive/config.part.js",
+            "interactive/frame.part.js",
+            "export.js"
         ]
     },
     "ripe-min.js": {
         "files": [
-            "interactive.js",
-            "image.js"
+            "base.js",
+            "interactive/base.part.js",
+            "interactive/config.part.js",
+            "interactive/frame.part.js",
+            "export.js"
         ],
         "minify": "javascript"
     }

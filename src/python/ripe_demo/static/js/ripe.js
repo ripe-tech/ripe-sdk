@@ -11,7 +11,7 @@ Ripe.prototype.init = function(url, brand, model, variant, parts, options) {
     this.variant = variant;
     this.parts = parts || {};
     this.options = options || {};
-    this.binds = {};
+    this.interactives = [];
     this.callbacks = {};
     this.ready = false;
 
@@ -62,27 +62,31 @@ Ripe.prototype.setParts = function(update, noUpdate) {
     }!noUpdate && this.update();
 };
 
-Ripe.prototype.bind = function(target, frame) {
+Ripe.prototype.bindFrame = function(element, frame, options) {
     // validates that the provided target element is a
     // valid one and if that's not the case returns the
     // control flow immediately to the caller
-    if (!target) {
+    if (!element) {
         return;
     }
 
     // tries to retrieve the set of binds to the target
     // frame, then adds the target to that list and re-sets
     // the list in the binds map
-    var bind = this.binds[frame] || [];
-    bind.push(target);
-    this.binds[frame] = bind;
+    var interactiveFrame = new Ripe.InteractiveFrame(this, element, frame, options);
+    this.interactives.push(interactiveFrame);
+    return interactiveFrame;
 };
 
-Ripe.prototype.addUpdateCallback = function(callback) {
-    this._addCallback("update", callback);
+Ripe.prototype.selectPart = function(part) {
+    this._runCallbacks("selected_part", part);
 };
 
-Ripe.prototype.removeUpdateCallback = function(callback) {
+Ripe.prototype.addSelectedPartCallback = function(callback) {
+    this._addCallback("selected_part", callback);
+};
+
+Ripe.prototype.removeSelectedPartCallback = function(callback) {
     this._removeCallback("update", callback);
 };
 
@@ -117,12 +121,9 @@ Ripe.prototype.render = function(target, frame, options) {
 };
 
 Ripe.prototype.update = function(price) {
-    for (var frame in this.binds) {
-        var bind = this.binds[frame];
-        for (var index = 0; index < bind.length; index++) {
-            var target = bind[index];
-            this.render(target, frame);
-        }
+    for (var index = 0; index < this.interactives.length; index++) {
+        var interactive = this.interactives[index];
+        interactive.update();
     }
 
     this.ready && this._runCallbacks("update");
@@ -268,3 +269,98 @@ Ripe.prototype._runCallbacks = function(name) {
         callback.apply(this, Array.prototype.slice.call(arguments, 1));
     }
 };
+
+Ripe.Interactive = function(ripe, element, options) {
+    if (!element) {
+        return;
+    }
+
+    this.ripe = ripe;
+    this.element = element;
+    this.options = options || {};
+
+    this.init();
+};
+
+Ripe.Interactive.prototype.init = function() {
+    this.callbacks = {};
+    this.size = this.element.getAttribute("data-size") || options.size || 1000;
+};
+
+Ripe.Interactive.prototype.update = function() {};
+
+Ripe.Interactive.prototype.mergeOptions = function(baseOptions, options) {};
+
+Ripe.Interactive.prototype.changeFrame = function(frame, options) {};
+
+Ripe.Interactive.prototype._addCallback = function(event, callback) {
+    var callbacks = this.callbacks[event] || [];
+    callbacks.push(callback);
+    this.callbacks[event] = callbacks;
+};
+
+Ripe.Interactive.prototype._runCallbacks = function(event) {
+    var callbacks = this.callbacks[event] || [];
+    for (var index = 0; index < callbacks.length; index++) {
+        var callback = callbacks[index];
+        callback.apply(this, Array.prototype.slice.call(arguments, 1));
+    }
+};
+
+Ripe.Interactive.prototype.addLoadedCallback = function(callback) {
+    this._addCallback("loaded", callback);
+};
+
+Ripe.Interactive.prototype.addUpdatedCallback = function(callback) {};
+
+Ripe.Interactive.prototype.addChangedFrameCallback = function(callback) {};
+
+Ripe.InteractiveConfig = function(ripe, element, options) {
+    Ripe.Interactive.call(this, ripe, element, options);
+    Ripe.Interactive.prototype.init.call(this);
+
+    this.init();
+};
+
+Ripe.InteractiveConfig.prototype = Object.create(Ripe.Interactive.prototype);
+
+Ripe.InteractiveConfig.prototype.init = function() {
+    this.ripe.addSelectedPartCallback(function(part) {
+        this.highlightPart(part);
+    });
+};
+
+Ripe.InteractiveConfig.prototype.highlightPart = function(part, options) {};
+
+Ripe.InteractiveConfig.prototype.lowlight = function(options) {};
+
+Ripe.InteractiveConfig.prototype.enterFullscreen = function(options) {};
+
+Ripe.InteractiveConfig.prototype.exitFullscreen = function(options) {};
+
+Ripe.InteractiveFrame = function(ripe, element, frame, options) {
+    Ripe.Interactive.call(this, ripe, element, options);
+    Ripe.Interactive.prototype.init.call(this);
+
+    this.frame = frame;
+    this.init();
+};
+
+Ripe.InteractiveFrame.prototype = Object.create(Ripe.Interactive.prototype);
+
+Ripe.InteractiveFrame.prototype.init = function() {
+    this.element.addEventListener("load", function() {
+        this._runCallbacks("loaded");
+    }.bind(this));
+};
+
+Ripe.InteractiveFrame.prototype.update = function() {
+    var url = this.ripe._getImageURL(this.frame, null, null, null, null, null, this.options);
+    if (this.element.src === url) {
+        return;
+    }
+    this.element.src = url;
+};
+
+var exports = typeof exports === "undefined" ? {} : exports;
+exports.Ripe = Ripe;

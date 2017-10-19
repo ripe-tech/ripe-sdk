@@ -43,10 +43,11 @@ window.onload = function() {
         index++;
     };
 
-    ripe.bind(document.getElementById("frame-0"), "0");
-    ripe.bind(document.getElementById("frame-1"), "1");
-    ripe.bind(document.getElementById("frame-6"), "6");
-    ripe.bind(document.getElementById("frame-top"), "top");
+    var frame0 = ripe.bindFrame(document.getElementById("frame-0"), "0");
+    var frame1 = ripe.bindFrame(document.getElementById("frame-1"), "1");
+    var frame6 = ripe.bindFrame(document.getElementById("frame-6"), "6");
+    var frameTop = ripe.bindFrame(document.getElementById("frame-top"), "top");
+
     ripe.addPriceCallback(function(value) {
         var price = document.getElementById("price");
         price.innerHTML = value.total.price_final + " " + value.total.currency;
