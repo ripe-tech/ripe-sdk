@@ -8,28 +8,19 @@ ripesdk.Interactive = function() {
 ripesdk.Interactive.prototype.highlightPart = function(element, options) {
     this.element = element;
     this.options = options || {};
- };
+};
 
- ripesdk.Interactive.prototype.changeFrame = function(element, options) {
+ripesdk.Interactive.prototype.changeFrame = function(element, options) {
     // ..
- };
+};
 
- ripesdk.Interactive.prototype.enterFullscreen = function(element, options) {
+ripesdk.Interactive.prototype.enterFullscreen = function(element, options) {
     // ..
- };
- 
- ripesdk.Interactive.prototype.exitFullscreen = function(element, options) {
+};
+
+ripesdk.Interactive.prototype.exitFullscreen = function(element, options) {
     // ..
- };
+};
 
 // ...
 // other methods implementation
-
-
-//child class
-// ripesdk.Image = function() {
-//     //...
-// };
-
-// ripesdk.Image.prototype = new ripesdk.Interactive();
-// ripesdk.Image.constructor = ripesdk.Interactive;
