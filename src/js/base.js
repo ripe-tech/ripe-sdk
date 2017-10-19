@@ -59,23 +59,23 @@ Ripe.prototype.setParts = function(update, noUpdate) {
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
         this.setPart(part[0], part[1], part[2], true);
-    }!noUpdate && this.update();
+    }
+    !noUpdate && this.update();
 };
 
-Ripe.prototype.bindFrame = function(element, frame, options) {
-    // validates that the provided target element is a
-    // valid one and if that's not the case returns the
-    // control flow immediately to the caller
-    if (!element) {
-        return;
-    }
+Ripe.prototype.bindImage = function(element, frame, options) {
+    var image = new Ripe.Image(this, element, frame, options);
+    return this.bindBase(image);
+};
 
-    // tries to retrieve the set of binds to the target
-    // frame, then adds the target to that list and re-sets
-    // the list in the binds map
-    var interactableFrame = new Ripe.InteractableFrame(this, element, frame, options);
-    this.interactables.push(interactableFrame);
-    return interactableFrame;
+Ripe.prototype.bindConfigurator = function(element, options) {
+    var configurator = new Ripe.Configurator(this, element, options);
+    return this.bindBase(configurator);
+};
+
+Ripe.prototype.bindBase = function(child) {
+    this.children.push(interactableFrame);
+    return child;
 };
 
 Ripe.prototype.selectPart = function(part) {
