@@ -1,5 +1,29 @@
 var ripe = ripe || {};
 
+ripe._assign = function(target) {
+    if (typeof Object.assign === "function") {
+        return Object.assign.apply(this, arguments);
+    }
+
+    if (target == null) {
+        throw new TypeError('Cannot convert undefined or null to object');
+    }
+
+    var to = Object(target);
+    for (var index = 1; index < arguments.length; index++) {
+        var nextSource = arguments[index];
+        if (nextSource == null) {
+            continue;
+        }
+        for (var nextKey in nextSource) {
+            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                to[nextKey] = nextSource[nextKey];
+            }
+        }
+    }
+    return to;
+};
+
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
@@ -179,7 +203,6 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
 ripe.Ripe.prototype.loadFrames = function(callback) {
     if (this.config === undefined) {
         this.getConfig(function(config) {
-            debugger;
             this.config = config;
             this.loadFrames(callback);
         });
@@ -300,15 +323,16 @@ ripe.Ripe.prototype._getImageURL = function(options) {
 };
 
 ripe.Visual = function(owner, element, options) {
-    ripe.Interactable.call(this, owner, options);
     ripe.Observable.call(this);
+    ripe.Interactable.call(this, owner, options);
 
     this.element = element;
     ripe.Visual.prototype.init.call(this);
 };
 
-ripe.Visual.prototype = Object.create(ripe.Interactable.prototype);
 ripe.Visual.prototype = Object.create(ripe.Observable.prototype);
+ripe._assign(ripe.Visual.prototype, ripe.Interactable.prototype);
+ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
 
@@ -322,7 +346,7 @@ ripe.Config.prototype = Object.create(ripe.Visual.prototype);
 ripe.Config.prototype.init = function() {
     this.owner.bind("selected_part", function(part) {
         this.highlightPart(part);
-    });
+    }.bind(this));
 
     this.owner.loadFrames(function() {
         this.initDOM();

@@ -23,7 +23,6 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
 ripe.Ripe.prototype.loadFrames = function(callback) {
     if (this.config === undefined) {
         this.getConfig(function(config) {
-            debugger;
             this.config = config;
             this.loadFrames(callback);
         });
