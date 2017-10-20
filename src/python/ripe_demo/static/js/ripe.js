@@ -115,9 +115,9 @@ ripe.Ripe.prototype.bindImage = function(element, options) {
     return this.bindBase(image);
 };
 
-ripe.Ripe.prototype.bindConfigurator = function(element, options) {
-    var configurator = new ripe.Configurator(this, element, options);
-    return this.bindBase(configurator);
+ripe.Ripe.prototype.bindConfig = function(element, options) {
+    var config = new ripe.Config(this, element, options);
+    return this.bindBase(config);
 };
 
 ripe.Ripe.prototype.bindBase = function(child) {
@@ -154,43 +154,62 @@ ripe.Ripe.prototype._removeCallback = function(name, callback) {
 
 var Ripe = ripe.Ripe;
 
+ripe.Ripe.prototype.getConfig = function(callback) {
+    var configURL = this._getConfigURL();
+    return this._requestUrl(configURL, callback);
+};
+
 ripe.Ripe.prototype.getPrice = function(options, callback) {
-    var context = this;
     var priceURL = this._getPriceURL();
+    return this._requestUrl(priceURL, callback);
+};
+
+ripe.Ripe.prototype.getDefaults = function(options, callback) {
+    var defaultsURL = this._getDefaultsURL();
+    return this._requestUrl(defaultsURL, function(result) {
+        callback(result ? result.parts : null);
+    });
+};
+
+ripe.Ripe.prototype.getCombinations = function(options, callback) {
+    var combinationsURL = this._getCombinationsURL();
+    return this._requestUrl(combinationsURL, callback);
+};
+
+ripe.Ripe.prototype.loadFrames = function(callback) {
+    if (this.config === undefined) {
+        this.getConfig(function(config) {
+            debugger;
+            this.config = config;
+            this.loadFrames(callback);
+        });
+        return;
+    }
+
+    var frames = {};
+    var faces = this.config["faces"];
+    for (var index = 0; index < faces.length; index++) {
+        var face = faces[index];
+        frames[face] = 1;
+    };
+
+    var sideFrames = this.config["frames"];
+    frames["side"] = sideFrames;
+    this.frames = frames;
+    callback && callback(frames);
+};
+
+ripe.Ripe.prototype._requestUrl = function(url, callback) {
+    var context = this;
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {
         var isValid = this.status === 200;
         var result = JSON.parse(this.responseText);
         callback.call(context, isValid ? result : null);
     });
-    request.open("GET", priceURL);
+    request.open("GET", url);
     request.send();
-};
-
-ripe.Ripe.prototype.getDefaults = function(options, callback) {
-    var context = this;
-    var defaultsURL = this._getDefaultsURL();
-    var request = new XMLHttpRequest();
-    request.addEventListener("load", function() {
-        var isValid = this.status === 200;
-        var result = JSON.parse(this.responseText);
-        callback.call(context, isValid ? result.parts : null);
-    });
-    request.open("GET", defaultsURL);
-    request.send();
-};
-
-ripe.Ripe.prototype.getCombinations = function(options, callback) {
-    var context = this;
-    var combinationsURL = this._getCombinationsURL();
-    var request = new XMLHttpRequest();
-    request.addEventListener("load", function() {
-        var isValid = this.status === 200;
-        var result = JSON.parse(this.responseText);
-        callback.call(context, isValid ? result.combinations : null);
-    });
-    request.open("GET", combinationsURL);
-    request.send();
+    return request;
 };
 
 ripe.Ripe.prototype._getQuery = function(options) {
@@ -236,6 +255,17 @@ ripe.Ripe.prototype._getQuery = function(options) {
     return buffer.join("&");
 };
 
+ripe.Ripe.prototype._getConfigURL = function(brand, model, variant) {
+    brand = brand || this.brand;
+    model = model || this.model;
+    variant = variant || this.variant;
+    var fullUrl = this.url + "brands/" + brand + "/models/" + model + "/config";
+    if (variant) {
+        fullUrl += "?variant=" + variant;
+    }
+    return fullUrl;
+};
+
 ripe.Ripe.prototype._getPriceURL = function(options) {
     var query = this._getQuery(options);
     return this.url + "config/price" + "?" + query;
@@ -245,7 +275,11 @@ ripe.Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
-    return this.url + "brands/" + brand + "/models/" + model + "/defaults?variant=" + variant;
+    var fullUrl = this.url + "brands/" + brand + "/models/" + model + "/defaults";
+    if (variant) {
+        fullUrl += "?variant=" + variant;
+    }
+    return fullUrl;
 };
 
 ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
@@ -253,7 +287,10 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
     model = model || this.model;
     variant = variant || this.variant;
     var useNameS = useName ? "1" : "0";
-    var query = "variant=" + variant + "&use_name=" + useNameS;
+    var query = "use_name=" + useNameS;
+    if (variant) {
+        query += "&variant=" + variant;
+    }
     return this.url + "brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
 };
 
@@ -283,9 +320,70 @@ ripe.Config = function(owner, element, options) {
 ripe.Config.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Config.prototype.init = function() {
-    this.owner.addSelectedPartCallback(function(part) {
+    this.owner.bind("selected_part", function(part) {
         this.highlightPart(part);
     });
+
+    this.owner.loadFrames(function() {
+        this.initDOM();
+    }.bind(this));
+};
+
+ripe.Config.prototype.initDOM = function() {
+
+    // sets defaults for the optional parameters
+    var size = this.element.dataset.size || this.options.size || 1000;
+    var maxSize = this.element.dataset.maxSize || this.options.maxSize || 1000;
+    var sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
+
+    // sets the target element's style so that it supports two canvas
+    // on top of each other so that double buffering can be used
+    this.element.classList.add("configurator");
+    this.element.style.fontSize = "0px";
+    this.element.style.whiteSpace = "nowrap";
+
+    // creates the area canvas and adds it to the target element
+    var area = document.createElement("canvas");
+    area.className = "area";
+    area.width = size;
+    area.height = size;
+    area.style.display = "inline-block";
+    var context = area.getContext("2d");
+    context.globalCompositeOperation = "multiply";
+    this.element.appendChild(area);
+
+    // creates the back canvas and adds it to the target element,
+    // placing it on top of the area canvas
+    var back = document.createElement("canvas");
+    back.className = "back";
+    back.width = size;
+    back.height = size;
+    back.style.display = "inline-block";
+    back.style.marginLeft = "-" + String(size) + "px";
+    var backContext = back.getContext("2d");
+    backContext.globalCompositeOperation = "multiply";
+    this.element.appendChild(back);
+
+    // adds the backs placeholder element that will be used to
+    // temporarily store the images of the product's frames
+    var sideFrames = this.frames["side"];
+    var backs = document.createElement("div");
+    backs.className = "backs";
+    backs.style.display = "none";
+    for (var index = 0; index < sideFrames; index++) {
+        var backImg = document.createElement("img");
+        backImg.dataset.frame = index;
+        backs.appendChild(backImg);
+    }
+    var topImg = document.createElement("img");
+    topImg.dataset.frame = "top";
+    backs.appendChild(topImg);
+    var bottomImg = document.createElement("img");
+    bottomImg.dataset.frame = "bottom";
+    backs.appendChild(bottomImg);
+    this.element.appendChild(backs);
+
+
 };
 
 ripe.Config.prototype.changeFrame = function(frame, options) {};
