@@ -1,40 +1,59 @@
+ripe.Ripe.prototype.getConfig = function(callback) {
+    var configURL = this._getConfigURL();
+    return this._requestUrl(configURL, callback);
+};
+
 ripe.Ripe.prototype.getPrice = function(options, callback) {
-    var context = this;
     var priceURL = this._getPriceURL();
+    return this._requestUrl(priceURL, callback);
+};
+
+ripe.Ripe.prototype.getDefaults = function(options, callback) {
+    var defaultsURL = this._getDefaultsURL();
+    return this._requestUrl(defaultsURL, function(result) {
+        callback(result ? result.parts : null);
+    });
+};
+
+ripe.Ripe.prototype.getCombinations = function(options, callback) {
+    var combinationsURL = this._getCombinationsURL();
+    return this._requestUrl(combinationsURL, callback);
+};
+
+ripe.Ripe.prototype.loadFrames = function(callback) {
+    if (this.config === undefined) {
+        this.getConfig(function(config) {
+            debugger;
+            this.config = config;
+            this.loadFrames(callback);
+        });
+        return;
+    }
+
+    var frames = {};
+    var faces = this.config["faces"];
+    for (var index = 0; index < faces.length; index++) {
+        var face = faces[index];
+        frames[face] = 1;
+    };
+
+    var sideFrames = this.config["frames"];
+    frames["side"] = sideFrames;
+    this.frames = frames;
+    callback && callback(frames);
+};
+
+ripe.Ripe.prototype._requestUrl = function(url, callback) {
+    var context = this;
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {
         var isValid = this.status === 200;
         var result = JSON.parse(this.responseText);
         callback.call(context, isValid ? result : null);
     });
-    request.open("GET", priceURL);
+    request.open("GET", url);
     request.send();
-};
-
-ripe.Ripe.prototype.getDefaults = function(options, callback) {
-    var context = this;
-    var defaultsURL = this._getDefaultsURL();
-    var request = new XMLHttpRequest();
-    request.addEventListener("load", function() {
-        var isValid = this.status === 200;
-        var result = JSON.parse(this.responseText);
-        callback.call(context, isValid ? result.parts : null);
-    });
-    request.open("GET", defaultsURL);
-    request.send();
-};
-
-ripe.Ripe.prototype.getCombinations = function(options, callback) {
-    var context = this;
-    var combinationsURL = this._getCombinationsURL();
-    var request = new XMLHttpRequest();
-    request.addEventListener("load", function() {
-        var isValid = this.status === 200;
-        var result = JSON.parse(this.responseText);
-        callback.call(context, isValid ? result.combinations : null);
-    });
-    request.open("GET", combinationsURL);
-    request.send();
+    return request;
 };
 
 ripe.Ripe.prototype._getQuery = function(options) {
@@ -80,6 +99,17 @@ ripe.Ripe.prototype._getQuery = function(options) {
     return buffer.join("&");
 };
 
+ripe.Ripe.prototype._getConfigURL = function(brand, model, variant) {
+    brand = brand || this.brand;
+    model = model || this.model;
+    variant = variant || this.variant;
+    var fullUrl = this.url + "brands/" + brand + "/models/" + model + "/config";
+    if (variant) {
+        fullUrl += "?variant=" + variant;
+    }
+    return fullUrl;
+};
+
 ripe.Ripe.prototype._getPriceURL = function(options) {
     var query = this._getQuery(options);
     return this.url + "config/price" + "?" + query;
@@ -89,7 +119,11 @@ ripe.Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
-    return this.url + "brands/" + brand + "/models/" + model + "/defaults?variant=" + variant;
+    var fullUrl = this.url + "brands/" + brand + "/models/" + model + "/defaults";
+    if (variant) {
+        fullUrl += "?variant=" + variant;
+    }
+    return fullUrl;
 };
 
 ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
@@ -97,7 +131,10 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
     model = model || this.model;
     variant = variant || this.variant;
     var useNameS = useName ? "1" : "0";
-    var query = "variant=" + variant + "&use_name=" + useNameS;
+    var query = "use_name=" + useNameS;
+    if (variant) {
+        query += "&variant=" + variant;
+    }
     return this.url + "brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
 };
 

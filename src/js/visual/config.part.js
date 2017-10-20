@@ -6,10 +6,16 @@ ripe.Config = function(owner, element, options) {
 ripe.Config.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Config.prototype.init = function() {
-    this.owner.addSelectedPartCallback(function(part) {
+    this.owner.bind("selected_part", function(part) {
         this.highlightPart(part);
     });
+
+    this.owner.loadFrames(function() {
+        this.initDOM();
+    });
 };
+
+ripe.Config.prototype.initDOM = function() {};
 
 ripe.Config.prototype.changeFrame = function(frame, options) {};
 

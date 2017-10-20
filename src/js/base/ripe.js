@@ -71,9 +71,9 @@ ripe.Ripe.prototype.bindImage = function(element, options) {
     return this.bindBase(image);
 };
 
-ripe.Ripe.prototype.bindConfigurator = function(element, options) {
-    var configurator = new ripe.Configurator(this, element, options);
-    return this.bindBase(configurator);
+ripe.Ripe.prototype.bindConfig = function(element, options) {
+    var config = new ripe.Config(this, element, options);
+    return this.bindBase(config);
 };
 
 ripe.Ripe.prototype.bindBase = function(child) {
