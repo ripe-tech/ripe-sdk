@@ -8,11 +8,11 @@ ripe.Config.prototype = Object.create(ripe.Visual.prototype);
 ripe.Config.prototype.init = function() {
     this.owner.bind("selected_part", function(part) {
         this.highlightPart(part);
-    });
+    }.bind(this));
 
     this.owner.loadFrames(function() {
         this.initDOM();
-    });
+    }.bind(this));
 };
 
 ripe.Config.prototype.initDOM = function() {};
