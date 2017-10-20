@@ -18,7 +18,7 @@
         <div id="canvas" class="canvas" data-url="{{ url|default('', True) }}"
              data-brand="{{ brand|default('', True) }}" data-model="{{ model|default('', True) }}"
              data-variant="{{ variant|default('', True) }}" data-country="{{ country|default('', True) }}"
-             data-currency="{{ currency|default('', True) }}" data-size="620" data-max_size="620" data-sensitivity="">
+             data-currency="{{ currency|default('', True) }}" data-size="620" data-max_size="620" data-sensitivity="40" data-position="0" data-view="side">
             <img id="frame-0" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
             <img id="frame-6" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
             <img id="frame-top" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />

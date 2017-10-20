@@ -86,6 +86,9 @@ ripe.Ripe.prototype.selectPart = function(part) {
 };
 
 ripe.Ripe.prototype.update = function(state) {
+    state = state || {};
+    state.parts = state.parts || this.parts;
+
     for (var index = 0; index < this.children.length; index++) {
         var child = this.children[index];
         child.update(state);

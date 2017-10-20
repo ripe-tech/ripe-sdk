@@ -1,5 +1,29 @@
 var ripe = ripe || {};
 
+ripe._assign = function(target) {
+    if (typeof Object.assign === "function") {
+        return Object.assign.apply(this, arguments);
+    }
+
+    if (target == null) {
+        throw new TypeError('Cannot convert undefined or null to object');
+    }
+
+    var to = Object(target);
+    for (var index = 1; index < arguments.length; index++) {
+        var nextSource = arguments[index];
+        if (nextSource == null) {
+            continue;
+        }
+        for (var nextKey in nextSource) {
+            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+                to[nextKey] = nextSource[nextKey];
+            }
+        }
+    }
+    return to;
+};
+
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
@@ -179,7 +203,6 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
 ripe.Ripe.prototype.loadFrames = function(callback) {
     if (this.config === undefined) {
         this.getConfig(function(config) {
-            debugger;
             this.config = config;
             this.loadFrames(callback);
         });
@@ -300,15 +323,16 @@ ripe.Ripe.prototype._getImageURL = function(options) {
 };
 
 ripe.Visual = function(owner, element, options) {
-    ripe.Interactable.call(this, owner, options);
     ripe.Observable.call(this);
+    ripe.Interactable.call(this, owner, options);
 
     this.element = element;
     ripe.Visual.prototype.init.call(this);
 };
 
-ripe.Visual.prototype = Object.create(ripe.Interactable.prototype);
 ripe.Visual.prototype = Object.create(ripe.Observable.prototype);
+ripe._assign(ripe.Visual.prototype, ripe.Interactable.prototype);
+ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
 
@@ -322,68 +346,127 @@ ripe.Config.prototype = Object.create(ripe.Visual.prototype);
 ripe.Config.prototype.init = function() {
     this.owner.bind("selected_part", function(part) {
         this.highlightPart(part);
-    });
+    }.bind(this));
 
     this.owner.loadFrames(function() {
-        this.initDOM();
+        this._initDOM();
     }.bind(this));
 };
 
-ripe.Config.prototype.initDOM = function() {
-
+ripe.Config.prototype._initDOM = function() {
     // sets defaults for the optional parameters
     var size = this.element.dataset.size || this.options.size || 1000;
     var maxSize = this.element.dataset.maxSize || this.options.maxSize || 1000;
     var sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
 
-    // sets the target element's style so that it supports two canvas
+    // sets the element element's style so that it supports two canvas
     // on top of each other so that double buffering can be used
     this.element.classList.add("configurator");
-    this.element.style.fontSize = "0px";
-    this.element.style.whiteSpace = "nowrap";
+    this.element.fontSize = "0px";
+    this.element.whiteSpace = "nowrap";
 
-    // creates the area canvas and adds it to the target element
+    // creates the area canvas and adds it to the element
     var area = document.createElement("canvas");
     area.className = "area";
-    area.width = size;
-    area.height = size;
     area.style.display = "inline-block";
     var context = area.getContext("2d");
     context.globalCompositeOperation = "multiply";
     this.element.appendChild(area);
 
-    // creates the back canvas and adds it to the target element,
+    // adds the front mask element to the element,
+    // this will be used to highlight parts
+    var frontMask = document.createElement("img");
+    frontMask.className = "front-mask";
+    frontMask.style.display = "none";
+    frontMask.style.position = "relative";
+    frontMask.style.pointerEvents = "none";
+    frontMask.style.zIndex = 2;
+    frontMask.style.opacity = 0.4;
+    this.element.appendChild(frontMask);
+
+    // creates the back canvas and adds it to the element,
     // placing it on top of the area canvas
     var back = document.createElement("canvas");
     back.className = "back";
-    back.width = size;
-    back.height = size;
     back.style.display = "inline-block";
-    back.style.marginLeft = "-" + String(size) + "px";
     var backContext = back.getContext("2d");
     backContext.globalCompositeOperation = "multiply";
     this.element.appendChild(back);
 
     // adds the backs placeholder element that will be used to
     // temporarily store the images of the product's frames
-    var sideFrames = this.frames["side"];
+    var sideFrames = this.owner.frames["side"];
     var backs = document.createElement("div");
     backs.className = "backs";
     backs.style.display = "none";
     for (var index = 0; index < sideFrames; index++) {
         var backImg = document.createElement("img");
-        backImg.dataset.frame = index;
+        backImg.setAttribute("data-frame", index);
         backs.appendChild(backImg);
     }
     var topImg = document.createElement("img");
-    topImg.dataset.frame = "top";
+    topImg.setAttribute("data-frame", "top");
     backs.appendChild(topImg);
     var bottomImg = document.createElement("img");
-    bottomImg.dataset.frame = "bottom";
+    bottomImg.setAttribute("data-frame", "bottom");
     backs.appendChild(bottomImg);
     this.element.appendChild(backs);
 
+    // creates a masks element that will be used to store the various
+    // mask images to be used during highlight and select operation
+    var mask = document.createElement("canvas");
+    mask.className = "mask";
+    mask.style.display = "none";
+    this.element.appendChild(mask);
+    var masks = document.createElement("div");
+    masks.className = "masks";
+    masks.style.display = "none";
+    for (var index = 0; index < sideFrames; index++) {
+        var maskImg = document.createElement("img");
+        maskImg.setAttribute("data-frame", index);
+        masks.appendChild(maskImg);
+    }
 
+    var topImg = document.createElement("img");
+    topImg.setAttribute("data-frame", "top");
+    masks.appendChild(topImg);
+    var bottomImg = document.createElement("img");
+    bottomImg.setAttribute("data-frame", "bottom");
+    masks.appendChild(bottomImg);
+    this.element.appendChild(masks);
+
+    // sets the element as the drag bind so that it can be updated when changes occur
+    this.element.dataset.position = 0;
+
+    // set the size of area, frontMask, back and mask
+    this.resize(size);
+
+    this._registerHandlers();
+};
+
+ripe.Config.prototype.resize = function(size) {
+    if (this.element === undefined) {
+        return;
+    }
+
+    size = size || this.element.dataset.size || this.options.size;
+    var area = this.element.querySelector(".area");
+    var frontMask = this.element.querySelector(".front-mask");
+    var back = this.element.querySelector(".back");
+    var mask = this.element.querySelector(".mask");
+    area.width = size;
+    area.height = size;
+    frontMask.width = size;
+    frontMask.height = size;
+    frontMask.style.width = size + "px";
+    frontMask.style.marginLeft = "-" + String(size) + "px";
+    back.width = size;
+    back.height = size;
+    back.style.marginLeft = "-" + String(size) + "px";
+    mask.width = size;
+    mask.height = size;
+    this.element.setAttribute("data-current-size", size);
+    this.update();
 };
 
 ripe.Config.prototype.changeFrame = function(frame, options) {};
@@ -395,6 +478,59 @@ ripe.Config.prototype.lowlight = function(options) {};
 ripe.Config.prototype.enterFullscreen = function(options) {};
 
 ripe.Config.prototype.exitFullscreen = function(options) {};
+
+ripe.Config.prototype._registerHandlers = function() {
+    // binds the mousedown event on the element
+    // to prepare it for drag movements
+    this.element.addEventListener("mousedown", function(event) {
+        var _element = this;
+        _element.dataset.view = _element.dataset.view || "side";
+        _element.dataset.base = _element.dataset.position || 0;
+        _element.dataset.down = true;
+        _element.dataset.referenceX = event.pageX;
+        _element.dataset.referenceY = event.pageY;
+        _element.dataset.percent = 0;
+        _element.classList.add("drag");
+    });
+
+    // listens for mouseup events and if it
+    // occurs then stops reacting to mousemove
+    // events has drag movements
+    this.element.addEventListener("mouseup", function(event) {
+        var _element = this;
+        _element.dataset.down = false;
+        _element.dataset.percent = 0;
+        _element.dataset.previous = _element.dataset.percent;
+        _element.classList.remove("drag");
+    });
+
+    // listens for mouseleave events and if it
+    // occurs then stops reacting to mousemove
+    // events has drag movements
+    this.element.addEventListener("mouseleave", function(event) {
+        var _element = this;
+        _element.dataset.down = false;
+        _element.dataset.percent = 0;
+        _element.dataset.previous = _element.dataset.percent;
+        _element.classList.remove("drag");
+    });
+
+    // if a mousemove event is triggered while
+    // the mouse is pressed down then updates
+    // the position of the drag element
+    this.element.addEventListener("mousemove", function(event) {
+        var _element = this;
+
+        if (_element.classList.contains("noDrag")) {
+            return;
+        }
+        var down = _element.dataset.down;
+        _element.dataset.mousePosX = event.pageX;
+        _element.dataset.mousePosY = event.pageY;
+        //TODO: updatePosition
+        down === "true" && updatePosition(_element);
+    });
+};
 
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
