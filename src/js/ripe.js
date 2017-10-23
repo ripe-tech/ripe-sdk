@@ -339,6 +339,44 @@ ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
 
+ripe.Visual.prototype._animateProperty = function(element, property, initial, final, duration, callback) {
+    // sets the initial value for the property
+    element.style[property] = initial;
+    var last = new Date();
+    var frame = function() {
+        // checks how much time has passed
+        // since the last animation frame
+        var current = new Date();
+        var timeDelta = current - last;
+        var animationDelta = timeDelta * (final - initial) / duration;
+
+        // adjusts the value by the correspondent amount
+        // making sure it doens't surpass the final value
+        var value = parseFloat(element.style[property]);
+        value += animationDelta;
+        value = final > initial ? Math.min(value, final) : Math.max(value, final);
+        element.style[property] = value;
+        last = current;
+
+        // checks if the animation has finished and if it is then
+        // fires the callback if it's set. Otherwise, requests a
+        // new animation frame to proceed with the animation
+        var incrementAnimation = final > initial && value < final;
+        var decrementAnimation = final < initial && value > final;
+        if (incrementAnimation || decrementAnimation) {
+            // sets the id of the animation frame on the element
+            // so that it can be canceled if necessary
+            var id = requestAnimationFrame(frame);
+            element.dataset.animation_id = id;
+        } else {
+            callback && callback();
+        }
+    };
+
+    // starts the animation
+    frame();
+};
+
 ripe.Config = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Config.prototype.init.call(this);
@@ -351,8 +389,11 @@ ripe.Config.prototype.init = function() {
         this.highlightPart(part);
     }.bind(this));
 
+    this.ready = false;
     this.owner.loadFrames(function() {
         this._initDOM();
+        this.ready = true;
+        this.update();
     }.bind(this));
 };
 
@@ -471,23 +512,31 @@ ripe.Config.prototype.resize = function(size) {
     this.update();
 };
 
-ripe.Config.prototype.update = function(state) {
+ripe.Config.prototype.update = function(state, options) {
+    if (this.ready == false) {
+        return;
+    }
+
     var view = this.element.dataset.view;
     var position = this.element.dataset.position;
+    options = options || {};
+    var animate = options.animate || false;
+    var callback = options.callback;
 
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
     var previous = this.element.dataset.signature || "";
     var signature = this.owner._getQuery();
     var changed = signature !== previous;
-    var animate = animate || (changed && "simple"); // TODO animate
+    animate = animate || (changed && "simple"); // TODO animate
     this.element.dataset.signature = signature;
 
     // if the parts and the position haven't changed
     // since the last frame load then ignores the
     // load request and returns immediately
-    var previous = this.element.dataset.unique;
-    var unique = signature + "&position=" + String(position) //+ "&single=" + String(single); TODO single
+    var size = this.element.getAttribute("data-current-size");
+    previous = this.element.dataset.unique;
+    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(size);
     if (previous === unique) {
         callback && callback();
         return false;
@@ -508,35 +557,45 @@ ripe.Config.prototype.update = function(state) {
     // based update (not just the loading of the current position)
     // and the current signature has changed
     var preloaded = this.element.classList.contains("preload");
-    var mustPreload = !single && (changed || !preloaded);
-    single && this.element.classList.remove("preload");
+    var mustPreload = changed || !preloaded;
     mustPreload && this._preload(this.options.useChain);
 };
 
-ripe.Config.prototype._initDOM = function() {};
-
 ripe.Config.prototype.changeFrame = function(frame, options) {
     var _frame = frame.split("-");
-    var view = _frame[0];
-    var position = _frame[1];
+    var nextView = _frame[0];
+    var nextPosition = _frame[1];
+
+    var view = this.element.dataset.view;
+    var position = this.element.dataset.position; // TODO save last view position
+
+    // if there is a new view and the product supports
+    // it then animates the transition with a crossfade
+    // and ignores all drag movements while it lasts
+    var animate = false;
+    var viewFrames = this.owner.frames[nextView];
+    if (view !== nextView && viewFrames !== undefined) {
+        view = nextView;
+        animate = "cross";
+        this.element.classList.add("noDrag");
+    }
 
     this.element.dataset.view = view;
-    this.element.dataset.position = position;
+    this.element.dataset.position = nextPosition;
 
-    this.oldFrame = this.currentFrame;
-    this.currentFrame = {
-        view: view,
-        position: position,
-        loaded: false
-    };
-    this.update();
+    this.update({}, {
+        animate: animate,
+        callback: function() {
+            animate === "cross" && this.element.classList.remove("noDrag");
+        }.bind(this)
+    });
 };
 
 ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     // retrieves the image that will be used to store the frame
     position = position || this.element.dataset.position || 0;
-    var options = options || {};
-    var draw = options.draw === undefined || draw;
+    options = options || {};
+    var draw = options.draw === undefined || options.draw;
     var animate = options.animate;
     var backs = this.element.querySelector(".backs");
     var area = this.element.querySelector(".area");
@@ -545,8 +604,9 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     image = image || front;
 
     // builds the url that will be set on the image
+    var frame = view === "side" ? position : view; // TODO view-position
     var url = this.owner._getImageURL({
-        frame: this.frame
+        frame: frame
     });
 
     // creates a callback to be called when the frame
@@ -567,7 +627,7 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
             return;
         }
         var isReady = image.dataset.loaded === "true";
-        isReady && this.drawDrag(this.element, image, animate, drawCallback);
+        isReady && this._drawFrame(image, animate, drawCallback);
         return;
     }
 
@@ -576,15 +636,18 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     // the canvas, note that this can't be an
     // anonymous function so that it can be used
     // with removeEventListener to avoid conflicts
+    console.log("animate", animate)
     var loadCallback = function() {
         image.dataset.loaded = true;
         image.dataset.src = url;
         callback && callback();
+        console.log("animate loadCallback", animate)
         if (!draw) {
             return;
         }
-        this.drawDrag(this.element, image, animate, drawCallback);
-    };
+        this._drawFrame(image, animate, drawCallback);
+    }.bind(this);
+
     // removes previous load callbacks and
     // adds one for the current frame
     image.removeEventListener("load", loadCallback);
@@ -596,6 +659,48 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     image.src = url;
     image.dataset.src = url;
     image.dataset.loaded = false;
+};
+
+ripe.Config.prototype._drawFrame = function(image, animate, callback) {
+    console.log("draw", image.dataset.frame);
+    var area = this.element.querySelector(".area");
+    var back = this.element.querySelector(".back");
+
+    var visible = area.dataset.visible === "true";
+    var current = visible ? area : back;
+    var target = visible ? back : area;
+    var context = target.getContext("2d");
+    context.clearRect(0, 0, target.clientWidth, target.clientHeight);
+    context.drawImage(image, 0, 0, target.clientWidth, target.clientHeight);
+
+    if (!animate) {
+        current.style.zIndex = 1;
+        current.style.opacity = 0;
+        target.style.zIndex = 1;
+        target.style.opacity = 1;
+        callback && callback();
+        return;
+    }
+
+    var currentId = current.dataset.animation_id;
+    var targetId = target.dataset.animation_id;
+    currentId && cancelAnimationFrame(parseInt(currentId));
+    targetId && cancelAnimationFrame(parseInt(targetId));
+
+    var timeout = animate === "immediate" ? 0 : 500;
+    if (animate === "cross") {
+        this._animateProperty(current, "opacity", 1, 0, timeout);
+    }
+
+    this._animateProperty(target, "opacity", 0, 1, timeout, function() {
+        current.style.opacity = 0;
+        current.style.zIndex = 1;
+        target.style.zIndex = 1;
+        callback && callback();
+    });
+
+    target.setAttribute("data-visible", true);
+    current.setAttribute("data-visible", false);
 };
 
 ripe.Config.prototype._preload = function(useChain) {
@@ -773,6 +878,7 @@ ripe.Config.prototype._registerHandlers = function() {
     // if a mousemove event is triggered while
     // the mouse is pressed down then updates
     // the position of the drag element
+    var self = this;
     this.element.addEventListener("mousemove", function(event) {
         var _element = this;
 
@@ -782,7 +888,7 @@ ripe.Config.prototype._registerHandlers = function() {
         var down = _element.dataset.down;
         _element.dataset.mousePosX = event.pageX;
         _element.dataset.mousePosY = event.pageY;
-        down === "true" && this._parseDrag();
+        down === "true" && self._parseDrag();
     });
 };
 
@@ -800,8 +906,8 @@ ripe.Config.prototype._parseDrag = function() {
     var deltaY = referenceY - mousePosY;
     var elementWidth = this.element.clientWidth;
     var elementHeight = this.element.clientHeight || child.clientHeight;
-    var percentX = deltaX / this.elementWidth;
-    var percentY = deltaY / this.elementHeight;
+    var percentX = deltaX / elementWidth;
+    var percentY = deltaY / elementHeight;
     this.element.dataset.percent = percentX;
     var sensitivity = this.element.dataset.sensitivity || this.sensitivity;
 
@@ -818,49 +924,17 @@ ripe.Config.prototype._parseDrag = function() {
     Math.abs(percentY) > 0.02 && this.element.classList.add("move");
 
     // if the drag was vertical then alters the view
-    var animate = false;
     var nextView = view;
     if (sensitivity * percentY > 15) {
         nextView = view === "top" ? "side" : "bottom";
+        this.element.dataset.referenceY = mousePosY;
     } else if (sensitivity * percentY < -15) {
         nextView = view === "bottom" ? "side" : "top";
-    }
-
-    // if there is a new view and the product supports
-    // it then animates the transition with a crossfade
-    // and ignores all drag movements while it lasts
-    if (view !== nextView && this.owner.frames[nextView]) {
         this.element.dataset.referenceY = mousePosY;
-        view = nextView;
-        animate = "cross";
-        this.element.classList.add("noDrag");
     }
-    this.element.dataset.view = view;
-
-    // if the frame changes then updates the product's position
-    // if not then keeps using the current frame
-    if (!isNaN(next)) {
-        this.element.dataset.position = next;
-    } else {
-        var pos = this.element.dataset.position;
-        next = parseInt(pos);
-    }
-
-    // if the new view doesn't have multiple frames
-    // then ignores the index of the new frame
-    viewFrames = this.owner.frames[view];
-    next = viewFrames === 1 ? view : next;
-
-    this.update();
-    // updates the image of the drag element
-    //self._updateDrag(element, next, animate, false, function() {
-    // if a crossfade animation finishes
-    // then stops ignoring drag movements
-    //  if (animate === "cross") {
-    //    this.element.classList.remove("noDrag");
-    //}
-    //}, options);
-
+    var nextFrame = nextView + "-" + next;
+    console.log(nextFrame);
+    this.changeFrame(nextFrame);
 };
 
 ripe.Image = function(owner, element, options) {
