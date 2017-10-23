@@ -18,7 +18,7 @@ ripe.Config.prototype.init = function() {
 ripe.Config.prototype._initDOM = function() {
     // sets defaults for the optional parameters
     var size = this.element.dataset.size || this.options.size || 1000;
-    var maxSize = this.element.dataset.maxSize || this.options.maxSize || 1000;
+    var maxSize = this.element.dataset.max_size || this.options.maxSize || 1000;
     var sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
 
     // sets the element element's style so that it supports two canvas
@@ -131,12 +131,13 @@ ripe.Config.prototype.resize = function(size) {
 };
 
 ripe.Config.prototype.update = function(state) {
-    var parts = state.parts || this.parts;
-    if (!parts) {
+    state = state || {};
+    state.parts = state.parts || this.parts;
+    if (!state.parts) {
         return;
     }
-    this.parts = parts;
-    var position = this.element.dataset.position
+    this.parts = state.parts;
+    var position = this.element.dataset.position;
 };
 
 ripe.Config.prototype.changeFrame = function(frame, options) {};
@@ -154,7 +155,7 @@ ripe.Config.prototype.enterFullscreen = function(options) {
     this.element.style.bottom = "0px";
     this.element.style.left = "0px";
     this.element.style.right = "0px";
-    var maxSize = options.maxSize || this.element.dataset.maxSize || this.options.maxSize;
+    var maxSize = options.maxSize || this.element.dataset.max_size || this.options.maxSize;
     this.resize(maxSize);
 };
 
