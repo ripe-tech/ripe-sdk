@@ -528,7 +528,7 @@ ripe.Config.prototype.update = function(state, options) {
     var previous = this.element.dataset.signature || "";
     var signature = this.owner._getQuery();
     var changed = signature !== previous;
-    animate = animate || (changed && "simple"); // TODO animate
+    animate = animate || (changed && "simple");
     this.element.dataset.signature = signature;
 
     // if the parts and the position haven't changed
@@ -636,12 +636,10 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     // the canvas, note that this can't be an
     // anonymous function so that it can be used
     // with removeEventListener to avoid conflicts
-    console.log("animate", animate)
     var loadCallback = function() {
         image.dataset.loaded = true;
         image.dataset.src = url;
         callback && callback();
-        console.log("animate loadCallback", animate)
         if (!draw) {
             return;
         }
@@ -662,7 +660,6 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
 };
 
 ripe.Config.prototype._drawFrame = function(image, animate, callback) {
-    console.log("draw", image.dataset.frame);
     var area = this.element.querySelector(".area");
     var back = this.element.querySelector(".back");
 
@@ -933,7 +930,6 @@ ripe.Config.prototype._parseDrag = function() {
         this.element.dataset.referenceY = mousePosY;
     }
     var nextFrame = nextView + "-" + next;
-    console.log(nextFrame);
     this.changeFrame(nextFrame);
 };
 
