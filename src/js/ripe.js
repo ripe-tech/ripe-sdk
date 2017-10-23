@@ -486,9 +486,30 @@ ripe.Config.prototype.highlight = function(part, options) {};
 
 ripe.Config.prototype.lowlight = function(options) {};
 
-ripe.Config.prototype.enterFullscreen = function(options) {};
+ripe.Config.prototype.enterFullscreen = function(options) {
+    if (this.element === undefined) {
+        return;
+    }
+    this.element.style.position = "fixed";
+    this.element.style.top = "0px";
+    this.element.style.bottom = "0px";
+    this.element.style.left = "0px";
+    this.element.style.right = "0px";
+    var maxSize = options.maxSize || this.element.dataset.maxSize || this.options.maxSize;
+    this.resize(maxSize);
+};
 
-ripe.Config.prototype.exitFullscreen = function(options) {};
+ripe.Config.prototype.exitFullscreen = function(options) {
+    if (this.element === undefined) {
+        return;
+    }
+    this.element.style.position = null;
+    this.element.style.top = null;
+    this.element.style.bottom = null;
+    this.element.style.left = null;
+    this.element.style.right = null;
+    this.resize();
+};
 
 ripe.Config.prototype._registerHandlers = function() {
     // binds the mousedown event on the element

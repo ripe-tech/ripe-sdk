@@ -154,6 +154,9 @@ ripe.Ripe.prototype.selectPart = function(part) {
 };
 
 ripe.Ripe.prototype.update = function(state) {
+    state = state || {};
+    state.parts = state.parts || this.parts;
+
     for (var index = 0; index < this.children.length; index++) {
         var child = this.children[index];
         child.update(state);
@@ -435,7 +438,6 @@ ripe.Config.prototype._initDOM = function() {
     masks.appendChild(bottomImg);
     this.element.appendChild(masks);
 
-    // sets the element as the drag bind so that it can be updated when changes occur
     this.element.dataset.position = 0;
 
     // set the size of area, frontMask, back and mask
@@ -469,15 +471,45 @@ ripe.Config.prototype.resize = function(size) {
     this.update();
 };
 
+ripe.Config.prototype.update = function(state) {
+    var parts = state.parts || this.parts;
+    if (!parts) {
+        return;
+    }
+    this.parts = parts;
+    var position = this.element.dataset.position
+};
+
 ripe.Config.prototype.changeFrame = function(frame, options) {};
 
 ripe.Config.prototype.highlight = function(part, options) {};
 
 ripe.Config.prototype.lowlight = function(options) {};
 
-ripe.Config.prototype.enterFullscreen = function(options) {};
+ripe.Config.prototype.enterFullscreen = function(options) {
+    if (this.element === undefined) {
+        return;
+    }
+    this.element.style.position = "fixed";
+    this.element.style.top = "0px";
+    this.element.style.bottom = "0px";
+    this.element.style.left = "0px";
+    this.element.style.right = "0px";
+    var maxSize = options.maxSize || this.element.dataset.maxSize || this.options.maxSize;
+    this.resize(maxSize);
+};
 
-ripe.Config.prototype.exitFullscreen = function(options) {};
+ripe.Config.prototype.exitFullscreen = function(options) {
+    if (this.element === undefined) {
+        return;
+    }
+    this.element.style.position = null;
+    this.element.style.top = null;
+    this.element.style.bottom = null;
+    this.element.style.left = null;
+    this.element.style.right = null;
+    this.resize();
+};
 
 ripe.Config.prototype._registerHandlers = function() {
     // binds the mousedown event on the element
@@ -527,9 +559,85 @@ ripe.Config.prototype._registerHandlers = function() {
         var down = _element.dataset.down;
         _element.dataset.mousePosX = event.pageX;
         _element.dataset.mousePosY = event.pageY;
-        //TODO: updatePosition
-        down === "true" && updatePosition(_element);
+        down === "true" && this._parseDrag();
     });
+};
+
+ripe.Config.prototype._parseDrag = function() {
+    // retrieves the last recorded mouse position
+    // and the current one and calculates the
+    // drag movement made by the user
+    var child = this.element.querySelector("*:first-child");
+    var referenceX = this.element.dataset.referenceX;
+    var referenceY = this.element.dataset.referenceY;
+    var mousePosX = this.element.dataset.mousePosX;
+    var mousePosY = this.element.dataset.mousePosY;
+    var base = this.element.dataset.base;
+    var deltaX = referenceX - mousePosX;
+    var deltaY = referenceY - mousePosY;
+    var elementWidth = this.element.clientWidth;
+    var elementHeight = this.element.clientHeight || child.clientHeight;
+    var percentX = deltaX / this.elementWidth;
+    var percentY = deltaY / this.elementHeight;
+    this.element.dataset.percent = percentX;
+    var sensitivity = this.element.dataset.sensitivity || this.sensitivity;
+
+    // retrieves the current view and its frames
+    // and determines which one is the next frame
+    var view = this.element.dataset.view;
+    var viewFrames = this.owner.frames[view];
+    var next = parseInt(base - (sensitivity * percentX)) % viewFrames;
+    next = next >= 0 ? next : viewFrames + next;
+
+    // if the movement was big enough then
+    // adds the move class to the element
+    Math.abs(percentX) > 0.02 && this.element.classList.add("move");
+    Math.abs(percentY) > 0.02 && this.element.classList.add("move");
+
+    // if the drag was vertical then alters the view
+    var animate = false;
+    var nextView = view;
+    if (sensitivity * percentY > 15) {
+        nextView = view === "top" ? "side" : "bottom";
+    } else if (sensitivity * percentY < -15) {
+        nextView = view === "bottom" ? "side" : "top";
+    }
+
+    // if there is a new view and the product supports
+    // it then animates the transition with a crossfade
+    // and ignores all drag movements while it lasts
+    if (view !== nextView && this.owner.frames[nextView]) {
+        this.element.dataset.referenceY = mousePosY;
+        view = nextView;
+        animate = "cross";
+        this.element.classList.add("noDrag");
+    }
+    this.element.dataset.view = view;
+
+    // if the frame changes then updates the product's position
+    // if not then keeps using the current frame
+    if (!isNaN(next)) {
+        this.element.dataset.position = next;
+    } else {
+        var pos = this.element.dataset.position;
+        next = parseInt(pos);
+    }
+
+    // if the new view doesn't have multiple frames
+    // then ignores the index of the new frame
+    viewFrames = this.owner.frames[view];
+    next = viewFrames === 1 ? view : next;
+
+    this.update();
+    // updates the image of the drag element
+    //self._updateDrag(element, next, animate, false, function() {
+    // if a crossfade animation finishes
+    // then stops ignoring drag movements
+    //  if (animate === "cross") {
+    //    this.element.classList.remove("noDrag");
+    //}
+    //}, options);
+
 };
 
 ripe.Image = function(owner, element, options) {
