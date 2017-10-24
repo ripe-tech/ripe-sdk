@@ -390,6 +390,8 @@ ripe.Config.prototype.init = function() {
     }.bind(this));
 
     this.ready = false;
+    this.lastFrame = {};
+
     this.owner.loadFrames(function() {
         this._initDOM();
         this.ready = true;
@@ -445,14 +447,14 @@ ripe.Config.prototype._initDOM = function() {
     backs.style.display = "none";
     for (var index = 0; index < sideFrames; index++) {
         var backImg = document.createElement("img");
-        backImg.setAttribute("data-frame", index);
+        backImg.dataset.frame = index;
         backs.appendChild(backImg);
     }
     var topImg = document.createElement("img");
-    topImg.setAttribute("data-frame", "top");
+    topImg.dataset.frame = "top";
     backs.appendChild(topImg);
     var bottomImg = document.createElement("img");
-    bottomImg.setAttribute("data-frame", "bottom");
+    bottomImg.dataset.frame = "bottom";
     backs.appendChild(bottomImg);
     this.element.appendChild(backs);
 
@@ -467,15 +469,15 @@ ripe.Config.prototype._initDOM = function() {
     masks.style.display = "none";
     for (var index = 0; index < sideFrames; index++) {
         var maskImg = document.createElement("img");
-        maskImg.setAttribute("data-frame", index);
+        maskImg.dataset.frame = index;
         masks.appendChild(maskImg);
     }
 
     var topImg = document.createElement("img");
-    topImg.setAttribute("data-frame", "top");
+    topImg.dataset.frame = "top";
     masks.appendChild(topImg);
     var bottomImg = document.createElement("img");
-    bottomImg.setAttribute("data-frame", "bottom");
+    bottomImg.dataset.frame = "bottom";
     masks.appendChild(bottomImg);
     this.element.appendChild(masks);
 
@@ -508,7 +510,7 @@ ripe.Config.prototype.resize = function(size) {
     back.style.marginLeft = "-" + String(size) + "px";
     mask.width = size;
     mask.height = size;
-    this.element.setAttribute("data-current-size", size);
+    this.element.dataset.current_size = size;
     this.update();
 };
 
@@ -567,7 +569,12 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     var nextPosition = _frame[1];
 
     var view = this.element.dataset.view;
-    var position = this.element.dataset.position; // TODO save last view position
+    var position = this.element.dataset.position;
+
+    // saves the position of the current view
+    // so that it returns to the same position
+    // when coming back to the same view
+    this.lastFrame[view] = position;
 
     // if there is a new view and the product supports
     // it then animates the transition with a crossfade
@@ -664,6 +671,9 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
     context.clearRect(0, 0, target.clientWidth, target.clientHeight);
     context.drawImage(image, 0, 0, target.clientWidth, target.clientHeight);
 
+    target.dataset.visible = true;
+    current.dataset.visible = false;
+
     if (!animate) {
         current.style.zIndex = 1;
         current.style.opacity = 0;
@@ -689,9 +699,6 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
         target.style.zIndex = 1;
         callback && callback();
     });
-
-    target.setAttribute("data-visible", true);
-    current.setAttribute("data-visible", false);
 };
 
 ripe.Config.prototype._preload = function(useChain) {
@@ -927,6 +934,12 @@ ripe.Config.prototype._parseDrag = function() {
     var viewFrames = this.owner.frames[nextView];
     var next = parseInt(base - (sensitivity * percentX)) % viewFrames;
     next = next >= 0 ? next : viewFrames + next;
+
+    // if the view changes then uses the last
+    // position presented in that view, if not
+    // then shows the next position according
+    // to the drag
+    next = view === nextView ? next : (this.lastFrame[nextView] || 0);
 
     var nextFrame = nextView + "-" + next;
     this.changeFrame(nextFrame);
