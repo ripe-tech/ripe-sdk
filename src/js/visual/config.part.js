@@ -359,6 +359,7 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
 };
 
 ripe.Config.prototype._preload = function(useChain) {
+    var position = this.element.dataset.position || 0;
     var index = this.element.dataset.index || 0;
     index++;
     this.element.dataset.index = index;
@@ -366,23 +367,21 @@ ripe.Config.prototype._preload = function(useChain) {
 
     // adds all the frames to the work pile
     var work = [];
-    for (var view in this.frames) {
-        var viewFrames = this.frames[view];
-        if (viewFrames === 0) {
-            work.push(view);
-            continue;
-        }
+    for (var view in this.owner.frames) {
+        var viewFrames = this.owner.frames[view];
         for (var _index = 0; _index < viewFrames; _index++) {
             if (_index === position) {
                 continue;
             }
-            work.push(_index);
+            var frame = view + "-" + _index;
+            work.push(frame);
         }
     }
     work.reverse();
 
+    var self = this;
     var mark = function(element) {
-        var _index = this.element.dataset.index;
+        var _index = self.element.dataset.index;
         _index = parseInt(_index);
         if (index !== _index) {
             return;
@@ -391,15 +390,15 @@ ripe.Config.prototype._preload = function(useChain) {
         // removes the preloading class from the image element
         // and retrieves all the images still preloading,
         element.classList.remove("preloading");
-        var backs = this.element.querySelector(".backs");
+        var backs = self.element.querySelector(".backs");
         var pending = backs.querySelectorAll("img.preloading") || [];
 
         // if there are images preloading then adds the
         // preloading class to the target element and
         // prevents drag movements to avoid flickering
         if (pending.length > 0) {
-            this.element.classList.add("preloading")
-            this.classList.add("noDrag");
+            self.element.classList.add("preloading")
+            self.element.classList.add("noDrag");
         }
 
         // if there are no images preloading and no
@@ -407,14 +406,14 @@ ripe.Config.prototype._preload = function(useChain) {
         // is considered finished so drag movements are
         // allowed again and the loaded event is triggered
         else if (work.length === 0) {
-            this.element.classList.remove("preloading");
-            this.classList.remove("noDrag");
-            this._runCallbacks("loaded");
+            self.element.classList.remove("preloading");
+            self.element.classList.remove("noDrag");
+            self._runCallbacks("loaded");
         }
     };
 
     var render = function() {
-        var _index = this.element.getAttribute("data-index");
+        var _index = self.element.getAttribute("data-index");
         _index = parseInt(_index);
 
         if (index !== _index) {
@@ -427,9 +426,13 @@ ripe.Config.prototype._preload = function(useChain) {
         // retrieves the next frame to be loaded
         // and its corresponding image element
         // and adds the preloading class to it
-        var element = work.pop();
-        var backs = this.element.querySelector(".backs");
-        var reference = backs.querySelector("img[data-frame='" + String(element) + "']");
+        var frame = work.pop();
+        var _frame = frame.split("-");
+        var view = _frame[0];
+        var position = _frame[1];
+        frame = view === "side" ? position : view;
+        var backs = self.element.querySelector(".backs");
+        var reference = backs.querySelector("img[data-frame='" + String(frame) + "']");
         reference.classList.add("preloading");
 
         // if a chain base loaded is used then
@@ -449,7 +452,9 @@ ripe.Config.prototype._preload = function(useChain) {
 
         // determines if a chain based loading should be used for the
         // pre-loading process of the various image resources to be loaded
-        this.load(element, false, false, useChain ? callbackChain : callbackMark);
+        self._loadFrame(view, position, {
+            draw: false
+        }, useChain ? callbackChain : callbackMark);
         !useChain && render();
     };
 
@@ -458,7 +463,7 @@ ripe.Config.prototype._preload = function(useChain) {
     // starts the render process after a timeout
     work.length > 0 && this.element.classList.add("preloading");
     if (work.length > 0) {
-        this.classList.add("noDrag");
+        this.element.classList.add("noDrag");
         setTimeout(function() {
             render();
         }, 250);

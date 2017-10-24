@@ -59,12 +59,12 @@ window.onload = function() {
 
     var configurator = ripe.bindConfig(element);
 
-    setTimeout(function() {
-        configurator.changeFrame("side-10", {
+    configurator.bind("loaded", function() {
+        configurator.changeFrame("side-11", {
             step: -1,
             interval: 50
         });
-    }, 600);
+    });
 
     image.bind("loaded", function() {
         console.log("frame-0 loaded")

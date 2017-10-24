@@ -101,14 +101,4 @@ ripe.Ripe.prototype.update = function(state) {
     }.bind(this));
 };
 
-ripe.Ripe.prototype._removeCallback = function(name, callback) {
-    var callbacks = this.callbacks[name] || [];
-    var index = array.indexOf(callback);
-    if (index === -1) {
-        return;
-    }
-    callbacks.splice(index, 1);
-    this.callbacks[name] = callbacks;
-};
-
 var Ripe = ripe.Ripe;
