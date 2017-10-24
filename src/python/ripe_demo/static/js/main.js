@@ -55,7 +55,7 @@ window.onload = function() {
         frame: "top"
     });
 
-    setTimeout(function() {image.setFrame("9")});
+    setTimeout(function() { image.setFrame("9"); });
 
     var configurator = ripe.bindConfig(element);
 

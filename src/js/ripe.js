@@ -513,7 +513,7 @@ ripe.Config.prototype.resize = function(size) {
 };
 
 ripe.Config.prototype.update = function(state, options) {
-    if (this.ready == false) {
+    if (this.ready === false) {
         return;
     }
 
