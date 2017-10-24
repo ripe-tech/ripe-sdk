@@ -6,7 +6,7 @@ ripe._assign = function(target) {
     }
 
     if (target == null) {
-        throw new TypeError('Cannot convert undefined or null to object');
+        throw new TypeError("Cannot assign undefined or null object");
     }
 
     var to = Object(target);
