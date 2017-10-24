@@ -593,18 +593,20 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
 
 ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     // retrieves the image that will be used to store the frame
+    view = view || this.element.dataset.view || "side";
     position = position || this.element.dataset.position || 0;
+    var frame = view === "side" ? position : view;
+
     options = options || {};
     var draw = options.draw === undefined || options.draw;
     var animate = options.animate;
     var backs = this.element.querySelector(".backs");
     var area = this.element.querySelector(".area");
-    var image = backs.querySelector("img[data-frame='" + String(position) + "']");
-    var front = area.querySelector("img[data-frame='" + String(position) + "']");
+    var image = backs.querySelector("img[data-frame='" + String(frame) + "']");
+    var front = area.querySelector("img[data-frame='" + String(frame) + "']");
     image = image || front;
 
     // builds the url that will be set on the image
-    var frame = view === "side" ? position : view; // TODO view-position
     var url = this.owner._getImageURL({
         frame: frame
     });
@@ -636,8 +638,8 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     image.onload = function() {
         image.dataset.loaded = true;
         image.dataset.src = url;
-        callback && callback();
         if (!draw) {
+            callback && callback();
             return;
         }
         this._drawFrame(image, animate, drawCallback);
@@ -900,19 +902,14 @@ ripe.Config.prototype._parseDrag = function() {
     this.element.dataset.percent = percentX;
     var sensitivity = this.element.dataset.sensitivity || this.sensitivity;
 
-    // retrieves the current view and its frames
-    // and determines which one is the next frame
-    var view = this.element.dataset.view;
-    var viewFrames = this.owner.frames[view];
-    var next = parseInt(base - (sensitivity * percentX)) % viewFrames;
-    next = next >= 0 ? next : viewFrames + next;
-
     // if the movement was big enough then
     // adds the move class to the element
     Math.abs(percentX) > 0.02 && this.element.classList.add("move");
     Math.abs(percentY) > 0.02 && this.element.classList.add("move");
 
-    // if the drag was vertical then alters the view
+    // if the drag was vertical then alters the
+    // view if it is supported by the product
+    var view = this.element.dataset.view;
     var nextView = view;
     if (sensitivity * percentY > 15) {
         nextView = view === "top" ? "side" : "bottom";
@@ -921,6 +918,16 @@ ripe.Config.prototype._parseDrag = function() {
         nextView = view === "bottom" ? "side" : "top";
         this.element.dataset.referenceY = mousePosY;
     }
+    if (this.owner.frames[nextView] === undefined) {
+        nextView = view;
+    }
+
+    // retrieves the current view and its frames
+    // and determines which one is the next frame
+    var viewFrames = this.owner.frames[nextView];
+    var next = parseInt(base - (sensitivity * percentX)) % viewFrames;
+    next = next >= 0 ? next : viewFrames + next;
+
     var nextFrame = nextView + "-" + next;
     this.changeFrame(nextFrame);
 };
