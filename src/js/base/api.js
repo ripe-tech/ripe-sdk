@@ -1,23 +1,23 @@
 ripe.Ripe.prototype.getConfig = function(callback) {
     var configURL = this._getConfigURL();
-    return this._requestUrl(configURL, callback);
+    return this._requestURL(configURL, callback);
 };
 
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     var priceURL = this._getPriceURL();
-    return this._requestUrl(priceURL, callback);
+    return this._requestURL(priceURL, callback);
 };
 
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     var defaultsURL = this._getDefaultsURL();
-    return this._requestUrl(defaultsURL, function(result) {
+    return this._requestURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
     });
 };
 
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
     var combinationsURL = this._getCombinationsURL();
-    return this._requestUrl(combinationsURL, callback);
+    return this._requestURL(combinationsURL, callback);
 };
 
 ripe.Ripe.prototype.loadFrames = function(callback) {
@@ -42,7 +42,7 @@ ripe.Ripe.prototype.loadFrames = function(callback) {
     callback && callback(frames);
 };
 
-ripe.Ripe.prototype._requestUrl = function(url, callback) {
+ripe.Ripe.prototype._requestURL = function(url, callback) {
     var context = this;
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {

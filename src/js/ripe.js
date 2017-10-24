@@ -1,6 +1,6 @@
 var ripe = ripe || {};
 
-ripe._assign = function(target) {
+ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
     }
@@ -183,24 +183,24 @@ var Ripe = ripe.Ripe;
 
 ripe.Ripe.prototype.getConfig = function(callback) {
     var configURL = this._getConfigURL();
-    return this._requestUrl(configURL, callback);
+    return this._requestURL(configURL, callback);
 };
 
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     var priceURL = this._getPriceURL();
-    return this._requestUrl(priceURL, callback);
+    return this._requestURL(priceURL, callback);
 };
 
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     var defaultsURL = this._getDefaultsURL();
-    return this._requestUrl(defaultsURL, function(result) {
+    return this._requestURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
     });
 };
 
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
     var combinationsURL = this._getCombinationsURL();
-    return this._requestUrl(combinationsURL, callback);
+    return this._requestURL(combinationsURL, callback);
 };
 
 ripe.Ripe.prototype.loadFrames = function(callback) {
@@ -225,7 +225,7 @@ ripe.Ripe.prototype.loadFrames = function(callback) {
     callback && callback(frames);
 };
 
-ripe.Ripe.prototype._requestUrl = function(url, callback) {
+ripe.Ripe.prototype._requestURL = function(url, callback) {
     var context = this;
     var request = new XMLHttpRequest();
     request.addEventListener("load", function() {
@@ -334,7 +334,7 @@ ripe.Visual = function(owner, element, options) {
 };
 
 ripe.Visual.prototype = Object.create(ripe.Observable.prototype);
-ripe._assign(ripe.Visual.prototype, ripe.Interactable.prototype);
+ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
@@ -631,12 +631,9 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
         return;
     }
 
-    // creates a load callback to be called when
-    // the image is loaded to draw the frame on
-    // the canvas, note that this can't be an
-    // anonymous function so that it can be used
-    // with removeEventListener to avoid conflicts
-    var loadCallback = function() {
+    // adds load callback to the image to
+    // draw the frame when it is available
+    image.onload = function() {
         image.dataset.loaded = true;
         image.dataset.src = url;
         callback && callback();
@@ -645,11 +642,6 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
         }
         this._drawFrame(image, animate, drawCallback);
     }.bind(this);
-
-    // removes previous load callbacks and
-    // adds one for the current frame
-    image.removeEventListener("load", loadCallback);
-    image.addEventListener("load", loadCallback);
 
     // sets the src of the image to trigger the request
     // and sets loaded to false to indicate that the
@@ -791,7 +783,7 @@ ripe.Config.prototype._preload = function(useChain) {
 
         // determines if a chain based loading should be used for the
         // pre-loading process of the various image resources to be loaded
-        load(element, false, false, useChain ? callbackChain : callbackMark);
+        this.load(element, false, false, useChain ? callbackChain : callbackMark);
         !useChain && render();
     };
 

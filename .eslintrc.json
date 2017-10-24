@@ -5,7 +5,7 @@
     "extends": "eslint:recommended",
     "rules": {
         "indent": [
-            "error",
+            "warn",
             4
         ],
         "linebreak-style": [
@@ -19,6 +19,11 @@
         "semi": [
             "error",
             "always"
-        ]
+        ],
+        "space-before-function-paren": [
+            "error",
+            "never"
+        ],
+        "mocha/no-exclusive-tests": "error"
     }
 }
