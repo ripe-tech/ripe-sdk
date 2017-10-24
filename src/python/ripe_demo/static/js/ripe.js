@@ -390,6 +390,8 @@ ripe.Config.prototype.init = function() {
     }.bind(this));
 
     this.ready = false;
+    this.lastFrame = {};
+
     this.owner.loadFrames(function() {
         this._initDOM();
         this.ready = true;
@@ -445,14 +447,14 @@ ripe.Config.prototype._initDOM = function() {
     backs.style.display = "none";
     for (var index = 0; index < sideFrames; index++) {
         var backImg = document.createElement("img");
-        backImg.setAttribute("data-frame", index);
+        backImg.dataset.frame = index;
         backs.appendChild(backImg);
     }
     var topImg = document.createElement("img");
-    topImg.setAttribute("data-frame", "top");
+    topImg.dataset.frame = "top";
     backs.appendChild(topImg);
     var bottomImg = document.createElement("img");
-    bottomImg.setAttribute("data-frame", "bottom");
+    bottomImg.dataset.frame = "bottom";
     backs.appendChild(bottomImg);
     this.element.appendChild(backs);
 
@@ -467,15 +469,15 @@ ripe.Config.prototype._initDOM = function() {
     masks.style.display = "none";
     for (var index = 0; index < sideFrames; index++) {
         var maskImg = document.createElement("img");
-        maskImg.setAttribute("data-frame", index);
+        maskImg.dataset.frame = index;
         masks.appendChild(maskImg);
     }
 
     var topImg = document.createElement("img");
-    topImg.setAttribute("data-frame", "top");
+    topImg.dataset.frame = "top";
     masks.appendChild(topImg);
     var bottomImg = document.createElement("img");
-    bottomImg.setAttribute("data-frame", "bottom");
+    bottomImg.dataset.frame = "bottom";
     masks.appendChild(bottomImg);
     this.element.appendChild(masks);
 
@@ -508,7 +510,7 @@ ripe.Config.prototype.resize = function(size) {
     back.style.marginLeft = "-" + String(size) + "px";
     mask.width = size;
     mask.height = size;
-    this.element.setAttribute("data-current-size", size);
+    this.element.dataset.current_size = size;
     this.update();
 };
 
@@ -567,7 +569,12 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     var nextPosition = _frame[1];
 
     var view = this.element.dataset.view;
-    var position = this.element.dataset.position; // TODO save last view position
+    var position = this.element.dataset.position;
+
+    // saves the position of the current view
+    // so that it returns to the same position
+    // when coming back to the same view
+    this.lastFrame[view] = position;
 
     // if there is a new view and the product supports
     // it then animates the transition with a crossfade
@@ -593,18 +600,20 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
 
 ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     // retrieves the image that will be used to store the frame
+    view = view || this.element.dataset.view || "side";
     position = position || this.element.dataset.position || 0;
+    var frame = view === "side" ? position : view;
+
     options = options || {};
     var draw = options.draw === undefined || options.draw;
     var animate = options.animate;
     var backs = this.element.querySelector(".backs");
     var area = this.element.querySelector(".area");
-    var image = backs.querySelector("img[data-frame='" + String(position) + "']");
-    var front = area.querySelector("img[data-frame='" + String(position) + "']");
+    var image = backs.querySelector("img[data-frame='" + String(frame) + "']");
+    var front = area.querySelector("img[data-frame='" + String(frame) + "']");
     image = image || front;
 
     // builds the url that will be set on the image
-    var frame = view === "side" ? position : view; // TODO view-position
     var url = this.owner._getImageURL({
         frame: frame
     });
@@ -636,8 +645,8 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     image.onload = function() {
         image.dataset.loaded = true;
         image.dataset.src = url;
-        callback && callback();
         if (!draw) {
+            callback && callback();
             return;
         }
         this._drawFrame(image, animate, drawCallback);
@@ -661,6 +670,9 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
     var context = target.getContext("2d");
     context.clearRect(0, 0, target.clientWidth, target.clientHeight);
     context.drawImage(image, 0, 0, target.clientWidth, target.clientHeight);
+
+    target.dataset.visible = true;
+    current.dataset.visible = false;
 
     if (!animate) {
         current.style.zIndex = 1;
@@ -687,9 +699,6 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
         target.style.zIndex = 1;
         callback && callback();
     });
-
-    target.setAttribute("data-visible", true);
-    current.setAttribute("data-visible", false);
 };
 
 ripe.Config.prototype._preload = function(useChain) {
@@ -900,19 +909,14 @@ ripe.Config.prototype._parseDrag = function() {
     this.element.dataset.percent = percentX;
     var sensitivity = this.element.dataset.sensitivity || this.sensitivity;
 
-    // retrieves the current view and its frames
-    // and determines which one is the next frame
-    var view = this.element.dataset.view;
-    var viewFrames = this.owner.frames[view];
-    var next = parseInt(base - (sensitivity * percentX)) % viewFrames;
-    next = next >= 0 ? next : viewFrames + next;
-
     // if the movement was big enough then
     // adds the move class to the element
     Math.abs(percentX) > 0.02 && this.element.classList.add("move");
     Math.abs(percentY) > 0.02 && this.element.classList.add("move");
 
-    // if the drag was vertical then alters the view
+    // if the drag was vertical then alters the
+    // view if it is supported by the product
+    var view = this.element.dataset.view;
     var nextView = view;
     if (sensitivity * percentY > 15) {
         nextView = view === "top" ? "side" : "bottom";
@@ -921,6 +925,22 @@ ripe.Config.prototype._parseDrag = function() {
         nextView = view === "bottom" ? "side" : "top";
         this.element.dataset.referenceY = mousePosY;
     }
+    if (this.owner.frames[nextView] === undefined) {
+        nextView = view;
+    }
+
+    // retrieves the current view and its frames
+    // and determines which one is the next frame
+    var viewFrames = this.owner.frames[nextView];
+    var next = parseInt(base - (sensitivity * percentX)) % viewFrames;
+    next = next >= 0 ? next : viewFrames + next;
+
+    // if the view changes then uses the last
+    // position presented in that view, if not
+    // then shows the next position according
+    // to the drag
+    next = view === nextView ? next : (this.lastFrame[nextView] || 0);
+
     var nextFrame = nextView + "-" + next;
     this.changeFrame(nextFrame);
 };
@@ -941,12 +961,15 @@ ripe.Image.prototype.init = function() {
 };
 
 ripe.Image.prototype.update = function(state) {
+    var size = this.element.dataset.size || this.options.size || 1000;
     var url = this.owner._getImageURL({
         frame: this.frame
     });
     if (this.element.src === url) {
         return;
     }
+    this.element.width = size;
+    this.element.height = size;
     this.element.src = url;
 };
 

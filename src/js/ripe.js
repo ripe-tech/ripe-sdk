@@ -961,12 +961,15 @@ ripe.Image.prototype.init = function() {
 };
 
 ripe.Image.prototype.update = function(state) {
+    var size = this.element.dataset.size || this.options.size || 1000;
     var url = this.owner._getImageURL({
         frame: this.frame
     });
     if (this.element.src === url) {
         return;
     }
+    this.element.width = size;
+    this.element.height = size;
     this.element.src = url;
 };
 
