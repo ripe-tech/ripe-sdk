@@ -45,9 +45,9 @@ ripe.Observable.prototype.addCallback = function(event, callback) {
     this.callbacks[event] = callbacks;
 };
 
-ripe.Observable.prototype.removeCallback = function(event) {
+ripe.Observable.prototype.removeCallback = function(event, callback) {
     var callbacks = this.callbacks[event] || [];
-    var index = array.indexOf(callback);
+    var index = callbacks.indexOf(callback);
     if (index === -1) {
         return;
     }
@@ -568,6 +568,11 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     var nextView = _frame[0];
     var nextPosition = _frame[1];
 
+    options = options || {};
+    var step = options.step;
+    var interval = options.interval || this.options.interval || 0;
+    var preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
+
     var view = this.element.dataset.view;
     var position = this.element.dataset.position;
 
@@ -584,16 +589,48 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     if (view !== nextView && viewFrames !== undefined) {
         view = nextView;
         animate = "cross";
-        this.element.classList.add("noDrag");
     }
 
     this.element.dataset.view = view;
     this.element.dataset.position = nextPosition;
 
+    // if an animation step was provided then changes
+    // to the next step instead of the target frame
+    if (step) {
+        var stepPosition = (parseInt(position) + step) % viewFrames;
+        stepPosition = stepPosition < 0 ? viewFrames + stepPosition : stepPosition;
+        if (step > 0 && stepPosition > nextPosition) {
+            stepPosition = nextPosition;
+        } else if (step < 0 && stepPosition < nextPosition) {
+            stepPosition = nextPosition;
+        }
+        this.element.dataset.position = stepPosition;
+    }
+
+    // if the frame change is animated and preventDrag is true
+    // then ignores drag movements until the animation is finished
+    preventDrag = preventDrag && (animate || step);
+    preventDrag && this.element.classList.add("noDrag");
+
     this.update({}, {
         animate: animate,
         callback: function() {
-            animate === "cross" && this.element.classList.remove("noDrag");
+            // if there is no step transition or the
+            // transition has finished then calls the
+            // changed_frame callback and allows drag
+            // movements again
+            if (!step || stepPosition == nextPosition) {
+                this._runCallbacks("changed_frame", nextPosition);
+                preventDrag && this.element.classList.remove("noDrag");
+            }
+
+            // otherwise waits the provided interval
+            // and proceeds to the next step
+            else {
+                setTimeout(function() {
+                    this.changeFrame(frame, options);
+                }.bind(this), interval);
+            }
         }.bind(this)
     });
 };
@@ -619,10 +656,9 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     });
 
     // creates a callback to be called when the frame
-    // is drawn to trigger the changed_frame event and
-    // the callback passed to this function if it's set
+    // is drawn to trigger the callback passed to this
+    // function if it's set
     var drawCallback = function() {
-        this._runCallbacks("changed_frame", position);
         callback && callback();
     }.bind(this);
 
