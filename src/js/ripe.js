@@ -420,13 +420,10 @@ ripe.Config.prototype._initLayout = function() {
     // sets the element's style so that it supports two canvas
     // on top of each other so that double buffering can be used
     this.element.classList.add("configurator");
-    this.element.fontSize = "0px";
-    this.element.whiteSpace = "nowrap";
 
     // creates the area canvas and adds it to the element
     var area = document.createElement("canvas");
     area.className = "area";
-    area.style.display = "inline-block";
     var context = area.getContext("2d");
     context.globalCompositeOperation = "multiply";
     this.element.appendChild(area);
@@ -435,18 +432,12 @@ ripe.Config.prototype._initLayout = function() {
     // this will be used to highlight parts
     var frontMask = document.createElement("img");
     frontMask.className = "front-mask";
-    frontMask.style.display = "none";
-    frontMask.style.position = "relative";
-    frontMask.style.pointerEvents = "none";
-    frontMask.style.zIndex = 2;
-    frontMask.style.opacity = 0.4;
     this.element.appendChild(frontMask);
 
     // creates the back canvas and adds it to the element,
     // placing it on top of the area canvas
     var back = document.createElement("canvas");
     back.className = "back";
-    back.style.display = "inline-block";
     var backContext = back.getContext("2d");
     backContext.globalCompositeOperation = "multiply";
     this.element.appendChild(back);
@@ -456,7 +447,6 @@ ripe.Config.prototype._initLayout = function() {
     var sideFrames = this.owner.frames["side"];
     var backs = document.createElement("div");
     backs.className = "backs";
-    backs.style.display = "none";
     for (var index = 0; index < sideFrames; index++) {
         var backImg = document.createElement("img");
         backImg.dataset.frame = index;
@@ -474,11 +464,9 @@ ripe.Config.prototype._initLayout = function() {
     // mask images to be used during highlight and select operation
     var mask = document.createElement("canvas");
     mask.className = "mask";
-    mask.style.display = "none";
     this.element.appendChild(mask);
     var masks = document.createElement("div");
     masks.className = "masks";
-    masks.style.display = "none";
     for (var index = 0; index < sideFrames; index++) {
         var maskImg = document.createElement("img");
         maskImg.dataset.frame = index;
@@ -506,7 +494,7 @@ ripe.Config.prototype.resize = function(size) {
         return;
     }
 
-    size = size || this.element.dataset.size || this.size;
+    size = size || this.element.clientWidth || this.options.size;
     var area = this.element.querySelector(".area");
     var frontMask = this.element.querySelector(".front-mask");
     var back = this.element.querySelector(".back");
@@ -874,11 +862,7 @@ ripe.Config.prototype.enterFullscreen = function(options) {
     if (this.element === undefined) {
         return;
     }
-    this.element.style.position = "fixed";
-    this.element.style.top = "0px";
-    this.element.style.bottom = "0px";
-    this.element.style.left = "0px";
-    this.element.style.right = "0px";
+    this.element.classList.add("fullscreen");
     var maxSize = options.maxSize || this.element.dataset.max_size || this.options.maxSize;
     this.resize(maxSize);
 };
@@ -887,11 +871,7 @@ ripe.Config.prototype.exitFullscreen = function(options) {
     if (this.element === undefined) {
         return;
     }
-    this.element.style.position = null;
-    this.element.style.top = null;
-    this.element.style.bottom = null;
-    this.element.style.left = null;
-    this.element.style.right = null;
+    this.element.classList.remove("fullscreen");
     this.resize();
 };
 
@@ -1019,7 +999,7 @@ ripe.Image.prototype.init = function() {
 };
 
 ripe.Image.prototype.update = function(state) {
-    var size = this.element.dataset.size || this.options.size || 1000;
+    var size = this.element.clientWidth || this.options.size || 1000;
     var url = this.owner._getImageURL({
         frame: this.frame
     });
