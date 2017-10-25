@@ -92,13 +92,17 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    var loadDefaults = !hasParts && !this.options.noDefaults;
-    loadDefaults && this.getDefaults({}, function(result) {
-        this.parts = result;
-        this.ready = true;
-        this.update();
-        this._runCallbacks("parts", this.parts);
-    }.bind(this));
+    if (!hasParts) {
+        this.getDefaults(function(parts) {
+            this.parts = parts;
+            this._runCallbacks("parts", this.parts);
+        }.bind(this));
+    } else {
+        this.parts = this.options.parts;
+        setTimeout(function() {
+            this._runCallbacks("parts", this.parts);
+        }.bind(this));
+    }
 
     // tries to determine if the combinations available should be
     // loaded for the current model and if that's the case start the
@@ -253,7 +257,7 @@ ripe.Ripe.prototype.getPrice = function(options, callback) {
     return this._requestURL(priceURL, callback);
 };
 
-ripe.Ripe.prototype.getDefaults = function(options, callback) {
+ripe.Ripe.prototype.getDefaults = function(callback) {
     var defaultsURL = this._getDefaultsURL();
     return this._requestURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
@@ -392,6 +396,16 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     return this.url + "compose?" + query;
 };
 
+ripe.Ripe.prototype._getMaskURL = function(options) {
+    options = options || {};
+    options.parts = options.parts || {};
+    var query = this._getQuery(options);
+    if (options.part) {
+        query += "&part=" + options.part;
+    }
+    return /*this.url*/ "http://localhost:8181/" + "mask?" + query;
+};
+
 ripe.Visual = function(owner, element, options) {
     ripe.Observable.call(this);
     ripe.Interactable.call(this, owner, options);
@@ -419,6 +433,7 @@ ripe.Config.prototype.init = function() {
     this.size = this.element.dataset.size || this.options.size || 1000;
     this.maxSize = this.element.dataset.max_size || this.options.maxSize || 1000;
     this.sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
+    this.interval = this.options.interval || 0;
 
     this.owner.bind("selected_part", function(part) {
         this.highlight(part);
@@ -437,6 +452,20 @@ ripe.Config.prototype.init = function() {
         this.ready = true;
         this.update();
     }.bind(this));
+
+    // creates a set of sorted parts to be
+    // used on the highlight operation
+    this.partsList = [];
+    this.owner.bind("parts", function(parts) {
+        this.parts = parts;
+        this.partsList = [];
+        for (var part in this.parts) {
+            var partValue = this.parts[part];
+            var material = partValue["material"];
+            material !== undefined && this.partsList.push(part)
+        }
+        this.partsList.sort();
+    }.bind(this));
 };
 
 ripe.Config.prototype.resize = function(size) {
@@ -444,7 +473,7 @@ ripe.Config.prototype.resize = function(size) {
         return;
     }
 
-    size = size || this.element.clientWidth || this.options.size;
+    size = size || this.element.clientWidth;
     var area = this.element.querySelector(".area");
     var frontMask = this.element.querySelector(".front-mask");
     var back = this.element.querySelector(".back");
@@ -520,7 +549,7 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
 
     options = options || {};
     var step = options.step;
-    var interval = options.interval || this.options.interval || 0;
+    var interval = options.interval || this.interval;
     var preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
 
     var view = this.element.dataset.view;
@@ -607,15 +636,16 @@ ripe.Config.prototype.highlight = function(part, options) {
 
     // constructs the full url of the mask image that is going to be
     // set for the current highlight operation (to be determined)
-    var url = this.url + "mask";
-    var query = "?model=" + this.model + "&frame=" + frame + "&part=" + part;
-    var fullUrl = url + query + "&format=" + format;
-    fullUrl += backgroundColor ? "&background=" + backgroundColor : "";
-    fullUrl += size ? "&size=" + String(size) : "";
+    var url = this.owner._getMaskURL({
+        frame: frame,
+        size: this.size,
+        color: backgroundColor,
+        part: part
+    });
 
     var frontMask = this.element.querySelector(".front-mask");
     var src = frontMask.getAttribute("src");
-    if (src === fullUrl) {
+    if (src === url) {
         return;
     }
 
@@ -630,11 +660,11 @@ ripe.Config.prototype.highlight = function(part, options) {
     frontMask.addEventListener("error", function() {
         this.setAttribute("src", "");
     });
-    frontMask.setAttribute("src", fullUrl);
+    frontMask.setAttribute("src", url);
 
     var animationId = frontMask.dataset.animation_id;
     cancelAnimationFrame(animationId);
-    this._animateProperty(frontMask, "opacity", 0, 0.4, 250);
+    ripe.animateProperty(frontMask, "opacity", 0, 0.4, 250);
 };
 
 ripe.Config.prototype.lowlight = function(options) {
@@ -648,7 +678,7 @@ ripe.Config.prototype.enterFullscreen = function(options) {
         return;
     }
     this.element.classList.add("fullscreen");
-    var maxSize = options.maxSize || this.element.dataset.max_size || this.options.maxSize;
+    var maxSize = options.maxSize || this.element.dataset.max_size || this.maxSize;
     this.resize(maxSize);
 };
 
@@ -740,38 +770,8 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     var maskImage = masksBuffer.querySelector("img[data-frame='" + String(frame) + "']");
     image = image || front;
 
-    // constructs the url for the mask and then at the end of the
-    // mask loading process runs the final update of the mask canvas
-    // operation that will allow new highlight and selection operation
-    // to be performed according to the new frame value
-    if (maskImage.dataset.src) {
-        setTimeout(function() {
-            console.log("updating maskImage...")
-            //TODO: updateMask(maskImage, position);
-        }, 150);
-    } else {
-        var format = options.format || this.format;
-        var backgroundColor = options.backgroundColor || this.backgroundColor;
-        var size = options.size || this.size;
-        var url = this.url + "mask";
-        var query = "?model=" + this.model + "&frame=" + frame;
-        var fullUrl = url + query + "&format=" + format;
-        fullUrl += backgroundColor ? "&background=" + backgroundColor : "";
-        fullUrl += size ? "&size=" + String(size) : "";
-        // var maskImageLoad = function() {
-        //     var self = this;
-        //     setTimeout(function() {
-        //         updateMask(self, position);
-        //     }, 150);
-        // }
-        // maskImage.removeEventListener("load", maskImageLoad);
-        // maskImage.addEventListener("load", maskImageLoad);
-        // maskImage.addEventListener("error", function() {
-        //     this.setAttribute("src", null);
-        // });
-        // maskImage.crossOrigin = "Anonymous";
-        maskImage.setAttribute("src", _fullUrl);
-    }
+    // constructs the url for the mask and updates it
+    this._loadMask(maskImage, view, position, options);
 
     // builds the url that will be set on the image
     var url = this.owner._getImageURL({
@@ -818,6 +818,47 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     image.src = url;
     image.dataset.src = url;
     image.dataset.loaded = false;
+};
+
+ripe.Config.prototype._loadMask = function(maskImage, view, position, options) {
+    // constructs the url for the mask and then at the end of the
+    // mask loading process runs the final update of the mask canvas
+    // operation that will allow new highlight and selection operation
+    // to be performed according to the new frame value
+    if (maskImage.dataset.src) {
+        setTimeout(function() {
+            this._drawMask(maskImage);
+        }, 150);
+    } else {
+        var format = options.format || this.format;
+        var backgroundColor = options.backgroundColor || this.backgroundColor;
+        var size = options.size || this.size;
+        var frame = ripe.getFrameKey(view, position);
+        var url = this.owner._getMaskURL({
+            frame: frame,
+            size: this.size,
+            color: backgroundColor
+        });
+
+        var self = this;
+        maskImage.onload = function() {
+            setTimeout(function() {
+                self._drawMask(maskImage);
+            }, 150);
+        };
+        maskImage.addEventListener("error", function() {
+            this.setAttribute("src", null);
+        });
+        maskImage.crossOrigin = "Anonymous";
+        maskImage.setAttribute("src", url);
+    }
+};
+
+ripe.Config.prototype._drawMask = function(maskImage) {
+    var mask = this.element.querySelector(".mask");
+    maskContext = mask.getContext("2d");
+    maskContext.clearRect(0, 0, mask.width, mask.height);
+    maskContext.drawImage(maskImage, 0, 0, mask.width, mask.height);
 };
 
 ripe.Config.prototype._drawFrame = function(image, animate, callback) {

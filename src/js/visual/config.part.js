@@ -30,6 +30,20 @@ ripe.Config.prototype.init = function() {
         this.ready = true;
         this.update();
     }.bind(this));
+
+    // creates a set of sorted parts to be
+    // used on the highlight operation
+    this.partsList = [];
+    this.owner.bind("parts", function(parts) {
+        this.parts = parts;
+        this.partsList = [];
+        for (var part in this.parts) {
+            var partValue = this.parts[part];
+            var material = partValue["material"];
+            material !== undefined && this.partsList.push(part)
+        }
+        this.partsList.sort();
+    }.bind(this));
 };
 
 ripe.Config.prototype.resize = function(size) {
@@ -200,15 +214,16 @@ ripe.Config.prototype.highlight = function(part, options) {
 
     // constructs the full url of the mask image that is going to be
     // set for the current highlight operation (to be determined)
-    var url = this.url + "mask";
-    var query = "?model=" + this.model + "&frame=" + frame + "&part=" + part;
-    var fullUrl = url + query + "&format=" + format;
-    fullUrl += backgroundColor ? "&background=" + backgroundColor : "";
-    fullUrl += size ? "&size=" + String(size) : "";
+    var url = this.owner._getMaskURL({
+        frame: frame,
+        size: this.size,
+        color: backgroundColor,
+        part: part
+    });
 
     var frontMask = this.element.querySelector(".front-mask");
     var src = frontMask.getAttribute("src");
-    if (src === fullUrl) {
+    if (src === url) {
         return;
     }
 
@@ -223,11 +238,11 @@ ripe.Config.prototype.highlight = function(part, options) {
     frontMask.addEventListener("error", function() {
         this.setAttribute("src", "");
     });
-    frontMask.setAttribute("src", fullUrl);
+    frontMask.setAttribute("src", url);
 
     var animationId = frontMask.dataset.animation_id;
     cancelAnimationFrame(animationId);
-    this._animateProperty(frontMask, "opacity", 0, 0.4, 250);
+    ripe.animateProperty(frontMask, "opacity", 0, 0.4, 250);
 };
 
 ripe.Config.prototype.lowlight = function(options) {
@@ -333,38 +348,8 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     var maskImage = masksBuffer.querySelector("img[data-frame='" + String(frame) + "']");
     image = image || front;
 
-    // constructs the url for the mask and then at the end of the
-    // mask loading process runs the final update of the mask canvas
-    // operation that will allow new highlight and selection operation
-    // to be performed according to the new frame value
-    if (maskImage.dataset.src) {
-        setTimeout(function() {
-            console.log("updating maskImage...")
-            //TODO: updateMask(maskImage, position);
-        }, 150);
-    } else {
-        var format = options.format || this.format;
-        var backgroundColor = options.backgroundColor || this.backgroundColor;
-        var size = options.size || this.size;
-        var url = this.url + "mask";
-        var query = "?model=" + this.model + "&frame=" + frame;
-        var fullUrl = url + query + "&format=" + format;
-        fullUrl += backgroundColor ? "&background=" + backgroundColor : "";
-        fullUrl += size ? "&size=" + String(size) : "";
-        // var maskImageLoad = function() {
-        //     var self = this;
-        //     setTimeout(function() {
-        //         updateMask(self, position);
-        //     }, 150);
-        // }
-        // maskImage.removeEventListener("load", maskImageLoad);
-        // maskImage.addEventListener("load", maskImageLoad);
-        // maskImage.addEventListener("error", function() {
-        //     this.setAttribute("src", null);
-        // });
-        // maskImage.crossOrigin = "Anonymous";
-        maskImage.setAttribute("src", _fullUrl);
-    }
+    // constructs the url for the mask and updates it
+    this._loadMask(maskImage, view, position, options);
 
     // builds the url that will be set on the image
     var url = this.owner._getImageURL({
@@ -411,6 +396,47 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     image.src = url;
     image.dataset.src = url;
     image.dataset.loaded = false;
+};
+
+ripe.Config.prototype._loadMask = function(maskImage, view, position, options) {
+    // constructs the url for the mask and then at the end of the
+    // mask loading process runs the final update of the mask canvas
+    // operation that will allow new highlight and selection operation
+    // to be performed according to the new frame value
+    if (maskImage.dataset.src) {
+        setTimeout(function() {
+            this._drawMask(maskImage);
+        }, 150);
+    } else {
+        var format = options.format || this.format;
+        var backgroundColor = options.backgroundColor || this.backgroundColor;
+        var size = options.size || this.size;
+        var frame = ripe.getFrameKey(view, position);
+        var url = this.owner._getMaskURL({
+            frame: frame,
+            size: this.size,
+            color: backgroundColor
+        });
+
+        var self = this;
+        maskImage.onload = function() {
+            setTimeout(function() {
+                self._drawMask(maskImage);
+            }, 150);
+        };
+        maskImage.addEventListener("error", function() {
+            this.setAttribute("src", null);
+        });
+        maskImage.crossOrigin = "Anonymous";
+        maskImage.setAttribute("src", url);
+    }
+};
+
+ripe.Config.prototype._drawMask = function(maskImage) {
+    var mask = this.element.querySelector(".mask");
+    maskContext = mask.getContext("2d");
+    maskContext.clearRect(0, 0, mask.width, mask.height);
+    maskContext.drawImage(maskImage, 0, 0, mask.width, mask.height);
 };
 
 ripe.Config.prototype._drawFrame = function(image, animate, callback) {

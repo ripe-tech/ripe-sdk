@@ -8,7 +8,7 @@ ripe.Ripe.prototype.getPrice = function(options, callback) {
     return this._requestURL(priceURL, callback);
 };
 
-ripe.Ripe.prototype.getDefaults = function(options, callback) {
+ripe.Ripe.prototype.getDefaults = function(callback) {
     var defaultsURL = this._getDefaultsURL();
     return this._requestURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
@@ -145,4 +145,14 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
 ripe.Ripe.prototype._getImageURL = function(options) {
     var query = this._getQuery(options);
     return this.url + "compose?" + query;
+};
+
+ripe.Ripe.prototype._getMaskURL = function(options) {
+    options = options || {};
+    options.parts = options.parts || {};
+    var query = this._getQuery(options);
+    if (options.part) {
+        query += "&part=" + options.part;
+    }
+    return /*this.url*/ "http://localhost:8181/" + "mask?" + query;
 };
