@@ -12,7 +12,7 @@ ripe.Config.prototype.init = function() {
     this.sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
 
     this.owner.bind("selected_part", function(part) {
-        this.highlightPart(part);
+        this.highlight(part);
     }.bind(this));
 
     this.ready = false;
@@ -181,7 +181,9 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     });
 };
 
-ripe.Config.prototype.highlight = function(part, options) {};
+ripe.Config.prototype.highlight = function(part, options) {
+
+};
 
 ripe.Config.prototype.lowlight = function(options) {
     var frontMask = this.element.querySelector(".front-mask");
@@ -549,7 +551,7 @@ ripe.Config.prototype._registerHandlers = function() {
         var x = event.offsetX;
         var y = event.offsetY;
         var part = self._chosenPart(this, x, y);
-        part && self.highlightPart(part);
+        part && self.highlight(part);
     });
 
     area.addEventListener("dragstart", function(event) {
@@ -560,7 +562,7 @@ ripe.Config.prototype._registerHandlers = function() {
         // canvasClick(this, event);
     });
 
-    back.addEventListener("mousemove", function() {
+    back.addEventListener("mousemove", function(event) {
         var drag = this.classList.contains("drag");
         if (drag) {
             return;
@@ -569,7 +571,7 @@ ripe.Config.prototype._registerHandlers = function() {
         var x = event.offsetX;
         var y = event.offsetY;
         var part = self._chosenPart(this, x, y);
-        part && self.highlightPart(part);
+        part && self.highlight(part);
     });
 
     back.addEventListener("dragstart", function(event) {
