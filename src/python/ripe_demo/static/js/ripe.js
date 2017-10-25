@@ -236,6 +236,11 @@ ripe.getFrameKey = function(view, position, token) {
     return view + token + position;
 };
 
+ripe.parseFrameKey = function(frame, token) {
+    token = token || "-";
+    return frame.split(token);
+};
+
 ripe.Ripe.prototype.getConfig = function(callback) {
     var configURL = this._getConfigURL();
     return this._requestURL(configURL, callback);
@@ -309,7 +314,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
     model && buffer.push("model=" + model);
     variant && buffer.push("variant=" + variant);
     if (frame) {
-        var _frame = frame.split("-");
+        var _frame = ripe.parseFrameKey(frame);
         var view = _frame[0];
         var position = _frame[1];
         position = view === "side" ? position : view;
@@ -399,6 +404,8 @@ ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
 
+var ripe = ripe || {};
+
 ripe.Config = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Config.prototype.init.call(this, options);
@@ -427,71 +434,6 @@ ripe.Config.prototype.init = function() {
         this.ready = true;
         this.update();
     }.bind(this));
-};
-
-ripe.Config.prototype._initLayout = function() {
-    // clears the elements children
-    while (this.element.firstChild) {
-        this.element.firstChild.remove();
-    }
-
-    // sets the element's style so that it supports two canvas
-    // on top of each other so that double buffering can be used
-    this.element.classList.add("configurator");
-
-    // creates the area canvas and adds it to the element
-    var area = ripe.createElement("canvas", "area");
-    var context = area.getContext("2d");
-    context.globalCompositeOperation = "multiply";
-    this.element.appendChild(area);
-
-    // adds the front mask element to the element,
-    // this will be used to highlight parts
-    var frontMask = ripe.createElement("img", "front-mask");
-    this.element.appendChild(frontMask);
-
-    // creates the back canvas and adds it to the element,
-    // placing it on top of the area canvas
-    var back = ripe.createElement("canvas", "back");
-    var backContext = back.getContext("2d");
-    backContext.globalCompositeOperation = "multiply";
-    this.element.appendChild(back);
-
-    // adds the framesBuffer placeholder element that will be used to
-    // temporarily store the images of the product's frames
-    var framesBuffer = ripe.createElement("div", "frames-buffer");
-    for (var view in this.frames) {
-        var viewFrames = this.frames[view];
-        for (var index = 0; index < viewFrames; index++) {
-            var frameBuffer = ripe.createElement("img");
-            frameBuffer.dataset.frame = ripe.getFrameKey(view, index);
-            framesBuffer.appendChild(frameBuffer);
-        }
-    }
-    this.element.appendChild(framesBuffer);
-
-    // creates a masksBuffer element that will be used to store the various
-    // mask images to be used during highlight and select operation
-    var mask = ripe.createElement("canvas", "mask");
-    this.element.appendChild(mask);
-    var masksBuffer = ripe.createElement("div", "masks-buffer");
-    for (var view in this.frames) {
-        var viewFrames = this.frames[view];
-        for (var index = 0; index < viewFrames; index++) {
-            var maskBuffer = ripe.createElement("img");
-            maskBuffer.dataset.frame = ripe.getFrameKey(view, index);
-            masksBuffer.appendChild(maskBuffer);
-        }
-    }
-    this.element.appendChild(masksBuffer);
-
-    this.element.dataset.view = "side";
-    this.element.dataset.position = 0;
-
-    // set the size of area, frontMask, back and mask
-    this.resize();
-
-    this._registerHandlers();
 };
 
 ripe.Config.prototype.resize = function(size) {
@@ -569,7 +511,7 @@ ripe.Config.prototype.update = function(state, options) {
 };
 
 ripe.Config.prototype.changeFrame = function(frame, options) {
-    var _frame = frame.split("-");
+    var _frame = ripe.parseFrameKey(frame);
     var nextView = _frame[0];
     var nextPosition = _frame[1];
 
@@ -612,8 +554,8 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
         this.element.dataset.position = stepPosition;
     }
 
-    // determines if the current change frame operation is an
-    // animated one or if it's a discrete one
+    // determines if the current change frame operation
+    // is an animated one or if it's a discrete one
     var animated = Boolean(step);
 
     // if the frame change is animated and preventDrag is true
@@ -621,17 +563,17 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     preventDrag = preventDrag && (animate || step);
     preventDrag && this.element.classList.add("noDrag");
 
+    var newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
+    this._runCallbacks("changed_frame", newFrame);
     this.update({}, {
         animate: animate,
         callback: function() {
-            this._runCallbacks("changed_frame", nextPosition);
-
-            // if there is no step transition or the
-            // transition has finished then calls the
-            // changed frame callback and allows drag
-            // movements again
+            // if there is no step transition
+            // or the transition has finished
+            // then allows drag movements again
             if (!animated || stepPosition == nextPosition) {
                 preventDrag && this.element.classList.remove("noDrag");
+
             }
 
             // otherwise waits the provided interval
@@ -643,6 +585,94 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
             }
         }.bind(this)
     });
+};
+
+ripe.Config.prototype.highlight = function(part, options) {};
+
+ripe.Config.prototype.lowlight = function(options) {
+    var frontMask = this.element.querySelector(".front-mask");
+    frontMask.classList.add("lowlight");
+    this.element.classList.remove("highlight");
+};
+
+ripe.Config.prototype.enterFullscreen = function(options) {
+    if (this.element === undefined) {
+        return;
+    }
+    this.element.classList.add("fullscreen");
+    var maxSize = options.maxSize || this.element.dataset.max_size || this.options.maxSize;
+    this.resize(maxSize);
+};
+
+ripe.Config.prototype.exitFullscreen = function(options) {
+    if (this.element === undefined) {
+        return;
+    }
+    this.element.classList.remove("fullscreen");
+    this.resize();
+};
+
+ripe.Config.prototype._initLayout = function() {
+    // clears the elements children
+    while (this.element.firstChild) {
+        this.element.firstChild.remove();
+    }
+
+    // sets the element's style so that it supports two canvas
+    // on top of each other so that double buffering can be used
+    this.element.classList.add("configurator");
+
+    // creates the area canvas and adds it to the element
+    var area = ripe.createElement("canvas", "area");
+    var context = area.getContext("2d");
+    context.globalCompositeOperation = "multiply";
+    this.element.appendChild(area);
+
+    // adds the front mask element to the element,
+    // this will be used to highlight parts
+    var frontMask = ripe.createElement("img", "front-mask");
+    this.element.appendChild(frontMask);
+
+    // creates the back canvas and adds it to the element,
+    // placing it on top of the area canvas
+    var back = ripe.createElement("canvas", "back");
+    var backContext = back.getContext("2d");
+    backContext.globalCompositeOperation = "multiply";
+    this.element.appendChild(back);
+
+    // creates the mask element that will de used to display
+    // the mask on top of an highlighted or selected part
+    var mask = ripe.createElement("canvas", "mask");
+    this.element.appendChild(mask);
+
+    // adds the framesBuffer placeholder element that will be used to
+    // temporarily store the images of the product's frames
+    var framesBuffer = ripe.createElement("div", "frames-buffer");
+
+    // creates a masksBuffer element that will be used to store the various
+    // mask images to be used during highlight and select operation
+    var masksBuffer = ripe.createElement("div", "masks-buffer");
+
+    // creates two image elements for each frame and
+    // appends them to the frames and masks buffers
+    for (var view in this.frames) {
+        var viewFrames = this.frames[view];
+        for (var index = 0; index < viewFrames; index++) {
+            var frameBuffer = ripe.createElement("img");
+            frameBuffer.dataset.frame = ripe.getFrameKey(view, index);
+            framesBuffer.appendChild(frameBuffer);
+            var maskBuffer = frameBuffer.cloneNode(true);
+            masksBuffer.appendChild(maskBuffer);
+        }
+    }
+    this.element.appendChild(framesBuffer);
+    this.element.appendChild(masksBuffer);
+
+    // set the size of area, frontMask, back and mask
+    this.resize();
+
+    // register for all the necessary DOM events
+    this._registerHandlers();
 };
 
 ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
@@ -837,6 +867,9 @@ ripe.Config.prototype._preload = function(useChain) {
 
         // determines if a chain based loading should be used for the
         // pre-loading process of the various image resources to be loaded
+        var _frame = ripe.parseFrameKey(frame);
+        var view = _frame[0];
+        var position = _frame[1];
         self._loadFrame(view, position, {
             draw: false
         }, useChain ? callbackChain : callbackMark);
@@ -853,31 +886,6 @@ ripe.Config.prototype._preload = function(useChain) {
             render();
         }, 250);
     }
-};
-
-ripe.Config.prototype.highlight = function(part, options) {};
-
-ripe.Config.prototype.lowlight = function(options) {
-    var frontMask = this.element.querySelector(".front-mask");
-    frontMask.classList.add("lowlight");
-    this.element.classList.remove("highlight");
-};
-
-ripe.Config.prototype.enterFullscreen = function(options) {
-    if (this.element === undefined) {
-        return;
-    }
-    this.element.classList.add("fullscreen");
-    var maxSize = options.maxSize || this.element.dataset.max_size || this.options.maxSize;
-    this.resize(maxSize);
-};
-
-ripe.Config.prototype.exitFullscreen = function(options) {
-    if (this.element === undefined) {
-        return;
-    }
-    this.element.classList.remove("fullscreen");
-    this.resize();
 };
 
 ripe.Config.prototype._registerHandlers = function() {

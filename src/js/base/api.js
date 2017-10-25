@@ -71,7 +71,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
     model && buffer.push("model=" + model);
     variant && buffer.push("variant=" + variant);
     if (frame) {
-        var _frame = frame.split("-");
+        var _frame = ripe.parseFrameKey(frame);
         var view = _frame[0];
         var position = _frame[1];
         position = view === "side" ? position : view;
