@@ -341,9 +341,9 @@ ripe.Ripe.prototype._getQuery = function(options) {
     currency && buffer.push("currency=" + currency);
 
     // TODO: move this to another place
-    options.format && buffer.push("format=" + format);
-    options.size && buffer.push("size=" + size);
-    options.background && buffer.push("background=" + background);
+    options.format && buffer.push("format=" + options.format);
+    options.size && buffer.push("size=" + options.size);
+    options.background && buffer.push("background=" + options.background);
 
     return buffer.join("&");
 };
@@ -416,6 +416,7 @@ ripe.Config = function(owner, element, options) {
 ripe.Config.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Config.prototype.init = function() {
+    this.size = this.element.dataset.size || this.options.size || 1000;
     this.maxSize = this.element.dataset.max_size || this.options.maxSize || 1000;
     this.sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
 
@@ -774,7 +775,8 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
 
     // builds the url that will be set on the image
     var url = this.owner._getImageURL({
-        frame: frame
+        frame: frame,
+        size: this.size
     });
 
     // creates a callback to be called when the frame
@@ -1169,16 +1171,17 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
-
+    this.size = this.element.dataset.size || this.options.size || 1000;
     this.element.addEventListener("load", function() {
         this._runCallbacks("loaded");
     }.bind(this));
 };
 
 ripe.Image.prototype.update = function(state) {
-    var size = this.element.clientWidth || this.options.size || 1000;
+    var size = this.element.dataset.size || 1000;
     var url = this.owner._getImageURL({
-        frame: this.frame
+        frame: this.frame,
+        size: size
     });
     if (this.element.src === url) {
         return;
