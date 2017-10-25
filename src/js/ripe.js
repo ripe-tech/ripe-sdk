@@ -186,6 +186,51 @@ ripe.Ripe.prototype.update = function(state) {
 
 var Ripe = ripe.Ripe;
 
+ripe.createElement = function(tagName, className) {
+    var element = tagName && document.createElement(tagName);
+    element.className = className ? className : "";
+
+    return element;
+};
+
+ripe.animateProperty = function(element, property, initial, final, duration, callback) {
+    // sets the initial value for the property
+    element.style[property] = initial;
+    var last = new Date();
+    var frame = function() {
+        // checks how much time has passed
+        // since the last animation frame
+        var current = new Date();
+        var timeDelta = current - last;
+        var animationDelta = timeDelta * (final - initial) / duration;
+
+        // adjusts the value by the correspondent amount
+        // making sure it doens't surpass the final value
+        var value = parseFloat(element.style[property]);
+        value += animationDelta;
+        value = final > initial ? Math.min(value, final) : Math.max(value, final);
+        element.style[property] = value;
+        last = current;
+
+        // checks if the animation has finished and if it is then
+        // fires the callback if it's set. Otherwise, requests a
+        // new animation frame to proceed with the animation
+        var incrementAnimation = final > initial && value < final;
+        var decrementAnimation = final < initial && value > final;
+        if (incrementAnimation || decrementAnimation) {
+            // sets the id of the animation frame on the element
+            // so that it can be canceled if necessary
+            var id = requestAnimationFrame(frame);
+            element.dataset.animation_id = id;
+        } else {
+            callback && callback();
+        }
+    };
+
+    // starts the animation
+    frame();
+};
+
 ripe.Ripe.prototype.getConfig = function(callback) {
     var configURL = this._getConfigURL();
     return this._requestURL(configURL, callback);
@@ -343,44 +388,6 @@ ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
 
-ripe.Visual.prototype._animateProperty = function(element, property, initial, final, duration, callback) {
-    // sets the initial value for the property
-    element.style[property] = initial;
-    var last = new Date();
-    var frame = function() {
-        // checks how much time has passed
-        // since the last animation frame
-        var current = new Date();
-        var timeDelta = current - last;
-        var animationDelta = timeDelta * (final - initial) / duration;
-
-        // adjusts the value by the correspondent amount
-        // making sure it doens't surpass the final value
-        var value = parseFloat(element.style[property]);
-        value += animationDelta;
-        value = final > initial ? Math.min(value, final) : Math.max(value, final);
-        element.style[property] = value;
-        last = current;
-
-        // checks if the animation has finished and if it is then
-        // fires the callback if it's set. Otherwise, requests a
-        // new animation frame to proceed with the animation
-        var incrementAnimation = final > initial && value < final;
-        var decrementAnimation = final < initial && value > final;
-        if (incrementAnimation || decrementAnimation) {
-            // sets the id of the animation frame on the element
-            // so that it can be canceled if necessary
-            var id = requestAnimationFrame(frame);
-            element.dataset.animation_id = id;
-        } else {
-            callback && callback();
-        }
-    };
-
-    // starts the animation
-    frame();
-};
-
 ripe.Config = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Config.prototype.init.call(this, options);
@@ -422,22 +429,21 @@ ripe.Config.prototype._initLayout = function() {
     this.element.classList.add("configurator");
 
     // creates the area canvas and adds it to the element
-    var area = document.createElement("canvas");
-    area.className = "area";
+    var area = ripe.createElement("canvas", "area");
     var context = area.getContext("2d");
     context.globalCompositeOperation = "multiply";
     this.element.appendChild(area);
 
     // adds the front mask element to the element,
     // this will be used to highlight parts
-    var frontMask = document.createElement("img");
-    frontMask.className = "front-mask";
+    var frontMask = ripe.createElement("img", "front-mask");
+
     this.element.appendChild(frontMask);
 
     // creates the back canvas and adds it to the element,
     // placing it on top of the area canvas
-    var back = document.createElement("canvas");
-    back.className = "back";
+    var back = ripe.createElement("canvas", "back");
+
     var backContext = back.getContext("2d");
     backContext.globalCompositeOperation = "multiply";
     this.element.appendChild(back);
@@ -445,38 +451,36 @@ ripe.Config.prototype._initLayout = function() {
     // adds the backs placeholder element that will be used to
     // temporarily store the images of the product's frames
     var sideFrames = this.owner.frames["side"];
-    var backs = document.createElement("div");
-    backs.className = "backs";
+    var backs = ripe.createElement("div", "backs");
+
     for (var index = 0; index < sideFrames; index++) {
-        var backImg = document.createElement("img");
+        var backImg = ripe.createElement("img");
         backImg.dataset.frame = index;
         backs.appendChild(backImg);
     }
-    var topImg = document.createElement("img");
+    var topImg = ripe.createElement("img");
     topImg.dataset.frame = "top";
     backs.appendChild(topImg);
-    var bottomImg = document.createElement("img");
+    var bottomImg = ripe.createElement("img");
     bottomImg.dataset.frame = "bottom";
     backs.appendChild(bottomImg);
     this.element.appendChild(backs);
 
     // creates a masks element that will be used to store the various
     // mask images to be used during highlight and select operation
-    var mask = document.createElement("canvas");
-    mask.className = "mask";
+    var mask = ripe.createElement("canvas", "mask");
     this.element.appendChild(mask);
-    var masks = document.createElement("div");
-    masks.className = "masks";
+    var masks = ripe.createElement("div", "masks");
     for (var index = 0; index < sideFrames; index++) {
-        var maskImg = document.createElement("img");
+        var maskImg = ripe.createElement("img");
         maskImg.dataset.frame = index;
         masks.appendChild(maskImg);
     }
 
-    var topImg = document.createElement("img");
+    var topImg = ripe.createElement("img");
     topImg.dataset.frame = "top";
     masks.appendChild(topImg);
-    var bottomImg = document.createElement("img");
+    var bottomImg = ripe.createElement("img");
     bottomImg.dataset.frame = "bottom";
     masks.appendChild(bottomImg);
     this.element.appendChild(masks);
@@ -731,10 +735,10 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
 
     var timeout = animate === "immediate" ? 0 : 500;
     if (animate === "cross") {
-        this._animateProperty(current, "opacity", 1, 0, timeout);
+        ripe.animateProperty(current, "opacity", 1, 0, timeout);
     }
 
-    this._animateProperty(target, "opacity", 0, 1, timeout, function() {
+    ripe.animateProperty(target, "opacity", 0, 1, timeout, function() {
         current.style.opacity = 0;
         current.style.zIndex = 1;
         target.style.zIndex = 1;
