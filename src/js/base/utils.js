@@ -42,3 +42,8 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     // starts the animation
     frame();
 };
+
+ripe.getFrameKey = function(view, position, token) {
+    token = token || "-";
+    return view + token + position;
+};

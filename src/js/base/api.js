@@ -70,7 +70,13 @@ ripe.Ripe.prototype._getQuery = function(options) {
     brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
     variant && buffer.push("variant=" + variant);
-    frame && buffer.push("frame=" + frame);
+    if (frame) {
+        var _frame = frame.split("-");
+        var view = _frame[0];
+        var position = _frame[1];
+        position = view === "side" ? position : view;
+        buffer.push("frame=" + position);
+    }
 
     for (var part in parts) {
         var value = parts[part];
