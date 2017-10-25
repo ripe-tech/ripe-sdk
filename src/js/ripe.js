@@ -448,42 +448,42 @@ ripe.Config.prototype._initLayout = function() {
     backContext.globalCompositeOperation = "multiply";
     this.element.appendChild(back);
 
-    // adds the backs placeholder element that will be used to
+    // adds the framesBuffer placeholder element that will be used to
     // temporarily store the images of the product's frames
     var sideFrames = this.owner.frames["side"];
-    var backs = ripe.createElement("div", "backs");
+    var framesBuffer = ripe.createElement("div", "frames-buffer");
 
     for (var index = 0; index < sideFrames; index++) {
         var backImg = ripe.createElement("img");
         backImg.dataset.frame = index;
-        backs.appendChild(backImg);
+        framesBuffer.appendChild(backImg);
     }
     var topImg = ripe.createElement("img");
     topImg.dataset.frame = "top";
-    backs.appendChild(topImg);
+    framesBuffer.appendChild(topImg);
     var bottomImg = ripe.createElement("img");
     bottomImg.dataset.frame = "bottom";
-    backs.appendChild(bottomImg);
-    this.element.appendChild(backs);
+    framesBuffer.appendChild(bottomImg);
+    this.element.appendChild(framesBuffer);
 
-    // creates a masks element that will be used to store the various
+    // creates a masksBuffer element that will be used to store the various
     // mask images to be used during highlight and select operation
     var mask = ripe.createElement("canvas", "mask");
     this.element.appendChild(mask);
-    var masks = ripe.createElement("div", "masks");
+    var masksBuffer = ripe.createElement("div", "masks-buffer");
     for (var index = 0; index < sideFrames; index++) {
         var maskImg = ripe.createElement("img");
         maskImg.dataset.frame = index;
-        masks.appendChild(maskImg);
+        masksBuffer.appendChild(maskImg);
     }
 
     var topImg = ripe.createElement("img");
     topImg.dataset.frame = "top";
-    masks.appendChild(topImg);
+    masksBuffer.appendChild(topImg);
     var bottomImg = ripe.createElement("img");
     bottomImg.dataset.frame = "bottom";
-    masks.appendChild(bottomImg);
-    this.element.appendChild(masks);
+    masksBuffer.appendChild(bottomImg);
+    this.element.appendChild(masksBuffer);
 
     this.element.dataset.position = 0;
 
@@ -653,9 +653,9 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     options = options || {};
     var draw = options.draw === undefined || options.draw;
     var animate = options.animate;
-    var backs = this.element.querySelector(".backs");
+    var framesBuffer = this.element.querySelector(".frames-buffer");
     var area = this.element.querySelector(".area");
-    var image = backs.querySelector("img[data-frame='" + String(frame) + "']");
+    var image = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
     var front = area.querySelector("img[data-frame='" + String(frame) + "']");
     image = image || front;
 
@@ -778,8 +778,8 @@ ripe.Config.prototype._preload = function(useChain) {
         // removes the preloading class from the image element
         // and retrieves all the images still preloading,
         element.classList.remove("preloading");
-        var backs = self.element.querySelector(".backs");
-        var pending = backs.querySelectorAll("img.preloading") || [];
+        var framesBuffer = self.element.querySelector(".frames-buffer");
+        var pending = framesBuffer.querySelectorAll("img.preloading") || [];
 
         // if there are images preloading then adds the
         // preloading class to the target element and
@@ -819,8 +819,8 @@ ripe.Config.prototype._preload = function(useChain) {
         var view = _frame[0];
         var position = _frame[1];
         frame = view === "side" ? position : view;
-        var backs = self.element.querySelector(".backs");
-        var reference = backs.querySelector("img[data-frame='" + String(frame) + "']");
+        var framesBuffer = self.element.querySelector(".frames-buffer");
+        var reference = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
         reference.classList.add("preloading");
 
         // if a chain base loaded is used then

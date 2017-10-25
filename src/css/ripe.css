@@ -13,7 +13,7 @@
     display: inline-block;
 }
 
-.configurator .backs {
+.configurator .frames-buffer {
     display: none;
 }
 
@@ -34,7 +34,7 @@
     display: none;
 }
 
-.configurator .masks {
+.configurator .masks-buffer {
     display: none;
 }
 
