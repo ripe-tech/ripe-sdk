@@ -178,6 +178,44 @@ ripe.createElement = function(tagName, className) {
     return element;
 };
 
+ripe._animateProperty = function(element, property, initial, final, duration, callback) {
+    // sets the initial value for the property
+    element.style[property] = initial;
+    var last = new Date();
+    var frame = function() {
+        // checks how much time has passed
+        // since the last animation frame
+        var current = new Date();
+        var timeDelta = current - last;
+        var animationDelta = timeDelta * (final - initial) / duration;
+
+        // adjusts the value by the correspondent amount
+        // making sure it doens't surpass the final value
+        var value = parseFloat(element.style[property]);
+        value += animationDelta;
+        value = final > initial ? Math.min(value, final) : Math.max(value, final);
+        element.style[property] = value;
+        last = current;
+
+        // checks if the animation has finished and if it is then
+        // fires the callback if it's set. Otherwise, requests a
+        // new animation frame to proceed with the animation
+        var incrementAnimation = final > initial && value < final;
+        var decrementAnimation = final < initial && value > final;
+        if (incrementAnimation || decrementAnimation) {
+            // sets the id of the animation frame on the element
+            // so that it can be canceled if necessary
+            var id = requestAnimationFrame(frame);
+            element.dataset.animation_id = id;
+        } else {
+            callback && callback();
+        }
+    };
+
+    // starts the animation
+    frame();
+};
+
 ripe.Ripe.prototype.getConfig = function(callback) {
     var configURL = this._getConfigURL();
     return this._requestURL(configURL, callback);
@@ -335,45 +373,6 @@ ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
-
-ripe.Visual.prototype._animateProperty = function(element, property, initial, final, duration, callback) {
-    // sets the initial value for the property
-    element.style[property] = initial;
-    var last = new Date();
-    var frame = function() {
-        // checks how much time has passed
-        // since the last animation frame
-        var current = new Date();
-        var timeDelta = current - last;
-        var animationDelta = timeDelta * (final - initial) / duration;
-
-        // adjusts the value by the correspondent amount
-        // making sure it doens't surpass the final value
-        var value = parseFloat(element.style[property]);
-        value += animationDelta;
-        value = final > initial ? Math.min(value, final) : Math.max(value, final);
-        element.style[property] = value;
-        last = current;
-
-        // checks if the animation has finished and if it is then
-        // fires the callback if it's set. Otherwise, requests a
-        // new animation frame to proceed with the animation
-        var incrementAnimation = final > initial && value < final;
-        var decrementAnimation = final < initial && value > final;
-        if (incrementAnimation || decrementAnimation) {
-            // sets the id of the animation frame on the element
-            // so that it can be canceled if necessary
-            var id = requestAnimationFrame(frame);
-            element.dataset.animation_id = id;
-        } else {
-            callback && callback();
-        }
-    };
-
-    // starts the animation
-    frame();
-};
-
 ripe.Config = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Config.prototype.init.call(this);
@@ -455,7 +454,11 @@ ripe.Config.prototype._initDOM = function() {
         masks.appendChild(maskImg);
     }
 
+    var topImg = ripe.createElement("img");
+    topImg.dataset.frame = "top";
     masks.appendChild(topImg);
+    var bottomImg = ripe.createElement("img");
+    bottomImg.dataset.frame = "bottom";
     masks.appendChild(bottomImg);
     this.element.appendChild(masks);
 
@@ -704,10 +707,10 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
 
     var timeout = animate === "immediate" ? 0 : 500;
     if (animate === "cross") {
-        this._animateProperty(current, "opacity", 1, 0, timeout);
+        ripe._animateProperty(current, "opacity", 1, 0, timeout);
     }
 
-    this._animateProperty(target, "opacity", 0, 1, timeout, function() {
+    ripe._animateProperty(target, "opacity", 0, 1, timeout, function() {
         current.style.opacity = 0;
         current.style.zIndex = 1;
         target.style.zIndex = 1;

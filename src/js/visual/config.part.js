@@ -79,7 +79,11 @@ ripe.Config.prototype._initDOM = function() {
         masks.appendChild(maskImg);
     }
 
+    var topImg = ripe.createElement("img");
+    topImg.dataset.frame = "top";
     masks.appendChild(topImg);
+    var bottomImg = ripe.createElement("img");
+    bottomImg.dataset.frame = "bottom";
     masks.appendChild(bottomImg);
     this.element.appendChild(masks);
 
@@ -328,10 +332,10 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
 
     var timeout = animate === "immediate" ? 0 : 500;
     if (animate === "cross") {
-        this._animateProperty(current, "opacity", 1, 0, timeout);
+        ripe._animateProperty(current, "opacity", 1, 0, timeout);
     }
 
-    this._animateProperty(target, "opacity", 0, 1, timeout, function() {
+    ripe._animateProperty(target, "opacity", 0, 1, timeout, function() {
         current.style.opacity = 0;
         current.style.zIndex = 1;
         target.style.zIndex = 1;
