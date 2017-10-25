@@ -20,11 +20,11 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     return this._requestURL(combinationsURL, callback);
 };
 
-ripe.Ripe.prototype.loadFrames = function(callback) {
+ripe.Ripe.prototype.getFrames = function(callback) {
     if (this.config === undefined) {
         this.getConfig(function(config) {
             this.config = config;
-            this.loadFrames(callback);
+            this.getFrames(callback);
         });
         return;
     }
@@ -38,7 +38,6 @@ ripe.Ripe.prototype.loadFrames = function(callback) {
 
     var sideFrames = this.config["frames"];
     frames["side"] = sideFrames;
-    this.frames = frames;
     callback && callback(frames);
 };
 

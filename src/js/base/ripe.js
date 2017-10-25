@@ -39,6 +39,21 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this._runCallbacks("combinations", this.combinations);
     }.bind(this));
 
+    // if no frames were provided then requests them from the
+    // server. In any case the frames callback is triggered
+    var loadFrames = !this.options.frames;
+    if (loadFrames) {
+        this.getFrames(function(frames) {
+            this.frames = frames;
+            this._runCallbacks("frames", this.frames);
+        }.bind(this));
+    } else {
+        this.frames = this.options.frames;
+        setTimeout(function() {
+            this._runCallbacks("frames", this.frames);
+        }.bind(this));
+    }
+
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
     this.ready = hasParts;

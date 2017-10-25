@@ -107,6 +107,21 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this._runCallbacks("combinations", this.combinations);
     }.bind(this));
 
+    // if no frames were provided then requests them from the
+    // server. In any case the frames callback is triggered
+    var loadFrames = !this.options.frames;
+    if (loadFrames) {
+        this.getFrames(function(frames) {
+            this.frames = frames;
+            this._runCallbacks("frames", this.frames);
+        }.bind(this));
+    } else {
+        this.frames = this.options.frames;
+        setTimeout(function() {
+            this._runCallbacks("frames", this.frames);
+        }.bind(this));
+    }
+
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
     this.ready = hasParts;
@@ -193,11 +208,11 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     return this._requestURL(combinationsURL, callback);
 };
 
-ripe.Ripe.prototype.loadFrames = function(callback) {
+ripe.Ripe.prototype.getFrames = function(callback) {
     if (this.config === undefined) {
         this.getConfig(function(config) {
             this.config = config;
-            this.loadFrames(callback);
+            this.getFrames(callback);
         });
         return;
     }
@@ -211,7 +226,6 @@ ripe.Ripe.prototype.loadFrames = function(callback) {
 
     var sideFrames = this.config["frames"];
     frames["side"] = sideFrames;
-    this.frames = frames;
     callback && callback(frames);
 };
 
@@ -369,33 +383,41 @@ ripe.Visual.prototype._animateProperty = function(element, property, initial, fi
 
 ripe.Config = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
-    ripe.Config.prototype.init.call(this);
+    ripe.Config.prototype.init.call(this, options);
 };
 
 ripe.Config.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Config.prototype.init = function() {
+    this.maxSize = this.element.dataset.max_size || this.options.maxSize || 1000;
+    this.sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
+
     this.owner.bind("selected_part", function(part) {
         this.highlightPart(part);
     }.bind(this));
 
     this.ready = false;
-    this.lastFrame = {};
 
-    this.owner.loadFrames(function() {
-        this._initDOM();
+    // creates a structure the store the last presented
+    // position of each view, to be used when returning
+    // to a view for better user experience
+    this._lastFrame = {};
+
+    this.owner.bind("frames", function(frames) {
+        this.frames = frames;
+        this._initLayout();
         this.ready = true;
         this.update();
     }.bind(this));
 };
 
-ripe.Config.prototype._initDOM = function() {
-    // sets defaults for the optional parameters
-    var size = this.element.dataset.size || this.options.size || 1000;
-    var maxSize = this.element.dataset.max_size || this.options.maxSize || 1000;
-    var sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
+ripe.Config.prototype._initLayout = function() {
+    // clears the elements children
+    while (this.element.firstChild) {
+        this.element.firstChild.remove();
+    }
 
-    // sets the element element's style so that it supports two canvas
+    // sets the element's style so that it supports two canvas
     // on top of each other so that double buffering can be used
     this.element.classList.add("configurator");
     this.element.fontSize = "0px";
@@ -474,7 +496,7 @@ ripe.Config.prototype._initDOM = function() {
     this.element.dataset.position = 0;
 
     // set the size of area, frontMask, back and mask
-    this.resize(size);
+    this.resize();
 
     this._registerHandlers();
 };
@@ -484,7 +506,7 @@ ripe.Config.prototype.resize = function(size) {
         return;
     }
 
-    size = size || this.element.dataset.size || this.options.size;
+    size = size || this.element.dataset.size || this.size;
     var area = this.element.querySelector(".area");
     var frontMask = this.element.querySelector(".front-mask");
     var back = this.element.querySelector(".back");
@@ -569,7 +591,7 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     // saves the position of the current view
     // so that it returns to the same position
     // when coming back to the same view
-    this.lastFrame[view] = position;
+    this._lastFrame[view] = position;
 
     // if there is a new view and the product supports
     // it then animates the transition with a crossfade
@@ -597,6 +619,10 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
         this.element.dataset.position = stepPosition;
     }
 
+    // determines if the current change frame operation is an
+    // animated one or if it's a discrete one
+    var animated = Boolean(step);
+
     // if the frame change is animated and preventDrag is true
     // then ignores drag movements until the animation is finished
     preventDrag = preventDrag && (animate || step);
@@ -605,12 +631,13 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     this.update({}, {
         animate: animate,
         callback: function() {
+            this._runCallbacks("changed_frame", nextPosition);
+
             // if there is no step transition or the
             // transition has finished then calls the
-            // changed_frame callback and allows drag
+            // changed frame callback and allows drag
             // movements again
-            if (!step || stepPosition == nextPosition) {
-                this._runCallbacks("changed_frame", nextPosition);
+            if (!animated || stepPosition == nextPosition) {
                 preventDrag && this.element.classList.remove("noDrag");
             }
 
@@ -970,7 +997,7 @@ ripe.Config.prototype._parseDrag = function() {
     // position presented in that view, if not
     // then shows the next position according
     // to the drag
-    next = view === nextView ? next : (this.lastFrame[nextView] || 0);
+    next = view === nextView ? next : (this._lastFrame[nextView] || 0);
 
     var nextFrame = nextView + "-" + next;
     this.changeFrame(nextFrame);
