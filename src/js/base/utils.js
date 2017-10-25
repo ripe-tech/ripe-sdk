@@ -5,7 +5,7 @@ ripe.createElement = function(tagName, className) {
     return element;
 };
 
-ripe._animateProperty = function(element, property, initial, final, duration, callback) {
+ripe.animateProperty = function(element, property, initial, final, duration, callback) {
     // sets the initial value for the property
     element.style[property] = initial;
     var last = new Date();

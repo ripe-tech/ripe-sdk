@@ -178,7 +178,7 @@ ripe.createElement = function(tagName, className) {
     return element;
 };
 
-ripe._animateProperty = function(element, property, initial, final, duration, callback) {
+ripe.animateProperty = function(element, property, initial, final, duration, callback) {
     // sets the initial value for the property
     element.style[property] = initial;
     var last = new Date();
@@ -373,6 +373,7 @@ ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
+
 ripe.Config = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Config.prototype.init.call(this);
@@ -707,10 +708,10 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
 
     var timeout = animate === "immediate" ? 0 : 500;
     if (animate === "cross") {
-        ripe._animateProperty(current, "opacity", 1, 0, timeout);
+        ripe.animateProperty(current, "opacity", 1, 0, timeout);
     }
 
-    ripe._animateProperty(target, "opacity", 0, 1, timeout, function() {
+    ripe.animateProperty(target, "opacity", 0, 1, timeout, function() {
         current.style.opacity = 0;
         current.style.zIndex = 1;
         target.style.zIndex = 1;

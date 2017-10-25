@@ -332,10 +332,10 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
 
     var timeout = animate === "immediate" ? 0 : 500;
     if (animate === "cross") {
-        ripe._animateProperty(current, "opacity", 1, 0, timeout);
+        ripe.animateProperty(current, "opacity", 1, 0, timeout);
     }
 
-    ripe._animateProperty(target, "opacity", 0, 1, timeout, function() {
+    ripe.animateProperty(target, "opacity", 0, 1, timeout, function() {
         current.style.opacity = 0;
         current.style.zIndex = 1;
         target.style.zIndex = 1;
