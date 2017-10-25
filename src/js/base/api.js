@@ -96,9 +96,9 @@ ripe.Ripe.prototype._getQuery = function(options) {
     currency && buffer.push("currency=" + currency);
 
     // TODO: move this to another place
-    options.format && buffer.push("format=" + format);
-    options.size && buffer.push("size=" + size);
-    options.background && buffer.push("background=" + background);
+    options.format && buffer.push("format=" + options.format);
+    options.size && buffer.push("size=" + options.size);
+    options.background && buffer.push("background=" + options.background);
 
     return buffer.join("&");
 };

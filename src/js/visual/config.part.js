@@ -8,8 +8,10 @@ ripe.Config = function(owner, element, options) {
 ripe.Config.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Config.prototype.init = function() {
+    this.size = this.element.dataset.size || this.options.size || 1000;
     this.maxSize = this.element.dataset.max_size || this.options.maxSize || 1000;
     this.sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
+    this.interval = this.options.interval || 0;
 
     this.owner.bind("selected_part", function(part) {
         this.highlightPart(part);
@@ -35,7 +37,7 @@ ripe.Config.prototype.resize = function(size) {
         return;
     }
 
-    size = size || this.element.clientWidth || this.options.size;
+    size = size || this.element.clientWidth;
     var area = this.element.querySelector(".area");
     var frontMask = this.element.querySelector(".front-mask");
     var back = this.element.querySelector(".back");
@@ -111,7 +113,7 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
 
     options = options || {};
     var step = options.step;
-    var interval = options.interval || this.options.interval || 0;
+    var interval = options.interval || this.interval;
     var preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
 
     var view = this.element.dataset.view;
@@ -190,7 +192,7 @@ ripe.Config.prototype.enterFullscreen = function(options) {
         return;
     }
     this.element.classList.add("fullscreen");
-    var maxSize = options.maxSize || this.element.dataset.max_size || this.options.maxSize;
+    var maxSize = options.maxSize || this.element.dataset.max_size || this.maxSize;
     this.resize(maxSize);
 };
 
@@ -282,7 +284,8 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
 
     // builds the url that will be set on the image
     var url = this.owner._getImageURL({
-        frame: frame
+        frame: frame,
+        size: this.size
     });
 
     // creates a callback to be called when the frame
