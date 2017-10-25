@@ -31,22 +31,21 @@ ripe.Config.prototype._initDOM = function() {
     this.element.classList.add("configurator");
 
     // creates the area canvas and adds it to the element
-    var area = document.createElement("canvas");
-    area.className = "area";
+    var area = ripe.createElement("canvas", "area");
     var context = area.getContext("2d");
     context.globalCompositeOperation = "multiply";
     this.element.appendChild(area);
 
     // adds the front mask element to the element,
     // this will be used to highlight parts
-    var frontMask = document.createElement("img");
-    frontMask.className = "front-mask";
+    var frontMask = ripe.createElement("img", "front-mask");
+
     this.element.appendChild(frontMask);
 
     // creates the back canvas and adds it to the element,
     // placing it on top of the area canvas
-    var back = document.createElement("canvas");
-    back.className = "back";
+    var back = ripe.createElement("canvas", "back");
+
     var backContext = back.getContext("2d");
     backContext.globalCompositeOperation = "multiply";
     this.element.appendChild(back);
@@ -54,39 +53,33 @@ ripe.Config.prototype._initDOM = function() {
     // adds the backs placeholder element that will be used to
     // temporarily store the images of the product's frames
     var sideFrames = this.owner.frames["side"];
-    var backs = document.createElement("div");
-    backs.className = "backs";
+    var backs = ripe.createElement("div", "backs");
+
     for (var index = 0; index < sideFrames; index++) {
-        var backImg = document.createElement("img");
+        var backImg = ripe.createElement("img");
         backImg.dataset.frame = index;
         backs.appendChild(backImg);
     }
-    var topImg = document.createElement("img");
+    var topImg = ripe.createElement("img");
     topImg.dataset.frame = "top";
     backs.appendChild(topImg);
-    var bottomImg = document.createElement("img");
+    var bottomImg = ripe.createElement("img");
     bottomImg.dataset.frame = "bottom";
     backs.appendChild(bottomImg);
     this.element.appendChild(backs);
 
     // creates a masks element that will be used to store the various
     // mask images to be used during highlight and select operation
-    var mask = document.createElement("canvas");
-    mask.className = "mask";
+    var mask = ripe.createElement("canvas", "mask");
     this.element.appendChild(mask);
-    var masks = document.createElement("div");
-    masks.className = "masks";
+    var masks = ripe.createElement("div", "masks");
     for (var index = 0; index < sideFrames; index++) {
-        var maskImg = document.createElement("img");
+        var maskImg = ripe.createElement("img");
         maskImg.dataset.frame = index;
         masks.appendChild(maskImg);
     }
 
-    var topImg = document.createElement("img");
-    topImg.dataset.frame = "top";
     masks.appendChild(topImg);
-    var bottomImg = document.createElement("img");
-    bottomImg.dataset.frame = "bottom";
     masks.appendChild(bottomImg);
     this.element.appendChild(masks);
 

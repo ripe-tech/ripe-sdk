@@ -19,24 +19,24 @@ ul li {
     font-weight: bold;
 }
 
-body .content .configurator {
+.configurator {
     font-size: 0px;
     white-space: nowrap;
 }
 
-body .content .configurator .area {
+.configurator .area {
     display: inline-block;
 }
 
-body .content .configurator .back {
+.configurator .back {
     display: inline-block;
 }
 
-body .content .configurator .backs {
+.configurator .backs {
     display: none;
 }
 
-body .content .configurator .front-mask {
+.configurator .front-mask {
     display: none;
     opacity: 0.4;
     -o-opacity: 0.4;
@@ -49,15 +49,15 @@ body .content .configurator .front-mask {
     z-index: 2;
 }
 
-body .content .configurator .mask {
+.configurator .mask {
     display: none;
 }
 
-body .content .configurator .masks {
+.configurator .masks {
     display: none;
 }
 
-body .content .configurator.fullscreen {
+.configurator.fullscreen {
     bottom: 0px;
     left: 0px;
     position: fixed;
