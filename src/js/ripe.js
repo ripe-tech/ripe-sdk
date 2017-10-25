@@ -399,8 +399,6 @@ ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
 
-var ripe = ripe || {};
-
 ripe.Config = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Config.prototype.init.call(this, options);
@@ -859,7 +857,11 @@ ripe.Config.prototype._preload = function(useChain) {
 
 ripe.Config.prototype.highlight = function(part, options) {};
 
-ripe.Config.prototype.lowlight = function(options) {};
+ripe.Config.prototype.lowlight = function(options) {
+    var frontMask = this.element.querySelector(".front-mask");
+    frontMask.classList.add("lowlight");
+    this.element.classList.remove("highlight");
+};
 
 ripe.Config.prototype.enterFullscreen = function(options) {
     if (this.element === undefined) {
@@ -929,6 +931,48 @@ ripe.Config.prototype._registerHandlers = function() {
         _element.dataset.mousePosY = event.pageY;
         down === "true" && self._parseDrag();
     });
+
+    var area = this.element.querySelector(".area");
+    var back = this.element.querySelector(".back");
+    area.addEventListener("click", function(event) {
+        // canvasClick(this, event);
+    });
+
+    area.addEventListener("mousemove", function(event) {
+        var drag = this.classList.contains("drag");
+        if (drag) {
+            return;
+        }
+        event = self._fixEvent(event);
+        var x = event.offsetX;
+        var y = event.offsetY;
+        var part = self._chosenPart(this, x, y);
+        part && self.highlightPart(part);
+    });
+
+    area.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
+
+    back.addEventListener("click", function(event) {
+        // canvasClick(this, event);
+    });
+
+    back.addEventListener("mousemove", function() {
+        var drag = this.classList.contains("drag");
+        if (drag) {
+            return;
+        }
+        event = self._fixEvent(event);
+        var x = event.offsetX;
+        var y = event.offsetY;
+        var part = self._chosenPart(this, x, y);
+        part && self.highlightPart(part);
+    });
+
+    back.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
 };
 
 ripe.Config.prototype._parseDrag = function() {
@@ -984,6 +1028,46 @@ ripe.Config.prototype._parseDrag = function() {
 
     var nextFrame = ripe.getFrameKey(nextView, nextPosition);
     this.changeFrame(nextFrame);
+};
+
+ripe.Config.prototype._chosenPart = function(canvas, x, y) {
+    var canvasRealWidth = canvas.getBoundingClientRect().width;
+    var mask = this.element.querySelector(".mask");
+    var ratio = mask.width / canvasRealWidth;
+    x = parseInt(x * ratio);
+    y = parseInt(y * ratio);
+
+    var maskContext = mask.getContext("2d");
+    var maskData = maskContext.getImageData(x, y, 1, 1);
+    var r = maskData.data[0];
+    var index = parseInt(r);
+
+    var down = this.element.dataset.down;
+    // in case the index that was found is the zero one this is a special
+    // position and the associated operation is the removal of the highlight
+    // also if the target is being dragged the highlight should be removed
+    if (index === 0 || down === "true") {
+        this.lowlight(this.element);
+        return;
+    }
+
+    // retrieves the reference to the part name by using the index
+    // extracted from the masks image (typical strategy for retrieval)
+    var part = self.partsList[index - 1];
+
+    return (part === undefined) ? null : part;
+};
+
+ripe.Config.prototype._fixEvent = function(event) {
+    if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
+        return event;
+    }
+
+    var _target = event.target || event.srcElement;
+    var rect = _target.getBoundingClientRect();
+    event.offsetX = event.clientX - rect.left;
+    event.offsetY = event.clientY - rect.top;
+    return event;
 };
 
 ripe.Image = function(owner, element, options) {

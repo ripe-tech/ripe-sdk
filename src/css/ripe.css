@@ -30,6 +30,10 @@
     z-index: 2;
 }
 
+.configurator .front-mask.lowlight {
+    display: none;
+}
+
 .configurator .mask {
     display: none;
 }

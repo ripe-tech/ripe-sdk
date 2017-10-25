@@ -231,6 +231,11 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     frame();
 };
 
+ripe.getFrameKey = function(view, position, token) {
+    token = token || "-";
+    return view + token + position;
+};
+
 ripe.Ripe.prototype.getConfig = function(callback) {
     var configURL = this._getConfigURL();
     return this._requestURL(configURL, callback);
@@ -303,7 +308,13 @@ ripe.Ripe.prototype._getQuery = function(options) {
     brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
     variant && buffer.push("variant=" + variant);
-    frame && buffer.push("frame=" + frame);
+    if (frame) {
+        var _frame = frame.split("-");
+        var view = _frame[0];
+        var position = _frame[1];
+        position = view === "side" ? position : view;
+        buffer.push("frame=" + position);
+    }
 
     for (var part in parts) {
         var value = parts[part];
@@ -437,33 +448,26 @@ ripe.Config.prototype._initLayout = function() {
     // adds the front mask element to the element,
     // this will be used to highlight parts
     var frontMask = ripe.createElement("img", "front-mask");
-
     this.element.appendChild(frontMask);
 
     // creates the back canvas and adds it to the element,
     // placing it on top of the area canvas
     var back = ripe.createElement("canvas", "back");
-
     var backContext = back.getContext("2d");
     backContext.globalCompositeOperation = "multiply";
     this.element.appendChild(back);
 
     // adds the framesBuffer placeholder element that will be used to
     // temporarily store the images of the product's frames
-    var sideFrames = this.owner.frames["side"];
     var framesBuffer = ripe.createElement("div", "frames-buffer");
-
-    for (var index = 0; index < sideFrames; index++) {
-        var backImg = ripe.createElement("img");
-        backImg.dataset.frame = index;
-        framesBuffer.appendChild(backImg);
+    for (var view in this.frames) {
+        var viewFrames = this.frames[view];
+        for (var index = 0; index < viewFrames; index++) {
+            var frameBuffer = ripe.createElement("img");
+            frameBuffer.dataset.frame = ripe.getFrameKey(view, index);
+            framesBuffer.appendChild(frameBuffer);
+        }
     }
-    var topImg = ripe.createElement("img");
-    topImg.dataset.frame = "top";
-    framesBuffer.appendChild(topImg);
-    var bottomImg = ripe.createElement("img");
-    bottomImg.dataset.frame = "bottom";
-    framesBuffer.appendChild(bottomImg);
     this.element.appendChild(framesBuffer);
 
     // creates a masksBuffer element that will be used to store the various
@@ -471,20 +475,17 @@ ripe.Config.prototype._initLayout = function() {
     var mask = ripe.createElement("canvas", "mask");
     this.element.appendChild(mask);
     var masksBuffer = ripe.createElement("div", "masks-buffer");
-    for (var index = 0; index < sideFrames; index++) {
-        var maskImg = ripe.createElement("img");
-        maskImg.dataset.frame = index;
-        masksBuffer.appendChild(maskImg);
+    for (var view in this.frames) {
+        var viewFrames = this.frames[view];
+        for (var index = 0; index < viewFrames; index++) {
+            var maskBuffer = ripe.createElement("img");
+            maskBuffer.dataset.frame = ripe.getFrameKey(view, index);
+            masksBuffer.appendChild(maskBuffer);
+        }
     }
-
-    var topImg = ripe.createElement("img");
-    topImg.dataset.frame = "top";
-    masksBuffer.appendChild(topImg);
-    var bottomImg = ripe.createElement("img");
-    bottomImg.dataset.frame = "bottom";
-    masksBuffer.appendChild(bottomImg);
     this.element.appendChild(masksBuffer);
 
+    this.element.dataset.view = "side";
     this.element.dataset.position = 0;
 
     // set the size of area, frontMask, back and mask
@@ -589,7 +590,7 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     // it then animates the transition with a crossfade
     // and ignores all drag movements while it lasts
     var animate = false;
-    var viewFrames = this.owner.frames[nextView];
+    var viewFrames = this.frames[nextView];
     if (view !== nextView && viewFrames !== undefined) {
         view = nextView;
         animate = "cross";
@@ -648,7 +649,7 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     // retrieves the image that will be used to store the frame
     view = view || this.element.dataset.view || "side";
     position = position || this.element.dataset.position || 0;
-    var frame = view === "side" ? position : view;
+    var frame = ripe.getFrameKey(view, position);
 
     options = options || {};
     var draw = options.draw === undefined || options.draw;
@@ -755,13 +756,13 @@ ripe.Config.prototype._preload = function(useChain) {
 
     // adds all the frames to the work pile
     var work = [];
-    for (var view in this.owner.frames) {
-        var viewFrames = this.owner.frames[view];
+    for (var view in this.frames) {
+        var viewFrames = this.frames[view];
         for (var _index = 0; _index < viewFrames; _index++) {
             if (_index === position) {
                 continue;
             }
-            var frame = view + "-" + _index;
+            var frame = ripe.getFrameKey(view, _index);
             work.push(frame);
         }
     }
@@ -815,10 +816,6 @@ ripe.Config.prototype._preload = function(useChain) {
         // and its corresponding image element
         // and adds the preloading class to it
         var frame = work.pop();
-        var _frame = frame.split("-");
-        var view = _frame[0];
-        var position = _frame[1];
-        frame = view === "side" ? position : view;
         var framesBuffer = self.element.querySelector(".frames-buffer");
         var reference = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
         reference.classList.add("preloading");
@@ -860,7 +857,11 @@ ripe.Config.prototype._preload = function(useChain) {
 
 ripe.Config.prototype.highlight = function(part, options) {};
 
-ripe.Config.prototype.lowlight = function(options) {};
+ripe.Config.prototype.lowlight = function(options) {
+    var frontMask = this.element.querySelector(".front-mask");
+    frontMask.classList.add("lowlight");
+    this.element.classList.remove("highlight");
+};
 
 ripe.Config.prototype.enterFullscreen = function(options) {
     if (this.element === undefined) {
@@ -930,6 +931,48 @@ ripe.Config.prototype._registerHandlers = function() {
         _element.dataset.mousePosY = event.pageY;
         down === "true" && self._parseDrag();
     });
+
+    var area = this.element.querySelector(".area");
+    var back = this.element.querySelector(".back");
+    area.addEventListener("click", function(event) {
+        // canvasClick(this, event);
+    });
+
+    area.addEventListener("mousemove", function(event) {
+        var drag = this.classList.contains("drag");
+        if (drag) {
+            return;
+        }
+        event = self._fixEvent(event);
+        var x = event.offsetX;
+        var y = event.offsetY;
+        var part = self._chosenPart(this, x, y);
+        part && self.highlightPart(part);
+    });
+
+    area.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
+
+    back.addEventListener("click", function(event) {
+        // canvasClick(this, event);
+    });
+
+    back.addEventListener("mousemove", function() {
+        var drag = this.classList.contains("drag");
+        if (drag) {
+            return;
+        }
+        event = self._fixEvent(event);
+        var x = event.offsetX;
+        var y = event.offsetY;
+        var part = self._chosenPart(this, x, y);
+        part && self.highlightPart(part);
+    });
+
+    back.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
 };
 
 ripe.Config.prototype._parseDrag = function() {
@@ -967,24 +1010,64 @@ ripe.Config.prototype._parseDrag = function() {
         nextView = view === "bottom" ? "side" : "top";
         this.element.dataset.referenceY = mousePosY;
     }
-    if (this.owner.frames[nextView] === undefined) {
+    if (this.frames[nextView] === undefined) {
         nextView = view;
     }
 
     // retrieves the current view and its frames
     // and determines which one is the next frame
-    var viewFrames = this.owner.frames[nextView];
-    var next = parseInt(base - (sensitivity * percentX)) % viewFrames;
-    next = next >= 0 ? next : viewFrames + next;
+    var viewFrames = this.frames[nextView];
+    var nextPosition = parseInt(base - (sensitivity * percentX)) % viewFrames;
+    nextPosition = nextPosition >= 0 ? nextPosition : viewFrames + nextPosition;
 
     // if the view changes then uses the last
     // position presented in that view, if not
     // then shows the next position according
     // to the drag
-    next = view === nextView ? next : (this._lastFrame[nextView] || 0);
+    nextPosition = view === nextView ? nextPosition : (this._lastFrame[nextView] || 0);
 
-    var nextFrame = nextView + "-" + next;
+    var nextFrame = ripe.getFrameKey(nextView, nextPosition);
     this.changeFrame(nextFrame);
+};
+
+ripe.Config.prototype._chosenPart = function(canvas, x, y) {
+    var canvasRealWidth = canvas.getBoundingClientRect().width;
+    var mask = this.element.querySelector(".mask");
+    var ratio = mask.width / canvasRealWidth;
+    x = parseInt(x * ratio);
+    y = parseInt(y * ratio);
+
+    var maskContext = mask.getContext("2d");
+    var maskData = maskContext.getImageData(x, y, 1, 1);
+    var r = maskData.data[0];
+    var index = parseInt(r);
+
+    var down = this.element.dataset.down;
+    // in case the index that was found is the zero one this is a special
+    // position and the associated operation is the removal of the highlight
+    // also if the target is being dragged the highlight should be removed
+    if (index === 0 || down === "true") {
+        this.lowlight(this.element);
+        return;
+    }
+
+    // retrieves the reference to the part name by using the index
+    // extracted from the masks image (typical strategy for retrieval)
+    var part = self.partsList[index - 1];
+
+    return (part === undefined) ? null : part;
+};
+
+ripe.Config.prototype._fixEvent = function(event) {
+    if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
+        return event;
+    }
+
+    var _target = event.target || event.srcElement;
+    var rect = _target.getBoundingClientRect();
+    event.offsetX = event.clientX - rect.left;
+    event.offsetY = event.clientY - rect.top;
+    return event;
 };
 
 ripe.Image = function(owner, element, options) {
