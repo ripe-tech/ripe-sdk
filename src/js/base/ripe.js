@@ -16,6 +16,8 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.parts = this.options.parts || {};
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
+    this.format = this.options.format || "jpeg";
+    this.backgroundColor = options.backgroundColor ? options.backgroundColor.replace("#", "") : "";
     this.children = [];
     this.ready = false;
 

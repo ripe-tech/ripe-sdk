@@ -182,12 +182,55 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
 };
 
 ripe.Config.prototype.highlight = function(part, options) {
+    // adds the highlight class to the current target configurator meaning
+    // that the front mask is currently active and showing info
+    this.element.classList.add("highlight");
 
+    // determines the current position of the configurator so that
+    // the proper mask url may be created and properly loaded
+    var view = this.element.dataset.view;
+    var position = this.element.dataset.position;
+    position = (view && view !== "side") ? view : position;
+    options = options || {};
+    var format = options.format || this.format;
+    var backgroundColor = options.backgroundColor || this.backgroundColor;
+    var size = options.size || this.element.clientWidth;
+
+    // constructs the full url of the mask image that is going to be
+    // set for the current highlight operation (to be determined)
+    var url = this.url + "mask";
+    var query = "?model=" + this.model + "&frame=" + position + "&part=" + part;
+    var fullUrl = url + query + "&format=" + format;
+    fullUrl += backgroundColor ? "&background=" + backgroundColor : "";
+    fullUrl += size ? "&size=" + String(size) : "";
+
+    var frontMask = this.element.querySelector(".front-mask");
+    var src = frontMask.getAttribute("src");
+    if (src === fullUrl) {
+        return;
+    }
+
+    var self = this;
+    var frontMaskLoad = function() {
+        this.classList.add("loaded");
+        this.classList.add("highlight");
+        self._runCallbacks("highlighted_part", part);
+    };
+    frontMask.removeEventListener("load", frontMaskLoad);
+    frontMask.addEventListener("load", frontMaskLoad);
+    frontMask.addEventListener("error", function() {
+        this.setAttribute("src", "");
+    });
+    frontMask.setAttribute("src", fullUrl);
+
+    var animationId = frontMask.dataset.animation_id;
+    cancelAnimationFrame(animationId);
+    this._animateProperty(frontMask, "opacity", 0, 0.4, 250);
 };
 
 ripe.Config.prototype.lowlight = function(options) {
     var frontMask = this.element.querySelector(".front-mask");
-    frontMask.classList.add("lowlight");
+    frontMask.classList.remove("highlight");
     this.element.classList.remove("highlight");
 };
 
@@ -657,7 +700,7 @@ ripe.Config.prototype._chosenPart = function(canvas, x, y) {
 
     // retrieves the reference to the part name by using the index
     // extracted from the masks image (typical strategy for retrieval)
-    var part = self.partsList[index - 1];
+    var part = this.partsList[index - 1];
 
     return (part === undefined) ? null : part;
 };
