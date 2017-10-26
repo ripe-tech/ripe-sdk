@@ -1,5 +1,5 @@
 window.onload = function() {
-    var element = document.getElementById("canvas");
+    var element = document.getElementById("config");
     var url = element.dataset.url || "https://demo.platforme.com/api/";
     var brand = element.dataset.brand || "swear";
     var model = element.dataset.model || "vyner";
@@ -55,7 +55,9 @@ window.onload = function() {
         frame: "top"
     });
 
-    setTimeout(function() { image.setFrame("9"); });
+    setTimeout(function() {
+        image.setFrame("9");
+    });
 
     var configurator = ripe.bindConfig(element);
 
