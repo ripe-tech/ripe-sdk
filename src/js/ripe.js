@@ -407,7 +407,7 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     if (options.part) {
         query += "&part=" + options.part;
     }
-    return /*this.url*/ "http://localhost:8181/" + "mask?" + query;
+    return this.url + "mask?" + query;
 };
 
 ripe.Visual = function(owner, element, options) {
