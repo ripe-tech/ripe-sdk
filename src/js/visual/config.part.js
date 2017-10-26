@@ -81,7 +81,7 @@ ripe.Config.prototype.update = function(state, options) {
     // load request and returns immediately
     var size = this.element.getAttribute("data-current-size");
     previous = this.element.dataset.unique;
-    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(size);
+    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(this.size);
     if (previous === unique) {
         callback && callback();
         return false;

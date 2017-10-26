@@ -417,6 +417,7 @@ ripe.Config.prototype.init = function() {
     this.size = this.element.dataset.size || this.options.size || 1000;
     this.maxSize = this.element.dataset.max_size || this.options.maxSize || 1000;
     this.sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
+    this.interval = this.options.interval || 0;
 
     this.owner.bind("selected_part", function(part) {
         this.highlightPart(part);
@@ -442,7 +443,7 @@ ripe.Config.prototype.resize = function(size) {
         return;
     }
 
-    size = size || this.element.clientWidth || this.options.size;
+    size = size || this.element.clientWidth;
     var area = this.element.querySelector(".area");
     var frontMask = this.element.querySelector(".front-mask");
     var back = this.element.querySelector(".back");
@@ -486,7 +487,7 @@ ripe.Config.prototype.update = function(state, options) {
     // load request and returns immediately
     var size = this.element.getAttribute("data-current-size");
     previous = this.element.dataset.unique;
-    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(size);
+    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(this.size);
     if (previous === unique) {
         callback && callback();
         return false;
@@ -518,7 +519,7 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
 
     options = options || {};
     var step = options.step;
-    var interval = options.interval || this.options.interval || 0;
+    var interval = options.interval || this.interval;
     var preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
 
     var view = this.element.dataset.view;
@@ -597,7 +598,7 @@ ripe.Config.prototype.enterFullscreen = function(options) {
         return;
     }
     this.element.classList.add("fullscreen");
-    var maxSize = options.maxSize || this.element.dataset.max_size || this.options.maxSize;
+    var maxSize = options.maxSize || this.element.dataset.max_size || this.maxSize;
     this.resize(maxSize);
 };
 
