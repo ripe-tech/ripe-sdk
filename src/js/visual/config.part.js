@@ -97,7 +97,7 @@ ripe.Config.prototype.update = function(state, options) {
     // if the parts and the position haven't changed
     // since the last frame load then ignores the
     // load request and returns immediately
-    var size = this.element.getAttribute("data-current-size");
+    var size = this.element.dataset.current_size;
     previous = this.element.dataset.unique;
     var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(size);
     if (previous === unique) {
