@@ -825,10 +825,11 @@ ripe.Config.prototype._loadMask = function(maskImage, view, position, options) {
     // mask loading process runs the final update of the mask canvas
     // operation that will allow new highlight and selection operation
     // to be performed according to the new frame value
+    var self = this;
     if (maskImage.dataset.src) {
         setTimeout(function() {
-            this._drawMask(maskImage);
-        }, 150);
+            self._drawMask(maskImage);
+        }.bind(this), 150);
     } else {
         var format = options.format || this.format;
         var backgroundColor = options.backgroundColor || this.backgroundColor;
@@ -840,7 +841,6 @@ ripe.Config.prototype._loadMask = function(maskImage, view, position, options) {
             color: backgroundColor
         });
 
-        var self = this;
         maskImage.onload = function() {
             setTimeout(function() {
                 self._drawMask(maskImage);
@@ -850,6 +850,7 @@ ripe.Config.prototype._loadMask = function(maskImage, view, position, options) {
             this.setAttribute("src", null);
         });
         maskImage.crossOrigin = "Anonymous";
+        maskImage.dataset.src = url;
         maskImage.setAttribute("src", url);
     }
 };
