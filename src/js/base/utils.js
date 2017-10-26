@@ -52,3 +52,15 @@ ripe.parseFrameKey = function(frame, token) {
     token = token || "-";
     return frame.split(token);
 };
+
+ripe.fixEvent = function(event) {
+    if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
+        return event;
+    }
+
+    var _target = event.target || event.srcElement;
+    var rect = _target.getBoundingClientRect();
+    event.offsetX = event.clientX - rect.left;
+    event.offsetY = event.clientY - rect.top;
+    return event;
+};

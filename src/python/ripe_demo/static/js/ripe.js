@@ -174,8 +174,8 @@ ripe.Ripe.prototype.select = function(part) {
     this._runCallbacks("selected_part", part);
 };
 
-ripe.Ripe.prototype.unselect = function(part) {
-    this._runCallbacks("unselected_part", part);
+ripe.Ripe.prototype.deselect = function(part) {
+    this._runCallbacks("deselected_part", part);
 };
 
 ripe.Ripe.prototype.update = function(state) {
@@ -249,6 +249,18 @@ ripe.getFrameKey = function(view, position, token) {
 ripe.parseFrameKey = function(frame, token) {
     token = token || "-";
     return frame.split(token);
+};
+
+ripe.fixEvent = function(event) {
+    if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
+        return event;
+    }
+
+    var _target = event.target || event.srcElement;
+    var rect = _target.getBoundingClientRect();
+    event.offsetX = event.clientX - rect.left;
+    event.offsetY = event.clientY - rect.top;
+    return event;
 };
 
 ripe.Ripe.prototype.getConfig = function(callback) {
@@ -407,7 +419,7 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     if (options.part) {
         query += "&part=" + options.part;
     }
-    return /*this.url*/ "http://localhost:8181/" + "mask?" + query;
+    return this.url + "mask?" + query;
 };
 
 ripe.Visual = function(owner, element, options) {
@@ -443,7 +455,7 @@ ripe.Config.prototype.init = function() {
         this.highlight(part);
     }.bind(this));
 
-    this.owner.bind("unselected_part", function(part) {
+    this.owner.bind("deselected_part", function(part) {
         this.lowlight();
     }.bind(this));
 
@@ -1079,7 +1091,7 @@ ripe.Config.prototype._registerHandlers = function() {
         if (move) {
             return;
         }
-        event = self._fixEvent(event);
+        event = ripe.fixEvent(event);
         var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
         if (index === 0) {
             return;
@@ -1097,7 +1109,7 @@ ripe.Config.prototype._registerHandlers = function() {
         if (drag) {
             return;
         }
-        event = self._fixEvent(event);
+        event = ripe.fixEvent(event);
         var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
 
         // in case the index that was found is the zero one this is a special
@@ -1123,7 +1135,7 @@ ripe.Config.prototype._registerHandlers = function() {
         if (move) {
             return;
         }
-        event = self._fixEvent(event);
+        event = ripe.fixEvent(event);
         var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
         if (index === 0) {
             return;
@@ -1141,7 +1153,7 @@ ripe.Config.prototype._registerHandlers = function() {
         if (drag) {
             return;
         }
-        event = self._fixEvent(event);
+        event = ripe.fixEvent(event);
         var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
 
         // in case the index that was found is the zero one this is a special
@@ -1231,18 +1243,6 @@ ripe.Config.prototype._getCanvasIndex = function(canvas, x, y) {
     var index = parseInt(r);
 
     return index;
-};
-
-ripe.Config.prototype._fixEvent = function(event) {
-    if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
-        return event;
-    }
-
-    var _target = event.target || event.srcElement;
-    var rect = _target.getBoundingClientRect();
-    event.offsetX = event.clientX - rect.left;
-    event.offsetY = event.clientY - rect.top;
-    return event;
 };
 
 ripe.Image = function(owner, element, options) {

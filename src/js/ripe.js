@@ -251,6 +251,18 @@ ripe.parseFrameKey = function(frame, token) {
     return frame.split(token);
 };
 
+ripe.fixEvent = function(event) {
+    if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
+        return event;
+    }
+
+    var _target = event.target || event.srcElement;
+    var rect = _target.getBoundingClientRect();
+    event.offsetX = event.clientX - rect.left;
+    event.offsetY = event.clientY - rect.top;
+    return event;
+};
+
 ripe.Ripe.prototype.getConfig = function(callback) {
     var configURL = this._getConfigURL();
     return this._requestURL(configURL, callback);
@@ -1079,7 +1091,7 @@ ripe.Config.prototype._registerHandlers = function() {
         if (move) {
             return;
         }
-        event = self._fixEvent(event);
+        event = ripe.fixEvent(event);
         var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
         if (index === 0) {
             return;
@@ -1097,7 +1109,7 @@ ripe.Config.prototype._registerHandlers = function() {
         if (drag) {
             return;
         }
-        event = self._fixEvent(event);
+        event = ripe.fixEvent(event);
         var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
 
         // in case the index that was found is the zero one this is a special
@@ -1123,7 +1135,7 @@ ripe.Config.prototype._registerHandlers = function() {
         if (move) {
             return;
         }
-        event = self._fixEvent(event);
+        event = ripe.fixEvent(event);
         var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
         if (index === 0) {
             return;
@@ -1141,7 +1153,7 @@ ripe.Config.prototype._registerHandlers = function() {
         if (drag) {
             return;
         }
-        event = self._fixEvent(event);
+        event = ripe.fixEvent(event);
         var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
 
         // in case the index that was found is the zero one this is a special
@@ -1231,18 +1243,6 @@ ripe.Config.prototype._getCanvasIndex = function(canvas, x, y) {
     var index = parseInt(r);
 
     return index;
-};
-
-ripe.Config.prototype._fixEvent = function(event) {
-    if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
-        return event;
-    }
-
-    var _target = event.target || event.srcElement;
-    var rect = _target.getBoundingClientRect();
-    event.offsetX = event.clientX - rect.left;
-    event.offsetY = event.clientY - rect.top;
-    return event;
 };
 
 ripe.Image = function(owner, element, options) {
