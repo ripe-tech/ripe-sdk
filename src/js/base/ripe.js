@@ -102,8 +102,12 @@ ripe.Ripe.prototype.bindBase = function(child) {
     return child;
 };
 
-ripe.Ripe.prototype.selectPart = function(part) {
+ripe.Ripe.prototype.select = function(part) {
     this._runCallbacks("selected_part", part);
+};
+
+ripe.Ripe.prototype.deselect = function(part) {
+    this._runCallbacks("deselected_part", part);
 };
 
 ripe.Ripe.prototype.update = function(state) {

@@ -170,8 +170,12 @@ ripe.Ripe.prototype.bindBase = function(child) {
     return child;
 };
 
-ripe.Ripe.prototype.selectPart = function(part) {
+ripe.Ripe.prototype.select = function(part) {
     this._runCallbacks("selected_part", part);
+};
+
+ripe.Ripe.prototype.unselect = function(part) {
+    this._runCallbacks("unselected_part", part);
 };
 
 ripe.Ripe.prototype.update = function(state) {
@@ -437,6 +441,10 @@ ripe.Config.prototype.init = function() {
 
     this.owner.bind("selected_part", function(part) {
         this.highlight(part);
+    }.bind(this));
+
+    this.owner.bind("unselected_part", function(part) {
+        this.lowlight();
     }.bind(this));
 
     this.ready = false;
@@ -1018,36 +1026,36 @@ ripe.Config.prototype._registerHandlers = function() {
     // binds the mousedown event on the element
     // to prepare it for drag movements
     this.element.addEventListener("mousedown", function(event) {
-        var _element = this;
-        _element.dataset.view = _element.dataset.view || "side";
-        _element.dataset.base = _element.dataset.position || 0;
-        _element.dataset.down = true;
-        _element.dataset.referenceX = event.pageX;
-        _element.dataset.referenceY = event.pageY;
-        _element.dataset.percent = 0;
-        _element.classList.add("drag");
+        this.dataset.view = this.dataset.view || "side";
+        this.dataset.base = this.dataset.position || 0;
+        this.dataset.down = true;
+        this.dataset.referenceX = event.pageX;
+        this.dataset.referenceY = event.pageY;
+        this.dataset.percent = 0;
+        this.classList.add("drag");
+        this.classList.remove("move");
     });
 
     // listens for mouseup events and if it
     // occurs then stops reacting to mousemove
     // events has drag movements
     this.element.addEventListener("mouseup", function(event) {
-        var _element = this;
-        _element.dataset.down = false;
-        _element.dataset.percent = 0;
-        _element.dataset.previous = _element.dataset.percent;
-        _element.classList.remove("drag");
+        this.dataset.down = false;
+        this.dataset.percent = 0;
+        this.dataset.previous = this.dataset.percent;
+        this.classList.remove("drag");
+        this.classList.remove("move");
     });
 
     // listens for mouseleave events and if it
     // occurs then stops reacting to mousemove
     // events has drag movements
     this.element.addEventListener("mouseleave", function(event) {
-        var _element = this;
-        _element.dataset.down = false;
-        _element.dataset.percent = 0;
-        _element.dataset.previous = _element.dataset.percent;
-        _element.classList.remove("drag");
+        this.dataset.down = false;
+        this.dataset.percent = 0;
+        this.dataset.previous = this.dataset.percent;
+        this.classList.remove("drag");
+        this.classList.remove("move");
     });
 
     // if a mousemove event is triggered while
@@ -1055,21 +1063,33 @@ ripe.Config.prototype._registerHandlers = function() {
     // the position of the drag element
     var self = this;
     this.element.addEventListener("mousemove", function(event) {
-        var _element = this;
-
-        if (_element.classList.contains("noDrag")) {
+        if (this.classList.contains("noDrag")) {
             return;
         }
-        var down = _element.dataset.down;
-        _element.dataset.mousePosX = event.pageX;
-        _element.dataset.mousePosY = event.pageY;
+        var down = this.dataset.down;
+        this.dataset.mousePosX = event.pageX;
+        this.dataset.mousePosY = event.pageY;
         down === "true" && self._parseDrag();
     });
 
     var area = this.element.querySelector(".area");
     var back = this.element.querySelector(".back");
     area.addEventListener("click", function(event) {
-        // canvasClick(this, event);
+        var move = self.element.classList.contains("move");
+        if (move) {
+            return;
+        }
+        event = self._fixEvent(event);
+        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
+        if (index === 0) {
+            return;
+        }
+
+        // retrieves the reference to the part name by using the index
+        // extracted from the masks image (typical strategy for retrieval)
+        var part = self.partsList[index - 1];
+        part && self.owner.select(part);
+        event.stopPropagation();
     });
 
     area.addEventListener("mousemove", function(event) {
@@ -1078,9 +1098,19 @@ ripe.Config.prototype._registerHandlers = function() {
             return;
         }
         event = self._fixEvent(event);
-        var x = event.offsetX;
-        var y = event.offsetY;
-        var part = self._chosenPart(this, x, y);
+        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
+
+        // in case the index that was found is the zero one this is a special
+        // position and the associated operation is the removal of the highlight
+        // also if the target is being dragged the highlight should be removed
+        if (index === 0 || self.element.dataset.down === "true") {
+            self.lowlight(self.element);
+            return;
+        }
+
+        // retrieves the reference to the part name by using the index
+        // extracted from the masks image (typical strategy for retrieval)
+        var part = self.partsList[index - 1];
         part && self.highlight(part);
     });
 
@@ -1089,7 +1119,21 @@ ripe.Config.prototype._registerHandlers = function() {
     });
 
     back.addEventListener("click", function(event) {
-        // canvasClick(this, event);
+        var move = self.element.classList.contains("move");
+        if (move) {
+            return;
+        }
+        event = self._fixEvent(event);
+        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
+        if (index === 0) {
+            return;
+        }
+
+        // retrieves the reference to the part name by using the index
+        // extracted from the masks image (typical strategy for retrieval)
+        var part = self.partsList[index - 1];
+        part && self.owner.select(part);
+        event.stopPropagation();
     });
 
     back.addEventListener("mousemove", function(event) {
@@ -1098,9 +1142,19 @@ ripe.Config.prototype._registerHandlers = function() {
             return;
         }
         event = self._fixEvent(event);
-        var x = event.offsetX;
-        var y = event.offsetY;
-        var part = self._chosenPart(this, x, y);
+        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
+
+        // in case the index that was found is the zero one this is a special
+        // position and the associated operation is the removal of the highlight
+        // also if the target is being dragged the highlight should be removed
+        if (index === 0 || self.element.dataset.down === "true") {
+            self.lowlight(self.element);
+            return;
+        }
+
+        // retrieves the reference to the part name by using the index
+        // extracted from the masks image (typical strategy for retrieval)
+        var part = self.partsList[index - 1];
         part && self.highlight(part);
     });
 
@@ -1164,7 +1218,7 @@ ripe.Config.prototype._parseDrag = function() {
     this.changeFrame(nextFrame);
 };
 
-ripe.Config.prototype._chosenPart = function(canvas, x, y) {
+ripe.Config.prototype._getCanvasIndex = function(canvas, x, y) {
     var canvasRealWidth = canvas.getBoundingClientRect().width;
     var mask = this.element.querySelector(".mask");
     var ratio = mask.width / canvasRealWidth;
@@ -1172,24 +1226,11 @@ ripe.Config.prototype._chosenPart = function(canvas, x, y) {
     y = parseInt(y * ratio);
 
     var maskContext = mask.getContext("2d");
-    var maskData = maskContext.getImageData(x, y, 1, 1);
-    var r = maskData.data[0];
+    var pixel = maskContext.getImageData(x, y, 1, 1);
+    var r = pixel.data[0];
     var index = parseInt(r);
 
-    var down = this.element.dataset.down;
-    // in case the index that was found is the zero one this is a special
-    // position and the associated operation is the removal of the highlight
-    // also if the target is being dragged the highlight should be removed
-    if (index === 0 || down === "true") {
-        this.lowlight(this.element);
-        return;
-    }
-
-    // retrieves the reference to the part name by using the index
-    // extracted from the masks image (typical strategy for retrieval)
-    var part = this.partsList[index - 1];
-
-    return (part === undefined) ? null : part;
+    return index;
 };
 
 ripe.Config.prototype._fixEvent = function(event) {
