@@ -1233,7 +1233,7 @@ ripe.Config.prototype._parseDrag = function() {
 ripe.Config.prototype._getCanvasIndex = function(canvas, x, y) {
     var canvasRealWidth = canvas.getBoundingClientRect().width;
     var mask = this.element.querySelector(".mask");
-    var ratio = mask.width / canvasRealWidth;
+    var ratio = mask.width && canvasRealWidth && mask.width / canvasRealWidth;
     x = parseInt(x * ratio);
     y = parseInt(y * ratio);
 
