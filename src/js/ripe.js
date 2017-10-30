@@ -187,7 +187,7 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this._runCallbacks("update");
 
-    this.ready && this.getPrice({}, function(value) {
+    this.ready && this.getPrice(function(value) {
         this._runCallbacks("price", value);
     }.bind(this));
 };
