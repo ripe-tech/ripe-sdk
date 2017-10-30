@@ -1,6 +1,6 @@
 window.onload = function() {
-    var element = document.getElementById("canvas");
-    var url = element.dataset.url || "https://demo.platforme.com/api/";
+    var element = document.getElementById("config");
+    var url = element.dataset.url || "http://localhost:8181/api/";
     var brand = element.dataset.brand || "swear";
     var model = element.dataset.model || "vyner";
     var variant = element.dataset.variant || "";
@@ -55,25 +55,26 @@ window.onload = function() {
         frame: "top"
     });
 
+    image.bind("loaded", function() {
+        console.log("frame-0 loaded")
+    });
+
     setTimeout(function() { image.setFrame("9"); });
 
-    var configurator = ripe.bindConfig(element);
+    var configurator = ripe.bindConfigurator(element);
 
     configurator.bind("loaded", function() {
         configurator.changeFrame("side-11", {
-            step: -1,
-            interval: 50
+            duration: 500,
+            type: "simple"
         });
-    });
-
-    image.bind("loaded", function() {
-        console.log("frame-0 loaded")
     });
 
     ripe.bind("price", function(value) {
         var price = document.getElementById("price");
         price.innerHTML = value.total.price_final + " " + value.total.currency;
     });
+    
     ripe.bind("combinations", function(value) {
         for (var index = 0; index < value.length; index++) {
             var triplet = value[index];

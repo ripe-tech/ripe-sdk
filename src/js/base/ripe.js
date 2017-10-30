@@ -71,27 +71,35 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
-    !noUpdate && this.update();
+    if (!noUpdate) {
+        this.update();
+        this._runCallbacks("parts", this.parts);
+    }
 };
 
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
         this.setPart(part[0], part[1], part[2], true);
-    }!noUpdate && this.update();
+    }
+
+    if (!noUpdate) {
+        this.update();
+        this._runCallbacks("parts", this.parts);
+    }
 };
 
 ripe.Ripe.prototype.bindImage = function(element, options) {
     var image = new ripe.Image(this, element, options);
-    return this.bindBase(image);
+    return this.bindInteractable(image);
 };
 
-ripe.Ripe.prototype.bindConfig = function(element, options) {
+ripe.Ripe.prototype.bindConfigurator = function(element, options) {
     var config = new ripe.Config(this, element, options);
-    return this.bindBase(config);
+    return this.bindInteractable(config);
 };
 
-ripe.Ripe.prototype.bindBase = function(child) {
+ripe.Ripe.prototype.bindInteractable = function(child) {
     this.children.push(child);
     return child;
 };
