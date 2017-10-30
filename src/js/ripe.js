@@ -91,7 +91,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && !this.options.noDefaults;
-    loadDefaults && this.getDefaults({}, function(result) {
+    loadDefaults && this.getDefaults(function(result) {
         this.parts = result;
         this.ready = true;
         this.update();
@@ -102,7 +102,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
     var loadCombinations = !this.options.noCombinations;
-    loadCombinations && this.getCombinations({}, function(result) {
+    loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
         this._runCallbacks("combinations", this.combinations);
     }.bind(this));
@@ -254,21 +254,23 @@ ripe.Ripe.prototype.getConfig = function(callback) {
     return this._requestURL(configURL, callback);
 };
 
-ripe.Ripe.prototype.getPrice = function(options, callback) {
+ripe.Ripe.prototype.getPrice = function(callback) {
     var priceURL = this._getPriceURL();
     return this._requestURL(priceURL, callback);
 };
 
-ripe.Ripe.prototype.getDefaults = function(options, callback) {
+ripe.Ripe.prototype.getDefaults = function(callback) {
     var defaultsURL = this._getDefaultsURL();
     return this._requestURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
     });
 };
 
-ripe.Ripe.prototype.getCombinations = function(options, callback) {
+ripe.Ripe.prototype.getCombinations = function(callback) {
     var combinationsURL = this._getCombinationsURL();
-    return this._requestURL(combinationsURL, callback);
+    return this._requestURL(combinationsURL, function(result) {
+        callback && callback(result.combinations);
+    });
 };
 
 ripe.Ripe.prototype.getFrames = function(callback) {
