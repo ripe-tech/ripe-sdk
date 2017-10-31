@@ -20,21 +20,6 @@ var ripe = new Ripe(brand, model, {
 Check all the available events and related subscription/unsubscription method calls [here](#events-list). -->
 After initializing the ripe library you should subscribe to the available events so you can easily respond and update your UI. You may also subscribe to events of frames being changed (`changed_frame`).
 
-### Configurator
-To interact with your customizable product, you first need to bind the configurator to automatically update the DOM element everytime a customization change. To know when that process is completed, you can subscribe the `loaded` event.
-
-```javascript
-// get the DOM element and bind the configurator
-var element = document.getElementById("config");
-var configurator = ripe.bindConfigurator(element, {});
-
-// bind the 'loaded' event
-configurator.bind("loaded", function() {
-    // code example
-    showCustomizationPickers();
-});
-```
-
 ### Update
 Triggered whenever there is a customization change.
 
@@ -105,17 +90,12 @@ var image = ripe.bindImage(document.getElementById("frame-0"), {
     frame: "0"
 });
 
-image.bind("loaded", function() {
-    console.log("frame-0 loaded")
-});
-
-
 ripe.load();
 ```
 
 ## 4. Product customization
 You can change a part of your product by using the `setPart` function.
-Alternatively, all the parts can be changed at once with `setParts`.
+Alternatively, all the parts can be changed at once with `setParts` method.
 
 ```javascript
 ripe.setPart(part, material, color);
@@ -128,7 +108,6 @@ If you need to explicitly retrieve the product's customization information you c
 - `getPrice`: to get the product's pricing information.
 - `getCombinations`: to get all the customization options for products without any restrictions applied.
 - `getDefaults`: to get the product's default customization.
-- `getValidOptions`: to get the product's allowed choices, taking into account the product's restrictions;
 
 Next, the example of how to get the price of the customizable product.
 ```javascript
@@ -139,10 +118,18 @@ ripe.getPrice(function(value) {
 ```
 
 ## 5. Product interaction
-To provide an interactive product visualization you simply need to pass a `<div>` element to the method `bindDrag`. You may also pass the size of the frames (1000px by default) and the maximum frame size.
+To provide an interactive product visualization you simply need to pass a `<div>` element to the method `bindConfigurator`.
 
 ```javascript
-ripe.bindDrag(document.getElementById("product-container"), 640, 1000);
+// get the DOM element and bind the configurator
+var element = document.getElementById("config");
+var configurator = ripe.bindConfigurator(element, {});
+
+// bind the 'loaded' event
+configurator.bind("loaded", function() {
+    // code example
+    showCustomizationPickers();
+});
 ```
 
 This element supports the following methods:
@@ -162,11 +149,13 @@ This element supports the following methods:
 ### Options
 | Name | Type | Description |
 | --- | --- | --- |
-| `backgroundColor` | *string* | RGB format color value of the background, with no need to pass the "#" signal. No background by default. Example: "cccccc" |
+<!-- | `backgroundColor` | *string* | RGB format color value of the background, with no need to pass the "#" signal. No background by default. Example: "cccccc" | -->
 | `country` | *string* | Two letters standard country codes defined in *ISO 3166-1 alpha-2* codes. "US" by default. Example: "PT" |
 | `currency` | *string* | Standard currency codes defined in *ISO 4217* codes. "USD" by default. Example: "EUR" |
-| `engraving` | *string* | Material name of the engraved object. Example: "metal" |
-| `format` | *string* | One of the valid image formats: 'jpeg', 'webp', 'sgi' or 'png' |
+<!-- | `engraving` | *string* | Material name of the engraved object. Example: "metal" | -->
+<!-- | `format` | *string* | One of the valid image formats: 'jpeg', 'webp', 'sgi' or 'png' | -->
+| `duration` |  |  |
+<!-- | `frame` |  |  | -->
 | `frames` | *array of strings* | All the frames to be used in the customization. Example: ["top", "bottom", "1", "2"] |
 | `maxSize` | *number* | Maximum value for frame image size. 1000px by default |
 | `noCombinations` | *boolean* | Defines if the combinations are loaded or not. False (loading) by default |
@@ -174,18 +163,20 @@ This element supports the following methods:
 | `parts` | *JSON Object* | Defines the product parts. Each key is a part's name built with color and material information. Example: `var parts = { "sole": { "material": "nappa", "color": "white" }, ... }` |
 | `sensitivity` | *string* | Defines the degree of sensitivity of the dragging interaction. 40 by default. |
 | `size` | *number* | Initial size value of a frame image that is going to be composed. By default is 1000px |
-| `target` | *HTML <img> element* | Target image element that will be updated when a customization change happens |
+<!-- | `target` | *HTML <img> element* | Target image element that will be updated when a customization change happens | -->
+| `url` | *string* | The base `url` of the server where the product is configured |
 | `useChain` | *boolean* | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default. |
+| `variant` | *string* |  |
 
 ### Events list
 | Name | Subscription | Unsubscription |
 | --- | --- | --- |
-| `update` | `addUpdateCallback(calback){...}` | `removeUpdateCallback(calback){...}` |
-| `price` | `addPriceCallback(calback){...}` | `removePriceCallback(calback){...}` |
-| `combinations` | `addCombinationsCallback(calback){...}` | `removeCombinationsCallback(calback){...}` |
-| `highlighted_part` | `addHighlightedPartCallback(calback){...}` | `removeHighlightedPartCallback(calback){...}` |
-| `selected_part` | `addSelectedPartCallback(calback){...}` | `removeSelectedPartCallback(calback){...}` |
-| `changed_frame` | `addChangedFrameCallback(calback){...}` | `removeChangedFrameCallback(calback){...}` |
+| `update` | `ripe.bind("update", calback);` | `ripe.unbind("update", calback);` |
+| `price` | `ripe.bind("price", calback);` | `ripe.unbind("price", calback);` |
+| `combinations` | `ripe.bind("combinations", calback);` | `ripe.unbind("combinations", calback);` |
+<!-- | `highlighted_part` | `addHighlightedPartCallback(calback){...}` | `removeHighlightedPartCallback(calback){...}` | -->
+<!-- | `selected_part` | `addSelectedPartCallback(calback){...}` | `removeSelectedPartCallback(calback){...}` | -->
+| `changed_frame` | `configurator.bind("changed_frame", calback){...}` | `configurator.unbind("changed_frame", calback);` |
 
 ## License
 
