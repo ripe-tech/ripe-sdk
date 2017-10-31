@@ -73,17 +73,17 @@ configurator.bind("changed_frame", function(frame) {
 ## 3. Product visualization
 Usually the product has 24 lateral frames, plus a top and bottom view.
 To display any frame of the product you can use the `bindImage` function to automatically update an `<img>` element. This method also contains an `options` parameter.
-Subscribe to the event `loaded` and you will know when your image is loaded. 
+Subscribe to the event `loaded` and you will know when your image is loaded.
 Finally, after the initial binding of the frames you should call the `load` function for the initial update.
 
 ```javascript
 var element = document.getElementById("frame-0")
 var image = ripe.bindImage(element, {
-    frame: "0"
+    frame: "side-0"
 });
 
-image.bind("loaded", function() {
-    console.log("frame-" + this.options.frame + " loaded")
+ image.bind("loaded", function(frame) {
+    console.log("frame " + frame + " loaded")
 });
 
 ripe.load();
@@ -117,14 +117,17 @@ ripe.getPrice(function(value) {
 
 ## 5. Product interaction
 To provide an interactive product visualization you simply need to pass a `<div>` element to the method `bindConfigurator`.
-Subscribe to the event `loaded` and you will know when your configurator is loaded. 
+Subscribe to the event `loaded` and you will know when your configurator is loaded.
 
 ```javascript
 var element = document.getElementById("config");
 var configurator = ripe.bindConfigurator(element, {});
 
 configurator.bind("loaded", function() {
-    showCustomizationPickers();
+    this.changeFrame("side-11", {
+        duration: 500,
+        type: "cross"
+    });
 });
 ```
 

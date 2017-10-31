@@ -46,27 +46,26 @@ window.onload = function() {
     };
 
     var image = ripe.bindImage(document.getElementById("frame-0"), {
-        frame: "0"
+        frame: "side-0"
     });
     ripe.bindImage(document.getElementById("frame-6"), {
-        frame: "6"
+        frame: "side-6"
     });
     ripe.bindImage(document.getElementById("frame-top"), {
         frame: "top"
     });
 
-    image.bind("loaded", function() {
-        console.log("frame-0 loaded")
+    image.bind("loaded", function(frame) {
+        console.log("frame " + frame + " loaded")
     });
 
-    setTimeout(function() { image.setFrame("9"); });
 
     var configurator = ripe.bindConfigurator(element);
 
     configurator.bind("loaded", function() {
-        configurator.changeFrame("side-11", {
+        this.changeFrame("side-11", {
             duration: 500,
-            type: "simple"
+            type: "cross"
         });
     });
 
