@@ -132,7 +132,7 @@ This element supports the following methods:
 
 | Method | Params | Description |
 | --- | --- | --- |
-| `changeFrame` | <ul><li>`frame` *(string), named frame defined in the "view-position" format. Eg.: "side-0"*</li><li>`options` *(JSON object) with optional fields. `duration`: *(number) total duration, in milliseconds, of the animation* ; `type`: *(string) the animation style you want, wich can be "simple" (fade in), "cross" (crossfade) our "immediate" (without any style)*; `preventDrag`: *(boolean), to choose if drag actions during an animated change of frames should be ignored. "True" by default *</li></ul> | displays a frame you pass according to some specifications passed by |
+| `changeFrame` | <ul><li>`frame` *(string), named frame defined in the "view-position" format. Eg.: "side-0"*</li><li>`options` *(JSON object with optional fields)*:  `duration`: *(number)* total duration, in milliseconds, of the animation; `type`: *(string)* the animation style you want, wich can be "simple" (fade in), "cross" (crossfade) our "immediate" (without any style)*; `preventDrag`: *(boolean)* to choose if drag actions during an animated change of frames should be ignored. "True" by default</li></ul> | displays a frame you pass according to some specifications passed by |
 | `resize` | <ul><li>`size` *(number), new size value in px*</li></ul> | sets the current frame size to a new given value |
 
 ## Appendix
