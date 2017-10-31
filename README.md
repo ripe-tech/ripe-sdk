@@ -150,13 +150,9 @@ This element supports the following methods:
 ### Options
 | Name | Type | Description |
 | --- | --- | --- |
-<!-- | `backgroundColor` | *string* | RGB format color value of the background, with no need to pass the "#" signal. No background by default. Example: "cccccc" | -->
 | `country` | *string* | Two letters standard country codes defined in *ISO 3166-1 alpha-2* codes. "US" by default. Example: "PT" |
 | `currency` | *string* | Standard currency codes defined in *ISO 4217* codes. "USD" by default. Example: "EUR" |
-<!-- | `engraving` | *string* | Material name of the engraved object. Example: "metal" | -->
-<!-- | `format` | *string* | One of the valid image formats: 'jpeg', 'webp', 'sgi' or 'png' | -->
 | `duration` |  |  |
-<!-- | `frame` |  |  | -->
 | `frames` | *array of strings* | All the frames to be used in the customization. Example: ["top", "bottom", "1", "2"] |
 | `maxSize` | *number* | Maximum value for frame image size. 1000px by default |
 | `noCombinations` | *boolean* | Defines if the combinations are loaded or not. False (loading) by default |
@@ -164,10 +160,15 @@ This element supports the following methods:
 | `parts` | *JSON Object* | Defines the product parts. Each key is a part's name built with color and material information. Example: `var parts = { "sole": { "material": "nappa", "color": "white" }, ... }` |
 | `sensitivity` | *string* | Defines the degree of sensitivity of the dragging interaction. 40 by default. |
 | `size` | *number* | Initial size value of a frame image that is going to be composed. By default is 1000px |
-<!-- | `target` | *HTML <img> element* | Target image element that will be updated when a customization change happens | -->
 | `url` | *string* | The base `url` of the server where the product is configured |
 | `useChain` | *boolean* | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default. |
 | `variant` | *string* |  |
+
+<!-- | `backgroundColor` | *string* | RGB format color value of the background, with no need to pass the "#" signal. No background by default. Example: "cccccc" | -->
+<!-- | `engraving` | *string* | Material name of the engraved object. Example: "metal" | -->
+<!-- | `format` | *string* | One of the valid image formats: 'jpeg', 'webp', 'sgi' or 'png' | -->
+<!-- | `frame` |  |  | -->
+<!-- | `target` | *HTML <img> element* | Target image element that will be updated when a customization change happens | -->
 
 ### Events list
 | Name | Subscription | Unsubscription |
@@ -175,9 +176,10 @@ This element supports the following methods:
 | `update` | `ripe.bind("update", calback);` | `ripe.unbind("update", calback);` |
 | `price` | `ripe.bind("price", calback);` | `ripe.unbind("price", calback);` |
 | `combinations` | `ripe.bind("combinations", calback);` | `ripe.unbind("combinations", calback);` |
+| `changed_frame` | `configurator.bind("changed_frame", calback){...}` | `configurator.unbind("changed_frame", calback);` |
+
 <!-- | `highlighted_part` | `addHighlightedPartCallback(calback){...}` | `removeHighlightedPartCallback(calback){...}` | -->
 <!-- | `selected_part` | `addSelectedPartCallback(calback){...}` | `removeSelectedPartCallback(calback){...}` | -->
-| `changed_frame` | `configurator.bind("changed_frame", calback){...}` | `configurator.unbind("changed_frame", calback);` |
 
 ## License
 
