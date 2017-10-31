@@ -19,6 +19,14 @@ ul li {
     font-weight: bold;
 }
 
+.images {
+    font-size: 0px;
+}
+
+.images .image {
+    display: inline-block;
+}
+
 .configurator {
     font-size: 0px;
     white-space: nowrap;

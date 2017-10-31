@@ -74,7 +74,7 @@ window.onload = function() {
         var price = document.getElementById("price");
         price.innerHTML = value.total.price_final + " " + value.total.currency;
     });
-    
+
     ripe.bind("combinations", function(value) {
         for (var index = 0; index < value.length; index++) {
             var triplet = value[index];
@@ -108,7 +108,7 @@ window.onload = function() {
     });
 
     getCombinations && getCombinations.addEventListener("click", function() {
-        ripe.getCombinations({}, function(value) {
+        ripe.getCombinations(function(value) {
             alert("There are <strong>" + String(value.length) +
                 "</strong> combinations with <strong>" + String(unique()) +
                 "</strong> possible compositions");
