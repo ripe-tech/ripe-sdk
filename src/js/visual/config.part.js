@@ -184,7 +184,10 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
             // otherwise waits the provided interval
             // and proceeds to the next step
             else {
-                this.changeFrame(frame, options);
+                var timeout = animate ? 0 : stepDuration;
+                setTimeout(function() {
+                    this.changeFrame(frame, options);
+                }.bind(this), timeout);
             }
         }.bind(this)
     });

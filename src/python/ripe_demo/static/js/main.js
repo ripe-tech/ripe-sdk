@@ -65,8 +65,7 @@ window.onload = function() {
 
     configurator.bind("loaded", function() {
         configurator.changeFrame("side-11", {
-            duration: 500,
-            type: "simple"
+            duration: 500
         });
     });
 

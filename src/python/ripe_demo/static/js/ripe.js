@@ -91,7 +91,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && !this.options.noDefaults;
-    loadDefaults && this.getDefaults({}, function(result) {
+    loadDefaults && this.getDefaults(function(result) {
         this.parts = result;
         this.ready = true;
         this.update();
@@ -102,7 +102,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
     var loadCombinations = !this.options.noCombinations;
-    loadCombinations && this.getCombinations({}, function(result) {
+    loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
         this._runCallbacks("combinations", this.combinations);
     }.bind(this));
@@ -139,27 +139,35 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
-    !noUpdate && this.update();
+    if (!noUpdate) {
+        this.update();
+        this._runCallbacks("parts", this.parts);
+    }
 };
 
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
         this.setPart(part[0], part[1], part[2], true);
-    }!noUpdate && this.update();
+    }
+
+    if (!noUpdate) {
+        this.update();
+        this._runCallbacks("parts", this.parts);
+    }
 };
 
 ripe.Ripe.prototype.bindImage = function(element, options) {
     var image = new ripe.Image(this, element, options);
-    return this.bindBase(image);
+    return this.bindInteractable(image);
 };
 
-ripe.Ripe.prototype.bindConfig = function(element, options) {
+ripe.Ripe.prototype.bindConfigurator = function(element, options) {
     var config = new ripe.Config(this, element, options);
-    return this.bindBase(config);
+    return this.bindInteractable(config);
 };
 
-ripe.Ripe.prototype.bindBase = function(child) {
+ripe.Ripe.prototype.bindInteractable = function(child) {
     this.children.push(child);
     return child;
 };
@@ -179,7 +187,7 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this._runCallbacks("update");
 
-    this.ready && this.getPrice({}, function(value) {
+    this.ready && this.getPrice(function(value) {
         this._runCallbacks("price", value);
     }.bind(this));
 };
@@ -246,21 +254,23 @@ ripe.Ripe.prototype.getConfig = function(callback) {
     return this._requestURL(configURL, callback);
 };
 
-ripe.Ripe.prototype.getPrice = function(options, callback) {
+ripe.Ripe.prototype.getPrice = function(callback) {
     var priceURL = this._getPriceURL();
     return this._requestURL(priceURL, callback);
 };
 
-ripe.Ripe.prototype.getDefaults = function(options, callback) {
+ripe.Ripe.prototype.getDefaults = function(callback) {
     var defaultsURL = this._getDefaultsURL();
     return this._requestURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
     });
 };
 
-ripe.Ripe.prototype.getCombinations = function(options, callback) {
+ripe.Ripe.prototype.getCombinations = function(callback) {
     var combinationsURL = this._getCombinationsURL();
-    return this._requestURL(combinationsURL, callback);
+    return this._requestURL(combinationsURL, function(result) {
+        callback && callback(result.combinations);
+    });
 };
 
 ripe.Ripe.prototype.getFrames = function(callback) {
@@ -339,9 +349,9 @@ ripe.Ripe.prototype._getQuery = function(options) {
     currency && buffer.push("currency=" + currency);
 
     // TODO: move this to another place
-    options.format && buffer.push("format=" + format);
-    options.size && buffer.push("size=" + size);
-    options.background && buffer.push("background=" + background);
+    options.format && buffer.push("format=" + options.format);
+    options.size && buffer.push("size=" + options.size);
+    options.background && buffer.push("background=" + options.background);
 
     return buffer.join("&");
 };
@@ -414,8 +424,10 @@ ripe.Config = function(owner, element, options) {
 ripe.Config.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Config.prototype.init = function() {
+    this.size = this.element.dataset.size || this.options.size || 1000;
     this.maxSize = this.element.dataset.max_size || this.options.maxSize || 1000;
     this.sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
+    this.duration = this.options.duration || 0;
 
     this.owner.bind("selected_part", function(part) {
         this.highlightPart(part);
@@ -434,6 +446,188 @@ ripe.Config.prototype.init = function() {
         this.ready = true;
         this.update();
     }.bind(this));
+};
+
+ripe.Config.prototype.resize = function(size) {
+    if (this.element === undefined) {
+        return;
+    }
+
+    size = size || this.element.clientWidth;
+    var area = this.element.querySelector(".area");
+    var frontMask = this.element.querySelector(".front-mask");
+    var back = this.element.querySelector(".back");
+    var mask = this.element.querySelector(".mask");
+    area.width = size;
+    area.height = size;
+    frontMask.width = size;
+    frontMask.height = size;
+    frontMask.style.width = size + "px";
+    frontMask.style.marginLeft = "-" + String(size) + "px";
+    back.width = size;
+    back.height = size;
+    back.style.marginLeft = "-" + String(size) + "px";
+    mask.width = size;
+    mask.height = size;
+    this.element.dataset.current_size = size;
+    this.update();
+};
+
+ripe.Config.prototype.update = function(state, options) {
+    if (this.ready === false) {
+        return;
+    }
+
+    var view = this.element.dataset.view;
+    var position = this.element.dataset.position;
+    options = options || {};
+    var animate = options.animate || false;
+    var duration = options.duration;
+    var callback = options.callback;
+
+    // checks if the parts drawed on the target have
+    // changed and animates the transition if they did
+    var previous = this.element.dataset.signature || "";
+    var signature = this.owner._getQuery();
+    var changed = signature !== previous;
+    animate = animate || (changed && "simple");
+    this.element.dataset.signature = signature;
+
+    // if the parts and the position haven't changed
+    // since the last frame load then ignores the
+    // load request and returns immediately
+    previous = this.element.dataset.unique;
+    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(this.size);
+    if (previous === unique) {
+        callback && callback();
+        return false;
+    }
+    this.element.dataset.unique = unique;
+
+    // runs the load operation for the current frame
+    this._loadFrame(view, position, {
+            draw: true,
+            animate: animate,
+            duration: duration
+        },
+        callback
+    );
+
+    // runs the pre-loading process so that the remaining frames are
+    // loaded for a smother experience when dragging the element,
+    // note that this is only performed in case this is not a single
+    // based update (not just the loading of the current position)
+    // and the current signature has changed
+    var preloaded = this.element.classList.contains("preload");
+    var mustPreload = changed || !preloaded;
+    mustPreload && this._preload(this.options.useChain);
+};
+
+ripe.Config.prototype.changeFrame = function(frame, options) {
+    var _frame = ripe.parseFrameKey(frame);
+    var nextView = _frame[0];
+    var nextPosition = parseInt(_frame[1]);
+
+    options = options || {};
+    var duration = options.duration || this.duration;
+    var type = options.type;
+    var preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
+
+    var view = this.element.dataset.view;
+    var position = parseInt(this.element.dataset.position);
+
+    var viewFrames = this.frames[nextView];
+    if (!viewFrames || nextPosition >= viewFrames) {
+        throw new RangeError("Frame " + frame + " is not supported.");
+    }
+
+    // saves the position of the current view
+    // so that it returns to the same position
+    // when coming back to the same view
+    this._lastFrame[view] = position;
+    this.element.dataset.position = nextPosition;
+
+    // if there is a new view and the product supports
+    // it then animates the transition with a crossfade
+    // and ignores all drag movements while it lasts
+    var animate = false;
+    if (view !== nextView && viewFrames !== undefined) {
+        this.element.dataset.view = nextView;
+        animate = "cross";
+    }
+
+    // if an animation duration was provided then changes
+    // to the next step instead of the target frame
+    var stepDuration = 0;
+    if (duration) {
+        animate = type || animate;
+
+        // calculates the number of steps of
+        // the animation and the step duration
+        var stepCount = view !== nextView ? 1 : nextPosition - position;
+        stepDuration = duration / Math.abs(stepCount);
+        options.duration = duration - stepDuration;
+
+        // determines the next step and sets it
+        // as the position
+        var stepPosition = stepCount !== 0 ? position + stepCount / stepCount : position;
+        stepPosition = stepPosition % viewFrames;
+        this.element.dataset.position = stepPosition;
+    }
+
+    // determines if the current change frame operation
+    // is an animated one or if it's a discrete one
+    var animated = Boolean(duration);
+
+    // if the frame change is animated and preventDrag is true
+    // then ignores drag movements until the animation is finished
+    preventDrag = preventDrag && (animate || duration);
+    preventDrag && this.element.classList.add("noDrag");
+
+    var newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
+    this._runCallbacks("changed_frame", newFrame);
+    this.update({}, {
+        animate: animate,
+        duration: stepDuration,
+        callback: function() {
+            // if there is no step transition
+            // or the transition has finished
+            // then allows drag movements again
+            if (!animated || stepPosition == nextPosition) {
+                preventDrag && this.element.classList.remove("noDrag");
+            }
+
+            // otherwise waits the provided interval
+            // and proceeds to the next step
+            else {
+                var timeout = animate ? 0 : stepDuration;
+                setTimeout(function() {
+                    this.changeFrame(frame, options);
+                }.bind(this), timeout);
+            }
+        }.bind(this)
+    });
+};
+
+ripe.Config.prototype.highlight = function(part, options) {};
+
+ripe.Config.prototype.lowlight = function(options) {};
+
+ripe.Config.prototype.enterFullscreen = function(options) {
+    if (this.element === undefined) {
+        return;
+    }
+    this.element.classList.add("fullscreen");
+    var maxSize = options.maxSize || this.element.dataset.max_size || this.maxSize;
+    this.resize(maxSize);
+};
+
+ripe.Config.prototype.exitFullscreen = function(options) {
+    if (this.element === undefined) {
+        return;
+    }
+    this.element.classList.remove("fullscreen");
+    this.resize();
 };
 
 ripe.Config.prototype._initLayout = function() {
@@ -499,157 +693,6 @@ ripe.Config.prototype._initLayout = function() {
     this._registerHandlers();
 };
 
-ripe.Config.prototype.resize = function(size) {
-    if (this.element === undefined) {
-        return;
-    }
-
-    size = size || this.element.clientWidth || this.options.size;
-    var area = this.element.querySelector(".area");
-    var frontMask = this.element.querySelector(".front-mask");
-    var back = this.element.querySelector(".back");
-    var mask = this.element.querySelector(".mask");
-    area.width = size;
-    area.height = size;
-    frontMask.width = size;
-    frontMask.height = size;
-    frontMask.style.width = size + "px";
-    frontMask.style.marginLeft = "-" + String(size) + "px";
-    back.width = size;
-    back.height = size;
-    back.style.marginLeft = "-" + String(size) + "px";
-    mask.width = size;
-    mask.height = size;
-    this.element.dataset.current_size = size;
-    this.update();
-};
-
-ripe.Config.prototype.update = function(state, options) {
-    if (this.ready === false) {
-        return;
-    }
-
-    var view = this.element.dataset.view;
-    var position = this.element.dataset.position;
-    options = options || {};
-    var animate = options.animate || false;
-    var callback = options.callback;
-
-    // checks if the parts drawed on the target have
-    // changed and animates the transition if they did
-    var previous = this.element.dataset.signature || "";
-    var signature = this.owner._getQuery();
-    var changed = signature !== previous;
-    animate = animate || (changed && "simple");
-    this.element.dataset.signature = signature;
-
-    // if the parts and the position haven't changed
-    // since the last frame load then ignores the
-    // load request and returns immediately
-    var size = this.element.getAttribute("data-current-size");
-    previous = this.element.dataset.unique;
-    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(size);
-    if (previous === unique) {
-        callback && callback();
-        return false;
-    }
-    this.element.dataset.unique = unique;
-
-    // runs the load operation for the current frame
-    this._loadFrame(view, position, {
-            draw: true,
-            animate: animate
-        },
-        callback
-    );
-
-    // runs the pre-loading process so that the remaining frames are
-    // loaded for a smother experience when dragging the element,
-    // note that this is only performed in case this is not a single
-    // based update (not just the loading of the current position)
-    // and the current signature has changed
-    var preloaded = this.element.classList.contains("preload");
-    var mustPreloapreloaded;
-    mustPreload && this._preload(this.options.useChain);
-};
-
-ripe.Config.prototype.changeFrame = function(frame, options) {
-    var _frame = ripe.parseFrameKey(frame);
-    var nextView = _frame[0];
-    var nextPosition = _frame[1];
-
-    options = options || {};
-    var step = options.step;
-    var interval = options.interval || this.options.interval || 0;
-    var preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
-
-    var view = this.element.dataset.view;
-    var position = this.element.dataset.position;
-
-    // saves the position of the current view
-    // so that it returns to the same position
-    // when coming back to the same view
-    this._lastFrame[view] = position;
-
-    // if there is a new view and the product supports
-    // it then animates the transition with a crossfade
-    // and ignores all drag movements while it lasts
-    var animate = false;
-    var viewFrames = this.frames[nextView];
-    if (view !== nextView && viewFrames !== undefined) {
-        view = nextView;
-        animate = "cross";
-    }
-
-    this.element.dataset.view = view;
-    this.element.dataset.position = nextPosition;
-
-    // if an animation step was provided then changes
-    // to the next step instead of the target frame
-    if (step) {
-        var stepPosition = (parseInt(position) + step) % viewFrames;
-        stepPosition = stepPosition < 0 ? viewFrames + stepPosition : stepPosition;
-        if (step > 0 && stepPosition > nextPosition) {
-            stepPosition = nextPosition;
-        } else if (step < 0 && stepPosition < nextPosition) {
-            stepPosition = nextPosition;
-        }
-        this.element.dataset.position = stepPosition;
-    }
-
-    // determines if the current change frame operation
-    // is an animated one or if it's a discrete one
-    var animated = Boolean(step);
-
-    // if the frame change is animated and preventDrag is true
-    // then ignores drag movements until the animation is finished
-    preventDrag = preventDrag && (animate || step);
-    preventDrag && this.element.classList.add("noDrag");
-
-    var newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    this._runCallbacks("changed_frame", newFrame);
-    this.update({}, {
-        animate: animate,
-        callback: function() {
-            // if there is no step transition
-            // or the transition has finished
-            // then allows drag movements again
-            if (!animated || stepPosition == nextPosition) {
-                preventDrag && this.element.classList.remove("noDrag");
-
-            }
-
-            // otherwise waits the provided interval
-            // and proceeds to the next step
-            else {
-                setTimeout(function() {
-                    this.changeFrame(frame, options);
-                }.bind(this), interval);
-            }
-        }.bind(this)
-    });
-};
-
 ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     // retrieves the image that will be used to store the frame
     view = view || this.element.dataset.view || "side";
@@ -659,6 +702,7 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     options = options || {};
     var draw = options.draw === undefined || options.draw;
     var animate = options.animate;
+    var duration = options.duration;
     var framesBuffer = this.element.querySelector(".frames-buffer");
     var area = this.element.querySelector(".area");
     var image = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
@@ -667,7 +711,8 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
 
     // builds the url that will be set on the image
     var url = this.owner._getImageURL({
-        frame: frame
+        frame: frame,
+        size: this.size
     });
 
     // creates a callback to be called when the frame
@@ -687,7 +732,7 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
             return;
         }
         var isReady = image.dataset.loaded === "true";
-        isReady && this._drawFrame(image, animate, drawCallback);
+        isReady && this._drawFrame(image, animate, duration, drawCallback);
         return;
     }
 
@@ -700,7 +745,7 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
             callback && callback();
             return;
         }
-        this._drawFrame(image, animate, drawCallback);
+        this._drawFrame(image, animate, duration, drawCallback);
     }.bind(this);
 
     // sets the src of the image to trigger the request
@@ -711,7 +756,7 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     image.dataset.loaded = false;
 };
 
-ripe.Config.prototype._drawFrame = function(image, animate, callback) {
+ripe.Config.prototype._drawFrame = function(image, animate, duration, callback) {
     var area = this.element.querySelector(".area");
     var back = this.element.querySelector(".back");
 
@@ -739,12 +784,12 @@ ripe.Config.prototype._drawFrame = function(image, animate, callback) {
     currentId && cancelAnimationFrame(parseInt(currentId));
     targetId && cancelAnimationFrame(parseInt(targetId));
 
-    var timeout = animate === "immediate" ? 0 : 500;
+    duration = duration || (animate === "immediate" ? 0 : 500);
     if (animate === "cross") {
-        ripe.animateProperty(current, "opacity", 1, 0, timeout);
+        ripe.animateProperty(current, "opacity", 1, 0, duration);
     }
 
-    ripe.animateProperty(target, "opacity", 0, 1, timeout, function() {
+    ripe.animateProperty(target, "opacity", 0, 1, duration, function() {
         current.style.opacity = 0;
         current.style.zIndex = 1;
         target.style.zIndex = 1;
@@ -861,27 +906,6 @@ ripe.Config.prototype._preload = function(useChain) {
             render();
         }, 250);
     }
-};
-
-ripe.Config.prototype.highlight = function(part, options) {};
-
-ripe.Config.prototype.lowlight = function(options) {};
-
-ripe.Config.prototype.enterFullscreen = function(options) {
-    if (this.element === undefined) {
-        return;
-    }
-    this.element.classList.add("fullscreen");
-    var maxSize = options.maxSize || this.element.dataset.max_size || this.options.maxSize;
-    this.resize(maxSize);
-};
-
-ripe.Config.prototype.exitFullscreen = function(options) {
-    if (this.element === undefined) {
-        return;
-    }
-    this.element.classList.remove("fullscreen");
-    this.resize();
 };
 
 ripe.Config.prototype._registerHandlers = function() {
@@ -1001,16 +1025,17 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
-
+    this.size = this.element.dataset.size || this.options.size || 1000;
     this.element.addEventListener("load", function() {
         this._runCallbacks("loaded");
     }.bind(this));
 };
 
 ripe.Image.prototype.update = function(state) {
-    var size = this.element.clientWidth || this.options.size || 1000;
+    var size = this.element.dataset.size || 1000;
     var url = this.owner._getImageURL({
-        frame: this.frame
+        frame: this.frame,
+        size: size
     });
     if (this.element.src === url) {
         return;
