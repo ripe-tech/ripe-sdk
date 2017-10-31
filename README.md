@@ -82,11 +82,16 @@ var image = ripe.bindImage(element, {
     frame: "side-0"
 });
 
- image.bind("loaded", function(frame) {
+image.bind("loaded", function(frame) {
     console.log("frame " + frame + " loaded")
 });
 
 ripe.load();
+```
+
+Whenever you want to set a new image frame, you only have to call `setFrame` function.
+```javascript
+    image.setFrame("side-3");
 ```
 
 ## 4. Product customization
