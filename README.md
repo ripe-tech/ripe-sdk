@@ -16,15 +16,31 @@ var ripe = new Ripe(brand, model, {
 ```
 
 ## 2. Events
-After initializing the ripe library you should subscribe to the available events (`update`, `price` and `combinations`) so you can easily respond and update your UI. You may also subscribe to events of parts being highlighted (`highlighted_part`), selected (`selected_part`) or frames being changed (`changed_frame`).
-Check all the available events and related subscription/unsubscription method calls [here](#events-list).
+<!-- After initializing the ripe library you should subscribe to the available events (`update`, `price` and `combinations`) so you can easily respond and update your UI. You may also subscribe to events of parts being highlighted (`highlighted_part`), selected (`selected_part`) or frames being changed (`changed_frame`).
+Check all the available events and related subscription/unsubscription method calls [here](#events-list). -->
+After initializing the ripe library you should subscribe to the available events so you can easily respond and update your UI. You may also subscribe to events of frames being changed (`changed_frame`).
+
+### Configurator
+To interact with your customizable product, you first need to bind the configurator to automatically update the DOM element everytime a customization change. To know when that process is completed, you can subscribe the `loaded` event.
+
+```javascript
+// get the DOM element and bind the configurator
+var element = document.getElementById("config");
+var configurator = ripe.bindConfigurator(element, {});
+
+// bind the 'loaded' event
+configurator.bind("loaded", function() {
+    // code example
+    showCustomizationPickers();
+});
+```
 
 ### Update
 Triggered whenever there is a customization change.
 
 ```javascript
-ripe.addUpdateCallback(function() {
-    updateUI();
+ripe.bind("update", function() {
+   updateUI();
 });
 ```
 
@@ -32,7 +48,7 @@ ripe.addUpdateCallback(function() {
 Notifies you when the price of the customization changes.
 
 ```javascript
-ripe.addPriceCallback(function(value) {
+ripe.bind("price", function(value) {
     var price = document.getElementById("price");
     price.innerHTML = value.total.price_final + " " + value.total.currency;
 });
@@ -42,7 +58,7 @@ ripe.addPriceCallback(function(value) {
 Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
 
 ```javascript
-ripe.addCombinationsCallback(function(value) {
+ripe.bind("combinations", function(value) {
     for (var index = 0; index < value.length; index++) {
         var triplet = value[index];
         var part = triplet[0];
@@ -54,7 +70,7 @@ ripe.addCombinationsCallback(function(value) {
 ```
 
 ### Parts
-Notifies you when any part was highlighted.
+<!-- Notifies you when any part was highlighted.
 
 ```javascript
 ripe.addHighlightedPartCallback(function(part) {
@@ -68,26 +84,31 @@ Triggered when some part was selected.
 ripe.addSelectedPartCallback(function(part) {
     part && showMaterialsPicker(part);
 });
-```
+``` -->
 
 ### Frames
 Triggered whenever there is a frame change.
 
 ```javascript
-ripe.addChangedFrameCallback(function(frame) {
+configurator.bind("changed_frame", function(frame) {
     frame === "top" && disableButton("top-view-button");
 });
 ```
 
 ## 3. Product visualization
 Usually the product has 24 lateral frames, plus a top and bottom view.
-To present a frame of the product you can use the `bindFrame` function to automatically update an `<img>` element when there is a customization change.
+To present any frame of the product you can use the `bindImage` function to automatically update an `<img>` element when there is a customization change.
 After the initial binding of the frames you should call the `load` function for the initial update.
 
 ```javascript
-ripe.bindFrame(document.getElementById("frame-0"), "0");
-ripe.bindFrame(document.getElementById("frame-1"), "1");
-ripe.bindFrame(document.getElementById("frame-top"), "top");
+var image = ripe.bindImage(document.getElementById("frame-0"), {
+    frame: "0"
+});
+
+image.bind("loaded", function() {
+    console.log("frame-0 loaded")
+});
+
 
 ripe.load();
 ```
