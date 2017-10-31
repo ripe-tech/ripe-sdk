@@ -63,9 +63,8 @@ window.onload = function() {
     var configurator = ripe.bindConfigurator(element);
 
     configurator.bind("loaded", function() {
-        this.changeFrame("side-11", {
-            duration: 500,
-            type: "cross"
+        configurator.changeFrame("side-11", {
+            duration: 500
         });
     });
 
