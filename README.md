@@ -17,7 +17,6 @@ var ripe = new Ripe(brand, model, {
 
 ## 2. Events
 After initializing the ripe library you should subscribe to the available events so you can easily respond and update your UI.
-Check all the available events and related subscription/unsubscription method calls [here](#events-list).
 
 ### Update
 Triggered whenever there is a customization change.
@@ -133,7 +132,7 @@ This element supports the following methods:
 
 | Method | Params | Description |
 | --- | --- | --- |
-| `changeFrame` | <ul><li>`frame` *(number or string), named frame*</li><li>`options` *(JSON object)*</li></ul> | displays a frame you pass by, with or without animation. If animated, it will gradually display `step` frames from the current one, taking `interval` milliseconds |
+| `changeFrame` | <ul><li>`frame` *(string), named frame defined in the "view-position" format. Eg.: "side-0"*</li><li>`options` *(JSON object) with optional fields. `duration`: *(number) total duration, in milliseconds, of the animation* ; `type`: *(string) the animation style you want, wich can be "simple" (fade in), "cross" (crossfade) our "immediate" (without any style)*; `preventDrag`: *(boolean), to choose if drag actions during an animated change of frames should be ignored. "True" by default *</li></ul> | displays a frame you pass according to some specifications passed by |
 | `resize` | <ul><li>`size` *(number), new size value in px*</li></ul> | sets the current frame size to a new given value |
 
 ## Appendix
@@ -153,14 +152,6 @@ This element supports the following methods:
 | `url` | *string* | The base `url` of the server where the product is configured |
 | `useChain` | *boolean* | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default. |
 | `variant` | *string* | Variant of the customizable product |
-
-### Events list
-| Name | Subscription | Unsubscription |
-| --- | --- | --- |
-| `update` | `ripe.bind("update", calback);` | `ripe.unbind("update", calback);` |
-| `price` | `ripe.bind("price", calback);` | `ripe.unbind("price", calback);` |
-| `combinations` | `ripe.bind("combinations", calback);` | `ripe.unbind("combinations", calback);` |
-| `changed_frame` | `configurator.bind("changed_frame", calback){...}` | `configurator.unbind("changed_frame", calback);` |
 
 ## License
 
