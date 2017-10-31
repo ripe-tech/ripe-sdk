@@ -137,12 +137,13 @@ This element supports the following methods:
 | Method | Params | Description |
 | --- | --- | --- |
 | `changeFrame` | <ul><li>`frame` *(number or string (named frame)*</li><li>`animate` *[optional] (boolean), if the transition should be animated, from the current frame to the frame provided. "True" by default*</li><li>`step` *[optional] (number), number of frames it iterates on each transition. "1" by default*</li><li>`interval` *[optional] (number), the duration, in milliseconds, of each transition between frames. 100ms by default*</li><li>`preventDrag` *[optional] (boolean), if drag actions during an animated change of frames should be ignored. "True" by default*</li><li> `callback` *[optional] (string), function to be called when the transition finishes*</li></ul> | displays a frame you pass by, with or without animation. If animated, it will gradually display `step` frames from the current one, taking `interval` milliseconds |
-| `highlightPart`| <ul><li>`part` *(string), named part*</li></ul> | highlights a part |
-| `lowlightPart` | <ul><li>`part` *(string), named part*</li></ul> | lowlights a part |
-| `selectPart` | <ul><li>`part` *(string), named part*</li></ul> | selects a part |
 | `resize` | <ul><li>`size` *(number), new size value in px*</li></ul> | sets the current frame size to a new given value |
-| `fullscreen` | | sets the frame to the maximum allowed size value (`options.maxSize`) |
-| `exitFullscreen` | | sets the frame size to the initial value (`options.size`) |
+
+<!-- | `highlightPart`| <ul><li>`part` *(string), named part*</li></ul> | highlights a part |
+| `lowlightPart` | <ul><li>`part` *(string), named part*</li></ul> | lowlights a part |
+| `selectPart` | <ul><li>`part` *(string), named part*</li></ul> | selects a part | -->
+<!-- | `fullscreen` | | sets the frame to the maximum allowed size value (`options.maxSize`) | -->
+<!-- | `exitFullscreen` | | sets the frame size to the initial value (`options.size`) | -->
 
 ## Appendix
 
