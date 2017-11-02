@@ -23,15 +23,3 @@ class BaseController(appier.Controller):
             country = self.field("country"),
             currency = self.field("currency")
         )
-
-    @appier.route("/gucci", "GET")
-    def gucci(self):
-        return self.template(
-            "gucci.html.tpl",
-            url = self.field("url"),
-            brand = self.field("brand"),
-            model = self.field("model"),
-            variant = self.field("variant"),
-            country = self.field("country"),
-            currency = self.field("currency")
-        )
