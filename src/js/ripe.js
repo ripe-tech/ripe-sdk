@@ -477,7 +477,7 @@ ripe.Configurator.prototype.resize = function(size) {
     back.style.marginLeft = "-" + String(size) + "px";
     mask.width = size;
     mask.height = size;
-    this.element.dataset.current_size = size;
+    this.currentSize = size;
     this.update();
 };
 
@@ -496,22 +496,22 @@ ripe.Configurator.prototype.update = function(state, options) {
 
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
-    var previous = this.element.dataset.signature || "";
+    var previous = this.signature || "";
     var signature = this.owner._getQuery();
     var changed = signature !== previous;
     animate = animate || (changed && "simple");
-    this.element.dataset.signature = signature;
+    this.signature = signature;
 
     // if the parts and the position haven't changed
     // since the last frame load then ignores the
     // load request and returns immediately
-    previous = this.element.dataset.unique;
+    previous = this.unique;
     var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(size);
     if (previous === unique) {
         callback && callback();
         return false;
     }
-    this.element.dataset.unique = unique;
+    this.unique = unique;
 
     // runs the load operation for the current frame
     this._loadFrame(view, position, {
@@ -811,9 +811,9 @@ ripe.Configurator.prototype._drawFrame = function(image, animate, duration, call
 
 ripe.Configurator.prototype._preload = function(useChain) {
     var position = this.element.dataset.position || 0;
-    var index = this.element.dataset.index || 0;
+    var index = this.index || 0;
     index++;
-    this.element.dataset.index = index;
+    this.index = index;
     this.element.classList.add("preload");
 
     // adds all the frames to the work pile
@@ -832,8 +832,7 @@ ripe.Configurator.prototype._preload = function(useChain) {
 
     var self = this;
     var mark = function(element) {
-        var _index = self.element.dataset.index;
-        _index = parseInt(_index);
+        var _index = self.index;
         if (index !== _index) {
             return;
         }
@@ -863,9 +862,7 @@ ripe.Configurator.prototype._preload = function(useChain) {
     };
 
     var render = function() {
-        var _index = self.element.getAttribute("data-index");
-        _index = parseInt(_index);
-
+        var _index = self.index;
         if (index !== _index) {
             return;
         }
@@ -922,14 +919,15 @@ ripe.Configurator.prototype._preload = function(useChain) {
 ripe.Configurator.prototype._registerHandlers = function() {
     // binds the mousedown event on the element
     // to prepare it for drag movements
+    var self = this;
     this.element.addEventListener("mousedown", function(event) {
         var _element = this;
         _element.dataset.view = _element.dataset.view || "side";
-        _element.dataset.base = _element.dataset.position || 0;
-        _element.dataset.down = true;
-        _element.dataset.referenceX = event.pageX;
-        _element.dataset.referenceY = event.pageY;
-        _element.dataset.percent = 0;
+        self.base = _element.dataset.position || 0;
+        self.down = true;
+        self.referenceX = event.pageX;
+        self.referenceY = event.pageY;
+        self.percent = 0;
         _element.classList.add("drag");
     });
 
@@ -938,9 +936,9 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // events has drag movements
     this.element.addEventListener("mouseup", function(event) {
         var _element = this;
-        _element.dataset.down = false;
-        _element.dataset.percent = 0;
-        _element.dataset.previous = _element.dataset.percent;
+        self.down = false;
+        self.percent = 0;
+        self.previous = self.percent;
         _element.classList.remove("drag");
     });
 
@@ -949,26 +947,25 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // events has drag movements
     this.element.addEventListener("mouseleave", function(event) {
         var _element = this;
-        _element.dataset.down = false;
-        _element.dataset.percent = 0;
-        _element.dataset.previous = _element.dataset.percent;
+        self.down = false;
+        self.percent = 0;
+        self.previous = self.percent;
         _element.classList.remove("drag");
     });
 
     // if a mousemove event is triggered while
     // the mouse is pressed down then updates
     // the position of the drag element
-    var self = this;
     this.element.addEventListener("mousemove", function(event) {
         var _element = this;
 
         if (_element.classList.contains("noDrag")) {
             return;
         }
-        var down = _element.dataset.down;
-        _element.dataset.mousePosX = event.pageX;
-        _element.dataset.mousePosY = event.pageY;
-        down === "true" && self._parseDrag();
+        var down = self.down;
+        self.mousePosX = event.pageX;
+        self.mousePosY = event.pageY;
+        down && self._parseDrag();
     });
 };
 
@@ -977,18 +974,18 @@ ripe.Configurator.prototype._parseDrag = function() {
     // and the current one and calculates the
     // drag movement made by the user
     var child = this.element.querySelector("*:first-child");
-    var referenceX = this.element.dataset.referenceX;
-    var referenceY = this.element.dataset.referenceY;
-    var mousePosX = this.element.dataset.mousePosX;
-    var mousePosY = this.element.dataset.mousePosY;
-    var base = this.element.dataset.base;
+    var referenceX = this.referenceX;
+    var referenceY = this.referenceY;
+    var mousePosX = this.mousePosX;
+    var mousePosY = this.mousePosY;
+    var base = this.base;
     var deltaX = referenceX - mousePosX;
     var deltaY = referenceY - mousePosY;
     var elementWidth = this.element.clientWidth;
     var elementHeight = this.element.clientHeight || child.clientHeight;
     var percentX = deltaX / elementWidth;
     var percentY = deltaY / elementHeight;
-    this.element.dataset.percent = percentX;
+    this.percent = percentX;
     var sensitivity = this.element.dataset.sensitivity || this.sensitivity;
     var verticalThreshold = this.element.dataset.verticalThreshold || this.verticalThreshold;
 
@@ -998,10 +995,10 @@ ripe.Configurator.prototype._parseDrag = function() {
     var nextView = view;
     if (sensitivity * percentY > verticalThreshold) {
         nextView = view === "top" ? "side" : "bottom";
-        this.element.dataset.referenceY = mousePosY;
+        this.referenceY = mousePosY;
     } else if (sensitivity * percentY < -verticalThreshold) {
         nextView = view === "bottom" ? "side" : "top";
-        this.element.dataset.referenceY = mousePosY;
+        this.referenceY = mousePosY;
     }
     if (this.frames[nextView] === undefined) {
         nextView = view;
