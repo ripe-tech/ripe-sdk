@@ -31,6 +31,9 @@ ripe.Image.prototype.init = function() {
 ripe.Image.prototype.update = function(state) {
     var frame = this.element.dataset.frame || this.frame;
     var size = this.element.dataset.size || this.size;
+    var width = size || this.element.dataset.width || this.width;
+    var height = size || this.element.dataset.height || this.height;
+
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size
@@ -38,8 +41,8 @@ ripe.Image.prototype.update = function(state) {
     if (this.element.src === url) {
         return;
     }
-    this.element.width = size;
-    this.element.height = size;
+    this.element.width = width;
+    this.element.height = height;
     this.element.src = url;
 };
 

@@ -112,6 +112,8 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
 ripe.Ripe.prototype._getImageURL = function(options) {
     var query = this._getQuery(options);
     query += options.format ? "&format=" + options.format : "";
+    query += options.width ? "&width=" + options.width : "";
+    query += options.height ? "&height=" + options.height : "";
     query += options.size ? "&size=" + options.size : "";
     query += options.background ? "&background=" + options.background : "";
     return this.url + "compose?" + query;

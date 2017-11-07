@@ -402,6 +402,8 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
 ripe.Ripe.prototype._getImageURL = function(options) {
     var query = this._getQuery(options);
     query += options.format ? "&format=" + options.format : "";
+    query += options.width ? "&width=" + options.width : "";
+    query += options.height ? "&height=" + options.height : "";
     query += options.size ? "&size=" + options.size : "";
     query += options.background ? "&background=" + options.background : "";
     return this.url + "compose?" + query;
@@ -433,7 +435,9 @@ ripe.Configurator = function(owner, element, options) {
 ripe.Configurator.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Configurator.prototype.init = function() {
-    this.size = this.options.size || 1000;
+    this.width = this.options.width || 1000;
+    this.height = this.options.height || 1000;
+    this.size = this.options.size;
     this.maxSize = this.options.maxSize || 1000;
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
@@ -495,6 +499,8 @@ ripe.Configurator.prototype.update = function(state, options) {
     var view = this.element.dataset.view;
     var position = this.element.dataset.position;
     var size = this.element.dataset.size || this.size;
+    var width = size || this.element.dataset.width || this.width;
+    var height = size || this.element.dataset.height || this.height;
     options = options || {};
     var animate = options.animate || false;
     var force = options.force || false;
@@ -504,7 +510,7 @@ ripe.Configurator.prototype.update = function(state, options) {
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
     var previous = this.signature || "";
-    var signature = this.owner._getQuery();
+    var signature = this.owner._getQuery() + "&width=" + String(width) + "&height=" + String(height);
     var changed = signature !== previous;
     animate = animate || (changed && "simple");
     this.signature = signature;
@@ -513,7 +519,7 @@ ripe.Configurator.prototype.update = function(state, options) {
     // since the last frame load then ignores the
     // load request and returns immediately
     previous = this.unique;
-    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(size);
+    var unique = signature + "&view=" + String(view) + "&position=" + String(position);
     if (previous === unique && !force) {
         callback && callback();
         return false;
@@ -718,6 +724,8 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
     var frame = ripe.getFrameKey(view, position);
 
     var size = this.element.dataset.size || this.size;
+    var width = size || this.element.dataset.width || this.width;
+    var height = size || this.element.dataset.height || this.height;
     options = options || {};
     var draw = options.draw === undefined || options.draw;
     var animate = options.animate;
@@ -731,7 +739,8 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
     // builds the url that will be set on the image
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
-        size: size
+        width: width,
+        height: height
     });
 
     // creates a callback to be called when the frame
@@ -977,19 +986,18 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for attribute changes to
     // redraw the configurator if needed
-    this.element.addEventListener("DOMSubtreeModified", function() {
-        self.resize();
-    }.bind(this));
-    this.element.addEventListener("DOMAttrModified", function() {
-        self.resize();
-    }.bind(this));
     var Observer = MutationObserver || WebKitMutationObserver;
     var observer = new Observer(function(mutations) {
-        self.resize();
+        for (var index = 0; index < mutations.length; index++) {
+            var mutation = mutations[index];
+            mutation.type === "style" && self.resize();
+            mutation.type === "attributes" && self.update();
+        }
     }.bind(this));
     observer.observe(this.element, {
         attributes: true,
-        subtree: false
+        subtree: false,
+        characterData: true
     });
 };
 
@@ -1077,6 +1085,9 @@ ripe.Image.prototype.init = function() {
 ripe.Image.prototype.update = function(state) {
     var frame = this.element.dataset.frame || this.frame;
     var size = this.element.dataset.size || this.size;
+    var width = size || this.element.dataset.width || this.width;
+    var height = size || this.element.dataset.height || this.height;
+
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size
@@ -1084,8 +1095,8 @@ ripe.Image.prototype.update = function(state) {
     if (this.element.src === url) {
         return;
     }
-    this.element.width = size;
-    this.element.height = size;
+    this.element.width = width;
+    this.element.height = height;
     this.element.src = url;
 };
 
