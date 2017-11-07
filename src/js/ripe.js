@@ -210,8 +210,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     element.style[property] = initial;
     var last = new Date();
     var frame = function() {
-        // checks how much time has passed
-        // since the last animation frame
+        // checks how much time has passed since the last animation frame
         var current = new Date();
         var timeDelta = current - last;
         var animationDelta = timeDelta * (final - initial) / duration;
@@ -1029,6 +1028,19 @@ ripe.Image.prototype.init = function() {
     this.element.addEventListener("load", function() {
         this.trigger("loaded");
     }.bind(this));
+    this.element.addEventListener("DOMSubtreeModified", function() {
+        this.update();
+    }.bind(this));
+    this.element.addEventListener("DOMAttrModified", function() {
+        this.update();
+    }.bind(this));
+    var observer = new WebKitMutationObserver(function(mutations) {
+        this.update();
+    }.bind(this));
+    observer.observe(this.element, {
+        attributes: true,
+        subtree: false
+    });
 };
 
 ripe.Image.prototype.update = function(state) {

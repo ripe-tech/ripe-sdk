@@ -11,6 +11,19 @@ ripe.Image.prototype.init = function() {
     this.element.addEventListener("load", function() {
         this.trigger("loaded");
     }.bind(this));
+    this.element.addEventListener("DOMSubtreeModified", function() {
+        this.update();
+    }.bind(this));
+    this.element.addEventListener("DOMAttrModified", function() {
+        this.update();
+    }.bind(this));
+    var observer = new WebKitMutationObserver(function(mutations) {
+        this.update();
+    }.bind(this));
+    observer.observe(this.element, {
+        attributes: true,
+        subtree: false
+    });
 };
 
 ripe.Image.prototype.update = function(state) {
