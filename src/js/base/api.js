@@ -38,7 +38,7 @@ ripe.Ripe.prototype.getFrames = function(callback) {
     for (var index = 0; index < faces.length; index++) {
         var face = faces[index];
         frames[face] = 1;
-    };
+    }
 
     var sideFrames = this.config["frames"];
     frames["side"] = sideFrames;
