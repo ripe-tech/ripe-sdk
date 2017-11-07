@@ -37,6 +37,10 @@ ripe.Configurator.prototype.resize = function(size) {
     }
 
     size = size || this.element.clientWidth;
+    if (this.currentSize === size) {
+        return;
+    }
+
     var area = this.element.querySelector(".area");
     var frontMask = this.element.querySelector(".front-mask");
     var back = this.element.querySelector(".back");
@@ -53,7 +57,9 @@ ripe.Configurator.prototype.resize = function(size) {
     mask.width = size;
     mask.height = size;
     this.currentSize = size;
-    this.update();
+    this.update({}, {
+        force: true
+    });
 };
 
 ripe.Configurator.prototype.update = function(state, options) {
@@ -66,6 +72,7 @@ ripe.Configurator.prototype.update = function(state, options) {
     var size = this.element.dataset.size || this.size;
     options = options || {};
     var animate = options.animate || false;
+    var force = options.force || false;
     var duration = options.duration;
     var callback = options.callback;
 
@@ -82,7 +89,7 @@ ripe.Configurator.prototype.update = function(state, options) {
     // load request and returns immediately
     previous = this.unique;
     var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(size);
-    if (previous === unique) {
+    if (previous === unique && !force) {
         callback && callback();
         return false;
     }
@@ -541,6 +548,23 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.mousePosX = event.pageX;
         self.mousePosY = event.pageY;
         down && self._parseDrag();
+    });
+
+    // listens for attribute changes to
+    // redraw the configurator if needed
+    this.element.addEventListener("DOMSubtreeModified", function() {
+        self.resize();
+    }.bind(this));
+    this.element.addEventListener("DOMAttrModified", function() {
+        self.resize();
+    }.bind(this));
+    var Observer = MutationObserver || WebKitMutationObserver;
+    var observer = new Observer(function(mutations) {
+        self.resize();
+    }.bind(this));
+    observer.observe(this.element, {
+        attributes: true,
+        subtree: false
     });
 };
 
