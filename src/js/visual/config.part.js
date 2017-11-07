@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.Config = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Config.prototype.init.call(this, options);

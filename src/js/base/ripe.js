@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.Ripe = function(brand, model, options) {
     ripe.Observable.call(this);
     ripe.Ripe.prototype.init.call(this, brand, model, options);

@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Image.prototype.init.call(this);

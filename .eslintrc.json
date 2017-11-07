@@ -1,16 +1,13 @@
 {
     "env": {
-        "browser": true,
-        "jasmine": true
+        "browser": true
     },
-    "extends": "standard",
-    "plugins": ["mocha"],
+    "extends": "eslint:recommended",
     "rules": {
         "indent": ["warn", 4],
         "quotes": ["error", "double"],
         "semi": ["error", "always"],
         "space-before-function-paren": ["error", "never"],
-        "linebreak-style": ["error", "windows"],
-        "mocha/no-exclusive-tests": "error"
+        "linebreak-style": ["error", "windows"]
     }
 }

@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.Visual = function(owner, element, options) {
     ripe.Observable.call(this);
     ripe.Interactable.call(this, owner, options);

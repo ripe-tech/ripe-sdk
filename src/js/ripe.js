@@ -1,5 +1,7 @@
 var ripe = ripe || {};
 
+var ripe = ripe || {};
+
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
@@ -24,6 +26,8 @@ ripe.assign = function(target) {
     return to;
 };
 
+var ripe = ripe || {};
+
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
@@ -34,6 +38,8 @@ ripe.Interactable = function(owner, options) {
 ripe.Interactable.prototype.init = function() {};
 
 ripe.Interactable.prototype.update = function(state) {};
+
+var ripe = ripe || {};
 
 ripe.Observable = function() {
     this.callbacks = {};
@@ -66,6 +72,8 @@ ripe.Observable.prototype.runCallbacks = function(event) {
 ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
 ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
+
+var ripe = ripe || {};
 
 ripe.Ripe = function(brand, model, options) {
     ripe.Observable.call(this);
@@ -198,6 +206,8 @@ ripe.Ripe.prototype.update = function(state) {
 
 var Ripe = ripe.Ripe;
 
+var ripe = ripe || {};
+
 ripe.createElement = function(tagName, className) {
     var element = tagName && document.createElement(tagName);
     element.className = className ? className : "";
@@ -251,6 +261,8 @@ ripe.parseFrameKey = function(frame, token) {
     token = token || "-";
     return frame.split(token);
 };
+
+var ripe = ripe || {};
 
 ripe.Ripe.prototype.getConfig = function(callback) {
     var configURL = this._getConfigURL();
@@ -311,9 +323,9 @@ ripe.Ripe.prototype._requestURL = function(url, callback) {
 };
 
 ripe.Ripe.prototype._getQuery = function(options) {
-    var buffer = [];
+    options = options || {};
 
-    var options = options || {};
+    var buffer = [];
     var brand = options.brand || this.brand;
     var model = options.model || this.model;
     var variant = options.variant || this.variant;
@@ -399,6 +411,8 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     return this.url + "compose?" + query;
 };
 
+var ripe = ripe || {};
+
 ripe.Visual = function(owner, element, options) {
     ripe.Observable.call(this);
     ripe.Interactable.call(this, owner, options);
@@ -412,6 +426,8 @@ ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
+
+var ripe = ripe || {};
 
 ripe.Config = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
@@ -835,10 +851,9 @@ ripe.Config.prototype._preload = function(useChain) {
         // preloading class to the target element and
         // prevents drag movements to avoid flickering
         if (pending.length > 0) {
-            self.element.classList.add("preloading")
+            self.element.classList.add("preloading");
             self.element.classList.add("noDrag");
         }
-
         // if there are no images preloading and no
         // frames yet to be preloaded then the preload
         // is considered finished so drag movements are
@@ -1015,6 +1030,8 @@ ripe.Config.prototype._parseDrag = function() {
     this.changeFrame(nextFrame);
 };
 
+var ripe = ripe || {};
+
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Image.prototype.init.call(this);
@@ -1064,4 +1081,5 @@ ripe.Image.prototype.setFrame = function(frame, options) {
 };
 
 var exports = typeof exports === "undefined" ? {} : exports;
+var Ripe = typeof Ripe === "undefined" ? {} : Ripe;
 exports.Ripe = Ripe;
