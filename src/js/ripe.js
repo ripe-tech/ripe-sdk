@@ -96,7 +96,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.parts = result;
         this.ready = true;
         this.update();
-        this._runCallbacks("parts", this.parts);
+        this.trigger("parts", this.parts);
     }.bind(this));
 
     // tries to determine if the combinations available should be
@@ -105,7 +105,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     var loadCombinations = !this.options.noCombinations;
     loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
-        this._runCallbacks("combinations", this.combinations);
+        this.trigger("combinations", this.combinations);
     }.bind(this));
 
     // if no frames were provided then requests them from the
@@ -114,12 +114,12 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     if (loadFrames) {
         this.getFrames(function(frames) {
             this.frames = frames;
-            this._runCallbacks("frames", this.frames);
+            this.trigger("frames", this.frames);
         }.bind(this));
     } else {
         this.frames = this.options.frames;
         setTimeout(function() {
-            this._runCallbacks("frames", this.frames);
+            this.trigger("frames", this.frames);
         }.bind(this));
     }
 
@@ -144,7 +144,7 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
         return;
     }
     this.update();
-    this._runCallbacks("parts", this.parts);
+    this.trigger("parts", this.parts);
 };
 
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
@@ -158,7 +158,7 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     }
 
     this.update();
-    this._runCallbacks("parts", this.parts);
+    this.trigger("parts", this.parts);
 };
 
 ripe.Ripe.prototype.bindImage = function(element, options) {
@@ -177,7 +177,7 @@ ripe.Ripe.prototype.bindInteractable = function(child) {
 };
 
 ripe.Ripe.prototype.selectPart = function(part) {
-    this._runCallbacks("selected_part", part);
+    this.trigger("selected_part", part);
 };
 
 ripe.Ripe.prototype.update = function(state) {
@@ -189,10 +189,10 @@ ripe.Ripe.prototype.update = function(state) {
         child.update(state);
     }
 
-    this.ready && this._runCallbacks("update");
+    this.ready && this.trigger("update");
 
     this.ready && this.getPrice(function(value) {
-        this._runCallbacks("price", value);
+        this.trigger("price", value);
     }.bind(this));
 };
 
@@ -582,21 +582,23 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     preventDrag = preventDrag && (animate || duration);
     preventDrag && this.element.classList.add("noDrag");
 
-    var newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    this._runCallbacks("changed_frame", newFrame);
+    var newFrame = ripe.getFrameKey(
+        this.element.dataset.view,
+        this.element.dataset.position
+    );
+    this.trigger("changed_frame", newFrame);
     this.update({}, {
         animate: animate,
         duration: stepDuration,
         callback: function() {
-            // if there is no step transition
-            // or the transition has finished
-            // then allows drag movements again
+            // if there is no step transition or the transition
+            // has finished, then allows drag movements again
             if (!animated || stepPosition == nextPosition) {
                 preventDrag && this.element.classList.remove("noDrag");
             }
 
-            // otherwise waits the provided interval
-            // and proceeds to the next step
+            // otherwise waits the provided interval and
+            // proceeds to the next step
             else {
                 var timeout = animate ? 0 : stepDuration;
                 setTimeout(function() {
@@ -845,7 +847,7 @@ ripe.Config.prototype._preload = function(useChain) {
         else if (work.length === 0) {
             self.element.classList.remove("preloading");
             self.element.classList.remove("noDrag");
-            self._runCallbacks("loaded");
+            self.trigger("loaded");
         }
     };
 
@@ -1025,7 +1027,7 @@ ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
     this.element.addEventListener("load", function() {
-        this._runCallbacks("loaded");
+        this.trigger("loaded");
     }.bind(this));
 };
 

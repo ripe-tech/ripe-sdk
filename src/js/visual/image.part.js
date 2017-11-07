@@ -9,7 +9,7 @@ ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
     this.element.addEventListener("load", function() {
-        this._runCallbacks("loaded");
+        this.trigger("loaded");
     }.bind(this));
 };
 

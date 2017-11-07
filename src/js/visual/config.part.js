@@ -170,7 +170,7 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
         this.element.dataset.view,
         this.element.dataset.position
     );
-    this._runCallbacks("changed_frame", newFrame);
+    this.trigger("changed_frame", newFrame);
     this.update({}, {
         animate: animate,
         duration: stepDuration,
@@ -431,7 +431,7 @@ ripe.Config.prototype._preload = function(useChain) {
         else if (work.length === 0) {
             self.element.classList.remove("preloading");
             self.element.classList.remove("noDrag");
-            self._runCallbacks("loaded");
+            self.trigger("loaded");
         }
     };
 
