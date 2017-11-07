@@ -10,8 +10,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     element.style[property] = initial;
     var last = new Date();
     var frame = function() {
-        // checks how much time has passed
-        // since the last animation frame
+        // checks how much time has passed since the last animation frame
         var current = new Date();
         var timeDelta = current - last;
         var animationDelta = timeDelta * (final - initial) / duration;
