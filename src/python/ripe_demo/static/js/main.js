@@ -46,13 +46,13 @@ window.onload = function() {
     };
 
     var image = ripe.bindImage(document.getElementById("frame-0"), {
-        frame: "0"
+        frame: "side-0"
     });
     ripe.bindImage(document.getElementById("frame-6"), {
-        frame: "6"
+        frame: "side-6"
     });
     ripe.bindImage(document.getElementById("frame-top"), {
-        frame: "top"
+        frame: "top-0"
     });
 
     image.bind("loaded", function() {
@@ -103,13 +103,13 @@ window.onload = function() {
     });
 
     getPrice && getPrice.addEventListener("click", function() {
-        ripe.getPrice(function(value) {
+        ripe.getPrice({}, function(value) {
             alert(String(value.total.price_final) + " " + value.total.currency);
         });
     });
 
     getCombinations && getCombinations.addEventListener("click", function() {
-        ripe.getCombinations(function(value) {
+        ripe.getCombinations({}, function(value) {
             alert("There are <strong>" + String(value.length) +
                 "</strong> combinations with <strong>" + String(unique()) +
                 "</strong> possible compositions");

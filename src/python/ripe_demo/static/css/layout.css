@@ -1,32 +1,5 @@
 @charset "utf-8";
 
-ul {
-    margin: 20px auto 20px auto;
-    width: 300px;
-}
-
-ul li {
-    cursor: pointer;
-    user-select: none;
-    -o-user-select: none;
-    -ms-user-select: none;
-    -moz-user-select: none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-}
-
-.price {
-    font-weight: bold;
-}
-
-.images {
-    font-size: 0px;
-}
-
-.images .image {
-    display: inline-block;
-}
-
 .configurator {
     font-size: 0px;
     white-space: nowrap;

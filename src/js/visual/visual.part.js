@@ -8,7 +8,7 @@ ripe.Visual = function(owner, element, options) {
     ripe.Visual.prototype.init.call(this);
 };
 
-ripe.Visual.prototype = Object.create(ripe.Observable.prototype);
+ripe.assign(ripe.Visual.prototype, ripe.Observable.prototype);
 ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 

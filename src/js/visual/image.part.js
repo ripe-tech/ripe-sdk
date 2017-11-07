@@ -32,7 +32,7 @@ ripe.Image.prototype.update = function(state) {
     var frame = this.element.dataset.frame || this.frame;
     var size = this.element.dataset.size || this.size;
     var url = this.owner._getImageURL({
-        frame: frame,
+        frame: ripe.frameNameHack(frame),
         size: size
     });
     if (this.element.src === url) {

@@ -1,48 +1,27 @@
 var ripe = ripe || {};
 
-ripe.Ripe.prototype.getConfig = function(callback) {
+ripe.Ripe.prototype.getConfig = function(options, callback) {
     var configURL = this._getConfigURL();
     return this._requestURL(configURL, callback);
 };
 
-ripe.Ripe.prototype.getPrice = function(callback) {
+ripe.Ripe.prototype.getPrice = function(options, callback) {
     var priceURL = this._getPriceURL();
     return this._requestURL(priceURL, callback);
 };
 
-ripe.Ripe.prototype.getDefaults = function(callback) {
+ripe.Ripe.prototype.getDefaults = function(options, callback) {
     var defaultsURL = this._getDefaultsURL();
     return this._requestURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
     });
 };
 
-ripe.Ripe.prototype.getCombinations = function(callback) {
+ripe.Ripe.prototype.getCombinations = function(options, callback) {
     var combinationsURL = this._getCombinationsURL();
     return this._requestURL(combinationsURL, function(result) {
         callback && callback(result.combinations);
     });
-};
-
-ripe.Ripe.prototype.getFrames = function(callback) {
-    if (this.config === undefined) {
-        this.getConfig(function(config) {
-            this.config = config;
-            this.getFrames(callback);
-        });
-        return;
-    }
-
-    var frames = {};
-    var faces = this.config["faces"];
-    for (var index = 0; index < faces.length; index++) {
-        var face = faces[index];
-        frames[face] = 1;
-    }
-
-    var sideFrames = this.config["frames"];
-    frames["side"] = sideFrames;
-    callback && callback(frames);
 };
 
 ripe.Ripe.prototype._requestURL = function(url, callback) {
@@ -74,13 +53,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
     brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
     variant && buffer.push("variant=" + variant);
-    if (frame) {
-        var _frame = ripe.parseFrameKey(frame);
-        var view = _frame[0];
-        var position = _frame[1];
-        position = view === "side" ? position : view;
-        buffer.push("frame=" + position);
-    }
+    frame && buffer.push("frame=" + frame);
 
     for (var part in parts) {
         var value = parts[part];
@@ -98,12 +71,6 @@ ripe.Ripe.prototype._getQuery = function(options) {
     engraving && buffer.push("engraving=" + engraving);
     country && buffer.push("country=" + country);
     currency && buffer.push("currency=" + currency);
-
-    // TODO: move this to another place
-    options.format && buffer.push("format=" + options.format);
-    options.size && buffer.push("size=" + options.size);
-    options.background && buffer.push("background=" + options.background);
-
     return buffer.join("&");
 };
 
@@ -144,5 +111,8 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
 
 ripe.Ripe.prototype._getImageURL = function(options) {
     var query = this._getQuery(options);
+    query += options.format ? "&format=" + options.format : "";
+    query += options.size ? "&size=" + options.size : "";
+    query += options.background ? "&background=" + options.background : "";
     return this.url + "compose?" + query;
 };

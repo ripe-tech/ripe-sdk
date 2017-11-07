@@ -53,3 +53,14 @@ ripe.parseFrameKey = function(frame, token) {
     token = token || "-";
     return frame.split(token);
 };
+
+ripe.frameNameHack = function(frame) {
+    if (!frame) {
+        return "";
+    }
+    var _frame = ripe.parseFrameKey(frame);
+    var view = _frame[0];
+    var position = _frame[1];
+    position = view === "side" ? position : view;
+    return position;
+};

@@ -12,6 +12,11 @@ ripe.Observable.prototype.addCallback = function(event, callback) {
 
 ripe.Observable.prototype.removeCallback = function(event, callback) {
     var callbacks = this.callbacks[event] || [];
+    if (!callback) {
+        delete this.callbacks[event];
+        return;
+    }
+
     var index = callbacks.indexOf(callback);
     if (index === -1) {
         return;

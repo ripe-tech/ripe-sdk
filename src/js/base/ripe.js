@@ -25,7 +25,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && !this.options.noDefaults;
-    loadDefaults && this.getDefaults(function(result) {
+    loadDefaults && this.getDefaults({}, function(result) {
         this.parts = result;
         this.ready = true;
         this.update();
@@ -36,25 +36,10 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
     var loadCombinations = !this.options.noCombinations;
-    loadCombinations && this.getCombinations(function(result) {
+    loadCombinations && this.getCombinations({}, function(result) {
         this.combinations = result;
         this.trigger("combinations", this.combinations);
     }.bind(this));
-
-    // if no frames were provided then requests them from the
-    // server. In any case the frames callback is triggered
-    var loadFrames = !this.options.frames;
-    if (loadFrames) {
-        this.getFrames(function(frames) {
-            this.frames = frames;
-            this.trigger("frames", this.frames);
-        }.bind(this));
-    } else {
-        this.frames = this.options.frames;
-        setTimeout(function() {
-            this.trigger("frames", this.frames);
-        }.bind(this));
-    }
 
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
@@ -94,13 +79,33 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     this.trigger("parts", this.parts);
 };
 
+ripe.Ripe.prototype.getFrames = function(callback) {
+    if (this.options.frames) {
+        callback(this.options.frames);
+        return;
+    }
+
+    this.getConfig({}, function(config) {
+        var frames = {};
+        var faces = config["faces"];
+        for (var index = 0; index < faces.length; index++) {
+            var face = faces[index];
+            frames[face] = 1;
+        }
+
+        var sideFrames = config["frames"];
+        frames["side"] = sideFrames;
+        callback && callback(frames);
+    });
+};
+
 ripe.Ripe.prototype.bindImage = function(element, options) {
     var image = new ripe.Image(this, element, options);
     return this.bindInteractable(image);
 };
 
 ripe.Ripe.prototype.bindConfigurator = function(element, options) {
-    var config = new ripe.Config(this, element, options);
+    var config = new ripe.Configurator(this, element, options);
     return this.bindInteractable(config);
 };
 
@@ -113,9 +118,14 @@ ripe.Ripe.prototype.selectPart = function(part) {
     this.trigger("selected_part", part);
 };
 
+ripe.Ripe.prototype._getState = function() {
+    return {
+        parts: this.parts
+    };
+}
+
 ripe.Ripe.prototype.update = function(state) {
-    state = state || {};
-    state.parts = state.parts || this.parts;
+    state = state || this._getState();
 
     for (var index = 0; index < this.children.length; index++) {
         var child = this.children[index];
@@ -124,7 +134,7 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this.trigger("update");
 
-    this.ready && this.getPrice(function(value) {
+    this.ready && this.getPrice({}, function(value) {
         this.trigger("price", value);
     }.bind(this));
 };

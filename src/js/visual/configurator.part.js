@@ -1,22 +1,17 @@
 var ripe = ripe || {};
 
-ripe.Config = function(owner, element, options) {
+ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
-    ripe.Config.prototype.init.call(this, options);
+    ripe.Configurator.prototype.init.call(this, options);
 };
 
-ripe.Config.prototype = Object.create(ripe.Visual.prototype);
+ripe.Configurator.prototype = Object.create(ripe.Visual.prototype);
 
-ripe.Config.prototype.init = function() {
-    this.size = this.element.dataset.size || this.options.size || 1000;
-    this.maxSize = this.element.dataset.max_size || this.options.maxSize || 1000;
-    this.sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
-    this.duration = this.options.duration || 0;
-
-    this.owner.bind("selected_part", function(part) {
-        this.highlightPart(part);
-    }.bind(this));
-
+ripe.Configurator.prototype.init = function() {
+    this.size = this.options.size || 1000;
+    this.maxSize = this.options.maxSize || 1000;
+    this.sensitivity = this.options.sensitivity || 40;
+    this.verticalThreshold = this.options.verticalThreshold || 15;
     this.ready = false;
 
     // creates a structure the store the last presented
@@ -24,15 +19,19 @@ ripe.Config.prototype.init = function() {
     // to a view for better user experience
     this._lastFrame = {};
 
-    this.owner.bind("frames", function(frames) {
+    this.owner.getFrames(function(frames) {
         this.frames = frames;
         this._initLayout();
         this.ready = true;
         this.update();
     }.bind(this));
+
+    this.owner.bind("selected_part", function(part) {
+        this.highlightPart(part);
+    }.bind(this));
 };
 
-ripe.Config.prototype.resize = function(size) {
+ripe.Configurator.prototype.resize = function(size) {
     if (this.element === undefined) {
         return;
     }
@@ -57,13 +56,14 @@ ripe.Config.prototype.resize = function(size) {
     this.update();
 };
 
-ripe.Config.prototype.update = function(state, options) {
+ripe.Configurator.prototype.update = function(state, options) {
     if (this.ready === false) {
         return;
     }
 
     var view = this.element.dataset.view;
     var position = this.element.dataset.position;
+    var size = this.element.dataset.size || this.size;
     options = options || {};
     var animate = options.animate || false;
     var duration = options.duration;
@@ -81,7 +81,7 @@ ripe.Config.prototype.update = function(state, options) {
     // since the last frame load then ignores the
     // load request and returns immediately
     previous = this.element.dataset.unique;
-    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(this.size);
+    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(size);
     if (previous === unique) {
         callback && callback();
         return false;
@@ -107,7 +107,7 @@ ripe.Config.prototype.update = function(state, options) {
     mustPreload && this._preload(this.options.useChain);
 };
 
-ripe.Config.prototype.changeFrame = function(frame, options) {
+ripe.Configurator.prototype.changeFrame = function(frame, options) {
     var _frame = ripe.parseFrameKey(frame);
     var nextView = _frame[0];
     var nextPosition = parseInt(_frame[1]);
@@ -195,20 +195,20 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     });
 };
 
-ripe.Config.prototype.highlight = function(part, options) {};
+ripe.Configurator.prototype.highlight = function(part, options) {};
 
-ripe.Config.prototype.lowlight = function(options) {};
+ripe.Configurator.prototype.lowlight = function(options) {};
 
-ripe.Config.prototype.enterFullscreen = function(options) {
+ripe.Configurator.prototype.enterFullscreen = function(options) {
     if (this.element === undefined) {
         return;
     }
     this.element.classList.add("fullscreen");
-    var maxSize = options.maxSize || this.element.dataset.max_size || this.maxSize;
+    var maxSize = this.element.dataset.max_size || this.maxSize;
     this.resize(maxSize);
 };
 
-ripe.Config.prototype.exitFullscreen = function(options) {
+ripe.Configurator.prototype.leaveFullscreen = function(options) {
     if (this.element === undefined) {
         return;
     }
@@ -216,7 +216,7 @@ ripe.Config.prototype.exitFullscreen = function(options) {
     this.resize();
 };
 
-ripe.Config.prototype._initLayout = function() {
+ripe.Configurator.prototype._initLayout = function() {
     // clears the elements children
     while (this.element.firstChild) {
         this.element.firstChild.remove();
@@ -279,12 +279,13 @@ ripe.Config.prototype._initLayout = function() {
     this._registerHandlers();
 };
 
-ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
+ripe.Configurator.prototype._loadFrame = function(view, position, options, callback) {
     // retrieves the image that will be used to store the frame
     view = view || this.element.dataset.view || "side";
     position = position || this.element.dataset.position || 0;
     var frame = ripe.getFrameKey(view, position);
 
+    var size = this.element.dataset.size || this.size;
     options = options || {};
     var draw = options.draw === undefined || options.draw;
     var animate = options.animate;
@@ -297,8 +298,8 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
 
     // builds the url that will be set on the image
     var url = this.owner._getImageURL({
-        frame: frame,
-        size: this.size
+        frame: ripe.frameNameHack(frame),
+        size: size
     });
 
     // creates a callback to be called when the frame
@@ -342,7 +343,7 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     image.dataset.loaded = false;
 };
 
-ripe.Config.prototype._drawFrame = function(image, animate, duration, callback) {
+ripe.Configurator.prototype._drawFrame = function(image, animate, duration, callback) {
     var area = this.element.querySelector(".area");
     var back = this.element.querySelector(".back");
 
@@ -383,7 +384,7 @@ ripe.Config.prototype._drawFrame = function(image, animate, duration, callback) 
     });
 };
 
-ripe.Config.prototype._preload = function(useChain) {
+ripe.Configurator.prototype._preload = function(useChain) {
     var position = this.element.dataset.position || 0;
     var index = this.element.dataset.index || 0;
     index++;
@@ -493,7 +494,7 @@ ripe.Config.prototype._preload = function(useChain) {
     }
 };
 
-ripe.Config.prototype._registerHandlers = function() {
+ripe.Configurator.prototype._registerHandlers = function() {
     // binds the mousedown event on the element
     // to prepare it for drag movements
     this.element.addEventListener("mousedown", function(event) {
@@ -546,7 +547,7 @@ ripe.Config.prototype._registerHandlers = function() {
     });
 };
 
-ripe.Config.prototype._parseDrag = function() {
+ripe.Configurator.prototype._parseDrag = function() {
     // retrieves the last recorded mouse position
     // and the current one and calculates the
     // drag movement made by the user
@@ -564,20 +565,16 @@ ripe.Config.prototype._parseDrag = function() {
     var percentY = deltaY / elementHeight;
     this.element.dataset.percent = percentX;
     var sensitivity = this.element.dataset.sensitivity || this.sensitivity;
-
-    // if the movement was big enough then
-    // adds the move class to the element
-    Math.abs(percentX) > 0.02 && this.element.classList.add("move");
-    Math.abs(percentY) > 0.02 && this.element.classList.add("move");
+    var verticalThreshold = this.element.dataset.verticalThreshold || this.verticalThreshold;
 
     // if the drag was vertical then alters the
     // view if it is supported by the product
     var view = this.element.dataset.view;
     var nextView = view;
-    if (sensitivity * percentY > 15) {
+    if (sensitivity * percentY > verticalThreshold) {
         nextView = view === "top" ? "side" : "bottom";
         this.element.dataset.referenceY = mousePosY;
-    } else if (sensitivity * percentY < -15) {
+    } else if (sensitivity * percentY < -verticalThreshold) {
         nextView = view === "bottom" ? "side" : "top";
         this.element.dataset.referenceY = mousePosY;
     }
