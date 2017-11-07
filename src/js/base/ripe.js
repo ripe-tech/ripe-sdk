@@ -71,7 +71,9 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
-    if (noUpdate) { return; }
+    if (noUpdate) {
+        return;
+    }
     this.update();
     this._runCallbacks("parts", this.parts);
 };
@@ -82,7 +84,9 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
         this.setPart(part[0], part[1], part[2], true);
     }
 
-    if (noUpdate) { return; }
+    if (noUpdate) {
+        return;
+    }
 
     this.update();
     this._runCallbacks("parts", this.parts);
