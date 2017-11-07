@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.Ripe = function(brand, model, options) {
     ripe.Observable.call(this);
     ripe.Ripe.prototype.init.call(this, brand, model, options);
@@ -27,7 +29,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.parts = result;
         this.ready = true;
         this.update();
-        this._runCallbacks("parts", this.parts);
+        this.trigger("parts", this.parts);
     }.bind(this));
 
     // tries to determine if the combinations available should be
@@ -36,7 +38,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     var loadCombinations = !this.options.noCombinations;
     loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
-        this._runCallbacks("combinations", this.combinations);
+        this.trigger("combinations", this.combinations);
     }.bind(this));
 
     // if no frames were provided then requests them from the
@@ -45,12 +47,12 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     if (loadFrames) {
         this.getFrames(function(frames) {
             this.frames = frames;
-            this._runCallbacks("frames", this.frames);
+            this.trigger("frames", this.frames);
         }.bind(this));
     } else {
         this.frames = this.options.frames;
         setTimeout(function() {
-            this._runCallbacks("frames", this.frames);
+            this.trigger("frames", this.frames);
         }.bind(this));
     }
 
@@ -71,9 +73,11 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
-    if (noUpdate) { return; }
+    if (noUpdate) {
+        return;
+    }
     this.update();
-    this._runCallbacks("parts", this.parts);
+    this.trigger("parts", this.parts);
 };
 
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
@@ -82,10 +86,12 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
         this.setPart(part[0], part[1], part[2], true);
     }
 
-    if (noUpdate) { return; }
+    if (noUpdate) {
+        return;
+    }
 
     this.update();
-    this._runCallbacks("parts", this.parts);
+    this.trigger("parts", this.parts);
 };
 
 ripe.Ripe.prototype.bindImage = function(element, options) {
@@ -104,7 +110,7 @@ ripe.Ripe.prototype.bindInteractable = function(child) {
 };
 
 ripe.Ripe.prototype.selectPart = function(part) {
-    this._runCallbacks("selected_part", part);
+    this.trigger("selected_part", part);
 };
 
 ripe.Ripe.prototype.update = function(state) {
@@ -116,10 +122,10 @@ ripe.Ripe.prototype.update = function(state) {
         child.update(state);
     }
 
-    this.ready && this._runCallbacks("update");
+    this.ready && this.trigger("update");
 
     this.ready && this.getPrice(function(value) {
-        this._runCallbacks("price", value);
+        this.trigger("price", value);
     }.bind(this));
 };
 

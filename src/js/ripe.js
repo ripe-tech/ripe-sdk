@@ -1,5 +1,7 @@
 var ripe = ripe || {};
 
+var ripe = ripe || {};
+
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
@@ -24,6 +26,8 @@ ripe.assign = function(target) {
     return to;
 };
 
+var ripe = ripe || {};
+
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
@@ -34,6 +38,8 @@ ripe.Interactable = function(owner, options) {
 ripe.Interactable.prototype.init = function() {};
 
 ripe.Interactable.prototype.update = function(state) {};
+
+var ripe = ripe || {};
 
 ripe.Observable = function() {
     this.callbacks = {};
@@ -55,7 +61,7 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
     this.callbacks[name] = callbacks;
 };
 
-ripe.Observable.prototype._runCallbacks = function(event) {
+ripe.Observable.prototype.runCallbacks = function(event) {
     var callbacks = this.callbacks[event] || [];
     for (var index = 0; index < callbacks.length; index++) {
         var callback = callbacks[index];
@@ -65,6 +71,9 @@ ripe.Observable.prototype._runCallbacks = function(event) {
 
 ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
+ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
+
+var ripe = ripe || {};
 
 ripe.Ripe = function(brand, model, options) {
     ripe.Observable.call(this);
@@ -95,7 +104,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.parts = result;
         this.ready = true;
         this.update();
-        this._runCallbacks("parts", this.parts);
+        this.trigger("parts", this.parts);
     }.bind(this));
 
     // tries to determine if the combinations available should be
@@ -104,7 +113,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     var loadCombinations = !this.options.noCombinations;
     loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
-        this._runCallbacks("combinations", this.combinations);
+        this.trigger("combinations", this.combinations);
     }.bind(this));
 
     // if no frames were provided then requests them from the
@@ -113,12 +122,12 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     if (loadFrames) {
         this.getFrames(function(frames) {
             this.frames = frames;
-            this._runCallbacks("frames", this.frames);
+            this.trigger("frames", this.frames);
         }.bind(this));
     } else {
         this.frames = this.options.frames;
         setTimeout(function() {
-            this._runCallbacks("frames", this.frames);
+            this.trigger("frames", this.frames);
         }.bind(this));
     }
 
@@ -139,10 +148,11 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
-    if (!noUpdate) {
-        this.update();
-        this._runCallbacks("parts", this.parts);
+    if (noUpdate) {
+        return;
     }
+    this.update();
+    this.trigger("parts", this.parts);
 };
 
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
@@ -151,10 +161,12 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
         this.setPart(part[0], part[1], part[2], true);
     }
 
-    if (!noUpdate) {
-        this.update();
-        this._runCallbacks("parts", this.parts);
+    if (noUpdate) {
+        return;
     }
+
+    this.update();
+    this.trigger("parts", this.parts);
 };
 
 ripe.Ripe.prototype.bindImage = function(element, options) {
@@ -173,7 +185,7 @@ ripe.Ripe.prototype.bindInteractable = function(child) {
 };
 
 ripe.Ripe.prototype.selectPart = function(part) {
-    this._runCallbacks("selected_part", part);
+    this.trigger("selected_part", part);
 };
 
 ripe.Ripe.prototype.update = function(state) {
@@ -185,14 +197,16 @@ ripe.Ripe.prototype.update = function(state) {
         child.update(state);
     }
 
-    this.ready && this._runCallbacks("update");
+    this.ready && this.trigger("update");
 
     this.ready && this.getPrice(function(value) {
-        this._runCallbacks("price", value);
+        this.trigger("price", value);
     }.bind(this));
 };
 
 var Ripe = ripe.Ripe;
+
+var ripe = ripe || {};
 
 ripe.createElement = function(tagName, className) {
     var element = tagName && document.createElement(tagName);
@@ -206,8 +220,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     element.style[property] = initial;
     var last = new Date();
     var frame = function() {
-        // checks how much time has passed
-        // since the last animation frame
+        // checks how much time has passed since the last animation frame
         var current = new Date();
         var timeDelta = current - last;
         var animationDelta = timeDelta * (final - initial) / duration;
@@ -248,6 +261,8 @@ ripe.parseFrameKey = function(frame, token) {
     token = token || "-";
     return frame.split(token);
 };
+
+var ripe = ripe || {};
 
 ripe.Ripe.prototype.getConfig = function(callback) {
     var configURL = this._getConfigURL();
@@ -308,9 +323,9 @@ ripe.Ripe.prototype._requestURL = function(url, callback) {
 };
 
 ripe.Ripe.prototype._getQuery = function(options) {
-    var buffer = [];
+    options = options || {};
 
-    var options = options || {};
+    var buffer = [];
     var brand = options.brand || this.brand;
     var model = options.model || this.model;
     var variant = options.variant || this.variant;
@@ -377,9 +392,7 @@ ripe.Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
     model = model || this.model;
     variant = variant || this.variant;
     var fullUrl = this.url + "brands/" + brand + "/models/" + model + "/defaults";
-    if (variant) {
-        fullUrl += "?variant=" + variant;
-    }
+    fullUrl += variant ? "?variant=" + variant : "";
     return fullUrl;
 };
 
@@ -389,9 +402,7 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
     variant = variant || this.variant;
     var useNameS = useName ? "1" : "0";
     var query = "use_name=" + useNameS;
-    if (variant) {
-        query += "&variant=" + variant;
-    }
+    query += variant ? "&variant=" + variant : "";
     return this.url + "brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
 };
 
@@ -399,6 +410,8 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     var query = this._getQuery(options);
     return this.url + "compose?" + query;
 };
+
+var ripe = ripe || {};
 
 ripe.Visual = function(owner, element, options) {
     ripe.Observable.call(this);
@@ -584,21 +597,23 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     preventDrag = preventDrag && (animate || duration);
     preventDrag && this.element.classList.add("noDrag");
 
-    var newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    this._runCallbacks("changed_frame", newFrame);
+    var newFrame = ripe.getFrameKey(
+        this.element.dataset.view,
+        this.element.dataset.position
+    );
+    this.trigger("changed_frame", newFrame);
     this.update({}, {
         animate: animate,
         duration: stepDuration,
         callback: function() {
-            // if there is no step transition
-            // or the transition has finished
-            // then allows drag movements again
+            // if there is no step transition or the transition
+            // has finished, then allows drag movements again
             if (!animated || stepPosition == nextPosition) {
                 preventDrag && this.element.classList.remove("noDrag");
             }
 
-            // otherwise waits the provided interval
-            // and proceeds to the next step
+            // otherwise waits the provided interval and
+            // proceeds to the next step
             else {
                 var timeout = animate ? 0 : stepDuration;
                 setTimeout(function() {
@@ -836,10 +851,9 @@ ripe.Config.prototype._preload = function(useChain) {
         // preloading class to the target element and
         // prevents drag movements to avoid flickering
         if (pending.length > 0) {
-            self.element.classList.add("preloading")
+            self.element.classList.add("preloading");
             self.element.classList.add("noDrag");
         }
-
         // if there are no images preloading and no
         // frames yet to be preloaded then the preload
         // is considered finished so drag movements are
@@ -847,7 +861,7 @@ ripe.Config.prototype._preload = function(useChain) {
         else if (work.length === 0) {
             self.element.classList.remove("preloading");
             self.element.classList.remove("noDrag");
-            self._runCallbacks("loaded");
+            self.trigger("loaded");
         }
     };
 
@@ -1016,6 +1030,8 @@ ripe.Config.prototype._parseDrag = function() {
     this.changeFrame(nextFrame);
 };
 
+var ripe = ripe || {};
+
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Image.prototype.init.call(this);
@@ -1025,16 +1041,30 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
-    this.size = this.element.dataset.size || this.options.size || 1000;
+    this.size = this.options.size || 1000;
     this.element.addEventListener("load", function() {
-        this._runCallbacks("loaded");
+        this.trigger("loaded");
     }.bind(this));
+    this.element.addEventListener("DOMSubtreeModified", function() {
+        this.update();
+    }.bind(this));
+    this.element.addEventListener("DOMAttrModified", function() {
+        this.update();
+    }.bind(this));
+    var observer = new WebKitMutationObserver(function(mutations) {
+        this.update();
+    }.bind(this));
+    observer.observe(this.element, {
+        attributes: true,
+        subtree: false
+    });
 };
 
 ripe.Image.prototype.update = function(state) {
-    var size = this.element.dataset.size || 1000;
+    var frame = this.element.dataset.frame || this.frame;
+    var size = this.element.dataset.size || this.size;
     var url = this.owner._getImageURL({
-        frame: this.frame,
+        frame: frame,
         size: size
     });
     if (this.element.src === url) {
@@ -1051,4 +1081,5 @@ ripe.Image.prototype.setFrame = function(frame, options) {
 };
 
 var exports = typeof exports === "undefined" ? {} : exports;
+var Ripe = typeof Ripe === "undefined" ? {} : Ripe;
 exports.Ripe = Ripe;

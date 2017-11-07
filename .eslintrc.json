@@ -1,9 +1,8 @@
 {
     "env": {
-        "browser": true,
-        "jasmine": true
+        "browser": true
     },
-    "extends": "standard",
+    "extends": "eslint:recommended",
     "plugins": ["mocha"],
     "rules": {
         "indent": ["warn", 4],

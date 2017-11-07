@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.Ripe.prototype.getConfig = function(callback) {
     var configURL = this._getConfigURL();
     return this._requestURL(configURL, callback);
@@ -57,9 +59,9 @@ ripe.Ripe.prototype._requestURL = function(url, callback) {
 };
 
 ripe.Ripe.prototype._getQuery = function(options) {
-    var buffer = [];
+    options = options || {};
 
-    var options = options || {};
+    var buffer = [];
     var brand = options.brand || this.brand;
     var model = options.model || this.model;
     var variant = options.variant || this.variant;

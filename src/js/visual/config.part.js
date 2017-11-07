@@ -168,21 +168,23 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     preventDrag = preventDrag && (animate || duration);
     preventDrag && this.element.classList.add("noDrag");
 
-    var newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    this._runCallbacks("changed_frame", newFrame);
+    var newFrame = ripe.getFrameKey(
+        this.element.dataset.view,
+        this.element.dataset.position
+    );
+    this.trigger("changed_frame", newFrame);
     this.update({}, {
         animate: animate,
         duration: stepDuration,
         callback: function() {
-            // if there is no step transition
-            // or the transition has finished
-            // then allows drag movements again
+            // if there is no step transition or the transition
+            // has finished, then allows drag movements again
             if (!animated || stepPosition == nextPosition) {
                 preventDrag && this.element.classList.remove("noDrag");
             }
 
-            // otherwise waits the provided interval
-            // and proceeds to the next step
+            // otherwise waits the provided interval and
+            // proceeds to the next step
             else {
                 var timeout = animate ? 0 : stepDuration;
                 setTimeout(function() {
@@ -420,10 +422,9 @@ ripe.Config.prototype._preload = function(useChain) {
         // preloading class to the target element and
         // prevents drag movements to avoid flickering
         if (pending.length > 0) {
-            self.element.classList.add("preloading")
+            self.element.classList.add("preloading");
             self.element.classList.add("noDrag");
         }
-
         // if there are no images preloading and no
         // frames yet to be preloaded then the preload
         // is considered finished so drag movements are
@@ -431,7 +432,7 @@ ripe.Config.prototype._preload = function(useChain) {
         else if (work.length === 0) {
             self.element.classList.remove("preloading");
             self.element.classList.remove("noDrag");
-            self._runCallbacks("loaded");
+            self.trigger("loaded");
         }
     };
 

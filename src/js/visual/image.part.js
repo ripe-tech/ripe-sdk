@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Image.prototype.init.call(this);
@@ -9,8 +11,21 @@ ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
     this.element.addEventListener("load", function() {
-        this._runCallbacks("loaded");
+        this.trigger("loaded");
     }.bind(this));
+    this.element.addEventListener("DOMSubtreeModified", function() {
+        this.update();
+    }.bind(this));
+    this.element.addEventListener("DOMAttrModified", function() {
+        this.update();
+    }.bind(this));
+    var observer = new WebKitMutationObserver(function(mutations) {
+        this.update();
+    }.bind(this));
+    observer.observe(this.element, {
+        attributes: true,
+        subtree: false
+    });
 };
 
 ripe.Image.prototype.update = function(state) {

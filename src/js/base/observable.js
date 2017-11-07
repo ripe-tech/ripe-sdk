@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.Observable = function() {
     this.callbacks = {};
 };

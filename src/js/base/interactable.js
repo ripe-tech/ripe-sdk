@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
