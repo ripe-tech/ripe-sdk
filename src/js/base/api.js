@@ -126,9 +126,7 @@ ripe.Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
     model = model || this.model;
     variant = variant || this.variant;
     var fullUrl = this.url + "brands/" + brand + "/models/" + model + "/defaults";
-    if (variant) {
-        fullUrl += "?variant=" + variant;
-    }
+    fullUrl += variant ? "?variant=" + variant : "";
     return fullUrl;
 };
 
@@ -138,9 +136,7 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
     variant = variant || this.variant;
     var useNameS = useName ? "1" : "0";
     var query = "use_name=" + useNameS;
-    if (variant) {
-        query += "&variant=" + variant;
-    }
+    query += variant ? "&variant=" + variant : "";
     return this.url + "brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
 };
 
