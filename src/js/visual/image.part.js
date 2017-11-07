@@ -14,9 +14,10 @@ ripe.Image.prototype.init = function() {
 };
 
 ripe.Image.prototype.update = function(state) {
+    var frame = this.element.dataset.frame || this.frame;
     var size = this.element.dataset.size || this.size;
     var url = this.owner._getImageURL({
-        frame: this.frame,
+        frame: frame,
         size: size
     });
     if (this.element.src === url) {
