@@ -1,7 +1,7 @@
 window.onload = function() {
     var element = document.getElementById("config");
-    var url = element.dataset.url || "http://localhost:8181/api/";
-    var brand = element.dataset.brand || "swear";
+    var url = element.dataset.url || "http://demo.platforme.com/api/";
+    var brand = element.dataset.brand || "myswear";
     var model = element.dataset.model || "vyner";
     var variant = element.dataset.variant || "";
     var currency = element.dataset.currency || "USD";
