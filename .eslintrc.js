@@ -1,7 +1,4 @@
-{
-    "env": {
-        "browser": true
-    },
+module.exports = {
     "extends": "eslint:recommended",
     "plugins": ["mocha"],
     "rules": {
@@ -14,5 +11,9 @@
             "varsIgnorePattern": "^h$"
         }],
         "mocha/no-exclusive-tests": "error"
+    },
+    "env": {
+        "browser": true,
+        "jasmine": true
     }
-}
+};
