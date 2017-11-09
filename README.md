@@ -8,11 +8,11 @@ You may also pass an [`options`](#options) map to override parameters like the b
 
 ```javascript
 var ripe = new Ripe(brand, model, {
-        variant: variant,
-        url: url,
-        currency: currency,
-        country: country
-    });
+    variant: variant,
+    url: url,
+    currency: currency,
+    country: country
+});
 ```
 
 ## 2. Events
