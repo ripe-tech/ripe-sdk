@@ -16,6 +16,8 @@ describe("Ripe", function() {
             });
 
             assert.equal(result["total"]["price_final"] > 0.0, true);
+            assert.equal(result["total"]["country"], "US");
+            assert.equal(result["total"]["currency"], "EUR");
         });
     });
 });
