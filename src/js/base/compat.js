@@ -5,7 +5,7 @@ ripe.assign = function(target) {
         return Object.assign.apply(this, arguments);
     }
 
-    if (target == null) {
+    if (target === null) {
         throw new TypeError("Cannot assign undefined or null object");
     }
 
