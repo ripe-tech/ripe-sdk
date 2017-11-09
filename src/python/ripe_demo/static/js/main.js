@@ -1,7 +1,7 @@
 window.onload = function() {
     var element = document.getElementById("configurator");
     var _body = document.querySelector("body");
-    var url = _body.dataset.url || "http://demo.platforme.com/api/";
+    var url = _body.dataset.url || "https://sandbox.platforme.com/api/";
     var brand = _body.dataset.brand || "myswear";
     var model = _body.dataset.model || "vyner";
     var variant = _body.dataset.variant || "";
