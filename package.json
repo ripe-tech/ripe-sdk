@@ -24,6 +24,9 @@
         "url": "https://github.com/ripe-tech/ripe-sdk/issues"
     },
     "homepage": "https://github.com/ripe-tech/ripe-sdk#readme",
+    "dependencies": {
+        "xmlhttprequest": "^1.8.0"
+    },
     "devDependencies": {
         "mocha": "^4.0.1",
         "eslint": "^3.19",

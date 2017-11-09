@@ -1,5 +1,7 @@
 var ripe = ripe || {};
 
+var isNeo = require !== undefined;
+
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
@@ -23,3 +25,7 @@ ripe.assign = function(target) {
     }
     return to;
 };
+
+if (isNeo) {
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+}

@@ -12,7 +12,7 @@ window.onload = function() {
     var partsMap = {};
     var index = 0;
 
-    var ripe = new Ripe(brand, model, {
+    var ripe = new ripe.Ripe(brand, model, {
         variant: variant,
         url: url,
         currency: currency,
@@ -69,7 +69,7 @@ window.onload = function() {
     });
 
     image.bind("loaded", function() {
-        console.log("frame-0 loaded")
+        console.log("frame-0 loaded");
     });
 
     setTimeout(function() {

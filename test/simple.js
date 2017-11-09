@@ -3,8 +3,19 @@ var ripe = require("../src/js/ripe");
 
 describe("Ripe", function() {
     describe("#main", function() {
-        it("should instance and retrieve values", function() {
+        it("should instance and retrieve values", async () => {
             var instance = new ripe.Ripe("myswear", "vyner");
+            instance.load();
+
+            await new Promise((resolve, reject) => {
+                instance.bind("parts", resolve)
+            })
+
+            result = await new Promise((resolve, reject) => {
+                instance.getPrice(resolve);
+            });
+
+            assert.equal(result["total"]["price_final"] > 0.0, true);
         });
     });
 });

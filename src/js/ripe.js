@@ -2,12 +2,14 @@ var ripe = ripe || {};
 
 var ripe = ripe || {};
 
+var isNeo = require !== undefined;
+
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
     }
 
-    if (target == null) {
+    if (target === null) {
         throw new TypeError("Cannot assign undefined or null object");
     }
 
@@ -25,6 +27,10 @@ ripe.assign = function(target) {
     }
     return to;
 };
+
+if (isNeo) {
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+}
 
 var ripe = ripe || {};
 
@@ -94,7 +100,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.model = model;
     this.options = options || {};
     this.variant = this.options.variant || null;
-    this.url = this.options.url || "https://sandbox.platforme.com/api";
+    this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.parts = this.options.parts || {};
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
@@ -234,6 +240,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     // sets the initial value for the property
     element.style[property] = initial;
     var last = new Date();
+
     var frame = function() {
         // checks how much time has passed since the last animation frame
         var current = new Date();
@@ -263,7 +270,8 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
         }
     };
 
-    // starts the animation
+    // starts the animation process by runnig the initial
+    // call to the frame animation function
     frame();
 };
 
