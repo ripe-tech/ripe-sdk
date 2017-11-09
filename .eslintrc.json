@@ -10,7 +10,9 @@
         "semi": ["error", "always"],
         "space-before-function-paren": ["error", "never"],
         "linebreak-style": ["error", "windows"],
-        "no-unused-vars": [0, { "varsIgnorePattern": "^h$" }],
+        "no-unused-vars": [0, {
+            "varsIgnorePattern": "^h$"
+        }],
         "mocha/no-exclusive-tests": "error"
     }
 }
