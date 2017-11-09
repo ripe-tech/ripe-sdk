@@ -1,0 +1,16 @@
+{
+    "env": {
+        "browser": true
+    },
+    "extends": "eslint:recommended",
+    "plugins": ["mocha"],
+    "rules": {
+        "indent": ["warn", 4],
+        "quotes": ["error", "double"],
+        "semi": ["error", "always"],
+        "space-before-function-paren": ["error", "never"],
+        "linebreak-style": ["error", "windows"],
+        "no-unused-vars": ["never"],
+        "mocha/no-exclusive-tests": "error"
+    }
+}

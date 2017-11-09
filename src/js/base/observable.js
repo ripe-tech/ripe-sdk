@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.Observable = function() {
     this.callbacks = {};
 };
@@ -8,9 +10,14 @@ ripe.Observable.prototype.addCallback = function(event, callback) {
     this.callbacks[event] = callbacks;
 };
 
-ripe.Observable.prototype.removeCallback = function(event) {
+ripe.Observable.prototype.removeCallback = function(event, callback) {
     var callbacks = this.callbacks[event] || [];
-    var index = array.indexOf(callback);
+    if (!callback) {
+        delete this.callbacks[event];
+        return;
+    }
+
+    var index = callbacks.indexOf(callback);
     if (index === -1) {
         return;
     }
@@ -18,7 +25,7 @@ ripe.Observable.prototype.removeCallback = function(event) {
     this.callbacks[name] = callbacks;
 };
 
-ripe.Observable.prototype._runCallbacks = function(event) {
+ripe.Observable.prototype.runCallbacks = function(event) {
     var callbacks = this.callbacks[event] || [];
     for (var index = 0; index < callbacks.length; index++) {
         var callback = callbacks[index];
@@ -28,3 +35,4 @@ ripe.Observable.prototype._runCallbacks = function(event) {
 
 ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
+ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;

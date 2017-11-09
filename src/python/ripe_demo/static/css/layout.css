@@ -1,13 +1,5 @@
 @charset "utf-8";
 
-img {
-    width: 600px;
-}
-
-body.uwide img {
-    width: 800px;
-}
-
 ul {
     margin: 20px auto 20px auto;
     width: 300px;
@@ -24,5 +16,10 @@ ul li {
 }
 
 .price {
+    font-size: 16px;
     font-weight: bold;
+}
+
+.images > img {
+    cursor: pointer;
 }

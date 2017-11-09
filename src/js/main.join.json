@@ -2,12 +2,14 @@
     "ripe.js": {
         "files": [
             "base/base.js",
+            "base/compat.js",
             "base/interactable.js",
             "base/observable.js",
             "base/ripe.js",
+            "base/utils.js",
             "base/api.js",
             "visual/visual.part.js",
-            "visual/config.part.js",
+            "visual/configurator.part.js",
             "visual/image.part.js",
             "base/export.js"
         ]
@@ -18,9 +20,10 @@
             "base/interactable.js",
             "base/observable.js",
             "base/ripe.js",
+            "base/utils.js",
             "base/api.js",
             "visual/visual.part.js",
-            "visual/config.part.js",
+            "visual/configurator.part.js",
             "visual/image.part.js",
             "base/export.js"
         ],

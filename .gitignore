@@ -2,3 +2,7 @@
 *.log
 
 session.shelve*
+
+package-lock.json
+
+/node_modules
