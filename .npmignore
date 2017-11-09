@@ -14,3 +14,8 @@ Dockerfile.demo
 /.settings
 
 /src/python
+/src/js/base
+/src/js/visual
+
+/src/js/ripe-min.js
+/src/js/main.join.json
