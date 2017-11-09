@@ -4,7 +4,7 @@
     "description": "The public SDK for RIPE Core",
     "main": "src/js/ripe.js",
     "scripts": {
-        "test": ""
+        "test": "mocha"
     },
     "repository": {
         "type": "git",
