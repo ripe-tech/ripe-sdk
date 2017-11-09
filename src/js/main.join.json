@@ -9,7 +9,7 @@
             "base/utils.js",
             "base/api.js",
             "visual/visual.part.js",
-            "visual/config.part.js",
+            "visual/configurator.part.js",
             "visual/image.part.js",
             "base/export.js"
         ]
@@ -23,7 +23,7 @@
             "base/utils.js",
             "base/api.js",
             "visual/visual.part.js",
-            "visual/config.part.js",
+            "visual/configurator.part.js",
             "visual/image.part.js",
             "base/export.js"
         ],

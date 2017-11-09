@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.createElement = function(tagName, className) {
     var element = tagName && document.createElement(tagName);
     element.className = className ? className : "";
@@ -10,8 +12,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     element.style[property] = initial;
     var last = new Date();
     var frame = function() {
-        // checks how much time has passed
-        // since the last animation frame
+        // checks how much time has passed since the last animation frame
         var current = new Date();
         var timeDelta = current - last;
         var animationDelta = timeDelta * (final - initial) / duration;
@@ -51,4 +52,15 @@ ripe.getFrameKey = function(view, position, token) {
 ripe.parseFrameKey = function(frame, token) {
     token = token || "-";
     return frame.split(token);
+};
+
+ripe.frameNameHack = function(frame) {
+    if (!frame) {
+        return "";
+    }
+    var _frame = ripe.parseFrameKey(frame);
+    var view = _frame[0];
+    var position = _frame[1];
+    position = view === "side" ? position : view;
+    return position;
 };

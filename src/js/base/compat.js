@@ -1,3 +1,5 @@
+var ripe = ripe || {};
+
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);

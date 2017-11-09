@@ -1,11 +1,12 @@
 window.onload = function() {
-    var element = document.getElementById("config");
-    var url = element.dataset.url || "http://localhost:8181/api/";
-    var brand = element.dataset.brand || "swear";
-    var model = element.dataset.model || "vyner";
-    var variant = element.dataset.variant || "";
-    var currency = element.dataset.currency || "USD";
-    var country = element.dataset.country || "US";
+    var element = document.getElementById("configurator");
+    var _body = document.querySelector("body");
+    var url = _body.dataset.url || "http://demo.platforme.com/api/";
+    var brand = _body.dataset.brand || "myswear";
+    var model = _body.dataset.model || "vyner";
+    var variant = _body.dataset.variant || "";
+    var currency = _body.dataset.currency || "USD";
+    var country = _body.dataset.country || "US";
 
     var parts = [];
     var partsMap = {};
@@ -52,18 +53,33 @@ window.onload = function() {
         frame: "side-6"
     });
     ripe.bindImage(document.getElementById("frame-top"), {
-        frame: "top"
+        frame: "top-0"
     });
 
-    image.bind("loaded", function(frame) {
-        console.log("frame " + frame + " loaded")
+    document.getElementById("frame-0").addEventListener("click", function() {
+        configurator.changeFrame("side-9");
     });
 
+    document.getElementById("frame-6").addEventListener("click", function() {
+        configurator.changeFrame("side-6");
+    });
+
+    document.getElementById("frame-top").addEventListener("click", function() {
+        configurator.changeFrame("top-0");
+    });
+
+    image.bind("loaded", function() {
+        console.log("frame-0 loaded")
+    });
+
+    setTimeout(function() {
+        image.setFrame("9");
+    });
 
     var configurator = ripe.bindConfigurator(element);
 
     configurator.bind("loaded", function() {
-        configurator.changeFrame("side-11", {
+        configurator.changeFrame("side-12", {
             duration: 500
         });
     });

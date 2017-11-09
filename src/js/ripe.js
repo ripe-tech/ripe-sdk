@@ -1,5 +1,7 @@
 var ripe = ripe || {};
 
+var ripe = ripe || {};
+
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
@@ -24,6 +26,8 @@ ripe.assign = function(target) {
     return to;
 };
 
+var ripe = ripe || {};
+
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
@@ -34,6 +38,8 @@ ripe.Interactable = function(owner, options) {
 ripe.Interactable.prototype.init = function() {};
 
 ripe.Interactable.prototype.update = function(state) {};
+
+var ripe = ripe || {};
 
 ripe.Observable = function() {
     this.callbacks = {};
@@ -47,6 +53,11 @@ ripe.Observable.prototype.addCallback = function(event, callback) {
 
 ripe.Observable.prototype.removeCallback = function(event, callback) {
     var callbacks = this.callbacks[event] || [];
+    if (!callback) {
+        delete this.callbacks[event];
+        return;
+    }
+
     var index = callbacks.indexOf(callback);
     if (index === -1) {
         return;
@@ -55,7 +66,7 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
     this.callbacks[name] = callbacks;
 };
 
-ripe.Observable.prototype._runCallbacks = function(event) {
+ripe.Observable.prototype.runCallbacks = function(event) {
     var callbacks = this.callbacks[event] || [];
     for (var index = 0; index < callbacks.length; index++) {
         var callback = callbacks[index];
@@ -65,6 +76,9 @@ ripe.Observable.prototype._runCallbacks = function(event) {
 
 ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
+ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
+
+var ripe = ripe || {};
 
 ripe.Ripe = function(brand, model, options) {
     ripe.Observable.call(this);
@@ -95,7 +109,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.parts = result;
         this.ready = true;
         this.update();
-        this._runCallbacks("parts", this.parts);
+        this.trigger("parts", this.parts);
     }.bind(this));
 
     // tries to determine if the combinations available should be
@@ -104,23 +118,8 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     var loadCombinations = !this.options.noCombinations;
     loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
-        this._runCallbacks("combinations", this.combinations);
+        this.trigger("combinations", this.combinations);
     }.bind(this));
-
-    // if no frames were provided then requests them from the
-    // server. In any case the frames callback is triggered
-    var loadFrames = !this.options.frames;
-    if (loadFrames) {
-        this.getFrames(function(frames) {
-            this.frames = frames;
-            this._runCallbacks("frames", this.frames);
-        }.bind(this));
-    } else {
-        this.frames = this.options.frames;
-        setTimeout(function() {
-            this._runCallbacks("frames", this.frames);
-        }.bind(this));
-    }
 
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
@@ -139,10 +138,11 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
-    if (!noUpdate) {
-        this.update();
-        this._runCallbacks("parts", this.parts);
+    if (noUpdate) {
+        return;
     }
+    this.update();
+    this.trigger("parts", this.parts);
 };
 
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
@@ -151,10 +151,32 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
         this.setPart(part[0], part[1], part[2], true);
     }
 
-    if (!noUpdate) {
-        this.update();
-        this._runCallbacks("parts", this.parts);
+    if (noUpdate) {
+        return;
     }
+
+    this.update();
+    this.trigger("parts", this.parts);
+};
+
+ripe.Ripe.prototype.getFrames = function(callback) {
+    if (this.options.frames) {
+        callback(this.options.frames);
+        return;
+    }
+
+    this.getConfig(function(config) {
+        var frames = {};
+        var faces = config["faces"];
+        for (var index = 0; index < faces.length; index++) {
+            var face = faces[index];
+            frames[face] = 1;
+        }
+
+        var sideFrames = config["frames"];
+        frames["side"] = sideFrames;
+        callback && callback(frames);
+    });
 };
 
 ripe.Ripe.prototype.bindImage = function(element, options) {
@@ -163,7 +185,7 @@ ripe.Ripe.prototype.bindImage = function(element, options) {
 };
 
 ripe.Ripe.prototype.bindConfigurator = function(element, options) {
-    var config = new ripe.Config(this, element, options);
+    var config = new ripe.Configurator(this, element, options);
     return this.bindInteractable(config);
 };
 
@@ -173,26 +195,33 @@ ripe.Ripe.prototype.bindInteractable = function(child) {
 };
 
 ripe.Ripe.prototype.selectPart = function(part) {
-    this._runCallbacks("selected_part", part);
+    this.trigger("selected_part", part);
 };
 
+ripe.Ripe.prototype._getState = function() {
+    return {
+        parts: this.parts
+    };
+}
+
 ripe.Ripe.prototype.update = function(state) {
-    state = state || {};
-    state.parts = state.parts || this.parts;
+    state = state || this._getState();
 
     for (var index = 0; index < this.children.length; index++) {
         var child = this.children[index];
         child.update(state);
     }
 
-    this.ready && this._runCallbacks("update");
+    this.ready && this.trigger("update");
 
     this.ready && this.getPrice(function(value) {
-        this._runCallbacks("price", value);
+        this.trigger("price", value);
     }.bind(this));
 };
 
 var Ripe = ripe.Ripe;
+
+var ripe = ripe || {};
 
 ripe.createElement = function(tagName, className) {
     var element = tagName && document.createElement(tagName);
@@ -206,8 +235,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     element.style[property] = initial;
     var last = new Date();
     var frame = function() {
-        // checks how much time has passed
-        // since the last animation frame
+        // checks how much time has passed since the last animation frame
         var current = new Date();
         var timeDelta = current - last;
         var animationDelta = timeDelta * (final - initial) / duration;
@@ -249,49 +277,49 @@ ripe.parseFrameKey = function(frame, token) {
     return frame.split(token);
 };
 
-ripe.Ripe.prototype.getConfig = function(callback) {
+ripe.frameNameHack = function(frame) {
+    if (!frame) {
+        return "";
+    }
+    var _frame = ripe.parseFrameKey(frame);
+    var view = _frame[0];
+    var position = _frame[1];
+    position = view === "side" ? position : view;
+    return position;
+};
+
+var ripe = ripe || {};
+
+ripe.Ripe.prototype.getConfig = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var configURL = this._getConfigURL();
     return this._requestURL(configURL, callback);
 };
 
-ripe.Ripe.prototype.getPrice = function(callback) {
+ripe.Ripe.prototype.getPrice = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var priceURL = this._getPriceURL();
     return this._requestURL(priceURL, callback);
 };
 
-ripe.Ripe.prototype.getDefaults = function(callback) {
+ripe.Ripe.prototype.getDefaults = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var defaultsURL = this._getDefaultsURL();
     return this._requestURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
     });
 };
 
-ripe.Ripe.prototype.getCombinations = function(callback) {
+ripe.Ripe.prototype.getCombinations = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var combinationsURL = this._getCombinationsURL();
     return this._requestURL(combinationsURL, function(result) {
         callback && callback(result.combinations);
     });
-};
-
-ripe.Ripe.prototype.getFrames = function(callback) {
-    if (this.config === undefined) {
-        this.getConfig(function(config) {
-            this.config = config;
-            this.getFrames(callback);
-        });
-        return;
-    }
-
-    var frames = {};
-    var faces = this.config["faces"];
-    for (var index = 0; index < faces.length; index++) {
-        var face = faces[index];
-        frames[face] = 1;
-    };
-
-    var sideFrames = this.config["frames"];
-    frames["side"] = sideFrames;
-    callback && callback(frames);
 };
 
 ripe.Ripe.prototype._requestURL = function(url, callback) {
@@ -308,9 +336,9 @@ ripe.Ripe.prototype._requestURL = function(url, callback) {
 };
 
 ripe.Ripe.prototype._getQuery = function(options) {
-    var buffer = [];
+    options = options || {};
 
-    var options = options || {};
+    var buffer = [];
     var brand = options.brand || this.brand;
     var model = options.model || this.model;
     var variant = options.variant || this.variant;
@@ -323,13 +351,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
     brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
     variant && buffer.push("variant=" + variant);
-    if (frame) {
-        var _frame = ripe.parseFrameKey(frame);
-        var view = _frame[0];
-        var position = _frame[1];
-        position = view === "side" ? position : view;
-        buffer.push("frame=" + position);
-    }
+    frame && buffer.push("frame=" + frame);
 
     for (var part in parts) {
         var value = parts[part];
@@ -347,12 +369,6 @@ ripe.Ripe.prototype._getQuery = function(options) {
     engraving && buffer.push("engraving=" + engraving);
     country && buffer.push("country=" + country);
     currency && buffer.push("currency=" + currency);
-
-    // TODO: move this to another place
-    options.format && buffer.push("format=" + options.format);
-    options.size && buffer.push("size=" + options.size);
-    options.background && buffer.push("background=" + options.background);
-
     return buffer.join("&");
 };
 
@@ -377,9 +393,7 @@ ripe.Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
     model = model || this.model;
     variant = variant || this.variant;
     var fullUrl = this.url + "brands/" + brand + "/models/" + model + "/defaults";
-    if (variant) {
-        fullUrl += "?variant=" + variant;
-    }
+    fullUrl += variant ? "?variant=" + variant : "";
     return fullUrl;
 };
 
@@ -389,16 +403,21 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
     variant = variant || this.variant;
     var useNameS = useName ? "1" : "0";
     var query = "use_name=" + useNameS;
-    if (variant) {
-        query += "&variant=" + variant;
-    }
+    query += variant ? "&variant=" + variant : "";
     return this.url + "brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
 };
 
 ripe.Ripe.prototype._getImageURL = function(options) {
     var query = this._getQuery(options);
+    query += options.format ? "&format=" + options.format : "";
+    query += options.width ? "&width=" + options.width : "";
+    query += options.height ? "&height=" + options.height : "";
+    query += options.size ? "&size=" + options.size : "";
+    query += options.background ? "&background=" + options.background : "";
     return this.url + "compose?" + query;
 };
+
+var ripe = ripe || {};
 
 ripe.Visual = function(owner, element, options) {
     ripe.Observable.call(this);
@@ -408,7 +427,7 @@ ripe.Visual = function(owner, element, options) {
     ripe.Visual.prototype.init.call(this);
 };
 
-ripe.Visual.prototype = Object.create(ripe.Observable.prototype);
+ripe.assign(ripe.Visual.prototype, ripe.Observable.prototype);
 ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
@@ -416,23 +435,20 @@ ripe.Visual.prototype.init = function() {};
 
 var ripe = ripe || {};
 
-ripe.Config = function(owner, element, options) {
+ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
-    ripe.Config.prototype.init.call(this, options);
+    ripe.Configurator.prototype.init.call(this, options);
 };
 
-ripe.Config.prototype = Object.create(ripe.Visual.prototype);
+ripe.Configurator.prototype = Object.create(ripe.Visual.prototype);
 
-ripe.Config.prototype.init = function() {
-    this.size = this.element.dataset.size || this.options.size || 1000;
-    this.maxSize = this.element.dataset.max_size || this.options.maxSize || 1000;
-    this.sensitivity = this.element.dataset.sensitivity || this.options.sensitivity || 40;
-    this.duration = this.options.duration || 0;
-
-    this.owner.bind("selected_part", function(part) {
-        this.highlightPart(part);
-    }.bind(this));
-
+ripe.Configurator.prototype.init = function() {
+    this.width = this.options.width || 1000;
+    this.height = this.options.height || 1000;
+    this.size = this.options.size;
+    this.maxSize = this.options.maxSize || 1000;
+    this.sensitivity = this.options.sensitivity || 40;
+    this.verticalThreshold = this.options.verticalThreshold || 15;
     this.ready = false;
 
     // creates a structure the store the last presented
@@ -440,7 +456,7 @@ ripe.Config.prototype.init = function() {
     // to a view for better user experience
     this._lastFrame = {};
 
-    this.owner.bind("frames", function(frames) {
+    this.owner.getFrames(function(frames) {
         this.frames = frames;
         this._initLayout();
         this.ready = true;
@@ -448,12 +464,16 @@ ripe.Config.prototype.init = function() {
     }.bind(this));
 };
 
-ripe.Config.prototype.resize = function(size) {
+ripe.Configurator.prototype.resize = function(size) {
     if (this.element === undefined) {
         return;
     }
 
     size = size || this.element.clientWidth;
+    if (this.currentSize === size) {
+        return;
+    }
+
     var area = this.element.querySelector(".area");
     var frontMask = this.element.querySelector(".front-mask");
     var back = this.element.querySelector(".back");
@@ -469,40 +489,48 @@ ripe.Config.prototype.resize = function(size) {
     back.style.marginLeft = "-" + String(size) + "px";
     mask.width = size;
     mask.height = size;
-    this.element.dataset.current_size = size;
-    this.update();
+    this.currentSize = size;
+    this.update({}, {
+        force: true
+    });
 };
 
-ripe.Config.prototype.update = function(state, options) {
+ripe.Configurator.prototype.update = function(state, options) {
+    options = options || {};
+
     if (this.ready === false) {
         return;
     }
 
     var view = this.element.dataset.view;
     var position = this.element.dataset.position;
-    options = options || {};
+    var size = this.element.dataset.size || this.size;
+    var width = size || this.element.dataset.width || this.width;
+    var height = size || this.element.dataset.height || this.height;
+
     var animate = options.animate || false;
+    var force = options.force || false;
     var duration = options.duration;
     var callback = options.callback;
 
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
-    var previous = this.element.dataset.signature || "";
-    var signature = this.owner._getQuery();
+    var previous = this.signature || "";
+    var signature = this.owner._getQuery() + "&width=" + String(width) + "&height=" + String(height);
     var changed = signature !== previous;
     animate = animate || (changed && "simple");
-    this.element.dataset.signature = signature;
+    this.signature = signature;
 
     // if the parts and the position haven't changed
     // since the last frame load then ignores the
     // load request and returns immediately
-    previous = this.element.dataset.unique;
-    var unique = signature + "&view=" + String(view) + "&position=" + String(position) + "&size=" + String(this.size);
-    if (previous === unique) {
+    previous = this.unique;
+    var unique = signature + "&view=" + String(view) + "&position=" + String(position);
+    if (previous === unique && !force) {
         callback && callback();
         return false;
     }
-    this.element.dataset.unique = unique;
+    this.unique = unique;
 
     // runs the load operation for the current frame
     this._loadFrame(view, position, {
@@ -523,7 +551,7 @@ ripe.Config.prototype.update = function(state, options) {
     mustPreload && this._preload(this.options.useChain);
 };
 
-ripe.Config.prototype.changeFrame = function(frame, options) {
+ripe.Configurator.prototype.changeFrame = function(frame, options) {
     var _frame = ripe.parseFrameKey(frame);
     var nextView = _frame[0];
     var nextPosition = parseInt(_frame[1]);
@@ -584,21 +612,23 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     preventDrag = preventDrag && (animate || duration);
     preventDrag && this.element.classList.add("noDrag");
 
-    var newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    this._runCallbacks("changed_frame", newFrame);
+    var newFrame = ripe.getFrameKey(
+        this.element.dataset.view,
+        this.element.dataset.position
+    );
+    this.trigger("changed_frame", newFrame);
     this.update({}, {
         animate: animate,
         duration: stepDuration,
         callback: function() {
-            // if there is no step transition
-            // or the transition has finished
-            // then allows drag movements again
+            // if there is no step transition or the transition
+            // has finished, then allows drag movements again
             if (!animated || stepPosition == nextPosition) {
                 preventDrag && this.element.classList.remove("noDrag");
             }
 
-            // otherwise waits the provided interval
-            // and proceeds to the next step
+            // otherwise waits the provided interval and
+            // proceeds to the next step
             else {
                 var timeout = animate ? 0 : stepDuration;
                 setTimeout(function() {
@@ -609,20 +639,20 @@ ripe.Config.prototype.changeFrame = function(frame, options) {
     });
 };
 
-ripe.Config.prototype.highlight = function(part, options) {};
+ripe.Configurator.prototype.highlight = function(part, options) {};
 
-ripe.Config.prototype.lowlight = function(options) {};
+ripe.Configurator.prototype.lowlight = function(options) {};
 
-ripe.Config.prototype.enterFullscreen = function(options) {
+ripe.Configurator.prototype.enterFullscreen = function(options) {
     if (this.element === undefined) {
         return;
     }
     this.element.classList.add("fullscreen");
-    var maxSize = options.maxSize || this.element.dataset.max_size || this.maxSize;
+    var maxSize = this.element.dataset.max_size || this.maxSize;
     this.resize(maxSize);
 };
 
-ripe.Config.prototype.exitFullscreen = function(options) {
+ripe.Configurator.prototype.leaveFullscreen = function(options) {
     if (this.element === undefined) {
         return;
     }
@@ -630,7 +660,7 @@ ripe.Config.prototype.exitFullscreen = function(options) {
     this.resize();
 };
 
-ripe.Config.prototype._initLayout = function() {
+ripe.Configurator.prototype._initLayout = function() {
     // clears the elements children
     while (this.element.firstChild) {
         this.element.firstChild.remove();
@@ -693,13 +723,19 @@ ripe.Config.prototype._initLayout = function() {
     this._registerHandlers();
 };
 
-ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
-    // retrieves the image that will be used to store the frame
+ripe.Configurator.prototype._loadFrame = function(view, position, options, callback) {
+    // runs the defaulting operation on all of the parameters
+    // sent to the load frame operation (defaulting)
     view = view || this.element.dataset.view || "side";
     position = position || this.element.dataset.position || 0;
+    options = options || {};
+
     var frame = ripe.getFrameKey(view, position);
 
-    options = options || {};
+    var size = this.element.dataset.size || this.size;
+    var width = size || this.element.dataset.width || this.width;
+    var height = size || this.element.dataset.height || this.height;
+
     var draw = options.draw === undefined || options.draw;
     var animate = options.animate;
     var duration = options.duration;
@@ -711,8 +747,9 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
 
     // builds the url that will be set on the image
     var url = this.owner._getImageURL({
-        frame: frame,
-        size: this.size
+        frame: ripe.frameNameHack(frame),
+        width: width,
+        height: height
     });
 
     // creates a callback to be called when the frame
@@ -756,7 +793,7 @@ ripe.Config.prototype._loadFrame = function(view, position, options, callback) {
     image.dataset.loaded = false;
 };
 
-ripe.Config.prototype._drawFrame = function(image, animate, duration, callback) {
+ripe.Configurator.prototype._drawFrame = function(image, animate, duration, callback) {
     var area = this.element.querySelector(".area");
     var back = this.element.querySelector(".back");
 
@@ -797,11 +834,11 @@ ripe.Config.prototype._drawFrame = function(image, animate, duration, callback) 
     });
 };
 
-ripe.Config.prototype._preload = function(useChain) {
+ripe.Configurator.prototype._preload = function(useChain) {
     var position = this.element.dataset.position || 0;
-    var index = this.element.dataset.index || 0;
+    var index = this.index || 0;
     index++;
-    this.element.dataset.index = index;
+    this.index = index;
     this.element.classList.add("preload");
 
     // adds all the frames to the work pile
@@ -820,8 +857,7 @@ ripe.Config.prototype._preload = function(useChain) {
 
     var self = this;
     var mark = function(element) {
-        var _index = self.element.dataset.index;
-        _index = parseInt(_index);
+        var _index = self.index;
         if (index !== _index) {
             return;
         }
@@ -836,10 +872,9 @@ ripe.Config.prototype._preload = function(useChain) {
         // preloading class to the target element and
         // prevents drag movements to avoid flickering
         if (pending.length > 0) {
-            self.element.classList.add("preloading")
+            self.element.classList.add("preloading");
             self.element.classList.add("noDrag");
         }
-
         // if there are no images preloading and no
         // frames yet to be preloaded then the preload
         // is considered finished so drag movements are
@@ -847,14 +882,12 @@ ripe.Config.prototype._preload = function(useChain) {
         else if (work.length === 0) {
             self.element.classList.remove("preloading");
             self.element.classList.remove("noDrag");
-            self._runCallbacks("loaded");
+            self.trigger("loaded");
         }
     };
 
     var render = function() {
-        var _index = self.element.getAttribute("data-index");
-        _index = parseInt(_index);
-
+        var _index = self.index;
         if (index !== _index) {
             return;
         }
@@ -908,93 +941,108 @@ ripe.Config.prototype._preload = function(useChain) {
     }
 };
 
-ripe.Config.prototype._registerHandlers = function() {
-    // binds the mousedown event on the element
-    // to prepare it for drag movements
+ripe.Configurator.prototype._registerHandlers = function() {
+    // registes for the selected part event on the owner
+    // so that we can highlight the associated part
+    this.owner.bind("selected_part", function(part) {
+        this.highlightPart(part);
+    }.bind(this));
+
+    // binds the mousedown event on the element to prepare
+    // it for drag movements
+    var self = this;
     this.element.addEventListener("mousedown", function(event) {
         var _element = this;
         _element.dataset.view = _element.dataset.view || "side";
-        _element.dataset.base = _element.dataset.position || 0;
-        _element.dataset.down = true;
-        _element.dataset.referenceX = event.pageX;
-        _element.dataset.referenceY = event.pageY;
-        _element.dataset.percent = 0;
+        self.base = _element.dataset.position || 0;
+        self.down = true;
+        self.referenceX = event.pageX;
+        self.referenceY = event.pageY;
+        self.percent = 0;
         _element.classList.add("drag");
     });
 
-    // listens for mouseup events and if it
-    // occurs then stops reacting to mousemove
-    // events has drag movements
+    // listens for mouseup events and if it occurs then
+    // stops reacting to mouse move events has drag movements
     this.element.addEventListener("mouseup", function(event) {
         var _element = this;
-        _element.dataset.down = false;
-        _element.dataset.percent = 0;
-        _element.dataset.previous = _element.dataset.percent;
+        self.down = false;
+        self.percent = 0;
+        self.previous = self.percent;
         _element.classList.remove("drag");
     });
 
-    // listens for mouseleave events and if it
-    // occurs then stops reacting to mousemove
-    // events has drag movements
+    // listens for mouse leave events and if it occurs then
+    // stops reacting to mousemove events has drag movements
     this.element.addEventListener("mouseleave", function(event) {
         var _element = this;
-        _element.dataset.down = false;
-        _element.dataset.percent = 0;
-        _element.dataset.previous = _element.dataset.percent;
+        self.down = false;
+        self.percent = 0;
+        self.previous = self.percent;
         _element.classList.remove("drag");
     });
 
-    // if a mousemove event is triggered while
-    // the mouse is pressed down then updates
-    // the position of the drag element
-    var self = this;
+    // if a mouse move event is triggered while the mouse is
+    // pressed down then updates the position of the drag element
     this.element.addEventListener("mousemove", function(event) {
         var _element = this;
 
         if (_element.classList.contains("noDrag")) {
             return;
         }
-        var down = _element.dataset.down;
-        _element.dataset.mousePosX = event.pageX;
-        _element.dataset.mousePosY = event.pageY;
-        down === "true" && self._parseDrag();
+        var down = self.down;
+        self.mousePosX = event.pageX;
+        self.mousePosY = event.pageY;
+        down && self._parseDrag();
+    });
+
+    // listens for attribute changes to redraw the configurator
+    // if needed, this makes use of the mutation observer
+    var Observer = MutationObserver || WebKitMutationObserver;
+    var observer = Observer ? new Observer(function(mutations) {
+        for (var index = 0; index < mutations.length; index++) {
+            var mutation = mutations[index];
+            mutation.type === "style" && self.resize();
+            mutation.type === "attributes" && self.update();
+        }
+    }.bind(this)) : null;
+    observer && observer.observe(this.element, {
+        attributes: true,
+        subtree: false,
+        characterData: true
     });
 };
 
-ripe.Config.prototype._parseDrag = function() {
+ripe.Configurator.prototype._parseDrag = function() {
     // retrieves the last recorded mouse position
     // and the current one and calculates the
     // drag movement made by the user
     var child = this.element.querySelector("*:first-child");
-    var referenceX = this.element.dataset.referenceX;
-    var referenceY = this.element.dataset.referenceY;
-    var mousePosX = this.element.dataset.mousePosX;
-    var mousePosY = this.element.dataset.mousePosY;
-    var base = this.element.dataset.base;
+    var referenceX = this.referenceX;
+    var referenceY = this.referenceY;
+    var mousePosX = this.mousePosX;
+    var mousePosY = this.mousePosY;
+    var base = this.base;
     var deltaX = referenceX - mousePosX;
     var deltaY = referenceY - mousePosY;
     var elementWidth = this.element.clientWidth;
     var elementHeight = this.element.clientHeight || child.clientHeight;
     var percentX = deltaX / elementWidth;
     var percentY = deltaY / elementHeight;
-    this.element.dataset.percent = percentX;
+    this.percent = percentX;
     var sensitivity = this.element.dataset.sensitivity || this.sensitivity;
-
-    // if the movement was big enough then
-    // adds the move class to the element
-    Math.abs(percentX) > 0.02 && this.element.classList.add("move");
-    Math.abs(percentY) > 0.02 && this.element.classList.add("move");
+    var verticalThreshold = this.element.dataset.verticalThreshold || this.verticalThreshold;
 
     // if the drag was vertical then alters the
     // view if it is supported by the product
     var view = this.element.dataset.view;
     var nextView = view;
-    if (sensitivity * percentY > 15) {
+    if (sensitivity * percentY > verticalThreshold) {
         nextView = view === "top" ? "side" : "bottom";
-        this.element.dataset.referenceY = mousePosY;
-    } else if (sensitivity * percentY < -15) {
+        this.referenceY = mousePosY;
+    } else if (sensitivity * percentY < -verticalThreshold) {
         nextView = view === "bottom" ? "side" : "top";
-        this.element.dataset.referenceY = mousePosY;
+        this.referenceY = mousePosY;
     }
     if (this.frames[nextView] === undefined) {
         nextView = view;
@@ -1016,6 +1064,8 @@ ripe.Config.prototype._parseDrag = function() {
     this.changeFrame(nextFrame);
 };
 
+var ripe = ripe || {};
+
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Image.prototype.init.call(this);
@@ -1025,23 +1075,25 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
-    this.size = this.element.dataset.size || this.options.size || 1000;
-    this.element.addEventListener("load", function() {
-        this._runCallbacks("loaded", this.frame);
-    }.bind(this));
+    this.size = this.options.size || 1000;
+    this._registerHandlers();
 };
 
 ripe.Image.prototype.update = function(state) {
-    var size = this.element.dataset.size || 1000;
+    var frame = this.element.dataset.frame || this.frame;
+    var size = this.element.dataset.size || this.size;
+    var width = size || this.element.dataset.width || this.width;
+    var height = size || this.element.dataset.height || this.height;
+
     var url = this.owner._getImageURL({
-        frame: this.frame,
+        frame: ripe.frameNameHack(frame),
         size: size
     });
     if (this.element.src === url) {
         return;
     }
-    this.element.width = size;
-    this.element.height = size;
+    this.element.width = width;
+    this.element.height = height;
     this.element.src = url;
 };
 
@@ -1050,5 +1102,20 @@ ripe.Image.prototype.setFrame = function(frame, options) {
     this.update();
 };
 
+ripe.Image.prototype._registerHandlers = function() {
+    this.element.addEventListener("load", function() {
+        this.trigger("loaded");
+    }.bind(this));
+    var Observer = MutationObserver || WebKitMutationObserver;
+    var observer = Observer ? new Observer(function(mutations) {
+        this.update();
+    }.bind(this)) : null;
+    observer && observer.observe(this.element, {
+        attributes: true,
+        subtree: false
+    });
+};
+
 var exports = typeof exports === "undefined" ? {} : exports;
+var Ripe = typeof Ripe === "undefined" ? {} : Ripe;
 exports.Ripe = Ripe;
