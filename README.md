@@ -3,6 +3,8 @@
 The public SDK for [RIPE Core](https://github.com/ripe-tech/ripe-core).
 
 ## 1. Initialization
+
+
 As a starting point, you need to provide the `brand` and `model` of your customizable product.
 You may also pass an [`options`](#options) map to override parameters like the base `url` of the server where the product is configured, as well as `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
@@ -16,18 +18,21 @@ var ripe = new Ripe(brand, model, {
 ```
 
 ## 2. Events
-After initializing the ripe library you should subscribe to the available events so you can easily respond and update your UI.
+
+After initializing the Ripe object you should subscribe to the available events so you can easily respond and update your UI.
 
 ### Update
-Triggered whenever there is a customization change.
+
+Triggered whenever there is a customization change (eg: the color of a part is changed).
 
 ```javascript
 ripe.bind("update", function() {
-   updateUI();
+    updateUI();
 });
 ```
 
 ### Price
+
 Notifies you when the price of the customization changes.
 
 ```javascript
@@ -38,6 +43,7 @@ ripe.bind("price", function(value) {
 ```
 
 ### Combinations
+
 Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
 
 ```javascript
@@ -53,6 +59,7 @@ ripe.bind("combinations", function(value) {
 ```
 
 ### Parts
+
 Notifies you when all the product's parts have changed.
 
 ```javascript
@@ -62,6 +69,7 @@ ripe.bind("parts", function(parts) {
 ```
 
 ### Frames
+
 Triggered whenever there is a frame change.
 
 ```javascript
@@ -71,6 +79,7 @@ configurator.bind("changed_frame", function(frame) {
 ```
 
 ## 3. Product visualization
+
 Usually the product has 24 lateral frames, plus a top and bottom view.
 To display any frame of the product you can use the `bindImage` function to automatically update an `<img>` element. This method also contains an `options` parameter.
 Subscribe to the event `loaded` and you will know when your image is loaded.
@@ -95,6 +104,7 @@ Whenever you want to set a new image frame, you only have to call `setFrame` fun
 ```
 
 ## 4. Product customization
+
 You can change a part of your product by using the `setPart` function.
 Alternatively, multiple parts can be changed at once with `setParts`.
 
@@ -107,6 +117,7 @@ ripe.setParts([
 ```
 
 ### Getters
+
 If you need to explicitly retrieve the product's customization information you can use the following methods:
 
 - `getConfig`: to get information about the product's model.
@@ -124,6 +135,7 @@ ripe.getPrice(function(value) {
 ```
 
 ## 5. Product interaction
+
 To provide an interactive product visualization you simply need to pass a `<div>` element to the method `bindConfigurator`.
 Subscribe to the event `loaded` and you will know when your configurator is loaded.
 
@@ -147,6 +159,7 @@ configurator.bind("loaded", function() {
 ## Appendix
 
 ### Options
+
 | Name | Type | Description |
 | --- | --- | --- |
 | `country` | *string* | Two letters standard country codes defined in *ISO 3166-1 alpha-2* codes. "US" by default. Example: "PT" |
