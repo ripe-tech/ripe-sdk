@@ -116,13 +116,13 @@ window.onload = function() {
     });
 
     getPrice && getPrice.addEventListener("click", function() {
-        ripe.getPrice({}, function(value) {
+        ripe.getPrice(function(value) {
             alert(String(value.total.price_final) + " " + value.total.currency);
         });
     });
 
     getCombinations && getCombinations.addEventListener("click", function() {
-        ripe.getCombinations({}, function(value) {
+        ripe.getCombinations(function(value) {
             alert("There are <strong>" + String(value.length) +
                 "</strong> combinations with <strong>" + String(unique()) +
                 "</strong> possible compositions");
