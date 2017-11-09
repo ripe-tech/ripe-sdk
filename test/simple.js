@@ -1,7 +1,11 @@
 var assert = require("assert");
 var ripe = require("../src/js/ripe");
 
+var timeout = process.env.TEST_TIMEOUT ? parseInt(process.env.TEST_TIMEOUT) : 30000;
+
 describe("Ripe", function() {
+    this.timeout(timeout);
+
     describe("#main", function() {
         it("should instance and retrieve values", async () => {
             var instance = new ripe.Ripe("myswear", "vyner");
