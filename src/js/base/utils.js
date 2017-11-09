@@ -11,6 +11,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     // sets the initial value for the property
     element.style[property] = initial;
     var last = new Date();
+
     var frame = function() {
         // checks how much time has passed since the last animation frame
         var current = new Date();
@@ -40,7 +41,8 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
         }
     };
 
-    // starts the animation
+    // starts the animation process by runnig the initial
+    // call to the frame animation function
     frame();
 };
 
