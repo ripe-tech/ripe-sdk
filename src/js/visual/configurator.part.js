@@ -65,6 +65,8 @@ ripe.Configurator.prototype.resize = function(size) {
 };
 
 ripe.Configurator.prototype.update = function(state, options) {
+    options = options || {};
+
     if (this.ready === false) {
         return;
     }
@@ -74,7 +76,7 @@ ripe.Configurator.prototype.update = function(state, options) {
     var size = this.element.dataset.size || this.size;
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
-    options = options || {};
+
     var animate = options.animate || false;
     var force = options.force || false;
     var duration = options.duration;
@@ -291,15 +293,18 @@ ripe.Configurator.prototype._initLayout = function() {
 };
 
 ripe.Configurator.prototype._loadFrame = function(view, position, options, callback) {
-    // retrieves the image that will be used to store the frame
+    // runs the defaulting operation on all of the parameters
+    // sent to the load frame operation (defaulting)
     view = view || this.element.dataset.view || "side";
     position = position || this.element.dataset.position || 0;
+    options = options || {};
+
     var frame = ripe.getFrameKey(view, position);
 
     var size = this.element.dataset.size || this.size;
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
-    options = options || {};
+
     var draw = options.draw === undefined || options.draw;
     var animate = options.animate;
     var duration = options.duration;
@@ -557,17 +562,17 @@ ripe.Configurator.prototype._registerHandlers = function() {
         down && self._parseDrag();
     });
 
-    // listens for attribute changes to
-    // redraw the configurator if needed
+    // listens for attribute changes to redraw the configurator
+    // if needed, this makes use of the mutation observer
     var Observer = MutationObserver || WebKitMutationObserver;
-    var observer = new Observer(function(mutations) {
+    var observer = Observer ? new Observer(function(mutations) {
         for (var index = 0; index < mutations.length; index++) {
             var mutation = mutations[index];
             mutation.type === "style" && self.resize();
             mutation.type === "attributes" && self.update();
         }
-    }.bind(this));
-    observer.observe(this.element, {
+    }.bind(this)) : null;
+    observer && observer.observe(this.element, {
         attributes: true,
         subtree: false,
         characterData: true

@@ -1,16 +1,22 @@
 var ripe = ripe || {};
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var configURL = this._getConfigURL();
     return this._requestURL(configURL, callback);
 };
 
 ripe.Ripe.prototype.getPrice = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var priceURL = this._getPriceURL();
     return this._requestURL(priceURL, callback);
 };
 
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var defaultsURL = this._getDefaultsURL();
     return this._requestURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
@@ -18,6 +24,8 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
 };
 
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var combinationsURL = this._getCombinationsURL();
     return this._requestURL(combinationsURL, function(result) {
         callback && callback(result.combinations);

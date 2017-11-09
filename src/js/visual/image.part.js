@@ -10,22 +10,7 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
-    this.element.addEventListener("load", function() {
-        this.trigger("loaded");
-    }.bind(this));
-    this.element.addEventListener("DOMSubtreeModified", function() {
-        this.update();
-    }.bind(this));
-    this.element.addEventListener("DOMAttrModified", function() {
-        this.update();
-    }.bind(this));
-    var observer = new WebKitMutationObserver(function(mutations) {
-        this.update();
-    }.bind(this));
-    observer.observe(this.element, {
-        attributes: true,
-        subtree: false
-    });
+    this._registerHandlers();
 };
 
 ripe.Image.prototype.update = function(state) {
@@ -49,4 +34,18 @@ ripe.Image.prototype.update = function(state) {
 ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
     this.update();
+};
+
+ripe.Image.prototype._registerHandlers = function() {
+    this.element.addEventListener("load", function() {
+        this.trigger("loaded");
+    }.bind(this));
+    var Observer = MutationObserver || WebKitMutationObserver;
+    var observer = Observer ? new Observer(function(mutations) {
+        this.update();
+    }.bind(this)) : null;
+    observer && observer.observe(this.element, {
+        attributes: true,
+        subtree: false
+    });
 };
