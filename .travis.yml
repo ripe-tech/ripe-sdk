@@ -1,0 +1,17 @@
+sudo: false
+dist: trusty
+language: node_js
+node_js:
+  - "7"
+  - "8"
+install:
+  - npm install
+script: npm test
+deploy:
+  provider: npm
+  email: development@platforme.com
+  api_key:
+    secure: KIR12Sp7ksmD9sy1V7NQpSLJKUJxQB05FIg7G7AQHdDvAUv5flVo4GMBkrbKF9z258/mOpAQ50sbhluA5h5HwPeh5IgiZ2N0bPZCU5/uJI+aiGT2YeKIsDVgiVygcR+WsDP5KzJfPr9U1F4wFQuY8T6al0xnKYR6k7IG0RbTKDWsTH5rvfE4ZJbWaD9cGyQP8YWwXq43uW72JaS3X8LKsrvCbOJ+PMbDURk4ws/WVmAXbbGYaxiXRFMehYlTM+5tl0p/pV7M52XKDE+hdqGddAuyMrE44hs9U22V3AARgZoV08hbkMf5ieeGPngfB6H4VkcL/18oEHkpRmaNt4oIz4hCCDu39qCmWZgwIaWhC8cc5/MlxG+mJqhezsdPScDAA101akUjFjr/qT/k9ASJkPzbOH3EkXI2tH1GslixXk5I9dhJfFPvVKsoSCe83rEpE7SxhWztleVVDrba9RdxUYH7ncP6q1ygM8r+X6UyWZR7MiW+vkYE6+kz4f8l5h0mlCOYRnMVtmb4fKya5eEvS5EU9QV1SonSovKoNAlWXXqJrJ/6i1unP4X/wsbcIjbx5wB4BXMtclEnhofp+7ZV1STwoUrfVlRo3aq9x2whruf0OhNasP/KOGJWACCroLrjrcR2GF9lYn0QVhU0CQpNR5Mz+9cnWvNfezAWli+BUIg=
+  on:
+    tags: true
+    node_js: "7"
