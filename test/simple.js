@@ -1,10 +1,9 @@
-var assert = require("assert");
-var ripe = require("../src/js/ripe");
-
-var timeout = process.env.TEST_TIMEOUT ? parseInt(process.env.TEST_TIMEOUT) : 30000;
+const assert = require("assert");
+const config = require("./config")
+const ripe = require("../src/js/ripe");
 
 describe("Ripe", function() {
-    this.timeout(timeout);
+    this.timeout(config.TEST_TIMEOUT);
 
     describe("#main", function() {
         it("should instance and retrieve values", async () => {
