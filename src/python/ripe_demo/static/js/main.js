@@ -56,6 +56,18 @@ window.onload = function() {
         frame: "top-0"
     });
 
+    document.getElementById("frame-0").addEventListener("click", function() {
+        configurator.changeFrame("side-9");
+    });
+
+    document.getElementById("frame-6").addEventListener("click", function() {
+        configurator.changeFrame("side-6");
+    });
+
+    document.getElementById("frame-top").addEventListener("click", function() {
+        configurator.changeFrame("top-0");
+    });
+
     image.bind("loaded", function() {
         console.log("frame-0 loaded")
     });
@@ -67,7 +79,7 @@ window.onload = function() {
     var configurator = ripe.bindConfigurator(element);
 
     configurator.bind("loaded", function() {
-        configurator.changeFrame("side-11", {
+        configurator.changeFrame("side-12", {
             duration: 500
         });
     });

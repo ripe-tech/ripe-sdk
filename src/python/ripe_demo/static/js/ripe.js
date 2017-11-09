@@ -291,16 +291,22 @@ ripe.frameNameHack = function(frame) {
 var ripe = ripe || {};
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var configURL = this._getConfigURL();
     return this._requestURL(configURL, callback);
 };
 
 ripe.Ripe.prototype.getPrice = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var priceURL = this._getPriceURL();
     return this._requestURL(priceURL, callback);
 };
 
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var defaultsURL = this._getDefaultsURL();
     return this._requestURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
@@ -308,6 +314,8 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
 };
 
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var combinationsURL = this._getCombinationsURL();
     return this._requestURL(combinationsURL, function(result) {
         callback && callback(result.combinations);
@@ -454,10 +462,6 @@ ripe.Configurator.prototype.init = function() {
         this.ready = true;
         this.update();
     }.bind(this));
-
-    this.owner.bind("selected_part", function(part) {
-        this.highlightPart(part);
-    }.bind(this));
 };
 
 ripe.Configurator.prototype.resize = function(size) {
@@ -492,6 +496,8 @@ ripe.Configurator.prototype.resize = function(size) {
 };
 
 ripe.Configurator.prototype.update = function(state, options) {
+    options = options || {};
+
     if (this.ready === false) {
         return;
     }
@@ -501,7 +507,7 @@ ripe.Configurator.prototype.update = function(state, options) {
     var size = this.element.dataset.size || this.size;
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
-    options = options || {};
+
     var animate = options.animate || false;
     var force = options.force || false;
     var duration = options.duration;
@@ -718,15 +724,18 @@ ripe.Configurator.prototype._initLayout = function() {
 };
 
 ripe.Configurator.prototype._loadFrame = function(view, position, options, callback) {
-    // retrieves the image that will be used to store the frame
+    // runs the defaulting operation on all of the parameters
+    // sent to the load frame operation (defaulting)
     view = view || this.element.dataset.view || "side";
     position = position || this.element.dataset.position || 0;
+    options = options || {};
+
     var frame = ripe.getFrameKey(view, position);
 
     var size = this.element.dataset.size || this.size;
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
-    options = options || {};
+
     var draw = options.draw === undefined || options.draw;
     var animate = options.animate;
     var duration = options.duration;
@@ -933,8 +942,14 @@ ripe.Configurator.prototype._preload = function(useChain) {
 };
 
 ripe.Configurator.prototype._registerHandlers = function() {
-    // binds the mousedown event on the element
-    // to prepare it for drag movements
+    // registes for the selected part event on the owner
+    // so that we can highlight the associated part
+    this.owner.bind("selected_part", function(part) {
+        this.highlightPart(part);
+    }.bind(this));
+
+    // binds the mousedown event on the element to prepare
+    // it for drag movements
     var self = this;
     this.element.addEventListener("mousedown", function(event) {
         var _element = this;
@@ -947,9 +962,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
         _element.classList.add("drag");
     });
 
-    // listens for mouseup events and if it
-    // occurs then stops reacting to mousemove
-    // events has drag movements
+    // listens for mouseup events and if it occurs then
+    // stops reacting to mouse move events has drag movements
     this.element.addEventListener("mouseup", function(event) {
         var _element = this;
         self.down = false;
@@ -958,9 +972,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
         _element.classList.remove("drag");
     });
 
-    // listens for mouseleave events and if it
-    // occurs then stops reacting to mousemove
-    // events has drag movements
+    // listens for mouse leave events and if it occurs then
+    // stops reacting to mousemove events has drag movements
     this.element.addEventListener("mouseleave", function(event) {
         var _element = this;
         self.down = false;
@@ -969,9 +982,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
         _element.classList.remove("drag");
     });
 
-    // if a mousemove event is triggered while
-    // the mouse is pressed down then updates
-    // the position of the drag element
+    // if a mouse move event is triggered while the mouse is
+    // pressed down then updates the position of the drag element
     this.element.addEventListener("mousemove", function(event) {
         var _element = this;
 
@@ -984,17 +996,17 @@ ripe.Configurator.prototype._registerHandlers = function() {
         down && self._parseDrag();
     });
 
-    // listens for attribute changes to
-    // redraw the configurator if needed
+    // listens for attribute changes to redraw the configurator
+    // if needed, this makes use of the mutation observer
     var Observer = MutationObserver || WebKitMutationObserver;
-    var observer = new Observer(function(mutations) {
+    var observer = Observer ? new Observer(function(mutations) {
         for (var index = 0; index < mutations.length; index++) {
             var mutation = mutations[index];
             mutation.type === "style" && self.resize();
             mutation.type === "attributes" && self.update();
         }
-    }.bind(this));
-    observer.observe(this.element, {
+    }.bind(this)) : null;
+    observer && observer.observe(this.element, {
         attributes: true,
         subtree: false,
         characterData: true
@@ -1064,22 +1076,7 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
-    this.element.addEventListener("load", function() {
-        this.trigger("loaded");
-    }.bind(this));
-    this.element.addEventListener("DOMSubtreeModified", function() {
-        this.update();
-    }.bind(this));
-    this.element.addEventListener("DOMAttrModified", function() {
-        this.update();
-    }.bind(this));
-    var observer = new WebKitMutationObserver(function(mutations) {
-        this.update();
-    }.bind(this));
-    observer.observe(this.element, {
-        attributes: true,
-        subtree: false
-    });
+    this._registerHandlers();
 };
 
 ripe.Image.prototype.update = function(state) {
@@ -1103,6 +1100,20 @@ ripe.Image.prototype.update = function(state) {
 ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
     this.update();
+};
+
+ripe.Image.prototype._registerHandlers = function() {
+    this.element.addEventListener("load", function() {
+        this.trigger("loaded");
+    }.bind(this));
+    var Observer = MutationObserver || WebKitMutationObserver;
+    var observer = Observer ? new Observer(function(mutations) {
+        this.update();
+    }.bind(this)) : null;
+    observer && observer.observe(this.element, {
+        attributes: true,
+        subtree: false
+    });
 };
 
 var exports = typeof exports === "undefined" ? {} : exports;

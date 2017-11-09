@@ -27,10 +27,6 @@ ripe.Configurator.prototype.init = function() {
         this.ready = true;
         this.update();
     }.bind(this));
-
-    this.owner.bind("selected_part", function(part) {
-        this.highlightPart(part);
-    }.bind(this));
 };
 
 ripe.Configurator.prototype.resize = function(size) {
@@ -511,8 +507,14 @@ ripe.Configurator.prototype._preload = function(useChain) {
 };
 
 ripe.Configurator.prototype._registerHandlers = function() {
-    // binds the mousedown event on the element
-    // to prepare it for drag movements
+    // registes for the selected part event on the owner
+    // so that we can highlight the associated part
+    this.owner.bind("selected_part", function(part) {
+        this.highlightPart(part);
+    }.bind(this));
+
+    // binds the mousedown event on the element to prepare
+    // it for drag movements
     var self = this;
     this.element.addEventListener("mousedown", function(event) {
         var _element = this;
@@ -525,9 +527,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
         _element.classList.add("drag");
     });
 
-    // listens for mouseup events and if it
-    // occurs then stops reacting to mousemove
-    // events has drag movements
+    // listens for mouseup events and if it occurs then
+    // stops reacting to mouse move events has drag movements
     this.element.addEventListener("mouseup", function(event) {
         var _element = this;
         self.down = false;
@@ -536,9 +537,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
         _element.classList.remove("drag");
     });
 
-    // listens for mouseleave events and if it
-    // occurs then stops reacting to mousemove
-    // events has drag movements
+    // listens for mouse leave events and if it occurs then
+    // stops reacting to mousemove events has drag movements
     this.element.addEventListener("mouseleave", function(event) {
         var _element = this;
         self.down = false;
@@ -547,9 +547,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
         _element.classList.remove("drag");
     });
 
-    // if a mousemove event is triggered while
-    // the mouse is pressed down then updates
-    // the position of the drag element
+    // if a mouse move event is triggered while the mouse is
+    // pressed down then updates the position of the drag element
     this.element.addEventListener("mousemove", function(event) {
         var _element = this;
 
