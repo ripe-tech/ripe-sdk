@@ -1,4 +1,4 @@
-# # [![RIPE SDK](res/logo.png)](http://www.platforme.com)
+# [![RIPE SDK](res/logo.png)](http://www.platforme.com)
 
 The public SDK for [RIPE Core](https://github.com/ripe-tech/ripe-core).
 
