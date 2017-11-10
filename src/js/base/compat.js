@@ -26,6 +26,6 @@ ripe.assign = function(target) {
     return to;
 };
 
-if (isNeo) {
+if (isNeo && typeof XMLHttpRequest === "undefined") {
     var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 }
