@@ -28,7 +28,9 @@
              data-currency="{{ currency|default('', True) }}">
         <div id="header" class="header">
             {% block header %}
-                <div class="header-container"></div>
+                <div class="header-container">
+                    <img src="{{ url_for('static', filename = 'images/logo.png') }}" />
+                </div>
             {% endblock %}
         </div>
         <div id="content" class="content">{% block content %}{% endblock %}</div>

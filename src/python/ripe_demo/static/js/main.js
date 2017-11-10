@@ -12,7 +12,7 @@ window.onload = function() {
     var partsMap = {};
     var index = 0;
 
-    var ripe = new ripe.Ripe(brand, model, {
+    var ripe = new Ripe(brand, model, {
         variant: variant,
         url: url,
         currency: currency,

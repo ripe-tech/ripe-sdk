@@ -2,7 +2,7 @@ var ripe = ripe || {};
 
 var ripe = ripe || {};
 
-var isNeo = require !== undefined;
+var isNeo = typeof require !== "undefined";
 
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
