@@ -1,6 +1,6 @@
 if (typeof require !== "undefined") {
     const base = require("./base");
-    var ripe = base.ripe;
+    const ripe = base.ripe;
 }
 
 ripe.assign = function(target) {

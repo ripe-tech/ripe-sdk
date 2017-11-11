@@ -8,7 +8,7 @@ if (typeof module !== "undefined") {
 
 if (typeof require !== "undefined") {
     const base = require("./base");
-    var ripe = base.ripe;
+    const ripe = base.ripe;
 }
 
 ripe.assign = function(target) {
@@ -47,7 +47,7 @@ if (typeof module !== "undefined") {
 
 if (typeof require !== "undefined") {
     const base = require("./base");
-    var ripe = base.ripe;
+    const ripe = base.ripe;
 }
 
 ripe.Interactable = function(owner, options) {
@@ -63,7 +63,7 @@ ripe.Interactable.prototype.update = function(state) {};
 
 if (typeof require !== "undefined") {
     const base = require("./base");
-    var ripe = base.ripe;
+    const ripe = base.ripe;
 }
 
 ripe.Observable = function() {
@@ -106,7 +106,7 @@ ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
 if (typeof require !== "undefined") {
     const base = require("./base");
     require("./observable");
-    var ripe = base.ripe;
+    const ripe = base.ripe;
 }
 
 ripe.Ripe = function(brand, model, options) {
@@ -252,7 +252,7 @@ var Ripe = ripe.Ripe;
 
 if (typeof require !== "undefined") {
     const base = require("./base");
-    var ripe = base.ripe;
+    const ripe = base.ripe;
 }
 
 ripe.createElement = function(tagName, className) {
@@ -326,8 +326,8 @@ if (typeof require !== "undefined") {
     const base = require("./base");
     const compat = require("./compat");
     require("./ripe");
-    var ripe = base.ripe;
-    var XMLHttpRequest = compat.XMLHttpRequest;
+    const ripe = base.ripe;
+    const XMLHttpRequest = compat.XMLHttpRequest;
 }
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
@@ -459,7 +459,7 @@ ripe.Ripe.prototype._getImageURL = function(options) {
 
 if (typeof require !== "undefined") {
     const base = require("../base");
-    var ripe = base.ripe;
+    const ripe = base.ripe;
 }
 
 ripe.Visual = function(owner, element, options) {
@@ -479,7 +479,7 @@ ripe.Visual.prototype.init = function() {};
 if (typeof require !== "undefined") {
     const base = require("../base");
     require("./visual");
-    var ripe = base.ripe;
+    const ripe = base.ripe;
 }
 
 ripe.Configurator = function(owner, element, options) {
@@ -1114,7 +1114,7 @@ ripe.Configurator.prototype._parseDrag = function() {
 if (typeof require !== "undefined") {
     const base = require("../base");
     require("./visual");
-    var ripe = base.ripe;
+    const ripe = base.ripe;
 }
 
 ripe.Image = function(owner, element, options) {

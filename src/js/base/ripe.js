@@ -1,7 +1,7 @@
 if (typeof require !== "undefined") {
     const base = require("./base");
     require("./observable");
-    var ripe = base.ripe;
+    const ripe = base.ripe;
 }
 
 ripe.Ripe = function(brand, model, options) {
