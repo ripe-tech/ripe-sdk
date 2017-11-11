@@ -1,4 +1,8 @@
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("./base");
+    require("./observable");
+    var ripe = base.ripe;
+}
 
 ripe.Ripe = function(brand, model, options) {
     ripe.Observable.call(this);

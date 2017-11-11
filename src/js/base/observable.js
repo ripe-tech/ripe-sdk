@@ -1,4 +1,7 @@
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("./base");
+    var ripe = base.ripe;
+}
 
 ripe.Observable = function() {
     this.callbacks = {};

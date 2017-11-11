@@ -1,4 +1,8 @@
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("../base");
+    require("./visual");
+    var ripe = base.ripe;
+}
 
 ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);

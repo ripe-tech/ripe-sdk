@@ -1,4 +1,10 @@
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("./base");
+    const compat = require("./compat");
+    require("./ripe");
+    var ripe = base.ripe;
+    var XMLHttpRequest = compat.XMLHttpRequest;
+}
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;

@@ -1,8 +1,15 @@
 var ripe = ripe || {};
 
-var ripe = ripe || {};
+if (typeof module !== "undefined") {
+    module.exports = {
+        ripe: ripe
+    };
+}
 
-var isNeo = typeof require !== "undefined";
+if (typeof require !== "undefined") {
+    const base = require("./base");
+    var ripe = base.ripe;
+}
 
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
@@ -28,11 +35,20 @@ ripe.assign = function(target) {
     return to;
 };
 
-if (isNeo && typeof XMLHttpRequest === "undefined") {
+if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
     var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 }
 
-var ripe = ripe || {};
+if (typeof module !== "undefined") {
+    module.exports = {
+        XMLHttpRequest: XMLHttpRequest
+    };
+}
+
+if (typeof require !== "undefined") {
+    const base = require("./base");
+    var ripe = base.ripe;
+}
 
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
@@ -45,7 +61,10 @@ ripe.Interactable.prototype.init = function() {};
 
 ripe.Interactable.prototype.update = function(state) {};
 
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("./base");
+    var ripe = base.ripe;
+}
 
 ripe.Observable = function() {
     this.callbacks = {};
@@ -84,7 +103,11 @@ ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
 ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
 
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("./base");
+    require("./observable");
+    var ripe = base.ripe;
+}
 
 ripe.Ripe = function(brand, model, options) {
     ripe.Observable.call(this);
@@ -227,7 +250,10 @@ ripe.Ripe.prototype.update = function(state) {
 
 var Ripe = ripe.Ripe;
 
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("./base");
+    var ripe = base.ripe;
+}
 
 ripe.createElement = function(tagName, className) {
     var element = tagName && document.createElement(tagName);
@@ -296,7 +322,13 @@ ripe.frameNameHack = function(frame) {
     return position;
 };
 
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("./base");
+    const compat = require("./compat");
+    require("./ripe");
+    var ripe = base.ripe;
+    var XMLHttpRequest = compat.XMLHttpRequest;
+}
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -425,7 +457,10 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     return this.url + "compose?" + query;
 };
 
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("../base");
+    var ripe = base.ripe;
+}
 
 ripe.Visual = function(owner, element, options) {
     ripe.Observable.call(this);
@@ -441,7 +476,11 @@ ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
 
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("../base");
+    require("./visual");
+    var ripe = base.ripe;
+}
 
 ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
@@ -1072,7 +1111,11 @@ ripe.Configurator.prototype._parseDrag = function() {
     this.changeFrame(nextFrame);
 };
 
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("../base");
+    require("./visual");
+    var ripe = base.ripe;
+}
 
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
@@ -1123,7 +1166,3 @@ ripe.Image.prototype._registerHandlers = function() {
         subtree: false
     });
 };
-
-var exports = typeof exports === "undefined" ? {} : exports;
-var Ripe = typeof Ripe === "undefined" ? {} : Ripe;
-exports.Ripe = Ripe;

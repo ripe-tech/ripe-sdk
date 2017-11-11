@@ -10,8 +10,7 @@
             "base/api.js",
             "visual/visual.js",
             "visual/configurator.js",
-            "visual/image.js",
-            "base/export.js"
+            "visual/image.js"
         ]
     },
     "ripe-min.js": {
@@ -24,8 +23,7 @@
             "base/api.js",
             "visual/visual.js",
             "visual/configurator.js",
-            "visual/image.js",
-            "base/export.js"
+            "visual/image.js"
         ],
         "minify": "javascript"
     }

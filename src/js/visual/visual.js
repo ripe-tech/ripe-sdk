@@ -1,4 +1,7 @@
-var ripe = ripe || {};
+if (typeof require !== "undefined") {
+    const base = require("../base");
+    var ripe = base.ripe;
+}
 
 ripe.Visual = function(owner, element, options) {
     ripe.Observable.call(this);

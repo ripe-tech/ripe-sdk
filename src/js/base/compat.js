@@ -1,6 +1,7 @@
-var ripe = ripe || {};
-
-var isNeo = typeof require !== "undefined";
+if (typeof require !== "undefined") {
+    const base = require("./base");
+    var ripe = base.ripe;
+}
 
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
@@ -26,6 +27,12 @@ ripe.assign = function(target) {
     return to;
 };
 
-if (isNeo && typeof XMLHttpRequest === "undefined") {
+if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
     var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+}
+
+if (typeof module !== "undefined") {
+    module.exports = {
+        XMLHttpRequest: XMLHttpRequest
+    };
 }
