@@ -8,9 +8,9 @@
             "base/ripe.js",
             "base/utils.js",
             "base/api.js",
-            "visual/visual.part.js",
-            "visual/configurator.part.js",
-            "visual/image.part.js",
+            "visual/visual.js",
+            "visual/configurator.js",
+            "visual/image.js",
             "base/export.js"
         ]
     },
@@ -22,9 +22,9 @@
             "base/ripe.js",
             "base/utils.js",
             "base/api.js",
-            "visual/visual.part.js",
-            "visual/configurator.part.js",
-            "visual/image.part.js",
+            "visual/visual.js",
+            "visual/configurator.js",
+            "visual/image.js",
             "base/export.js"
         ],
         "minify": "javascript"
