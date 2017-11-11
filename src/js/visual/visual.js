@@ -1,5 +1,5 @@
 if (typeof require !== "undefined") {
-    const base = require("../base");
+    var base = require("../base");
     var ripe = base.ripe;
 }
 

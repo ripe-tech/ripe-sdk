@@ -1,6 +1,6 @@
 if (typeof require !== "undefined") {
-    const base = require("./base");
-    const compat = require("./compat");
+    var base = require("./base");
+    var compat = require("./compat");
     require("./ripe");
     var ripe = base.ripe;
     var XMLHttpRequest = compat.XMLHttpRequest;
