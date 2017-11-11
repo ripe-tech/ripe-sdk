@@ -23,3 +23,7 @@ ul li {
 .images > img {
     cursor: pointer;
 }
+
+.configurator {
+    cursor: pointer;
+}
