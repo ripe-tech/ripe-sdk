@@ -2,8 +2,8 @@ if (typeof require !== "undefined") {
     const base = require("./base");
     const compat = require("./compat");
     require("./ripe");
-    const ripe = base.ripe;
-    const XMLHttpRequest = compat.XMLHttpRequest;
+    var ripe = base.ripe;
+    var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {

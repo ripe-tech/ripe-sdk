@@ -1,6 +1,6 @@
 if (typeof require !== "undefined") {
     const base = require("./base");
-    const ripe = base.ripe;
+    var ripe = base.ripe;
 }
 
 ripe.Observable = function() {

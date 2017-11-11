@@ -1,7 +1,7 @@
 if (typeof require !== "undefined") {
     const base = require("../base");
     require("./visual");
-    const ripe = base.ripe;
+    var ripe = base.ripe;
 }
 
 ripe.Configurator = function(owner, element, options) {
