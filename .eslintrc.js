@@ -1,5 +1,5 @@
 module.exports = {
-    "extends": "eslint:recommended",
+    "extends": "standard",
     "plugins": ["mocha"],
     "rules": {
         "indent": ["warn", 4],
@@ -7,9 +7,6 @@ module.exports = {
         "semi": ["error", "always"],
         "space-before-function-paren": ["error", "never"],
         "linebreak-style": ["error", "windows"],
-        "no-unused-vars": [0, {
-            "varsIgnorePattern": "^h$"
-        }],
         "mocha/no-exclusive-tests": "error"
     },
     "env": {

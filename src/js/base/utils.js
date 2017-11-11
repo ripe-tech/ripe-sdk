@@ -5,8 +5,7 @@ if (typeof require !== "undefined") {
 
 ripe.createElement = function(tagName, className) {
     var element = tagName && document.createElement(tagName);
-    element.className = className ? className : "";
-
+    element.className = className || "";
     return element;
 };
 

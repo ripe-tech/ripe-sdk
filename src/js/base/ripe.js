@@ -126,7 +126,7 @@ ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts
     };
-}
+};
 
 ripe.Ripe.prototype.update = function(state) {
     state = state || this._getState();

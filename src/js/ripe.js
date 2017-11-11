@@ -88,7 +88,7 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
         return;
     }
     callbacks.splice(index, 1);
-    this.callbacks[name] = callbacks;
+    this.callbacks[event] = callbacks;
 };
 
 ripe.Observable.prototype.runCallbacks = function(event) {
@@ -231,7 +231,7 @@ ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts
     };
-}
+};
 
 ripe.Ripe.prototype.update = function(state) {
     state = state || this._getState();
@@ -257,8 +257,7 @@ if (typeof require !== "undefined") {
 
 ripe.createElement = function(tagName, className) {
     var element = tagName && document.createElement(tagName);
-    element.className = className ? className : "";
-
+    element.className = className || "";
     return element;
 };
 
@@ -669,14 +668,12 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
         duration: stepDuration,
         callback: function() {
             // if there is no step transition or the transition
-            // has finished, then allows drag movements again
-            if (!animated || stepPosition == nextPosition) {
-                preventDrag && this.element.classList.remove("noDrag");
-            }
-
+            // has finished, then allows drag movements again,
             // otherwise waits the provided interval and
             // proceeds to the next step
-            else {
+            if (!animated || stepPosition === nextPosition) {
+                preventDrag && this.element.classList.remove("noDrag");
+            } else {
                 var timeout = animate ? 0 : stepDuration;
                 setTimeout(function() {
                     this.changeFrame(frame, options);
@@ -804,7 +801,7 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
     // function if it's set
     var drawCallback = function() {
         callback && callback();
-    }.bind(this);
+    };
 
     // verifies if the loading of the current image
     // is considered redundant (already loaded or
@@ -918,15 +915,14 @@ ripe.Configurator.prototype._preload = function(useChain) {
         // if there are images preloading then adds the
         // preloading class to the target element and
         // prevents drag movements to avoid flickering
-        if (pending.length > 0) {
-            self.element.classList.add("preloading");
-            self.element.classList.add("noDrag");
-        }
-        // if there are no images preloading and no
+        // else and if there are no images preloading and no
         // frames yet to be preloaded then the preload
         // is considered finished so drag movements are
         // allowed again and the loaded event is triggered
-        else if (work.length === 0) {
+        if (pending.length > 0) {
+            self.element.classList.add("preloading");
+            self.element.classList.add("noDrag");
+        } else if (work.length === 0) {
             self.element.classList.remove("preloading");
             self.element.classList.remove("noDrag");
             self.trigger("loaded");
@@ -1052,7 +1048,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
             mutation.type === "style" && self.resize();
             mutation.type === "attributes" && self.update();
         }
-    }.bind(this)) : null;
+    }) : null;
     observer && observer.observe(this.element, {
         attributes: true,
         subtree: false,
