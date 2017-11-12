@@ -2,7 +2,7 @@
     "name": "ripe-sdk",
     "version": "1.0.9",
     "description": "The public SDK for RIPE Core",
-    "main": "src/js/ripe.js",
+    "main": "src/js/index.js",
     "scripts": {
         "test": "mocha"
     },
