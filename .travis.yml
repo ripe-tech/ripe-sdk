@@ -6,8 +6,8 @@ node_js:
   - "8"
   - "9"
 install:
-  - npm install && npm run build
-script: npm test
+  - npm install
+script: npm test && npm run build
 deploy:
   provider: npm
   email: development@platforme.com
