@@ -4,7 +4,8 @@
     "description": "The public SDK for RIPE Core",
     "main": "src/js/index.js",
     "scripts": {
-        "test": "mocha"
+        "build": "gulp",
+        "test": "gulp test"
     },
     "repository": {
         "type": "git",
@@ -29,6 +30,8 @@
     },
     "devDependencies": {
         "mocha": "^4.0.1",
+        "gulp": "^3.9.1",
+        "gulp-mocha": "^4.3.1",
         "eslint": "^3.19",
         "eslint-config-standard": "^10.2.1",
         "eslint-plugin-import": "^2.7.0",
