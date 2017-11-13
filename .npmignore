@@ -13,8 +13,6 @@ Dockerfile.demo
 /.git
 /.settings
 
-/dist
-
 /src/python
 
 /src/js/ripe.js

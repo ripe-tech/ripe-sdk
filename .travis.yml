@@ -6,7 +6,7 @@ node_js:
   - "8"
   - "9"
 install:
-  - npm install
+  - npm install && npm run build
 script: npm test
 deploy:
   provider: npm
