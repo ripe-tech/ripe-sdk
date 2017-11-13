@@ -18,9 +18,23 @@ describe("Ripe", function() {
                 instance.getPrice(resolve);
             });
 
-            assert.equal(result["total"]["price_final"] > 0.0, true);
-            assert.equal(result["total"]["country"], "US");
-            assert.equal(result["total"]["currency"], "EUR");
+            assert.equal(result.total.price_final > 0.0, true);
+            assert.equal(result.total.country, "US");
+            assert.equal(result.total.currency, "EUR");
+        });
+        it("should instance and retrieve config", async () => {
+            var instance = new ripe.Ripe("myswear", "vyner");
+            instance.load();
+
+            await new Promise((resolve, reject) => {
+                instance.bind("parts", resolve);
+            });
+
+            var result = await new Promise((resolve, reject) => {
+                instance.getConfig(resolve);
+            });
+
+            assert.equal(result.hidden.indexOf("shadow") !== -1, true);
         });
     });
 });
