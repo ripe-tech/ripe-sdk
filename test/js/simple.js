@@ -11,8 +11,8 @@ describe("Ripe", function() {
             instance.load();
 
             await new Promise((resolve, reject) => {
-                instance.bind("parts", resolve)
-            })
+                instance.bind("parts", resolve);
+            });
 
             result = await new Promise((resolve, reject) => {
                 instance.getPrice(resolve);

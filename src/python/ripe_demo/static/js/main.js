@@ -119,8 +119,8 @@ window.onload = function() {
 
     getCombinations && getCombinations.addEventListener("click", function() {
         ripe.getCombinations(function(value) {
-            alert("There are <strong>" + String(value.length) +
-                "</strong> combinations with <strong>" + String(unique()) +
+            alert("There are <strong>" + String((value.length).formatMoney(0)) +
+                "</strong> combinations with <strong>" + String(unique().formatMoney(0)) +
                 "</strong> possible compositions");
         });
     });

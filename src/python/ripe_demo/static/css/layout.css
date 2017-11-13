@@ -15,6 +15,11 @@ ul li {
     -webkit-user-select: none;
 }
 
+.logo {
+    height: 51px;
+    width: 96px;
+}
+
 .price {
     font-size: 16px;
     font-weight: bold;

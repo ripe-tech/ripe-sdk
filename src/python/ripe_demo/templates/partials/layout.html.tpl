@@ -29,7 +29,9 @@
         <div id="header" class="header">
             {% block header %}
                 <div class="header-container">
-                    <img src="{{ url_for('static', filename = 'images/logo.png') }}" />
+                    <img class="image-lazy logo"
+                         data-url="{{ url_for('static', filename = 'images/logo.png') }}"
+                         data-url_retina="{{ url_for('static', filename = 'images/logo-2x.png') }}" />
                 </div>
             {% endblock %}
         </div>
