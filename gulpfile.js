@@ -7,7 +7,8 @@ const replace = require("gulp-replace");
 const _package = require("./package.json");
 
 var paths = {
-    main: "src/js/ripe.js",
+    mainjs: "src/js/ripe.js",
+    maincss: "src/css/ripe.css",
     scripts: "src/js/**/*.js",
     css: "src/css/**/*.css",
     test: "test/js/**/*.js"
@@ -29,8 +30,13 @@ gulp.task("build-js", function() {
 });
 
 gulp.task("move-js", function() {
-    return gulp.src(paths.main)
+    return gulp.src(paths.mainjs)
         .pipe(gulp.dest("src/python/ripe_demo/static/js"));
+});
+
+gulp.task("move-css", function() {
+    return gulp.src(paths.maincss)
+        .pipe(gulp.dest("src/python/ripe_demo/static/css"));
 });
 
 gulp.task("test", function() {
@@ -40,4 +46,4 @@ gulp.task("test", function() {
         }));
 });
 
-gulp.task("default", ["build-js", "move-js"]);
+gulp.task("default", ["build-js", "move-js", "move-css"]);

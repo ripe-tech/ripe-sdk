@@ -15,7 +15,16 @@ ul li {
     -webkit-user-select: none;
 }
 
-.logo {
+a.logo-link {
+    padding-bottom: 0px;
+}
+
+a.logo-link:hover,
+a.logo-link.hover {
+    border-color: transparent;
+}
+
+img.logo {
     height: 51px;
     width: 96px;
 }
