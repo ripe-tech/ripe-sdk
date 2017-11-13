@@ -4,6 +4,8 @@
 
 .project
 .pydevproject
+.travis.yml
+.eslintrc.js
 
 extra.txt
 requirements.txt
