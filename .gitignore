@@ -3,6 +3,7 @@
 
 session.shelve*
 
+dist.zip
 package-lock.json
 
 /dist

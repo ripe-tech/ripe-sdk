@@ -1,5 +1,12 @@
 var ripe=ripe||{};if(typeof module!=="undefined"){module.exports={ripe:ripe};}
 if(typeof require!=="undefined"){var base=require("./base");var ripe=base.ripe;}
+ripe.assign=function(target){if(typeof Object.assign==="function"){return Object.assign.apply(this,arguments);}
+if(target===null){throw new TypeError("Cannot assign undefined or null object");}
+var to=Object(target);for(var index=1;index<arguments.length;index++){var nextSource=arguments[index];if(nextSource==null){continue;}
+for(var nextKey in nextSource){if(Object.prototype.hasOwnProperty.call(nextSource,nextKey)){to[nextKey]=nextSource[nextKey];}}}
+return to;};if(typeof require!=="undefined"&&typeof XMLHttpRequest==="undefined"){var XMLHttpRequest=require("xmlhttprequest").XMLHttpRequest;}
+if(typeof module!=="undefined"){module.exports={XMLHttpRequest:XMLHttpRequest};}
+if(typeof require!=="undefined"){var base=require("./base");var ripe=base.ripe;}
 ripe.Interactable=function(owner,options){this.owner=owner;this.options=options||{};ripe.Interactable.prototype.init.call(this);};ripe.Interactable.prototype.init=function(){};ripe.Interactable.prototype.update=function(state){};if(typeof require!=="undefined"){var base=require("./base");var ripe=base.ripe;}
 ripe.Observable=function(){this.callbacks={};};ripe.Observable.prototype.addCallback=function(event,callback){var callbacks=this.callbacks[event]||[];callbacks.push(callback);this.callbacks[event]=callbacks;};ripe.Observable.prototype.removeCallback=function(event,callback){var callbacks=this.callbacks[event]||[];if(!callback){delete this.callbacks[event];return;}
 var index=callbacks.indexOf(callback);if(index===-1){return;}

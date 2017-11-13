@@ -16,6 +16,7 @@
     "ripe-min.js": {
         "files": [
             "base/base.js",
+            "base/compat.js",
             "base/interactable.js",
             "base/observable.js",
             "base/ripe.js",
