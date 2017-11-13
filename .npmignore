@@ -7,6 +7,7 @@
 .travis.yml
 .eslintrc.js
 
+dist.zip
 extra.txt
 requirements.txt
 Dockerfile

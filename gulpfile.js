@@ -1,4 +1,5 @@
 const gulp = require("gulp");
+const zip = require("gulp-zip");
 const size = require("gulp-size");
 const count = require("gulp-count");
 const mocha = require("gulp-mocha");
@@ -11,10 +12,11 @@ var paths = {
     maincss: "src/css/ripe.css",
     scripts: "src/js/**/*.js",
     css: "src/css/**/*.css",
-    test: "test/js/**/*.js"
+    test: "test/js/**/*.js",
+    dist: "dist/**/*"
 };
 
-gulp.task("build-js", function() {
+gulp.task("build-js", () => {
     return gulp.src(paths.scripts)
         .pipe(uglifyes({
             mangle: false,
@@ -29,21 +31,27 @@ gulp.task("build-js", function() {
         .pipe(count("## js files copied"));
 });
 
-gulp.task("move-js", function() {
+gulp.task("move-js", () => {
     return gulp.src(paths.mainjs)
         .pipe(gulp.dest("src/python/ripe_demo/static/js"));
 });
 
-gulp.task("move-css", function() {
+gulp.task("move-css", () => {
     return gulp.src(paths.maincss)
         .pipe(gulp.dest("src/python/ripe_demo/static/css"));
 });
 
-gulp.task("test", function() {
+gulp.task("compress", ["build-js"], () =>
+    gulp.src(paths.dist)
+    .pipe(zip("dist.zip"))
+    .pipe(gulp.dest("./"))
+);
+
+gulp.task("test", () => {
     return gulp.src(paths.test)
         .pipe(mocha({
             reporter: "spec"
         }));
 });
 
-gulp.task("default", ["build-js", "move-js", "move-css"]);
+gulp.task("default", ["build-js", "move-js", "move-css", "compress"]);
