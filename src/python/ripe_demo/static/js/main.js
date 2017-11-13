@@ -10,7 +10,6 @@ window.onload = function() {
 
     var parts = [];
     var partsMap = {};
-    var index = 0;
 
     var ripe = new Ripe(brand, model, {
         variant: variant,
@@ -37,13 +36,6 @@ window.onload = function() {
             count *= triplets.length;
         }
         return count;
-    };
-
-    var sequence = function() {
-        var target = index % parts.length;
-        var part = parts[target];
-        ripe.setPart(part[0], part[1], part[2]);
-        index++;
     };
 
     var image = ripe.bindImage(document.getElementById("frame-0"), {
@@ -86,6 +78,10 @@ window.onload = function() {
 
     ripe.bind("price", function(value) {
         var price = document.getElementById("price");
+        if (!value || !value.total) {
+            price.innerHTML = "N/A";
+            return;
+        }
         price.innerHTML = value.total.price_final + " " + value.total.currency;
     });
 

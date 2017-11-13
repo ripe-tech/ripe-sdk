@@ -367,7 +367,7 @@ ripe.Ripe.prototype._requestURL = function(url, callback) {
     request.addEventListener("load", function() {
         var isValid = this.status === 200;
         var result = JSON.parse(this.responseText);
-        callback.call(context, isValid ? result : null);
+        callback && callback.call(context, isValid ? result : null);
     });
     request.open("GET", url);
     request.send();
