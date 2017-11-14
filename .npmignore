@@ -16,6 +16,8 @@ Dockerfile.demo
 /.git
 /.settings
 
+/build
+
 /src/python
 
 /src/js/ripe.js

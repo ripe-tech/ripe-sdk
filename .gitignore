@@ -7,4 +7,5 @@ dist.zip
 package-lock.json
 
 /dist
+/build
 /node_modules
