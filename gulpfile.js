@@ -50,7 +50,7 @@ gulp.task("compress", ["build-js"], () => {
 gulp.task("mark", () => {
     return gulp.src(paths.scripts)
         .pipe(replace("__VERSION__", _package.version))
-        .pipe(gulp.dest("lib"));
+        .pipe(gulp.dest("src"));
 });
 
 gulp.task("test", () => {
