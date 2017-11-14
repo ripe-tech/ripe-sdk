@@ -47,6 +47,12 @@ gulp.task("compress", ["build-js"], () => {
         .pipe(gulp.dest("build"));
 });
 
+gulp.task("mark", () => {
+    return gulp.src(paths.scripts)
+        .pipe(replace("__VERSION__", _package.version))
+        .pipe(gulp.dest("lib"));
+});
+
 gulp.task("test", () => {
     return gulp.src(paths.test)
         .pipe(mocha({
