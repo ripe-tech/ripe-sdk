@@ -44,7 +44,7 @@ gulp.task("move-css", () => {
 gulp.task("compress", ["build-js"], () => {
     return gulp.src(paths.dist)
         .pipe(zip("dist.zip"))
-        .pipe(gulp.dest("./"));
+        .pipe(gulp.dest("build"));
 });
 
 gulp.task("test", () => {
