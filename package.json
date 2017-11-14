@@ -26,6 +26,16 @@
         "url": "https://github.com/ripe-tech/ripe-sdk/issues"
     },
     "homepage": "https://github.com/ripe-tech/ripe-sdk#readme",
+    "files": [
+        "gulpfile.js",
+        "dist/**/*",
+        "res/**/*",
+        "src/css/**/*.css",
+        "src/js/index.js",
+        "src/js/base/**/*.js",
+        "src/js/visual/**/*.js",
+        "test/**/*.js"
+    ],
     "dependencies": {
         "xmlhttprequest": "^1.8.0"
     },
