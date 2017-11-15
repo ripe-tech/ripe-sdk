@@ -1,3 +1,8 @@
+if (typeof require !== "undefined") {
+    var base = require("../base");
+    var ripe = base.ripe;
+}
+
 ripe.Visual = function(owner, element, options) {
     ripe.Observable.call(this);
     ripe.Interactable.call(this, owner, options);
@@ -6,7 +11,7 @@ ripe.Visual = function(owner, element, options) {
     ripe.Visual.prototype.init.call(this);
 };
 
-ripe.Visual.prototype = Object.create(ripe.Observable.prototype);
+ripe.assign(ripe.Visual.prototype, ripe.Observable.prototype);
 ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 

@@ -1,3 +1,8 @@
+if (typeof require !== "undefined") {
+    var base = require("./base");
+    var ripe = base.ripe;
+}
+
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};

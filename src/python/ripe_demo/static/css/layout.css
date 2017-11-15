@@ -18,3 +18,30 @@ ul li {
 .price {
     font-weight: bold;
 }
+
+a.logo-link {
+    padding-bottom: 0px;
+}
+
+a.logo-link:hover,
+a.logo-link.hover {
+    border-color: transparent;
+}
+
+img.logo {
+    height: 51px;
+    width: 96px;
+}
+
+.price {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.images > img {
+    cursor: pointer;
+}
+
+.configurator {
+    cursor: pointer;
+}

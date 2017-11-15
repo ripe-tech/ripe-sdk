@@ -4,6 +4,10 @@
 import appier
 
 class RipeDemoApp(appier.WebApp):
+    """
+    The main app class for the Ripe Demo instance
+    should configure the instance main points.
+    """
 
     def __init__(self, *args, **kwargs):
         appier.WebApp.__init__(

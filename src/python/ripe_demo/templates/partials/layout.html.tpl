@@ -13,18 +13,29 @@
             <script type="text/javascript" src="{{ touch('//libs.platforme.com/uxf/js/ux-min.js') }}"></script>
             <script type="text/javascript" src="{{ touch('//libs.platforme.com/layout/js/layout-min.js') }}"></script>
             {% if own.is_devel() %}
+                <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/ripe.css') }}" />
                 <script type="text/javascript" src="{{ url_for('static', filename = 'js/ripe.js', compress = 'js') }}"></script>
-               {% else %}
-                   <script type="text/javascript" src="{{ touch('//sdk.platforme.com/js/ripe.js') }}"></script>
+            {% else %}
+                <link rel="stylesheet" type="text/css" href="{{ touch('//sdk.platforme.com/css/ripe.css') }}" />
+                <script type="text/javascript" src="{{ touch('//sdk.platforme.com/js/ripe.js') }}"></script>
             {% endif %}
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js', compress = 'js') }}"></script>
             <title>{{ title }}{% block title %}{% endblock %}</title>
         {% endblock %}
     </head>
-    <body class="{% block body_class %}ux wait-load{% endblock %}">
+    <body class="{% block body_class %}ux wait-load{% endblock %}" data-url="{{ url|default('', True) }}"
+             data-brand="{{ brand|default('', True) }}" data-model="{{ model|default('', True) }}"
+             data-variant="{{ variant|default('', True) }}" data-country="{{ country|default('', True) }}"
+             data-currency="{{ currency|default('', True) }}">
         <div id="header" class="header">
             {% block header %}
-                <div class="header-container"></div>
+                <div class="header-container">
+                    <a class="logo-link" href="https://github.com/ripe-tech/ripe-sdk" target="_blank">
+                        <img class="image-lazy logo"
+                             data-url="{{ url_for('static', filename = 'images/logo.png') }}"
+                             data-url_retina="{{ url_for('static', filename = 'images/logo-2x.png') }}" />
+                    </a>
+                </div>
             {% endblock %}
         </div>
         <div id="content" class="content">{% block content %}{% endblock %}</div>

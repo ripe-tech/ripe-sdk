@@ -4,7 +4,10 @@
 
 .project
 .pydevproject
+.travis.yml
+.eslintrc.js
 
+dist.zip
 extra.txt
 requirements.txt
 Dockerfile
@@ -14,3 +17,7 @@ Dockerfile.demo
 /.settings
 
 /src/python
+
+/src/js/ripe.js
+/src/js/ripe-min.js
+/src/js/main.join.json

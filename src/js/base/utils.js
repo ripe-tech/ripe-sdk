@@ -1,7 +1,11 @@
+if (typeof require !== "undefined") {
+    var base = require("./base");
+    var ripe = base.ripe;
+}
+
 ripe.createElement = function(tagName, className) {
     var element = tagName && document.createElement(tagName);
-    element.className = className ? className : "";
-
+    element.className = className || "";
     return element;
 };
 
@@ -9,9 +13,9 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     // sets the initial value for the property
     element.style[property] = initial;
     var last = new Date();
+
     var frame = function() {
-        // checks how much time has passed
-        // since the last animation frame
+        // checks how much time has passed since the last animation frame
         var current = new Date();
         var timeDelta = current - last;
         var animationDelta = timeDelta * (final - initial) / duration;
@@ -39,7 +43,8 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
         }
     };
 
-    // starts the animation
+    // starts the animation process by runnig the initial
+    // call to the frame animation function
     frame();
 };
 
@@ -51,6 +56,17 @@ ripe.getFrameKey = function(view, position, token) {
 ripe.parseFrameKey = function(frame, token) {
     token = token || "-";
     return frame.split(token);
+};
+
+ripe.frameNameHack = function(frame) {
+    if (!frame) {
+        return "";
+    }
+    var _frame = ripe.parseFrameKey(frame);
+    var view = _frame[0];
+    var position = _frame[1];
+    position = view === "side" ? position : view;
+    return position;
 };
 
 ripe.fixEvent = function(event) {

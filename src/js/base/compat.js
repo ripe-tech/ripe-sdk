@@ -1,9 +1,14 @@
+if (typeof require !== "undefined") {
+    var base = require("./base");
+    var ripe = base.ripe;
+}
+
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
     }
 
-    if (target == null) {
+    if (target === null) {
         throw new TypeError("Cannot assign undefined or null object");
     }
 
@@ -21,3 +26,13 @@ ripe.assign = function(target) {
     }
     return to;
 };
+
+if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+}
+
+if (typeof module !== "undefined") {
+    module.exports = {
+        XMLHttpRequest: XMLHttpRequest
+    };
+}

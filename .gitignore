@@ -2,3 +2,9 @@
 *.log
 
 session.shelve*
+
+dist.zip
+package-lock.json
+
+/dist
+/node_modules
