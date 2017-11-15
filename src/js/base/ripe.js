@@ -23,6 +23,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
     this.noPrice = this.options.noPrice || false;
+    this.usePrice = !this.noPrice;
     this.children = [];
     this.ready = false;
 
