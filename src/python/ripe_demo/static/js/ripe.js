@@ -128,6 +128,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
     this.noPrice = this.options.noPrice || false;
+    this.usePrice = !this.noPrice;
     this.children = [];
     this.ready = false;
 
@@ -244,7 +245,7 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this.trigger("update");
 
-    this.ready && !this.noPrice && this.getPrice(function(value) {
+    this.ready && !this.usePrice && this.getPrice(function(value) {
         this.trigger("price", value);
     }.bind(this));
 };
