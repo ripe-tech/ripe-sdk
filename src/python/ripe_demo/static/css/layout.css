@@ -15,6 +15,10 @@ ul li {
     -webkit-user-select: none;
 }
 
+.price {
+    font-weight: bold;
+}
+
 a.logo-link {
     padding-bottom: 0px;
 }

@@ -25,7 +25,9 @@ ripe.Image.prototype.update = function(state) {
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
-        size: size
+        size: size,
+        width: width,
+        height: height
     });
     if (this.element.src === url) {
         return;

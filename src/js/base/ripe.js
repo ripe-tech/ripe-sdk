@@ -22,16 +22,24 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.parts = this.options.parts || {};
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
+    this.format = this.options.format || "jpeg";
+    this.backgroundColor = options.backgroundColor || "";
     this.noPrice = this.options.noPrice || false;
     this.usePrice = !this.noPrice;
     this.children = [];
     this.ready = false;
 
+    // runs the background color normalization process that removes
+    // the typical cardinal character from the definition
+    this.backgroundColor = this.backgroundColor.replace("#", "");
+
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && !this.options.noDefaults;
-    loadDefaults && this.getDefaults(function(result) {
+    var loadParts = loadDefaults ? this.getDefaults : setTimeout;
+    loadParts.call(this, function(result) {
+        result = result || this.parts;
         this.parts = result;
         this.ready = true;
         this.update();
@@ -120,8 +128,12 @@ ripe.Ripe.prototype.bindInteractable = function(child) {
     return child;
 };
 
-ripe.Ripe.prototype.selectPart = function(part) {
+ripe.Ripe.prototype.select = function(part) {
     this.trigger("selected_part", part);
+};
+
+ripe.Ripe.prototype.deselect = function(part) {
+    this.trigger("deselected_part", part);
 };
 
 ripe.Ripe.prototype._getState = function() {
