@@ -41,11 +41,17 @@ gulp.task("move-css", () => {
         .pipe(gulp.dest("src/python/ripe_demo/static/css"));
 });
 
-gulp.task("compress", ["build-js"], () =>
-    gulp.src(paths.dist)
-    .pipe(zip("dist.zip"))
-    .pipe(gulp.dest("./"))
-);
+gulp.task("compress", ["build-js"], () => {
+    return gulp.src(paths.dist)
+        .pipe(zip("dist.zip"))
+        .pipe(gulp.dest("build"));
+});
+
+gulp.task("mark", () => {
+    return gulp.src(paths.scripts)
+        .pipe(replace("__VERSION__", _package.version))
+        .pipe(gulp.dest("src/js"));
+});
 
 gulp.task("test", () => {
     return gulp.src(paths.test)

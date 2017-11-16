@@ -24,13 +24,16 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.currency = this.options.currency || null;
     this.format = this.options.format || "jpeg";
     this.backgroundColor = options.backgroundColor ? options.backgroundColor.replace("#", "") : "";
+    this.noPrice = this.options.noPrice || false;
+    this.usePrice = !this.noPrice;
     this.children = [];
     this.ready = false;
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    if (!hasParts) {
+    var loadDefaults = !hasParts && !this.options.noDefaults;
+    if (loadDefaults) {
         this.getDefaults(function(result) {
             this.parts = result;
             this.ready = true;
@@ -133,14 +136,14 @@ ripe.Ripe.prototype.select = function(part) {
     this.trigger("selected_part", part);
 };
 
+ripe.Ripe.prototype.deselect = function(part) {
+    this.trigger("deselected_part", part);
+};
+
 ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts
     };
-};
-
-ripe.Ripe.prototype.deselect = function(part) {
-    this.trigger("deselected_part", part);
 };
 
 ripe.Ripe.prototype.update = function(state) {
@@ -153,7 +156,7 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this.trigger("update");
 
-    this.ready && this.getPrice(function(value) {
+    this.ready && !this.usePrice && this.getPrice(function(value) {
         this.trigger("price", value);
     }.bind(this));
 };

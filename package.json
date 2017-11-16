@@ -1,10 +1,12 @@
 {
     "name": "ripe-sdk",
-    "version": "1.1.0",
+    "version": "1.1.5",
     "description": "The public SDK for RIPE Core",
     "main": "src/js/index.js",
     "scripts": {
+        "gulp": "gulp",
         "build": "gulp",
+        "mark": "gulp mark",
         "test": "gulp test"
     },
     "repository": {
@@ -25,6 +27,16 @@
         "url": "https://github.com/ripe-tech/ripe-sdk/issues"
     },
     "homepage": "https://github.com/ripe-tech/ripe-sdk#readme",
+    "files": [
+        "gulpfile.js",
+        "dist/**/*",
+        "res/**/*",
+        "src/css/**/*.css",
+        "src/js/index.js",
+        "src/js/base/**/*.js",
+        "src/js/visual/**/*.js",
+        "test/**/*.js"
+    ],
     "dependencies": {
         "xmlhttprequest": "^1.8.0"
     },

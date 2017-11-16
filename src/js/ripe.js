@@ -66,6 +66,73 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+ripe.touchHandler = function(element, options) {
+    if (typeof Mobile !== "undefined" && Mobile.touchHandler) {
+        return;
+    }
+
+    options = options || {};
+    var SAFE = options.safe === undefined ? true : options.safe;
+    var VALID = options.valid || ["DIV", "IMG", "SPAN", "CANVAS"];
+
+    var eventHandler = function(event) {
+        // retrieves the complete set of touches and uses
+        // only the first one for type reference
+        var touches = event.changedTouches;
+        var first = touches[0];
+        var type = "";
+
+        // switches over the type of touch event associating
+        // the proper equivalent mouse enve to each of them
+        switch (event.type) {
+            case "touchstart":
+                type = "mousedown";
+                break;
+
+            case "touchmove":
+                type = "mousemove";
+                break;
+
+            case "touchend":
+                type = "mouseup";
+                break;
+
+            default:
+                return;
+        }
+
+        // verifies if the current event is considered to be valid,
+        // this occurs if the target of the type of the target is
+        // considered to be valid according to the current rules
+        var isValid = VALID.indexOf(first.target.tagName) === -1;
+        if (SAFE && isValid) {
+            return;
+        }
+
+        // creates the new mouse event that will emulate the
+        // touch event that has just been raised, it should
+        // be completly equivalent to the original touch
+        var mouseEvent = document.createEvent("MouseEvent");
+        mouseEvent.initMouseEvent(type, true, true, window, 1, first.screenX,
+            first.screenY, first.clientX, first.clientY, false, false, false,
+            false, 0, null);
+
+        // dispatches the event to the original target of the
+        // touch event (pure emulation)
+        first.target.dispatchEvent(mouseEvent);
+    };
+
+    element.addEventListener("touchstart", eventHandler, true);
+    element.addEventListener("touchmove", eventHandler, true);
+    element.addEventListener("touchend", eventHandler, true);
+    element.addEventListener("touchcancel", eventHandler, true);
+};
+
+if (typeof require !== "undefined") {
+    var base = require("./base");
+    var ripe = base.ripe;
+}
+
 ripe.Observable = function() {
     this.callbacks = {};
 };
@@ -127,30 +194,21 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.parts = this.options.parts || {};
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
-    this.format = this.options.format || "jpeg";
-    this.backgroundColor = options.backgroundColor ? options.backgroundColor.replace("#", "") : "";
+    this.noPrice = this.options.noPrice || false;
+    this.usePrice = !this.noPrice;
     this.children = [];
     this.ready = false;
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    if (!hasParts) {
-        this.getDefaults(function(result) {
-            this.parts = result;
-            this.ready = true;
-            this.update();
-            this.trigger("parts", this.parts);
-        }.bind(this));
-    } else {
-        this.parts = this.options.parts;
-        setTimeout(function() {
-            this.parts = result;
-            this.ready = true;
-            this.update();
-            this.trigger("parts", this.parts);
-        }.bind(this));
-    }
+    var loadDefaults = !hasParts && !this.options.noDefaults;
+    loadDefaults && this.getDefaults(function(result) {
+        this.parts = result;
+        this.ready = true;
+        this.update();
+        this.trigger("parts", this.parts);
+    }.bind(this));
 
     // tries to determine if the combinations available should be
     // loaded for the current model and if that's the case start the
@@ -234,7 +292,7 @@ ripe.Ripe.prototype.bindInteractable = function(child) {
     return child;
 };
 
-ripe.Ripe.prototype.select = function(part) {
+ripe.Ripe.prototype.selectPart = function(part) {
     this.trigger("selected_part", part);
 };
 
@@ -242,10 +300,6 @@ ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts
     };
-};
-
-ripe.Ripe.prototype.deselect = function(part) {
-    this.trigger("deselected_part", part);
 };
 
 ripe.Ripe.prototype.update = function(state) {
@@ -258,7 +312,7 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this.trigger("update");
 
-    this.ready && this.getPrice(function(value) {
+    this.ready && !this.usePrice && this.getPrice(function(value) {
         this.trigger("price", value);
     }.bind(this));
 };
@@ -334,18 +388,6 @@ ripe.frameNameHack = function(frame) {
     var position = _frame[1];
     position = view === "side" ? position : view;
     return position;
-};
-
-ripe.fixEvent = function(event) {
-    if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
-        return event;
-    }
-
-    var _target = event.target || event.srcElement;
-    var rect = _target.getBoundingClientRect();
-    event.offsetX = event.clientX - rect.left;
-    event.offsetY = event.clientY - rect.top;
-    return event;
 };
 
 if (typeof require !== "undefined") {
@@ -483,16 +525,6 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     return this.url + "compose?" + query;
 };
 
-ripe.Ripe.prototype._getMaskURL = function(options) {
-    options = options || {};
-    options.parts = options.parts || {};
-    var query = this._getQuery(options);
-    if (options.part) {
-        query += "&part=" + options.part;
-    }
-    return this.url + "mask?" + query;
-};
-
 if (typeof require !== "undefined") {
     var base = require("../base");
     var ripe = base.ripe;
@@ -533,7 +565,6 @@ ripe.Configurator.prototype.init = function() {
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.ready = false;
-    this.interval = this.options.interval || 0;
 
     // creates a structure the store the last presented
     // position of each view, to be used when returning
@@ -545,32 +576,6 @@ ripe.Configurator.prototype.init = function() {
         this._initLayout();
         this.ready = true;
         this.update();
-    }.bind(this));
-
-    // creates a set of sorted parts to be
-    // used on the highlight operation
-    this.partsList = [];
-    this.owner.getConfig(function(config) {
-        var defaults = config.defaults;
-        this.hiddenParts = config.hidden;
-        this.partsList = [];
-        for (var part in defaults) {
-            var partValue = defaults[part];
-            this.partsList.push(part);
-        }
-        this.partsList.sort();
-    }.bind(this));
-
-    this.owner.bind("parts", function(parts) {
-        this.parts = parts;
-    });
-
-    this.owner.bind("selected_part", function(part) {
-        this.highlight(part);
-    }.bind(this));
-
-    this.owner.bind("deselected_part", function(part) {
-        this.lowlight();
     }.bind(this));
 };
 
@@ -747,63 +752,9 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
     });
 };
 
-ripe.Configurator.prototype.highlight = function(part, options) {
-    // adds the highlight class to the current target configurator meaning
-    // that the front mask is currently active and showing info
-    this.element.classList.add("highlight");
+ripe.Configurator.prototype.highlight = function(part, options) {};
 
-    // determines the current position of the configurator so that
-    // the proper mask url may be created and properly loaded
-    var view = this.element.dataset.view;
-    var position = this.element.dataset.position;
-    var frame = ripe.getFrameKey(view, position);
-    options = options || {};
-    var format = options.format || this.format;
-    var backgroundColor = options.backgroundColor || this.backgroundColor;
-    var size = this.element.dataset.size || this.size;
-    var width = size || this.element.dataset.width || this.width;
-    var height = size || this.element.dataset.height || this.height;
-
-    // constructs the full url of the mask image that is going to be
-    // set for the current highlight operation (to be determined)
-    var url = this.owner._getMaskURL({
-        frame: ripe.frameNameHack(frame),
-        size: size,
-        width: width,
-        height: height,
-        color: backgroundColor,
-        part: part
-    });
-
-    var frontMask = this.element.querySelector(".front-mask");
-    var src = frontMask.getAttribute("src");
-    if (src === url) {
-        return;
-    }
-
-    var self = this;
-    var frontMaskLoad = function() {
-        this.classList.add("loaded");
-        this.classList.add("highlight");
-        self.trigger("highlighted_part", part);
-    };
-    frontMask.removeEventListener("load", frontMaskLoad);
-    frontMask.addEventListener("load", frontMaskLoad);
-    frontMask.addEventListener("error", function() {
-        this.setAttribute("src", "");
-    });
-    frontMask.setAttribute("src", url);
-
-    var animationId = frontMask.dataset.animation_id;
-    cancelAnimationFrame(animationId);
-    ripe.animateProperty(frontMask, "opacity", 0, 0.4, 250);
-};
-
-ripe.Configurator.prototype.lowlight = function(options) {
-    var frontMask = this.element.querySelector(".front-mask");
-    frontMask.classList.remove("highlight");
-    this.element.classList.remove("highlight");
-};
+ripe.Configurator.prototype.lowlight = function(options) {};
 
 ripe.Configurator.prototype.enterFullscreen = function(options) {
     if (this.element === undefined) {
@@ -902,20 +853,14 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
     var animate = options.animate;
     var duration = options.duration;
     var framesBuffer = this.element.querySelector(".frames-buffer");
-    var masksBuffer = this.element.querySelector(".masks-buffer");
     var area = this.element.querySelector(".area");
     var image = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
     var front = area.querySelector("img[data-frame='" + String(frame) + "']");
-    var maskImage = masksBuffer.querySelector("img[data-frame='" + String(frame) + "']");
     image = image || front;
-
-    // constructs the url for the mask and updates it
-    this._loadMask(maskImage, view, position, options);
 
     // builds the url that will be set on the image
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
-        size: size,
         width: width,
         height: height
     });
@@ -959,52 +904,6 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
     image.src = url;
     image.dataset.src = url;
     image.dataset.loaded = false;
-};
-
-ripe.Configurator.prototype._loadMask = function(maskImage, view, position, options) {
-    // constructs the url for the mask and then at the end of the
-    // mask loading process runs the final update of the mask canvas
-    // operation that will allow new highlight and selection operation
-    // to be performed according to the new frame value
-    var self = this;
-    if (maskImage.dataset.src) {
-        setTimeout(function() {
-            self._drawMask(maskImage);
-        }.bind(this), 150);
-    } else {
-        var format = options.format || this.format;
-        var backgroundColor = options.backgroundColor || this.backgroundColor;
-        var size = this.element.dataset.size || this.size;
-        var width = size || this.element.dataset.width || this.width;
-        var height = size || this.element.dataset.height || this.height;
-        var frame = ripe.getFrameKey(view, position);
-        var url = this.owner._getMaskURL({
-            frame: ripe.frameNameHack(frame),
-            size: size,
-            width: width,
-            height: height,
-            color: backgroundColor
-        });
-
-        maskImage.onload = function() {
-            setTimeout(function() {
-                self._drawMask(maskImage);
-            }, 150);
-        };
-        maskImage.addEventListener("error", function() {
-            this.setAttribute("src", null);
-        });
-        maskImage.crossOrigin = "Anonymous";
-        maskImage.dataset.src = url;
-        maskImage.setAttribute("src", url);
-    }
-};
-
-ripe.Configurator.prototype._drawMask = function(maskImage) {
-    var mask = this.element.querySelector(".mask");
-    maskContext = mask.getContext("2d");
-    maskContext.clearRect(0, 0, mask.width, mask.height);
-    maskContext.drawImage(maskImage, 0, 0, mask.width, mask.height);
 };
 
 ripe.Configurator.prototype._drawFrame = function(image, animate, duration, callback) {
@@ -1158,7 +1057,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // registes for the selected part event on the owner
     // so that we can highlight the associated part
     this.owner.bind("selected_part", function(part) {
-        this.highlight(part);
+        this.highlightPart(part);
     }.bind(this));
 
     // binds the mousedown event on the element to prepare
@@ -1173,7 +1072,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.referenceY = event.pageY;
         self.percent = 0;
         _element.classList.add("drag");
-        _element.classList.remove("move");
     });
 
     // listens for mouseup events and if it occurs then
@@ -1184,7 +1082,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.percent = 0;
         self.previous = self.percent;
         _element.classList.remove("drag");
-        _element.classList.remove("move");
     });
 
     // listens for mouse leave events and if it occurs then
@@ -1195,13 +1092,14 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.percent = 0;
         self.previous = self.percent;
         _element.classList.remove("drag");
-        _element.classList.remove("move");
     });
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
     this.element.addEventListener("mousemove", function(event) {
-        if (this.classList.contains("noDrag")) {
+        var _element = this;
+
+        if (_element.classList.contains("noDrag")) {
             return;
         }
         var down = self.down;
@@ -1209,6 +1107,12 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.mousePosY = event.pageY;
         down && self._parseDrag();
     });
+
+    // adds handlers for the touch events so that they get
+    // parsed to mouse events for the configurator element,
+    // taking into account that there may be a touch handler
+    // already defined
+    ripe.touchHandler(this.element);
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
@@ -1224,96 +1128,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
         attributes: true,
         subtree: false,
         characterData: true
-    });
-
-    var area = this.element.querySelector(".area");
-    var back = this.element.querySelector(".back");
-    area.addEventListener("click", function(event) {
-        var move = self.element.classList.contains("move");
-        if (move) {
-            return;
-        }
-        event = ripe.fixEvent(event);
-        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
-        if (index === 0) {
-            return;
-        }
-
-        // retrieves the reference to the part name by using the index
-        // extracted from the masks image (typical strategy for retrieval)
-        var part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.owner.select(part);
-        event.stopPropagation();
-    });
-
-    area.addEventListener("mousemove", function(event) {
-        var drag = this.classList.contains("drag");
-        if (drag) {
-            return;
-        }
-        event = ripe.fixEvent(event);
-        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
-
-        // in case the index that was found is the zero one this is a special
-        // position and the associated operation is the removal of the highlight
-        // also if the target is being dragged the highlight should be removed
-        if (index === 0 || self.down === true) {
-            self.lowlight();
-            return;
-        }
-
-        // retrieves the reference to the part name by using the index
-        // extracted from the masks image (typical strategy for retrieval)
-        var part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.highlight(part);
-    });
-
-    area.addEventListener("dragstart", function(event) {
-        event.preventDefault();
-    });
-
-    back.addEventListener("click", function(event) {
-        var move = self.element.classList.contains("move");
-        if (move) {
-            return;
-        }
-        event = ripe.fixEvent(event);
-        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
-        if (index === 0) {
-            return;
-        }
-
-        // retrieves the reference to the part name by using the index
-        // extracted from the masks image (typical strategy for retrieval)
-        var part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.owner.select(part);
-        event.stopPropagation();
-    });
-
-    back.addEventListener("mousemove", function(event) {
-        var drag = this.classList.contains("drag");
-        if (drag) {
-            return;
-        }
-        event = ripe.fixEvent(event);
-        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
-
-        // in case the index that was found is the zero one this is a special
-        // position and the associated operation is the removal of the highlight
-        // also if the target is being dragged the highlight should be removed
-        if (index === 0 || self.down === true) {
-            self.lowlight();
-            return;
-        }
-
-        // retrieves the reference to the part name by using the index
-        // extracted from the masks image (typical strategy for retrieval)
-        var part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.highlight(part);
-    });
-
-    back.addEventListener("dragstart", function(event) {
-        event.preventDefault();
     });
 };
 
@@ -1368,21 +1182,6 @@ ripe.Configurator.prototype._parseDrag = function() {
     this.changeFrame(nextFrame);
 };
 
-ripe.Configurator.prototype._getCanvasIndex = function(canvas, x, y) {
-    var canvasRealWidth = canvas.getBoundingClientRect().width;
-    var mask = this.element.querySelector(".mask");
-    var ratio = mask.width && canvasRealWidth && mask.width / canvasRealWidth;
-    x = parseInt(x * ratio);
-    y = parseInt(y * ratio);
-
-    var maskContext = mask.getContext("2d");
-    var pixel = maskContext.getImageData(x, y, 1, 1);
-    var r = pixel.data[0];
-    var index = parseInt(r);
-
-    return index;
-};
-
 if (typeof require !== "undefined") {
     var base = require("../base");
     require("./visual");
@@ -1410,9 +1209,7 @@ ripe.Image.prototype.update = function(state) {
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
-        size: size,
-        width: width,
-        height: height
+        size: size
     });
     if (this.element.src === url) {
         return;
