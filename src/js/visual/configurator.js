@@ -18,6 +18,9 @@ ripe.Configurator.prototype.init = function() {
     this.maxSize = this.options.maxSize || 1000;
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
+    this.interval = this.options.interval || 0;
+    this.maskOpacity = this.options.maskOpacity || 0.4;
+    this.maskDuration = this.options.maskDuration || 150;
     this.ready = false;
 
     // creates a structure the store the last presented
@@ -30,6 +33,28 @@ ripe.Configurator.prototype.init = function() {
         this._initLayout();
         this.ready = true;
         this.update();
+    }.bind(this));
+
+    // creates a set of sorted parts to be used on the
+    // highlight operation (considers only the default ones)
+    this.partsList = [];
+    this.owner.getConfig(function(config) {
+        var defaults = config.defaults;
+        this.hiddenParts = config.hidden;
+        this.partsList = Object.keys(defaults);
+        this.partsList.sort();
+    }.bind(this));
+
+    this.owner.bind("parts", function(parts) {
+        this.parts = parts;
+    });
+
+    this.owner.bind("selected_part", function(part) {
+        this.highlight(part);
+    }.bind(this));
+
+    this.owner.bind("deselected_part", function(part) {
+        this.lowlight();
     }.bind(this));
 };
 
@@ -206,9 +231,69 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
     });
 };
 
-ripe.Configurator.prototype.highlight = function(part, options) {};
+ripe.Configurator.prototype.highlight = function(part, options) {
+    // captures the current context to be used by clojure callbacks
+    var self = this;
 
-ripe.Configurator.prototype.lowlight = function(options) {};
+    // runs the default operation for the parameters that this
+    // function receives
+    options = options || {};
+
+    // determines the current position of the configurator so that
+    // the proper mask URL may be created and properly loaded
+    var view = this.element.dataset.view;
+    var position = this.element.dataset.position;
+    var frame = ripe.getFrameKey(view, position);
+    var backgroundColor = options.backgroundColor || this.backgroundColor;
+    var size = this.element.dataset.size || this.size;
+    var width = size || this.element.dataset.width || this.width;
+    var height = size || this.element.dataset.height || this.height;
+    var maskOpacity = this.element.dataset.mask_opacity || this.maskOpacity;
+    var maskDuration = this.element.dataset.mask_duration || this.maskDuration;
+
+    // constructs the full URL of the mask image that is going to be
+    // set for the current highlight operation (to be determined)
+    var url = this.owner._getMaskURL({
+        frame: ripe.frameNameHack(frame),
+        size: size,
+        width: width,
+        height: height,
+        color: backgroundColor,
+        part: part
+    });
+
+    var frontMask = this.element.querySelector(".front-mask");
+    var src = frontMask.getAttribute("src");
+    if (src === url) {
+        return;
+    }
+
+    var frontMaskLoad = function() {
+        this.classList.add("loaded");
+        this.classList.add("highlight");
+        self.trigger("highlighted_part", part);
+    };
+    frontMask.removeEventListener("load", frontMaskLoad);
+    frontMask.addEventListener("load", frontMaskLoad);
+    frontMask.addEventListener("error", function() {
+        this.setAttribute("src", "");
+    });
+    frontMask.setAttribute("src", url);
+
+    var animationId = frontMask.dataset.animation_id;
+    cancelAnimationFrame(animationId);
+    ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration);
+
+    // adds the highlight class to the current target configurator meaning
+    // that the front mask is currently active and showing info
+    this.element.classList.add("highlight");
+};
+
+ripe.Configurator.prototype.lowlight = function(options) {
+    var frontMask = this.element.querySelector(".front-mask");
+    frontMask.classList.remove("highlight");
+    this.element.classList.remove("highlight");
+};
 
 ripe.Configurator.prototype.enterFullscreen = function(options) {
     if (this.element === undefined) {
@@ -307,14 +392,20 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
     var animate = options.animate;
     var duration = options.duration;
     var framesBuffer = this.element.querySelector(".frames-buffer");
+    var masksBuffer = this.element.querySelector(".masks-buffer");
     var area = this.element.querySelector(".area");
     var image = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
     var front = area.querySelector("img[data-frame='" + String(frame) + "']");
+    var maskImage = masksBuffer.querySelector("img[data-frame='" + String(frame) + "']");
     image = image || front;
 
-    // builds the url that will be set on the image
+    // constructs the URL for the mask and updates it
+    this._loadMask(maskImage, view, position, options);
+
+    // builds the URL that will be set on the image
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
+        size: size,
         width: width,
         height: height
     });
@@ -358,6 +449,51 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
     image.src = url;
     image.dataset.src = url;
     image.dataset.loaded = false;
+};
+
+ripe.Configurator.prototype._loadMask = function(maskImage, view, position, options) {
+    // constructs the URL for the mask and then at the end of the
+    // mask loading process runs the final update of the mask canvas
+    // operation that will allow new highlight and selection operation
+    // to be performed according to the new frame value
+    var self = this;
+    if (maskImage.dataset.src) {
+        setTimeout(function() {
+            self._drawMask(maskImage);
+        }, 150);
+    } else {
+        var backgroundColor = options.backgroundColor || this.backgroundColor;
+        var size = this.element.dataset.size || this.size;
+        var width = size || this.element.dataset.width || this.width;
+        var height = size || this.element.dataset.height || this.height;
+        var frame = ripe.getFrameKey(view, position);
+        var url = this.owner._getMaskURL({
+            frame: ripe.frameNameHack(frame),
+            size: size,
+            width: width,
+            height: height,
+            color: backgroundColor
+        });
+
+        maskImage.onload = function() {
+            setTimeout(function() {
+                self._drawMask(maskImage);
+            }, 150);
+        };
+        maskImage.addEventListener("error", function() {
+            this.setAttribute("src", null);
+        });
+        maskImage.crossOrigin = "Anonymous";
+        maskImage.dataset.src = url;
+        maskImage.setAttribute("src", url);
+    }
+};
+
+ripe.Configurator.prototype._drawMask = function(maskImage) {
+    var mask = this.element.querySelector(".mask");
+    var maskContext = mask.getContext("2d");
+    maskContext.clearRect(0, 0, mask.width, mask.height);
+    maskContext.drawImage(maskImage, 0, 0, mask.width, mask.height);
 };
 
 ripe.Configurator.prototype._drawFrame = function(image, animate, duration, callback) {
@@ -508,15 +644,22 @@ ripe.Configurator.prototype._preload = function(useChain) {
 };
 
 ripe.Configurator.prototype._registerHandlers = function() {
+    // captures the current context to be used inside clojures
+    var self = this;
+
+    // retrieves the reference to the multiple elements that
+    // are going to be used for event handler operations
+    var area = this.element.querySelector(".area");
+    var back = this.element.querySelector(".back");
+
     // registes for the selected part event on the owner
     // so that we can highlight the associated part
     this.owner.bind("selected_part", function(part) {
-        this.highlightPart(part);
+        this.highlight(part);
     }.bind(this));
 
     // binds the mousedown event on the element to prepare
     // it for drag movements
-    var self = this;
     this.element.addEventListener("mousedown", function(event) {
         var _element = this;
         _element.dataset.view = _element.dataset.view || "side";
@@ -526,6 +669,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.referenceY = event.pageY;
         self.percent = 0;
         _element.classList.add("drag");
+        _element.classList.remove("move");
     });
 
     // listens for mouseup events and if it occurs then
@@ -536,6 +680,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.percent = 0;
         self.previous = self.percent;
         _element.classList.remove("drag");
+        _element.classList.remove("move");
     });
 
     // listens for mouse leave events and if it occurs then
@@ -546,14 +691,13 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.percent = 0;
         self.previous = self.percent;
         _element.classList.remove("drag");
+        _element.classList.remove("move");
     });
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
     this.element.addEventListener("mousemove", function(event) {
-        var _element = this;
-
-        if (_element.classList.contains("noDrag")) {
+        if (this.classList.contains("noDrag")) {
             return;
         }
         var down = self.down;
@@ -562,11 +706,93 @@ ripe.Configurator.prototype._registerHandlers = function() {
         down && self._parseDrag();
     });
 
-    // adds handlers for the touch events so that they get
-    // parsed to mouse events for the configurator element,
-    // taking into account that there may be a touch handler
-    // already defined
-    ripe.touchHandler(this.element);
+    area.addEventListener("click", function(event) {
+        var move = self.element.classList.contains("move");
+        if (move) {
+            return;
+        }
+        event = ripe.fixEvent(event);
+        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
+        if (index === 0) {
+            return;
+        }
+
+        // retrieves the reference to the part name by using the index
+        // extracted from the masks image (typical strategy for retrieval)
+        var part = self.partsList[index - 1];
+        self.hiddenParts.indexOf(part) === -1 && self.owner.select(part);
+        event.stopPropagation();
+    });
+
+    area.addEventListener("mousemove", function(event) {
+        var drag = this.classList.contains("drag");
+        if (drag) {
+            return;
+        }
+        event = ripe.fixEvent(event);
+        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
+
+        // in case the index that was found is the zero one this is a special
+        // position and the associated operation is the removal of the highlight
+        // also if the target is being dragged the highlight should be removed
+        if (index === 0 || self.down === true) {
+            self.lowlight();
+            return;
+        }
+
+        // retrieves the reference to the part name by using the index
+        // extracted from the masks image (typical strategy for retrieval)
+        var part = self.partsList[index - 1];
+        self.hiddenParts.indexOf(part) === -1 && self.highlight(part);
+    });
+
+    area.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
+
+    back.addEventListener("click", function(event) {
+        var move = self.element.classList.contains("move");
+        if (move) {
+            return;
+        }
+        event = ripe.fixEvent(event);
+        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
+        if (index === 0) {
+            return;
+        }
+
+        // retrieves the reference to the part name by using the index
+        // extracted from the masks image (typical strategy for retrieval)
+        var part = self.partsList[index - 1];
+        self.hiddenParts.indexOf(part) === -1 && self.owner.select(part);
+        event.stopPropagation();
+    });
+
+    back.addEventListener("mousemove", function(event) {
+        var drag = this.classList.contains("drag");
+        if (drag) {
+            return;
+        }
+        event = ripe.fixEvent(event);
+        var index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
+
+        // in case the index that was found is the zero one this is a special
+        // position and the associated operation is the removal of the highlight
+        // also if the target is being dragged the highlight should be removed
+        if (index === 0 || self.down === true) {
+            self.lowlight();
+            return;
+        }
+
+        // retrieves the reference to the part name by using the index
+        // extracted from the masks image (typical strategy for retrieval)
+        var part = self.partsList[index - 1];
+        self.hiddenParts.indexOf(part) === -1 && self.highlight(part);
+    });
+
+    back.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
@@ -583,6 +809,12 @@ ripe.Configurator.prototype._registerHandlers = function() {
         subtree: false,
         characterData: true
     });
+
+    // adds handlers for the touch events so that they get
+    // parsed to mouse events for the configurator element,
+    // taking into account that there may be a touch handler
+    // already defined
+    ripe.touchHandler(this.element);
 };
 
 ripe.Configurator.prototype._parseDrag = function() {
@@ -634,4 +866,19 @@ ripe.Configurator.prototype._parseDrag = function() {
 
     var nextFrame = ripe.getFrameKey(nextView, nextPosition);
     this.changeFrame(nextFrame);
+};
+
+ripe.Configurator.prototype._getCanvasIndex = function(canvas, x, y) {
+    var canvasRealWidth = canvas.getBoundingClientRect().width;
+    var mask = this.element.querySelector(".mask");
+    var ratio = mask.width && canvasRealWidth && mask.width / canvasRealWidth;
+    x = parseInt(x * ratio);
+    y = parseInt(y * ratio);
+
+    var maskContext = mask.getContext("2d");
+    var pixel = maskContext.getImageData(x, y, 1, 1);
+    var r = pixel.data[0];
+    var index = parseInt(r);
+
+    return index;
 };

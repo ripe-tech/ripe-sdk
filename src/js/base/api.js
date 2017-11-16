@@ -132,3 +132,13 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     query += options.background ? "&background=" + options.background : "";
     return this.url + "compose?" + query;
 };
+
+ripe.Ripe.prototype._getMaskURL = function(options) {
+    options = options || {};
+    options.parts = options.parts || {};
+    var query = this._getQuery(options);
+    if (options.part) {
+        query += "&part=" + options.part;
+    }
+    return this.url + "mask?" + query;
+};
