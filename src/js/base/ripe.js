@@ -24,7 +24,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.currency = this.options.currency || null;
     this.format = this.options.format || "jpeg";
     this.backgroundColor = options.backgroundColor || "";
-    this.noPrice = this.options.noPrice || false;
+    this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = !this.noPrice;
     this.children = [];
     this.ready = false;

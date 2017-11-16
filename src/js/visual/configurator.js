@@ -21,6 +21,8 @@ ripe.Configurator.prototype.init = function() {
     this.interval = this.options.interval || 0;
     this.maskOpacity = this.options.maskOpacity || 0.4;
     this.maskDuration = this.options.maskDuration || 150;
+    this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
+    this.useMasks = !this.noMasks;
     this.ready = false;
 
     // creates a structure the store the last presented
@@ -28,6 +30,9 @@ ripe.Configurator.prototype.init = function() {
     // to a view for better user experience
     this._lastFrame = {};
 
+    // ues the owner to retrieve the complete set of frames
+    // that are available for the current model and runs
+    // the intial layout update operation on result
     this.owner.getFrames(function(frames) {
         this.frames = frames;
         this._initLayout();
@@ -232,6 +237,12 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
 };
 
 ripe.Configurator.prototype.highlight = function(part, options) {
+    // verifiers if masks are meant to be used for the current model
+    // and if that's not the case returns immediately
+    if (!this.useMasks) {
+        return;
+    }
+
     // captures the current context to be used by clojure callbacks
     var self = this;
 
@@ -290,6 +301,14 @@ ripe.Configurator.prototype.highlight = function(part, options) {
 };
 
 ripe.Configurator.prototype.lowlight = function(options) {
+    // verifiers if masks are meant to be used for the current model
+    // and if that's not the case returns immediately
+    if (!this.useMasks) {
+        return;
+    }
+
+    // retrieves the reference to the current front mask and removes
+    // the highlight associated classes from it and the configurator
     var frontMask = this.element.querySelector(".front-mask");
     frontMask.classList.remove("highlight");
     this.element.classList.remove("highlight");

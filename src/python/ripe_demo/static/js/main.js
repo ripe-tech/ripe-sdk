@@ -68,7 +68,9 @@ window.onload = function() {
         image.setFrame("9");
     });
 
-    var configurator = ripe.bindConfigurator(element);
+    var configurator = ripe.bindConfigurator(element, {
+        noMasks: false
+    });
 
     configurator.bind("loaded", function() {
         configurator.changeFrame("side-12", {
