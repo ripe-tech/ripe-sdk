@@ -20,7 +20,7 @@ ripe.Configurator.prototype.init = function() {
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.interval = this.options.interval || 0;
     this.maskOpacity = this.options.maskOpacity || 0.4;
-    this.maskDuration = this.options.maskDuration || 250;
+    this.maskDuration = this.options.maskDuration || 150;
     this.ready = false;
 
     // creates a structure the store the last presented
@@ -232,6 +232,9 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
 };
 
 ripe.Configurator.prototype.highlight = function(part, options) {
+    // captures the current context to be used by clojure callbacks
+    var self = this;
+
     // runs the default operation for the parameters that this
     // function receives
     options = options || {};
@@ -245,8 +248,8 @@ ripe.Configurator.prototype.highlight = function(part, options) {
     var size = this.element.dataset.size || this.size;
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
-    var maskOpacity = this.element.dataset.maskOpacity || this.maskOpacity;
-    var maskDuration = this.element.dataset.maskDuration || this.maskDuration;
+    var maskOpacity = this.element.dataset.mask_opacity || this.maskOpacity;
+    var maskDuration = this.element.dataset.mask_duration || this.maskDuration;
 
     // constructs the full URL of the mask image that is going to be
     // set for the current highlight operation (to be determined)
@@ -265,7 +268,6 @@ ripe.Configurator.prototype.highlight = function(part, options) {
         return;
     }
 
-    var self = this;
     var frontMaskLoad = function() {
         this.classList.add("loaded");
         this.classList.add("highlight");
