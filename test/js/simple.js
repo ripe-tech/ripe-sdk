@@ -6,7 +6,7 @@ describe("Ripe", function() {
     this.timeout(config.TEST_TIMEOUT);
 
     describe("#main", function() {
-        it("should instance and retrieve values", async() => {
+        it("should instance and retrieve values", async () => {
             var instance = new ripe.Ripe("myswear", "vyner");
             instance.load();
 
@@ -22,7 +22,7 @@ describe("Ripe", function() {
             assert.equal(result.total.country, "US");
             assert.equal(result.total.currency, "EUR");
         });
-        it("should instance and retrieve config", async() => {
+        it("should instance and retrieve config", async () => {
             var instance = new ripe.Ripe("myswear", "vyner");
             instance.load();
 
