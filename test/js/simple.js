@@ -9,7 +9,7 @@ describe("Ripe", function() {
         it("should instance and retrieve values", async () => {
             var instance = new ripe.Ripe("myswear", "vyner");
             instance.load();
- 
+
             await new Promise((resolve, reject) => {
                 instance.bind("parts", resolve);
             });
