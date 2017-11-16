@@ -323,6 +323,64 @@ ripe.frameNameHack = function(frame) {
     return position;
 };
 
+ripe.touchHandler = function(element, options) {
+    options = options || {};
+    var SAFE = options.safe === undefined ? true : options.safe;
+    var VALID = options.valid || ["DIV", "IMG", "SPAN", "CANVAS"];
+
+    var eventHandler = function(event) {
+        // retrieves the complete set of touches and uses
+        // only the first one for type reference
+        var touches = event.changedTouches;
+        var first = touches[0];
+        var type = "";
+
+        // switches over the type of touch event associating
+        // the proper equivalent mouse enve to each of them
+        switch (event.type) {
+            case "touchstart":
+                type = "mousedown";
+                break;
+
+            case "touchmove":
+                type = "mousemove";
+                break;
+
+            case "touchend":
+                type = "mouseup";
+                break;
+
+            default:
+                return;
+        }
+
+        // verifies if the current event is considered to be valid,
+        // this occurs if the target of the type of the target is
+        // considered to be valid according to the current rules
+        var isValid = VALID.indexOf(first.target.tagName) === -1;
+        if (SAFE && isValid) {
+            return;
+        }
+
+        // creates the new mouse event that will emulate the
+        // touch event that has just been raised, it should
+        // be completly equivalent to the original touch
+        var mouseEvent = document.createEvent("MouseEvent");
+        mouseEvent.initMouseEvent(type, true, true, window, 1, first.screenX,
+            first.screenY, first.clientX, first.clientY, false, false, false,
+            false, 0, null);
+
+        // dispatches the event to the original target of the
+        // touch event (pure emulation)
+        first.target.dispatchEvent(mouseEvent);
+    };
+
+    element.addEventListener("touchstart", eventHandler, true);
+    element.addEventListener("touchmove", eventHandler, true);
+    element.addEventListener("touchend", eventHandler, true);
+    element.addEventListener("touchcancel", eventHandler, true);
+};
+
 if (typeof require !== "undefined") {
     var base = require("./base");
     var compat = require("./compat");
@@ -996,7 +1054,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // binds the mousedown event on the element to prepare
     // it for drag movements
     var self = this;
-    this.element.addEventListener("mousedown touchstart", function(event) {
+    this.element.addEventListener("mousedown", function(event) {
         var _element = this;
         _element.dataset.view = _element.dataset.view || "side";
         self.base = _element.dataset.position || 0;
@@ -1009,7 +1067,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for mouseup events and if it occurs then
     // stops reacting to mouse move events has drag movements
-    this.element.addEventListener("mouseup touchend", function(event) {
+    this.element.addEventListener("mouseup", function(event) {
         var _element = this;
         self.down = false;
         self.percent = 0;
@@ -1019,7 +1077,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for mouse leave events and if it occurs then
     // stops reacting to mousemove events has drag movements
-    this.element.addEventListener("mouseleave touchend", function(event) {
+    this.element.addEventListener("mouseleave", function(event) {
         var _element = this;
         self.down = false;
         self.percent = 0;
@@ -1029,7 +1087,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
-    this.element.addEventListener("mousemove touchmove", function(event) {
+    this.element.addEventListener("mousemove", function(event) {
         var _element = this;
 
         if (_element.classList.contains("noDrag")) {
@@ -1040,6 +1098,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.mousePosY = event.pageY;
         down && self._parseDrag();
     });
+
+    ripe.touchHandler(this.element);
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer

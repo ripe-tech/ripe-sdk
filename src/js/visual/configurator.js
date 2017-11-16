@@ -517,7 +517,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // binds the mousedown event on the element to prepare
     // it for drag movements
     var self = this;
-    this.element.addEventListener("mousedown touchstart", function(event) {
+    this.element.addEventListener("mousedown", function(event) {
         var _element = this;
         _element.dataset.view = _element.dataset.view || "side";
         self.base = _element.dataset.position || 0;
@@ -530,7 +530,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for mouseup events and if it occurs then
     // stops reacting to mouse move events has drag movements
-    this.element.addEventListener("mouseup touchend", function(event) {
+    this.element.addEventListener("mouseup", function(event) {
         var _element = this;
         self.down = false;
         self.percent = 0;
@@ -540,7 +540,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for mouse leave events and if it occurs then
     // stops reacting to mousemove events has drag movements
-    this.element.addEventListener("mouseleave touchend", function(event) {
+    this.element.addEventListener("mouseleave", function(event) {
         var _element = this;
         self.down = false;
         self.percent = 0;
@@ -550,7 +550,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
-    this.element.addEventListener("mousemove touchmove", function(event) {
+    this.element.addEventListener("mousemove", function(event) {
         var _element = this;
 
         if (_element.classList.contains("noDrag")) {
@@ -561,6 +561,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.mousePosY = event.pageY;
         down && self._parseDrag();
     });
+
+    ripe.touchHandler(this.element);
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
