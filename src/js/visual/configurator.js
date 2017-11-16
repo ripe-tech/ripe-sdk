@@ -18,8 +18,8 @@ ripe.Configurator.prototype.init = function() {
     this.maxSize = this.options.maxSize || 1000;
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
-    this.ready = false;
     this.interval = this.options.interval || 0;
+    this.ready = false;
 
     // creates a structure the store the last presented
     // position of each view, to be used when returning
@@ -33,17 +33,13 @@ ripe.Configurator.prototype.init = function() {
         this.update();
     }.bind(this));
 
-    // creates a set of sorted parts to be
-    // used on the highlight operation
+    // creates a set of sorted parts to be used on the
+    // highlight operation (considers only the default ones)
     this.partsList = [];
     this.owner.getConfig(function(config) {
         var defaults = config.defaults;
         this.hiddenParts = config.hidden;
-        this.partsList = [];
-        for (var part in defaults) {
-            var partValue = defaults[part];
-            this.partsList.push(part);
-        }
+        this.partsList = Object.keys(defaults);
         this.partsList.sort();
     }.bind(this));
 
@@ -239,18 +235,17 @@ ripe.Configurator.prototype.highlight = function(part, options) {
     this.element.classList.add("highlight");
 
     // determines the current position of the configurator so that
-    // the proper mask url may be created and properly loaded
+    // the proper mask URL may be created and properly loaded
     var view = this.element.dataset.view;
     var position = this.element.dataset.position;
     var frame = ripe.getFrameKey(view, position);
     options = options || {};
-    var format = options.format || this.format;
     var backgroundColor = options.backgroundColor || this.backgroundColor;
     var size = this.element.dataset.size || this.size;
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
 
-    // constructs the full url of the mask image that is going to be
+    // constructs the full URL of the mask image that is going to be
     // set for the current highlight operation (to be determined)
     var url = this.owner._getMaskURL({
         frame: ripe.frameNameHack(frame),
@@ -395,10 +390,10 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
     var maskImage = masksBuffer.querySelector("img[data-frame='" + String(frame) + "']");
     image = image || front;
 
-    // constructs the url for the mask and updates it
+    // constructs the URL for the mask and updates it
     this._loadMask(maskImage, view, position, options);
 
-    // builds the url that will be set on the image
+    // builds the URL that will be set on the image
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size,
@@ -448,7 +443,7 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
 };
 
 ripe.Configurator.prototype._loadMask = function(maskImage, view, position, options) {
-    // constructs the url for the mask and then at the end of the
+    // constructs the URL for the mask and then at the end of the
     // mask loading process runs the final update of the mask canvas
     // operation that will allow new highlight and selection operation
     // to be performed according to the new frame value
@@ -456,9 +451,8 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     if (maskImage.dataset.src) {
         setTimeout(function() {
             self._drawMask(maskImage);
-        }.bind(this), 150);
+        }, 150);
     } else {
-        var format = options.format || this.format;
         var backgroundColor = options.backgroundColor || this.backgroundColor;
         var size = this.element.dataset.size || this.size;
         var width = size || this.element.dataset.width || this.width;
@@ -488,7 +482,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
 
 ripe.Configurator.prototype._drawMask = function(maskImage) {
     var mask = this.element.querySelector(".mask");
-    maskContext = mask.getContext("2d");
+    var maskContext = mask.getContext("2d");
     maskContext.clearRect(0, 0, mask.width, mask.height);
     maskContext.drawImage(maskImage, 0, 0, mask.width, mask.height);
 };
