@@ -23,7 +23,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
     this.format = this.options.format || "jpeg";
-    this.backgroundColor = options.backgroundColor || "";
+    this.backgroundColor = this.options.backgroundColor || "";
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = !this.noPrice;
     this.children = [];
