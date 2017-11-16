@@ -19,6 +19,8 @@ ripe.Configurator.prototype.init = function() {
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.interval = this.options.interval || 0;
+    this.maskOpacity = this.options.maskOpacity || 0.4;
+    this.maskDuration = this.options.maskDuration || 250;
     this.ready = false;
 
     // creates a structure the store the last presented
@@ -230,20 +232,21 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
 };
 
 ripe.Configurator.prototype.highlight = function(part, options) {
-    // adds the highlight class to the current target configurator meaning
-    // that the front mask is currently active and showing info
-    this.element.classList.add("highlight");
+    // runs the default operation for the parameters that this
+    // function receives
+    options = options || {};
 
     // determines the current position of the configurator so that
     // the proper mask URL may be created and properly loaded
     var view = this.element.dataset.view;
     var position = this.element.dataset.position;
     var frame = ripe.getFrameKey(view, position);
-    options = options || {};
     var backgroundColor = options.backgroundColor || this.backgroundColor;
     var size = this.element.dataset.size || this.size;
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
+    var maskOpacity = this.element.dataset.maskOpacity || this.maskOpacity;
+    var maskDuration = this.element.dataset.maskDuration || this.maskDuration;
 
     // constructs the full URL of the mask image that is going to be
     // set for the current highlight operation (to be determined)
@@ -277,7 +280,11 @@ ripe.Configurator.prototype.highlight = function(part, options) {
 
     var animationId = frontMask.dataset.animation_id;
     cancelAnimationFrame(animationId);
-    ripe.animateProperty(frontMask, "opacity", 0, 0.4, 250);
+    ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration);
+
+    // adds the highlight class to the current target configurator meaning
+    // that the front mask is currently active and showing info
+    this.element.classList.add("highlight");
 };
 
 ripe.Configurator.prototype.lowlight = function(options) {

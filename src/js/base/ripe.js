@@ -23,11 +23,15 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
     this.format = this.options.format || "jpeg";
-    this.backgroundColor = options.backgroundColor ? options.backgroundColor.replace("#", "") : "";
+    this.backgroundColor = options.backgroundColor || "";
     this.noPrice = this.options.noPrice || false;
     this.usePrice = !this.noPrice;
     this.children = [];
     this.ready = false;
+
+    // runs the background color normalization process that removes
+    // the typical cardinal character from the definition
+    this.backgroundColor = this.backgroundColor.replace("#", "");
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
