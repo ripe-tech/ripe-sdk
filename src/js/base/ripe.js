@@ -33,22 +33,14 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && !this.options.noDefaults;
-    if (loadDefaults) {
-        this.getDefaults(function(result) {
-            this.parts = result;
-            this.ready = true;
-            this.update();
-            this.trigger("parts", this.parts);
-        }.bind(this));
-    } else {
-        this.parts = this.options.parts;
-        setTimeout(function() {
-            this.parts = result;
-            this.ready = true;
-            this.update();
-            this.trigger("parts", this.parts);
-        }.bind(this));
-    }
+    var loadParts = loadDefaults ? this.getDefaults : setTimeout;
+    loadParts(function(result) {
+        result = result || this.parts;
+        this.parts = result;
+        this.ready = true;
+        this.update();
+        this.trigger("parts", this.parts);
+    }.bind(this));
 
     // tries to determine if the combinations available should be
     // loaded for the current model and if that's the case start the
