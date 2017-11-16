@@ -66,15 +66,14 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-ripe.Mobile = ripe.Mobile || {};
+ripe.touchHandler = function(element, options) {
+    if (typeof Mobile !== "undefined" && Mobile.touchHandler) {
+        return;
+    }
 
-ripe.Mobile.SAFE = true;
-ripe.Mobile.VALID = ["DIV", "IMG", "SPAN", "CANVAS"];
-
-ripe.Mobile.touchHandler = function(element, options) {
     options = options || {};
-    var SAFE = options.safe === undefined ? true : ripe.Mobile.SAFE;
-    var VALID = options.valid || ripe.Mobile.VALID;
+    var SAFE = options.safe === undefined ? true : options.safe;
+    var VALID = options.valid || ["DIV", "IMG", "SPAN", "CANVAS"];
 
     var eventHandler = function(event) {
         // retrieves the complete set of touches and uses
@@ -1113,7 +1112,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // parsed to mouse events for the configurator element,
     // taking into account that there may be a touch handler
     // already defined
-    Mobile && Mobile.touchHandler || ripe.Mobile.touchHandler(this.element);
+    ripe.touchHandler(this.element);
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
