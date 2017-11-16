@@ -566,7 +566,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // parsed to mouse events for the configurator element,
     // taking into account that there may be a touch handler
     // already defined
-    Mobile && Mobile.touchHandler || ripe.touchHandler(this.element);
+    Mobile && Mobile.touchHandler || ripe.Mobile.touchHandler(this.element);
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
