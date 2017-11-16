@@ -642,6 +642,14 @@ ripe.Configurator.prototype._preload = function(useChain) {
 };
 
 ripe.Configurator.prototype._registerHandlers = function() {
+    // captures the current context to be used inside clojures
+    var self = this;
+
+    // retrieves the reference to the multiple elements that
+    // are going to be used for event handler operations
+    var area = this.element.querySelector(".area");
+    var back = this.element.querySelector(".back");
+
     // registes for the selected part event on the owner
     // so that we can highlight the associated part
     this.owner.bind("selected_part", function(part) {
@@ -650,7 +658,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // binds the mousedown event on the element to prepare
     // it for drag movements
-    var self = this;
     this.element.addEventListener("mousedown", function(event) {
         var _element = this;
         _element.dataset.view = _element.dataset.view || "side";
@@ -697,30 +704,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
         down && self._parseDrag();
     });
 
-    // adds handlers for the touch events so that they get
-    // parsed to mouse events for the configurator element,
-    // taking into account that there may be a touch handler
-    // already defined
-    ripe.touchHandler(this.element);
-
-    // listens for attribute changes to redraw the configurator
-    // if needed, this makes use of the mutation observer
-    var Observer = MutationObserver || WebKitMutationObserver;
-    var observer = Observer ? new Observer(function(mutations) {
-        for (var index = 0; index < mutations.length; index++) {
-            var mutation = mutations[index];
-            mutation.type === "style" && self.resize();
-            mutation.type === "attributes" && self.update();
-        }
-    }) : null;
-    observer && observer.observe(this.element, {
-        attributes: true,
-        subtree: false,
-        characterData: true
-    });
-
-    var area = this.element.querySelector(".area");
-    var back = this.element.querySelector(".back");
     area.addEventListener("click", function(event) {
         var move = self.element.classList.contains("move");
         if (move) {
@@ -808,6 +791,28 @@ ripe.Configurator.prototype._registerHandlers = function() {
     back.addEventListener("dragstart", function(event) {
         event.preventDefault();
     });
+
+    // listens for attribute changes to redraw the configurator
+    // if needed, this makes use of the mutation observer
+    var Observer = MutationObserver || WebKitMutationObserver;
+    var observer = Observer ? new Observer(function(mutations) {
+        for (var index = 0; index < mutations.length; index++) {
+            var mutation = mutations[index];
+            mutation.type === "style" && self.resize();
+            mutation.type === "attributes" && self.update();
+        }
+    }) : null;
+    observer && observer.observe(this.element, {
+        attributes: true,
+        subtree: false,
+        characterData: true
+    });
+
+    // adds handlers for the touch events so that they get
+    // parsed to mouse events for the configurator element,
+    // taking into account that there may be a touch handler
+    // already defined
+    ripe.touchHandler(this.element);
 };
 
 ripe.Configurator.prototype._parseDrag = function() {
