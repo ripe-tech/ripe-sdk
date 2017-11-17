@@ -100,7 +100,7 @@ ripe.load();
 
 Whenever you want to set a new image frame, you only have to call `setFrame` function.
 ```javascript
-    image.setFrame("side-3");
+image.setFrame("side-3");
 ```
 
 ## 4. Product customization
