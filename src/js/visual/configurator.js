@@ -209,7 +209,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
     // if the frame change is animated and preventDrag is true
     // then ignores drag movements until the animation is finished
     preventDrag = preventDrag && (animate || duration);
-    preventDrag && this.element.classList.add("noDrag");
+    preventDrag && this.element.classList.add("noDrag", "animating");
 
     var newFrame = ripe.getFrameKey(
         this.element.dataset.view,
@@ -225,7 +225,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
             // otherwise waits the provided interval and
             // proceeds to the next step
             if (!animated || stepPosition === nextPosition) {
-                preventDrag && this.element.classList.remove("noDrag");
+                preventDrag && this.element.classList.remove("noDrag", "animating");
             } else {
                 var timeout = animate ? 0 : stepDuration;
                 setTimeout(function() {
@@ -688,7 +688,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.referenceY = event.pageY;
         self.percent = 0;
         _element.classList.add("drag");
-        _element.classList.remove("move");
     });
 
     // listens for mouseup events and if it occurs then
@@ -699,7 +698,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.percent = 0;
         self.previous = self.percent;
         _element.classList.remove("drag");
-        _element.classList.remove("move");
     });
 
     // listens for mouse leave events and if it occurs then
@@ -710,7 +708,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
         self.percent = 0;
         self.previous = self.percent;
         _element.classList.remove("drag");
-        _element.classList.remove("move");
     });
 
     // if a mouse move event is triggered while the mouse is
@@ -726,8 +723,9 @@ ripe.Configurator.prototype._registerHandlers = function() {
     });
 
     area.addEventListener("click", function(event) {
-        var move = self.element.classList.contains("move");
-        if (move) {
+        var preloading = self.element.classList.contains("preloading");
+        var animating = self.element.classList.contains("animating");
+        if (preloading || animating) {
             return;
         }
         event = ripe.fixEvent(event);
@@ -744,8 +742,9 @@ ripe.Configurator.prototype._registerHandlers = function() {
     });
 
     area.addEventListener("mousemove", function(event) {
-        var drag = this.classList.contains("drag");
-        if (drag) {
+        var preloading = self.element.classList.contains("preloading");
+        var animating = self.element.classList.contains("animating");
+        if (preloading || animating) {
             return;
         }
         event = ripe.fixEvent(event);
@@ -770,8 +769,9 @@ ripe.Configurator.prototype._registerHandlers = function() {
     });
 
     back.addEventListener("click", function(event) {
-        var move = self.element.classList.contains("move");
-        if (move) {
+        var preloading = self.element.classList.contains("preloading");
+        var animating = self.element.classList.contains("animating");
+        if (preloading || animating) {
             return;
         }
         event = ripe.fixEvent(event);
@@ -788,8 +788,9 @@ ripe.Configurator.prototype._registerHandlers = function() {
     });
 
     back.addEventListener("mousemove", function(event) {
-        var drag = this.classList.contains("drag");
-        if (drag) {
+        var preloading = self.element.classList.contains("preloading");
+        var animating = self.element.classList.contains("animating");
+        if (preloading || animating) {
             return;
         }
         event = ripe.fixEvent(event);
