@@ -197,7 +197,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
-    this.usePrice = !this.noPrice;
+    this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.children = [];
     this.ready = false;
 
@@ -602,7 +602,7 @@ ripe.Configurator.prototype.init = function() {
     this.maskOpacity = this.options.maskOpacity || 0.4;
     this.maskDuration = this.options.maskDuration || 150;
     this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
-    this.useMasks = !this.noMasks;
+    this.useMasks = this.options.useMasks === undefined ? !this.noMasks : this.options.useMasks;
     this.ready = false;
 
     // creates a structure the store the last presented

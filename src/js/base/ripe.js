@@ -25,7 +25,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
-    this.usePrice = !this.noPrice;
+    this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.children = [];
     this.ready = false;
 
