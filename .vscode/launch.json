@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [{
+        "name": "Python",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceRoot}/src/python/ripe_demo/main.py",
+        "debugOptions": [
+            "WaitOnAbnormalExit",
+            "WaitOnNormalExit",
+            "RedirectOutput"
+        ],
+        "env": {
+            "PYTHONPATH": "${workspaceRoot}/src/python/ripe_demo:{env.PYTHONPATH}"
+        }
+    }]
+}
