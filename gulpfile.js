@@ -27,7 +27,7 @@ gulp.task("build-js", () => {
         .pipe(size({
             gzip: true
         }))
-        .pipe(gulp.dest("./dist"))
+        .pipe(gulp.dest("dist"))
         .pipe(count("## js files copied"));
 });
 
