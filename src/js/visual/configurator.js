@@ -55,11 +55,11 @@ ripe.Configurator.prototype.init = function() {
     });
 
     this.owner.bind("selected_part", function(part) {
-        this.highlight(part);
+        this.highlightPart(part);
     }.bind(this));
 
     this.owner.bind("deselected_part", function(part) {
-        this.lowlight();
+        this.lowlightPart();
     }.bind(this));
 };
 
@@ -236,7 +236,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
     });
 };
 
-ripe.Configurator.prototype.highlight = function(part, options) {
+ripe.Configurator.prototype.highlightPart = function(part, options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -300,7 +300,7 @@ ripe.Configurator.prototype.highlight = function(part, options) {
     this.element.classList.add("highlight");
 };
 
-ripe.Configurator.prototype.lowlight = function(options) {
+ripe.Configurator.prototype.lowlightPart = function(options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -674,7 +674,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // registes for the selected part event on the owner
     // so that we can highlight the associated part
     this.owner.bind("selected_part", function(part) {
-        this.highlight(part);
+        this.highlightPart(part);
     }.bind(this));
 
     // binds the mousedown event on the element to prepare
@@ -737,7 +737,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         var part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.owner.select(part);
+        self.hiddenParts.indexOf(part) === -1 && self.owner.selectPart(part);
         event.stopPropagation();
     });
 
@@ -754,14 +754,14 @@ ripe.Configurator.prototype._registerHandlers = function() {
         // position and the associated operation is the removal of the highlight
         // also if the target is being dragged the highlight should be removed
         if (index === 0 || self.down === true) {
-            self.lowlight();
+            self.lowlightPart();
             return;
         }
 
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         var part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.highlight(part);
+        self.hiddenParts.indexOf(part) === -1 && self.highlightPart(part);
     });
 
     area.addEventListener("dragstart", function(event) {
@@ -783,7 +783,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         var part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.owner.select(part);
+        self.hiddenParts.indexOf(part) === -1 && self.owner.selectPart(part);
         event.stopPropagation();
     });
 
@@ -800,14 +800,14 @@ ripe.Configurator.prototype._registerHandlers = function() {
         // position and the associated operation is the removal of the highlight
         // also if the target is being dragged the highlight should be removed
         if (index === 0 || self.down === true) {
-            self.lowlight();
+            self.lowlightPart();
             return;
         }
 
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         var part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.highlight(part);
+        self.hiddenParts.indexOf(part) === -1 && self.highlightPart(part);
     });
 
     back.addEventListener("dragstart", function(event) {
