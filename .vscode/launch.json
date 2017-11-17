@@ -4,6 +4,7 @@
         "name": "Python",
         "type": "python",
         "request": "launch",
+        "pythonPath": "${config:python.pythonPath}",
         "program": "${workspaceRoot}/src/python/ripe_demo/main.py",
         "debugOptions": [
             "WaitOnAbnormalExit",
