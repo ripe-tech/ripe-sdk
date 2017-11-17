@@ -789,7 +789,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
     // if the frame change is animated and preventDrag is true
     // then ignores drag movements until the animation is finished
     preventDrag = preventDrag && (animate || duration);
-    preventDrag && this.element.classList.add("noDrag", "animating");
+    preventDrag && this.element.classList.add("no-drag", "animating");
 
     var newFrame = ripe.getFrameKey(
         this.element.dataset.view,
@@ -805,7 +805,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
             // otherwise waits the provided interval and
             // proceeds to the next step
             if (!animated || stepPosition === nextPosition) {
-                preventDrag && this.element.classList.remove("noDrag", "animating");
+                preventDrag && this.element.classList.remove("no-drag", "animating");
             } else {
                 var timeout = animate ? 0 : stepDuration;
                 setTimeout(function() {
@@ -1179,10 +1179,10 @@ ripe.Configurator.prototype._preload = function(useChain) {
         // allowed again and the loaded event is triggered
         if (pending.length > 0) {
             self.element.classList.add("preloading");
-            self.element.classList.add("noDrag");
+            self.element.classList.add("no-drag");
         } else if (work.length === 0) {
             self.element.classList.remove("preloading");
-            self.element.classList.remove("noDrag");
+            self.element.classList.remove("no-drag");
             self.trigger("loaded");
         }
     };
@@ -1235,7 +1235,7 @@ ripe.Configurator.prototype._preload = function(useChain) {
     // starts the render process after a timeout
     work.length > 0 && this.element.classList.add("preloading");
     if (work.length > 0) {
-        this.element.classList.add("noDrag");
+        this.element.classList.add("no-drag");
         setTimeout(function() {
             render();
         }, 250);
@@ -1293,7 +1293,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
     this.element.addEventListener("mousemove", function(event) {
-        if (this.classList.contains("noDrag")) {
+        if (this.classList.contains("no-drag")) {
             return;
         }
         var down = self.down;
