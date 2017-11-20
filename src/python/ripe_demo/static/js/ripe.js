@@ -209,7 +209,9 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && !this.options.noDefaults;
-    var loadParts = loadDefaults ? this.getDefaults : setTimeout;
+    var loadParts = loadDefaults ? this.getDefaults : function(callback) {
+        setTimeout(callback);
+    };
     loadParts.call(this, function(result) {
         result = result || this.parts;
         this.parts = result;
