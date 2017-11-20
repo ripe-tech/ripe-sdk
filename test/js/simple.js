@@ -42,11 +42,24 @@ describe("Ripe", function() {
                 instance.bind("parts", resolve);
             });
 
-            var result = await new Promise((resolve, reject) => {
+            result = await new Promise((resolve, reject) => {
                 instance.getConfig(resolve);
             });
 
             assert.equal(result.hidden.indexOf("shadow") !== -1, true);
+        });
+        it("should instance with custom options", async () => {
+            var instance = new ripe.Ripe("myswear", "vyner", {
+                noDefaults: true,
+                noCombinations: true
+            });
+            instance.load();
+
+            await new Promise((resolve, reject) => {
+                instance.bind("parts", resolve);
+            });
+
+            assert.equal(Object.keys(instance.parts).length, 0);
         });
     });
 });
