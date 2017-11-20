@@ -144,8 +144,8 @@ This element supports the following methods:
 | Method | Params | Description |
 | --- | --- | --- |
 | `changeFrame` | <ul><li>`frame` *(string), named frame defined in the "view-position" format. Eg.: "side-0"*</li><li>`options` *(JSON object with optional fields)*:  `duration`: *(number)* total duration, in milliseconds, of the animation; `type`: *(string)* the animation style you want, wich can be "simple" (fade in), "cross" (crossfade) or null (without any style)*; `preventDrag`: *(boolean)* to choose if drag actions during an animated change of frames should be ignored. "True" by default</li></ul> | displays a new frame, with an animation from the starting frame |
-| `highlightPart` | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul> | highlights a product's part |
-| `lowlightPart` | <ul><li>`options` *(JSON object with optional fields)*</li></ul> | removes any highlight from the product |
+| `highlight` | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul> | highlights a product's part |
+| `lowlight` | <ul><li>`options` *(JSON object with optional fields)*</li></ul> | removes any highlight from the product |
 | `selectPart` | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul> | selects a given product's part |
 | `deselectPart` | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul> | removes selection from a given product's part |
 
