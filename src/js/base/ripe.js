@@ -128,11 +128,11 @@ ripe.Ripe.prototype.bindInteractable = function(child) {
     return child;
 };
 
-ripe.Ripe.prototype.selectPart = function(part) {
+ripe.Ripe.prototype.selectPart = function(part, options) {
     this.trigger("selected_part", part);
 };
 
-ripe.Ripe.prototype.deselectPart = function(part) {
+ripe.Ripe.prototype.deselectPart = function(part, options) {
     this.trigger("deselected_part", part);
 };
 

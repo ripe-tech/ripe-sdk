@@ -300,11 +300,11 @@ ripe.Ripe.prototype.bindInteractable = function(child) {
     return child;
 };
 
-ripe.Ripe.prototype.selectPart = function(part) {
+ripe.Ripe.prototype.selectPart = function(part, options) {
     this.trigger("selected_part", part);
 };
 
-ripe.Ripe.prototype.deselectPart = function(part) {
+ripe.Ripe.prototype.deselectPart = function(part, options) {
     this.trigger("deselected_part", part);
 };
 
@@ -1317,7 +1317,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         var part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.owner.select(part);
+        self.hiddenParts.indexOf(part) === -1 && self.owner.selectPart(part);
         event.stopPropagation();
     });
 
@@ -1363,7 +1363,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         var part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.owner.select(part);
+        self.hiddenParts.indexOf(part) === -1 && self.owner.selectPart(part);
         event.stopPropagation();
     });
 
