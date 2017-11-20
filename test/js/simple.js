@@ -7,6 +7,8 @@ describe("Ripe", function() {
 
     describe("#main", function() {
         it("should instance and retrieve values", async () => {
+            var result = null;
+
             var instance = new ripe.Ripe("myswear", "vyner");
             instance.load();
 
@@ -14,7 +16,15 @@ describe("Ripe", function() {
                 instance.bind("parts", resolve);
             });
 
-            var result = await new Promise((resolve, reject) => {
+            result = await new Promise((resolve, reject) => {
+                instance.bind("price", resolve);
+            });
+
+            assert.equal(result.total.price_final > 0.0, true);
+            assert.equal(result.total.country, "US");
+            assert.equal(result.total.currency, "EUR");
+
+            result = await new Promise((resolve, reject) => {
                 instance.getPrice(resolve);
             });
 
@@ -23,6 +33,8 @@ describe("Ripe", function() {
             assert.equal(result.total.currency, "EUR");
         });
         it("should instance and retrieve config", async () => {
+            var result = null;
+
             var instance = new ripe.Ripe("myswear", "vyner");
             instance.load();
 
