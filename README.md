@@ -187,6 +187,18 @@ configurator.bind("loaded", function() {
 | `usePrice` | *boolean* | Enables the fetch price feature everytime a new part is set. True by default. | //calcular o preço
 | `variant` | *string* | Variant of the customizable product |
 
+## Browser Support
+Desktop:
+* Chrome 23 (V8)
+* Firefox 21 (SpiderMonkey)
+* Safari 6 (Nitro)
+* Opera 12 (V8)
+* IE 11 (Chakra)
+
+Mobile:
+* Android 4.4
+* iOS 9
+
 ## License
 
 RIPE SDK is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
