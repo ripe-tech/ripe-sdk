@@ -188,6 +188,7 @@ configurator.bind("loaded", function() {
 | `variant` | *string* | Variant of the customizable product |
 
 ## Browser Support
+
 Desktop:
 * ≥ Chrome v23 (V8)
 * ≥ Firefox v21 (SpiderMonkey)
