@@ -189,15 +189,15 @@ configurator.bind("loaded", function() {
 
 ## Browser Support
 Desktop:
-* Chrome 23 (V8)
-* Firefox 21 (SpiderMonkey)
-* Safari 6 (Nitro)
-* Opera 12 (V8)
-* IE 11 (Chakra)
+* Chrome ≥v23 (V8)
+* Firefox ≥v21 (SpiderMonkey)
+* Safari ≥v6 (Nitro)
+* Opera ≥v12 (V8)
+* IE ≥v11 (Chakra)
 
 Mobile:
-* Android 4.4
-* iOS 9
+* Android  ≥4.4
+* iOS's WebKit ≥9
 
 ## License
 
