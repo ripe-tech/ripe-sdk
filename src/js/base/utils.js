@@ -48,6 +48,14 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     frame();
 };
 
+ripe.getTripletKey = function(part, material, color, token) {
+    token = token || ":";
+    part = part || "";
+    material = material || "";
+    color = color || "";
+    return part + token + material + token + color;
+};
+
 ripe.getFrameKey = function(view, position, token) {
     token = token || "-";
     return view + token + position;
