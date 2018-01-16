@@ -41,7 +41,7 @@
         <div id="footer" class="footer">
             {% block footer %}
                 <div class="footer-container">
-                    <span>&copy; 2008-2017 PLATFORME</span>
+                    <span>&copy; 2008-2018 PLATFORME</span>
                 </div>
             {% endblock %}
         </div>
