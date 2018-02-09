@@ -6,7 +6,7 @@ if (typeof module !== "undefined") {
     };
 }
 
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("./base");
     var ripe = base.ripe;
 }
@@ -45,7 +45,7 @@ if (typeof module !== "undefined") {
     };
 }
 
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("./base");
     var ripe = base.ripe;
 }
@@ -61,7 +61,7 @@ ripe.Interactable.prototype.init = function() {};
 
 ripe.Interactable.prototype.update = function(state) {};
 
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("./base");
     var ripe = base.ripe;
 }
@@ -128,7 +128,7 @@ ripe.touchHandler = function(element, options) {
     element.addEventListener("touchcancel", eventHandler, true);
 };
 
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("./base");
     var ripe = base.ripe;
 }
@@ -170,7 +170,7 @@ ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
 ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
 
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("./base");
     require("./observable");
     var ripe = base.ripe;
@@ -337,7 +337,7 @@ ripe.Ripe.prototype.update = function(state) {
 
 var Ripe = ripe.Ripe;
 
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("./base");
     var ripe = base.ripe;
 }
@@ -420,7 +420,7 @@ ripe.fixEvent = function(event) {
     return event;
 };
 
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("./base");
     var compat = require("./compat");
     require("./ripe");
@@ -565,7 +565,7 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     return this.url + "mask?" + query;
 };
 
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("../base");
     var ripe = base.ripe;
 }
@@ -584,7 +584,7 @@ ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
 
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("../base");
     require("./visual");
     var ripe = base.ripe;
@@ -1488,7 +1488,7 @@ ripe.Configurator.prototype._getCanvasIndex = function(canvas, x, y) {
     return index;
 };
 
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("../base");
     require("./visual");
     var ripe = base.ripe;

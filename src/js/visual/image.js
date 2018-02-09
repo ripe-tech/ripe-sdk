@@ -1,4 +1,4 @@
-if (typeof require !== "undefined") {
+if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("../base");
     require("./visual");
     var ripe = base.ripe;
