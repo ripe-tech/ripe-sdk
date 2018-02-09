@@ -862,6 +862,7 @@ ripe.Configurator.prototype.highlight = function(part, options) {
     var frontMask = this.element.querySelector(".front-mask");
     var src = frontMask.getAttribute("src");
     if (src === url) {
+        this.element.classList.add("highlight");
         return;
     }
 
