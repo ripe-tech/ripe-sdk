@@ -262,6 +262,10 @@ ripe.Configurator.prototype.highlight = function(part, options) {
     var maskOpacity = this.element.dataset.mask_opacity || this.maskOpacity;
     var maskDuration = this.element.dataset.mask_duration || this.maskDuration;
 
+    // adds the highlight class to the current target configurator meaning
+    // that the front mask is currently active and showing info
+    this.element.classList.add("highlight");
+
     // constructs the full URL of the mask image that is going to be
     // set for the current highlight operation (to be determined)
     var url = this.owner._getMaskURL({
@@ -278,7 +282,6 @@ ripe.Configurator.prototype.highlight = function(part, options) {
     if (src === url) {
         return;
     }
-
     var frontMaskLoad = function() {
         this.classList.add("loaded");
         this.classList.add("highlight");
@@ -294,10 +297,6 @@ ripe.Configurator.prototype.highlight = function(part, options) {
     var animationId = frontMask.dataset.animation_id;
     cancelAnimationFrame(animationId);
     ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration);
-
-    // adds the highlight class to the current target configurator meaning
-    // that the front mask is currently active and showing info
-    this.element.classList.add("highlight");
 };
 
 ripe.Configurator.prototype.lowlight = function(options) {
