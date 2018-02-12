@@ -14,6 +14,10 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
+    this.initials = this.options.initials;
+    this.profile = this.options.profile || null;
+    this.updateInitials = this.options.updateInitials || false;
+
     this._registerHandlers();
 };
 
@@ -23,11 +27,17 @@ ripe.Image.prototype.update = function(state) {
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
 
+    this.initials = this.updateInitials ? state.initials : this.initials;
+    var initials = this.element.dataset.initials || this.initials;
+    var profile = this.element.dataset.profile || this.profile;
+
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size,
         width: width,
-        height: height
+        height: height,
+        initials: initials,
+        profile: profile
     });
     if (this.element.src === url) {
         return;
@@ -39,6 +49,16 @@ ripe.Image.prototype.update = function(state) {
 
 ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
+    this.update();
+};
+
+ripe.Image.prototype.setInitials = function(initials, options) {
+    this.initials = initials;
+    this.update();
+};
+
+ripe.Image.prototype.setProfile = function(profile, options) {
+    this.profile = profile;
     this.update();
 };
 

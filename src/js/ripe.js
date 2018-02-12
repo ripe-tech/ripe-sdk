@@ -192,6 +192,8 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.variant = this.options.variant || null;
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.parts = this.options.parts || {};
+    this.initials = "";
+    this.engraving = null;
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
     this.format = this.options.format || "jpeg";
@@ -271,6 +273,16 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     this.trigger("parts", this.parts);
 };
 
+ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
+    this.initials = initials;
+    this.engraving = engraving;
+
+    if (noUpdate) {
+        return;
+    }
+    this.update();
+};
+
 ripe.Ripe.prototype.getFrames = function(callback) {
     if (this.options.frames) {
         callback(this.options.frames);
@@ -316,7 +328,9 @@ ripe.Ripe.prototype.deselectPart = function(part, options) {
 
 ripe.Ripe.prototype._getState = function() {
     return {
-        parts: this.parts
+        parts: this.parts,
+        engraving: this.engraving,
+        initials: this.initials
     };
 };
 
@@ -552,6 +566,11 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     query += options.height ? "&height=" + options.height : "";
     query += options.size ? "&size=" + options.size : "";
     query += options.background ? "&background=" + options.background : "";
+    query += options.profile ? "&initials_profile=" + options.profile : "";
+
+    var initials = options.initials === "" ? "$empty" : options.initials;
+    query += initials ? "&initials=" + initials : "";
+
     return this.url + "compose?" + query;
 };
 
@@ -1504,6 +1523,10 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
+    this.initials = this.options.initials;
+    this.profile = this.options.profile || null;
+    this.updateInitials = this.options.updateInitials || false;
+
     this._registerHandlers();
 };
 
@@ -1513,11 +1536,17 @@ ripe.Image.prototype.update = function(state) {
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
 
+    this.initials = this.updateInitials ? state.initials : this.initials;
+    var initials = this.element.dataset.initials || this.initials;
+    var profile = this.element.dataset.profile || this.profile;
+
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size,
         width: width,
-        height: height
+        height: height,
+        initials: initials,
+        profile: profile
     });
     if (this.element.src === url) {
         return;
@@ -1529,6 +1558,16 @@ ripe.Image.prototype.update = function(state) {
 
 ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
+    this.update();
+};
+
+ripe.Image.prototype.setInitials = function(initials, options) {
+    this.initials = initials;
+    this.update();
+};
+
+ripe.Image.prototype.setProfile = function(profile, options) {
+    this.profile = profile;
     this.update();
 };
 
