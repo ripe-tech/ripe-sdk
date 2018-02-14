@@ -27,19 +27,19 @@ ripe.Image.prototype.update = function(state) {
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
 
-    this.initials = this.updateInitials ? state.initials : this.initials;
-    this.profile = this.updateInitials ? state.profile : this.profile;
+    this.initials = this.updateInitials && state ? state.initials : this.initials;
+    this.profile = this.updateInitials && state ? state.profile : this.profile;
 
     this.initials = this.element.dataset.initials || this.initials;
-    profile = this.element.dataset.profile || this.profile;
+    this.profile = this.element.dataset.profile || this.profile;
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size,
         width: width,
         height: height,
-        initials: initials,
-        profile: profile
+        initials: this.initials,
+        profile: this.profile
     });
     if (this.element.src === url) {
         return;
