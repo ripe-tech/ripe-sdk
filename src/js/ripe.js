@@ -193,7 +193,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.parts = this.options.parts || {};
     this.initials = "";
-    this.engraving = null;
+    this.profile = null;
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
     this.format = this.options.format || "jpeg";
@@ -273,9 +273,9 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     this.trigger("parts", this.parts);
 };
 
-ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
+ripe.Ripe.prototype.setInitials = function(initials, profile, noUpdate) {
     this.initials = initials;
-    this.engraving = engraving;
+    this.profile = profile;
 
     if (noUpdate) {
         return;
@@ -329,8 +329,8 @@ ripe.Ripe.prototype.deselectPart = function(part, options) {
 ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts,
-        engraving: this.engraving,
-        initials: this.initials
+        initials: this.initials,
+        profile: this.profile,
     };
 };
 
@@ -496,7 +496,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
     var variant = options.variant || this.variant;
     var frame = options.frame || this.frame;
     var parts = options.parts || this.parts;
-    var engraving = options.engraving || this.engraving;
+    var profile = options.profile || this.profile;
     var country = options.country || this.country;
     var currency = options.currency || this.currency;
 
@@ -518,7 +518,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
         buffer.push("p=" + part + ":" + material + ":" + color);
     }
 
-    engraving && buffer.push("engraving=" + engraving);
+    profile && buffer.push("engraving=" + profile);
     country && buffer.push("country=" + country);
     currency && buffer.push("currency=" + currency);
     return buffer.join("&");
@@ -1537,8 +1537,10 @@ ripe.Image.prototype.update = function(state) {
     var height = size || this.element.dataset.height || this.height;
 
     this.initials = this.updateInitials ? state.initials : this.initials;
-    var initials = this.element.dataset.initials || this.initials;
-    var profile = this.element.dataset.profile || this.profile;
+    this.profile = this.updateInitials ? state.profile : this.profile;
+
+    this.initials = this.element.dataset.initials || this.initials;
+    profile = this.element.dataset.profile || this.profile;
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),

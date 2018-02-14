@@ -60,7 +60,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
     var variant = options.variant || this.variant;
     var frame = options.frame || this.frame;
     var parts = options.parts || this.parts;
-    var engraving = options.engraving || this.engraving;
+    var profile = options.profile || this.profile;
     var country = options.country || this.country;
     var currency = options.currency || this.currency;
 
@@ -82,7 +82,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
         buffer.push("p=" + part + ":" + material + ":" + color);
     }
 
-    engraving && buffer.push("engraving=" + engraving);
+    profile && buffer.push("engraving=" + profile);
     country && buffer.push("country=" + country);
     currency && buffer.push("currency=" + currency);
     return buffer.join("&");

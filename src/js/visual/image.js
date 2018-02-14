@@ -28,8 +28,10 @@ ripe.Image.prototype.update = function(state) {
     var height = size || this.element.dataset.height || this.height;
 
     this.initials = this.updateInitials ? state.initials : this.initials;
-    var initials = this.element.dataset.initials || this.initials;
-    var profile = this.element.dataset.profile || this.profile;
+    this.profile = this.updateInitials ? state.profile : this.profile;
+
+    this.initials = this.element.dataset.initials || this.initials;
+    profile = this.element.dataset.profile || this.profile;
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
