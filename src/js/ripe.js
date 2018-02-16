@@ -975,6 +975,11 @@ ripe.Configurator.prototype._initLayout = function() {
     // set the size of area, frontMask, back and mask
     this.resize();
 
+    // sets the initial view and position
+    var initialView = this.frames.side !== undefined ? "side" : Object.keys(this.frames)[0];
+    this.element.dataset.view = this.element.dataset.view || initialView;
+    this.element.dataset.position = this.element.dataset.position || 0;
+
     // register for all the necessary DOM events
     this._registerHandlers();
 };
