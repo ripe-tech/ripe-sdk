@@ -130,7 +130,7 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     query += options.height ? "&height=" + options.height : "";
     query += options.size ? "&size=" + options.size : "";
     query += options.background ? "&background=" + options.background : "";
-    query += options.profile ? "&initials_profile=" + options.profile : "";
+    query += options.profile ? "&initials_profile=" + options.profile.join(",") : "";
 
     var initials = options.initials === "" ? "$empty" : options.initials;
     query += initials ? "&initials=" + initials : "";

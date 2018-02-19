@@ -193,7 +193,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.parts = this.options.parts || {};
     this.initials = "";
-    this.profile = null;
+    this.engraving = null;
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
     this.format = this.options.format || "jpeg";
@@ -273,9 +273,9 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     this.trigger("parts", this.parts);
 };
 
-ripe.Ripe.prototype.setInitials = function(initials, profile, noUpdate) {
+ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
     this.initials = initials;
-    this.profile = profile;
+    this.engraving = engraving;
 
     if (noUpdate) {
         return;
@@ -330,7 +330,7 @@ ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts,
         initials: this.initials,
-        profile: this.profile,
+        engraving: this.engraving,
     };
 };
 
@@ -566,7 +566,7 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     query += options.height ? "&height=" + options.height : "";
     query += options.size ? "&size=" + options.size : "";
     query += options.background ? "&background=" + options.background : "";
-    query += options.profile ? "&initials_profile=" + options.profile : "";
+    query += options.profile ? "&initials_profile=" + options.profile.join(",") : "";
 
     var initials = options.initials === "" ? "$empty" : options.initials;
     query += initials ? "&initials=" + initials : "";
@@ -1523,37 +1523,32 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
-    this.initials = this.options.initials;
-    this.engraving = this.options.engraving || null;
-    this.updateInitials = this.options.updateInitials || false;
-    this.profileBuilder = this.options.profileBuilder || function() {
-        return this.engraving;
+    this.initialsBuilder = this.options.initialsBuilder || function(initials, engraving, element) {
+        return {
+            initials: initials,
+            profile: [engraving]
+        };
     }
 
     this._registerHandlers();
 };
 
 ripe.Image.prototype.update = function(state) {
+    state = state || {};
     var frame = this.element.dataset.frame || this.frame;
     var size = this.element.dataset.size || this.size;
     var width = size || this.element.dataset.width || this.width;
     var height = size || this.element.dataset.height || this.height;
 
-    this.initials = this.updateInitials && state ? state.initials : this.initials;
-    this.engraving = this.updateInitials && state ? state.engraving : this.engraving;
-
-    this.initials = this.element.dataset.initials || this.initials;
-    this.engraving = this.element.dataset.engraving || this.engraving;
-
-    var profile = this.profileBuilder(this.initials, this.engraving, this.element);
+    var initials = this.initialsBuilder(state.initials, state.engraving, this.element);
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size,
         width: width,
         height: height,
-        initials: this.initials,
-        profile: profile
+        initials: initials.initials,
+        profile: initials.profile
     });
     if (this.element.src === url) {
         return;
@@ -1568,18 +1563,8 @@ ripe.Image.prototype.setFrame = function(frame, options) {
     this.update();
 };
 
-ripe.Image.prototype.setInitials = function(initials, options) {
-    this.initials = initials;
-    this.update();
-};
-
-ripe.Image.prototype.setEngraving = function(engraving, options) {
-    this.engraving = engraving;
-    this.update();
-};
-
-ripe.Image.prototype.setProfileBuilder = function(builder, options) {
-    this.profileBuilder = builder;
+ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
+    this.initialsBuilder = builder;
     this.update();
 };
 
