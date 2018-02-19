@@ -609,6 +609,8 @@ ripe.Configurator.prototype.init = function() {
     this.maskDuration = this.options.maskDuration || 150;
     this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
     this.useMasks = this.options.useMasks === undefined ? !this.noMasks : this.options.useMasks;
+    this.view = this.options.view || "side";
+    this.position = this.options.position || 0;
     this.ready = false;
 
     // creates a structure the store the last presented
@@ -976,9 +978,8 @@ ripe.Configurator.prototype._initLayout = function() {
     this.resize();
 
     // sets the initial view and position
-    var initialView = this.frames.side !== undefined ? "side" : Object.keys(this.frames)[0];
-    this.element.dataset.view = this.element.dataset.view || initialView;
-    this.element.dataset.position = this.element.dataset.position || 0;
+    this.element.dataset.view = this.view;
+    this.element.dataset.position = this.position;
 
     // register for all the necessary DOM events
     this._registerHandlers();
