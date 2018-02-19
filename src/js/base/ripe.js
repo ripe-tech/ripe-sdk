@@ -21,7 +21,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.parts = this.options.parts || {};
     this.initials = "";
-    this.profile = null;
+    this.engraving = null;
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
     this.format = this.options.format || "jpeg";
@@ -101,9 +101,9 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     this.trigger("parts", this.parts);
 };
 
-ripe.Ripe.prototype.setInitials = function(initials, profile, noUpdate) {
+ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
     this.initials = initials;
-    this.profile = profile;
+    this.engraving = engraving;
 
     if (noUpdate) {
         return;
@@ -158,7 +158,7 @@ ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts,
         initials: this.initials,
-        profile: this.profile,
+        engraving: this.engraving,
     };
 };
 

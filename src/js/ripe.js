@@ -193,7 +193,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.parts = this.options.parts || {};
     this.initials = "";
-    this.profile = null;
+    this.engraving = null;
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
     this.format = this.options.format || "jpeg";
@@ -273,9 +273,9 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     this.trigger("parts", this.parts);
 };
 
-ripe.Ripe.prototype.setInitials = function(initials, profile, noUpdate) {
+ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
     this.initials = initials;
-    this.profile = profile;
+    this.engraving = engraving;
 
     if (noUpdate) {
         return;
@@ -330,7 +330,7 @@ ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts,
         initials: this.initials,
-        profile: this.profile,
+        engraving: this.engraving,
     };
 };
 
@@ -496,7 +496,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
     var variant = options.variant || this.variant;
     var frame = options.frame || this.frame;
     var parts = options.parts || this.parts;
-    var profile = options.profile || this.profile;
+    var engraving = options.engraving || this.engraving;
     var country = options.country || this.country;
     var currency = options.currency || this.currency;
 
@@ -518,7 +518,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
         buffer.push("p=" + part + ":" + material + ":" + color);
     }
 
-    profile && buffer.push("engraving=" + profile);
+    engraving && buffer.push("engraving=" + engraving);
     country && buffer.push("country=" + country);
     currency && buffer.push("currency=" + currency);
     return buffer.join("&");
@@ -1524,8 +1524,11 @@ ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
     this.initials = this.options.initials;
-    this.profile = this.options.profile || null;
+    this.engraving = this.options.engraving || null;
     this.updateInitials = this.options.updateInitials || false;
+    this.profileBuilder = this.options.profileBuilder || function() {
+        return this.engraving;
+    }
 
     this._registerHandlers();
 };
@@ -1537,10 +1540,12 @@ ripe.Image.prototype.update = function(state) {
     var height = size || this.element.dataset.height || this.height;
 
     this.initials = this.updateInitials && state ? state.initials : this.initials;
-    this.profile = this.updateInitials && state ? state.profile : this.profile;
+    this.engraving = this.updateInitials && state ? state.engraving : this.engraving;
 
     this.initials = this.element.dataset.initials || this.initials;
-    this.profile = this.element.dataset.profile || this.profile;
+    this.engraving = this.element.dataset.engraving || this.engraving;
+
+    var profile = this.profileBuilder(this.initials, this.engraving, this.element);
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
@@ -1548,7 +1553,7 @@ ripe.Image.prototype.update = function(state) {
         width: width,
         height: height,
         initials: this.initials,
-        profile: this.profile
+        profile: profile
     });
     if (this.element.src === url) {
         return;
@@ -1568,8 +1573,13 @@ ripe.Image.prototype.setInitials = function(initials, options) {
     this.update();
 };
 
-ripe.Image.prototype.setProfile = function(profile, options) {
-    this.profile = profile;
+ripe.Image.prototype.setEngraving = function(engraving, options) {
+    this.engraving = engraving;
+    this.update();
+};
+
+ripe.Image.prototype.setProfileBuilder = function(builder, options) {
+    this.profileBuilder = builder;
     this.update();
 };
 

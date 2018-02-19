@@ -15,8 +15,11 @@ ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
     this.initials = this.options.initials;
-    this.profile = this.options.profile || null;
+    this.engraving = this.options.engraving || null;
     this.updateInitials = this.options.updateInitials || false;
+    this.profileBuilder = this.options.profileBuilder || function() {
+        return this.engraving;
+    }
 
     this._registerHandlers();
 };
@@ -28,10 +31,12 @@ ripe.Image.prototype.update = function(state) {
     var height = size || this.element.dataset.height || this.height;
 
     this.initials = this.updateInitials && state ? state.initials : this.initials;
-    this.profile = this.updateInitials && state ? state.profile : this.profile;
+    this.engraving = this.updateInitials && state ? state.engraving : this.engraving;
 
     this.initials = this.element.dataset.initials || this.initials;
-    this.profile = this.element.dataset.profile || this.profile;
+    this.engraving = this.element.dataset.engraving || this.engraving;
+
+    var profile = this.profileBuilder(this.initials, this.engraving, this.element);
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
@@ -39,7 +44,7 @@ ripe.Image.prototype.update = function(state) {
         width: width,
         height: height,
         initials: this.initials,
-        profile: this.profile
+        profile: profile
     });
     if (this.element.src === url) {
         return;
@@ -59,8 +64,13 @@ ripe.Image.prototype.setInitials = function(initials, options) {
     this.update();
 };
 
-ripe.Image.prototype.setProfile = function(profile, options) {
-    this.profile = profile;
+ripe.Image.prototype.setEngraving = function(engraving, options) {
+    this.engraving = engraving;
+    this.update();
+};
+
+ripe.Image.prototype.setProfileBuilder = function(builder, options) {
+    this.profileBuilder = builder;
     this.update();
 };
 
