@@ -1529,6 +1529,7 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
+    this.showInitials = this.options.showInitials || false;
     this.initialsBuilder = this.options.initialsBuilder || function(initials, engraving, element) {
         return {
             initials: initials,
@@ -1543,10 +1544,10 @@ ripe.Image.prototype.update = function(state) {
     state = state || {};
     var frame = this.element.dataset.frame || this.frame;
     var size = this.element.dataset.size || this.size;
-    var width = size || this.element.dataset.width || this.width;
-    var height = size || this.element.dataset.height || this.height;
+    var width = this.element.dataset.width || this.width;
+    var height = this.element.dataset.height || this.height;
 
-    var initials = this.initialsBuilder(state.initials, state.engraving, this.element);
+    var initials = this.showInitials ? this.initialsBuilder(state.initials, state.engraving, this.element) : {};
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
