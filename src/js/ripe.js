@@ -775,6 +775,10 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
         throw new RangeError("Frame " + frame + " is not supported.");
     }
 
+    // removes any part highlight in case it is set
+    // to replicate the behaviour of dragging the product
+    this.lowlight();
+
     // saves the position of the current view
     // so that it returns to the same position
     // when coming back to the same view
