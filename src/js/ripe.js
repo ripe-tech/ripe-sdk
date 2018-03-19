@@ -1545,21 +1545,23 @@ ripe.Image.prototype.init = function() {
 };
 
 ripe.Image.prototype.update = function(state) {
-    state = state || {};
     var frame = this.element.dataset.frame || this.frame;
     var size = this.element.dataset.size || this.size;
     var width = this.element.dataset.width || this.width;
     var height = this.element.dataset.height || this.height;
 
-    var initials = this.showInitials ? this.initialsBuilder(state.initials, state.engraving, this.element) : {};
+    this.initials = state !== undefined ? state.initials : this.initials;
+    this.engraving = state !== undefined ? state.engraving : this.engraving;
+
+    var initialsSpec = this.showInitials ? this.initialsBuilder(this.initials, this.engraving, this.element) : {};
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size,
         width: width,
         height: height,
-        initials: initials.initials,
-        profile: initials.profile
+        initials: initialsSpec.initials,
+        profile: initialsSpec.profile
     });
     if (this.element.src === url) {
         return;

@@ -40,8 +40,29 @@ img.logo {
 
 .images > img {
     cursor: pointer;
+    height: 100px;
+    width: 100px;
 }
 
+.frame-initials-container {
+    border-radius: 50% 50% 50% 50%;
+    -o-border-radius: 50% 50% 50% 50%;
+    -ms-border-radius: 50% 50% 50% 50%;
+    -moz-border-radius: 50% 50% 50% 50%;
+    -khtml-border-radius: 50% 50% 50% 50%;
+    -webkit-border-radius: 50% 50% 50% 50%;
+    height: 250px;
+    margin: 40px auto 40px auto;
+    overflow: hidden;
+    width: 250px;
+}
+
+.frame-initials-container > .frame-initials.vyner {
+    height: 1000px;
+    margin-left: -324px;
+    margin-top: -320px;
+    width: 1000px;
+}
 .configurator {
     cursor: pointer;
 }
