@@ -148,12 +148,6 @@ ripe.bindImage(document.getElementById("frame-initials"), {
 });
 ```
 
-ripe.setInitials(function(value) {
-    var price = document.getElementById("price");
-    price.innerHTML = value.total.price_final + " " + value.total.currency;
-});
-```
-
 
 ## 6. Product interaction
 
