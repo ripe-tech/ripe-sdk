@@ -148,7 +148,6 @@ ripe.bindImage(document.getElementById("frame-initials"), {
 });
 ```
 
-
 ## 6. Product interaction
 
 To provide an interactive product visualization you simply need to pass a `<div>` element to the method `bindConfigurator`.

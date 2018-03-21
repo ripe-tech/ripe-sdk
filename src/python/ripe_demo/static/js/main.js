@@ -69,9 +69,7 @@ window.onload = function() {
     });
 
     ripe.setInitials("SW", "metal_gold");
-    var initialsImage = document.getElementById("frame-initials");
-    initialsImage.classList.add(model);
-    ripe.bindImage(initialsImage, {
+    ripe.bindImage(document.getElementById("initials"), {
         showInitials: true
     });
 
