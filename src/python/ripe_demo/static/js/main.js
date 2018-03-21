@@ -2,7 +2,7 @@ window.onload = function() {
     var element = document.getElementById("configurator");
     var _body = document.querySelector("body");
     var url = _body.dataset.url || "https://sandbox.platforme.com/api/";
-    var brand = _body.dataset.brand || "myswear";
+    var brand = _body.dataset.brand || "swear";
     var model = _body.dataset.model || "vyner";
     var variant = _body.dataset.variant || "";
     var currency = _body.dataset.currency || "USD";
@@ -66,6 +66,11 @@ window.onload = function() {
 
     setTimeout(function() {
         image.setFrame("9");
+    });
+
+    ripe.setInitials("SW", "metal_gold");
+    ripe.bindImage(document.getElementById("initials"), {
+        showInitials: true
     });
 
     var configurator = ripe.bindConfigurator(element, {

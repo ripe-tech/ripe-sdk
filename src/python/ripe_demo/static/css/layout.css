@@ -40,6 +40,12 @@ img.logo {
 
 .images > img {
     cursor: pointer;
+    height: 100px;
+    width: 100px;
+}
+
+.initials-container {
+    margin: 40px auto 40px auto;
 }
 
 .configurator {
