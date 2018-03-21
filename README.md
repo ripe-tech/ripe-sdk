@@ -137,7 +137,7 @@ ripe.getPrice(function(value) {
 ## 5. Product personalization
 
 To display a frame with initials you can use the bindImage function by setting the parameter `showInitials` as `true` on the options map.
-The initials are set on the `Ripe` object with the ´setInitials´ function which accepts `initials` and `engraving` as parameters.
+The initials are set on the `Ripe` object with the `setInitials` function which accepts `initials` and `engraving` as parameters.
 If your initials require a transformation to different profiles you can set a function that receives the `initials` and `engraving` parameters and transforms it into a map with initials and an array of profiles using the `setInitialsBuilder` function.
 
 ```javascript
