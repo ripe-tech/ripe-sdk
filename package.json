@@ -5,7 +5,8 @@
     "main": "src/js/index.js",
     "scripts": {
         "gulp": "gulp",
-        "build": "gulp",
+        "build": "gulp build",
+        "watch": "gulp watch",
         "mark": "gulp mark",
         "test": "gulp test"
     },
@@ -42,6 +43,7 @@
     },
     "devDependencies": {
         "mocha": "^5.0.4",
+        "mocha-cli": "^1.0.1",
         "gulp": "^3.9.1",
         "gulp-cli": "^2.0.1",
         "gulp-zip": "^4.1.0",

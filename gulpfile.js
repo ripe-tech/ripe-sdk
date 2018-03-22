@@ -60,4 +60,16 @@ gulp.task("test", () => {
         }));
 });
 
-gulp.task("default", ["build-js", "move-js", "move-css", "compress"]);
+gulp.task("watch-js", function() {
+    gulp.watch(paths.scripts, ["build-js", "move-js", "compress"]);
+});
+
+gulp.task("watch-css", function() {
+    gulp.watch(paths.css, ["move-css"]);
+});
+
+gulp.task("watch", ["build", "watch-js", "watch-css"]);
+
+gulp.task("build", ["build-js", "move-js", "move-css", "compress"]);
+
+gulp.task("default", ["build"]);
