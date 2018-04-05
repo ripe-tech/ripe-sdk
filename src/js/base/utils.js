@@ -80,3 +80,11 @@ ripe.fixEvent = function(event) {
     event.offsetY = event.clientY - rect.top;
     return event;
 };
+
+ripe.clone = function(object) {
+    if (object === undefined) {
+        return object;
+    }
+    var objectS = JSON.stringify(object);
+    return JSON.parse(objectS);
+}

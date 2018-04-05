@@ -204,6 +204,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.useCombinations = this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
+    this.noRestrictions = this.options.noRestrictions === undefined ? false : this.options.noRestrictions;
     this.children = [];
     this.ready = false;
 
@@ -234,6 +235,16 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.combinations = result;
         this.trigger("combinations", this.combinations);
     }.bind(this));
+
+    var loadRestrictions = this.noRestrictions === false;
+    loadRestrictions && this.getConfig(function(result) {
+        this.config = result;
+        this.restrictions = result.restrictions;
+        this.trigger("restrictions", this.combinations);
+    }.bind(this));
+    loadRestrictions && this.bind("parts", function(parts) {
+        this._applyRestrictions();
+    });
 
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
@@ -347,6 +358,13 @@ ripe.Ripe.prototype.update = function(state) {
     this.ready && this.usePrice && this.getPrice(function(value) {
         this.trigger("price", value);
     }.bind(this));
+};
+
+ripe.Ripe.prototype._solveRestrictions = function(parts) {
+    parts = parts || this.parts;
+    if (!this.restrictions) {
+        return parts;
+    }
 };
 
 var Ripe = ripe.Ripe;

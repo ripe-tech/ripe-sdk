@@ -32,7 +32,10 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.useCombinations = this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
+    this.noRestrictions = this.options.noRestrictions === undefined ? true : this.options.noRestrictions;
+    this.useRestrictions = this.options.useRestrictions === undefined ? !this.noRestrictions : this.options.useRestrictions;
     this.children = [];
+    this.plugins = [];
     this.ready = false;
 
     // runs the background color normalization process that removes
@@ -63,6 +66,16 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.trigger("combinations", this.combinations);
     }.bind(this));
 
+    var loadRestrictions = this.noRestrictions === false;
+    loadRestrictions && this.getConfig(function(result) {
+        var restrictionsPlugin = new ripe.plugins.Restrictions(
+            this,
+            result.restrictions,
+            result.parts
+        );
+        this.plugins.push(restrictionsPlugin);
+    }.bind(this));
+
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
     this.ready = hasParts;
@@ -80,6 +93,14 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
+
+    var newPart = {
+        name: part,
+        material: material,
+        color: color
+    };
+    this.trigger("pre_parts", this.parts, newPart);
+
     if (noUpdate) {
         return;
     }

@@ -9,6 +9,7 @@
             "base/ripe.js",
             "base/utils.js",
             "base/api.js",
+            "plugins/restrictions.js",
             "visual/visual.js",
             "visual/configurator.js",
             "visual/image.js"
@@ -24,6 +25,7 @@
             "base/ripe.js",
             "base/utils.js",
             "base/api.js",
+            "plugins/restrictions.js",
             "visual/visual.js",
             "visual/configurator.js",
             "visual/image.js"
