@@ -42,6 +42,19 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // the typical cardinal character from the definition
     this.backgroundColor = this.backgroundColor.replace("#", "");
 
+    // if restrictions are configured to be used then loads
+    // the config of the product to retrieve them and initializes
+    // the restrictions plugin
+    var loadRestrictions = this.noRestrictions === false;
+    loadRestrictions && this.getConfig(function(result) {
+        var restrictionsPlugin = new ripe.plugins.Restrictions(
+            this,
+            result.restrictions,
+            result.parts
+        );
+        this.plugins.push(restrictionsPlugin);
+    }.bind(this));
+
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
@@ -54,6 +67,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.parts = result;
         this.ready = true;
         this.update();
+        this.trigger("pre_parts", this.parts);
         this.trigger("parts", this.parts);
     }.bind(this));
 
@@ -64,16 +78,6 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     loadCombinations && this.getCombinations(function(result) {
         this.combinations = result;
         this.trigger("combinations", this.combinations);
-    }.bind(this));
-
-    var loadRestrictions = this.noRestrictions === false;
-    loadRestrictions && this.getConfig(function(result) {
-        var restrictionsPlugin = new ripe.plugins.Restrictions(
-            this,
-            result.restrictions,
-            result.parts
-        );
-        this.plugins.push(restrictionsPlugin);
     }.bind(this));
 
     // in case the current instance already contains configured parts
