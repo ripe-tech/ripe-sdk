@@ -45,8 +45,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // if restrictions are configured to be used then loads
     // the config of the product to retrieve them and initializes
     // the restrictions plugin
-    var loadRestrictions = this.noRestrictions === false;
-    loadRestrictions && this.getConfig(function(result) {
+    this.useRestrictions && this.getConfig(function(result) {
         var restrictionsPlugin = new ripe.plugins.Restrictions(
             this,
             result.restrictions,

@@ -217,8 +217,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // if restrictions are configured to be used then loads
     // the config of the product to retrieve them and initializes
     // the restrictions plugin
-    var loadRestrictions = this.noRestrictions === false;
-    loadRestrictions && this.getConfig(function(result) {
+    this.useRestrictions && this.getConfig(function(result) {
         var restrictionsPlugin = new ripe.plugins.Restrictions(
             this,
             result.restrictions,
@@ -687,16 +686,16 @@ ripe.plugins.Restrictions.prototype._solveRestrictions = function(
     }
 
     // If the part is restricted then tries to retrieve an alternative option.
-    // If no alternative is found then an invalid state was reached and an empty
-    // solution is returned, otherwise tries to proceed with the alternative option.
-    else {
-        var newPartOption = this._alternativeFor(newPart, restrictions, availableParts, true);
-        if (newPartOption === null) {
-            return [];
-        }
-        customization.push(newPartOption);
-        return this._solveRestrictions(availableParts, restrictions, customization, solution);
+    // If an alternative is found then adds it to the customization and proceeds
+    // with it, otherwise an invalid state was reached and an empty solution
+    // is returned, meaning that there is no option for the current customization
+    // that would comply with the restrictions
+    var newPartOption = this._alternativeFor(newPart, restrictions, availableParts, true);
+    if (newPartOption === null) {
+        return [];
     }
+    customization.push(newPartOption);
+    return this._solveRestrictions(availableParts, restrictions, customization, solution);
 };
 
 ripe.plugins.Restrictions.prototype._getRestrictionKey = function(
@@ -713,10 +712,15 @@ ripe.plugins.Restrictions.prototype._getRestrictionKey = function(
 };
 
 ripe.plugins.Restrictions.prototype._buildRestrictionsMap = function(restrictions) {
+    // maps the restrictions array into a dictionary where restrictions
+    // are associated by key with eachother for easier use.
+    // For example, '[[{ material: "nappa"}, { material: "suede"}]]'
+    // turns into '{ "nappa": ["suede"], "suede": ["nappa"] }'
+    var restrictionsMap = {};
+
     // iterates over the complete set of restrictions in the restrictions
     // list to process them and populate the restrictions map with a single
     // key to "restricted keys" association
-    var restrictionsMap = {};
     for (var index = 0; index < restrictions.length; index++) {
         // in case the restriction is considered to be a single one
         // then this is a special (all cases excluded one) and must
@@ -813,12 +817,17 @@ ripe.plugins.Restrictions.prototype._isRestricted = function(newPart, restrictio
 };
 
 ripe.plugins.Restrictions.prototype._isComplete = function(parts) {
+    // iterates through the parts array and creates
+    // an array with the names of the parts for
+    // easier searching
     var partsS = [];
     for (var index = 0; index < parts.length; index++) {
         var part = parts[index];
         partsS.push(part.name);
     }
 
+    // iterates through the part options and checks
+    // if all of them are set
     for (var index = 0; index < this.partsOptions.length; index++) {
         var part = this.partsOptions[index];
         if (partsS.indexOf(part.name) === -1) {
@@ -873,8 +882,10 @@ ripe.plugins.Restrictions.prototype._alternativeFor = function(
 
     // tries to retrieve an alternative option, giving
     // priority to the colors of its material
-    var indexM = materialsIndex;
-    do {
+    var indexM = null;
+    while (indexM !== materialsIndex) {
+        indexM = indexM === null ? materialsIndex : indexM;
+
         var material = part.materials[indexM];
         var colors = material.colors;
         for (var indexC = 0; indexC < colors.length; indexC++) {
@@ -897,7 +908,7 @@ ripe.plugins.Restrictions.prototype._alternativeFor = function(
             return alternative;
         }
         indexM = (indexM + 1) % part.materials.length;
-    } while (indexM !== materialsIndex);
+    }
 
     return null;
 };
