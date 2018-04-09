@@ -202,14 +202,28 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.useDefaults = this.options.useDefaults === undefined ? !this.noDefaults : this.options.useDefaults;
     this.noCombinations = this.options.noCombinations === undefined ? false : this.options.noCombinations;
     this.useCombinations = this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
+    this.useSync = this.options.useSync === undefined ? false : this.options.useSync;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.children = [];
+    this.plugins = [];
     this.ready = false;
 
     // runs the background color normalization process that removes
     // the typical cardinal character from the definition
     this.backgroundColor = this.backgroundColor.replace("#", "");
+
+    // if sync is configured to be used then loads the config of
+    // the product to retrieve the sync rules and initializes
+    // the sync plugin if they exist
+    this.useSync && this.getConfig(function(result) {
+        var sync = result.sync;
+        if (!sync) {
+            return;
+        }
+        var syncPlugin = new ripe.plugins.Sync(this, sync);
+        this.plugins.push(syncPlugin);
+    }.bind(this));
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
@@ -223,6 +237,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.parts = result;
         this.ready = true;
         this.update();
+        this.trigger("pre_parts", this.parts);
         this.trigger("parts", this.parts);
     }.bind(this));
 
@@ -252,6 +267,14 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
+
+    var newPart = {
+        name: part,
+        material: material,
+        color: color
+    };
+    this.trigger("pre_parts", this.parts, newPart);
+
     if (noUpdate) {
         return;
     }
@@ -583,6 +606,36 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     }
     return this.url + "mask?" + query;
 };
+
+ripe.plugins = ripe.plugins || {};
+
+ripe.plugins.Sync = function(owner, rules, options) {
+    options = options || {};
+    this.owner = owner;
+    this.rules = rules;
+
+    // binds to the pre parts event so the parts can be changed
+    // so that they comply with the product's sync rules
+    this.owner.bind("pre_parts", function(parts, newPart) {
+        for (var key in this.rules) {
+            // if a part was selected and it is part of
+            // the rule then its value is used otherwise
+            // the first part of the rule is used
+            var rule = this.rules[key];
+            var part = newPart && rule.indexOf(newPart.name) !== -1 ? newPart.name : rule[0];
+            var value = parts[part];
+
+            // iterates through the parts of the rule and
+            // sets their material and color to be the same
+            // of the reference part
+            for (var index = 0; index < rule.length; index++) {
+                var _part = rule[index];
+                parts[_part].material = value.material;
+                parts[_part].color = value.color;
+            }
+        }
+    }.bind(this));
+}
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("../base");
