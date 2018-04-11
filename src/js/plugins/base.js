@@ -2,6 +2,6 @@ ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 
 ripe.Ripe.plugins.Plugin = function() {}
 
-ripe.Ripe.plugins.Plugin.prototype.setOwner = function(owner) {
+ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
     this.owner = owner;
 }

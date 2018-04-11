@@ -249,7 +249,7 @@ ripe.Ripe.prototype.load = function() {
 ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.addPlugin = function(plugin) {
-    plugin.setOwner(this);
+    plugin.register(this);
     this.plugins.push(plugin);
 };
 
@@ -603,7 +603,7 @@ ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 
 ripe.Ripe.plugins.Plugin = function() {}
 
-ripe.Ripe.plugins.Plugin.prototype.setOwner = function(owner) {
+ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
     this.owner = owner;
 }
 
@@ -614,8 +614,8 @@ ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
 
 ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
 
-ripe.Ripe.plugins.SyncPlugin.prototype.setOwner = function(owner) {
-    ripe.Ripe.plugins.Plugin.prototype.setOwner.call(this, owner);
+ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
+    ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
     // binds to the pre parts event so the parts can be changed
     // so that they comply with the product's sync rules

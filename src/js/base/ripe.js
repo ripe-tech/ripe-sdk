@@ -77,7 +77,7 @@ ripe.Ripe.prototype.load = function() {
 ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.addPlugin = function(plugin) {
-    plugin.setOwner(this);
+    plugin.register(this);
     this.plugins.push(plugin);
 };
 
