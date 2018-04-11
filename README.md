@@ -178,10 +178,14 @@ configurator.bind("loaded", function() {
 
 ### Part synchronisation
 
-If your product has synchronisation rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behaviour automatically. To do this you need to set the `useSync` value as `true` on the `options` parameter when initialising the ripe object.
+If your product has synchronisation rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behaviour automatically. To do this you need to initialize the `SyncPlugin` wich receives the synchronisation rules and add it to the ripe object using the `addPlugin` function.
 
 ```javascript
-var ripe = new Ripe(brand, model, { useSync: true });
+ripe.getConfig(function(result) {
+    var syncRules = result.sync;
+    var syncPlugin = new Ripe.plugins.SyncPlugin(syncRules);
+    ripe.addPlugin(syncPlugin);
+});
 ```
 
 ## Appendix

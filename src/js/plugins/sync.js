@@ -1,7 +1,12 @@
-ripe.plugins.Sync = function(owner, rules, options) {
+ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
     options = options || {};
-    this.owner = owner;
     this.rules = rules;
+}
+
+ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+
+ripe.Ripe.plugins.SyncPlugin.prototype.setOwner = function(owner) {
+    ripe.Ripe.plugins.Plugin.prototype.setOwner.call(this, owner);
 
     // binds to the pre parts event so the parts can be changed
     // so that they comply with the product's sync rules

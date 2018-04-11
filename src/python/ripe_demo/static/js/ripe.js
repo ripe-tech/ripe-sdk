@@ -202,7 +202,6 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.useDefaults = this.options.useDefaults === undefined ? !this.noDefaults : this.options.useDefaults;
     this.noCombinations = this.options.noCombinations === undefined ? false : this.options.noCombinations;
     this.useCombinations = this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
-    this.useSync = this.options.useSync === undefined ? false : this.options.useSync;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.children = [];
@@ -212,18 +211,6 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // runs the background color normalization process that removes
     // the typical cardinal character from the definition
     this.backgroundColor = this.backgroundColor.replace("#", "");
-
-    // if sync is configured to be used then loads the config of
-    // the product to retrieve the sync rules and initializes
-    // the sync plugin if they exist
-    this.useSync && this.getConfig(function(result) {
-        var sync = result.sync;
-        if (!sync) {
-            return;
-        }
-        var syncPlugin = new ripe.plugins.Sync(this, sync);
-        this.plugins.push(syncPlugin);
-    }.bind(this));
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
@@ -260,6 +247,11 @@ ripe.Ripe.prototype.load = function() {
 };
 
 ripe.Ripe.prototype.unload = function() {};
+
+ripe.Ripe.prototype.addPlugin = function(plugin) {
+    plugin.setOwner(this);
+    this.plugins.push(plugin);
+};
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     var parts = this.parts || {};
@@ -607,12 +599,23 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     return this.url + "mask?" + query;
 };
 
-ripe.plugins = ripe.plugins || {};
+ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 
-ripe.plugins.Sync = function(owner, rules, options) {
-    options = options || {};
+ripe.Ripe.plugins.Plugin = function() {}
+
+ripe.Ripe.plugins.Plugin.prototype.setOwner = function(owner) {
     this.owner = owner;
+}
+
+ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
+    options = options || {};
     this.rules = rules;
+}
+
+ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+
+ripe.Ripe.plugins.SyncPlugin.prototype.setOwner = function(owner) {
+    ripe.Ripe.plugins.Plugin.prototype.setOwner.call(this, owner);
 
     // binds to the pre parts event so the parts can be changed
     // so that they comply with the product's sync rules
