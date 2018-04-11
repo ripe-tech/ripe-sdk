@@ -49,11 +49,15 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     };
     loadParts.call(this, function(result) {
         result = result || this.parts;
-        this.parts = result;
+        var parts = [];
+        for (var name in result) {
+            var part = result[name];
+            parts.push([name, part.material, part.color]);
+        }
+        this.setParts(parts);
+
         this.ready = true;
         this.update();
-        this.trigger("pre_parts", this.parts);
-        this.trigger("parts", this.parts);
     }.bind(this));
 
     // tries to determine if the combinations available should be
@@ -82,8 +86,8 @@ ripe.Ripe.prototype.addPlugin = function(plugin) {
 };
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
-    var parts = this.parts || {};
-    var value = parts[part];
+    var parts = this.parts;
+    var value = parts[part] || {};
     value.material = material;
     value.color = color;
     this.parts[part] = value;
@@ -100,6 +104,7 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     }
     this.update();
     this.trigger("parts", this.parts);
+    this.trigger("post_parts", this.parts, newPart);
 };
 
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
@@ -114,6 +119,7 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
 
     this.update();
     this.trigger("parts", this.parts);
+    this.trigger("post_parts", this.parts);
 };
 
 ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
