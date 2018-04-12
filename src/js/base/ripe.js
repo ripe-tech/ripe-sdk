@@ -49,11 +49,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     };
     loadParts.call(this, function(result) {
         result = result || this.parts;
-        var parts = [];
-        for (var name in result) {
-            var part = result[name];
-            parts.push([name, part.material, part.color]);
-        }
+        var parts = this._partsList(result);
         this.setParts(parts);
 
         this.ready = true;
@@ -85,6 +81,11 @@ ripe.Ripe.prototype.addPlugin = function(plugin) {
     this.plugins.push(plugin);
 };
 
+ripe.Ripe.prototype.removePlugin = function(plugin) {
+    plugin.unregister(this);
+    this.plugins.splice(this.plugins.indexOf(plugin), 1);
+};
+
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     var parts = this.parts;
     var value = parts[part] || {};
@@ -97,17 +98,19 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
         material: material,
         color: color
     };
-    this.trigger("pre_parts", this.parts, newPart);
+    this.trigger("part", newPart);
 
     if (noUpdate) {
         return;
     }
     this.update();
     this.trigger("parts", this.parts);
-    this.trigger("post_parts", this.parts, newPart);
 };
 
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
+    var isMap = typeof update === "object" && Array.isArray(update) === false;
+    update = isMap ? this._partsList(update) : update;
+
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
         this.setPart(part[0], part[1], part[2], true);
@@ -119,7 +122,6 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
 
     this.update();
     this.trigger("parts", this.parts);
-    this.trigger("post_parts", this.parts);
 };
 
 ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
@@ -173,6 +175,15 @@ ripe.Ripe.prototype.selectPart = function(part, options) {
 
 ripe.Ripe.prototype.deselectPart = function(part, options) {
     this.trigger("deselected_part", part);
+};
+
+ripe.Ripe.prototype._partsList = function(partsM) {
+    var parts = [];
+    for (var name in partsM) {
+        var part = partsM[name];
+        parts.push([name, part.material, part.color]);
+    }
+    return parts;
 };
 
 ripe.Ripe.prototype._getState = function() {
