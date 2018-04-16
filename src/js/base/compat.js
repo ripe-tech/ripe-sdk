@@ -4,9 +4,11 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
 }
 
 /**
- * Assigns a certain value to certain target.
+ * Assigns a certain set of values in the provided object to the
+ * first parameter of the call (target).
  *
- * @param {String} target The target of the assign.
+ * @param {String} target The target of the assign operation meaning
+ * the object to which the values will be assigned.
  */
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
