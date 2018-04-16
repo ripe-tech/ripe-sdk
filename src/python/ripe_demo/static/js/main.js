@@ -105,6 +105,18 @@ window.onload = function() {
 
     ripe.load();
 
+    // loads the config of the product to retrieve
+    // the sync rules and initializes the sync
+    // plugin if they exist
+    ripe.getConfig(function(result) {
+        var sync = result.sync;
+        if (!sync) {
+            return;
+        }
+        var syncPlugin = new Ripe.plugins.SyncPlugin(sync);
+        ripe.addPlugin(syncPlugin);
+    });
+
     var setPart = document.getElementById("set-part");
     var setMessage = document.getElementById("set-message");
     var getPrice = document.getElementById("get-price");
