@@ -182,7 +182,7 @@ ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts,
         initials: this.initials,
-        engraving: this.engraving,
+        engraving: this.engraving
     };
 };
 

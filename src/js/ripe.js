@@ -354,7 +354,7 @@ ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts,
         initials: this.initials,
-        engraving: this.engraving,
+        engraving: this.engraving
     };
 };
 
@@ -1273,7 +1273,7 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
 ripe.Configurator.prototype._initLayout = function() {
     // clears the elements children
     while (this.element.firstChild) {
-        this.element.firstChild.remove();
+        this.element.removeChild(this.element.firstChild);
     }
 
     // sets the element's style so that it supports two canvas
