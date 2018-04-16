@@ -611,15 +611,15 @@ var ripe = ripe || {};
 ripe.Ripe = ripe.Ripe || {};
 ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 
-ripe.Ripe.plugins.Plugin = function() {}
+ripe.Ripe.plugins.Plugin = function() {};
 
 ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
     this.owner = owner;
-}
+};
 
 ripe.Ripe.plugins.Plugin.prototype.unregister = function(owner) {
     this.owner = null;
-}
+};
 
 if (typeof module !== "undefined") {
     module.exports = {
@@ -637,7 +637,7 @@ ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
     options = options || {};
     this.rules = rules;
-}
+};
 
 ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
 
@@ -669,7 +669,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     // resets the current selection to trigger the sync operation
     var initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
-}
+};
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("../base");
