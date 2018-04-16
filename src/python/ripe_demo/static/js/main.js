@@ -105,16 +105,24 @@ window.onload = function() {
 
     ripe.load();
 
-    // loads the config of the product to retrieve
-    // the sync rules and initializes the sync
-    // plugin if they exist
+    // loads the config of the product to retrieve the
+    // sync and the resctriction rules and initializes
+    // the respective plugin if they exits
     ripe.getConfig(function(result) {
+        var parts = result.parts;
+        var restrictions = result.restrictions;
         var sync = result.sync;
-        if (!sync) {
-            return;
+        if (sync) {
+            var syncPlugin = new Ripe.plugins.SyncPlugin(sync);
+            ripe.addPlugin(syncPlugin);
         }
-        var syncPlugin = new Ripe.plugins.SyncPlugin(sync);
-        ripe.addPlugin(syncPlugin);
+        if (restrictions && restrictions.length) {
+            var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(
+                restrictions,
+                parts
+            );
+            ripe.addPlugin(restrictionsPlugin);
+        }
     });
 
     var setPart = document.getElementById("set-part");

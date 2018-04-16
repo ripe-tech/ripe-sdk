@@ -10,8 +10,8 @@
             "base/utils.js",
             "base/api.js",
             "plugins/base.js",
-            "plugins/sync.js",
             "plugins/restrictions.js",
+            "plugins/sync.js",
             "visual/visual.js",
             "visual/configurator.js",
             "visual/image.js"
@@ -28,8 +28,8 @@
             "base/utils.js",
             "base/api.js",
             "plugins/base.js",
-            "plugins/sync.js",
             "plugins/restrictions.js",
+            "plugins/sync.js",
             "visual/visual.js",
             "visual/configurator.js",
             "visual/image.js"

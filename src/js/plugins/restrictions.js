@@ -1,26 +1,36 @@
-ripe.plugins = ripe.plugins || {};
+if (typeof window === "undefined" && typeof require !== "undefined") {
+    var base = require("./base");
+    var ripe = base.ripe;
+}
 
-ripe.plugins.Restrictions = function(owner, restrictions, partsOptions, options) {
+ripe.Ripe.plugins = ripe.Ripe.plugins || {};
+
+ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, partsOptions, options) {
     options = options || {};
     this.token = options.token || ":";
-    this.owner = owner;
     this.restrictions = restrictions;
     this.restrictionsMap = this._buildRestrictionsMap(restrictions);
     this.partsOptions = partsOptions;
+};
+
+ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+
+ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
+    ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
     // binds to the pre parts event so that the parts can be
     // changed so that they comply with the product's restrictions
-    this.owner.bind("pre_parts", function(parts, newPart) {
+    this.owner.bind("part", function(newPart) {
         // creates an array with the customization. If a new
         // part is set it is added at the end so that it has
         // priority when solving the restrictions
         var partsOptions = ripe.clone(this.partsOptions);
         var customization = [];
-        for (var name in parts) {
+        for (var name in this.owner.parts) {
             if (newPart !== undefined && newPart.name === name) {
                 continue;
             }
-            var part = parts[name];
+            var part = this.owner.parts[name];
             customization.push({
                 name: name,
                 material: part.material,
@@ -38,13 +48,18 @@ ripe.plugins.Restrictions = function(owner, restrictions, partsOptions, options)
         );
         for (var index = 0; index < newParts.length; index++) {
             var newPart = newParts[index];
-            parts[newPart.name].material = newPart.material;
-            parts[newPart.name].color = newPart.color;
+            this.owner.parts[newPart.name].material = newPart.material;
+            this.owner.parts[newPart.name].color = newPart.color;
         }
     }.bind(this));
+
+    // resets the current selection to trigger
+    // the restrictions operation
+    var initialParts = ripe.clone(this.owner.parts);
+    this.owner.setParts(initialParts);
 };
 
-ripe.plugins.Restrictions.prototype._solveRestrictions = function(
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
     availableParts,
     restrictions,
     customization,
@@ -80,7 +95,7 @@ ripe.plugins.Restrictions.prototype._solveRestrictions = function(
     return this._solveRestrictions(availableParts, restrictions, customization, solution);
 };
 
-ripe.plugins.Restrictions.prototype._getRestrictionKey = function(
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._getRestrictionKey = function(
     part,
     material,
     color,
@@ -93,7 +108,7 @@ ripe.plugins.Restrictions.prototype._getRestrictionKey = function(
     return part + token + material + token + color;
 };
 
-ripe.plugins.Restrictions.prototype._buildRestrictionsMap = function(restrictions) {
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(restrictions) {
     // maps the restrictions array into a dictionary where restrictions
     // are associated by key with eachother for easier use.
     // For example, '[[{ material: "nappa"}, { material: "suede"}]]'
@@ -152,7 +167,7 @@ ripe.plugins.Restrictions.prototype._buildRestrictionsMap = function(restriction
     return restrictionsMap;
 };
 
-ripe.plugins.Restrictions.prototype._isRestricted = function(newPart, restrictions, parts) {
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(newPart, restrictions, parts) {
     var name = newPart.name;
     var material = newPart.material;
     var color = newPart.color;
@@ -198,7 +213,7 @@ ripe.plugins.Restrictions.prototype._isRestricted = function(newPart, restrictio
     return false;
 };
 
-ripe.plugins.Restrictions.prototype._isComplete = function(parts) {
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._isComplete = function(parts) {
     // iterates through the parts array and creates
     // an array with the names of the parts for
     // easier searching
@@ -220,7 +235,7 @@ ripe.plugins.Restrictions.prototype._isComplete = function(parts) {
     return true;
 };
 
-ripe.plugins.Restrictions.prototype._alternativeFor = function(
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
     newPart,
     restrictions,
     availableParts,
