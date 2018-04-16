@@ -270,14 +270,6 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     this.trigger("parts", this.parts);
 };
 
-ripe.Ripe.prototype._setPart = function(part, material, color) {
-    var value = this.parts[part];
-    value.material = material;
-    value.color = color;
-    this.parts[part] = value;
-    this.trigger("part", value);
-};
-
 ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
     this.initials = initials;
     this.engraving = engraving;
@@ -331,14 +323,6 @@ ripe.Ripe.prototype.deselectPart = function(part, options) {
     this.trigger("deselected_part", part);
 };
 
-ripe.Ripe.prototype._getState = function() {
-    return {
-        parts: this.parts,
-        initials: this.initials,
-        engraving: this.engraving
-    };
-};
-
 ripe.Ripe.prototype.update = function(state) {
     state = state || this._getState();
 
@@ -362,6 +346,22 @@ ripe.Ripe.prototype.addPlugin = function(plugin) {
 ripe.Ripe.prototype.removePlugin = function(plugin) {
     plugin.unregister(this);
     this.plugins.splice(this.plugins.indexOf(plugin), 1);
+};
+
+ripe.Ripe.prototype._getState = function() {
+    return {
+        parts: this.parts,
+        initials: this.initials,
+        engraving: this.engraving
+    };
+};
+
+ripe.Ripe.prototype._setPart = function(part, material, color) {
+    var value = this.parts[part];
+    value.material = material;
+    value.color = color;
+    this.parts[part] = value;
+    this.trigger("part", value);
 };
 
 var Ripe = ripe.Ripe;
