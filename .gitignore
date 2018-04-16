@@ -3,9 +3,11 @@
 
 session.shelve*
 
+.DS_Store
 dist.zip
 package-lock.json
 
+/out
 /dist
 /build
 /node_modules

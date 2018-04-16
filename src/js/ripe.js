@@ -1,3 +1,4 @@
+/** @namespace */
 var ripe = ripe || {};
 
 if (typeof module !== "undefined") {
@@ -11,6 +12,11 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Assigns a certain value to certain target.
+ *
+ * @param {String} target The target of the assign.
+ */
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
@@ -50,6 +56,16 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Class that defines an entity that can be used to interact
+ * with the customizer (abstract).
+ *
+ * @constructor
+ * @param {Object} owner The owner (customizer instance) for
+ * this insteractable.
+ * @param {Object} options The options to be used to configure the
+ * interactable instance to be created.
+ */
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};

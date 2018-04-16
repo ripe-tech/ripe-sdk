@@ -3,6 +3,11 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Assigns a certain value to certain target.
+ *
+ * @param {String} target The target of the assign.
+ */
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
