@@ -87,4 +87,4 @@ ripe.clone = function(object) {
     }
     var objectS = JSON.stringify(object);
     return JSON.parse(objectS);
-}
+};

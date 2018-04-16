@@ -91,19 +91,7 @@ ripe.Ripe.prototype.load = function() {
 ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
-    var parts = this.parts || {};
-    var value = parts[part];
-    value.material = material;
-    value.color = color;
-    this.parts[part] = value;
-
-    var newPart = {
-        name: part,
-        material: material,
-        color: color
-    };
-    this.trigger("pre_parts", this.parts, newPart);
-
+    this._setPart(part, material, color, true);
     if (noUpdate) {
         return;
     }
@@ -114,7 +102,7 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
-        this.setPart(part[0], part[1], part[2], true);
+        this._setPart(part[0], part[1], part[2], true);
     }
 
     if (noUpdate) {
@@ -178,14 +166,6 @@ ripe.Ripe.prototype.deselectPart = function(part, options) {
     this.trigger("deselected_part", part);
 };
 
-ripe.Ripe.prototype._getState = function() {
-    return {
-        parts: this.parts,
-        initials: this.initials,
-        engraving: this.engraving
-    };
-};
-
 ripe.Ripe.prototype.update = function(state) {
     state = state || this._getState();
 
@@ -199,6 +179,32 @@ ripe.Ripe.prototype.update = function(state) {
     this.ready && this.usePrice && this.getPrice(function(value) {
         this.trigger("price", value);
     }.bind(this));
+};
+
+ripe.Ripe.prototype.addPlugin = function(plugin) {
+    plugin.register(this);
+    this.plugins.push(plugin);
+};
+
+ripe.Ripe.prototype.removePlugin = function(plugin) {
+    plugin.unregister(this);
+    this.plugins.splice(this.plugins.indexOf(plugin), 1);
+};
+
+ripe.Ripe.prototype._getState = function() {
+    return {
+        parts: this.parts,
+        initials: this.initials,
+        engraving: this.engraving
+    };
+};
+
+ripe.Ripe.prototype._setPart = function(part, material, color) {
+    var value = this.parts[part];
+    value.material = material;
+    value.color = color;
+    this.parts[part] = value;
+    this.trigger("part", value);
 };
 
 var Ripe = ripe.Ripe;

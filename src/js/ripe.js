@@ -263,19 +263,7 @@ ripe.Ripe.prototype.load = function() {
 ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
-    var parts = this.parts || {};
-    var value = parts[part];
-    value.material = material;
-    value.color = color;
-    this.parts[part] = value;
-
-    var newPart = {
-        name: part,
-        material: material,
-        color: color
-    };
-    this.trigger("pre_parts", this.parts, newPart);
-
+    this._setPart(part, material, color, true);
     if (noUpdate) {
         return;
     }
@@ -286,7 +274,7 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
-        this.setPart(part[0], part[1], part[2], true);
+        this._setPart(part[0], part[1], part[2], true);
     }
 
     if (noUpdate) {
@@ -350,14 +338,6 @@ ripe.Ripe.prototype.deselectPart = function(part, options) {
     this.trigger("deselected_part", part);
 };
 
-ripe.Ripe.prototype._getState = function() {
-    return {
-        parts: this.parts,
-        initials: this.initials,
-        engraving: this.engraving
-    };
-};
-
 ripe.Ripe.prototype.update = function(state) {
     state = state || this._getState();
 
@@ -371,6 +351,32 @@ ripe.Ripe.prototype.update = function(state) {
     this.ready && this.usePrice && this.getPrice(function(value) {
         this.trigger("price", value);
     }.bind(this));
+};
+
+ripe.Ripe.prototype.addPlugin = function(plugin) {
+    plugin.register(this);
+    this.plugins.push(plugin);
+};
+
+ripe.Ripe.prototype.removePlugin = function(plugin) {
+    plugin.unregister(this);
+    this.plugins.splice(this.plugins.indexOf(plugin), 1);
+};
+
+ripe.Ripe.prototype._getState = function() {
+    return {
+        parts: this.parts,
+        initials: this.initials,
+        engraving: this.engraving
+    };
+};
+
+ripe.Ripe.prototype._setPart = function(part, material, color) {
+    var value = this.parts[part];
+    value.material = material;
+    value.color = color;
+    this.parts[part] = value;
+    this.trigger("part", value);
 };
 
 var Ripe = ripe.Ripe;
@@ -464,7 +470,7 @@ ripe.clone = function(object) {
     }
     var objectS = JSON.stringify(object);
     return JSON.parse(objectS);
-}
+};
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("./base");
@@ -614,6 +620,70 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
         query += "&part=" + options.part;
     }
     return this.url + "mask?" + query;
+};
+
+var ripe = ripe || {};
+ripe.Ripe = ripe.Ripe || {};
+ripe.Ripe.plugins = ripe.Ripe.plugins || {};
+
+ripe.Ripe.plugins.Plugin = function() {};
+
+ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
+    this.owner = owner;
+};
+
+ripe.Ripe.plugins.Plugin.prototype.unregister = function(owner) {
+    this.owner = null;
+};
+
+if (typeof module !== "undefined") {
+    module.exports = {
+        ripe: ripe
+    };
+}
+
+if (typeof window === "undefined" && typeof require !== "undefined") {
+    var base = require("./base");
+    var ripe = base.ripe;
+}
+
+ripe.Ripe.plugins = ripe.Ripe.plugins || {};
+
+ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
+    options = options || {};
+    this.rules = rules;
+};
+
+ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+
+ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
+    ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
+
+    // binds to the part event to change the necessary parts
+    // so that they comply with the product's sync rules
+    this.owner.bind("part", function(newPart) {
+        for (var key in this.rules) {
+            // if a part was selected and it is part of
+            // the rule then its value is used otherwise
+            // the first part of the rule is used
+            var rule = this.rules[key];
+            var part = newPart && rule.indexOf(newPart.name) !== -1 ? newPart.name : rule[0];
+            var value = this.owner.parts[part];
+
+            // iterates through the parts of the rule and
+            // sets their material and color to be the same
+            // of the reference part
+            for (var index = 0; index < rule.length; index++) {
+                var _part = rule[index];
+                this.owner.parts[_part].material = value.material;
+                this.owner.parts[_part].color = value.color;
+            }
+        }
+    }.bind(this));
+
+    // resets the current selection to trigger the sync operation
+    var initialParts = ripe.clone(this.owner.parts);
+    this.owner.setParts(initialParts);
 };
 
 ripe.plugins = ripe.plugins || {};

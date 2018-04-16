@@ -174,6 +174,20 @@ configurator.bind("loaded", function() {
 });
 ```
 
+## 7. Plugins
+
+### Part synchronisation
+
+If your product has synchronisation rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behaviour automatically. To do this you need to initialize the `SyncPlugin` wich receives the synchronisation rules and add it to the ripe object using the `addPlugin` function.
+
+```javascript
+ripe.getConfig(function(result) {
+    var syncRules = result.sync;
+    var syncPlugin = new Ripe.plugins.SyncPlugin(syncRules);
+    ripe.addPlugin(syncPlugin);
+});
+```
+
 ## Appendix
 
 ### Options
@@ -196,10 +210,11 @@ configurator.bind("loaded", function() {
 | `sensitivity` | *string* | Defines the degree of sensitivity of the dragging interaction. 40 by default. |
 | `size` | *number* | Initial size value of a frame image that is going to be composed. By default it's 1000px. |
 | `url` | *string* | The base `url` of the server where the product is configured |
-| `useChain` | *boolean* | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default. |
-| `useMasks` | *boolean* | Enables masks on selection/highlight. True by default  |
-| `usePrice` | *boolean* | Enables the fetch price feature everytime a new part is set. True by default. | //calcular o preço
 | `variant` | *string* | Variant of the customizable product |
+| `useChain` | *boolean* | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default. |
+| `useMasks` | *boolean* | Enables masks on selection/highlight. True by default |
+| `usePrice` | *boolean* | Enables the fetch price feature everytime a new part is set. True by default. |
+| `useSync` | *boolean* | Enables the part synchronisation feature. False by default. |
 
 ## Browser Support
 
