@@ -1,5 +1,5 @@
 const base = require("./base");
 const sync = require("./sync");
 
-Object.assign(module.exports, plugins.base);
-Object.assign(module.exports, plugins.sync);
+Object.assign(module.exports, base);
+Object.assign(module.exports, sync);

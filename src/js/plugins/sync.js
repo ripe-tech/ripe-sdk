@@ -1,3 +1,10 @@
+if (typeof window === "undefined" && typeof require !== "undefined") {
+    var base = require("./base");
+    var ripe = base.ripe;
+}
+
+ripe.Ripe.plugins = ripe.Ripe.plugins || {};
+
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
     options = options || {};
     this.rules = rules;
