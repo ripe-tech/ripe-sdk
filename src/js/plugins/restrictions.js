@@ -87,7 +87,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
     // with it, otherwise an invalid state was reached and an empty solution
     // is returned, meaning that there is no option for the current customization
     // that would comply with the restrictions
-    var newPartOption = this._alternativeFor(newPart, restrictions, availableParts, true);
+    var newPartOption = this._alternativeFor(newPart, availableParts, true);
     if (newPartOption === null) {
         return [];
     }
@@ -108,11 +108,11 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._getRestrictionKey = function(
     return part + token + material + token + color;
 };
 
+// maps the restrictions array into a dictionary where restrictions
+// are associated by key with eachother for easier use.
+// For example, '[[{ material: "nappa"}, { material: "suede"}]]'
+// turns into '{ "nappa": ["suede"], "suede": ["nappa"] }'
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(restrictions) {
-    // maps the restrictions array into a dictionary where restrictions
-    // are associated by key with eachother for easier use.
-    // For example, '[[{ material: "nappa"}, { material: "suede"}]]'
-    // turns into '{ "nappa": ["suede"], "suede": ["nappa"] }'
     var restrictionsMap = {};
 
     // iterates over the complete set of restrictions in the restrictions
@@ -167,6 +167,8 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(
     return restrictionsMap;
 };
 
+// checks if newPart is restricted according
+// to the restrictions and the current parts
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(newPart, restrictions, parts) {
     var name = newPart.name;
     var material = newPart.material;
@@ -213,6 +215,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(newPart,
     return false;
 };
 
+// checks if a solution contains all the required parts
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._isComplete = function(parts) {
     // iterates through the parts array and creates
     // an array with the names of the parts for
@@ -235,9 +238,11 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isComplete = function(parts) {
     return true;
 };
 
+// tries to find an alternative to the newPart by searching through the
+// availableParts. If pop is set to true then the alternative will be
+// removed from the solutions space to avoid repeating a solution
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
     newPart,
-    restrictions,
     availableParts,
     pop
 ) {
