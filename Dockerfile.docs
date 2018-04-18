@@ -10,8 +10,9 @@ ENV ENCODING gzip
 ENV HOST 0.0.0.0
 ENV PORT 8080
 ENV CACHE 86400
+ENV INDEX_FILES index.html
 ENV CORS 1
-ENV BASE_PATH /docs
+ENV BASE_PATH /docs/gen
 
 ADD package.json /
 ADD gulpfile.js /
