@@ -9,5 +9,6 @@ package-lock.json
 
 /out
 /dist
+/docs
 /build
 /node_modules
