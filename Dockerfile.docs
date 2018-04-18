@@ -13,6 +13,8 @@ ENV CACHE 86400
 ENV CORS 1
 ENV BASE_PATH /docs
 
+ADD package.json /
+ADD gulpfile.js /
 ADD src /src
 
 RUN apt-get update && apt-get install -y -q nodejs
