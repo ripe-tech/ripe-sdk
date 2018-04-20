@@ -43,10 +43,10 @@
         "xmlhttprequest": "^1.8.0"
     },
     "devDependencies": {
-        "eslint": "^4.19.0",
+        "eslint": "^4.19.1",
         "eslint-config-standard": "^11.0.0",
-        "eslint-plugin-import": "^2.9.0",
-        "eslint-plugin-mocha": "^4.12.1",
+        "eslint-plugin-import": "^2.11.0",
+        "eslint-plugin-mocha": "^5.0.0",
         "eslint-plugin-node": "^6.0.1",
         "eslint-plugin-promise": "^3.7.0",
         "eslint-plugin-standard": "^3.0.1",
@@ -59,7 +59,7 @@
         "gulp-size": "^3.0.0",
         "gulp-uglifyes": "^0.1.3",
         "gulp-zip": "^4.1.0",
-        "mocha": "^5.0.4",
+        "mocha": "^5.1.1",
         "mocha-cli": "^1.0.1"
     }
 }
