@@ -2,33 +2,20 @@
     "name": "ripe-sdk",
     "version": "1.2.4",
     "description": "The public SDK for RIPE Core",
-    "main": "src/js/index.js",
-    "scripts": {
-        "gulp": "gulp",
-        "build": "gulp build",
-        "docs": "gulp docs",
-        "watch": "gulp watch",
-        "mark": "gulp mark",
-        "test": "gulp test"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/ripe-tech/ripe-sdk.git"
-    },
     "keywords": [
+        "js",
         "ripe",
-        "sdk",
-        "js"
+        "sdk"
     ],
+    "homepage": "https://github.com/ripe-tech/ripe-sdk#readme",
+    "bugs": {
+        "url": "https://github.com/ripe-tech/ripe-sdk/issues"
+    },
+    "license": "Apache-2.0",
     "author": {
         "name": "Platforme",
         "url": "https://www.platforme.com"
     },
-    "license": "Apache-2.0",
-    "bugs": {
-        "url": "https://github.com/ripe-tech/ripe-sdk/issues"
-    },
-    "homepage": "https://github.com/ripe-tech/ripe-sdk#readme",
     "files": [
         "gulpfile.js",
         "dist/**/*",
@@ -39,6 +26,19 @@
         "src/js/visual/**/*.js",
         "test/**/*.js"
     ],
+    "main": "src/js/index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ripe-tech/ripe-sdk.git"
+    },
+    "scripts": {
+        "build": "gulp build",
+        "docs": "gulp docs",
+        "gulp": "gulp",
+        "mark": "gulp mark",
+        "upgrade": "npx sort-package-json && ncu -au",
+        "watch": "gulp watch"
+    },
     "dependencies": {
         "xmlhttprequest": "^1.8.0"
     },
@@ -60,6 +60,8 @@
         "gulp-uglifyes": "^0.1.3",
         "gulp-zip": "^4.1.0",
         "mocha": "^5.1.1",
-        "mocha-cli": "^1.0.1"
+        "mocha-cli": "^1.0.1",
+        "npm-check-updates": "^2.14.1",
+        "sort-package-json": "^1.12.0"
     }
 }
