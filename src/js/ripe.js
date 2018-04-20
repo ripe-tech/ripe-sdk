@@ -13,9 +13,11 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
 }
 
 /**
- * Assigns a certain value to certain target.
+ * Assigns a certain set of values in the provided object to the
+ * first parameter of the call (target).
  *
- * @param {String} target The target of the assign.
+ * @param {String} target The target of the assign operation meaning
+ * the object to which the values will be assigned.
  */
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
@@ -73,8 +75,18 @@ ripe.Interactable = function(owner, options) {
     ripe.Interactable.prototype.init.call(this);
 };
 
+/**
+ * The initializer of the class, called whenever this interactable
+ * is going to become active.
+ */
 ripe.Interactable.prototype.init = function() {};
 
+/**
+ * Callback function to be called when the owner configurator has
+ * been changed and some kind of visual update should take place.
+ *
+ * @param {Object} state The new configuration state.
+ */
 ripe.Interactable.prototype.update = function(state) {};
 
 if (typeof window === "undefined" && typeof require !== "undefined") {

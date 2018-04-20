@@ -63,7 +63,9 @@ gulp.task("test", () => {
 });
 
 gulp.task("docs", (cb) => {
-    gulp.src(["README.md", paths.docs], {read: false})
+    gulp.src(["README.md", paths.docs], {
+            read: false
+        })
         .pipe(jsdoc(cb));
 });
 

@@ -29,7 +29,7 @@ ripe.Interactable.prototype.init = function() {};
 /**
  * Callback function to be called when the owner configurator has
  * been changed and some kind of visual update should take place.
- * 
+ *
  * @param {Object} state The new configuration state.
  */
 ripe.Interactable.prototype.update = function(state) {};
