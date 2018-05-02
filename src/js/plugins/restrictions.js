@@ -11,6 +11,7 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, partsOptions, opti
     this.restrictions = restrictions;
     this.restrictionsMap = this._buildRestrictionsMap(restrictions);
     this.partsOptions = partsOptions;
+    this.partCallback = this._applyRestrictions.bind(this);
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
@@ -20,43 +21,51 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
 
     // binds to the pre parts event so that the parts can be
     // changed so that they comply with the product's restrictions
-    this.owner.bind("part", function(newPart) {
-        // creates an array with the customization. If a new
-        // part is set it is added at the end so that it has
-        // priority when solving the restrictions
-        var partsOptions = ripe.clone(this.partsOptions);
-        var customization = [];
-        for (var name in this.owner.parts) {
-            if (newPart !== undefined && newPart.name === name) {
-                continue;
-            }
-            var part = this.owner.parts[name];
-            customization.push({
-                name: name,
-                material: part.material,
-                color: part.color
-            });
-        }
-        newPart !== undefined && customization.push(newPart);
-
-        // obtains the new parts and mutates the original
-        // parts map to apply the necessary changes
-        var newParts = this._solveRestrictions(
-            partsOptions,
-            this.restrictionsMap,
-            customization
-        );
-        for (var index = 0; index < newParts.length; index++) {
-            newPart = newParts[index];
-            this.owner.parts[newPart.name].material = newPart.material;
-            this.owner.parts[newPart.name].color = newPart.color;
-        }
-    }.bind(this));
+    this.owner.bind("part", this.partCallback);
 
     // resets the current selection to trigger
     // the restrictions operation
     var initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
+};
+
+ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
+    this.owner.unbind("part", this.partCallback);
+
+    ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
+};
+
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(newPart) {
+    // creates an array with the customization. If a new
+    // part is set it is added at the end so that it has
+    // priority when solving the restrictions
+    var partsOptions = ripe.clone(this.partsOptions);
+    var customization = [];
+    for (var name in this.owner.parts) {
+        if (newPart !== undefined && newPart.name === name) {
+            continue;
+        }
+        var part = this.owner.parts[name];
+        customization.push({
+            name: name,
+            material: part.material,
+            color: part.color
+        });
+    }
+    newPart !== undefined && customization.push(newPart);
+
+    // obtains the new parts and mutates the original
+    // parts map to apply the necessary changes
+    var newParts = this._solveRestrictions(
+        partsOptions,
+        this.restrictionsMap,
+        customization
+    );
+    for (var index = 0; index < newParts.length; index++) {
+        newPart = newParts[index];
+        this.owner.parts[newPart.name].material = newPart.material;
+        this.owner.parts[newPart.name].color = newPart.color;
+    }
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(

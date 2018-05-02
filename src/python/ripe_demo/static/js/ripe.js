@@ -1,3 +1,4 @@
+/** @namespace */
 var ripe = ripe || {};
 
 if (typeof module !== "undefined") {
@@ -11,6 +12,13 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Assigns a certain set of values in the provided object to the
+ * first parameter of the call (target).
+ *
+ * @param {String} target The target of the assign operation meaning
+ * the object to which the values will be assigned.
+ */
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
@@ -50,6 +58,16 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Class that defines an entity that can be used to interact
+ * with the customizer (abstract).
+ *
+ * @constructor
+ * @param {Object} owner The owner (customizer instance) for
+ * this insteractable.
+ * @param {Object} options The options to be used to configure the
+ * interactable instance to be created.
+ */
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
@@ -57,8 +75,18 @@ ripe.Interactable = function(owner, options) {
     ripe.Interactable.prototype.init.call(this);
 };
 
+/**
+ * The initializer of the class, called whenever this interactable
+ * is going to become active.
+ */
 ripe.Interactable.prototype.init = function() {};
 
+/**
+ * Callback function to be called when the owner configurator has
+ * been changed and some kind of visual update should take place.
+ *
+ * @param {Object} state The new configuration state.
+ */
 ripe.Interactable.prototype.update = function(state) {};
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
@@ -662,6 +690,7 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, partsOptions, opti
     this.restrictions = restrictions;
     this.restrictionsMap = this._buildRestrictionsMap(restrictions);
     this.partsOptions = partsOptions;
+    this.partCallback = this._applyRestrictions.bind(this);
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
@@ -671,43 +700,51 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
 
     // binds to the pre parts event so that the parts can be
     // changed so that they comply with the product's restrictions
-    this.owner.bind("part", function(newPart) {
-        // creates an array with the customization. If a new
-        // part is set it is added at the end so that it has
-        // priority when solving the restrictions
-        var partsOptions = ripe.clone(this.partsOptions);
-        var customization = [];
-        for (var name in this.owner.parts) {
-            if (newPart !== undefined && newPart.name === name) {
-                continue;
-            }
-            var part = this.owner.parts[name];
-            customization.push({
-                name: name,
-                material: part.material,
-                color: part.color
-            });
-        }
-        newPart !== undefined && customization.push(newPart);
-
-        // obtains the new parts and mutates the original
-        // parts map to apply the necessary changes
-        var newParts = this._solveRestrictions(
-            partsOptions,
-            this.restrictionsMap,
-            customization
-        );
-        for (var index = 0; index < newParts.length; index++) {
-            newPart = newParts[index];
-            this.owner.parts[newPart.name].material = newPart.material;
-            this.owner.parts[newPart.name].color = newPart.color;
-        }
-    }.bind(this));
+    this.owner.bind("part", this.partCallback);
 
     // resets the current selection to trigger
     // the restrictions operation
     var initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
+};
+
+ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
+    this.owner.unbind("part", this.partCallback);
+
+    ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
+};
+
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(newPart) {
+    // creates an array with the customization. If a new
+    // part is set it is added at the end so that it has
+    // priority when solving the restrictions
+    var partsOptions = ripe.clone(this.partsOptions);
+    var customization = [];
+    for (var name in this.owner.parts) {
+        if (newPart !== undefined && newPart.name === name) {
+            continue;
+        }
+        var part = this.owner.parts[name];
+        customization.push({
+            name: name,
+            material: part.material,
+            color: part.color
+        });
+    }
+    newPart !== undefined && customization.push(newPart);
+
+    // obtains the new parts and mutates the original
+    // parts map to apply the necessary changes
+    var newParts = this._solveRestrictions(
+        partsOptions,
+        this.restrictionsMap,
+        customization
+    );
+    for (var index = 0; index < newParts.length; index++) {
+        newPart = newParts[index];
+        this.owner.parts[newPart.name].material = newPart.material;
+        this.owner.parts[newPart.name].color = newPart.color;
+    }
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
@@ -974,6 +1011,7 @@ ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
     options = options || {};
     this.rules = rules;
+    this.partCallback = this._applySync.bind(this);
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
@@ -983,29 +1021,37 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
 
     // binds to the part event to change the necessary parts
     // so that they comply with the product's sync rules
-    this.owner.bind("part", function(newPart) {
-        for (var key in this.rules) {
-            // if a part was selected and it is part of
-            // the rule then its value is used otherwise
-            // the first part of the rule is used
-            var rule = this.rules[key];
-            var part = newPart && rule.indexOf(newPart.name) !== -1 ? newPart.name : rule[0];
-            var value = this.owner.parts[part];
-
-            // iterates through the parts of the rule and
-            // sets their material and color to be the same
-            // of the reference part
-            for (var index = 0; index < rule.length; index++) {
-                var _part = rule[index];
-                this.owner.parts[_part].material = value.material;
-                this.owner.parts[_part].color = value.color;
-            }
-        }
-    }.bind(this));
+    this.owner.bind("part", this.partCallback);
 
     // resets the current selection to trigger the sync operation
     var initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
+};
+
+ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
+    this.owner.unbind("part", this.partCallback);
+
+    ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
+};
+
+ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(newPart) {
+    for (var key in this.rules) {
+        // if a part was selected and it is part of
+        // the rule then its value is used otherwise
+        // the first part of the rule is used
+        var rule = this.rules[key];
+        var part = newPart && rule.indexOf(newPart.name) !== -1 ? newPart.name : rule[0];
+        var value = this.owner.parts[part];
+
+        // iterates through the parts of the rule and
+        // sets their material and color to be the same
+        // of the reference part
+        for (var index = 0; index < rule.length; index++) {
+            var _part = rule[index];
+            this.owner.parts[_part].material = value.material;
+            this.owner.parts[_part].color = value.color;
+        }
+    }
 };
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
