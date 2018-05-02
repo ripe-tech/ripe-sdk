@@ -698,7 +698,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
             customization
         );
         for (var index = 0; index < newParts.length; index++) {
-            var newPart = newParts[index];
+            newPart = newParts[index];
             this.owner.parts[newPart.name].material = newPart.material;
             this.owner.parts[newPart.name].color = newPart.color;
         }
@@ -723,18 +723,18 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
         return solution;
     }
 
-    // Retrieves a part from the customization and checks if it is
-    // being restricted by any of the validated parts. If there is
+    // retrieves a part from the customization and checks if it is
+    // being restricted by any of the validated parts, if there is
     // no restriction then adds the part to the solution array and
-    // proceeds to the next part.
+    // proceeds to the next part
     var newPart = customization.pop();
     if (this._isRestricted(newPart, restrictions, solution) === false) {
         solution.push(newPart);
         return this._solveRestrictions(availableParts, restrictions, customization, solution);
     }
 
-    // If the part is restricted then tries to retrieve an alternative option.
-    // If an alternative is found then adds it to the customization and proceeds
+    // if the part is restricted then tries to retrieve an alternative option,
+    // if an alternative is found then adds it to the customization and proceeds
     // with it, otherwise an invalid state was reached and an empty solution
     // is returned, meaning that there is no option for the current customization
     // that would comply with the restrictions
@@ -752,17 +752,24 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._getRestrictionKey = function(
     color,
     token
 ) {
-    var token = token || this.token;
+    token = token || this.token;
     part = part || "";
     material = material || "";
     color = color || "";
     return part + token + material + token + color;
 };
 
-// maps the restrictions array into a dictionary where restrictions
-// are associated by key with eachother for easier use.
-// For example, '[[{ material: "nappa"}, { material: "suede"}]]'
-// turns into '{ "nappa": ["suede"], "suede": ["nappa"] }'
+/**
+ * Maps the restrictions array into a dictionary where restrictions
+ * are associated by key with eachother for easier use.
+ * For example, '[[{ material: "nappa"}, { material: "suede"}]]'
+ * turns into '{ "nappa": ["suede"], "suede": ["nappa"] }'.
+ *
+ * @param {Array} restrictions The array of restrictions defined by an
+ * object of incompatible materials/colors.
+ * @return {Object} A map that associates the restricted keys with the
+ * array of associated restrictions.
+ */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(restrictions) {
     var restrictionsMap = {};
 
@@ -818,8 +825,6 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(
     return restrictionsMap;
 };
 
-// checks if newPart is restricted according
-// to the restrictions and the current parts
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(newPart, restrictions, parts) {
     var name = newPart.name;
     var material = newPart.material;
@@ -831,10 +836,10 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(newPart,
     var materialRestrictions = restrictions[materialKey];
     var colorRestrictions = restrictions[colorKey];
     var keyRestrictions = restrictions[materialColorKey] || [];
-    var restricted = restrictions[partKey] ? true : false;
-    restricted |= materialRestrictions === true ? true : false;
-    restricted |= colorRestrictions === true ? true : false;
-    restricted |= keyRestrictions === true ? true : false;
+    var restricted = restrictions[partKey] !== undefined;
+    restricted |= materialRestrictions === true;
+    restricted |= colorRestrictions === true;
+    restricted |= keyRestrictions === true;
     if (restricted) {
         return true;
     }
@@ -871,16 +876,17 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isComplete = function(parts) {
     // iterates through the parts array and creates
     // an array with the names of the parts for
     // easier searching
+    var part = null;
     var partsS = [];
     for (var index = 0; index < parts.length; index++) {
-        var part = parts[index];
+        part = parts[index];
         partsS.push(part.name);
     }
 
     // iterates through the part options and checks
     // if all of them are set
-    for (var index = 0; index < this.partsOptions.length; index++) {
-        var part = this.partsOptions[index];
+    for (index = 0; index < this.partsOptions.length; index++) {
+        part = this.partsOptions[index];
         if (partsS.indexOf(part.name) === -1) {
             return false;
         }
@@ -899,9 +905,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
 ) {
     pop = pop || false;
     var part = null;
-    var partIndex = null;
+    var color = null;
+    var colors = null;
     var materialsIndex = null;
-    var colorsIndex = null;
 
     // finds the index of the part to use it as the starting
     // point of the search for an alternative
@@ -910,24 +916,16 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
         if (_part.name !== newPart.name) {
             continue;
         }
-        partIndex = index;
         part = _part;
         var materials = part.materials;
-        for (var indexM = 0; indexM < materials.length; indexM++) {
-            var material = materials[indexM];
+        for (var _index = 0; _index < materials.length; _index++) {
+            var material = materials[_index];
             if (material.name !== newPart.material) {
                 continue;
             }
 
-            materialsIndex = indexM;
-            var colors = material.colors;
-            for (var indexC = 0; indexC < colors.length; indexC++) {
-                var color = colors[indexC];
-                if (color.name === newPart.color) {
-                    colorsIndex = indexC;
-                    break;
-                }
-            }
+            materialsIndex = _index;
+            colors = material.colors;
             break;
         }
         break;
@@ -939,10 +937,10 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
     while (indexM !== materialsIndex) {
         indexM = indexM === null ? materialsIndex : indexM;
 
-        var material = part.materials[indexM];
-        var colors = material.colors;
-        for (var indexC = 0; indexC < colors.length; indexC++) {
-            var color = colors[indexC];
+        material = part.materials[indexM];
+        colors = material.colors;
+        for (index = 0; index < colors.length; index++) {
+            color = colors[index];
             if (color === newPart.color) {
                 continue;
             }
@@ -951,7 +949,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
             // from the available parts list so that it is not
             // used again to avoid infinite loops
             if (pop) {
-                colors.splice(indexC, 1);
+                colors.splice(index, 1);
             }
             var alternative = {
                 name: newPart.name,
