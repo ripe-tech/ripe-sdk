@@ -3,6 +3,7 @@ const zip = require("gulp-zip");
 const size = require("gulp-size");
 const count = require("gulp-count");
 const mocha = require("gulp-mocha");
+const jsdoc = require("gulp-jsdoc3");
 const uglifyes = require("gulp-uglifyes");
 const replace = require("gulp-replace");
 const _package = require("./package.json");
@@ -12,6 +13,7 @@ var paths = {
     maincss: "src/css/ripe.css",
     scripts: "src/js/**/*.js",
     css: "src/css/**/*.css",
+    docs: "src/js/*/**/*.js",
     test: "test/js/**/*.js",
     dist: "dist/**/*"
 };
@@ -20,7 +22,7 @@ gulp.task("build-js", () => {
     return gulp.src(paths.scripts)
         .pipe(uglifyes({
             mangle: false,
-            ecma: 6
+            ecma: 5
         }))
         .pipe(replace("__VERSION__", _package.version))
         .pipe(size())
@@ -58,6 +60,13 @@ gulp.task("test", () => {
         .pipe(mocha({
             reporter: "spec"
         }));
+});
+
+gulp.task("docs", (cb) => {
+    gulp.src(["README.md", paths.docs], {
+            read: false
+        })
+        .pipe(jsdoc(cb));
 });
 
 gulp.task("watch-js", function() {

@@ -1,3 +1,4 @@
+/** @namespace */
 var ripe = ripe || {};
 
 if (typeof module !== "undefined") {
