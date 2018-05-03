@@ -1,3 +1,4 @@
+/** @namespace */
 var ripe = ripe || {};
 
 if (typeof module !== "undefined") {
@@ -11,6 +12,13 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Assigns a certain set of values in the provided object to the
+ * first parameter of the call (target).
+ *
+ * @param {String} target The target of the assign operation meaning
+ * the object to which the values will be assigned.
+ */
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
@@ -50,6 +58,16 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Class that defines an entity that can be used to interact
+ * with the customizer (abstract).
+ *
+ * @constructor
+ * @param {Object} owner The owner (customizer instance) for
+ * this insteractable.
+ * @param {Object} options The options to be used to configure the
+ * interactable instance to be created.
+ */
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
@@ -57,8 +75,18 @@ ripe.Interactable = function(owner, options) {
     ripe.Interactable.prototype.init.call(this);
 };
 
+/**
+ * The initializer of the class, called whenever this interactable
+ * is going to become active.
+ */
 ripe.Interactable.prototype.init = function() {};
 
+/**
+ * Callback function to be called when the owner configurator has
+ * been changed and some kind of visual update should take place.
+ *
+ * @param {Object} state The new configuration state.
+ */
 ripe.Interactable.prototype.update = function(state) {};
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
@@ -497,6 +525,60 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     });
 };
 
+ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, callback) {
+    var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
+    var fullUrl = this.url + "sizes/size_to_native?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, callback) {
+    var query = "";
+    var scale = null;
+    var value = null;
+    var gender = null;
+    for (var index = 0; index < scales.length; index++) {
+        scale = scales[index];
+        value = values[index];
+        gender = genders[index];
+        var prefix = index === 0 ? "" : "&";
+        query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
+    }
+
+    var fullUrl = this.url + "sizes/size_to_native_b?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, callback) {
+    var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
+    var fullUrl = this.url + "sizes/native_to_size?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, callback) {
+    var query = "";
+    var scale = null;
+    var value = null;
+    var gender = null;
+    for (var index = 0; index < scales.length; index++) {
+        scale = scales[index];
+        value = values[index];
+        gender = genders[index];
+        var prefix = index === 0 ? "" : "&";
+        query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
+    }
+
+    var fullUrl = this.url + "sizes/native_to_size_b?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
 ripe.Ripe.prototype._requestURL = function(url, callback) {
     var context = this;
     var request = new XMLHttpRequest();
@@ -611,15 +693,15 @@ var ripe = ripe || {};
 ripe.Ripe = ripe.Ripe || {};
 ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 
-ripe.Ripe.plugins.Plugin = function() {}
+ripe.Ripe.plugins.Plugin = function() {};
 
 ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
     this.owner = owner;
-}
+};
 
 ripe.Ripe.plugins.Plugin.prototype.unregister = function(owner) {
     this.owner = null;
-}
+};
 
 if (typeof module !== "undefined") {
     module.exports = {
@@ -637,7 +719,7 @@ ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
     options = options || {};
     this.rules = rules;
-}
+};
 
 ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
 
@@ -669,7 +751,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     // resets the current selection to trigger the sync operation
     var initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
-}
+};
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("../base");

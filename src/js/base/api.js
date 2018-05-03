@@ -38,6 +38,60 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     });
 };
 
+ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, callback) {
+    var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
+    var fullUrl = this.url + "sizes/size_to_native?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, callback) {
+    var query = "";
+    var scale = null;
+    var value = null;
+    var gender = null;
+    for (var index = 0; index < scales.length; index++) {
+        scale = scales[index];
+        value = values[index];
+        gender = genders[index];
+        var prefix = index === 0 ? "" : "&";
+        query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
+    }
+
+    var fullUrl = this.url + "sizes/size_to_native_b?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, callback) {
+    var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
+    var fullUrl = this.url + "sizes/native_to_size?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, callback) {
+    var query = "";
+    var scale = null;
+    var value = null;
+    var gender = null;
+    for (var index = 0; index < scales.length; index++) {
+        scale = scales[index];
+        value = values[index];
+        gender = genders[index];
+        var prefix = index === 0 ? "" : "&";
+        query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
+    }
+
+    var fullUrl = this.url + "sizes/native_to_size_b?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
 ripe.Ripe.prototype._requestURL = function(url, callback) {
     var context = this;
     var request = new XMLHttpRequest();
