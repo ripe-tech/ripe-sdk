@@ -854,14 +854,13 @@ ripe.Configurator.prototype.update = function(state, options) {
     }
     this.unique = unique;
 
-    // runs the load operation for the current frame
+    // runs the load operation for the current frame, taking into
+    // account the multiple requirements for such execution
     this._loadFrame(view, position, {
-            draw: true,
-            animate: animate,
-            duration: duration
-        },
-        callback
-    );
+        draw: true,
+        animate: animate,
+        duration: duration
+    }, callback);
 
     // runs the pre-loading process so that the remaining frames are
     // loaded for a smother experience when dragging the element,
@@ -1656,7 +1655,7 @@ ripe.Image.prototype.init = function() {
             initials: initials,
             profile: [engraving]
         };
-    }
+    };
 
     this._registerHandlers();
 };

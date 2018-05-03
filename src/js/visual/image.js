@@ -21,7 +21,7 @@ ripe.Image.prototype.init = function() {
             initials: initials,
             profile: [engraving]
         };
-    }
+    };
 
     this._registerHandlers();
 };
