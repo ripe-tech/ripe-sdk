@@ -3,8 +3,6 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-ripe.Ripe.plugins = ripe.Ripe.plugins || {};
-
 ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, partsOptions, options) {
     options = options || {};
     this.token = options.token || ":";
@@ -229,7 +227,6 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(newPart,
     return false;
 };
 
-// checks if a solution contains all the required parts
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._isComplete = function(parts) {
     // iterates through the parts array and creates
     // an array with the names of the parts for
@@ -253,9 +250,6 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isComplete = function(parts) {
     return true;
 };
 
-// tries to find an alternative to the newPart by searching through the
-// availableParts. If pop is set to true then the alternative will be
-// removed from the solutions space to avoid repeating a solution
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
     newPart,
     availableParts,

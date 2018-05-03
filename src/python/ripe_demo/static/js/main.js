@@ -109,20 +109,13 @@ window.onload = function() {
     // sync and the resctriction rules and initializes
     // the respective plugin if they exits
     ripe.getConfig(function(result) {
-        var parts = result.parts;
-        var restrictions = result.restrictions;
-        var sync = result.sync;
-        if (sync) {
-            var syncPlugin = new Ripe.plugins.SyncPlugin(sync);
-            ripe.addPlugin(syncPlugin);
-        }
-        if (restrictions && restrictions.length) {
-            var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(
-                restrictions,
-                parts
-            );
-            ripe.addPlugin(restrictionsPlugin);
-        }
+        var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
+        var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(
+            result.restrictions,
+            result.parts
+        );
+        ripe.addPlugin(syncPlugin);
+        ripe.addPlugin(restrictionsPlugin);
     });
 
     var setPart = document.getElementById("set-part");
