@@ -1,3 +1,4 @@
+/** @namespace */
 var ripe = ripe || {};
 
 if (typeof module !== "undefined") {
@@ -11,6 +12,13 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Assigns a certain set of values in the provided object to the
+ * first parameter of the call (target).
+ *
+ * @param {String} target The target of the assign operation meaning
+ * the object to which the values will be assigned.
+ */
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
@@ -50,6 +58,16 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Class that defines an entity that can be used to interact
+ * with the customizer (abstract).
+ *
+ * @constructor
+ * @param {Object} owner The owner (customizer instance) for
+ * this insteractable.
+ * @param {Object} options The options to be used to configure the
+ * interactable instance to be created.
+ */
 ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
@@ -57,8 +75,18 @@ ripe.Interactable = function(owner, options) {
     ripe.Interactable.prototype.init.call(this);
 };
 
+/**
+ * The initializer of the class, called whenever this interactable
+ * is going to become active.
+ */
 ripe.Interactable.prototype.init = function() {};
 
+/**
+ * Callback function to be called when the owner configurator has
+ * been changed and some kind of visual update should take place.
+ *
+ * @param {Object} state The new configuration state.
+ */
 ripe.Interactable.prototype.update = function(state) {};
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
@@ -589,6 +617,7 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     query += options.height ? "&height=" + options.height : "";
     query += options.size ? "&size=" + options.size : "";
     query += options.background ? "&background=" + options.background : "";
+    query += options.crop ? "&crop=" + (options.crop ? 1 : 0) : "";
     query += options.profile ? "&initials_profile=" + options.profile.join(",") : "";
 
     var initials = options.initials === "" ? "$empty" : options.initials;
@@ -611,15 +640,15 @@ var ripe = ripe || {};
 ripe.Ripe = ripe.Ripe || {};
 ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 
-ripe.Ripe.plugins.Plugin = function() {}
+ripe.Ripe.plugins.Plugin = function() {};
 
 ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
     this.owner = owner;
-}
+};
 
 ripe.Ripe.plugins.Plugin.prototype.unregister = function(owner) {
     this.owner = null;
-}
+};
 
 if (typeof module !== "undefined") {
     module.exports = {
@@ -637,7 +666,7 @@ ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
     options = options || {};
     this.rules = rules;
-}
+};
 
 ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
 
@@ -669,7 +698,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     // resets the current selection to trigger the sync operation
     var initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
-}
+};
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("../base");
@@ -1620,6 +1649,7 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
+    this.crop = this.options.crop || false;
     this.showInitials = this.options.showInitials || false;
     this.initialsBuilder = this.options.initialsBuilder || function(initials, engraving, element) {
         return {
@@ -1636,6 +1666,7 @@ ripe.Image.prototype.update = function(state) {
     var size = this.element.dataset.size || this.size;
     var width = this.element.dataset.width || this.width;
     var height = this.element.dataset.height || this.height;
+    var crop = this.element.dataset.crop || this.crop;
 
     this.initials = state !== undefined ? state.initials : this.initials;
     this.engraving = state !== undefined ? state.engraving : this.engraving;
@@ -1647,6 +1678,7 @@ ripe.Image.prototype.update = function(state) {
         size: size,
         width: width,
         height: height,
+        crop: crop,
         initials: initialsSpec.initials,
         profile: initialsSpec.profile
     });

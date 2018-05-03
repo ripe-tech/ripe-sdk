@@ -617,6 +617,7 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     query += options.height ? "&height=" + options.height : "";
     query += options.size ? "&size=" + options.size : "";
     query += options.background ? "&background=" + options.background : "";
+    query += options.crop ? "&crop=" + (options.crop ? 1 : 0) : "";
     query += options.profile ? "&initials_profile=" + options.profile.join(",") : "";
 
     var initials = options.initials === "" ? "$empty" : options.initials;
@@ -1648,6 +1649,7 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
+    this.crop = this.options.crop || false;
     this.showInitials = this.options.showInitials || false;
     this.initialsBuilder = this.options.initialsBuilder || function(initials, engraving, element) {
         return {
@@ -1664,6 +1666,7 @@ ripe.Image.prototype.update = function(state) {
     var size = this.element.dataset.size || this.size;
     var width = this.element.dataset.width || this.width;
     var height = this.element.dataset.height || this.height;
+    var crop = this.element.dataset.crop || this.crop;
 
     this.initials = state !== undefined ? state.initials : this.initials;
     this.engraving = state !== undefined ? state.engraving : this.engraving;
@@ -1675,6 +1678,7 @@ ripe.Image.prototype.update = function(state) {
         size: size,
         width: width,
         height: height,
+        crop: crop,
         initials: initialsSpec.initials,
         profile: initialsSpec.profile
     });
