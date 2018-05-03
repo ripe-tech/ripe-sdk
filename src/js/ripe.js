@@ -393,11 +393,14 @@ ripe.Ripe.prototype._setPart = function(part, material, color) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
-    this.trigger("part", {
-        name: part,
-        material: material,
-        color: color
-    });
+    this.trigger(
+        "part",
+        part, {
+            name: part,
+            material: material,
+            color: color
+        }
+    );
 };
 
 ripe.Ripe.prototype._partsList = function(parts) {
@@ -715,24 +718,28 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
 
-ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(newPart) {
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(name, value) {
     // creates an array with the customization. If a new
     // part is set it is added at the end so that it has
     // priority when solving the restrictions
     var partsOptions = ripe.clone(this.partsOptions);
     var customization = [];
-    for (var name in this.owner.parts) {
-        if (newPart !== undefined && newPart.name === name) {
+    for (var partName in this.owner.parts) {
+        if (name !== undefined && name === partName) {
             continue;
         }
-        var part = this.owner.parts[name];
+        var part = this.owner.parts[partName];
         customization.push({
-            name: name,
+            name: partName,
             material: part.material,
             color: part.color
         });
     }
-    newPart !== undefined && customization.push(newPart);
+    name !== undefined && customization.push({
+        name: name,
+        material: value.material,
+        color: value.color
+    });
 
     // obtains the new parts and mutates the original
     // parts map to apply the necessary changes
@@ -1029,22 +1036,22 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
 
-ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(newPart) {
+ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
     for (var key in this.rules) {
         // if a part was selected and it is part of
         // the rule then its value is used otherwise
         // the first part of the rule is used
         var rule = this.rules[key];
-        var part = newPart && rule.indexOf(newPart.name) !== -1 ? newPart.name : rule[0];
-        var value = this.owner.parts[part];
+        var part = name && rule.indexOf(name) !== -1 ? name : rule[0];
+        var partValue = this.owner.parts[part];
 
         // iterates through the parts of the rule and
         // sets their material and color to be the same
         // of the reference part
         for (var index = 0; index < rule.length; index++) {
             var _part = rule[index];
-            this.owner.parts[_part].material = value.material;
-            this.owner.parts[_part].color = value.color;
+            this.owner.parts[_part].material = partValue.material;
+            this.owner.parts[_part].color = partValue.color;
         }
     }
 };

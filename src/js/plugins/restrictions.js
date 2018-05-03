@@ -33,24 +33,28 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
 
-ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(newPart) {
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(name, value) {
     // creates an array with the customization. If a new
     // part is set it is added at the end so that it has
     // priority when solving the restrictions
     var partsOptions = ripe.clone(this.partsOptions);
     var customization = [];
-    for (var name in this.owner.parts) {
-        if (newPart !== undefined && newPart.name === name) {
+    for (var partName in this.owner.parts) {
+        if (name !== undefined && name === partName) {
             continue;
         }
-        var part = this.owner.parts[name];
+        var part = this.owner.parts[partName];
         customization.push({
-            name: name,
+            name: partName,
             material: part.material,
             color: part.color
         });
     }
-    newPart !== undefined && customization.push(newPart);
+    name !== undefined && customization.push({
+        name: name,
+        material: value.material,
+        color: value.color
+    });
 
     // obtains the new parts and mutates the original
     // parts map to apply the necessary changes

@@ -60,11 +60,13 @@ describe("Ripe", function() {
             assert.deepEqual(initialParts, mockRipe.parts);
 
             mockRipe.parts.bottom.color = "white";
-            restrictionsPlugin._applyRestrictions({
-                name: "bottom",
-                material: mockRipe.parts.bottom.material,
-                color: mockRipe.parts.bottom.color
-            });
+            restrictionsPlugin._applyRestrictions(
+                "bottom",
+                {
+                    material: mockRipe.parts.bottom.material,
+                    color: mockRipe.parts.bottom.color
+                }
+            );
             assert.equal(mockRipe.parts.bottom.color, "white");
             assert.equal(mockRipe.parts.upper.color, "white");
         });

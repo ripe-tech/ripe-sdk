@@ -193,11 +193,14 @@ ripe.Ripe.prototype._setPart = function(part, material, color) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
-    this.trigger("part", {
-        name: part,
-        material: material,
-        color: color
-    });
+    this.trigger(
+        "part",
+        part, {
+            name: part,
+            material: material,
+            color: color
+        }
+    );
 };
 
 ripe.Ripe.prototype._partsList = function(parts) {
