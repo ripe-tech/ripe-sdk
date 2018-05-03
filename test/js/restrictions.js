@@ -56,11 +56,11 @@ describe("Ripe", function() {
             var restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(restrictions, partOptions);
             restrictionsPlugin.register(mockRipe);
 
-            mockRipe.trigger("part");
+            restrictionsPlugin._applyRestrictions();
             assert.deepEqual(initialParts, mockRipe.parts);
 
             mockRipe.parts.bottom.color = "white";
-            mockRipe.trigger("part", {
+            restrictionsPlugin._applyRestrictions({
                 name: "bottom",
                 material: mockRipe.parts.bottom.material,
                 color: mockRipe.parts.bottom.color
