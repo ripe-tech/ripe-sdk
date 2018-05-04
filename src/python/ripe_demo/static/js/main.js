@@ -106,7 +106,7 @@ window.onload = function() {
     ripe.load();
 
     // loads the config of the product to retrieve the
-    // sync and the resctriction rules and initializes
+    // sync and the restriction rules and initializes
     // the respective plugin if they exits
     ripe.getConfig(function(result) {
         var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
