@@ -28,32 +28,27 @@ describe("Ripe", function() {
             mockRipe.setParts(parts);
 
             var restrictions = [
-                [
-                    { color: "black" },
-                    { color: "white" }
-                ]
+                [{
+                    color: "black"
+                }, {
+                    color: "white"
+                }]
             ];
-            var partOptions = [
-                {
-                    name: "upper",
-                    materials: [
-                        {
-                            name: "nappa",
-                            colors: ["black", "white"]
-                        }
-                    ]
-                },
-                {
-                    name: "bottom",
-                    materials: [
-                        {
-                            name: "nappa",
-                            colors: ["black", "white"]
-                        }
-                    ]
-                }
-            ];
-            var restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(restrictions, partOptions);
+            var partOptions = [{
+                name: "upper",
+                materials: [{
+                    name: "nappa",
+                    colors: ["black", "white"]
+                }]
+            }, {
+                name: "bottom",
+                materials: [{
+                    name: "nappa",
+                    colors: ["black", "white"]
+                }]
+            }];
+            var restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
+                restrictions, partOptions);
             restrictionsPlugin.register(mockRipe);
 
             restrictionsPlugin._applyRestrictions();
@@ -61,8 +56,7 @@ describe("Ripe", function() {
 
             mockRipe.parts.bottom.color = "white";
             restrictionsPlugin._applyRestrictions(
-                "bottom",
-                {
+                "bottom", {
                     material: mockRipe.parts.bottom.material,
                     color: mockRipe.parts.bottom.color
                 }
