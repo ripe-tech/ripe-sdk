@@ -8,13 +8,12 @@ describe("Ripe", function() {
 
     describe("#main", function() {
         it("should apply restrictions", async () => {
-            var result = null;
-            var mockRipe = new base.ripe.Observable();
+            const mockRipe = new base.ripe.Observable();
             mockRipe.setParts = function(parts) {
                 this.parts = parts;
             };
 
-            var initialParts = {
+            const initialParts = {
                 upper: {
                     material: "nappa",
                     color: "black"
@@ -24,17 +23,14 @@ describe("Ripe", function() {
                     color: "black"
                 }
             };
-            var parts = JSON.parse(JSON.stringify(initialParts));
-            mockRipe.setParts(parts);
-
-            var restrictions = [
+            const restrictions = [
                 [{
                     color: "black"
                 }, {
                     color: "white"
                 }]
             ];
-            var partOptions = [{
+            const partOptions = [{
                 name: "upper",
                 materials: [{
                     name: "nappa",
@@ -47,7 +43,10 @@ describe("Ripe", function() {
                     colors: ["black", "white"]
                 }]
             }];
-            var restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
+
+            mockRipe.setParts(initialParts);
+
+            const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
                 restrictions, partOptions);
             restrictionsPlugin.register(mockRipe);
 
