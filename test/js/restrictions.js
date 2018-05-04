@@ -7,12 +7,7 @@ describe("Ripe", function() {
     this.timeout(config.TEST_TIMEOUT);
 
     describe("#main", function() {
-        it("should apply restrictions", async () => {
-            const mockRipe = new base.ripe.Observable();
-            mockRipe.setParts = function(parts) {
-                this.parts = parts;
-            };
-
+        it("should apply restrictions", () => {
             const initialParts = {
                 upper: {
                     material: "nappa",
@@ -44,7 +39,8 @@ describe("Ripe", function() {
                 }]
             }];
 
-            mockRipe.setParts(initialParts);
+            const mockRipe = new base.ripe.Observable();
+            mockRipe.parts = initialParts;
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
                 restrictions, partOptions);
