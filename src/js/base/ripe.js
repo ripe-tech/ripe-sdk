@@ -52,7 +52,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.parts = result;
         this.ready = true;
         this.update();
-        this.trigger("parts", this.parts);
+        this.setParts(result);
     }.bind(this));
 
     // tries to determine if the combinations available should be
@@ -85,6 +85,10 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
 };
 
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
+    if (typeof update === "object" && Array.isArray(update) === false) {
+        update = this._partsList(update);
+    }
+
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
         this._setPart(part[0], part[1], part[2], true);
@@ -189,7 +193,21 @@ ripe.Ripe.prototype._setPart = function(part, material, color) {
     value.material = material;
     value.color = color;
     this.parts[part] = value;
-    this.trigger("part", value);
+    this.trigger("part", part, value);
 };
+
+ripe.Ripe.prototype._partsList = function(parts) {
+    parts = parts || this.parts;
+    var partsList = [];
+    for (var part in parts) {
+        var value = parts[part];
+        partsList.push([
+            part,
+            value.material,
+            value.color
+        ]);
+    }
+    return partsList;
+}
 
 var Ripe = ripe.Ripe;

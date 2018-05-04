@@ -35,6 +35,7 @@
         "build": "gulp build",
         "docs": "gulp docs",
         "gulp": "gulp",
+        "test": "gulp test",
         "mark": "gulp mark",
         "upgrade": "npx sort-package-json && ncu -au",
         "watch": "gulp watch"
