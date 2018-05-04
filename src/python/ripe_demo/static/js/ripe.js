@@ -550,6 +550,60 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     });
 };
 
+ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, callback) {
+    var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
+    var fullUrl = this.url + "sizes/size_to_native?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, callback) {
+    var query = "";
+    var scale = null;
+    var value = null;
+    var gender = null;
+    for (var index = 0; index < scales.length; index++) {
+        scale = scales[index];
+        value = values[index];
+        gender = genders[index];
+        var prefix = index === 0 ? "" : "&";
+        query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
+    }
+
+    var fullUrl = this.url + "sizes/size_to_native_b?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, callback) {
+    var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
+    var fullUrl = this.url + "sizes/native_to_size?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, callback) {
+    var query = "";
+    var scale = null;
+    var value = null;
+    var gender = null;
+    for (var index = 0; index < scales.length; index++) {
+        scale = scales[index];
+        value = values[index];
+        gender = genders[index];
+        var prefix = index === 0 ? "" : "&";
+        query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
+    }
+
+    var fullUrl = this.url + "sizes/native_to_size_b?" + query;
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
 ripe.Ripe.prototype._requestURL = function(url, callback) {
     var context = this;
     var request = new XMLHttpRequest();
@@ -642,6 +696,7 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     query += options.height ? "&height=" + options.height : "";
     query += options.size ? "&size=" + options.size : "";
     query += options.background ? "&background=" + options.background : "";
+    query += options.crop ? "&crop=" + (options.crop ? 1 : 0) : "";
     query += options.profile ? "&initials_profile=" + options.profile.join(",") : "";
 
     var initials = options.initials === "" ? "$empty" : options.initials;
@@ -1091,7 +1146,7 @@ ripe.Configurator.prototype = Object.create(ripe.Visual.prototype);
 ripe.Configurator.prototype.init = function() {
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
-    this.size = this.options.size;
+    this.size = this.options.size || null;
     this.maxSize = this.options.maxSize || 1000;
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
@@ -1210,14 +1265,13 @@ ripe.Configurator.prototype.update = function(state, options) {
     }
     this.unique = unique;
 
-    // runs the load operation for the current frame
+    // runs the load operation for the current frame, taking into
+    // account the multiple requirements for such execution
     this._loadFrame(view, position, {
-            draw: true,
-            animate: animate,
-            duration: duration
-        },
-        callback
-    );
+        draw: true,
+        animate: animate,
+        duration: duration
+    }, callback);
 
     // runs the pre-loading process so that the remaining frames are
     // loaded for a smother experience when dragging the element,
@@ -2005,13 +2059,16 @@ ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
+    this.width = this.options.width || null;
+    this.height = this.options.height || null;
+    this.crop = this.options.crop || false;
     this.showInitials = this.options.showInitials || false;
     this.initialsBuilder = this.options.initialsBuilder || function(initials, engraving, element) {
         return {
             initials: initials,
             profile: [engraving]
         };
-    }
+    };
 
     this._registerHandlers();
 };
@@ -2021,6 +2078,7 @@ ripe.Image.prototype.update = function(state) {
     var size = this.element.dataset.size || this.size;
     var width = this.element.dataset.width || this.width;
     var height = this.element.dataset.height || this.height;
+    var crop = this.element.dataset.crop || this.crop;
 
     this.initials = state !== undefined ? state.initials : this.initials;
     this.engraving = state !== undefined ? state.engraving : this.engraving;
@@ -2032,6 +2090,7 @@ ripe.Image.prototype.update = function(state) {
         size: size,
         width: width,
         height: height,
+        crop: crop,
         initials: initialsSpec.initials,
         profile: initialsSpec.profile
     });

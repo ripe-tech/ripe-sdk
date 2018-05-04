@@ -14,7 +14,7 @@ ripe.Configurator.prototype = Object.create(ripe.Visual.prototype);
 ripe.Configurator.prototype.init = function() {
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
-    this.size = this.options.size;
+    this.size = this.options.size || null;
     this.maxSize = this.options.maxSize || 1000;
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
@@ -133,14 +133,13 @@ ripe.Configurator.prototype.update = function(state, options) {
     }
     this.unique = unique;
 
-    // runs the load operation for the current frame
+    // runs the load operation for the current frame, taking into
+    // account the multiple requirements for such execution
     this._loadFrame(view, position, {
-            draw: true,
-            animate: animate,
-            duration: duration
-        },
-        callback
-    );
+        draw: true,
+        animate: animate,
+        duration: duration
+    }, callback);
 
     // runs the pre-loading process so that the remaining frames are
     // loaded for a smother experience when dragging the element,
