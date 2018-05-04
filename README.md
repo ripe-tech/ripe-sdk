@@ -177,7 +177,7 @@ configurator.bind("loaded", function() {
 
 ### Part synchronisation
 
-If your product has synchronisation rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behaviour automatically. To do this you need to initialize the `SyncPlugin` wich receives the synchronisation rules and add it to the ripe object using the `addPlugin` function.
+If your product has synchronisation rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behaviour automatically. To do this you need to initialize the `SyncPlugin` which receives the synchronisation rules and add it to the ripe object using the `addPlugin` function.
 
 ```javascript
 ripe.getConfig(function(result) {
@@ -186,6 +186,17 @@ ripe.getConfig(function(result) {
     ripe.addPlugin(syncPlugin);
 });
 ```
+
+## 8. Sizes
+
+If you need to create an order using the `ripe-core` API then you have to set the size of the product according to the `ripe-core` native scale. The following methods allow you to convert from and to that scale. `scale` is a string that represents the size scale, `value` is the numeric value in that scale and `gender` is a string that can be set to `female`, `male` or `kids`.
+To reduce the number of requests when you need to convert several size options you can use the bulk methods that accept an array of values and return an array with all the results.
+
+- `sizeToNative(scale, value, gender)`
+- `nativeToSize(scale, value, gender)`
+- `sizeToNativeB(scales, values, genders)`
+- `nativeToSizeB(scales, values, genders)`
+
 
 ## Appendix
 
