@@ -40,7 +40,10 @@ describe("Ripe", function() {
             }];
 
             const mockRipe = new base.ripe.Observable();
-            mockRipe.parts = initialParts;
+            mockRipe.setParts = function(parts) {
+                this.parts = parts;
+            };
+            mockRipe.setParts(initialParts);
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
                 restrictions, partOptions);
