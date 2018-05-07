@@ -46,6 +46,13 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, callback) {
     });
 };
 
+ripe.Ripe.prototype.getSizes = function(callback) {
+    var fullUrl = this.url + "sizes";
+    return this._requestURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
 ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, callback) {
     var query = "";
     var scale = null;
