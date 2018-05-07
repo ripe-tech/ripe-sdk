@@ -534,6 +534,17 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
     });
 };
 
+ripe.Ripe.prototype.getOptionals = function(options, callback) {
+    return this.getDefaults(options, function(defaults) {
+        var optionals = [];
+        for (var name in defaults) {
+            var part = defaults[name];
+            part.optional && optionals.push(name);
+        }
+        callback(optionals);
+    });
+};
+
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
@@ -749,6 +760,7 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, partsOptions, opti
     this.restrictions = restrictions;
     this.restrictionsMap = this._buildRestrictionsMap(restrictions);
     this.partsOptions = partsOptions;
+    this.optionals = options.optionalParts || [];
     this.partCallback = this._applyRestrictions.bind(this);
 };
 
@@ -1055,6 +1067,14 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
             return alternative;
         }
         indexM = (indexM + 1) % part.materials.length;
+    }
+
+    if (this.optionals.indexOf(newPart.name) !== -1) {
+        return {
+            name: newPart.name,
+            material: null,
+            color: null
+        };
     }
 
     return null;
