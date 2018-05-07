@@ -1049,7 +1049,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
         colors = material.colors;
         for (index = 0; index < colors.length; index++) {
             color = colors[index];
-            if (color === newPart.color) {
+            if (indexM === materialsIndex && color === newPart.color) {
                 continue;
             }
 

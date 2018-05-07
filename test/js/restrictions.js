@@ -79,35 +79,33 @@ describe("Ripe", function() {
                     material: "metal"
                 }]
             ];
-            const partOptions = [
-                {
-                    name: "upper",
-                    materials: [
-                        {
-                            name: "suede",
-                            colors: ["black"]
-                        },
-                        {
-                            name: "nappa",
-                            colors: ["black"]
-                        }
-                    ]
+            const partOptions = [{
+                name: "upper",
+                materials: [{
+                    name: "suede",
+                    colors: ["black"]
                 }, {
-                    name: "logo",
-                    materials: [{
-                        name: "metal",
-                        colors: ["gold"]
-                    }]
-                }];
+                    name: "nappa",
+                    colors: ["black"]
+                }]
+            }, {
+                name: "logo",
+                materials: [{
+                    name: "metal",
+                    colors: ["gold"]
+                }]
+            }];
 
             const mockRipe = new base.ripe.Observable();
-            mockRipe.setParts = function (parts) {
+            mockRipe.setParts = function(parts) {
                 this.parts = parts;
             };
             mockRipe.setParts(initialParts);
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
-                restrictions, partOptions, { optionalParts: ["logo"] });
+                restrictions, partOptions, {
+                    optionalParts: ["logo"]
+                });
             restrictionsPlugin.register(mockRipe);
 
             assert.deepEqual(initialParts, mockRipe.parts);

@@ -58,7 +58,7 @@ return true;};ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor=fun
 part=_part;var materials=part.materials;for(var _index=0;_index<materials.length;_index++){var material=materials[_index];if(material.name!==newPart.material){continue;}
 materialsIndex=_index;colors=material.colors;break;}
 break;}
-var indexM=null;while(indexM!==materialsIndex){indexM=indexM===null?materialsIndex:indexM;material=part.materials[indexM];colors=material.colors;for(index=0;index<colors.length;index++){color=colors[index];if(color===newPart.color){continue;}
+var indexM=null;while(indexM!==materialsIndex){indexM=indexM===null?materialsIndex:indexM;material=part.materials[indexM];colors=material.colors;for(index=0;index<colors.length;index++){color=colors[index];if(indexM===materialsIndex&&color===newPart.color){continue;}
 if(pop){colors.splice(index,1);}
 var alternative={name:newPart.name,material:material.name,color:color};return alternative;}
 indexM=(indexM+1)%part.materials.length;}
