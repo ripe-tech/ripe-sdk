@@ -867,10 +867,20 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
     if (newPartOption === null) {
         for (var index = solution.length - 1; index > 0; index--) {
             var solutionPart = solution[index];
+
+            // checks if a part on the solution has other options
             if (this._hasOptions(solutionPart, availableParts)) {
+                // removes the existing part from the solution and
+                // moves it behind the part with no valid optionals
+                // so that it is added first to the solution instead
                 solution.splice(index, 1);
                 customization.push(solutionPart);
                 customization.push(newPart);
+
+                // restores the options for both parts so that the
+                // algorithm can backtrack to a point with valid
+                // alternatives and tries to continue with the
+                // new customization order
                 this._restoreAvailableParts(solutionPart.name, availableParts, _availablePartsBackup);
                 this._restoreAvailableParts(newPart.name, availableParts, _availablePartsBackup);
                 return this._solveRestrictions(
