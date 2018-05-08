@@ -1179,9 +1179,13 @@ ripe.Configurator.prototype.init = function() {
     // highlight operation (considers only the default ones)
     this.partsList = [];
     this.owner.getConfig(function(config) {
-        var defaults = config.defaults;
         this.hiddenParts = config.hidden;
-        this.partsList = Object.keys(defaults);
+        var parts = config.parts;
+        this.partsList = [];
+        for (var index = 0; index < parts.length; index++) {
+            var part = parts[index];
+            this.partsList.push(part.name);
+        }
         this.partsList.sort();
     }.bind(this));
 
