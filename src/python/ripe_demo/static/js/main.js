@@ -111,8 +111,7 @@ window.onload = function() {
     ripe.getConfig(function(result) {
         var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
         var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(
-            result.restrictions,
-            result.parts
+            result.restrictions
         );
         ripe.addPlugin(syncPlugin);
         ripe.addPlugin(restrictionsPlugin);

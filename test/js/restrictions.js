@@ -3,6 +3,20 @@ const config = require("./config");
 const base = require("../../src/js/base");
 const plugins = require("../../src/js/plugins");
 
+const MockRipe = function(partOptions) {
+    const mockRipe = new base.ripe.Observable();
+    mockRipe.getConfig = function(options, callback) {
+        callback({
+            parts: partOptions
+        });
+    };
+    mockRipe.setParts = function(parts) {
+        this.parts = parts;
+    };
+    mockRipe.bind = function(name, callback) {};
+    return mockRipe;
+};
+
 describe("Ripe", function() {
     this.timeout(config.TEST_TIMEOUT);
 
@@ -39,14 +53,11 @@ describe("Ripe", function() {
                 }]
             }];
 
-            const mockRipe = new base.ripe.Observable();
-            mockRipe.setParts = function(parts) {
-                this.parts = parts;
-            };
+            const mockRipe = new MockRipe(partOptions);
             mockRipe.setParts(initialParts);
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
-                restrictions, partOptions);
+                restrictions);
             restrictionsPlugin.register(mockRipe);
 
             restrictionsPlugin._applyRestrictions();
@@ -82,10 +93,10 @@ describe("Ripe", function() {
             const partOptions = [{
                 name: "upper",
                 materials: [{
-                    name: "suede",
+                    name: "nappa",
                     colors: ["black"]
                 }, {
-                    name: "nappa",
+                    name: "suede",
                     colors: ["black"]
                 }]
             }, {
@@ -96,10 +107,7 @@ describe("Ripe", function() {
                 }]
             }];
 
-            const mockRipe = new base.ripe.Observable();
-            mockRipe.setParts = function(parts) {
-                this.parts = parts;
-            };
+            const mockRipe = new MockRipe(partOptions);
             mockRipe.setParts(initialParts);
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(

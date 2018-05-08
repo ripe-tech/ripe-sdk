@@ -1069,6 +1069,8 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
         indexM = (indexM + 1) % part.materials.length;
     }
 
+    // if no alternative is found and this part is
+    // optional then the part is removed
     if (this.optionals.indexOf(newPart.name) !== -1) {
         return {
             name: newPart.name,
