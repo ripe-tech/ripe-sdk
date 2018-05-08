@@ -251,6 +251,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         result = result || this.parts;
         this.parts = result;
         this.ready = true;
+        this.trigger("ready");
         this.update();
         this.setParts(result);
     }.bind(this));
@@ -408,7 +409,7 @@ ripe.Ripe.prototype._partsList = function(parts) {
         ]);
     }
     return partsList;
-}
+};
 
 var Ripe = ripe.Ripe;
 
