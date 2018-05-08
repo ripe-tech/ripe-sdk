@@ -85,7 +85,8 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
     availableParts,
     restrictions,
     customization,
-    solution
+    solution,
+    _availablePartsBackup
 ) {
     // if all the parts are set then a solution has been found
     // and it is returned
@@ -101,20 +102,47 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
     var newPart = customization.pop();
     if (this._isRestricted(newPart, restrictions, solution) === false) {
         solution.push(newPart);
-        return this._solveRestrictions(availableParts, restrictions, customization, solution);
+        return this._solveRestrictions(availableParts, restrictions, customization, solution, _availablePartsBackup);
     }
 
+    // creates a backup of the available parts so that a backtrack is possible
+    _availablePartsBackup = _availablePartsBackup || ripe.clone(availableParts);
+
     // if the part is restricted then tries to retrieve an alternative option,
-    // if an alternative is found then adds it to the customization and proceeds
-    // with it, otherwise an invalid state was reached and an empty solution
-    // is returned, meaning that there is no option for the current customization
-    // that would comply with the restrictions
+    // if no alternative is found then checks if any of the parts already added
+    // to the soluton have other options and removes it to give priority to the
+    // part with no valid alternative
     var newPartOption = this._alternativeFor(newPart, availableParts, true);
     if (newPartOption === null) {
+        for (var index = solution.length - 1; index > 0; index--) {
+            var solutionPart = solution[index];
+            if (this._hasOptions(solutionPart, availableParts)) {
+                solution.splice(index, 1);
+                customization.push(solutionPart);
+                customization.push(newPart);
+                this._restoreAvailableParts(solutionPart.name, availableParts, _availablePartsBackup);
+                this._restoreAvailableParts(newPart.name, availableParts, _availablePartsBackup);
+                return this._solveRestrictions(
+                    availableParts,
+                    restrictions,
+                    customization,
+                    solution,
+                    _availablePartsBackup
+                );
+            }
+        }
+
+        // if no valid alternative for the new part exists and there
+        // is no other options for the parts already on the solution
+        // then there is option for the current customization that
+        // would comply with the restrictions
         return [];
     }
+
+    // if an alternative was found then adds it to
+    // the customization and proceeds with it
     customization.push(newPartOption);
-    return this._solveRestrictions(availableParts, restrictions, customization, solution);
+    return this._solveRestrictions(availableParts, restrictions, customization, solution, _availablePartsBackup);
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._getRestrictionKey = function(
@@ -339,4 +367,43 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
     }
 
     return null;
+};
+
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._hasOptions = function(part, availableParts) {
+    if (this.optionals.indexOf(part.name) !== -1 && part.material !== null) {
+        return true;
+    }
+
+    for (var index = 0; index < availableParts.length; index++) {
+        var availablePart = availableParts[index];
+        if (availablePart.name === part.name) {
+            options = availablePart;
+            var materials = availablePart.materials;
+            for (var _index = 0; _index < materials.length; _index++) {
+                var material = materials[_index];
+                var colors = material.colors
+                if (material.name !== part.material && colors.length) {
+                    return true;
+                }
+                for (var __index = 0; __index < colors.length; __index++) {
+                    var color = colors[__index];
+                    if (color !== part.color) {
+                        return true;
+                    }
+                }
+            }
+            break;
+        }
+    }
+    return false;
+};
+
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._restoreAvailableParts = function(part, availableParts,
+    availablePartsBackup) {
+    for (var index = 0; index < availableParts.length; index++) {
+        var availablePart = availableParts[index];
+        if (availablePart.name === part) {
+            availableParts[index] = availablePartsBackup[index];
+        }
+    }
 };
