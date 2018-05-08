@@ -51,6 +51,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         result = result || this.parts;
         this.parts = result;
         this.ready = true;
+        this.trigger("ready");
         this.update();
         this.setParts(result);
     }.bind(this));
