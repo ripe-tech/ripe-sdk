@@ -3,10 +3,17 @@ const config = require("./config");
 const base = require("../../src/js/base");
 const plugins = require("../../src/js/plugins");
 
-const MockRipe = function(partOptions) {
+const MockRipe = function(partOptions, optionals) {
     const mockRipe = new base.ripe.Observable();
+
+    var defaults = {};
+    optionals = optionals || [];
+    optionals.forEach(optional => defaults[optional] = {
+        optional: true
+    });
     mockRipe.getConfig = function(options, callback) {
         callback({
+            defaults: defaults,
             parts: partOptions
         });
     };
@@ -107,13 +114,11 @@ describe("Ripe", function() {
                 }]
             }];
 
-            const mockRipe = new MockRipe(partOptions);
+            const mockRipe = new MockRipe(partOptions, ["logo"]);
             mockRipe.setParts(initialParts);
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
-                restrictions, partOptions, {
-                    optionalParts: ["logo"]
-                });
+                restrictions);
             restrictionsPlugin.register(mockRipe);
 
             assert.deepEqual(initialParts, mockRipe.parts);
