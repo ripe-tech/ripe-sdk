@@ -209,6 +209,6 @@ ripe.Ripe.prototype._partsList = function(parts) {
         ]);
     }
     return partsList;
-}
+};
 
 var Ripe = ripe.Ripe;
