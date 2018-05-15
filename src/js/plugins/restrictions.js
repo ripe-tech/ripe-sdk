@@ -3,12 +3,11 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, partsOptions, options) {
+ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
     options = options || {};
     this.token = options.token || ":";
     this.restrictions = restrictions;
     this.restrictionsMap = this._buildRestrictionsMap(restrictions);
-    this.partsOptions = partsOptions;
     this.partCallback = this._applyRestrictions.bind(this);
 };
 
@@ -17,17 +16,29 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
-    // binds to the pre parts event so that the parts can be
-    // changed so that they comply with the product's restrictions
-    this.owner.bind("part", this.partCallback);
+    this.owner.getConfig({}, function(config) {
+        this.partsOptions = config.parts;
+        var optionals = [];
+        for (var name in config.defaults) {
+            var part = config.defaults[name];
+            part.optional && optionals.push(name);
+        }
+        this.optionals = optionals;
 
-    // resets the current selection to trigger
-    // the restrictions operation
-    var initialParts = ripe.clone(this.owner.parts);
-    this.owner.setParts(initialParts);
+        // binds to the pre parts event so that the parts can be
+        // changed so that they comply with the product's restrictions
+        this.owner.bind("part", this.partCallback);
+
+        // resets the current selection to trigger
+        // the restrictions operation
+        var initialParts = ripe.clone(this.owner.parts);
+        this.owner.setParts(initialParts);
+    }.bind(this));
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
+    this.partsOptions = null;
+    this.options = null;
     this.owner.unbind("part", this.partCallback);
 
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
@@ -297,7 +308,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
         colors = material.colors;
         for (index = 0; index < colors.length; index++) {
             color = colors[index];
-            if (color === newPart.color) {
+            if (indexM === materialsIndex && color === newPart.color) {
                 continue;
             }
 
@@ -315,6 +326,16 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
             return alternative;
         }
         indexM = (indexM + 1) % part.materials.length;
+    }
+
+    // if no alternative is found and this part is
+    // optional then the part is removed
+    if (this.optionals.indexOf(newPart.name) !== -1) {
+        return {
+            name: newPart.name,
+            material: null,
+            color: null
+        };
     }
 
     return null;

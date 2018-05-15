@@ -29,6 +29,17 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
     });
 };
 
+ripe.Ripe.prototype.getOptionals = function(options, callback) {
+    return this.getDefaults(options, function(defaults) {
+        var optionals = [];
+        for (var name in defaults) {
+            var part = defaults[name];
+            part.optional && optionals.push(name);
+        }
+        callback(optionals);
+    });
+};
+
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
