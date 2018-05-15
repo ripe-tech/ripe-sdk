@@ -156,4 +156,83 @@ describe("Ripe", function() {
             }, mockRipe.parts);
         });
     });
+
+    describe("#full restriction", function() {
+        it("should try to remove remaining parts if a part has no alternative", () => {
+            const initialParts = {
+                upper: {
+                    material: "nappa",
+                    color: "black"
+                },
+                bottom: {
+                    material: "suede",
+                    color: "black"
+                }
+            };
+            const restrictions = [
+                [{
+                    material: "nappa",
+                    color: "black"
+                }, {
+                    material: "metal",
+                    color: "gold"
+                }],
+                [{
+                    color: "black"
+                }, {
+                    color: "white"
+                }]
+            ];
+            const partOptions = [{
+                name: "upper",
+                materials: [{
+                    name: "nappa",
+                    colors: ["black", "white"]
+                }]
+            }, {
+                name: "bottom",
+                materials: [{
+                    name: "suede",
+                    colors: ["black", "grey"]
+                }]
+            }, {
+                name: "logo",
+                materials: [{
+                    name: "metal",
+                    colors: ["gold"]
+                }]
+            }];
+
+            const mockRipe = new MockRipe(partOptions);
+            mockRipe.setParts(initialParts);
+
+            const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
+                restrictions, partOptions, {
+                    optionalParts: ["logo"]
+                });
+            restrictionsPlugin.register(mockRipe);
+
+            assert.deepEqual(initialParts, mockRipe.parts);
+
+            mockRipe.parts.logo = {
+                material: "metal",
+                color: "gold"
+            };
+            restrictionsPlugin._applyRestrictions("logo", mockRipe.parts.logo);
+            assert.deepEqual({
+                upper: {
+                    material: "nappa",
+                    color: "white"
+                },
+                bottom: {
+                    material: "suede",
+                    color: "grey"
+                },
+                logo: {
+                    material: "metal",
+                    color: "gold"
+                }
+            }, mockRipe.parts);
+        });
+    });
 });
