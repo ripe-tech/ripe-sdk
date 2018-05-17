@@ -82,7 +82,6 @@ window.onload = function() {
         image.setFrame("9");
     });
 
-    ripe.setInitials("SW", "metal_gold");
     ripe.bindImage(document.getElementById("initials"), {
         showInitials: true
     });
