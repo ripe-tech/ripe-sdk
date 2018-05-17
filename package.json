@@ -23,6 +23,7 @@
         "src/css/**/*.css",
         "src/js/index.js",
         "src/js/base/**/*.js",
+        "src/js/plugins/**/*.js",
         "src/js/visual/**/*.js",
         "test/**/*.js"
     ],
