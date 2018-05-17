@@ -64,14 +64,14 @@ window.onload = function() {
         var initialsDrop = document.getElementById("initials-drop");
         var initialsDropContainer = initialsDrop.parentElement;
         var initialsInput = initialsDropContainer.getElementsByTagName("input")[0];
-        ripe.setInitials(this.value, initialsInput.value);
+        ripe.setInitials(this.value || "$empty", initialsInput.value);
     });
 
     document.getElementById("initials-drop").onvalue_change = function() {
         var initialsText = document.getElementById("initials-text");
         var initialsDropContainer = this.parentElement;
         var initialsInput = initialsDropContainer.getElementsByTagName("input")[0];
-        ripe.setInitials(initialsText.value, initialsInput.value);
+        ripe.setInitials(initialsText.value || "$empty", initialsInput.value);
     };
 
     image.bind("loaded", function() {
@@ -82,6 +82,7 @@ window.onload = function() {
         image.setFrame("9");
     });
 
+    ripe.setInitials("$empty");
     ripe.bindImage(document.getElementById("initials"), {
         showInitials: true
     });
