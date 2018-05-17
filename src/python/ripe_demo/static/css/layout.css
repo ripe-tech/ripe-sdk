@@ -33,9 +33,43 @@ img.logo {
     width: 96px;
 }
 
+.operations {
+    display: none;
+}
+
+body[data-mode=full] .operations,
+body[data-mode=header] .operations {
+    display: block;
+}
+
 .price {
+    display: none;
     font-size: 16px;
     font-weight: bold;
+}
+
+body[data-mode=full] .price,
+body[data-mode=header] .price {
+    display: block;
+}
+
+.configurator {
+    cursor: pointer;
+    display: none;
+}
+
+body[data-mode=full] .configurator,
+body[data-mode=configurator] .configurator {
+    display: block;
+}
+
+.images {
+    display: none;
+}
+
+body[data-mode=full] .images,
+body[data-mode=configurator] .images {
+    display: block;
 }
 
 .images > img {
@@ -45,7 +79,13 @@ img.logo {
 }
 
 .initials-container {
+    display: none;
     margin: 40px auto 40px auto;
+}
+
+body[data-mode=full] .initials-container,
+body[data-mode=initials] .initials-container {
+    display: block;
 }
 
 .initials-container > input[type=text] {
@@ -58,8 +98,4 @@ img.logo {
 
 .initials-container ul.drop-down {
     width: auto;
-}
-
-.configurator {
-    cursor: pointer;
 }

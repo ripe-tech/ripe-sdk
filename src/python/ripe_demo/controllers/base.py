@@ -21,5 +21,6 @@ class BaseController(appier.Controller):
             model = self.field("model"),
             variant = self.field("variant"),
             country = self.field("country"),
-            currency = self.field("currency")
+            currency = self.field("currency"),
+            mode = self.field("mode", "full")
         )

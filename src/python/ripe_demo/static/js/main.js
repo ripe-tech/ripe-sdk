@@ -130,7 +130,8 @@ window.onload = function() {
         var buffer = [];
         for (var index = 0; index < profilesKeys.length; index++) {
             var profile = profilesKeys[index];
-            buffer.push("<li data-value=\"" + profile + "\"><span>" + profile + "</span></li>");
+            var profileS = profile[0].toUpperCase() + profile.substring(1);
+            buffer.push("<li data-value=\"" + profile + "\"><span>" + profileS + "</span></li>");
         }
         var innerHTML = buffer.join("");
         dropdown.innerHTML = innerHTML;
