@@ -24,6 +24,14 @@
         </div>
         <div class="initials-container">
             <img id="initials" class="initials" data-width="500" data-height="500" />
+            <input id="initials-text" name="initials-text" type="text" class="text-field"
+                   placeholder="Set initials" value="" />
+            <ul id="initials-drop" name="initials-drop" class="drop-down"
+                data-name="Select profile" data-input="profile">
+                <li data-value="default">
+                    <span>Default</span>
+                </li>
+            </ul>
         </div>
     {% endblock %}
 {% endblock %}

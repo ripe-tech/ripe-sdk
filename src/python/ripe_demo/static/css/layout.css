@@ -48,6 +48,18 @@ img.logo {
     margin: 40px auto 40px auto;
 }
 
+.initials-container > input[type=text] {
+    font-size: 14px;
+    height: 28px;
+    text-align: center;
+    vertical-align: top;
+    width: 220px;
+}
+
+.initials-container ul.drop-down {
+    width: auto;
+}
+
 .configurator {
     cursor: pointer;
 }
