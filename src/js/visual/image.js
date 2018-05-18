@@ -49,9 +49,15 @@ ripe.Image.prototype.update = function(state) {
         initials: initialsSpec.initials,
         profile: initialsSpec.profile
     });
+
+    // verifies if the target image URL for the update is already
+    // set and if that's the case returns (end of loop)
     if (this.element.src === url) {
         return;
     }
+
+    // updates the image DOM element with the values of the image
+    // including requested size and URL
     this.element.width = width;
     this.element.height = height;
     this.element.src = url;

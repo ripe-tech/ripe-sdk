@@ -249,7 +249,7 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     query += options.profile ? "&initials_profile=" + options.profile.join(",") : "";
 
     var initials = options.initials === "" ? "$empty" : options.initials;
-    query += initials ? "&initials=" + initials : "";
+    query += initials ? "&initials=" + encodeURIComponent(initials) : "";
 
     return this.url + "compose?" + query;
 };

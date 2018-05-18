@@ -64,7 +64,7 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
  *
  * @constructor
  * @param {Object} owner The owner (customizer instance) for
- * this insteractable.
+ * this interactable.
  * @param {Object} options The options to be used to configure the
  * interactable instance to be created.
  */
@@ -758,7 +758,7 @@ ripe.Ripe.prototype._getImageURL = function(options) {
     query += options.profile ? "&initials_profile=" + options.profile.join(",") : "";
 
     var initials = options.initials === "" ? "$empty" : options.initials;
-    query += initials ? "&initials=" + initials : "";
+    query += initials ? "&initials=" + encodeURIComponent(initials) : "";
 
     return this.url + "compose?" + query;
 };
@@ -1220,6 +1220,20 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
+/**
+ * Class that defines an interactive configurator instace to be
+ * used in connection with the main Ripe owner to provide an
+ * interactive configuration experience inside a DOM.
+ *
+ * @constructor
+ * @param {Object} owner The owner (customizer instance) for
+ * this configurator.
+ * @param {Object} element The DOM element that is considered to
+ * be the target for the configurator, it's going to have its own
+ * inner HTML changed.
+ * @param {Object} options The options to be used to configure the
+ * configurator instance to be created.
+ */
 ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Configurator.prototype.init.call(this, options);
@@ -2195,9 +2209,15 @@ ripe.Image.prototype.update = function(state) {
         initials: initialsSpec.initials,
         profile: initialsSpec.profile
     });
+
+    // verifies if the target image URL for the update is already
+    // set and if that's the case returns (end of loop)
     if (this.element.src === url) {
         return;
     }
+
+    // updates the image DOM element with the values of the image
+    // including requested size and URL
     this.element.width = width;
     this.element.height = height;
     this.element.src = url;
