@@ -55,10 +55,11 @@ window.onload = function() {
     };
 
     var bestFace = function(config) {
+        var faces = config.faces || [];
         var bestFace = null;
         for (var index = 0; index < FACES.length; index++) {
             var face = FACES[index];
-            if (config.faces.indexOf(face) === -1) {
+            if (faces.indexOf(face) === -1) {
                 continue;
             }
             bestFace = face;
@@ -67,7 +68,7 @@ window.onload = function() {
         if (bestFace) {
             return bestFace;
         }
-        return config.faces.length > 0 ? config.faces[0] : null;
+        return faces.length > 0 ? faces[0] : null;
     };
 
     var init = function() {
@@ -92,7 +93,11 @@ window.onload = function() {
 
         getPrice && getPrice.addEventListener("click", function() {
             ripe.getPrice(function(value) {
-                alert(String(value.total.price_final) + " " + value.total.currency);
+                if (value) {
+                    alert(String(value.total.price_final) + " " + value.total.currency);
+                } else {
+                    alert("No price available");
+                }
             });
         });
 
