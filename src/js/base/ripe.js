@@ -52,17 +52,9 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.parts = result;
         this.ready = true;
         this.trigger("ready");
+        this.remote();
         this.update();
         this.setParts(result);
-    }.bind(this));
-
-    // tries to determine if the combinations available should be
-    // loaded for the current model and if that's the case start the
-    // loading process for them, setting then the result in the instance
-    var loadCombinations = this.useCombinations;
-    loadCombinations && this.getCombinations(function(result) {
-        this.combinations = result;
-        this.trigger("combinations", this.combinations);
     }.bind(this));
 
     // in case the current instance already contains configured parts
@@ -75,6 +67,17 @@ ripe.Ripe.prototype.load = function() {
 };
 
 ripe.Ripe.prototype.unload = function() {};
+
+ripe.Ripe.prototype.remote = function() {
+    // tries to determine if the combinations available should be
+    // loaded for the current model and if that's the case start the
+    // loading process for them, setting then the result in the instance
+    var loadCombinations = this.useCombinations;
+    loadCombinations && this.getCombinations(function(result) {
+        this.combinations = result;
+        this.trigger("combinations", this.combinations);
+    }.bind(this));
+};
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     this._setPart(part, material, color, true);

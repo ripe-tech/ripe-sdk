@@ -252,17 +252,9 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.parts = result;
         this.ready = true;
         this.trigger("ready");
+        this.remote();
         this.update();
         this.setParts(result);
-    }.bind(this));
-
-    // tries to determine if the combinations available should be
-    // loaded for the current model and if that's the case start the
-    // loading process for them, setting then the result in the instance
-    var loadCombinations = this.useCombinations;
-    loadCombinations && this.getCombinations(function(result) {
-        this.combinations = result;
-        this.trigger("combinations", this.combinations);
     }.bind(this));
 
     // in case the current instance already contains configured parts
@@ -275,6 +267,17 @@ ripe.Ripe.prototype.load = function() {
 };
 
 ripe.Ripe.prototype.unload = function() {};
+
+ripe.Ripe.prototype.remote = function() {
+    // tries to determine if the combinations available should be
+    // loaded for the current model and if that's the case start the
+    // loading process for them, setting then the result in the instance
+    var loadCombinations = this.useCombinations;
+    loadCombinations && this.getCombinations(function(result) {
+        this.combinations = result;
+        this.trigger("combinations", this.combinations);
+    }.bind(this));
+};
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     this._setPart(part, material, color, true);
@@ -633,14 +636,14 @@ ripe.Ripe.prototype._getQuery = function(options) {
     options = options || {};
 
     var buffer = [];
-    var brand = options.brand === undefined ? this.brand : null;
-    var model = options.model === undefined ? this.model : null;
-    var variant = options.variant === undefined ? this.variant : null;
-    var frame = options.frame === undefined ? this.frame : null;
-    var parts = options.parts === undefined ? this.parts : null;
-    var engraving = options.engraving === undefined ? this.engraving : null;
-    var country = options.country === undefined ? this.country : null;
-    var currency = options.currency === undefined ? this.currency : null;
+    var brand = options.brand === undefined ? this.brand : options.brand;
+    var model = options.model === undefined ? this.model : options.model;
+    var variant = options.variant === undefined ? this.variant : options.variant;
+    var frame = options.frame === undefined ? this.frame : options.frame;
+    var parts = options.parts === undefined ? this.parts : options.parts;
+    var engraving = options.engraving === undefined ? this.engraving : options.engraving;
+    var country = options.country === undefined ? this.country : options.country;
+    var currency = options.currency === undefined ? this.currency : options.currency;
 
     brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
@@ -730,10 +733,13 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     options.parts = options.parts || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
+
     var query = this._getQuery(options);
+
     if (options.part) {
         query += "&part=" + options.part;
     }
+
     return this.url + "mask?" + query;
 };
 
