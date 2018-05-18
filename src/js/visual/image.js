@@ -1,7 +1,7 @@
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base");
+    var base = require("../base"); // eslint-disable-line no-redeclare
     require("./visual");
-    var ripe = base.ripe;
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Image = function(owner, element, options) {
@@ -71,7 +71,7 @@ ripe.Image.prototype._registerHandlers = function() {
     this.element.addEventListener("load", function() {
         this.trigger("loaded");
     }.bind(this));
-    var Observer = MutationObserver || WebKitMutationObserver;
+    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
     var observer = Observer ? new Observer(function(mutations) {
         this.update();
     }.bind(this)) : null;

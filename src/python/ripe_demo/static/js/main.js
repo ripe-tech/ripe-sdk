@@ -17,7 +17,7 @@ window.onload = function() {
     var parts = [];
     var partsMap = {};
 
-    var ripe = new Ripe(brand, model, {
+    var ripe = new Ripe(brand, model, { // eslint-disable-line no-undef
         variant: variant,
         url: url,
         currency: currency,
@@ -197,8 +197,8 @@ window.onload = function() {
                 }
             });
 
-            var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
-            var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(
+            var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync); // eslint-disable-line no-undef
+            var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin( // eslint-disable-line no-undef
                 result.restrictions
             );
             ripe.addPlugin(syncPlugin);

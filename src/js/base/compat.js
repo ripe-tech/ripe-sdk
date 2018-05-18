@@ -1,6 +1,6 @@
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var ripe = base.ripe;
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 /**
@@ -34,8 +34,8 @@ ripe.assign = function(target) {
     return to;
 };
 
-if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") { // eslint-disable-line no-use-before-define
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest; // eslint-disable-line no-redeclare
 }
 
 if (typeof module !== "undefined") {

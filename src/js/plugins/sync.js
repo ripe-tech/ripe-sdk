@@ -1,6 +1,6 @@
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var ripe = base.ripe;
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {

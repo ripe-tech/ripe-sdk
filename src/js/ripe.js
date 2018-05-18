@@ -1,5 +1,5 @@
 /** @namespace */
-var ripe = ripe || {};
+var ripe = typeof ripe === "undefined" ? {} : ripe; // eslint-disable-line no-use-before-define
 
 if (typeof module !== "undefined") {
     module.exports = {
@@ -8,8 +8,8 @@ if (typeof module !== "undefined") {
 }
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var ripe = base.ripe;
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 /**
@@ -43,8 +43,8 @@ ripe.assign = function(target) {
     return to;
 };
 
-if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") { // eslint-disable-line no-use-before-define
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest; // eslint-disable-line no-redeclare
 }
 
 if (typeof module !== "undefined") {
@@ -54,8 +54,8 @@ if (typeof module !== "undefined") {
 }
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var ripe = base.ripe;
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 /**
@@ -90,12 +90,12 @@ ripe.Interactable.prototype.init = function() {};
 ripe.Interactable.prototype.update = function(state) {};
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var ripe = base.ripe;
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.touchHandler = function(element, options) {
-    if (typeof Mobile !== "undefined" && Mobile.touchHandler) {
+    if (typeof Mobile !== "undefined" && Mobile.touchHandler) { // eslint-disable-line no-undef
         return;
     }
 
@@ -157,8 +157,8 @@ ripe.touchHandler = function(element, options) {
 };
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var ripe = base.ripe;
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Observable = function() {
@@ -199,9 +199,9 @@ ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
 ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
+    var base = require("./base"); // eslint-disable-line no-redeclare
     require("./observable");
-    var ripe = base.ripe;
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Ripe = function(brand, model, options) {
@@ -414,11 +414,11 @@ ripe.Ripe.prototype._partsList = function(parts) {
     return partsList;
 };
 
-var Ripe = ripe.Ripe;
+var Ripe = ripe.Ripe; // eslint-disable-line no-unused-vars
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var ripe = base.ripe;
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.createElement = function(tagName, className) {
@@ -508,11 +508,11 @@ ripe.clone = function(object) {
 };
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var compat = require("./compat");
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var compat = require("./compat"); // eslint-disable-line no-redeclare
     require("./ripe");
-    var ripe = base.ripe;
-    var XMLHttpRequest = compat.XMLHttpRequest;
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
+    var XMLHttpRequest = compat.XMLHttpRequest; // eslint-disable-line no-redeclare
 }
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
@@ -744,8 +744,8 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
 };
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base");
-    var ripe = base.ripe;
+    var base = require("../base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Ripe.plugins = ripe.Ripe.plugins || {};
@@ -767,8 +767,8 @@ if (typeof module !== "undefined") {
 }
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var ripe = base.ripe;
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
@@ -843,7 +843,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
         customization
     );
     for (var index = 0; index < newParts.length; index++) {
-        newPart = newParts[index];
+        var newPart = newParts[index];
         this.owner.parts[newPart.name].material = newPart.material;
         this.owner.parts[newPart.name].color = newPart.color;
     }
@@ -1110,8 +1110,8 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
 };
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var ripe = base.ripe;
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
@@ -1161,8 +1161,8 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
 };
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base");
-    var ripe = base.ripe;
+    var base = require("../base"); // eslint-disable-line no-redeclare
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Visual = function(owner, element, options) {
@@ -1180,9 +1180,9 @@ ripe.Visual.constructor = ripe.Visual;
 ripe.Visual.prototype.init = function() {};
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base");
+    var base = require("../base"); // eslint-disable-line no-redeclare
     require("./visual");
-    var ripe = base.ripe;
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Configurator = function(owner, element, options) {
@@ -2022,7 +2022,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
-    var Observer = MutationObserver || WebKitMutationObserver;
+    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
     var observer = Observer ? new Observer(function(mutations) {
         for (var index = 0; index < mutations.length; index++) {
             var mutation = mutations[index];
@@ -2110,9 +2110,9 @@ ripe.Configurator.prototype._getCanvasIndex = function(canvas, x, y) {
 };
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base");
+    var base = require("../base"); // eslint-disable-line no-redeclare
     require("./visual");
-    var ripe = base.ripe;
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Image = function(owner, element, options) {
@@ -2182,7 +2182,7 @@ ripe.Image.prototype._registerHandlers = function() {
     this.element.addEventListener("load", function() {
         this.trigger("loaded");
     }.bind(this));
-    var Observer = MutationObserver || WebKitMutationObserver;
+    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
     var observer = Observer ? new Observer(function(mutations) {
         this.update();
     }.bind(this)) : null;
