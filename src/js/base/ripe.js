@@ -214,4 +214,4 @@ ripe.Ripe.prototype._partsList = function(parts) {
     return partsList;
 };
 
-var Ripe = ripe.Ripe;
+var Ripe = ripe.Ripe; // eslint-disable-line no-unused-vars
