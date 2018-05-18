@@ -1,9 +1,9 @@
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base");
-    var compat = require("./compat");
+    var base = require("./base"); // eslint-disable-line no-redeclare
+    var compat = require("./compat"); // eslint-disable-line no-redeclare
     require("./ripe");
-    var ripe = base.ripe;
-    var XMLHttpRequest = compat.XMLHttpRequest;
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
+    var XMLHttpRequest = compat.XMLHttpRequest; // eslint-disable-line no-redeclare
 }
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {

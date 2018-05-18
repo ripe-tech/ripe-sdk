@@ -1,7 +1,7 @@
 if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base");
+    var base = require("../base"); // eslint-disable-line no-redeclare
     require("./visual");
-    var ripe = base.ripe;
+    var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
 ripe.Configurator = function(owner, element, options) {
