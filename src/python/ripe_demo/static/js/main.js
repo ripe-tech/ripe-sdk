@@ -82,7 +82,11 @@ window.onload = function() {
         image.setFrame("9");
     });
 
+    // sets the initial value of the initials to an empty value
+    // this special value is the way to represent an empty initials
+    // value under the RIPE composition engine
     ripe.setInitials("$empty");
+
     ripe.bindImage(document.getElementById("initials"), {
         showInitials: true
     });
