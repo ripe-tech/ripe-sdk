@@ -250,6 +250,11 @@ window.onload = function() {
             var innerHTML = buffer.join("");
             dropdown.innerHTML = innerHTML;
             dropdown.dispatchEvent(new Event("update"));
+            if (profilesKeys.length === 0) {
+                dropdown.dispatchEvent(new Event("disable"));
+            } else {
+                dropdown.dispatchEvent(new Event("enable"));
+            }
         });
     };
 

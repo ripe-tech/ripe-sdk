@@ -96,6 +96,14 @@ body[data-mode=initials] .initials-container {
     width: 220px;
 }
 
-.initials-container ul.drop-down {
+.initials-container > .drop-down-container > .button,
+.initials-container > .drop-down-container > ul.drop-down {
+    box-sizing: border-box;
+    -o-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -khtml-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    min-width: 160px;
     width: auto;
 }
