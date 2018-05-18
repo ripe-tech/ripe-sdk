@@ -124,17 +124,21 @@ ripe.Ripe.prototype._cacheURL = function(url, callback, options) {
     // assuming no request payload
     var fullKey = key + ":" + url;
 
+    // initializes the cache object in the current instance
+    // in case it does not exists already
+    this._cache = this._cache === undefined ? {} : this._cache;
+
     // in case there's already a valid value in cache,
     // retrieves it and calls the callback with the value
-    if (this[fullKey] !== undefined && !options.force) {
-        callback && callback(this[fullKey]);
+    if (this._cache[fullKey] !== undefined && !options.force) {
+        callback && callback(this._cache[fullKey]);
         return;
     }
 
     // otherwise runs the "normal" request URL call and
     // sets the result cache key on return
     this._requestURL(url, function(result) {
-        this[fullKey] = result;
+        this._cache[fullKey] = result;
         callback && callback(result);
     }.bind(this));
 };
