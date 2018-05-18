@@ -104,50 +104,79 @@ window.onload = function() {
     };
 
     var initConfigurator = function() {
-        var image = ripe.bindImage(document.getElementById("frame-0"), {
-            frame: "side-0"
-        });
-        ripe.bindImage(document.getElementById("frame-6"), {
-            frame: "side-6"
-        });
-        ripe.bindImage(document.getElementById("frame-top"), {
-            frame: "top-0"
-        });
-
-        document.getElementById("frame-0").addEventListener("click", function() {
-            configurator.changeFrame("side-9");
-        });
-
-        document.getElementById("frame-6").addEventListener("click", function() {
-            configurator.changeFrame("side-6");
-        });
-
-        document.getElementById("frame-top").addEventListener("click", function() {
-            configurator.changeFrame("top-0");
-        });
-
-        image.bind("loaded", function() {
-            console.log("frame-0 loaded");
-        });
-
-        setTimeout(function() {
-            image.setFrame("9");
-        });
-
-        var configurator = ripe.bindConfigurator(element, {
-            noMasks: false
-        });
-
-        configurator.bind("loaded", function() {
-            configurator.changeFrame("side-12", {
-                duration: 500
-            });
-        });
-
         // loads the config of the product to retrieve the
-        // sync and the restriction rules and initializes
-        // the respective plugin if they exits
+        // complete configuration of the product and be able
+        // to define the visible frames and apply restrictions
         ripe.getConfig(function(result) {
+            var frame0 = document.getElementById("frame-0");
+            var frame6 = document.getElementById("frame-6");
+            var frameTop = document.getElementById("frame-top");
+            var frameFront = document.getElementById("frame-front");
+
+            frame0.style.display = "none";
+            frame6.style.display = "none";
+            frameTop.style.display = "none";
+            frameFront.style.display = "none";
+
+            if (result.faces.indexOf("side") !== -1) {
+                frame0.style.display = "inline";
+                frame6.style.display = "inline";
+
+                var image = ripe.bindImage(frame0, {
+                    frame: "side-0"
+                });
+                ripe.bindImage(document.getElementById("frame-6"), {
+                    frame: "side-6"
+                });
+            }
+
+            if (result.faces.indexOf("top") !== -1) {
+                frameTop.style.display = "inline";
+                ripe.bindImage(frameTop, {
+                    frame: "top-0"
+                });
+            }
+
+            if (result.faces.indexOf("front") !== -1) {
+                frameFront.style.display = "inline";
+                ripe.bindImage(frameFront, {
+                    frame: "front-0"
+                });
+            }
+
+            frame0.addEventListener("click", function() {
+                configurator.changeFrame("side-9");
+            });
+            frame6.addEventListener("click", function() {
+                configurator.changeFrame("side-6");
+            });
+            frameTop.addEventListener("click", function() {
+                configurator.changeFrame("top-0");
+            });
+            frameFront.addEventListener("click", function() {
+                configurator.changeFrame("front-0");
+            });
+
+            image && image.bind("loaded", function() {
+                console.log("frame-0 loaded");
+            });
+
+            setTimeout(function() {
+                image && image.setFrame("9");
+            });
+
+            var configurator = ripe.bindConfigurator(element, {
+                noMasks: false
+            });
+
+            configurator.bind("loaded", function() {
+                if (result.faces.indexOf("side") !== -1) {
+                    configurator.changeFrame("side-12", {
+                        duration: 500
+                    });
+                }
+            });
+
             var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
             var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(
                 result.restrictions
