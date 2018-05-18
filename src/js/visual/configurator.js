@@ -39,6 +39,7 @@ ripe.Configurator.prototype.init = function() {
         this.frames = frames;
         this._initLayout();
         this.ready = true;
+        this.trigger("ready");
         this.update();
     }.bind(this));
 
@@ -335,6 +336,15 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
     this.resize();
 };
 
+/**
+ * Initializes the layout for the configurator element by
+ * constructing all te child elements required for the proper
+ * configurator functionality to work.
+ *
+ * From a DOM prespective this is a synchronous operation,
+ * meaning that after its execution the configurator is ready
+ * to be manipulated.
+ */
 ripe.Configurator.prototype._initLayout = function() {
     // clears the elements children
     while (this.element.firstChild) {
