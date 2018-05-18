@@ -525,7 +525,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
             }, 150);
         };
         maskImage.addEventListener("error", function() {
-            this.setAttribute("src", null);
+            this.removeAttribute("src");
         });
         maskImage.crossOrigin = "Anonymous";
         maskImage.dataset.src = url;
