@@ -127,14 +127,14 @@ ripe.Ripe.prototype._getQuery = function(options) {
     options = options || {};
 
     var buffer = [];
-    var brand = options.brand || this.brand;
-    var model = options.model || this.model;
-    var variant = options.variant || this.variant;
-    var frame = options.frame || this.frame;
-    var parts = options.parts || this.parts;
-    var engraving = options.engraving || this.engraving;
-    var country = options.country || this.country;
-    var currency = options.currency || this.currency;
+    var brand = options.brand === undefined ? this.brand : null;
+    var model = options.model === undefined ? this.model : null;
+    var variant = options.variant === undefined ? this.variant : null;
+    var frame = options.frame === undefined ? this.frame : null;
+    var parts = options.parts === undefined ? this.parts : null;
+    var engraving = options.engraving === undefined ? this.engraving : null;
+    var country = options.country === undefined ? this.country : null;
+    var currency = options.currency === undefined ? this.currency : null;
 
     brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
@@ -157,6 +157,7 @@ ripe.Ripe.prototype._getQuery = function(options) {
     engraving && buffer.push("engraving=" + engraving);
     country && buffer.push("country=" + country);
     currency && buffer.push("currency=" + currency);
+
     return buffer.join("&");
 };
 
@@ -196,7 +197,14 @@ ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useNam
 };
 
 ripe.Ripe.prototype._getImageURL = function(options) {
+    // ensures that some of the extra query options are not
+    // sent unless they are explictly defined (exception)
+    options = options || {};
+    options.country = options.country || null;
+    options.currency = options.currency || null;
+
     var query = this._getQuery(options);
+
     query += options.format ? "&format=" + options.format : "";
     query += options.width ? "&width=" + options.width : "";
     query += options.height ? "&height=" + options.height : "";
@@ -214,6 +222,8 @@ ripe.Ripe.prototype._getImageURL = function(options) {
 ripe.Ripe.prototype._getMaskURL = function(options) {
     options = options || {};
     options.parts = options.parts || {};
+    options.country = options.country || null;
+    options.currency = options.currency || null;
     var query = this._getQuery(options);
     if (options.part) {
         query += "&part=" + options.part;
