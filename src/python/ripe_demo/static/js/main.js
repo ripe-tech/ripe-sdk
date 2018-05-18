@@ -64,7 +64,10 @@ window.onload = function() {
             bestFace = face;
             break;
         }
-        return bestFace;
+        if (bestFace) {
+            return bestFace;
+        }
+        return config.faces.length > 0 ? config.faces[0] : null;
     };
 
     var init = function() {
