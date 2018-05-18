@@ -1,3 +1,9 @@
+/**
+ * The complete set of faces that may be used in the configurator
+ * as the starting view.
+ */
+var FACES = ["side", "top", "front"];
+
 window.onload = function() {
     var element = document.getElementById("configurator");
     var _body = document.querySelector("body");
@@ -46,6 +52,19 @@ window.onload = function() {
             buffer.push(part[0].toUpperCase() + part.substring(1));
         }
         return buffer.join(" ");
+    };
+
+    var bestFace = function(config) {
+        var bestFace = null;
+        for (var index = 0; index < FACES.length; index++) {
+            var face = FACES[index];
+            if (config.faces.indexOf(face) === -1) {
+                continue;
+            }
+            bestFace = face;
+            break;
+        }
+        return bestFace;
     };
 
     var init = function() {
@@ -166,7 +185,8 @@ window.onload = function() {
             });
 
             var configurator = ripe.bindConfigurator(element, {
-                noMasks: false
+                noMasks: false,
+                view: bestFace(result)
             });
 
             configurator.bind("loaded", function() {

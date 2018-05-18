@@ -436,6 +436,13 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
     var maskImage = masksBuffer.querySelector("img[data-frame='" + String(frame) + "']");
     image = image || front;
 
+    // in case there's no images for the frames that are meant
+    // to be loaded calls the callback immediately and returns
+    // the control flow (not possible to load them)
+    if (image === null || maskImage === null) {
+        throw new RangeError("Frame " + frame + " is not supported.");
+    }
+
     // constructs the URL for the mask and updates it
     this._loadMask(maskImage, view, position, options);
 
