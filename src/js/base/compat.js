@@ -34,7 +34,7 @@ ripe.assign = function(target) {
     return to;
 };
 
-if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
+if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") { // eslint-disable-line no-use-before-define
     var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 }
 

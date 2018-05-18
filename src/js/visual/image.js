@@ -71,7 +71,7 @@ ripe.Image.prototype._registerHandlers = function() {
     this.element.addEventListener("load", function() {
         this.trigger("loaded");
     }.bind(this));
-    var Observer = MutationObserver || WebKitMutationObserver;
+    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
     var observer = Observer ? new Observer(function(mutations) {
         this.update();
     }.bind(this)) : null;

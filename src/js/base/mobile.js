@@ -4,7 +4,7 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
 }
 
 ripe.touchHandler = function(element, options) {
-    if (typeof Mobile !== "undefined" && Mobile.touchHandler) {
+    if (typeof Mobile !== "undefined" && Mobile.touchHandler) { // eslint-disable-line no-undef
         return;
     }
 
@@ -22,20 +22,20 @@ ripe.touchHandler = function(element, options) {
         // switches over the type of touch event associating
         // the proper equivalent mouse enve to each of them
         switch (event.type) {
-        case "touchstart":
-            type = "mousedown";
-            break;
+            case "touchstart":
+                type = "mousedown";
+                break;
 
-        case "touchmove":
-            type = "mousemove";
-            break;
+            case "touchmove":
+                type = "mousemove";
+                break;
 
-        case "touchend":
-            type = "mouseup";
-            break;
+            case "touchend":
+                type = "mouseup";
+                break;
 
-        default:
-            return;
+            default:
+                return;
         }
 
         // verifies if the current event is considered to be valid,

@@ -1,5 +1,5 @@
 /** @namespace */
-var ripe = ripe || {};
+var ripe = typeof ripe === "undefined" ? {} : ripe; // eslint-disable-line no-use-before-define
 
 if (typeof module !== "undefined") {
     module.exports = {
@@ -43,7 +43,7 @@ ripe.assign = function(target) {
     return to;
 };
 
-if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
+if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") { // eslint-disable-line no-use-before-define
     var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 }
 
@@ -95,7 +95,7 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
 }
 
 ripe.touchHandler = function(element, options) {
-    if (typeof Mobile !== "undefined" && Mobile.touchHandler) {
+    if (typeof Mobile !== "undefined" && Mobile.touchHandler) { // eslint-disable-line no-undef
         return;
     }
 
@@ -414,7 +414,7 @@ ripe.Ripe.prototype._partsList = function(parts) {
     return partsList;
 };
 
-var Ripe = ripe.Ripe;
+var Ripe = ripe.Ripe; // eslint-disable-line no-unused-vars
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("./base");
@@ -843,7 +843,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
         customization
     );
     for (var index = 0; index < newParts.length; index++) {
-        newPart = newParts[index];
+        var newPart = newParts[index];
         this.owner.parts[newPart.name].material = newPart.material;
         this.owner.parts[newPart.name].color = newPart.color;
     }
@@ -2022,7 +2022,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
-    var Observer = MutationObserver || WebKitMutationObserver;
+    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
     var observer = Observer ? new Observer(function(mutations) {
         for (var index = 0; index < mutations.length; index++) {
             var mutation = mutations[index];
@@ -2182,7 +2182,7 @@ ripe.Image.prototype._registerHandlers = function() {
     this.element.addEventListener("load", function() {
         this.trigger("loaded");
     }.bind(this));
-    var Observer = MutationObserver || WebKitMutationObserver;
+    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
     var observer = Observer ? new Observer(function(mutations) {
         this.update();
     }.bind(this)) : null;

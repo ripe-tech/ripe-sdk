@@ -75,7 +75,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
         customization
     );
     for (var index = 0; index < newParts.length; index++) {
-        newPart = newParts[index];
+        var newPart = newParts[index];
         this.owner.parts[newPart.name].material = newPart.material;
         this.owner.parts[newPart.name].color = newPart.color;
     }

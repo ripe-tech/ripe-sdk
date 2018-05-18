@@ -841,7 +841,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
-    var Observer = MutationObserver || WebKitMutationObserver;
+    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
     var observer = Observer ? new Observer(function(mutations) {
         for (var index = 0; index < mutations.length; index++) {
             var mutation = mutations[index];
