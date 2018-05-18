@@ -11,12 +11,12 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
  *
  * @constructor
  * @param {Object} owner The owner (customizer instance) for
- * this insteractable.
+ * this configurator.
  * @param {Object} element The DOM element that is considered to
  * be the target for the configurator, it's going to have its own
  * inner HTML changed.
  * @param {Object} options The options to be used to configure the
- * interactable instance to be created.
+ * configurator instance to be created.
  */
 ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
