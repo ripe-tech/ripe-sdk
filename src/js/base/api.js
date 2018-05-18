@@ -127,14 +127,14 @@ ripe.Ripe.prototype._getQuery = function(options) {
     options = options || {};
 
     var buffer = [];
-    var brand = options.brand === undefined ? this.brand : null;
-    var model = options.model === undefined ? this.model : null;
-    var variant = options.variant === undefined ? this.variant : null;
-    var frame = options.frame === undefined ? this.frame : null;
-    var parts = options.parts === undefined ? this.parts : null;
-    var engraving = options.engraving === undefined ? this.engraving : null;
-    var country = options.country === undefined ? this.country : null;
-    var currency = options.currency === undefined ? this.currency : null;
+    var brand = options.brand === undefined ? this.brand : options.brand;
+    var model = options.model === undefined ? this.model : options.model;
+    var variant = options.variant === undefined ? this.variant : options.variant;
+    var frame = options.frame === undefined ? this.frame : options.frame;
+    var parts = options.parts === undefined ? this.parts : options.parts;
+    var engraving = options.engraving === undefined ? this.engraving : options.engraving;
+    var country = options.country === undefined ? this.country : options.country;
+    var currency = options.currency === undefined ? this.currency : options.currency;
 
     brand && buffer.push("brand=" + brand);
     model && buffer.push("model=" + model);
@@ -224,9 +224,12 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     options.parts = options.parts || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
+
     var query = this._getQuery(options);
+
     if (options.part) {
         query += "&part=" + options.part;
     }
+
     return this.url + "mask?" + query;
 };
