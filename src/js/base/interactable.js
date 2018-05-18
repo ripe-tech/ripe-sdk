@@ -9,7 +9,7 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
  *
  * @constructor
  * @param {Object} owner The owner (customizer instance) for
- * this insteractable.
+ * this interactable.
  * @param {Object} options The options to be used to configure the
  * interactable instance to be created.
  */

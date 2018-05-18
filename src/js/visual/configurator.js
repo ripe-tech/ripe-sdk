@@ -4,6 +4,20 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
 
+/**
+ * Class that defines an interactive configurator instace to be
+ * used in connection with the main Ripe owner to provide an
+ * interactive configuration experience inside a DOM.
+ *
+ * @constructor
+ * @param {Object} owner The owner (customizer instance) for
+ * this insteractable.
+ * @param {Object} element The DOM element that is considered to
+ * be the target for the configurator, it's going to have its own
+ * inner HTML changed.
+ * @param {Object} options The options to be used to configure the
+ * interactable instance to be created.
+ */
 ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
     ripe.Configurator.prototype.init.call(this, options);
