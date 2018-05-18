@@ -519,21 +519,21 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     var configURL = this._getConfigURL();
-    return this._requestURL(configURL, callback);
+    return this._cacheURL(configURL, callback);
 };
 
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     var priceURL = this._getPriceURL();
-    return this._requestURL(priceURL, callback);
+    return this._cacheURL(priceURL, callback);
 };
 
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     var defaultsURL = this._getDefaultsURL();
-    return this._requestURL(defaultsURL, function(result) {
+    return this._cacheURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
     });
 };
@@ -553,7 +553,7 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     var combinationsURL = this._getCombinationsURL();
-    return this._requestURL(combinationsURL, function(result) {
+    return this._cacheURL(combinationsURL, function(result) {
         callback && callback(result.combinations);
     });
 };
@@ -561,14 +561,14 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
 ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, callback) {
     var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
     var fullUrl = this.url + "sizes/size_to_native?" + query;
-    return this._requestURL(fullUrl, function(result) {
+    return this._cacheURL(fullUrl, function(result) {
         callback && callback(result);
     });
 };
 
 ripe.Ripe.prototype.getSizes = function(callback) {
     var fullUrl = this.url + "sizes";
-    return this._requestURL(fullUrl, function(result) {
+    return this._cacheURL(fullUrl, function(result) {
         callback && callback(result);
     });
 };
@@ -587,7 +587,7 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, callback) 
     }
 
     var fullUrl = this.url + "sizes/size_to_native_b?" + query;
-    return this._requestURL(fullUrl, function(result) {
+    return this._cacheURL(fullUrl, function(result) {
         callback && callback(result);
     });
 };
@@ -595,7 +595,7 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, callback) 
 ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, callback) {
     var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
     var fullUrl = this.url + "sizes/native_to_size?" + query;
-    return this._requestURL(fullUrl, function(result) {
+    return this._cacheURL(fullUrl, function(result) {
         callback && callback(result);
     });
 };
@@ -614,9 +614,38 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, callback) 
     }
 
     var fullUrl = this.url + "sizes/native_to_size_b?" + query;
-    return this._requestURL(fullUrl, function(result) {
+    return this._cacheURL(fullUrl, function(result) {
         callback && callback(result);
     });
+};
+
+ripe.Ripe.prototype._cacheURL = function(url, callback, options) {
+    // runs the defaulting operatin on the provided options
+    // optional parameter (ensures valid object there)
+    options = options || {};
+
+    // builds the (base) key value fro the provided value
+    // from options or used the default one
+    var key = options.key || "default";
+
+    // creates the full key by adding the base key to the
+    // URL value (including query string), this is unique
+    // assuming no request payload
+    var fullKey = key + ":" + url;
+
+    // in case there's already a valid value in cache,
+    // retrieves it and calls the callback with the value
+    if (this[fullKey] !== undefined && !options.force) {
+        callback && callback(this[fullKey]);
+        return;
+    }
+
+    // otherwise runs the "normal" request URL call and
+    // sets the result cache key on return
+    this._requestURL(url, function(result) {
+        this[fullKey] = result;
+        callback && callback(result);
+    }.bind(this));
 };
 
 ripe.Ripe.prototype._requestURL = function(url, callback) {
