@@ -2,16 +2,10 @@
 
 ul {
     margin: 20px auto 20px auto;
-    width: 300px;
+    width: 270px;
 }
 
 ul li {
-    border-radius: 18px 18px 18px 18px;
-    -o-border-radius: 18px 18px 18px 18px;
-    -ms-border-radius: 18px 18px 18px 18px;
-    -moz-border-radius: 18px 18px 18px 18px;
-    -khtml-border-radius: 18px 18px 18px 18px;
-    -webkit-border-radius: 18px 18px 18px 18px;
     cursor: pointer;
     user-select: none;
     -o-user-select: none;
@@ -46,6 +40,19 @@ img.logo {
 body[data-mode=full] .operations,
 body[data-mode=header] .operations {
     display: block;
+}
+
+.operations li {
+	border-radius: 18px 18px 18px 18px;
+    -o-border-radius: 18px 18px 18px 18px;
+    -ms-border-radius: 18px 18px 18px 18px;
+    -moz-border-radius: 18px 18px 18px 18px;
+    -khtml-border-radius: 18px 18px 18px 18px;
+    -webkit-border-radius: 18px 18px 18px 18px;
+}
+
+.operations li:active {
+	background-color: #e0e0e0;
 }
 
 .price {
