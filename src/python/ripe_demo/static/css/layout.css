@@ -6,6 +6,12 @@ ul {
 }
 
 ul li {
+    border-radius: 18px 18px 18px 18px;
+    -o-border-radius: 18px 18px 18px 18px;
+    -ms-border-radius: 18px 18px 18px 18px;
+    -moz-border-radius: 18px 18px 18px 18px;
+    -khtml-border-radius: 18px 18px 18px 18px;
+    -webkit-border-radius: 18px 18px 18px 18px;
     cursor: pointer;
     user-select: none;
     -o-user-select: none;
