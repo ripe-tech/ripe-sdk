@@ -69,11 +69,11 @@ gulp.task("docs", (cb) => {
         .pipe(jsdoc(cb));
 });
 
-gulp.task("watch-js", function() {
+gulp.task("watch-js", () => {
     gulp.watch(paths.scripts, ["build-js", "move-js", "compress"]);
 });
 
-gulp.task("watch-css", function() {
+gulp.task("watch-css", () => {
     gulp.watch(paths.css, ["move-css"]);
 });
 
