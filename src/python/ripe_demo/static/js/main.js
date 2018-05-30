@@ -74,7 +74,15 @@ window.onload = function() {
     var init = function() {
         initHeader();
         initConfigurator();
-        initInitials();
+
+        ripe.getConfig(function(result) {
+            if (Object.keys(result.initials).length == 0) {
+                document.getElementById("initials-container").style.display = "none";
+                return;
+            }
+            initInitials();
+        });
+        
     };
 
     var initHeader = function() {
