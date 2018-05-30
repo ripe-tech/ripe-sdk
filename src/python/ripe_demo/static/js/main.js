@@ -82,7 +82,6 @@ window.onload = function() {
             }
             initInitials();
         });
-
     };
 
     var initHeader = function() {
