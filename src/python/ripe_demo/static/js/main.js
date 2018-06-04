@@ -152,7 +152,7 @@ window.onload = function() {
                 var image = ripe.bindImage(frame0, {
                     frame: "side-0"
                 });
-                ripe.bindImage(document.getElementById("frame-6"), {
+                ripe.bindImage(frame6, {
                     frame: "side-6"
                 });
             }
