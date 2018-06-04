@@ -146,15 +146,19 @@ window.onload = function() {
             frameFront.style.display = "none";
 
             if (result.faces.indexOf("side") !== -1) {
-                frame0.style.display = "inline";
-                frame6.style.display = "inline";
+                if (result.frames > 0) {
+                    frame0.style.display = "inline";
+                    var image = ripe.bindImage(frame0, {
+                        frame: "side-0"
+                    });
+                }
 
-                var image = ripe.bindImage(frame0, {
-                    frame: "side-0"
-                });
-                ripe.bindImage(frame6, {
-                    frame: "side-6"
-                });
+                if (result.frames > 6) {
+                    frame6.style.display = "inline";
+                    ripe.bindImage(frame6, {
+                        frame: "side-6"
+                    });
+                }
             }
 
             if (result.faces.indexOf("top") !== -1) {
@@ -172,7 +176,11 @@ window.onload = function() {
             }
 
             frame0.addEventListener("click", function() {
-                configurator.changeFrame("side-9");
+                if (result.frames > 9) {
+                    configurator.changeFrame("side-9");
+                } else {
+                    configurator.changeFrame("side-0");
+                }
             });
             frame6.addEventListener("click", function() {
                 configurator.changeFrame("side-6");
@@ -189,7 +197,9 @@ window.onload = function() {
             });
 
             setTimeout(function() {
-                image && image.setFrame("9");
+                if (result.frames > 9) {
+                    image && image.setFrame("9");
+                }
             });
 
             var configurator = ripe.bindConfigurator(element, {

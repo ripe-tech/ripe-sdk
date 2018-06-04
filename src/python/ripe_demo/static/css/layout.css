@@ -43,7 +43,7 @@ body[data-mode*=header] .operations {
 }
 
 .operations li {
-	border-radius: 18px 18px 18px 18px;
+    border-radius: 18px 18px 18px 18px;
     -o-border-radius: 18px 18px 18px 18px;
     -ms-border-radius: 18px 18px 18px 18px;
     -moz-border-radius: 18px 18px 18px 18px;
@@ -52,7 +52,7 @@ body[data-mode*=header] .operations {
 }
 
 .operations li:active {
-	background-color: #e0e0e0;
+    background-color: #e0e0e0;
 }
 
 .price {
