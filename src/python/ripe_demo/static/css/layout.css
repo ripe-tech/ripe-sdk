@@ -37,8 +37,8 @@ img.logo {
     display: none;
 }
 
-body[data-mode=full] .operations,
-body[data-mode=header] .operations {
+body[data-mode*=full] .operations,
+body[data-mode*=header] .operations {
     display: block;
 }
 
@@ -61,8 +61,8 @@ body[data-mode=header] .operations {
     font-weight: bold;
 }
 
-body[data-mode=full] .price,
-body[data-mode=header] .price {
+body[data-mode*=full] .price,
+body[data-mode*=header] .price {
     display: block;
 }
 
@@ -71,8 +71,8 @@ body[data-mode=header] .price {
     display: none;
 }
 
-body[data-mode=full] .configurator,
-body[data-mode=configurator] .configurator {
+body[data-mode*=full] .configurator,
+body[data-mode*=configurator] .configurator {
     display: block;
 }
 
@@ -80,8 +80,8 @@ body[data-mode=configurator] .configurator {
     display: none;
 }
 
-body[data-mode=full] .images,
-body[data-mode=configurator] .images {
+body[data-mode*=full] .images,
+body[data-mode*=configurator] .images {
     display: block;
 }
 
@@ -96,8 +96,8 @@ body[data-mode=configurator] .images {
     margin: 40px auto 40px auto;
 }
 
-body[data-mode=full] .initials-container,
-body[data-mode=initials] .initials-container {
+body[data-mode*=full] .initials-container,
+body[data-mode*=initials] .initials-container {
     display: block;
 }
 
