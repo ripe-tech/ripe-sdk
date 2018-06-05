@@ -36,6 +36,10 @@ ripe.Observable.prototype.runCallbacks = function(event) {
     }
 };
 
+ripe.Observable.prototype.deinit = function() {
+    this.callbacks = {};
+};
+
 ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
 ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;

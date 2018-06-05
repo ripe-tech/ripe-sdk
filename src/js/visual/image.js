@@ -2,6 +2,8 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("../base"); // eslint-disable-line no-redeclare
     require("./visual");
     var ripe = base.ripe; // eslint-disable-line no-redeclare
+    var MutationObserver = typeof MutationObserver === "undefined" ? null : MutationObserver;
+    var WebKitMutationObserver = typeof WebKitMutationObserver === "undefined" ? null : WebKitMutationObserver;
 }
 
 ripe.Image = function(owner, element, options) {
@@ -24,6 +26,8 @@ ripe.Image.prototype.init = function() {
             profile: [engraving]
         };
     };
+    this.observer = null;
+    this.loadListener = null;
 
     this._registerHandlers();
 };
@@ -63,6 +67,17 @@ ripe.Image.prototype.update = function(state) {
     this.element.src = url;
 };
 
+ripe.Image.prototype.deinit = function() {
+    ripe.Visual.prototype.deinit.call(this);
+
+    this._unregisterHandlers();
+
+    this.element = null;
+    this.observer = null;
+    this.loadListener = null;
+    this.initialsBuilder = null;
+};
+
 ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
     this.update();
@@ -74,15 +89,22 @@ ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
 };
 
 ripe.Image.prototype._registerHandlers = function() {
-    this.element.addEventListener("load", function() {
+    this.loadListener = function() {
         this.trigger("loaded");
-    }.bind(this));
+    }.bind(this);
+    this.element.addEventListener("load", this.loadListener);
+
     var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
-    var observer = Observer ? new Observer(function(mutations) {
+    this.observer = Observer ? new Observer(function(mutations) {
         this.update();
     }.bind(this)) : null;
-    observer && observer.observe(this.element, {
+    this.observer && this.observer.observe(this.element, {
         attributes: true,
         subtree: false
     });
+};
+
+ripe.Image.prototype._unregisterHandlers = function() {
+    this.loadListener && this.element.removeEventListener("load", this.loadListener);
+    this.observer && this.observer.disconnect();
 };

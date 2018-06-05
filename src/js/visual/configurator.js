@@ -40,6 +40,8 @@ ripe.Configurator.prototype.init = function() {
     this.view = this.options.view || "side";
     this.position = this.options.position || 0;
     this.ready = false;
+    this.observer = null;
+    this.elementEvents = {};
 
     // creates a structure the store the last presented
     // position of each view, to be used when returning
@@ -164,6 +166,19 @@ ripe.Configurator.prototype.update = function(state, options) {
     var preloaded = this.element.classList.contains("preload");
     var mustPreload = changed || !preloaded;
     mustPreload && this._preload(this.options.useChain);
+};
+
+ripe.Configurator.prototype.deinit = function() {
+    ripe.Interactable.prototype.deinit.call(this);
+
+    while (this.element.firstChild) {
+        this.element.removeChild(this.element.firstChild);
+    }
+
+    this._removeElementHandlers();
+    this.observer && this.observer.disconnect();
+    this.observer = null;
+    this.element = null;
 };
 
 ripe.Configurator.prototype.changeFrame = function(frame, options) {
@@ -718,7 +733,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // binds the mousedown event on the element to prepare
     // it for drag movements
-    this.element.addEventListener("mousedown", function(event) {
+    this._addElementHandler("mousedown", function(event) {
         var _element = this;
         _element.dataset.view = _element.dataset.view || "side";
         self.base = _element.dataset.position || 0;
@@ -731,7 +746,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for mouseup events and if it occurs then
     // stops reacting to mouse move events has drag movements
-    this.element.addEventListener("mouseup", function(event) {
+    this._addElementHandler("mouseup", function(event) {
         var _element = this;
         self.down = false;
         self.percent = 0;
@@ -741,7 +756,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for mouse leave events and if it occurs then
     // stops reacting to mousemove events has drag movements
-    this.element.addEventListener("mouseleave", function(event) {
+    this._addElementHandler("mouseleave", function(event) {
         var _element = this;
         self.down = false;
         self.percent = 0;
@@ -751,7 +766,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
-    this.element.addEventListener("mousemove", function(event) {
+    this._addElementHandler("mousemove", function(event) {
         if (this.classList.contains("no-drag")) {
             return;
         }
@@ -856,14 +871,14 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
     var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
-    var observer = Observer ? new Observer(function(mutations) {
+    this.observer = Observer ? new Observer(function(mutations) {
         for (var index = 0; index < mutations.length; index++) {
             var mutation = mutations[index];
             mutation.type === "style" && self.resize();
             mutation.type === "attributes" && self.update();
         }
     }) : null;
-    observer && observer.observe(this.element, {
+    this.observer && this.observer.observe(this.element, {
         attributes: true,
         subtree: false,
         characterData: true
@@ -874,6 +889,26 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // taking into account that there may be a touch handler
     // already defined
     ripe.touchHandler(this.element);
+};
+
+ripe.Configurator.prototype._addElementHandler = function(event, callback) {
+    this.element.addEventListener(event, callback);
+
+    var callbacks = this.elementEvents[event] || [];
+    callbacks.push(callback);
+    this.elementEvents[event] = callbacks;
+};
+
+ripe.Configurator.prototype._removeElementHandlers = function() {
+    for (var event in this.elementEvents) {
+        var callbacks = this.elementEvents[event];
+        for (var index = 0; index < callbacks.length; index++) {
+            var callback = callbacks[index];
+            this.element.removeEventListener(event, callback);
+        }
+    }
+
+    this.elementEvents = {};
 };
 
 ripe.Configurator.prototype._parseDrag = function() {

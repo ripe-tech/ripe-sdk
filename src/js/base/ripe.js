@@ -62,6 +62,20 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.ready = hasParts;
 };
 
+ripe.Ripe.prototype.deinit = function() {
+    ripe.Observable.prototype.deinit.call(this);
+
+    for (var index = this.children.length - 1; index >= 0; index--) {
+        var child = this.children[index];
+        this.unbindInteractable(child);
+    }
+
+    for (var index = this.plugins.length - 1; index >= 0; index--) {
+        var plugin = this.plugins[index];
+        this.removePlugin(plugin);
+    }
+};
+
 ripe.Ripe.prototype.load = function() {
     this.update();
 };
@@ -150,6 +164,14 @@ ripe.Ripe.prototype.bindInteractable = function(child) {
     this.children.push(child);
     return child;
 };
+
+ripe.Ripe.prototype.unbindInteractable = function(child) {
+    child.deinit();
+    this.children.splice(this.children.indexOf(child), 1);
+};
+
+ripe.Ripe.prototype.unbindImage = ripe.Ripe.prototype.unbindInteractable;
+ripe.Ripe.prototype.unbindConfigurator = ripe.Ripe.prototype.unbindInteractable;
 
 ripe.Ripe.prototype.selectPart = function(part, options) {
     this.trigger("selected_part", part);

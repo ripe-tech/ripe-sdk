@@ -16,3 +16,8 @@ ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {};
+
+ripe.Visual.prototype.deinit = function() {
+    ripe.Observable.prototype.deinit.call(this);
+    ripe.Interactable.prototype.deinit.call(this);
+};
