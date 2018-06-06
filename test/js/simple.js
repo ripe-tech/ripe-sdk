@@ -2,10 +2,10 @@ const assert = require("assert");
 const config = require("./config");
 const ripe = require("../../src/js");
 
-describe("Ripe", function () {
+describe("Ripe", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#main", function () {
+    describe("#main", function() {
         it("should instance and retrieve values", async () => {
             let result = null;
 

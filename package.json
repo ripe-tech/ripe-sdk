@@ -22,6 +22,8 @@
         "res/**/*",
         "src/css/**/*.css",
         "src/js/index.js",
+        "src/js/ripe.js",
+        "src/js/ripe-min.js",
         "src/js/base/**/*.js",
         "src/js/plugins/**/*.js",
         "src/js/visual/**/*.js",
@@ -45,7 +47,6 @@
         "xmlhttprequest": "^1.8.0"
     },
     "devDependencies": {
-        "canvas-prebuilt": "^1.6.5-prerelease.1",
         "eslint": "^4.19.1",
         "eslint-config-standard": "^11.0.0",
         "eslint-plugin-import": "^2.11.0",

@@ -72,7 +72,7 @@ ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
 
-    ripe.Interactable.prototype.init.call(this);
+    this.init();
 };
 
 /**
@@ -173,6 +173,8 @@ ripe.Observable = function() {
     this.callbacks = {};
 };
 
+ripe.Observable.prototype.init = function() {};
+
 ripe.Observable.prototype.addCallback = function(event, callback) {
     var callbacks = this.callbacks[event] || [];
     callbacks.push(callback);
@@ -203,7 +205,7 @@ ripe.Observable.prototype.runCallbacks = function(event) {
 };
 
 ripe.Observable.prototype.deinit = function() {
-    this.callbacks = {};
+    this.callbacks = null;
 };
 
 ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
@@ -277,12 +279,14 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
 ripe.Ripe.prototype.deinit = function() {
     ripe.Observable.prototype.deinit.call(this);
 
-    for (var index = this.children.length - 1; index >= 0; index--) {
+    var index = null;
+
+    for (index = this.children.length - 1; index >= 0; index--) {
         var child = this.children[index];
         this.unbindInteractable(child);
     }
 
-    for (var index = this.plugins.length - 1; index >= 0; index--) {
+    for (index = this.plugins.length - 1; index >= 0; index--) {
         var plugin = this.plugins[index];
         this.removePlugin(plugin);
     }
@@ -1235,22 +1239,57 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
 }
 
 ripe.Visual = function(owner, element, options) {
+    this.element = element;
+    this.elementEvents = {};
+
     ripe.Observable.call(this);
     ripe.Interactable.call(this, owner, options);
-
-    this.element = element;
-    ripe.Visual.prototype.init.call(this);
 };
 
 ripe.assign(ripe.Visual.prototype, ripe.Observable.prototype);
 ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
-ripe.Visual.prototype.init = function() {};
+ripe.Visual.prototype.init = function() {
+    ripe.Observable.prototype.init.call(this);
+    ripe.Interactable.prototype.init.call(this);
+};
 
 ripe.Visual.prototype.deinit = function() {
+    this._removeElementHandlers();
+    this.element = null;
+    this.elementEvents = null;
+
     ripe.Observable.prototype.deinit.call(this);
     ripe.Interactable.prototype.deinit.call(this);
+};
+
+/**
+ * Utility function that binds an event to the interactable
+ * DOM element and keeps a reference to it to unbind it
+ * when no longer needed
+ */
+ripe.Visual.prototype._addElementHandler = function(event, callback) {
+    this.element.addEventListener(event, callback);
+
+    var callbacks = this.elementEvents[event] || [];
+    callbacks.push(callback);
+    this.elementEvents[event] = callbacks;
+};
+
+/**
+ * Unbinds all the events from the DOM element
+ */
+ripe.Visual.prototype._removeElementHandlers = function() {
+    for (var event in this.elementEvents) {
+        var callbacks = this.elementEvents[event];
+        for (var index = 0; index < callbacks.length; index++) {
+            var callback = callbacks[index];
+            this.element.removeEventListener(event, callback);
+        }
+    }
+
+    this.elementEvents = {};
 };
 
 if (typeof window === "undefined" && typeof require !== "undefined") {
@@ -1275,12 +1314,13 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
  */
 ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
-    ripe.Configurator.prototype.init.call(this, options);
 };
 
 ripe.Configurator.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Configurator.prototype.init = function() {
+    ripe.Visual.prototype.init.call(this);
+
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
     this.size = this.options.size || null;
@@ -1295,8 +1335,7 @@ ripe.Configurator.prototype.init = function() {
     this.view = this.options.view || "side";
     this.position = this.options.position || 0;
     this.ready = false;
-    this.observer = null;
-    this.elementEvents = {};
+    this._observer = null;
 
     // creates a structure the store the last presented
     // position of each view, to be used when returning
@@ -1424,16 +1463,15 @@ ripe.Configurator.prototype.update = function(state, options) {
 };
 
 ripe.Configurator.prototype.deinit = function() {
-    ripe.Interactable.prototype.deinit.call(this);
-
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
     }
 
     this._removeElementHandlers();
-    this.observer && this.observer.disconnect();
-    this.observer = null;
-    this.element = null;
+    this._observer && this._observer.disconnect();
+    this._observer = null;
+
+    ripe.Visual.prototype.deinit.call(this);
 };
 
 ripe.Configurator.prototype.changeFrame = function(frame, options) {
@@ -2126,14 +2164,14 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
     var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
-    this.observer = Observer ? new Observer(function(mutations) {
+    this._observer = Observer ? new Observer(function(mutations) {
         for (var index = 0; index < mutations.length; index++) {
             var mutation = mutations[index];
             mutation.type === "style" && self.resize();
             mutation.type === "attributes" && self.update();
         }
     }) : null;
-    this.observer && this.observer.observe(this.element, {
+    this._observer && this._observer.observe(this.element, {
         attributes: true,
         subtree: false,
         characterData: true
@@ -2144,26 +2182,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // taking into account that there may be a touch handler
     // already defined
     ripe.touchHandler(this.element);
-};
-
-ripe.Configurator.prototype._addElementHandler = function(event, callback) {
-    this.element.addEventListener(event, callback);
-
-    var callbacks = this.elementEvents[event] || [];
-    callbacks.push(callback);
-    this.elementEvents[event] = callbacks;
-};
-
-ripe.Configurator.prototype._removeElementHandlers = function() {
-    for (var event in this.elementEvents) {
-        var callbacks = this.elementEvents[event];
-        for (var index = 0; index < callbacks.length; index++) {
-            var callback = callbacks[index];
-            this.element.removeEventListener(event, callback);
-        }
-    }
-
-    this.elementEvents = {};
 };
 
 ripe.Configurator.prototype._parseDrag = function() {
@@ -2242,12 +2260,13 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
 
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
-    ripe.Image.prototype.init.call(this);
 };
 
 ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Image.prototype.init = function() {
+    ripe.Visual.prototype.init.call(this);
+
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
     this.width = this.options.width || null;
@@ -2260,8 +2279,7 @@ ripe.Image.prototype.init = function() {
             profile: [engraving]
         };
     };
-    this.observer = null;
-    this.loadListener = null;
+    this._observer = null;
 
     this._registerHandlers();
 };
@@ -2302,14 +2320,11 @@ ripe.Image.prototype.update = function(state) {
 };
 
 ripe.Image.prototype.deinit = function() {
-    ripe.Visual.prototype.deinit.call(this);
-
-    this._unregisterHandlers();
-
-    this.element = null;
-    this.observer = null;
-    this.loadListener = null;
+    this._observer && this._observer.disconnect();
+    this._observer = null;
     this.initialsBuilder = null;
+
+    ripe.Visual.prototype.deinit.call(this);
 };
 
 ripe.Image.prototype.setFrame = function(frame, options) {
@@ -2329,16 +2344,11 @@ ripe.Image.prototype._registerHandlers = function() {
     this.element.addEventListener("load", this.loadListener);
 
     var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
-    this.observer = Observer ? new Observer(function(mutations) {
+    this._observer = Observer ? new Observer(function(mutations) {
         this.update();
     }.bind(this)) : null;
-    this.observer && this.observer.observe(this.element, {
+    this._observer && this._observer.observe(this.element, {
         attributes: true,
         subtree: false
     });
-};
-
-ripe.Image.prototype._unregisterHandlers = function() {
-    this.loadListener && this.element.removeEventListener("load", this.loadListener);
-    this.observer && this.observer.disconnect();
 };

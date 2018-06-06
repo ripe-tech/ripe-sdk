@@ -20,12 +20,13 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
  */
 ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
-    ripe.Configurator.prototype.init.call(this, options);
 };
 
 ripe.Configurator.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Configurator.prototype.init = function() {
+    ripe.Visual.prototype.init.call(this);
+
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
     this.size = this.options.size || null;
@@ -40,8 +41,7 @@ ripe.Configurator.prototype.init = function() {
     this.view = this.options.view || "side";
     this.position = this.options.position || 0;
     this.ready = false;
-    this.observer = null;
-    this.elementEvents = {};
+    this._observer = null;
 
     // creates a structure the store the last presented
     // position of each view, to be used when returning
@@ -169,16 +169,15 @@ ripe.Configurator.prototype.update = function(state, options) {
 };
 
 ripe.Configurator.prototype.deinit = function() {
-    ripe.Interactable.prototype.deinit.call(this);
-
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
     }
 
     this._removeElementHandlers();
-    this.observer && this.observer.disconnect();
-    this.observer = null;
-    this.element = null;
+    this._observer && this._observer.disconnect();
+    this._observer = null;
+
+    ripe.Visual.prototype.deinit.call(this);
 };
 
 ripe.Configurator.prototype.changeFrame = function(frame, options) {
@@ -871,14 +870,14 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
     var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
-    this.observer = Observer ? new Observer(function(mutations) {
+    this._observer = Observer ? new Observer(function(mutations) {
         for (var index = 0; index < mutations.length; index++) {
             var mutation = mutations[index];
             mutation.type === "style" && self.resize();
             mutation.type === "attributes" && self.update();
         }
     }) : null;
-    this.observer && this.observer.observe(this.element, {
+    this._observer && this._observer.observe(this.element, {
         attributes: true,
         subtree: false,
         characterData: true
@@ -889,26 +888,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // taking into account that there may be a touch handler
     // already defined
     ripe.touchHandler(this.element);
-};
-
-ripe.Configurator.prototype._addElementHandler = function(event, callback) {
-    this.element.addEventListener(event, callback);
-
-    var callbacks = this.elementEvents[event] || [];
-    callbacks.push(callback);
-    this.elementEvents[event] = callbacks;
-};
-
-ripe.Configurator.prototype._removeElementHandlers = function() {
-    for (var event in this.elementEvents) {
-        var callbacks = this.elementEvents[event];
-        for (var index = 0; index < callbacks.length; index++) {
-            var callback = callbacks[index];
-            this.element.removeEventListener(event, callback);
-        }
-    }
-
-    this.elementEvents = {};
 };
 
 ripe.Configurator.prototype._parseDrag = function() {

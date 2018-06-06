@@ -3,7 +3,7 @@ const config = require("./config");
 const base = require("../../src/js/base");
 const plugins = require("../../src/js/plugins");
 
-const MockRipe = function (partOptions, optionals) {
+const MockRipe = function(partOptions, optionals) {
     const mockRipe = new base.ripe.Observable();
 
     var defaults = {};
@@ -11,23 +11,23 @@ const MockRipe = function (partOptions, optionals) {
     optionals.forEach(optional => defaults[optional] = {
         optional: true
     });
-    mockRipe.getConfig = function (options, callback) {
+    mockRipe.getConfig = function(options, callback) {
         callback({
             defaults: defaults,
             parts: partOptions
         });
     };
-    mockRipe.setParts = function (parts) {
+    mockRipe.setParts = function(parts) {
         this.parts = parts;
     };
-    mockRipe.bind = function (name, callback) { };
+    mockRipe.bind = function(name, callback) {};
     return mockRipe;
 };
 
-describe("Restrictions", function () {
+describe("Restrictions", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#main", function () {
+    describe("#main", function() {
         it("should apply restrictions", () => {
             const initialParts = {
                 upper: {
@@ -82,7 +82,7 @@ describe("Restrictions", function () {
         });
     });
 
-    describe("#optional", function () {
+    describe("#optional", function() {
         it("should remove optional part if needed", () => {
             const initialParts = {
                 upper: {

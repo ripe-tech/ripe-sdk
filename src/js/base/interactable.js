@@ -17,7 +17,7 @@ ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
 
-    ripe.Interactable.prototype.init.call(this);
+    this.init();
 };
 
 /**

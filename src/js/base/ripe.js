@@ -65,12 +65,14 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
 ripe.Ripe.prototype.deinit = function() {
     ripe.Observable.prototype.deinit.call(this);
 
-    for (var index = this.children.length - 1; index >= 0; index--) {
+    var index = null;
+
+    for (index = this.children.length - 1; index >= 0; index--) {
         var child = this.children[index];
         this.unbindInteractable(child);
     }
 
-    for (var index = this.plugins.length - 1; index >= 0; index--) {
+    for (index = this.plugins.length - 1; index >= 0; index--) {
         var plugin = this.plugins[index];
         this.removePlugin(plugin);
     }

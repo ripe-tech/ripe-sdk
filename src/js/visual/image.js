@@ -8,12 +8,13 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
 
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
-    ripe.Image.prototype.init.call(this);
 };
 
 ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Image.prototype.init = function() {
+    ripe.Visual.prototype.init.call(this);
+
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
     this.width = this.options.width || null;
@@ -26,8 +27,7 @@ ripe.Image.prototype.init = function() {
             profile: [engraving]
         };
     };
-    this.observer = null;
-    this.loadListener = null;
+    this._observer = null;
 
     this._registerHandlers();
 };
@@ -68,14 +68,11 @@ ripe.Image.prototype.update = function(state) {
 };
 
 ripe.Image.prototype.deinit = function() {
-    ripe.Visual.prototype.deinit.call(this);
-
-    this._unregisterHandlers();
-
-    this.element = null;
-    this.observer = null;
-    this.loadListener = null;
+    this._observer && this._observer.disconnect();
+    this._observer = null;
     this.initialsBuilder = null;
+
+    ripe.Visual.prototype.deinit.call(this);
 };
 
 ripe.Image.prototype.setFrame = function(frame, options) {
@@ -95,16 +92,11 @@ ripe.Image.prototype._registerHandlers = function() {
     this.element.addEventListener("load", this.loadListener);
 
     var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
-    this.observer = Observer ? new Observer(function(mutations) {
+    this._observer = Observer ? new Observer(function(mutations) {
         this.update();
     }.bind(this)) : null;
-    this.observer && this.observer.observe(this.element, {
+    this._observer && this._observer.observe(this.element, {
         attributes: true,
         subtree: false
     });
-};
-
-ripe.Image.prototype._unregisterHandlers = function() {
-    this.loadListener && this.element.removeEventListener("load", this.loadListener);
-    this.observer && this.observer.disconnect();
 };
