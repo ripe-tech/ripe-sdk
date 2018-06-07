@@ -34,6 +34,10 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
         var initialParts = ripe.clone(this.owner.parts);
         this.owner.setParts(initialParts);
     }.bind(this));
+
+    this.owner.bind("config", function() {
+        this.unregister(this.owner);
+    }.bind(this));
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {

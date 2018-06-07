@@ -32,9 +32,9 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.useCombinations = this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
-    this.children = [];
-    this.plugins = [];
-    this.ready = false;
+    this.children = this.children || [];
+    this.plugins = this.plugins || [];
+    this.ready = this.ready || false;
 
     // runs the background color normalization process that removes
     // the typical cardinal character from the definition
@@ -50,8 +50,10 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     loadParts.call(this, function(result) {
         result = result || this.parts;
         this.parts = result;
-        this.ready = true;
-        this.trigger("ready");
+        if (this.ready === false) {
+            this.ready = true;
+            this.trigger("ready");
+        }
         this.remote();
         this.update();
         this.setParts(result);
@@ -59,7 +61,8 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
 
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
-    this.ready = hasParts;
+    var update = this.options.update || false;
+    this.ready = update ? this.ready : hasParts;
 };
 
 ripe.Ripe.prototype.deinit = function() {
@@ -83,6 +86,14 @@ ripe.Ripe.prototype.load = function() {
 };
 
 ripe.Ripe.prototype.unload = function() {};
+
+ripe.Ripe.prototype.updateConfig = function(brand, model, options) {
+    options = Object.assign({
+        update: true
+    }, this.options, options);
+    this.init(brand, model, options);
+    this.trigger("config");
+};
 
 ripe.Ripe.prototype.remote = function() {
     // tries to determine if the combinations available should be

@@ -7,7 +7,11 @@ module.exports = {
         }],
         "quotes": ["error", "double"],
         "semi": ["error", "always"],
-        "space-before-function-paren": ["error", "never"],
+        "space-before-function-paren": ["error", {
+            "anonymous": "never",
+            "named": "never",
+            "asyncArrow": "always"
+        }],
         "linebreak-style": ["error", "windows"],
         "mocha/no-exclusive-tests": "error"
     },

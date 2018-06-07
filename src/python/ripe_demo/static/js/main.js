@@ -24,6 +24,10 @@ window.onload = function() {
         country: country
     });
 
+    setTimeout(() => {
+        ripe.updateConfig("swear", "redchurch");
+    }, 3000);
+
     var randomize = function() {
         var parts = [];
         for (var key in partsMap) {

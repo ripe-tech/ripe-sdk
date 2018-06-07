@@ -246,9 +246,9 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.useCombinations = this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
-    this.children = [];
-    this.plugins = [];
-    this.ready = false;
+    this.children = this.children || [];
+    this.plugins = this.plugins || [];
+    this.ready = this.ready || false;
 
     // runs the background color normalization process that removes
     // the typical cardinal character from the definition
@@ -264,8 +264,10 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     loadParts.call(this, function(result) {
         result = result || this.parts;
         this.parts = result;
-        this.ready = true;
-        this.trigger("ready");
+        if (this.ready === false) {
+            this.ready = true;
+            this.trigger("ready");
+        }
         this.remote();
         this.update();
         this.setParts(result);
@@ -273,7 +275,8 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
 
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
-    this.ready = hasParts;
+    var update = this.options.update || false;
+    this.ready = update ? this.ready : hasParts;
 };
 
 ripe.Ripe.prototype.deinit = function() {
@@ -297,6 +300,14 @@ ripe.Ripe.prototype.load = function() {
 };
 
 ripe.Ripe.prototype.unload = function() {};
+
+ripe.Ripe.prototype.updateConfig = function(brand, model, options) {
+    options = Object.assign({
+        update: true
+    }, this.options, options);
+    this.init(brand, model, options);
+    this.trigger("config");
+};
 
 ripe.Ripe.prototype.remote = function() {
     // tries to determine if the combinations available should be
@@ -875,6 +886,10 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
         var initialParts = ripe.clone(this.owner.parts);
         this.owner.setParts(initialParts);
     }.bind(this));
+
+    this.owner.bind("config", function() {
+        this.unregister(this.owner);
+    }.bind(this));
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
@@ -1205,6 +1220,10 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     // resets the current selection to trigger the sync operation
     var initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
+
+    this.owner.bind("config", function() {
+        this.unregister(this.owner);
+    }.bind(this));
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
@@ -1337,10 +1356,17 @@ ripe.Configurator.prototype.init = function() {
     this.ready = false;
     this._observer = null;
 
-    // creates a structure the store the last presented
-    // position of each view, to be used when returning
-    // to a view for better user experience
-    this._lastFrame = {};
+    this.owner.bind("parts", function(parts) {
+        this.parts = parts;
+    });
+
+    this.owner.bind("selected_part", function(part) {
+        this.highlight(part);
+    }.bind(this));
+
+    this.owner.bind("deselected_part", function(part) {
+        this.lowlight();
+    }.bind(this));
 
     // ues the owner to retrieve the complete set of frames
     // that are available for the current model and runs
@@ -1353,27 +1379,10 @@ ripe.Configurator.prototype.init = function() {
         this.update();
     }.bind(this));
 
-    // creates a set of sorted parts to be used on the
-    // highlight operation (considers only the default ones)
-    this.partsList = [];
-    this.owner.getConfig(function(config) {
-        var defaults = config.defaults || {};
-        this.hiddenParts = config.hidden || [];
-        this.partsList = Object.keys(defaults);
-        this.partsList.sort();
+    this.owner.bind("config", function() {
+        this._updateConfig();
     }.bind(this));
-
-    this.owner.bind("parts", function(parts) {
-        this.parts = parts;
-    });
-
-    this.owner.bind("selected_part", function(part) {
-        this.highlight(part);
-    }.bind(this));
-
-    this.owner.bind("deselected_part", function(part) {
-        this.lowlight();
-    }.bind(this));
+    this._updateConfig();
 };
 
 ripe.Configurator.prototype.resize = function(size) {
@@ -1708,20 +1717,10 @@ ripe.Configurator.prototype._initLayout = function() {
     // mask images to be used during highlight and select operation
     var masksBuffer = ripe.createElement("div", "masks-buffer");
 
-    // creates two image elements for each frame and
-    // appends them to the frames and masks buffers
-    for (var view in this.frames) {
-        var viewFrames = this.frames[view];
-        for (var index = 0; index < viewFrames; index++) {
-            var frameBuffer = ripe.createElement("img");
-            frameBuffer.dataset.frame = ripe.getFrameKey(view, index);
-            framesBuffer.appendChild(frameBuffer);
-            var maskBuffer = frameBuffer.cloneNode(true);
-            masksBuffer.appendChild(maskBuffer);
-        }
-    }
     this.element.appendChild(framesBuffer);
     this.element.appendChild(masksBuffer);
+
+    this._populateBuffers();
 
     // set the size of area, frontMask, back and mask
     this.resize();
@@ -1732,6 +1731,64 @@ ripe.Configurator.prototype._initLayout = function() {
 
     // register for all the necessary DOM events
     this._registerHandlers();
+};
+
+ripe.Configurator.prototype._populateBuffers = function() {
+    var framesBuffer = this.element.getElementsByClassName("frames-buffer");
+    var masksBuffer = this.element.getElementsByClassName("masks-buffer");
+    var index = null;
+    var buffer = null;
+
+    for (index = 0; index < framesBuffer.length; index++) {
+        buffer = framesBuffer[index];
+        this._populateBuffer(buffer);
+    }
+
+    for (index = 0; index < masksBuffer.length; index++) {
+        buffer = masksBuffer[index];
+        this._populateBuffer(buffer);
+    }
+};
+
+ripe.Configurator.prototype._populateBuffer = function(buffer) {
+    while (buffer.firstChild) {
+        buffer.removeChild(buffer.firstChild);
+    }
+
+    // creates two image elements for each frame and
+    // appends them to the frames and masks buffers
+    for (var view in this.frames) {
+        var viewFrames = this.frames[view];
+        for (var index = 0; index < viewFrames; index++) {
+            var frameBuffer = ripe.createElement("img");
+            frameBuffer.dataset.frame = ripe.getFrameKey(view, index);
+            buffer.appendChild(frameBuffer);
+        }
+    }
+};
+
+ripe.Configurator.prototype._updateConfig = function() {
+    this.element.classList.remove("preload");
+
+    // creates a structure the store the last presented
+    // position of each view, to be used when returning
+    // to a view for better user experience
+    this._lastFrame = {};
+
+    // creates a set of sorted parts to be used on the
+    // highlight operation (considers only the default ones)
+    this.partsList = [];
+    this.owner.getConfig(function(config) {
+        var defaults = config.defaults || {};
+        this.hiddenParts = config.hidden || [];
+        this.partsList = Object.keys(defaults);
+        this.partsList.sort();
+    }.bind(this));
+
+    this.owner.getFrames(function(frames) {
+        this.frames = frames;
+        this.update("cross");
+    }.bind(this));
 };
 
 ripe.Configurator.prototype._loadFrame = function(view, position, options, callback) {
@@ -1822,25 +1879,24 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     // mask loading process runs the final update of the mask canvas
     // operation that will allow new highlight and selection operation
     // to be performed according to the new frame value
+    var backgroundColor = options.backgroundColor || this.backgroundColor;
+    var size = this.element.dataset.size || this.size;
+    var width = size || this.element.dataset.width || this.width;
+    var height = size || this.element.dataset.height || this.height;
+    var frame = ripe.getFrameKey(view, position);
+    var url = this.owner._getMaskURL({
+        frame: ripe.frameNameHack(frame),
+        size: size,
+        width: width,
+        height: height,
+        color: backgroundColor
+    });
     var self = this;
-    if (maskImage.dataset.src) {
+    if (maskImage.dataset.src === url) {
         setTimeout(function() {
             self._drawMask(maskImage);
         }, 150);
     } else {
-        var backgroundColor = options.backgroundColor || this.backgroundColor;
-        var size = this.element.dataset.size || this.size;
-        var width = size || this.element.dataset.width || this.width;
-        var height = size || this.element.dataset.height || this.height;
-        var frame = ripe.getFrameKey(view, position);
-        var url = this.owner._getMaskURL({
-            frame: ripe.frameNameHack(frame),
-            size: size,
-            width: width,
-            height: height,
-            color: backgroundColor
-        });
-
         maskImage.onload = function() {
             setTimeout(function() {
                 self._drawMask(maskImage);

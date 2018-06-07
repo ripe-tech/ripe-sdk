@@ -21,6 +21,10 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     // resets the current selection to trigger the sync operation
     var initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
+
+    this.owner.bind("config", function() {
+        this.unregister(this.owner);
+    }.bind(this));
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
