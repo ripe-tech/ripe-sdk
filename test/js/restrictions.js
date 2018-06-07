@@ -8,8 +8,10 @@ const MockRipe = function(partOptions, optionals) {
 
     var defaults = {};
     optionals = optionals || [];
-    optionals.forEach(optional => defaults[optional] = {
-        optional: true
+    optionals.forEach(function(optional) {
+        defaults[optional] = {
+            optional: true
+        };
     });
     mockRipe.getConfig = function(options, callback) {
         callback({
