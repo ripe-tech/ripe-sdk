@@ -63,8 +63,6 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
 };
 
 ripe.Ripe.prototype.deinit = function() {
-    ripe.Observable.prototype.deinit.call(this);
-
     var index = null;
 
     for (index = this.children.length - 1; index >= 0; index--) {
@@ -76,6 +74,8 @@ ripe.Ripe.prototype.deinit = function() {
         var plugin = this.plugins[index];
         this.removePlugin(plugin);
     }
+
+    ripe.Observable.prototype.deinit.call(this);
 };
 
 ripe.Ripe.prototype.load = function() {
