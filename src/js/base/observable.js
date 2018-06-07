@@ -7,6 +7,8 @@ ripe.Observable = function() {
     this.callbacks = {};
 };
 
+ripe.Observable.prototype.init = function() {};
+
 ripe.Observable.prototype.addCallback = function(event, callback) {
     var callbacks = this.callbacks[event] || [];
     callbacks.push(callback);
@@ -34,6 +36,10 @@ ripe.Observable.prototype.runCallbacks = function(event) {
         var callback = callbacks[index];
         callback.apply(this, Array.prototype.slice.call(arguments, 1));
     }
+};
+
+ripe.Observable.prototype.deinit = function() {
+    this.callbacks = null;
 };
 
 ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;

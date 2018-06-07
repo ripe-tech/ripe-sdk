@@ -20,12 +20,13 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
  */
 ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
-    ripe.Configurator.prototype.init.call(this, options);
 };
 
 ripe.Configurator.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Configurator.prototype.init = function() {
+    ripe.Visual.prototype.init.call(this);
+
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
     this.size = this.options.size || null;
@@ -40,6 +41,7 @@ ripe.Configurator.prototype.init = function() {
     this.view = this.options.view || "side";
     this.position = this.options.position || 0;
     this.ready = false;
+    this._observer = null;
 
     // creates a structure the store the last presented
     // position of each view, to be used when returning
@@ -164,6 +166,18 @@ ripe.Configurator.prototype.update = function(state, options) {
     var preloaded = this.element.classList.contains("preload");
     var mustPreload = changed || !preloaded;
     mustPreload && this._preload(this.options.useChain);
+};
+
+ripe.Configurator.prototype.deinit = function() {
+    while (this.element.firstChild) {
+        this.element.removeChild(this.element.firstChild);
+    }
+
+    this._removeElementHandlers();
+    this._observer && this._observer.disconnect();
+    this._observer = null;
+
+    ripe.Visual.prototype.deinit.call(this);
 };
 
 ripe.Configurator.prototype.changeFrame = function(frame, options) {
@@ -718,7 +732,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // binds the mousedown event on the element to prepare
     // it for drag movements
-    this.element.addEventListener("mousedown", function(event) {
+    this._addElementHandler("mousedown", function(event) {
         var _element = this;
         _element.dataset.view = _element.dataset.view || "side";
         self.base = _element.dataset.position || 0;
@@ -731,7 +745,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for mouseup events and if it occurs then
     // stops reacting to mouse move events has drag movements
-    this.element.addEventListener("mouseup", function(event) {
+    this._addElementHandler("mouseup", function(event) {
         var _element = this;
         self.down = false;
         self.percent = 0;
@@ -741,7 +755,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for mouse leave events and if it occurs then
     // stops reacting to mousemove events has drag movements
-    this.element.addEventListener("mouseleave", function(event) {
+    this._addElementHandler("mouseleave", function(event) {
         var _element = this;
         self.down = false;
         self.percent = 0;
@@ -751,7 +765,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
-    this.element.addEventListener("mousemove", function(event) {
+    this._addElementHandler("mousemove", function(event) {
         if (this.classList.contains("no-drag")) {
             return;
         }
@@ -856,14 +870,14 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
     var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
-    var observer = Observer ? new Observer(function(mutations) {
+    this._observer = Observer ? new Observer(function(mutations) {
         for (var index = 0; index < mutations.length; index++) {
             var mutation = mutations[index];
             mutation.type === "style" && self.resize();
             mutation.type === "attributes" && self.update();
         }
     }) : null;
-    observer && observer.observe(this.element, {
+    this._observer && this._observer.observe(this.element, {
         attributes: true,
         subtree: false,
         characterData: true

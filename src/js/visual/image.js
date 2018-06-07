@@ -2,16 +2,19 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
     var base = require("../base"); // eslint-disable-line no-redeclare
     require("./visual");
     var ripe = base.ripe; // eslint-disable-line no-redeclare
+    var MutationObserver = typeof MutationObserver === "undefined" ? null : MutationObserver;
+    var WebKitMutationObserver = typeof WebKitMutationObserver === "undefined" ? null : WebKitMutationObserver;
 }
 
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
-    ripe.Image.prototype.init.call(this);
 };
 
 ripe.Image.prototype = Object.create(ripe.Visual.prototype);
 
 ripe.Image.prototype.init = function() {
+    ripe.Visual.prototype.init.call(this);
+
     this.frame = this.options.frame || 0;
     this.size = this.options.size || 1000;
     this.width = this.options.width || null;
@@ -24,6 +27,7 @@ ripe.Image.prototype.init = function() {
             profile: [engraving]
         };
     };
+    this._observer = null;
 
     this._registerHandlers();
 };
@@ -63,6 +67,14 @@ ripe.Image.prototype.update = function(state) {
     this.element.src = url;
 };
 
+ripe.Image.prototype.deinit = function() {
+    this._observer && this._observer.disconnect();
+    this._observer = null;
+    this.initialsBuilder = null;
+
+    ripe.Visual.prototype.deinit.call(this);
+};
+
 ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
     this.update();
@@ -74,14 +86,16 @@ ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
 };
 
 ripe.Image.prototype._registerHandlers = function() {
-    this.element.addEventListener("load", function() {
+    this.loadListener = function() {
         this.trigger("loaded");
-    }.bind(this));
+    }.bind(this);
+    this.element.addEventListener("load", this.loadListener);
+
     var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
-    var observer = Observer ? new Observer(function(mutations) {
+    this._observer = Observer ? new Observer(function(mutations) {
         this.update();
     }.bind(this)) : null;
-    observer && observer.observe(this.element, {
+    this._observer && this._observer.observe(this.element, {
         attributes: true,
         subtree: false
     });

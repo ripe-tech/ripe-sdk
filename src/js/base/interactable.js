@@ -17,7 +17,7 @@ ripe.Interactable = function(owner, options) {
     this.owner = owner;
     this.options = options || {};
 
-    ripe.Interactable.prototype.init.call(this);
+    this.init();
 };
 
 /**
@@ -33,3 +33,11 @@ ripe.Interactable.prototype.init = function() {};
  * @param {Object} state The new configuration state.
  */
 ripe.Interactable.prototype.update = function(state) {};
+
+/**
+ * The deinitializer of the class, called whenever this
+ * interactable should stop responding to updates.
+ */
+ripe.Interactable.prototype.deinit = function() {
+    this.owner = null;
+};

@@ -24,7 +24,7 @@ const MockRipe = function(partOptions, optionals) {
     return mockRipe;
 };
 
-describe("Ripe", function() {
+describe("Restrictions", function() {
     this.timeout(config.TEST_TIMEOUT);
 
     describe("#main", function() {
@@ -68,7 +68,7 @@ describe("Ripe", function() {
             restrictionsPlugin.register(mockRipe);
 
             restrictionsPlugin._applyRestrictions();
-            assert.deepEqual(initialParts, mockRipe.parts);
+            assert.deepStrictEqual(initialParts, mockRipe.parts);
 
             mockRipe.parts.bottom.color = "white";
             restrictionsPlugin._applyRestrictions(
@@ -121,14 +121,14 @@ describe("Ripe", function() {
                 restrictions);
             restrictionsPlugin.register(mockRipe);
 
-            assert.deepEqual(initialParts, mockRipe.parts);
+            assert.deepStrictEqual(initialParts, mockRipe.parts);
 
             mockRipe.parts.logo = {
                 material: "metal",
                 color: "gold"
             };
             restrictionsPlugin._applyRestrictions("logo", mockRipe.parts.logo);
-            assert.deepEqual({
+            assert.deepStrictEqual({
                 upper: {
                     material: "suede",
                     color: "black"
@@ -144,7 +144,7 @@ describe("Ripe", function() {
                 color: "black"
             };
             restrictionsPlugin._applyRestrictions("upper", mockRipe.parts.upper);
-            assert.deepEqual({
+            assert.deepStrictEqual({
                 upper: {
                     material: "nappa",
                     color: "black"
