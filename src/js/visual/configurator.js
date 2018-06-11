@@ -474,7 +474,10 @@ ripe.Configurator.prototype._updateConfig = function() {
 
     this.owner.getFrames(function(frames) {
         this.frames = frames;
-        this.update("cross");
+        this.update({}, {
+            animate: "cross",
+            force: true
+        });
     }.bind(this));
 };
 
