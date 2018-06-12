@@ -13,7 +13,8 @@ module.exports = {
             "asyncArrow": "always"
         }],
         "linebreak-style": ["error", "windows"],
-        "mocha/no-exclusive-tests": "error"
+        "mocha/no-exclusive-tests": "error",
+        "standard/no-callback-literal": "off"
     },
     "env": {
         "browser": true,

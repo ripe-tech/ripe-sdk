@@ -4,6 +4,7 @@ const size = require("gulp-size");
 const count = require("gulp-count");
 const mocha = require("gulp-mocha");
 const jsdoc = require("gulp-jsdoc3");
+const eslint = require("gulp-eslint");
 const uglifyes = require("gulp-uglifyes");
 const replace = require("gulp-replace");
 const _package = require("./package.json");
@@ -12,6 +13,7 @@ var paths = {
     mainjs: "src/js/ripe.js",
     maincss: "src/css/ripe.css",
     scripts: "src/js/**/*.js",
+    bscripts: "src/js/*/**/*.js",
     css: "src/css/**/*.css",
     docs: "src/js/*/**/*.js",
     test: "test/js/**/*.js",
@@ -53,6 +55,13 @@ gulp.task("mark", () => {
     return gulp.src(paths.scripts)
         .pipe(replace("__VERSION__", _package.version))
         .pipe(gulp.dest("src/js"));
+});
+
+gulp.task("lint", () => {
+    return gulp.src([paths.bscripts, paths.test])
+        .pipe(eslint())
+        .pipe(eslint.format())
+        .pipe(eslint.failAfterError());
 });
 
 gulp.task("test", () => {

@@ -280,8 +280,6 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
 };
 
 ripe.Ripe.prototype.deinit = function() {
-    ripe.Observable.prototype.deinit.call(this);
-
     var index = null;
 
     for (index = this.children.length - 1; index >= 0; index--) {
@@ -293,6 +291,8 @@ ripe.Ripe.prototype.deinit = function() {
         var plugin = this.plugins[index];
         this.removePlugin(plugin);
     }
+
+    ripe.Observable.prototype.deinit.call(this);
 };
 
 ripe.Ripe.prototype.load = function() {
@@ -1286,7 +1286,12 @@ ripe.Visual.prototype.deinit = function() {
 /**
  * Utility function that binds an event to the interactable
  * DOM element and keeps a reference to it to unbind it
- * when no longer needed
+ * when no longer needed.
+ *
+ * @param {String} event The name of the event for which an event
+ * handler is going to be registered.
+ * @param {Function} callback The callback function to called once
+ * the event is triggered.
  */
 ripe.Visual.prototype._addElementHandler = function(event, callback) {
     this.element.addEventListener(event, callback);
@@ -1297,7 +1302,7 @@ ripe.Visual.prototype._addElementHandler = function(event, callback) {
 };
 
 /**
- * Unbinds all the events from the DOM element
+ * Unbinds all the events from the DOM element.
  */
 ripe.Visual.prototype._removeElementHandlers = function() {
     for (var event in this.elementEvents) {
