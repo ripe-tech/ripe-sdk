@@ -888,7 +888,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     }.bind(this));
 
     this.owner.bind("config", function() {
-        this.unregister(this.owner);
+        this.owner && this.unregister(this.owner);
     }.bind(this));
 };
 
@@ -1222,7 +1222,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     this.owner.setParts(initialParts);
 
     this.owner.bind("config", function() {
-        this.unregister(this.owner);
+        this.owner && this.unregister(this.owner);
     }.bind(this));
 };
 
@@ -1368,12 +1368,18 @@ ripe.Configurator.prototype.init = function() {
         this.lowlight();
     }.bind(this));
 
+    // creates a structure the store the last presented
+    // position of each view, to be used when returning
+    // to a view for better user experience
+    this._lastFrame = {};
+
     // ues the owner to retrieve the complete set of frames
     // that are available for the current model and runs
     // the intial layout update operation on result
     this.owner.getFrames(function(frames) {
         this.frames = frames;
         this._initLayout();
+        this._initPartsList();
         this.ready = true;
         this.trigger("ready");
         this.update();
@@ -1382,7 +1388,6 @@ ripe.Configurator.prototype.init = function() {
     this.owner.bind("config", function() {
         this._updateConfig();
     }.bind(this));
-    this._updateConfig();
 };
 
 ripe.Configurator.prototype.resize = function(size) {
@@ -1433,6 +1438,7 @@ ripe.Configurator.prototype.update = function(state, options) {
     var force = options.force || false;
     var duration = options.duration;
     var callback = options.callback;
+    var preload = options.preload;
 
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
@@ -1467,7 +1473,7 @@ ripe.Configurator.prototype.update = function(state, options) {
     // based update (not just the loading of the current position)
     // and the current signature has changed
     var preloaded = this.element.classList.contains("preload");
-    var mustPreload = changed || !preloaded;
+    var mustPreload = preload !== undefined ? preload : (changed || !preloaded);
     mustPreload && this._preload(this.options.useChain);
 };
 
@@ -1733,6 +1739,18 @@ ripe.Configurator.prototype._initLayout = function() {
     this._registerHandlers();
 };
 
+ripe.Configurator.prototype._initPartsList = function() {
+    // creates a set of sorted parts to be used on the
+    // highlight operation (considers only the default ones)
+    this.partsList = [];
+    this.owner.getConfig(function(config) {
+        var defaults = config.defaults || {};
+        this.hiddenParts = config.hidden || [];
+        this.partsList = Object.keys(defaults);
+        this.partsList.sort();
+    }.bind(this));
+};
+
 ripe.Configurator.prototype._populateBuffers = function() {
     var framesBuffer = this.element.getElementsByClassName("frames-buffer");
     var masksBuffer = this.element.getElementsByClassName("masks-buffer");
@@ -1768,26 +1786,47 @@ ripe.Configurator.prototype._populateBuffer = function(buffer) {
 };
 
 ripe.Configurator.prototype._updateConfig = function() {
-    this.element.classList.remove("preload");
+    // sets ready to false to temporarily block
+    // update requests while the new config
+    // is being loaded
+    this.ready = false;
 
-    // creates a structure the store the last presented
-    // position of each view, to be used when returning
-    // to a view for better user experience
-    this._lastFrame = {};
+    // updates the parts list for the new product
+    this._initPartsList();
 
-    // creates a set of sorted parts to be used on the
-    // highlight operation (considers only the default ones)
-    this.partsList = [];
-    this.owner.getConfig(function(config) {
-        var defaults = config.defaults || {};
-        this.hiddenParts = config.hidden || [];
-        this.partsList = Object.keys(defaults);
-        this.partsList.sort();
-    }.bind(this));
-
+    // retrieves the new product frames and sets them
     this.owner.getFrames(function(frames) {
         this.frames = frames;
+
+        // tries to keep the current view and position
+        // if the new model supports it otherwise
+        // changes to a supported frame
+        var view = this.element.dataset.position;
+        var position = this.element.dataset.position;
+        var maxPosition = this.frames[view];
+        if (!maxPosition) {
+            view = Object.keys(this.frames)[0];
+            position = 0;
+        } else if (position >= maxPosition) {
+            position = 0;
+        }
+
+        // checks the last viewed frames of each view
+        // and deletes the ones not supported
+        var lastFrameViews = Object.keys(this._lastFrame);
+        for (view in lastFrameViews) {
+            position = this._lastFrame[view];
+            maxPosition = this.frames[view];
+            if (!maxPosition || position >= maxPosition) {
+                delete this._lastFrame[view];
+            }
+        }
+
+        // shows the new product with a crossfade effect
+        // and starts responding to updates again
+        this.ready = true;
         this.update({}, {
+            preload: true,
             animate: "cross",
             force: true
         });
@@ -1882,6 +1921,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     // mask loading process runs the final update of the mask canvas
     // operation that will allow new highlight and selection operation
     // to be performed according to the new frame value
+    var draw = options.draw === undefined || options.draw;
     var backgroundColor = options.backgroundColor || this.backgroundColor;
     var size = this.element.dataset.size || this.size;
     var width = size || this.element.dataset.width || this.width;
@@ -1895,16 +1935,16 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
         color: backgroundColor
     });
     var self = this;
-    if (maskImage.dataset.src === url) {
+    if (draw && maskImage.dataset.src === url) {
         setTimeout(function() {
             self._drawMask(maskImage);
         }, 150);
     } else {
-        maskImage.onload = function() {
+        maskImage.onload = draw ? function() {
             setTimeout(function() {
                 self._drawMask(maskImage);
             }, 150);
-        };
+        } : null;
         maskImage.addEventListener("error", function() {
             this.removeAttribute("src");
         });

@@ -24,10 +24,6 @@ window.onload = function() {
         country: country
     });
 
-    setTimeout(() => {
-        ripe.updateConfig("swear", "redchurch");
-    }, 3000);
-
     var randomize = function() {
         var parts = [];
         for (var key in partsMap) {
@@ -210,13 +206,16 @@ window.onload = function() {
                 noMasks: false,
                 view: bestFace(result)
             });
-
+            var test = true;
             configurator.bind("loaded", function() {
                 if (result.faces.indexOf("side") !== -1) {
-                    configurator.changeFrame("side-12", {
+                    configurator.changeFrame("top-0", {
                         duration: 500
                     });
                 }
+
+                test && setTimeout(function() { ripe.updateConfig("fendi", "kan_i") }, 2000);
+                test = false;
             });
 
             var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync); // eslint-disable-line no-undef

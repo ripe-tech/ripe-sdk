@@ -36,7 +36,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     }.bind(this));
 
     this.owner.bind("config", function() {
-        this.unregister(this.owner);
+        this.owner && this.unregister(this.owner);
     }.bind(this));
 };
 

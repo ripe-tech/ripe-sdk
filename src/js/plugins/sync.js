@@ -23,7 +23,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     this.owner.setParts(initialParts);
 
     this.owner.bind("config", function() {
-        this.unregister(this.owner);
+        this.owner && this.unregister(this.owner);
     }.bind(this));
 };
 
