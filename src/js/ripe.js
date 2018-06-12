@@ -302,7 +302,7 @@ ripe.Ripe.prototype.load = function() {
 ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.updateConfig = function(brand, model, options) {
-    options = Object.assign({
+    options = ripe.assign({
         update: true
     }, this.options, options);
     this.init(brand, model, options);

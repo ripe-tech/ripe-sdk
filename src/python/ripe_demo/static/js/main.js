@@ -206,16 +206,13 @@ window.onload = function() {
                 noMasks: false,
                 view: bestFace(result)
             });
-            var test = true;
+
             configurator.bind("loaded", function() {
                 if (result.faces.indexOf("side") !== -1) {
-                    configurator.changeFrame("top-0", {
+                    configurator.changeFrame("side-12", {
                         duration: 500
                     });
                 }
-
-                test && setTimeout(function() { ripe.updateConfig("fendi", "kan_i") }, 2000);
-                test = false;
             });
 
             var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync); // eslint-disable-line no-undef
