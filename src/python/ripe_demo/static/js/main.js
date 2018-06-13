@@ -215,18 +215,8 @@ window.onload = function() {
                 }
             });
 
-            var syncPlugin = new Ripe.plugins.SyncPlugin({
-                "sole": [{
-                    part: "sole_edge",
-                    material: "leather_ps"
-                }, {
-                    part: "sole_bottom",
-                    material: "hand_dyed_finish_ps"
-                }]
-            }); // eslint-disable-line no-undef
-            var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin( // eslint-disable-line no-undef
-                {}
-            );
+            var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync); // eslint-disable-line no-undef
+            var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(result.restrictions); // eslint-disable-line no-undef
             ripe.addPlugin(syncPlugin);
             ripe.addPlugin(restrictionsPlugin);
         });

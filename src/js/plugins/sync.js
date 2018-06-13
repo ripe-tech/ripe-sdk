@@ -5,7 +5,7 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
 
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
     options = options || {};
-    this.rules = this._buildRules(rules);
+    this.rules = this._normalizeRules(rules);
     this.partCallback = this._applySync.bind(this);
 };
 
@@ -29,7 +29,9 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
 
-ripe.Ripe.plugins.SyncPlugin.prototype._buildRules = function(rules) {
+ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
+    // transforms string sync rules into object rules to keep
+    // the internal representation of the rules consistent
     var _rules = {};
     for (var ruleName in rules) {
         var rule = rules[ruleName];
