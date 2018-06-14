@@ -1,3 +1,3 @@
 {
-    "disabled": ["jssource.py", "misc.py"]
+    "disabled": ["jssource.py"]
 }
