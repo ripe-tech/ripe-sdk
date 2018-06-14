@@ -11,6 +11,10 @@
     "bugs": {
         "url": "https://github.com/ripe-tech/ripe-sdk/issues"
     },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ripe-tech/ripe-sdk.git"
+    },
     "license": "Apache-2.0",
     "author": {
         "name": "Platforme",
@@ -30,17 +34,14 @@
         "test/**/*.js"
     ],
     "main": "src/js/index.js",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/ripe-tech/ripe-sdk.git"
-    },
     "scripts": {
         "build": "gulp build",
         "docs": "gulp docs",
         "gulp": "gulp",
         "lint": "gulp lint",
-        "test": "gulp test",
         "mark": "gulp mark",
+        "test": "gulp test",
+        "prettier": "prettier ./src/**/*.js ./test/**/*.js --write",
         "upgrade": "npx sort-package-json && ncu -au",
         "watch": "gulp watch"
     },
@@ -49,12 +50,7 @@
     },
     "devDependencies": {
         "eslint": "^4.19.1",
-        "eslint-config-standard": "^11.0.0",
-        "eslint-plugin-import": "^2.12.0",
-        "eslint-plugin-mocha": "^5.0.0",
-        "eslint-plugin-node": "^6.0.1",
-        "eslint-plugin-promise": "^3.8.0",
-        "eslint-plugin-standard": "^3.1.0",
+        "eslint-config-hive": "^0.1.4",
         "gulp": "^3.9.1",
         "gulp-cli": "^2.0.1",
         "gulp-count": "^1.0.0",
@@ -69,6 +65,8 @@
         "mocha": "^5.2.0",
         "mocha-cli": "^1.0.1",
         "npm-check-updates": "^2.14.2",
+        "prettier": "^1.13.5",
+        "prettier-config-hive": "^0.1.1",
         "sort-package-json": "^1.15.0"
     }
 }

@@ -4,7 +4,8 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
 }
 
 ripe.touchHandler = function(element, options) {
-    if (typeof Mobile !== "undefined" && Mobile.touchHandler) { // eslint-disable-line no-undef
+    // eslint-disable-next-line no-undef
+    if (typeof Mobile !== "undefined" && Mobile.touchHandler) {
         return;
     }
 
@@ -50,9 +51,23 @@ ripe.touchHandler = function(element, options) {
         // touch event that has just been raised, it should
         // be completly equivalent to the original touch
         var mouseEvent = document.createEvent("MouseEvent");
-        mouseEvent.initMouseEvent(type, true, true, window, 1, first.screenX,
-            first.screenY, first.clientX, first.clientY, false, false, false,
-            false, 0, null);
+        mouseEvent.initMouseEvent(
+            type,
+            true,
+            true,
+            window,
+            1,
+            first.screenX,
+            first.screenY,
+            first.clientX,
+            first.clientY,
+            false,
+            false,
+            false,
+            false,
+            0,
+            null
+        );
 
         // dispatches the event to the original target of the
         // touch event (pure emulation)

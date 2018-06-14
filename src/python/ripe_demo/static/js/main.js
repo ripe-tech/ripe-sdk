@@ -17,7 +17,8 @@ window.onload = function() {
     var parts = [];
     var partsMap = {};
 
-    var ripe = new Ripe(brand, model, { // eslint-disable-line no-undef
+    // eslint-disable-next-line no-undef
+    var ripe = new Ripe(brand, model, {
         variant: variant,
         url: url,
         currency: currency,
@@ -103,9 +104,11 @@ window.onload = function() {
 
         getCombinations && getCombinations.addEventListener("click", function() {
             ripe.getCombinations(function(value) {
-                alert("There are <strong>" + String((value.length).formatMoney(0)) +
+                alert(
+                    "There are <strong>" + String(value.length.formatMoney(0)) +
                     "</strong> combinations with <strong>" + String(unique().formatMoney(0)) +
-                    "</strong> possible compositions");
+                    "</strong> possible compositions"
+                );
             });
         });
 
@@ -215,10 +218,14 @@ window.onload = function() {
                 }
             });
 
-            var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync); // eslint-disable-line no-undef
-            var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin( // eslint-disable-line no-undef
-                result.restrictions
-            );
+            // eslint-disable-next-line no-undef
+            var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
+
+            // eslint-disable-next-line no-undef
+            var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(result.restrictions);
+
+            // adds both plugins to the ripe instance so that can
+            // be properly used under this runtime
             ripe.addPlugin(syncPlugin);
             ripe.addPlugin(restrictionsPlugin);
         });
@@ -255,7 +262,7 @@ window.onload = function() {
             for (var index = 0; index < profilesKeys.length; index++) {
                 var profile = profilesKeys[index];
                 var profileS = beautify(profile);
-                buffer.push("<li data-value=\"" + profile + "\"><span>" + profileS + "</span></li>");
+                buffer.push('<li data-value="' + profile + '"><span>' + profileS + "</span></li>");
             }
             var innerHTML = buffer.join("");
             dropdown.innerHTML = innerHTML;
