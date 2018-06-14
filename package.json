@@ -66,7 +66,7 @@
         "mocha-cli": "^1.0.1",
         "npm-check-updates": "^2.14.2",
         "prettier": "^1.13.5",
-        "prettier-config-hive": "^0.1.0",
+        "prettier-config-hive": "^0.1.1",
         "sort-package-json": "^1.15.0"
     }
 }
