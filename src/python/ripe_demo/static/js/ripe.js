@@ -43,9 +43,9 @@ ripe.assign = function(target) {
     return to;
 };
 
+// eslint-disable-next-line no-use-before-define
 if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
-    // eslint-disable-line no-use-before-define
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest; // eslint-disable-line no-redeclare
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 }
 
 if (typeof module !== "undefined") {
@@ -104,8 +104,8 @@ if (typeof window === "undefined" && typeof require !== "undefined") {
 }
 
 ripe.touchHandler = function(element, options) {
+    // eslint-disable-next-line no-undef
     if (typeof Mobile !== "undefined" && Mobile.touchHandler) {
-        // eslint-disable-line no-undef
         return;
     }
 
@@ -2234,7 +2234,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
-    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
+    // eslint-disable-next-line no-undef
+    var Observer = MutationObserver || WebKitMutationObserver;
     this._observer = Observer
         ? new Observer(function(mutations) {
               for (var index = 0; index < mutations.length; index++) {
@@ -2422,7 +2423,8 @@ ripe.Image.prototype._registerHandlers = function() {
     }.bind(this);
     this.element.addEventListener("load", this.loadListener);
 
-    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
+    // eslint-disable-next-line no-undef
+    var Observer = MutationObserver || WebKitMutationObserver;
     this._observer = Observer
         ? new Observer(
               function(mutations) {
