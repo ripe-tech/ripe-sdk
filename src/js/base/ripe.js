@@ -27,9 +27,14 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
     this.noDefaults = this.options.noDefaults === undefined ? false : this.options.noDefaults;
-    this.useDefaults = this.options.useDefaults === undefined ? !this.noDefaults : this.options.useDefaults;
-    this.noCombinations = this.options.noCombinations === undefined ? false : this.options.noCombinations;
-    this.useCombinations = this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
+    this.useDefaults =
+        this.options.useDefaults === undefined ? !this.noDefaults : this.options.useDefaults;
+    this.noCombinations =
+        this.options.noCombinations === undefined ? false : this.options.noCombinations;
+    this.useCombinations =
+        this.options.useCombinations === undefined
+            ? !this.noCombinations
+            : this.options.useCombinations;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.children = [];
@@ -44,18 +49,23 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && this.useDefaults;
-    var loadParts = loadDefaults ? this.getDefaults : function(callback) {
-        setTimeout(callback);
-    };
-    loadParts.call(this, function(result) {
-        result = result || this.parts;
-        this.parts = result;
-        this.ready = true;
-        this.trigger("ready");
-        this.remote();
-        this.update();
-        this.setParts(result);
-    }.bind(this));
+    var loadParts = loadDefaults
+        ? this.getDefaults
+        : function(callback) {
+              setTimeout(callback);
+          };
+    loadParts.call(
+        this,
+        function(result) {
+            result = result || this.parts;
+            this.parts = result;
+            this.ready = true;
+            this.trigger("ready");
+            this.remote();
+            this.update();
+            this.setParts(result);
+        }.bind(this)
+    );
 
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
@@ -89,10 +99,13 @@ ripe.Ripe.prototype.remote = function() {
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
     var loadCombinations = this.useCombinations;
-    loadCombinations && this.getCombinations(function(result) {
-        this.combinations = result;
-        this.trigger("combinations", this.combinations);
-    }.bind(this));
+    loadCombinations &&
+        this.getCombinations(
+            function(result) {
+                this.combinations = result;
+                this.trigger("combinations", this.combinations);
+            }.bind(this)
+        );
 };
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
@@ -193,9 +206,13 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this.trigger("update");
 
-    this.ready && this.usePrice && this.getPrice(function(value) {
-        this.trigger("price", value);
-    }.bind(this));
+    this.ready &&
+        this.usePrice &&
+        this.getPrice(
+            function(value) {
+                this.trigger("price", value);
+            }.bind(this)
+        );
 };
 
 ripe.Ripe.prototype.addPlugin = function(plugin) {
@@ -229,11 +246,7 @@ ripe.Ripe.prototype._partsList = function(parts) {
     var partsList = [];
     for (var part in parts) {
         var value = parts[part];
-        partsList.push([
-            part,
-            value.material,
-            value.color
-        ]);
+        partsList.push([part, value.material, value.color]);
     }
     return partsList;
 };
