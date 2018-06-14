@@ -137,12 +137,15 @@ ripe.Ripe.prototype._cacheURL = function(url, callback, options) {
 
     // otherwise runs the "normal" request URL call and
     // sets the result cache key on return
-    this._requestURL(url, function(result, isValid, request) {
-        if (isValid) {
-            this._cache[fullKey] = result;
-        }
-        callback && callback(result, isValid, request);
-    }.bind(this));
+    this._requestURL(
+        url,
+        function(result, isValid, request) {
+            if (isValid) {
+                this._cache[fullKey] = result;
+            }
+            callback && callback(result, isValid, request);
+        }.bind(this)
+    );
 };
 
 ripe.Ripe.prototype._requestURL = function(url, callback) {
