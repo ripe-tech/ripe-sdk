@@ -11,6 +11,10 @@
     "bugs": {
         "url": "https://github.com/ripe-tech/ripe-sdk/issues"
     },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ripe-tech/ripe-sdk.git"
+    },
     "license": "Apache-2.0",
     "author": {
         "name": "Platforme",
@@ -30,17 +34,14 @@
         "test/**/*.js"
     ],
     "main": "src/js/index.js",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/ripe-tech/ripe-sdk.git"
-    },
     "scripts": {
         "build": "gulp build",
         "docs": "gulp docs",
         "gulp": "gulp",
         "lint": "gulp lint",
-        "test": "gulp test",
         "mark": "gulp mark",
+        "test": "gulp test",
+        "prettier": "prettier ./src/**/*.js ./test/**/*.js --write",
         "upgrade": "npx sort-package-json && ncu -au",
         "watch": "gulp watch"
     },
@@ -49,7 +50,7 @@
     },
     "devDependencies": {
         "eslint": "^4.19.1",
-        "eslint-config-hive": "^0.1.2",
+        "eslint-config-hive": "^0.1.3",
         "gulp": "^3.9.1",
         "gulp-cli": "^2.0.1",
         "gulp-count": "^1.0.0",
@@ -64,6 +65,8 @@
         "mocha": "^5.2.0",
         "mocha-cli": "^1.0.1",
         "npm-check-updates": "^2.14.2",
+        "prettier": "^1.13.5",
+        "prettier-config-hive": "^0.1.0",
         "sort-package-json": "^1.15.0"
     }
 }
