@@ -34,8 +34,9 @@ ripe.assign = function(target) {
     return to;
 };
 
-if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") { // eslint-disable-line no-use-before-define
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest; // eslint-disable-line no-redeclare
+// eslint-disable-next-line no-use-before-define
+if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
+    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 }
 
 if (typeof module !== "undefined") {
