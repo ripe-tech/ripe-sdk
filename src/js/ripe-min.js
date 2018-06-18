@@ -47,7 +47,7 @@ ripe.Interactable.prototype.update = function(state) {};
 ripe.Interactable.prototype.deinit = function() {
     this.owner = null;
 };
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("./base");
     var ripe = base.ripe;
 }
@@ -104,7 +104,7 @@ ripe.touchHandler = function(element, options) {
     element.addEventListener("touchend", eventHandler, true);
     element.addEventListener("touchcancel", eventHandler, true);
 };
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("./base");
     var ripe = base.ripe;
 }
@@ -143,7 +143,7 @@ ripe.Observable.prototype.deinit = function() {
 ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
 ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("./base");
     require("./observable");
     var ripe = base.ripe;
@@ -356,7 +356,7 @@ ripe.Ripe.prototype._partsList = function(parts) {
     return partsList;
 };
 var Ripe = ripe.Ripe;
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("./base");
     var ripe = base.ripe;
 }
@@ -645,7 +645,7 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     }
     return this.url + "mask?" + query;
 };
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("../base");
     var ripe = base.ripe;
 }
@@ -660,7 +660,7 @@ ripe.Ripe.plugins.Plugin.prototype.unregister = function(owner) {
 if (typeof module !== "undefined") {
     module.exports = { ripe: ripe };
 }
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("./base");
     var ripe = base.ripe;
 }
@@ -905,7 +905,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
     }
     return null;
 };
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("./base");
     var ripe = base.ripe;
 }
@@ -943,7 +943,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
         }
     }
 };
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("../base");
     var ripe = base.ripe;
 }
@@ -983,7 +983,7 @@ ripe.Visual.prototype._removeElementHandlers = function() {
     }
     this.elementEvents = {};
 };
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("../base");
     require("./visual");
     var ripe = base.ripe;
@@ -1700,7 +1700,7 @@ ripe.Configurator.prototype._getCanvasIndex = function(canvas, x, y) {
     var index = parseInt(r);
     return index;
 };
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("../base");
     require("./visual");
     var ripe = base.ripe;

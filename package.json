@@ -50,11 +50,7 @@
     },
     "devDependencies": {
         "eslint": "^4.19.1",
-        "eslint-config-hive": "^0.1.4",
-        "eslint-plugin-import": "^2.12.0",
-        "eslint-plugin-mocha": "^5.0.0",
-        "eslint-plugin-node": "^6.0.1",
-        "eslint-plugin-promise": "^3.8.0",
+        "eslint-config-hive": "^0.1.5",
         "gulp": "^3.9.1",
         "gulp-cli": "^2.0.1",
         "gulp-count": "^1.0.0",

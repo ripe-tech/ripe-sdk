@@ -102,9 +102,11 @@ ripe.Interactable.prototype.deinit = function() {
     this.owner = null;
 };
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 ripe.touchHandler = function(element, options) {
@@ -184,9 +186,11 @@ ripe.touchHandler = function(element, options) {
     element.addEventListener("touchcancel", eventHandler, true);
 };
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 ripe.Observable = function() {
@@ -232,10 +236,12 @@ ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
 ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
     require("./observable");
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 ripe.Ripe = function(brand, model, options) {
@@ -529,9 +535,11 @@ ripe.Ripe.prototype._partsList = function(parts) {
 
 var Ripe = ripe.Ripe; // eslint-disable-line no-unused-vars
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 ripe.createElement = function(tagName, className) {
@@ -901,9 +909,11 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     return this.url + "mask?" + query;
 };
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("../base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 ripe.Ripe.plugins = ripe.Ripe.plugins || {};
@@ -924,9 +934,11 @@ if (typeof module !== "undefined") {
     };
 }
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
@@ -1278,9 +1290,11 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
     return null;
 };
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
@@ -1336,9 +1350,11 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
     }
 };
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("../base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 ripe.Visual = function(owner, element, options) {
@@ -1400,10 +1416,12 @@ ripe.Visual.prototype._removeElementHandlers = function() {
     this.elementEvents = {};
 };
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base"); // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("../base");
     require("./visual");
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 /**
@@ -2482,10 +2500,12 @@ ripe.Configurator.prototype._getCanvasIndex = function(canvas, x, y) {
     return index;
 };
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base"); // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("../base");
     require("./visual");
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
     var MutationObserver = typeof MutationObserver === "undefined" ? null : MutationObserver;
     var WebKitMutationObserver =
         typeof WebKitMutationObserver === "undefined" ? null : WebKitMutationObserver;
