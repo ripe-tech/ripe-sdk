@@ -16,8 +16,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
-    this.owner.getConfig(
-        {},
+    this.owner.getConfig({},
         function(config) {
             this.partsOptions = config.parts;
             var optionals = [];
@@ -35,8 +34,11 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
             // the restrictions operation
             var initialParts = ripe.clone(this.owner.parts);
             this.owner.setParts(initialParts);
-        }.bind(this)
-    );
+        }.bind(this));
+
+    this.owner.bind("config", function() {
+        this.owner && this.unregister(this.owner);
+    }.bind(this));
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
@@ -64,12 +66,11 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
             color: part.color
         });
     }
-    name !== undefined &&
-        customization.push({
-            name: name,
-            material: value.material,
-            color: value.color
-        });
+    name !== undefined && customization.push({
+        name: name,
+        material: value.material,
+        color: value.color
+    });
 
     // obtains the new parts and mutates the original
     // parts map to apply the necessary changes
@@ -216,13 +217,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(
     }
 
     keyRestrictions =
-        materialRestrictions instanceof Array
-            ? keyRestrictions.concat(materialRestrictions)
-            : keyRestrictions;
+        materialRestrictions instanceof Array ? keyRestrictions.concat(materialRestrictions) : keyRestrictions;
     keyRestrictions =
-        colorRestrictions instanceof Array
-            ? keyRestrictions.concat(colorRestrictions)
-            : keyRestrictions;
+        colorRestrictions instanceof Array ? keyRestrictions.concat(colorRestrictions) : keyRestrictions;
 
     for (var index = 0; index < keyRestrictions.length; index++) {
         var restriction = keyRestrictions[index];

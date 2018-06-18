@@ -23,8 +23,7 @@ ripe.Image.prototype.init = function() {
     this.crop = this.options.crop || false;
     this.showInitials = this.options.showInitials || false;
     this.initialsBuilder =
-        this.options.initialsBuilder ||
-        function(initials, engraving, element) {
+        this.options.initialsBuilder || function(initials, engraving, element) {
             return {
                 initials: initials,
                 profile: [engraving]
@@ -45,9 +44,7 @@ ripe.Image.prototype.update = function(state) {
     this.initials = state !== undefined ? state.initials : this.initials;
     this.engraving = state !== undefined ? state.engraving : this.engraving;
 
-    var initialsSpec = this.showInitials
-        ? this.initialsBuilder(this.initials, this.engraving, this.element)
-        : {};
+    var initialsSpec = this.showInitials ? this.initialsBuilder(this.initials, this.engraving, this.element) : {};
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
@@ -98,16 +95,13 @@ ripe.Image.prototype._registerHandlers = function() {
 
     // eslint-disable-next-line no-undef
     var Observer = MutationObserver || WebKitMutationObserver;
-    this._observer = Observer
-        ? new Observer(
-              function(mutations) {
-                  this.update();
-              }.bind(this)
-          )
-        : null;
-    this._observer &&
-        this._observer.observe(this.element, {
-            attributes: true,
-            subtree: false
-        });
+    this._observer = Observer ? new Observer(
+        function(mutations) {
+            this.update();
+        }.bind(this)
+    ) : null;
+    this._observer && this._observer.observe(this.element, {
+        attributes: true,
+        subtree: false
+    });
 };
