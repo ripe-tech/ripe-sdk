@@ -21,7 +21,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.ready = false;
 
     options = ripe.assign({ options: false }, options);
-    this.updateConfig(brand, model, options);
+    this.config(brand, model, options);
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
@@ -52,7 +52,7 @@ ripe.Ripe.prototype.load = function() {
 
 ripe.Ripe.prototype.unload = function() { };
 
-ripe.Ripe.prototype.updateConfig = function(brand, model, options) {
+ripe.Ripe.prototype.config = function(brand, model, options) {
     this.brand = brand;
     this.model = model;
 
