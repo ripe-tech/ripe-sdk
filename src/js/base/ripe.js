@@ -53,6 +53,8 @@ ripe.Ripe.prototype.load = function() {
 ripe.Ripe.prototype.unload = function() { };
 
 ripe.Ripe.prototype.config = function(brand, model, options) {
+    // sets the most strctural values of this entity
+    // that represent the configuration to be used
     this.brand = brand;
     this.model = model;
 
