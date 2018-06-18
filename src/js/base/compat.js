@@ -38,7 +38,13 @@ ripe.assign = function(target) {
 
 // eslint-disable-next-line no-use-before-define
 if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    var XMLHttpRequest = null;
+    // eslint-disable-next-line camelcase
+    if (typeof __webpack_require__ === "undefined") {
+        XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    } else {
+        XMLHttpRequest = window.XMLHttpRequest;
+    }
 }
 
 if (typeof module !== "undefined") {
