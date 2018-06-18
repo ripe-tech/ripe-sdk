@@ -14,34 +14,55 @@ ripe.Ripe.prototype = Object.create(ripe.Observable.prototype);
 ripe.Ripe.prototype.init = function(brand, model, options) {
     // sets the various values in the instance taking into
     // account the default values
-    this.brand = brand;
-    this.model = model;
-    this.options = options || {};
-    this.variant = this.options.variant || null;
-    this.url = this.options.url || "https://sandbox.platforme.com/api/";
-    this.parts = this.options.parts || {};
     this.initials = "";
     this.engraving = null;
-    this.country = this.options.country || null;
-    this.currency = this.options.currency || null;
-    this.format = this.options.format || "jpeg";
-    this.backgroundColor = this.options.backgroundColor || "";
-    this.noDefaults = this.options.noDefaults === undefined ? false : this.options.noDefaults;
-    this.useDefaults =
-        this.options.useDefaults === undefined ? !this.noDefaults : this.options.useDefaults;
-    this.noCombinations =
-        this.options.noCombinations === undefined ? false : this.options.noCombinations;
-    this.useCombinations =
-        this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
-    this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
-    this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.children = this.children || [];
     this.plugins = this.plugins || [];
-    this.ready = this.ready || false;
+    this.ready = false;
 
-    // runs the background color normalization process that removes
-    // the typical cardinal character from the definition
-    this.backgroundColor = this.backgroundColor.replace("#", "");
+    options = ripe.assign({ options: false }, options);
+    this.updateConfig(brand, model, options);
+
+    // determines if the defaults for the selected model should
+    // be loaded so that the parts structure is initially populated
+    var hasParts = this.parts && Object.keys(this.parts).length !== 0;
+
+    this.ready = hasParts;
+};
+
+ripe.Ripe.prototype.deinit = function() {
+    var index = null;
+
+    for (index = this.children.length - 1; index >= 0; index--) {
+        var child = this.children[index];
+        this.unbindInteractable(child);
+    }
+
+    for (index = this.plugins.length - 1; index >= 0; index--) {
+        var plugin = this.plugins[index];
+        this.removePlugin(plugin);
+    }
+
+    ripe.Observable.prototype.deinit.call(this);
+};
+
+ripe.Ripe.prototype.load = function() {
+    this.update();
+};
+
+ripe.Ripe.prototype.unload = function() { };
+
+ripe.Ripe.prototype.updateConfig = function(brand, model, options) {
+    this.brand = brand;
+    this.model = model;
+
+    // sets the new options using the current options
+    // as default values and sets the update flag to
+    // true if it is not set
+    options = ripe.assign({
+        update: true
+    }, this.options, options);
+    this.setOptions(options);
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
@@ -67,37 +88,10 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
 
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
+    // for cases where this is the first configuration (not an update)
     var update = this.options.update || false;
     this.ready = update ? this.ready : hasParts;
-};
 
-ripe.Ripe.prototype.deinit = function() {
-    var index = null;
-
-    for (index = this.children.length - 1; index >= 0; index--) {
-        var child = this.children[index];
-        this.unbindInteractable(child);
-    }
-
-    for (index = this.plugins.length - 1; index >= 0; index--) {
-        var plugin = this.plugins[index];
-        this.removePlugin(plugin);
-    }
-
-    ripe.Observable.prototype.deinit.call(this);
-};
-
-ripe.Ripe.prototype.load = function() {
-    this.update();
-};
-
-ripe.Ripe.prototype.unload = function() {};
-
-ripe.Ripe.prototype.updateConfig = function(brand, model, options) {
-    options = ripe.assign({
-        update: true
-    }, this.options, options);
-    this.init(brand, model, options);
     this.trigger("config");
 };
 
@@ -112,6 +106,30 @@ ripe.Ripe.prototype.remote = function() {
             this.trigger("combinations", this.combinations);
         }.bind(this)
     );
+};
+
+ripe.Ripe.prototype.setOptions = function(options) {
+    this.options = options || {};
+    this.variant = this.options.variant || null;
+    this.url = this.options.url || "https://sandbox.platforme.com/api/";
+    this.parts = this.options.parts || {};
+    this.country = this.options.country || null;
+    this.currency = this.options.currency || null;
+    this.format = this.options.format || "jpeg";
+    this.backgroundColor = this.options.backgroundColor || "";
+    this.noDefaults = this.options.noDefaults === undefined ? false : this.options.noDefaults;
+    this.useDefaults =
+        this.options.useDefaults === undefined ? !this.noDefaults : this.options.useDefaults;
+    this.noCombinations =
+        this.options.noCombinations === undefined ? false : this.options.noCombinations;
+    this.useCombinations =
+        this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
+    this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
+    this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
+
+    // runs the background color normalization process that removes
+    // the typical cardinal character from the definition
+    this.backgroundColor = this.backgroundColor.replace("#", "");
 };
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {

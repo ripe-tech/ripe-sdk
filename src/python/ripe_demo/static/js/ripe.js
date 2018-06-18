@@ -244,73 +244,20 @@ ripe.Ripe.prototype = Object.create(ripe.Observable.prototype);
 ripe.Ripe.prototype.init = function(brand, model, options) {
     // sets the various values in the instance taking into
     // account the default values
-    this.brand = brand;
-    this.model = model;
-    this.options = options || {};
-    this.variant = this.options.variant || null;
-    this.url = this.options.url || "https://sandbox.platforme.com/api/";
-    this.parts = this.options.parts || {};
     this.initials = "";
     this.engraving = null;
-    this.country = this.options.country || null;
-    this.currency = this.options.currency || null;
-    this.format = this.options.format || "jpeg";
-    this.backgroundColor = this.options.backgroundColor || "";
-    this.noDefaults = this.options.noDefaults === undefined ? false : this.options.noDefaults;
-    this.useDefaults =
-        this.options.useDefaults === undefined ? !this.noDefaults : this.options.useDefaults;
-    this.noCombinations =
-        this.options.noCombinations === undefined ? false : this.options.noCombinations;
-    this.useCombinations =
-        this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
-    this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
-    this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.children = this.children || [];
     this.plugins = this.plugins || [];
-    this.ready = this.ready || false;
+    this.ready = false;
 
-    // runs the background color normalization process that removes
-    // the typical cardinal character from the definition
-    this.backgroundColor = this.backgroundColor.replace("#", "");
+    options = ripe.assign({ options: false }, options);
+    this.updateConfig(brand, model, options);
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    var loadDefaults = !hasParts && this.useDefaults; << << << < HEAD
-    var loadParts = loadDefaults ? this.getDefaults : function(callback) {
-        setTimeout(callback);
-    };
-    loadParts.call(this, function(result) {
-        result = result || this.parts;
-        this.parts = result;
-        if (this.ready === false) {
-            this.ready = true;
-            this.trigger("ready");
-        }
-        this.remote();
-        this.update();
-        this.setParts(result);
-    }.bind(this)); === === =
-    var loadParts = loadDefaults ? this.getDefaults : function(callback) {
-        setTimeout(callback);
-    };
-    loadParts.call(
-        this,
-        function(result) {
-            result = result || this.parts;
-            this.parts = result;
-            this.ready = true;
-            this.trigger("ready");
-            this.remote();
-            this.update();
-            this.setParts(result);
-        }.bind(this)
-    ); >>> >>> > master
 
-    // in case the current instance already contains configured parts
-    // the instance is marked as ready (for complex resolution like price)
-    var update = this.options.update || false;
-    this.ready = update ? this.ready : hasParts;
+    this.ready = hasParts;
 };
 
 ripe.Ripe.prototype.deinit = function() {
@@ -333,13 +280,48 @@ ripe.Ripe.prototype.load = function() {
     this.update();
 };
 
-ripe.Ripe.prototype.unload = function() {};
+ripe.Ripe.prototype.unload = function() { };
 
 ripe.Ripe.prototype.updateConfig = function(brand, model, options) {
+    this.brand = brand;
+    this.model = model;
+
+    // sets the new options using the current options
+    // as default values and sets the update flag to
+    // true if it is not set
     options = ripe.assign({
         update: true
     }, this.options, options);
-    this.init(brand, model, options);
+    this.setOptions(options);
+
+    // determines if the defaults for the selected model should
+    // be loaded so that the parts structure is initially populated
+    var hasParts = this.parts && Object.keys(this.parts).length !== 0;
+    var loadDefaults = !hasParts && this.useDefaults;
+    var loadParts = loadDefaults ? this.getDefaults : function(callback) {
+        setTimeout(callback);
+    };
+    loadParts.call(
+        this,
+        function(result) {
+            result = result || this.parts;
+            this.parts = result;
+            if (this.ready === false) {
+                this.ready = true;
+                this.trigger("ready");
+            }
+            this.remote();
+            this.update();
+            this.setParts(result);
+        }.bind(this)
+    );
+
+    // in case the current instance already contains configured parts
+    // the instance is marked as ready (for complex resolution like price)
+    // for cases where this is the first configuration (not an update)
+    var update = this.options.update || false;
+    this.ready = update ? this.ready : hasParts;
+
     this.trigger("config");
 };
 
@@ -354,6 +336,30 @@ ripe.Ripe.prototype.remote = function() {
             this.trigger("combinations", this.combinations);
         }.bind(this)
     );
+};
+
+ripe.Ripe.prototype.setOptions = function(options) {
+    this.options = options || {};
+    this.variant = this.options.variant || null;
+    this.url = this.options.url || "https://sandbox.platforme.com/api/";
+    this.parts = this.options.parts || {};
+    this.country = this.options.country || null;
+    this.currency = this.options.currency || null;
+    this.format = this.options.format || "jpeg";
+    this.backgroundColor = this.options.backgroundColor || "";
+    this.noDefaults = this.options.noDefaults === undefined ? false : this.options.noDefaults;
+    this.useDefaults =
+        this.options.useDefaults === undefined ? !this.noDefaults : this.options.useDefaults;
+    this.noCombinations =
+        this.options.noCombinations === undefined ? false : this.options.noCombinations;
+    this.useCombinations =
+        this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
+    this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
+    this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
+
+    // runs the background color normalization process that removes
+    // the typical cardinal character from the definition
+    this.backgroundColor = this.backgroundColor.replace("#", "");
 };
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
@@ -903,38 +909,31 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
 ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
-ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
+    ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
-this.owner.getConfig({},
-    function(config) {
-        this.partsOptions = config.parts;
-        var optionals = [];
-        for (var name in config.defaults) {
-            var part = config.defaults[name];
-            part.optional && optionals.push(name);
-        }
-        this.optionals = optionals;
+    this.owner.getConfig({},
+        function(config) {
+            this.partsOptions = config.parts;
+            var optionals = [];
+            for (var name in config.defaults) {
+                var part = config.defaults[name];
+                part.optional && optionals.push(name);
+            }
+            this.optionals = optionals;
 
-        // binds to the pre parts event so that the parts can be
-        // changed so that they comply with the product's restrictions
-        this.owner.bind("part", this.partCallback);
+            // binds to the pre parts event so that the parts can be
+            // changed so that they comply with the product's restrictions
+            this.owner.bind("part", this.partCallback);
 
-        << << << < HEAD
-        // resets the current selection to trigger
-        // the restrictions operation
-        var initialParts = ripe.clone(this.owner.parts);
-        this.owner.setParts(initialParts);
+            // resets the current selection to trigger
+            // the restrictions operation
+            var initialParts = ripe.clone(this.owner.parts);
+            this.owner.setParts(initialParts);
+        }.bind(this));
+
+    this.owner.bind("config", function() {
+        this.owner && this.unregister(this.owner);
     }.bind(this));
-
-this.owner.bind("config", function() {
-    this.owner && this.unregister(this.owner);
-}.bind(this)); === === =
-// resets the current selection to trigger
-// the restrictions operation
-var initialParts = ripe.clone(this.owner.parts);
-this.owner.setParts(initialParts);
-}.bind(this)
-); >>> >>> > master
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
@@ -1422,7 +1421,6 @@ ripe.Configurator.prototype.init = function() {
     // ues the owner to retrieve the complete set of frames
     // that are available for the current model and runs
     // the intial layout update operation on result
-    << << << < HEAD
     this.owner.getFrames(function(frames) {
         this.frames = frames;
         this._initLayout();
@@ -1434,46 +1432,7 @@ ripe.Configurator.prototype.init = function() {
 
     this.owner.bind("config", function() {
         this._updateConfig();
-    }.bind(this)); === === =
-    this.owner.getFrames(
-        function(frames) {
-            this.frames = frames;
-            this._initLayout();
-            this.ready = true;
-            this.trigger("ready");
-            this.update();
-        }.bind(this)
-    );
-
-    // creates a set of sorted parts to be used on the
-    // highlight operation (considers only the default ones)
-    this.partsList = [];
-    this.owner.getConfig(
-        function(config) {
-            var defaults = config.defaults || {};
-            this.hiddenParts = config.hidden || [];
-            this.partsList = Object.keys(defaults);
-            this.partsList.sort();
-        }.bind(this)
-    );
-
-    this.owner.bind("parts", function(parts) {
-        this.parts = parts;
-    });
-
-    this.owner.bind(
-        "selected_part",
-        function(part) {
-            this.highlight(part);
-        }.bind(this)
-    );
-
-    this.owner.bind(
-        "deselected_part",
-        function(part) {
-            this.lowlight();
-        }.bind(this)
-    ); >>> >>> > master
+    }.bind(this));
 };
 
 ripe.Configurator.prototype.resize = function(size) {
