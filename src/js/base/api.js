@@ -6,11 +6,8 @@ if (typeof require !== "undefined") {
     require("./ripe");
     // eslint-disable-next-line no-redeclare
     var ripe = base.ripe;
-    // eslint-disable-next-line camelcase
-    if (typeof __webpack_require__ === "undefined") {
-        // eslint-disable-next-line no-redeclare
-        var XMLHttpRequest = compat.XMLHttpRequest;
-    }
+    // eslint-disable-next-line no-redeclare
+    var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
