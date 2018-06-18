@@ -10,6 +10,7 @@ if (typeof module !== "undefined") {
 if (typeof require !== "undefined") {
     // eslint-disable-next-line no-redeclare
     var base = require("./base");
+    // eslint-disable-next-line no-redeclare
     var ripe = base.ripe;
 }
 
@@ -56,8 +57,10 @@ if (typeof module !== "undefined") {
 }
 
 if (typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 /**
