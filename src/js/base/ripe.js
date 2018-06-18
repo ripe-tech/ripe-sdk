@@ -295,4 +295,5 @@ ripe.Ripe.prototype._partsList = function(parts) {
     return partsList;
 };
 
-var Ripe = ripe.Ripe; // eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+var Ripe = ripe.Ripe;

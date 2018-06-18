@@ -1,5 +1,6 @@
 /** @namespace */
-var ripe = typeof ripe === "undefined" ? {} : ripe; // eslint-disable-line no-use-before-define
+// eslint-disable-next-line no-use-before-define
+var ripe = typeof ripe === "undefined" ? {} : ripe;
 
 if (typeof module !== "undefined") {
     module.exports = {
@@ -533,7 +534,8 @@ ripe.Ripe.prototype._partsList = function(parts) {
     return partsList;
 };
 
-var Ripe = ripe.Ripe; // eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+var Ripe = ripe.Ripe;
 
 if (typeof require !== "undefined") {
     // eslint-disable-next-line no-redeclare

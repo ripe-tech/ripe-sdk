@@ -1,5 +1,6 @@
 /** @namespace */
-var ripe = typeof ripe === "undefined" ? {} : ripe; // eslint-disable-line no-use-before-define
+// eslint-disable-next-line no-use-before-define
+var ripe = typeof ripe === "undefined" ? {} : ripe;
 
 if (typeof module !== "undefined") {
     module.exports = {
