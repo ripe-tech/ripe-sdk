@@ -47,13 +47,19 @@ ripe.Configurator.prototype.init = function() {
         this.parts = parts;
     });
 
-    this.owner.bind("selected_part", function(part) {
-        this.highlight(part);
-    }.bind(this));
+    this.owner.bind(
+        "selected_part",
+        function(part) {
+            this.highlight(part);
+        }.bind(this)
+    );
 
-    this.owner.bind("deselected_part", function(part) {
-        this.lowlight();
-    }.bind(this));
+    this.owner.bind(
+        "deselected_part",
+        function(part) {
+            this.lowlight();
+        }.bind(this)
+    );
 
     // creates a structure the store the last presented
     // position of each view, to be used when returning
@@ -63,18 +69,23 @@ ripe.Configurator.prototype.init = function() {
     // ues the owner to retrieve the complete set of frames
     // that are available for the current model and runs
     // the intial layout update operation on result
-    this.owner.getFrames(function(frames) {
-        this.frames = frames;
-        this._initLayout();
-        this._initPartsList();
-        this.ready = true;
-        this.trigger("ready");
-        this.update();
-    }.bind(this));
+    this.owner.getFrames(
+        function(frames) {
+            this.frames = frames;
+            this._initLayout();
+            this._initPartsList();
+            this.ready = true;
+            this.trigger("ready");
+            this.update();
+        }.bind(this)
+    );
 
-    this.owner.bind("config", function() {
-        this._updateConfig();
-    }.bind(this));
+    this.owner.bind(
+        "config",
+        function() {
+            this._updateConfig();
+        }.bind(this)
+    );
 };
 
 ripe.Configurator.prototype.resize = function(size) {
@@ -103,9 +114,12 @@ ripe.Configurator.prototype.resize = function(size) {
     mask.width = size;
     mask.height = size;
     this.currentSize = size;
-    this.update({}, {
-        force: true
-    });
+    this.update(
+        {},
+        {
+            force: true
+        }
+    );
 };
 
 ripe.Configurator.prototype.update = function(state, options) {
@@ -151,7 +165,8 @@ ripe.Configurator.prototype.update = function(state, options) {
     // account the multiple requirements for such execution
     this._loadFrame(
         view,
-        position, {
+        position,
+        {
             draw: true,
             animate: animate,
             duration: duration
@@ -165,7 +180,7 @@ ripe.Configurator.prototype.update = function(state, options) {
     // based update (not just the loading of the current position)
     // and the current signature has changed
     var preloaded = this.element.classList.contains("preload");
-    var mustPreload = preload !== undefined ? preload : (changed || !preloaded);
+    var mustPreload = preload !== undefined ? preload : changed || !preloaded;
     mustPreload && this._preload(this.options.useChain);
 };
 
@@ -248,27 +263,30 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
 
     var newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
     this.trigger("changed_frame", newFrame);
-    this.update({}, {
-        animate: animate,
-        duration: stepDuration,
-        callback: function() {
-            // if there is no step transition or the transition
-            // has finished, then allows drag movements again,
-            // otherwise waits the provided interval and
-            // proceeds to the next step
-            if (!animated || stepPosition === nextPosition) {
-                preventDrag && this.element.classList.remove("no-drag", "animating");
-            } else {
-                var timeout = animate ? 0 : stepDuration;
-                setTimeout(
-                    function() {
-                        this.changeFrame(frame, options);
-                    }.bind(this),
-                    timeout
-                );
-            }
-        }.bind(this)
-    });
+    this.update(
+        {},
+        {
+            animate: animate,
+            duration: stepDuration,
+            callback: function() {
+                // if there is no step transition or the transition
+                // has finished, then allows drag movements again,
+                // otherwise waits the provided interval and
+                // proceeds to the next step
+                if (!animated || stepPosition === nextPosition) {
+                    preventDrag && this.element.classList.remove("no-drag", "animating");
+                } else {
+                    var timeout = animate ? 0 : stepDuration;
+                    setTimeout(
+                        function() {
+                            this.changeFrame(frame, options);
+                        }.bind(this),
+                        timeout
+                    );
+                }
+            }.bind(this)
+        }
+    );
 };
 
 ripe.Configurator.prototype.highlight = function(part, options) {
@@ -435,12 +453,14 @@ ripe.Configurator.prototype._initPartsList = function() {
     // creates a set of sorted parts to be used on the
     // highlight operation (considers only the default ones)
     this.partsList = [];
-    this.owner.getConfig(function(config) {
-        var defaults = config.defaults || {};
-        this.hiddenParts = config.hidden || [];
-        this.partsList = Object.keys(defaults);
-        this.partsList.sort();
-    }.bind(this));
+    this.owner.getConfig(
+        function(config) {
+            var defaults = config.defaults || {};
+            this.hiddenParts = config.hidden || [];
+            this.partsList = Object.keys(defaults);
+            this.partsList.sort();
+        }.bind(this)
+    );
 };
 
 ripe.Configurator.prototype._populateBuffers = function() {
@@ -487,42 +507,47 @@ ripe.Configurator.prototype._updateConfig = function() {
     this._initPartsList();
 
     // retrieves the new product frames and sets them
-    this.owner.getFrames(function(frames) {
-        this.frames = frames;
+    this.owner.getFrames(
+        function(frames) {
+            this.frames = frames;
 
-        // tries to keep the current view and position
-        // if the new model supports it otherwise
-        // changes to a supported frame
-        var view = this.element.dataset.position;
-        var position = this.element.dataset.position;
-        var maxPosition = this.frames[view];
-        if (!maxPosition) {
-            view = Object.keys(this.frames)[0];
-            position = 0;
-        } else if (position >= maxPosition) {
-            position = 0;
-        }
-
-        // checks the last viewed frames of each view
-        // and deletes the ones not supported
-        var lastFrameViews = Object.keys(this._lastFrame);
-        for (view in lastFrameViews) {
-            position = this._lastFrame[view];
-            maxPosition = this.frames[view];
-            if (!maxPosition || position >= maxPosition) {
-                delete this._lastFrame[view];
+            // tries to keep the current view and position
+            // if the new model supports it otherwise
+            // changes to a supported frame
+            var view = this.element.dataset.position;
+            var position = this.element.dataset.position;
+            var maxPosition = this.frames[view];
+            if (!maxPosition) {
+                view = Object.keys(this.frames)[0];
+                position = 0;
+            } else if (position >= maxPosition) {
+                position = 0;
             }
-        }
 
-        // shows the new product with a crossfade effect
-        // and starts responding to updates again
-        this.ready = true;
-        this.update({}, {
-            preload: true,
-            animate: "cross",
-            force: true
-        });
-    }.bind(this));
+            // checks the last viewed frames of each view
+            // and deletes the ones not supported
+            var lastFrameViews = Object.keys(this._lastFrame);
+            for (view in lastFrameViews) {
+                position = this._lastFrame[view];
+                maxPosition = this.frames[view];
+                if (!maxPosition || position >= maxPosition) {
+                    delete this._lastFrame[view];
+                }
+            }
+
+            // shows the new product with a crossfade effect
+            // and starts responding to updates again
+            this.ready = true;
+            this.update(
+                {},
+                {
+                    preload: true,
+                    animate: "cross",
+                    force: true
+                }
+            );
+        }.bind(this)
+    );
 };
 
 ripe.Configurator.prototype._loadFrame = function(view, position, options, callback) {
@@ -632,11 +657,13 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
             self._drawMask(maskImage);
         }, 150);
     } else {
-        maskImage.onload = draw ? function() {
-            setTimeout(function() {
-                self._drawMask(maskImage);
-            }, 150);
-        } : null;
+        maskImage.onload = draw
+            ? function() {
+                  setTimeout(function() {
+                      self._drawMask(maskImage);
+                  }, 150);
+              }
+            : null;
         maskImage.addEventListener("error", function() {
             this.removeAttribute("src");
         });
@@ -784,7 +811,8 @@ ripe.Configurator.prototype._preload = function(useChain) {
         var position = _frame[1];
         self._loadFrame(
             view,
-            position, {
+            position,
+            {
                 draw: false
             },
             useChain ? callbackChain : callbackMark
@@ -963,18 +991,21 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // if needed, this makes use of the mutation observer
     // eslint-disable-next-line no-undef
     var Observer = MutationObserver || WebKitMutationObserver;
-    this._observer = Observer ? new Observer(function(mutations) {
-        for (var index = 0; index < mutations.length; index++) {
-            var mutation = mutations[index];
-            mutation.type === "style" && self.resize();
-            mutation.type === "attributes" && self.update();
-        }
-    }) : null;
-    this._observer && this._observer.observe(this.element, {
-        attributes: true,
-        subtree: false,
-        characterData: true
-    });
+    this._observer = Observer
+        ? new Observer(function(mutations) {
+              for (var index = 0; index < mutations.length; index++) {
+                  var mutation = mutations[index];
+                  mutation.type === "style" && self.resize();
+                  mutation.type === "attributes" && self.update();
+              }
+          })
+        : null;
+    this._observer &&
+        this._observer.observe(this.element, {
+            attributes: true,
+            subtree: false,
+            characterData: true
+        });
 
     // adds handlers for the touch events so that they get
     // parsed to mouse events for the configurator element,

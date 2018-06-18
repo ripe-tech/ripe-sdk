@@ -22,9 +22,12 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     var initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
 
-    this.owner.bind("config", function() {
-        this.owner && this.unregister(this.owner);
-    }.bind(this));
+    this.owner.bind(
+        "config",
+        function() {
+            this.owner && this.unregister(this.owner);
+        }.bind(this)
+    );
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {

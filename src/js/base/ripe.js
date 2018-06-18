@@ -50,7 +50,7 @@ ripe.Ripe.prototype.load = function() {
     this.update();
 };
 
-ripe.Ripe.prototype.unload = function() { };
+ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.config = function(brand, model, options) {
     // sets the most strctural values of this entity
@@ -61,18 +61,24 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     // sets the new options using the current options
     // as default values and sets the update flag to
     // true if it is not set
-    options = ripe.assign({
-        update: true
-    }, this.options, options);
+    options = ripe.assign(
+        {
+            update: true
+        },
+        this.options,
+        options
+    );
     this.setOptions(options);
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
     var loadDefaults = !hasParts && this.useDefaults;
-    var loadParts = loadDefaults ? this.getDefaults : function(callback) {
-        setTimeout(callback);
-    };
+    var loadParts = loadDefaults
+        ? this.getDefaults
+        : function(callback) {
+              setTimeout(callback);
+          };
     loadParts.call(
         this,
         function(result) {
@@ -104,12 +110,13 @@ ripe.Ripe.prototype.remote = function() {
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
     var loadCombinations = this.useCombinations;
-    loadCombinations && this.getCombinations(
-        function(result) {
-            this.combinations = result;
-            this.trigger("combinations", this.combinations);
-        }.bind(this)
-    );
+    loadCombinations &&
+        this.getCombinations(
+            function(result) {
+                this.combinations = result;
+                this.trigger("combinations", this.combinations);
+            }.bind(this)
+        );
 };
 
 ripe.Ripe.prototype.setOptions = function(options) {
@@ -127,7 +134,9 @@ ripe.Ripe.prototype.setOptions = function(options) {
     this.noCombinations =
         this.options.noCombinations === undefined ? false : this.options.noCombinations;
     this.useCombinations =
-        this.options.useCombinations === undefined ? !this.noCombinations : this.options.useCombinations;
+        this.options.useCombinations === undefined
+            ? !this.noCombinations
+            : this.options.useCombinations;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
 
@@ -234,11 +243,13 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this.trigger("update");
 
-    this.ready && this.usePrice && this.getPrice(
-        function(value) {
-            this.trigger("price", value);
-        }.bind(this)
-    );
+    this.ready &&
+        this.usePrice &&
+        this.getPrice(
+            function(value) {
+                this.trigger("price", value);
+            }.bind(this)
+        );
 };
 
 ripe.Ripe.prototype.addPlugin = function(plugin) {
