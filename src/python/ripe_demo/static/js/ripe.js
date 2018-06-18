@@ -7,9 +7,10 @@ if (typeof module !== "undefined") {
     };
 }
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    var ripe = base.ripe;
 }
 
 /**
@@ -54,7 +55,7 @@ if (typeof module !== "undefined") {
     };
 }
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("./base"); // eslint-disable-line no-redeclare
     var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
@@ -250,7 +251,12 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.plugins = this.plugins || [];
     this.ready = false;
 
-    options = ripe.assign({ options: false }, options);
+    options = ripe.assign(
+        {
+            options: false
+        },
+        options
+    );
     this.config(brand, model, options);
 
     // determines if the defaults for the selected model should
@@ -611,12 +617,19 @@ ripe.clone = function(object) {
     return JSON.parse(objectS);
 };
 
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var compat = require("./compat"); // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var compat = require("./compat");
     require("./ripe");
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
-    var XMLHttpRequest = compat.XMLHttpRequest; // eslint-disable-line no-redeclare
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
+    // eslint-disable-next-line camelcase
+    if (typeof __webpack_require__ === "undefined") {
+        // eslint-disable-next-line no-redeclare
+        var XMLHttpRequest = compat.XMLHttpRequest;
+    }
 }
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {

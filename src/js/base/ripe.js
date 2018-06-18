@@ -20,7 +20,12 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.plugins = this.plugins || [];
     this.ready = false;
 
-    options = ripe.assign({ options: false }, options);
+    options = ripe.assign(
+        {
+            options: false
+        },
+        options
+    );
     this.config(brand, model, options);
 
     // determines if the defaults for the selected model should

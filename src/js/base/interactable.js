@@ -1,4 +1,4 @@
-if (typeof window === "undefined" && typeof require !== "undefined") {
+if (typeof require !== "undefined") {
     var base = require("./base"); // eslint-disable-line no-redeclare
     var ripe = base.ripe; // eslint-disable-line no-redeclare
 }
