@@ -21,57 +21,64 @@ var paths = {
 };
 
 gulp.task("build-js", () => {
-    return gulp.src(paths.scripts)
-        .pipe(uglifyes({
-            mangle: false,
-            ecma: 5
-        }))
+    return gulp
+        .src(paths.scripts)
+        .pipe(
+            uglifyes({
+                mangle: false,
+                ecma: 5
+            })
+        )
         .pipe(replace("__VERSION__", _package.version))
         .pipe(size())
-        .pipe(size({
-            gzip: true
-        }))
+        .pipe(
+            size({
+                gzip: true
+            })
+        )
         .pipe(gulp.dest("dist"))
         .pipe(count("## js files copied"));
 });
 
 gulp.task("move-js", () => {
-    return gulp.src(paths.mainjs)
-        .pipe(gulp.dest("src/python/ripe_demo/static/js"));
+    return gulp.src(paths.mainjs).pipe(gulp.dest("src/python/ripe_demo/static/js"));
 });
 
 gulp.task("move-css", () => {
-    return gulp.src(paths.maincss)
-        .pipe(gulp.dest("src/python/ripe_demo/static/css"));
+    return gulp.src(paths.maincss).pipe(gulp.dest("src/python/ripe_demo/static/css"));
 });
 
 gulp.task("compress", ["build-js"], () => {
-    return gulp.src(paths.dist)
+    return gulp
+        .src(paths.dist)
         .pipe(zip("dist.zip"))
         .pipe(gulp.dest("build"));
 });
 
 gulp.task("mark", () => {
-    return gulp.src(paths.scripts)
+    return gulp
+        .src(paths.scripts)
         .pipe(replace("__VERSION__", _package.version))
         .pipe(gulp.dest("src/js"));
 });
 
 gulp.task("lint", () => {
-    return gulp.src([paths.bscripts, paths.test])
+    return gulp
+        .src([paths.bscripts, paths.test])
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError());
 });
 
 gulp.task("test", () => {
-    return gulp.src(paths.test)
-        .pipe(mocha({
+    return gulp.src(paths.test).pipe(
+        mocha({
             reporter: "spec"
-        }));
+        })
+    );
 });
 
-gulp.task("docs", (cb) => {
+gulp.task("docs", cb => {
     gulp.src(["README.md", paths.docs], {
         read: false
     }).pipe(jsdoc(cb));
