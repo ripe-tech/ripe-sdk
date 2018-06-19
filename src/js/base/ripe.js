@@ -107,7 +107,7 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     var update = this.options.update || false;
     this.ready = update ? this.ready : hasParts;
 
-    // triggers the config event notifyng any listener that the (base)
+    // triggers the config event notifying any listener that the (base)
     // configuration for this main RIPE instance has changed
     this.trigger("config");
 };
