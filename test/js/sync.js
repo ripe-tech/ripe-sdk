@@ -28,7 +28,7 @@ describe("Sync", function() {
                 }
             };
             const sync = {
-                "full": ["upper", "bottom"]
+                full: ["upper", "bottom"]
             };
             const mockRipe = new MockRipe();
             mockRipe.setParts(initialParts);
@@ -40,12 +40,10 @@ describe("Sync", function() {
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
             mockRipe.parts.bottom.color = "white";
-            syncPlugin._applySync(
-                "bottom", {
-                    material: "nappa",
-                    color: "white"
-                }
-            );
+            syncPlugin._applySync("bottom", {
+                material: "nappa",
+                color: "white"
+            });
             assert.equal(mockRipe.parts.bottom.color, "white");
             assert.equal(mockRipe.parts.upper.color, "white");
         });
@@ -62,11 +60,14 @@ describe("Sync", function() {
                 }
             };
             const sync = {
-                "full": [{
-                    part: "upper"
-                }, {
-                    part: "bottom"
-                }]
+                full: [
+                    {
+                        part: "upper"
+                    },
+                    {
+                        part: "bottom"
+                    }
+                ]
             };
             const mockRipe = new MockRipe();
             mockRipe.setParts(initialParts);
@@ -80,12 +81,10 @@ describe("Sync", function() {
 
             mockRipe.parts.bottom.material = "suede";
             mockRipe.parts.bottom.color = "white";
-            syncPlugin._applySync(
-                "bottom", {
-                    material: "suede",
-                    color: "white"
-                }
-            );
+            syncPlugin._applySync("bottom", {
+                material: "suede",
+                color: "white"
+            });
             assert.equal(mockRipe.parts.bottom.material, "suede");
             assert.equal(mockRipe.parts.bottom.color, "white");
             assert.equal(mockRipe.parts.upper.material, "suede");
@@ -105,13 +104,16 @@ describe("Sync", function() {
             };
 
             const sync = {
-                "full": [{
-                    part: "upper",
-                    material: "nappa"
-                }, {
-                    part: "bottom",
-                    material: "suede"
-                }]
+                full: [
+                    {
+                        part: "upper",
+                        material: "nappa"
+                    },
+                    {
+                        part: "bottom",
+                        material: "suede"
+                    }
+                ]
             };
             const mockRipe = new MockRipe();
             mockRipe.setParts(initialParts);
@@ -124,12 +126,10 @@ describe("Sync", function() {
 
             mockRipe.parts.bottom.material = "suede";
             mockRipe.parts.bottom.color = "white";
-            syncPlugin._applySync(
-                "bottom", {
-                    material: "suede",
-                    color: "white"
-                }
-            );
+            syncPlugin._applySync("bottom", {
+                material: "suede",
+                color: "white"
+            });
             assert.equal(mockRipe.parts.bottom.material, "suede");
             assert.equal(mockRipe.parts.bottom.color, "white");
             assert.equal(mockRipe.parts.upper.material, "nappa");
@@ -148,13 +148,16 @@ describe("Sync", function() {
                 }
             };
             const sync = {
-                "full": [{
-                    part: "upper",
-                    color: "white"
-                }, {
-                    part: "bottom",
-                    color: "white"
-                }]
+                full: [
+                    {
+                        part: "upper",
+                        color: "white"
+                    },
+                    {
+                        part: "bottom",
+                        color: "white"
+                    }
+                ]
             };
             const mockRipe = new MockRipe();
             mockRipe.setParts(initialParts);
@@ -166,24 +169,20 @@ describe("Sync", function() {
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
             mockRipe.parts.bottom.color = "red";
-            syncPlugin._applySync(
-                "bottom", {
-                    material: "suede",
-                    color: "red"
-                }
-            );
+            syncPlugin._applySync("bottom", {
+                material: "suede",
+                color: "red"
+            });
             assert.equal(mockRipe.parts.bottom.material, "suede");
             assert.equal(mockRipe.parts.bottom.color, "red");
             assert.equal(mockRipe.parts.upper.material, "nappa");
             assert.equal(mockRipe.parts.upper.color, "black");
 
             mockRipe.parts.bottom.color = "white";
-            syncPlugin._applySync(
-                "bottom", {
-                    material: "suede",
-                    color: "white"
-                }
-            );
+            syncPlugin._applySync("bottom", {
+                material: "suede",
+                color: "white"
+            });
             assert.equal(mockRipe.parts.bottom.material, "suede");
             assert.equal(mockRipe.parts.bottom.color, "white");
             assert.equal(mockRipe.parts.upper.material, "nappa");
@@ -203,15 +202,18 @@ describe("Sync", function() {
             };
 
             const sync = {
-                "full": [{
-                    part: "upper",
-                    material: "nappa",
-                    color: "green"
-                }, {
-                    part: "bottom",
-                    material: "suede",
-                    color: "red"
-                }]
+                full: [
+                    {
+                        part: "upper",
+                        material: "nappa",
+                        color: "green"
+                    },
+                    {
+                        part: "bottom",
+                        material: "suede",
+                        color: "red"
+                    }
+                ]
             };
             const mockRipe = new MockRipe();
             mockRipe.setParts(initialParts);
@@ -224,12 +226,10 @@ describe("Sync", function() {
 
             mockRipe.parts.bottom.material = "suede";
             mockRipe.parts.bottom.color = "red";
-            syncPlugin._applySync(
-                "bottom", {
-                    material: "suede",
-                    color: "red"
-                }
-            );
+            syncPlugin._applySync("bottom", {
+                material: "suede",
+                color: "red"
+            });
             assert.equal(mockRipe.parts.bottom.material, "suede");
             assert.equal(mockRipe.parts.bottom.color, "red");
             assert.equal(mockRipe.parts.upper.material, "nappa");

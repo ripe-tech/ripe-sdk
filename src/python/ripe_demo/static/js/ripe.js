@@ -644,11 +644,8 @@ if (typeof require !== "undefined") {
     require("./ripe");
     // eslint-disable-next-line no-redeclare
     var ripe = base.ripe;
-    // eslint-disable-next-line camelcase
-    if (typeof __webpack_require__ === "undefined") {
-        // eslint-disable-next-line no-redeclare
-        var XMLHttpRequest = compat.XMLHttpRequest;
-    }
+    // eslint-disable-next-line no-redeclare
+    var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
@@ -1383,7 +1380,9 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
                 continue;
             }
             if (_part.color === undefined) {
-                this.owner.parts[_part.part].material = _part.material ? _part.material : value.material;
+                this.owner.parts[_part.part].material = _part.material
+                    ? _part.material
+                    : value.material;
             }
             this.owner.parts[_part.part].color = _part.color ? _part.color : value.color;
         }

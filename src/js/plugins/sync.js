@@ -83,7 +83,9 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
                 continue;
             }
             if (_part.color === undefined) {
-                this.owner.parts[_part.part].material = _part.material ? _part.material : value.material;
+                this.owner.parts[_part.part].material = _part.material
+                    ? _part.material
+                    : value.material;
             }
             this.owner.parts[_part.part].color = _part.color ? _part.color : value.color;
         }
