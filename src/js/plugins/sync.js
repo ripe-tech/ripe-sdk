@@ -93,6 +93,9 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype._shouldSync = function(rule, name, value) {
+    // checks if the changed part triggers any sync rule
+    // meaning that there are parts that have to be changed
+    // accordingly
     for (var index = 0; index < rule.length; index++) {
         var rulePart = rule[index];
         var part = rulePart.part;
