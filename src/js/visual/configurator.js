@@ -1,7 +1,9 @@
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base"); // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("../base");
     require("./visual");
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 /**
@@ -43,6 +45,24 @@ ripe.Configurator.prototype.init = function() {
     this.ready = false;
     this._observer = null;
 
+    this.owner.bind("parts", function(parts) {
+        this.parts = parts;
+    });
+
+    this.owner.bind(
+        "selected_part",
+        function(part) {
+            this.highlight(part);
+        }.bind(this)
+    );
+
+    this.owner.bind(
+        "deselected_part",
+        function(part) {
+            this.lowlight();
+        }.bind(this)
+    );
+
     // creates a structure the store the last presented
     // position of each view, to be used when returning
     // to a view for better user experience
@@ -51,35 +71,23 @@ ripe.Configurator.prototype.init = function() {
     // ues the owner to retrieve the complete set of frames
     // that are available for the current model and runs
     // the intial layout update operation on result
-    this.owner.getFrames(function(frames) {
-        this.frames = frames;
-        this._initLayout();
-        this.ready = true;
-        this.trigger("ready");
-        this.update();
-    }.bind(this));
+    this.owner.getFrames(
+        function(frames) {
+            this.frames = frames;
+            this._initLayout();
+            this._initPartsList();
+            this.ready = true;
+            this.trigger("ready");
+            this.update();
+        }.bind(this)
+    );
 
-    // creates a set of sorted parts to be used on the
-    // highlight operation (considers only the default ones)
-    this.partsList = [];
-    this.owner.getConfig(function(config) {
-        var defaults = config.defaults || {};
-        this.hiddenParts = config.hidden || [];
-        this.partsList = Object.keys(defaults);
-        this.partsList.sort();
-    }.bind(this));
-
-    this.owner.bind("parts", function(parts) {
-        this.parts = parts;
-    });
-
-    this.owner.bind("selected_part", function(part) {
-        this.highlight(part);
-    }.bind(this));
-
-    this.owner.bind("deselected_part", function(part) {
-        this.lowlight();
-    }.bind(this));
+    this.owner.bind(
+        "config",
+        function() {
+            this._updateConfig();
+        }.bind(this)
+    );
 };
 
 ripe.Configurator.prototype.resize = function(size) {
@@ -108,9 +116,12 @@ ripe.Configurator.prototype.resize = function(size) {
     mask.width = size;
     mask.height = size;
     this.currentSize = size;
-    this.update({}, {
-        force: true
-    });
+    this.update(
+        {},
+        {
+            force: true
+        }
+    );
 };
 
 ripe.Configurator.prototype.update = function(state, options) {
@@ -130,11 +141,13 @@ ripe.Configurator.prototype.update = function(state, options) {
     var force = options.force || false;
     var duration = options.duration;
     var callback = options.callback;
+    var preload = options.preload;
 
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
     var previous = this.signature || "";
-    var signature = this.owner._getQuery() + "&width=" + String(width) + "&height=" + String(height);
+    var signature =
+        this.owner._getQuery() + "&width=" + String(width) + "&height=" + String(height);
     var changed = signature !== previous;
     animate = animate || (changed && "simple");
     this.signature = signature;
@@ -152,11 +165,16 @@ ripe.Configurator.prototype.update = function(state, options) {
 
     // runs the load operation for the current frame, taking into
     // account the multiple requirements for such execution
-    this._loadFrame(view, position, {
-        draw: true,
-        animate: animate,
-        duration: duration
-    }, callback);
+    this._loadFrame(
+        view,
+        position,
+        {
+            draw: true,
+            animate: animate,
+            duration: duration
+        },
+        callback
+    );
 
     // runs the pre-loading process so that the remaining frames are
     // loaded for a smother experience when dragging the element,
@@ -164,7 +182,7 @@ ripe.Configurator.prototype.update = function(state, options) {
     // based update (not just the loading of the current position)
     // and the current signature has changed
     var preloaded = this.element.classList.contains("preload");
-    var mustPreload = changed || !preloaded;
+    var mustPreload = preload !== undefined ? preload : changed || !preloaded;
     mustPreload && this._preload(this.options.useChain);
 };
 
@@ -245,29 +263,32 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
     preventDrag = preventDrag && (animate || duration);
     preventDrag && this.element.classList.add("no-drag", "animating");
 
-    var newFrame = ripe.getFrameKey(
-        this.element.dataset.view,
-        this.element.dataset.position
-    );
+    var newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
     this.trigger("changed_frame", newFrame);
-    this.update({}, {
-        animate: animate,
-        duration: stepDuration,
-        callback: function() {
-            // if there is no step transition or the transition
-            // has finished, then allows drag movements again,
-            // otherwise waits the provided interval and
-            // proceeds to the next step
-            if (!animated || stepPosition === nextPosition) {
-                preventDrag && this.element.classList.remove("no-drag", "animating");
-            } else {
-                var timeout = animate ? 0 : stepDuration;
-                setTimeout(function() {
-                    this.changeFrame(frame, options);
-                }.bind(this), timeout);
-            }
-        }.bind(this)
-    });
+    this.update(
+        {},
+        {
+            animate: animate,
+            duration: stepDuration,
+            callback: function() {
+                // if there is no step transition or the transition
+                // has finished, then allows drag movements again,
+                // otherwise waits the provided interval and
+                // proceeds to the next step
+                if (!animated || stepPosition === nextPosition) {
+                    preventDrag && this.element.classList.remove("no-drag", "animating");
+                } else {
+                    var timeout = animate ? 0 : stepDuration;
+                    setTimeout(
+                        function() {
+                            this.changeFrame(frame, options);
+                        }.bind(this),
+                        timeout
+                    );
+                }
+            }.bind(this)
+        }
+    );
 };
 
 ripe.Configurator.prototype.highlight = function(part, options) {
@@ -414,20 +435,10 @@ ripe.Configurator.prototype._initLayout = function() {
     // mask images to be used during highlight and select operation
     var masksBuffer = ripe.createElement("div", "masks-buffer");
 
-    // creates two image elements for each frame and
-    // appends them to the frames and masks buffers
-    for (var view in this.frames) {
-        var viewFrames = this.frames[view];
-        for (var index = 0; index < viewFrames; index++) {
-            var frameBuffer = ripe.createElement("img");
-            frameBuffer.dataset.frame = ripe.getFrameKey(view, index);
-            framesBuffer.appendChild(frameBuffer);
-            var maskBuffer = frameBuffer.cloneNode(true);
-            masksBuffer.appendChild(maskBuffer);
-        }
-    }
     this.element.appendChild(framesBuffer);
     this.element.appendChild(masksBuffer);
+
+    this._populateBuffers();
 
     // set the size of area, frontMask, back and mask
     this.resize();
@@ -438,6 +449,107 @@ ripe.Configurator.prototype._initLayout = function() {
 
     // register for all the necessary DOM events
     this._registerHandlers();
+};
+
+ripe.Configurator.prototype._initPartsList = function() {
+    // creates a set of sorted parts to be used on the
+    // highlight operation (considers only the default ones)
+    this.partsList = [];
+    this.owner.getConfig(
+        function(config) {
+            var defaults = config.defaults || {};
+            this.hiddenParts = config.hidden || [];
+            this.partsList = Object.keys(defaults);
+            this.partsList.sort();
+        }.bind(this)
+    );
+};
+
+ripe.Configurator.prototype._populateBuffers = function() {
+    var framesBuffer = this.element.getElementsByClassName("frames-buffer");
+    var masksBuffer = this.element.getElementsByClassName("masks-buffer");
+    var index = null;
+    var buffer = null;
+
+    for (index = 0; index < framesBuffer.length; index++) {
+        buffer = framesBuffer[index];
+        this._populateBuffer(buffer);
+    }
+
+    for (index = 0; index < masksBuffer.length; index++) {
+        buffer = masksBuffer[index];
+        this._populateBuffer(buffer);
+    }
+};
+
+ripe.Configurator.prototype._populateBuffer = function(buffer) {
+    while (buffer.firstChild) {
+        buffer.removeChild(buffer.firstChild);
+    }
+
+    // creates two image elements for each frame and
+    // appends them to the frames and masks buffers
+    for (var view in this.frames) {
+        var viewFrames = this.frames[view];
+        for (var index = 0; index < viewFrames; index++) {
+            var frameBuffer = ripe.createElement("img");
+            frameBuffer.dataset.frame = ripe.getFrameKey(view, index);
+            buffer.appendChild(frameBuffer);
+        }
+    }
+};
+
+ripe.Configurator.prototype._updateConfig = function() {
+    // sets ready to false to temporarily block
+    // update requests while the new config
+    // is being loaded
+    this.ready = false;
+
+    // updates the parts list for the new product
+    this._initPartsList();
+
+    // retrieves the new product frames and sets them
+    this.owner.getFrames(
+        function(frames) {
+            this.frames = frames;
+
+            // tries to keep the current view and position
+            // if the new model supports it otherwise
+            // changes to a supported frame
+            var view = this.element.dataset.position;
+            var position = this.element.dataset.position;
+            var maxPosition = this.frames[view];
+            if (!maxPosition) {
+                view = Object.keys(this.frames)[0];
+                position = 0;
+            } else if (position >= maxPosition) {
+                position = 0;
+            }
+
+            // checks the last viewed frames of each view
+            // and deletes the ones not supported
+            var lastFrameViews = Object.keys(this._lastFrame);
+            for (view in lastFrameViews) {
+                position = this._lastFrame[view];
+                maxPosition = this.frames[view];
+                if (!maxPosition || position >= maxPosition) {
+                    delete this._lastFrame[view];
+                }
+            }
+
+            // shows the new product with a crossfade effect
+            // and starts responding to updates again
+            this.ready = true;
+            this.update(
+                {},
+                {
+                    preload: true,
+                    animate: "cross",
+                    force: true
+                }
+            );
+        }.bind(this)
+    );
 };
 
 ripe.Configurator.prototype._loadFrame = function(view, position, options, callback) {
@@ -528,30 +640,32 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     // mask loading process runs the final update of the mask canvas
     // operation that will allow new highlight and selection operation
     // to be performed according to the new frame value
+    var draw = options.draw === undefined || options.draw;
+    var backgroundColor = options.backgroundColor || this.backgroundColor;
+    var size = this.element.dataset.size || this.size;
+    var width = size || this.element.dataset.width || this.width;
+    var height = size || this.element.dataset.height || this.height;
+    var frame = ripe.getFrameKey(view, position);
+    var url = this.owner._getMaskURL({
+        frame: ripe.frameNameHack(frame),
+        size: size,
+        width: width,
+        height: height,
+        color: backgroundColor
+    });
     var self = this;
-    if (maskImage.dataset.src) {
+    if (draw && maskImage.dataset.src === url) {
         setTimeout(function() {
             self._drawMask(maskImage);
         }, 150);
     } else {
-        var backgroundColor = options.backgroundColor || this.backgroundColor;
-        var size = this.element.dataset.size || this.size;
-        var width = size || this.element.dataset.width || this.width;
-        var height = size || this.element.dataset.height || this.height;
-        var frame = ripe.getFrameKey(view, position);
-        var url = this.owner._getMaskURL({
-            frame: ripe.frameNameHack(frame),
-            size: size,
-            width: width,
-            height: height,
-            color: backgroundColor
-        });
-
-        maskImage.onload = function() {
-            setTimeout(function() {
-                self._drawMask(maskImage);
-            }, 150);
-        };
+        maskImage.onload = draw
+            ? function() {
+                  setTimeout(function() {
+                      self._drawMask(maskImage);
+                  }, 150);
+              }
+            : null;
         maskImage.addEventListener("error", function() {
             this.removeAttribute("src");
         });
@@ -697,9 +811,14 @@ ripe.Configurator.prototype._preload = function(useChain) {
         var _frame = ripe.parseFrameKey(frame);
         var view = _frame[0];
         var position = _frame[1];
-        self._loadFrame(view, position, {
-            draw: false
-        }, useChain ? callbackChain : callbackMark);
+        self._loadFrame(
+            view,
+            position,
+            {
+                draw: false
+            },
+            useChain ? callbackChain : callbackMark
+        );
         !useChain && render();
     };
 
@@ -726,9 +845,12 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // registes for the selected part event on the owner
     // so that we can highlight the associated part
-    this.owner.bind("selected_part", function(part) {
-        this.highlight(part);
-    }.bind(this));
+    this.owner.bind(
+        "selected_part",
+        function(part) {
+            this.highlight(part);
+        }.bind(this)
+    );
 
     // binds the mousedown event on the element to prepare
     // it for drag movements
@@ -869,19 +991,23 @@ ripe.Configurator.prototype._registerHandlers = function() {
 
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer
-    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
-    this._observer = Observer ? new Observer(function(mutations) {
-        for (var index = 0; index < mutations.length; index++) {
-            var mutation = mutations[index];
-            mutation.type === "style" && self.resize();
-            mutation.type === "attributes" && self.update();
-        }
-    }) : null;
-    this._observer && this._observer.observe(this.element, {
-        attributes: true,
-        subtree: false,
-        characterData: true
-    });
+    // eslint-disable-next-line no-undef
+    var Observer = MutationObserver || WebKitMutationObserver;
+    this._observer = Observer
+        ? new Observer(function(mutations) {
+              for (var index = 0; index < mutations.length; index++) {
+                  var mutation = mutations[index];
+                  mutation.type === "style" && self.resize();
+                  mutation.type === "attributes" && self.update();
+              }
+          })
+        : null;
+    this._observer &&
+        this._observer.observe(this.element, {
+            attributes: true,
+            subtree: false,
+            characterData: true
+        });
 
     // adds handlers for the touch events so that they get
     // parsed to mouse events for the configurator element,
@@ -928,14 +1054,14 @@ ripe.Configurator.prototype._parseDrag = function() {
     // retrieves the current view and its frames
     // and determines which one is the next frame
     var viewFrames = this.frames[nextView];
-    var nextPosition = parseInt(base - (sensitivity * percentX)) % viewFrames;
+    var nextPosition = parseInt(base - sensitivity * percentX) % viewFrames;
     nextPosition = nextPosition >= 0 ? nextPosition : viewFrames + nextPosition;
 
     // if the view changes then uses the last
     // position presented in that view, if not
     // then shows the next position according
     // to the drag
-    nextPosition = view === nextView ? nextPosition : (this._lastFrame[nextView] || 0);
+    nextPosition = view === nextView ? nextPosition : this._lastFrame[nextView] || 0;
 
     var nextFrame = ripe.getFrameKey(nextView, nextPosition);
     this.changeFrame(nextFrame);

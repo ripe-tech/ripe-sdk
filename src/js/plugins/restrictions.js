@@ -1,6 +1,8 @@
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
@@ -16,24 +18,34 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
-    this.owner.getConfig({}, function(config) {
-        this.partsOptions = config.parts;
-        var optionals = [];
-        for (var name in config.defaults) {
-            var part = config.defaults[name];
-            part.optional && optionals.push(name);
-        }
-        this.optionals = optionals;
+    this.owner.getConfig(
+        {},
+        function(config) {
+            this.partsOptions = config.parts;
+            var optionals = [];
+            for (var name in config.defaults) {
+                var part = config.defaults[name];
+                part.optional && optionals.push(name);
+            }
+            this.optionals = optionals;
 
-        // binds to the pre parts event so that the parts can be
-        // changed so that they comply with the product's restrictions
-        this.owner.bind("part", this.partCallback);
+            // binds to the pre parts event so that the parts can be
+            // changed so that they comply with the product's restrictions
+            this.owner.bind("part", this.partCallback);
 
-        // resets the current selection to trigger
-        // the restrictions operation
-        var initialParts = ripe.clone(this.owner.parts);
-        this.owner.setParts(initialParts);
-    }.bind(this));
+            // resets the current selection to trigger
+            // the restrictions operation
+            var initialParts = ripe.clone(this.owner.parts);
+            this.owner.setParts(initialParts);
+        }.bind(this)
+    );
+
+    this.owner.bind(
+        "config",
+        function() {
+            this.owner && this.unregister(this.owner);
+        }.bind(this)
+    );
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
@@ -61,19 +73,16 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
             color: part.color
         });
     }
-    name !== undefined && customization.push({
-        name: name,
-        material: value.material,
-        color: value.color
-    });
+    name !== undefined &&
+        customization.push({
+            name: name,
+            material: value.material,
+            color: value.color
+        });
 
     // obtains the new parts and mutates the original
     // parts map to apply the necessary changes
-    var newParts = this._solveRestrictions(
-        partsOptions,
-        this.restrictionsMap,
-        customization
-    );
+    var newParts = this._solveRestrictions(partsOptions, this.restrictionsMap, customization);
     for (var index = 0; index < newParts.length; index++) {
         var newPart = newParts[index];
         this.owner.parts[newPart.name].material = newPart.material;
@@ -170,11 +179,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(
 
             var material = item.material;
             var color = item.color;
-            var materialColorKey = this._getRestrictionKey(
-                null,
-                material,
-                color
-            );
+            var materialColorKey = this._getRestrictionKey(null, material, color);
 
             for (var __index = 0; __index < restriction.length; __index++) {
                 var _item = restriction[__index];
@@ -196,7 +201,11 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(
     return restrictionsMap;
 };
 
-ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(newPart, restrictions, parts) {
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(
+    newPart,
+    restrictions,
+    parts
+) {
     var name = newPart.name;
     var material = newPart.material;
     var color = newPart.color;
@@ -216,9 +225,13 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(newPart,
     }
 
     keyRestrictions =
-        materialRestrictions instanceof Array ? keyRestrictions.concat(materialRestrictions) : keyRestrictions;
+        materialRestrictions instanceof Array
+            ? keyRestrictions.concat(materialRestrictions)
+            : keyRestrictions;
     keyRestrictions =
-        colorRestrictions instanceof Array ? keyRestrictions.concat(colorRestrictions) : keyRestrictions;
+        colorRestrictions instanceof Array
+            ? keyRestrictions.concat(colorRestrictions)
+            : keyRestrictions;
 
     for (var index = 0; index < keyRestrictions.length; index++) {
         var restriction = keyRestrictions[index];

@@ -1,9 +1,12 @@
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("../base"); // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("../base");
     require("./visual");
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
     var MutationObserver = typeof MutationObserver === "undefined" ? null : MutationObserver;
-    var WebKitMutationObserver = typeof WebKitMutationObserver === "undefined" ? null : WebKitMutationObserver;
+    var WebKitMutationObserver =
+        typeof WebKitMutationObserver === "undefined" ? null : WebKitMutationObserver;
 }
 
 ripe.Image = function(owner, element, options) {
@@ -21,12 +24,14 @@ ripe.Image.prototype.init = function() {
     this.height = this.options.height || null;
     this.crop = this.options.crop || false;
     this.showInitials = this.options.showInitials || false;
-    this.initialsBuilder = this.options.initialsBuilder || function(initials, engraving, element) {
-        return {
-            initials: initials,
-            profile: [engraving]
+    this.initialsBuilder =
+        this.options.initialsBuilder ||
+        function(initials, engraving, element) {
+            return {
+                initials: initials,
+                profile: [engraving]
+            };
         };
-    };
     this._observer = null;
 
     this._registerHandlers();
@@ -42,7 +47,9 @@ ripe.Image.prototype.update = function(state) {
     this.initials = state !== undefined ? state.initials : this.initials;
     this.engraving = state !== undefined ? state.engraving : this.engraving;
 
-    var initialsSpec = this.showInitials ? this.initialsBuilder(this.initials, this.engraving, this.element) : {};
+    var initialsSpec = this.showInitials
+        ? this.initialsBuilder(this.initials, this.engraving, this.element)
+        : {};
 
     var url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
@@ -91,12 +98,18 @@ ripe.Image.prototype._registerHandlers = function() {
     }.bind(this);
     this.element.addEventListener("load", this.loadListener);
 
-    var Observer = MutationObserver || WebKitMutationObserver; // eslint-disable-line no-undef
-    this._observer = Observer ? new Observer(function(mutations) {
-        this.update();
-    }.bind(this)) : null;
-    this._observer && this._observer.observe(this.element, {
-        attributes: true,
-        subtree: false
-    });
+    // eslint-disable-next-line no-undef
+    var Observer = MutationObserver || WebKitMutationObserver;
+    this._observer = Observer
+        ? new Observer(
+              function(mutations) {
+                  this.update();
+              }.bind(this)
+          )
+        : null;
+    this._observer &&
+        this._observer.observe(this.element, {
+            attributes: true,
+            subtree: false
+        });
 };

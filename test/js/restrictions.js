@@ -42,43 +42,52 @@ describe("Restrictions", function() {
                 }
             };
             const restrictions = [
-                [{
-                    color: "black"
-                }, {
-                    color: "white"
-                }]
+                [
+                    {
+                        color: "black"
+                    },
+                    {
+                        color: "white"
+                    }
+                ]
             ];
-            const partOptions = [{
-                name: "upper",
-                materials: [{
-                    name: "nappa",
-                    colors: ["black", "white"]
-                }]
-            }, {
-                name: "bottom",
-                materials: [{
-                    name: "nappa",
-                    colors: ["black", "white"]
-                }]
-            }];
+            const partOptions = [
+                {
+                    name: "upper",
+                    materials: [
+                        {
+                            name: "nappa",
+                            colors: ["black", "white"]
+                        }
+                    ]
+                },
+                {
+                    name: "bottom",
+                    materials: [
+                        {
+                            name: "nappa",
+                            colors: ["black", "white"]
+                        }
+                    ]
+                }
+            ];
 
             const mockRipe = new MockRipe(partOptions);
             mockRipe.setParts(initialParts);
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
-                restrictions);
+                restrictions
+            );
             restrictionsPlugin.register(mockRipe);
 
             restrictionsPlugin._applyRestrictions();
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
             mockRipe.parts.bottom.color = "white";
-            restrictionsPlugin._applyRestrictions(
-                "bottom", {
-                    material: mockRipe.parts.bottom.material,
-                    color: mockRipe.parts.bottom.color
-                }
-            );
+            restrictionsPlugin._applyRestrictions("bottom", {
+                material: mockRipe.parts.bottom.material,
+                color: mockRipe.parts.bottom.color
+            });
             assert.equal(mockRipe.parts.bottom.color, "white");
             assert.equal(mockRipe.parts.upper.color, "white");
         });
@@ -93,34 +102,46 @@ describe("Restrictions", function() {
                 }
             };
             const restrictions = [
-                [{
-                    material: "nappa"
-                }, {
-                    material: "metal"
-                }]
+                [
+                    {
+                        material: "nappa"
+                    },
+                    {
+                        material: "metal"
+                    }
+                ]
             ];
-            const partOptions = [{
-                name: "upper",
-                materials: [{
-                    name: "nappa",
-                    colors: ["black"]
-                }, {
-                    name: "suede",
-                    colors: ["black"]
-                }]
-            }, {
-                name: "logo",
-                materials: [{
-                    name: "metal",
-                    colors: ["gold"]
-                }]
-            }];
+            const partOptions = [
+                {
+                    name: "upper",
+                    materials: [
+                        {
+                            name: "nappa",
+                            colors: ["black"]
+                        },
+                        {
+                            name: "suede",
+                            colors: ["black"]
+                        }
+                    ]
+                },
+                {
+                    name: "logo",
+                    materials: [
+                        {
+                            name: "metal",
+                            colors: ["gold"]
+                        }
+                    ]
+                }
+            ];
 
             const mockRipe = new MockRipe(partOptions, ["logo"]);
             mockRipe.setParts(initialParts);
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
-                restrictions);
+                restrictions
+            );
             restrictionsPlugin.register(mockRipe);
 
             assert.deepStrictEqual(initialParts, mockRipe.parts);
@@ -130,32 +151,38 @@ describe("Restrictions", function() {
                 color: "gold"
             };
             restrictionsPlugin._applyRestrictions("logo", mockRipe.parts.logo);
-            assert.deepStrictEqual({
-                upper: {
-                    material: "suede",
-                    color: "black"
+            assert.deepStrictEqual(
+                {
+                    upper: {
+                        material: "suede",
+                        color: "black"
+                    },
+                    logo: {
+                        material: "metal",
+                        color: "gold"
+                    }
                 },
-                logo: {
-                    material: "metal",
-                    color: "gold"
-                }
-            }, mockRipe.parts);
+                mockRipe.parts
+            );
 
             mockRipe.parts.upper = {
                 material: "nappa",
                 color: "black"
             };
             restrictionsPlugin._applyRestrictions("upper", mockRipe.parts.upper);
-            assert.deepStrictEqual({
-                upper: {
-                    material: "nappa",
-                    color: "black"
+            assert.deepStrictEqual(
+                {
+                    upper: {
+                        material: "nappa",
+                        color: "black"
+                    },
+                    logo: {
+                        material: null,
+                        color: null
+                    }
                 },
-                logo: {
-                    material: null,
-                    color: null
-                }
-            }, mockRipe.parts);
+                mockRipe.parts
+            );
         });
     });
 });

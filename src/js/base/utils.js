@@ -1,6 +1,8 @@
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 ripe.createElement = function(tagName, className) {
@@ -18,7 +20,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
         // checks how much time has passed since the last animation frame
         var current = new Date();
         var timeDelta = current - last;
-        var animationDelta = timeDelta * (final - initial) / duration;
+        var animationDelta = (timeDelta * (final - initial)) / duration;
 
         // adjusts the value by the correspondent amount
         // making sure it doens't surpass the final value

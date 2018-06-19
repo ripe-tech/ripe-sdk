@@ -1,6 +1,8 @@
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
 }
 
 /**
@@ -34,8 +36,15 @@ ripe.assign = function(target) {
     return to;
 };
 
-if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") { // eslint-disable-line no-use-before-define
-    var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest; // eslint-disable-line no-redeclare
+// eslint-disable-next-line no-use-before-define
+if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
+    var XMLHttpRequest = null;
+    // eslint-disable-next-line camelcase
+    if (typeof __webpack_require__ === "undefined") {
+        XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    } else {
+        XMLHttpRequest = window.XMLHttpRequest;
+    }
 }
 
 if (typeof module !== "undefined") {

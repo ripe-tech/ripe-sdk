@@ -1,9 +1,13 @@
-if (typeof window === "undefined" && typeof require !== "undefined") {
-    var base = require("./base"); // eslint-disable-line no-redeclare
-    var compat = require("./compat"); // eslint-disable-line no-redeclare
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var compat = require("./compat");
     require("./ripe");
-    var ripe = base.ripe; // eslint-disable-line no-redeclare
-    var XMLHttpRequest = compat.XMLHttpRequest; // eslint-disable-line no-redeclare
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
+    // eslint-disable-next-line no-redeclare
+    var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
@@ -137,12 +141,15 @@ ripe.Ripe.prototype._cacheURL = function(url, callback, options) {
 
     // otherwise runs the "normal" request URL call and
     // sets the result cache key on return
-    this._requestURL(url, function(result, isValid, request) {
-        if (isValid) {
-            this._cache[fullKey] = result;
-        }
-        callback && callback(result, isValid, request);
-    }.bind(this));
+    this._requestURL(
+        url,
+        function(result, isValid, request) {
+            if (isValid) {
+                this._cache[fullKey] = result;
+            }
+            callback && callback(result, isValid, request);
+        }.bind(this)
+    );
 };
 
 ripe.Ripe.prototype._requestURL = function(url, callback) {
