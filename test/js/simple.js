@@ -9,7 +9,7 @@ describe("Ripe", function() {
         it("should instance and retrieve values", async () => {
             let result = null;
 
-            const instance = new ripe.Ripe("myswear", "vyner");
+            const instance = new ripe.Ripe("swear", "vyner");
             instance.load();
 
             await new Promise((resolve, reject) => {
@@ -35,7 +35,7 @@ describe("Ripe", function() {
         it("should instance and retrieve config", async () => {
             let result = null;
 
-            const instance = new ripe.Ripe("myswear", "vyner");
+            const instance = new ripe.Ripe("swear", "vyner");
             instance.load();
 
             await new Promise((resolve, reject) => {
@@ -49,7 +49,7 @@ describe("Ripe", function() {
             assert.equal(result.hidden.indexOf("shadow") !== -1, true);
         });
         it("should instance with custom options", async () => {
-            const instance = new ripe.Ripe("myswear", "vyner", {
+            const instance = new ripe.Ripe("swear", "vyner", {
                 noDefaults: true,
                 noCombinations: true
             });
