@@ -177,13 +177,25 @@ configurator.bind("loaded", function() {
 
 ### Part synchronisation
 
-If your product has synchronisation rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behaviour automatically. To do this you need to initialize the `SyncPlugin` which receives the synchronisation rules and add it to the ripe object using the `addPlugin` function.
+If your product has synchronisation rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behaviour automatically. To do this you need to initialize the `SyncPlugin` which receives the synchronisation rules and add it to the ripe object using the `addPlugin` function. When a new part is set, the plugin checks the synchronisation rules and automatically makes the necessary changes to the related parts.
 
 ```javascript
-ripe.getConfig(function(result) {
-    var syncRules = result.sync;
+ripe.getConfig(function(config) {
+    var syncRules = config.sync;
     var syncPlugin = new Ripe.plugins.SyncPlugin(syncRules);
     ripe.addPlugin(syncPlugin);
+});
+```
+
+### Part restrictions
+
+To include restrictions to the customization experience the `Restrictions` plugin is available. This allow setting rules that declare that certain combinations between different parts, materials or colors are not possible. When a new option is selected, the plugin will check if any of the other parts has become restricted by the new part and change them to a valid option automatically. The usage of this plugin is similar to the `sync` plugin.
+
+```javascript
+ripe.getConfig(function(config) {
+    var restrictionRules = config.restrictions;
+    var resctrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(restrictionRules);
+    ripe.addPlugin(resctrictionsPlugin);
 });
 ```
 
