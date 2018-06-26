@@ -302,7 +302,7 @@ ripe.Ripe.prototype.load = function() {
     this.update();
 };
 
-ripe.Ripe.prototype.unload = function() { };
+ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.config = function(brand, model, options) {
     // sets the most structural values of this entity
@@ -329,8 +329,8 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     var loadParts = loadDefaults
         ? this.getDefaults
         : function(callback) {
-            setTimeout(callback);
-        };
+              setTimeout(callback);
+          };
     loadParts.call(
         this,
         function(result) {
@@ -1337,11 +1337,11 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
 
 /**
  * Traverses the provided rules and transforms string rules
- * into  object rules to keep the internal representation
- * of the rules consistent
+ * into object rules to keep the internal representation
+ * of the rules consistent.
  *
  * @param {Array} rules The rules that will be normalized
- * into object rules
+ * into object rules.
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
     var _rules = {};
@@ -1398,12 +1398,12 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
 /**
  * Checks if the sync rule contains the provided part
  * meaning that the other parts of the rule have to
- * be changed accordingly
+ * be changed accordingly.
  *
- * @param {Object} rule The sync rule that will be checked
+ * @param {Object} rule The sync rule that will be checked.
  * @param {String} name The name of the part that may be
- * affected by the rule
- * @param {Object} value The material and color of the part
+ * affected by the rule.
+ * @param {Object} value The material and color of the part.
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._shouldSync = function(rule, name, value) {
     for (var index = 0; index < rule.length; index++) {
