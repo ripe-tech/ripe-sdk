@@ -1,16 +1,33 @@
 {
     "version": "0.2.0",
-    "configurations": [{
-        "name": "Python",
-        "type": "python",
-        "request": "launch",
-        "pythonPath": "${config:python.pythonPath}",
-        "program": "${workspaceRoot}/src/python/ripe_demo/main.py",
-        "debugOptions": [
-            "RedirectOutput"
-        ],
-        "env": {
-            "PYTHONPATH": "${workspaceRoot}/src/python/ripe_demo:{env.PYTHONPATH}"
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha Tests",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "-u",
+                "tdd",
+                "--timeout",
+                "999999",
+                "--colors",
+                "${workspaceFolder}/test/js"
+            ],
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "Python",
+            "type": "python",
+            "request": "launch",
+            "pythonPath": "${config:python.pythonPath}",
+            "program": "${workspaceRoot}/src/python/ripe_demo/main.py",
+            "debugOptions": [
+                "RedirectOutput"
+            ],
+            "env": {
+                "PYTHONPATH": "${workspaceRoot}/src/python/ripe_demo:{env.PYTHONPATH}"
+            }
         }
-    }]
+    ]
 }
