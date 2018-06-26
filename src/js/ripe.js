@@ -1335,9 +1335,15 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
 
+/**
+ * Traverses the provided rules and transforms string rules
+ * into  object rules to keep the internal representation
+ * of the rules consistent
+ *
+ * @param {Array} rules The rules that will be normalized
+ * into object rules
+ */
 ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
-    // transforms string sync rules into object rules to keep
-    // the internal representation of the rules consistent
     var _rules = {};
     for (var ruleName in rules) {
         var rule = rules[ruleName];
@@ -1389,10 +1395,17 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
     }
 };
 
+/**
+ * Checks if the sync rule contains the provided part
+ * meaning that the other parts of the rule have to
+ * be changed accordingly
+ *
+ * @param {Object} rule The sync rule that will be checked
+ * @param {String} name The name of the part that may be
+ * affected by the rule
+ * @param {Object} value The material and color of the part
+ */
 ripe.Ripe.plugins.SyncPlugin.prototype._shouldSync = function(rule, name, value) {
-    // checks if the changed part triggers any sync rule
-    // meaning that there are parts that have to be changed
-    // accordingly
     for (var index = 0; index < rule.length; index++) {
         var rulePart = rule[index];
         var part = rulePart.part;
