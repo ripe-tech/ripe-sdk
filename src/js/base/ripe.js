@@ -60,7 +60,7 @@ ripe.Ripe.prototype.load = function() {
 ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.config = function(brand, model, options) {
-    // sets the most strctural values of this entity
+    // sets the most structural values of this entity
     // that represent the configuration to be used
     this.brand = brand;
     this.model = model;
@@ -107,7 +107,7 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     var update = this.options.update || false;
     this.ready = update ? this.ready : hasParts;
 
-    // triggers the config event notyfin any listener that the (base)
+    // triggers the config event notifying any listener that the (base)
     // configuration for this main RIPE instance has changed
     this.trigger("config");
 };
