@@ -61,5 +61,44 @@ describe("Ripe", function() {
 
             assert.equal(Object.keys(instance.parts).length, 0);
         });
+        it("should set parts and undo", async () => {
+            const instance = new ripe.Ripe("swear", "vyner", {
+                noCombinations: true
+            });
+            instance.load();
+
+            var initialParts = await new Promise((resolve, reject) => {
+                instance.bind("parts", resolve);
+            });
+
+            assert.deepStrictEqual(instance.parts, initialParts);
+            assert.equal(instance.canUndo(), false);
+
+            instance.undo();
+
+            assert.deepStrictEqual(instance.parts, initialParts);
+
+            assert.equal(instance.parts.front.color, "white");
+            assert.equal(instance.parts.front.color, "white");
+
+            instance.setPart("front", "suede", "black");
+            var changedParts = Object.assign({}, instance.parts);
+
+            assert.equal(instance.parts.front.material, "suede");
+            assert.equal(instance.parts.front.color, "black");
+            assert.equal(instance.canUndo(), true);
+
+            instance.undo();
+
+            assert.deepStrictEqual(instance.parts, initialParts);
+
+            instance.setParts(changedParts);
+
+            assert.deepStrictEqual(instance.parts, changedParts);
+
+            instance.undo();
+
+            assert.deepStrictEqual(instance.parts, initialParts);
+        });
     });
 });

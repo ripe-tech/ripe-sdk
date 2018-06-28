@@ -115,6 +115,14 @@ ripe.setParts([
 ]);
 ```
 
+To undo part changes in the product you can call the `undo` function. The method `canUndo` is also available so you can allow the undo operation based on the current changes.
+
+```javascript
+if (ripe.canUndo()) {
+    ripe.undo();
+}
+```
+
 ### Getters
 
 If you need to explicitly retrieve the product's customization information you can use the following methods:

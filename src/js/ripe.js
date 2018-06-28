@@ -280,6 +280,10 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
 
     this.ready = hasParts;
+
+    this.bind("pre_parts", function() {
+        this.parts && Object.keys(this.parts).length && this.partsHistory.push(this.parts);
+    });
 };
 
 ripe.Ripe.prototype.deinit = function() {
@@ -302,7 +306,7 @@ ripe.Ripe.prototype.load = function() {
     this.update();
 };
 
-ripe.Ripe.prototype.unload = function() {};
+ripe.Ripe.prototype.unload = function() { };
 
 ripe.Ripe.prototype.config = function(brand, model, options) {
     // sets the most structural values of this entity
@@ -329,20 +333,20 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     var loadParts = loadDefaults
         ? this.getDefaults
         : function(callback) {
-              setTimeout(callback);
-          };
+            setTimeout(callback);
+        };
     loadParts.call(
         this,
         function(result) {
             result = result || this.parts;
-            this.parts = result;
+            this.partsHistory = [];
             if (this.ready === false) {
                 this.ready = true;
                 this.trigger("ready");
             }
+            this.setParts(result);
             this.remote();
             this.update();
-            this.setParts(result);
         }.bind(this)
     );
 
@@ -398,12 +402,19 @@ ripe.Ripe.prototype.setOptions = function(options) {
 };
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
-    this._setPart(part, material, color, true);
+    if (noUpdate !== true) {
+        this.trigger("pre_parts", this.parts);
+    }
+
+    this._setPart(part, material, color);
+
     if (noUpdate) {
         return;
     }
+
     this.update();
     this.trigger("parts", this.parts);
+    this.trigger("post_parts", this.parts);
 };
 
 ripe.Ripe.prototype.setParts = function(update, noUpdate) {
@@ -411,9 +422,13 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
         update = this._partsList(update);
     }
 
+    if (noUpdate !== true) {
+        this.trigger("pre_parts", this.parts);
+    }
+
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
-        this._setPart(part[0], part[1], part[2], true);
+        this._setPart(part[0], part[1], part[2]);
     }
 
     if (noUpdate) {
@@ -422,6 +437,7 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
 
     this.update();
     this.trigger("parts", this.parts);
+    this.trigger("post_parts", this.parts);
 };
 
 ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
@@ -504,6 +520,15 @@ ripe.Ripe.prototype.update = function(state) {
         );
 };
 
+ripe.Ripe.prototype.undo = function() {
+    var parts = this.partsHistory.pop();
+    parts && this.setParts(parts);
+};
+
+ripe.Ripe.prototype.canUndo = function() {
+    return this.partsHistory && this.partsHistory.length > 0;
+};
+
 ripe.Ripe.prototype.addPlugin = function(plugin) {
     plugin.register(this);
     this.plugins.push(plugin);
@@ -523,11 +548,13 @@ ripe.Ripe.prototype._getState = function() {
 };
 
 ripe.Ripe.prototype._setPart = function(part, material, color) {
-    var value = this.parts[part];
+    var value = this.parts[part] || {};
     value.material = material;
     value.color = color;
     this.parts[part] = value;
+    this.trigger("pre_part", part, value);
     this.trigger("part", part, value);
+    this.trigger("post_part", part, value);
 };
 
 ripe.Ripe.prototype._partsList = function(parts) {
