@@ -403,15 +403,11 @@ ripe.Ripe.prototype.setOptions = function(options) {
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
     if (noUpdate !== true) {
-        this.trigger("pre_parts", this.parts);
+        return this._setPart(part, material, color);
     }
 
+    this.trigger("pre_parts", this.parts);
     this._setPart(part, material, color);
-
-    if (noUpdate) {
-        return;
-    }
-
     this.update();
     this.trigger("parts", this.parts);
     this.trigger("post_parts", this.parts);
@@ -520,11 +516,20 @@ ripe.Ripe.prototype.update = function(state) {
         );
 };
 
+/**
+ * Reverses the last change to the parts. It is possible
+ * to undo all the changes done from the initial state.
+ */
 ripe.Ripe.prototype.undo = function() {
     var parts = this.partsHistory.pop();
     parts && this.setParts(parts);
 };
 
+/**
+ * Indicates if there are part changes to undo.
+ *
+ * @returns {boolean} True if there are changes to reverse, false otherwise.
+ */
 ripe.Ripe.prototype.canUndo = function() {
     return this.partsHistory && this.partsHistory.length > 0;
 };
