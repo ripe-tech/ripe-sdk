@@ -157,7 +157,7 @@ ripe.Ripe.prototype.setOptions = function(options) {
 };
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
-    if (noUpdate !== true) {
+    if (noUpdate === true) {
         return this._setPart(part, material, color);
     }
 
