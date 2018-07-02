@@ -79,10 +79,10 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
     var partSet =
         name !== undefined
             ? {
-                name: name,
-                material: value.material,
-                color: value.color
-            }
+                  name: name,
+                  material: value.material,
+                  color: value.color
+              }
             : null;
     name !== undefined && customization.push(partSet);
 

@@ -102,10 +102,10 @@ ripe.Image.prototype._registerHandlers = function() {
     var Observer = MutationObserver || WebKitMutationObserver;
     this._observer = Observer
         ? new Observer(
-            function(mutations) {
-                this.update();
-            }.bind(this)
-        )
+              function(mutations) {
+                  this.update();
+              }.bind(this)
+          )
         : null;
     this._observer &&
         this._observer.observe(this.element, {

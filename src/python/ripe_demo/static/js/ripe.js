@@ -1005,11 +1005,10 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(name, value) {
-    // creates an array with the customization. If a new
-    // part is set it is added at the end so that it has
-    // priority when solving the restrictions
-    var partsOptions = ripe.clone(this.partsOptions);
+    // creates an array with the customization, by copying the
+    // current parts environment into a separate array
     var customization = [];
+    var partsOptions = ripe.clone(this.partsOptions);
     for (var partName in this.owner.parts) {
         if (name !== undefined && name === partName) {
             continue;
@@ -1021,6 +1020,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
             color: part.color
         });
     }
+
+    // if a new part is set it is added at the end so that it
+    // has higher priority when solving the restrictions
     var partSet =
         name !== undefined
             ? {
@@ -1034,10 +1036,15 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
     // obtains the new parts and mutates the original
     // parts map to apply the necessary changes
     var newParts = this._solveRestrictions(partsOptions, this.restrictionsMap, customization);
+
     var changes = [];
+
     for (var index = 0; index < newParts.length; index++) {
         var newPart = newParts[index];
         var oldPart = this.owner.parts[newPart.name];
+
+        // if a change was made due to the restrictions
+        // then adds it to the changes array
         if (oldPart.material !== newPart.material || oldPart.color !== newPart.color) {
             changes.push({
                 from: {
@@ -1056,6 +1063,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
         oldPart.material = newPart.material;
         oldPart.color = newPart.color;
     }
+
+    // triggers the restrictions event with the set of changes in the
+    // domain and the possible part set that triggered those changes
     this.trigger("restrictions", changes, partSet);
 };
 
@@ -2702,10 +2712,10 @@ ripe.Image.prototype._registerHandlers = function() {
     var Observer = MutationObserver || WebKitMutationObserver;
     this._observer = Observer
         ? new Observer(
-            function(mutations) {
-                this.update();
-            }.bind(this)
-        )
+              function(mutations) {
+                  this.update();
+              }.bind(this)
+          )
         : null;
     this._observer &&
         this._observer.observe(this.element, {
