@@ -197,7 +197,6 @@ ripe.getConfig(function(config) {
     var restrictionRules = config.restrictions;
     var resctrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(restrictionRules);
     ripe.addPlugin(resctrictionsPlugin);
-
     restrictionsPlugin.bind("restrictions", function(changes, part) {});
 });
 ```
