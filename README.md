@@ -190,12 +190,14 @@ ripe.getConfig(function(config) {
 ### Part restrictions
 
 To include restrictions to the customization experience the `Restrictions` plugin is available. This allow setting rules that declare that certain combinations between different parts, materials or colors are not possible. When a new option is selected, the plugin will check if any of the other parts has become restricted by the new part and change them to a valid option automatically. The usage of this plugin is similar to the `sync` plugin.
+To be notified when a restriction causes parts to be changed, bind to the `restrictions` event on the plugin object. Whenever the restrictions are applied, this event will be triggered with the changes that ocurred and the part that caused them.
 
 ```javascript
 ripe.getConfig(function(config) {
     var restrictionRules = config.restrictions;
     var resctrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(restrictionRules);
     ripe.addPlugin(resctrictionsPlugin);
+    restrictionsPlugin.bind("restrictions", function(changes, part) {});
 });
 ```
 

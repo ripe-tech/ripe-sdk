@@ -923,14 +923,20 @@ if (typeof require !== "undefined") {
 
 ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 
-ripe.Ripe.plugins.Plugin = function() {};
+ripe.Ripe.plugins.Plugin = function() {
+    ripe.Observable.call(this);
+};
+
+ripe.assign(ripe.Ripe.plugins.Plugin.prototype, ripe.Observable.prototype);
 
 ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
     this.owner = owner;
+    ripe.Observable.prototype.init.call(this);
 };
 
 ripe.Ripe.plugins.Plugin.prototype.unregister = function(owner) {
     this.owner = null;
+    ripe.Observable.prototype.deinit.call(this);
 };
 
 if (typeof module !== "undefined") {
@@ -947,6 +953,7 @@ if (typeof require !== "undefined") {
 }
 
 ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
+    ripe.Ripe.plugins.Plugin.call(this);
     options = options || {};
     this.token = options.token || ":";
     this.restrictions = restrictions;
@@ -1014,21 +1021,42 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
             color: part.color
         });
     }
-    name !== undefined &&
-        customization.push({
-            name: name,
-            material: value.material,
-            color: value.color
-        });
+    var partSet =
+        name !== undefined
+            ? {
+                  name: name,
+                  material: value.material,
+                  color: value.color
+              }
+            : null;
+    name !== undefined && customization.push(partSet);
 
     // obtains the new parts and mutates the original
     // parts map to apply the necessary changes
     var newParts = this._solveRestrictions(partsOptions, this.restrictionsMap, customization);
+    var changes = [];
     for (var index = 0; index < newParts.length; index++) {
         var newPart = newParts[index];
-        this.owner.parts[newPart.name].material = newPart.material;
-        this.owner.parts[newPart.name].color = newPart.color;
+        var oldPart = this.owner.parts[newPart.name];
+        if (oldPart.material !== newPart.material || oldPart.color !== newPart.color) {
+            changes.push({
+                from: {
+                    part: newPart.name,
+                    material: oldPart.material,
+                    color: oldPart.color
+                },
+                to: {
+                    part: newPart.name,
+                    material: newPart.material,
+                    color: newPart.color
+                }
+            });
+        }
+
+        oldPart.material = newPart.material;
+        oldPart.color = newPart.color;
     }
+    this.trigger("restrictions", changes, partSet);
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
