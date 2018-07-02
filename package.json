@@ -49,7 +49,7 @@
         "xmlhttprequest": "^1.8.0"
     },
     "devDependencies": {
-        "eslint": "^5.0.1",
+        "eslint": "^4.19.1",
         "eslint-config-hive": "^0.1.5",
         "gulp": "^3.9.1",
         "gulp-cli": "^2.0.1",
