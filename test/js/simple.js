@@ -73,8 +73,11 @@ describe("Ripe", function() {
 
             assert.deepStrictEqual(instance.parts, initialParts);
             assert.equal(instance.canUndo(), false);
+            assert.equal(instance.canRedo(), false);
 
             instance.undo();
+            assert.equal(instance.canUndo(), false);
+            assert.equal(instance.canRedo(), false);
 
             assert.deepStrictEqual(instance.parts, initialParts);
 
@@ -87,18 +90,25 @@ describe("Ripe", function() {
             assert.equal(instance.parts.front.material, "suede");
             assert.equal(instance.parts.front.color, "black");
             assert.equal(instance.canUndo(), true);
+            assert.equal(instance.canRedo(), false);
 
             instance.undo();
 
             assert.deepStrictEqual(instance.parts, initialParts);
+            assert.equal(instance.canUndo(), false);
+            assert.equal(instance.canRedo(), true);
 
-            instance.setParts(changedParts);
+            instance.redo();
 
             assert.deepStrictEqual(instance.parts, changedParts);
+            assert.equal(instance.canUndo(), true);
+            assert.equal(instance.canRedo(), false);
 
             instance.undo();
 
             assert.deepStrictEqual(instance.parts, initialParts);
+            assert.equal(instance.canUndo(), false);
+            assert.equal(instance.canRedo(), true);
         });
     });
 });

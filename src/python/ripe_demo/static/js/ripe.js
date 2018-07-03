@@ -281,8 +281,16 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
 
     this.ready = hasParts;
 
-    this.bind("pre_parts", function() {
-        this.parts && Object.keys(this.parts).length && this.partsHistory.push(this.parts);
+    // listens for the pre parts event and saves the current
+    // configuration for the undo operation
+    this.bind("pre_parts", function(parts, options) {
+        if (options && ["undo", "redo"].indexOf(options.action) > -1) {
+            return;
+        } else if (this.parts && Object.keys(this.parts).length) {
+            this.partsHistory = this.partsHistory.slice(0, this.partsHistoryPointer);
+            this.partsHistory.push(this.parts);
+            this.partsHistoryPointer = this.partsHistory.length - 1;
+        }
     });
 };
 
@@ -340,6 +348,7 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
         function(result) {
             result = result || this.parts;
             this.partsHistory = [];
+            this.partsHistoryPointer = -1;
             if (this.ready === false) {
                 this.ready = true;
                 this.trigger("ready");
@@ -401,25 +410,25 @@ ripe.Ripe.prototype.setOptions = function(options) {
     this.backgroundColor = this.backgroundColor.replace("#", "");
 };
 
-ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate) {
-    if (noUpdate !== true) {
+ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate, options) {
+    if (noUpdate) {
         return this._setPart(part, material, color);
     }
 
-    this.trigger("pre_parts", this.parts);
+    this.trigger("pre_parts", this.parts, options);
     this._setPart(part, material, color);
     this.update();
-    this.trigger("parts", this.parts);
-    this.trigger("post_parts", this.parts);
+    this.trigger("parts", this.parts, options);
+    this.trigger("post_parts", this.parts, options);
 };
 
-ripe.Ripe.prototype.setParts = function(update, noUpdate) {
-    if (typeof update === "object" && Array.isArray(update) === false) {
+ripe.Ripe.prototype.setParts = function(update, noUpdate, options) {
+    if (typeof update === "object" && !Array.isArray(update)) {
         update = this._partsList(update);
     }
 
-    if (noUpdate !== true) {
-        this.trigger("pre_parts", this.parts);
+    if (!noUpdate) {
+        this.trigger("pre_parts", this.parts, options);
     }
 
     for (var index = 0; index < update.length; index++) {
@@ -432,8 +441,8 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate) {
     }
 
     this.update();
-    this.trigger("parts", this.parts);
-    this.trigger("post_parts", this.parts);
+    this.trigger("parts", this.parts, options);
+    this.trigger("post_parts", this.parts, options);
 };
 
 ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
@@ -521,8 +530,25 @@ ripe.Ripe.prototype.update = function(state) {
  * to undo all the changes done from the initial state.
  */
 ripe.Ripe.prototype.undo = function() {
-    var parts = this.partsHistory.pop();
-    parts && this.setParts(parts);
+    if (!this.canUndo()) {
+        return;
+    }
+
+    this.partsHistoryPointer -= 1;
+    var parts = this.partsHistory[this.partsHistoryPointer];
+    parts && this.setParts(parts, { action: "undo" });
+};
+
+/**
+ * Reapplies the last change to the parts that was undone.
+ */
+ripe.Ripe.prototype.redo = function() {
+    if (!this.canRedo()) {
+        return;
+    }
+    this.partsHistoryPointer += 1;
+    var parts = this.partsHistory[this.partsHistoryPointer];
+    parts && this.setParts(parts, { action: "redo" });
 };
 
 /**
@@ -531,7 +557,16 @@ ripe.Ripe.prototype.undo = function() {
  * @returns {boolean} True if there are changes to reverse, false otherwise.
  */
 ripe.Ripe.prototype.canUndo = function() {
-    return this.partsHistory && this.partsHistory.length > 0;
+    return this.partsHistoryPointer > -1;
+};
+
+/**
+ * Indicates if there are part changes to redo.
+ *
+ * @returns {boolean} True if there are changes to reapply, false otherwise.
+ */
+ripe.Ripe.prototype.canRedo = function() {
+    return (this.partsHistory.length - 1) > this.partsHistoryPointer;
 };
 
 ripe.Ripe.prototype.addPlugin = function(plugin) {
