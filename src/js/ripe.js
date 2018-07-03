@@ -286,7 +286,9 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.bind("pre_parts", function(parts, options) {
         if (options && ["undo", "redo"].indexOf(options.action) > -1) {
             return;
-        } else if (this.parts && Object.keys(this.parts).length) {
+        }
+
+        if (this.parts && Object.keys(this.parts).length) {
             this.partsHistory = this.partsHistory.slice(0, this.partsHistoryPointer);
             this.partsHistory.push(this.parts);
             this.partsHistoryPointer = this.partsHistory.length - 1;
