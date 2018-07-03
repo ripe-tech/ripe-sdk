@@ -992,14 +992,20 @@ if (typeof require !== "undefined") {
 
 ripe.Ripe.plugins = ripe.Ripe.plugins || {};
 
-ripe.Ripe.plugins.Plugin = function() {};
+ripe.Ripe.plugins.Plugin = function() {
+    ripe.Observable.call(this);
+};
+
+ripe.assign(ripe.Ripe.plugins.Plugin.prototype, ripe.Observable.prototype);
 
 ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
     this.owner = owner;
+    ripe.Observable.prototype.init.call(this);
 };
 
 ripe.Ripe.plugins.Plugin.prototype.unregister = function(owner) {
     this.owner = null;
+    ripe.Observable.prototype.deinit.call(this);
 };
 
 if (typeof module !== "undefined") {
@@ -1016,6 +1022,7 @@ if (typeof require !== "undefined") {
 }
 
 ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
+    ripe.Ripe.plugins.Plugin.call(this);
     options = options || {};
     this.token = options.token || ":";
     this.restrictions = restrictions;
@@ -1067,11 +1074,10 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(name, value) {
-    // creates an array with the customization. If a new
-    // part is set it is added at the end so that it has
-    // priority when solving the restrictions
-    var partsOptions = ripe.clone(this.partsOptions);
+    // creates an array with the customization, by copying the
+    // current parts environment into a separate array
     var customization = [];
+    var partsOptions = ripe.clone(this.partsOptions);
     for (var partName in this.owner.parts) {
         if (name !== undefined && name === partName) {
             continue;
@@ -1083,21 +1089,53 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
             color: part.color
         });
     }
-    name !== undefined &&
-        customization.push({
-            name: name,
-            material: value.material,
-            color: value.color
-        });
+
+    // if a new part is set it is added at the end so that it
+    // has higher priority when solving the restrictions
+    var partSet =
+        name !== undefined
+            ? {
+                  name: name,
+                  material: value.material,
+                  color: value.color
+              }
+            : null;
+    name !== undefined && customization.push(partSet);
 
     // obtains the new parts and mutates the original
     // parts map to apply the necessary changes
     var newParts = this._solveRestrictions(partsOptions, this.restrictionsMap, customization);
+
+    var changes = [];
+
     for (var index = 0; index < newParts.length; index++) {
         var newPart = newParts[index];
-        this.owner.parts[newPart.name].material = newPart.material;
-        this.owner.parts[newPart.name].color = newPart.color;
+        var oldPart = this.owner.parts[newPart.name];
+
+        // if a change was made due to the restrictions
+        // then adds it to the changes array
+        if (oldPart.material !== newPart.material || oldPart.color !== newPart.color) {
+            changes.push({
+                from: {
+                    part: newPart.name,
+                    material: oldPart.material,
+                    color: oldPart.color
+                },
+                to: {
+                    part: newPart.name,
+                    material: newPart.material,
+                    color: newPart.color
+                }
+            });
+        }
+
+        oldPart.material = newPart.material;
+        oldPart.color = newPart.color;
     }
+
+    // triggers the restrictions event with the set of changes in the
+    // domain and the possible part set that triggered those changes
+    this.trigger("restrictions", changes, partSet);
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
@@ -2716,7 +2754,7 @@ ripe.Image.prototype.update = function(state) {
 };
 
 ripe.Image.prototype.deinit = function() {
-    this._observer && this._observer.disconnect();
+    this._unregisterHandlers();
     this._observer = null;
     this.initialsBuilder = null;
 
@@ -2753,4 +2791,9 @@ ripe.Image.prototype._registerHandlers = function() {
             attributes: true,
             subtree: false
         });
+};
+
+ripe.Image.prototype._unregisterHandlers = function() {
+    this.element.removeEventListener("load", this.loadListener);
+    this._observer && this._observer.disconnect();
 };

@@ -75,7 +75,7 @@ ripe.Image.prototype.update = function(state) {
 };
 
 ripe.Image.prototype.deinit = function() {
-    this._observer && this._observer.disconnect();
+    this._unregisterHandlers();
     this._observer = null;
     this.initialsBuilder = null;
 
@@ -112,4 +112,9 @@ ripe.Image.prototype._registerHandlers = function() {
             attributes: true,
             subtree: false
         });
+};
+
+ripe.Image.prototype._unregisterHandlers = function() {
+    this.element.removeEventListener("load", this.loadListener);
+    this._observer && this._observer.disconnect();
 };
