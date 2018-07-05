@@ -292,14 +292,14 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
             return;
         }
 
-        if (ripe.equal(this.parts, this.partsHistory[this.partsHistoryPointer])) {
+        if (ripe.equal(this.parts, this.history[this.historyPointer])) {
             return;
         }
 
         var _parts = ripe.clone(this.parts);
-        this.partsHistory = this.partsHistory.slice(0, this.partsHistoryPointer + 1);
-        this.partsHistory.push(_parts);
-        this.partsHistoryPointer = this.partsHistory.length - 1;
+        this.history = this.history.slice(0, this.historyPointer + 1);
+        this.history.push(_parts);
+        this.historyPointer = this.history.length - 1;
     });
 };
 
@@ -356,8 +356,8 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
         this,
         function(result) {
             result = result || this.parts;
-            this.partsHistory = [];
-            this.partsHistoryPointer = -1;
+            this.history = [];
+            this.historyPointer = -1;
             if (this.ready === false) {
                 this.ready = true;
                 this.trigger("ready");
@@ -543,8 +543,8 @@ ripe.Ripe.prototype.undo = function() {
         return;
     }
 
-    this.partsHistoryPointer -= 1;
-    var parts = this.partsHistory[this.partsHistoryPointer];
+    this.historyPointer -= 1;
+    var parts = this.history[this.historyPointer];
     parts && this.setParts(parts, false, { action: "undo" });
 };
 
@@ -559,8 +559,8 @@ ripe.Ripe.prototype.redo = function() {
         return;
     }
 
-    this.partsHistoryPointer += 1;
-    var parts = this.partsHistory[this.partsHistoryPointer];
+    this.historyPointer += 1;
+    var parts = this.history[this.historyPointer];
     parts && this.setParts(parts, false, { action: "redo" });
 };
 
@@ -571,7 +571,7 @@ ripe.Ripe.prototype.redo = function() {
  * current parts history stack.
  */
 ripe.Ripe.prototype.canUndo = function() {
-    return this.partsHistoryPointer > 0;
+    return this.historyPointer > 0;
 };
 
 /**
@@ -581,7 +581,7 @@ ripe.Ripe.prototype.canUndo = function() {
  * in the history stack.
  */
 ripe.Ripe.prototype.canRedo = function() {
-    return this.partsHistory.length - 1 > this.partsHistoryPointer;
+    return this.history.length - 1 > this.historyPointer;
 };
 
 ripe.Ripe.prototype.addPlugin = function(plugin) {
