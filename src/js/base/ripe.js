@@ -39,15 +39,17 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // listens for the pre parts event and saves the current
     // configuration for the undo operation
     this.bind("pre_parts", function(parts, options) {
-        if (options && ["undo", "redo"].indexOf(options.action) > -1) {
+        if (options && ["undo", "redo"].indexOf(options.action) !== -1) {
             return;
         }
 
-        if (this.parts && Object.keys(this.parts).length) {
-            this.partsHistory = this.partsHistory.slice(0, this.partsHistoryPointer);
-            this.partsHistory.push(this.parts);
-            this.partsHistoryPointer = this.partsHistory.length - 1;
+        if (!this.parts || !Object.keys(this.parts).length) {
+            return;
         }
+
+        this.partsHistory = this.partsHistory.slice(0, this.partsHistoryPointer + 1);
+        this.partsHistory.push(this.parts);
+        this.partsHistoryPointer = this.partsHistory.length - 1;
     });
 };
 
@@ -298,11 +300,15 @@ ripe.Ripe.prototype.undo = function() {
 
 /**
  * Reapplies the last change to the parts that was undone.
+ * Notice that if there's a change when the history pointer
+ * is in the middle of the stack the complete stack forward
+ * is removed (history re-written).
  */
 ripe.Ripe.prototype.redo = function() {
     if (!this.canRedo()) {
         return;
     }
+
     this.partsHistoryPointer += 1;
     var parts = this.partsHistory[this.partsHistoryPointer];
     parts && this.setParts(parts, { action: "redo" });
@@ -311,7 +317,8 @@ ripe.Ripe.prototype.redo = function() {
 /**
  * Indicates if there are part changes to undo.
  *
- * @returns {boolean} True if there are changes to reverse, false otherwise.
+ * @returns {boolean} If there are changes to reverse in the
+ * current parts history stack.
  */
 ripe.Ripe.prototype.canUndo = function() {
     return this.partsHistoryPointer > -1;
@@ -320,7 +327,8 @@ ripe.Ripe.prototype.canUndo = function() {
 /**
  * Indicates if there are part changes to redo.
  *
- * @returns {boolean} True if there are changes to reapply, false otherwise.
+ * @returns {boolean} If there are changes to reapply pending
+ * in the history stack.
  */
 ripe.Ripe.prototype.canRedo = function() {
     return this.partsHistory.length - 1 > this.partsHistoryPointer;

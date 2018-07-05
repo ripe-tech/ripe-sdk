@@ -294,4 +294,16 @@ window.onload = function() {
     ripe.bind("ready", function() {
         init(ripe);
     });
+
+    // registers for the key down event on the global document element
+    // to listen to some of the key strokes (global operations)
+    document.addEventListener("keydown", function(event) {
+        if (event.ctrlKey && event.keyCode === 90) {
+            ripe.undo();
+        }
+
+        if (event.ctrlKey && event.keyCode === 89) {
+            ripe.redo();
+        }
+    });
 };
