@@ -81,7 +81,7 @@ describe("Ripe", function() {
 
             assert.deepStrictEqual(instance.parts, initialParts);
 
-            assert.equal(instance.parts.front.color, "white");
+            assert.equal(instance.parts.front.material, "nappa");
             assert.equal(instance.parts.front.color, "white");
 
             instance.setPart("front", "suede", "black");
@@ -95,12 +95,16 @@ describe("Ripe", function() {
             instance.undo();
 
             assert.deepStrictEqual(instance.parts, initialParts);
+            assert.equal(instance.parts.front.material, "nappa");
+            assert.equal(instance.parts.front.color, "white");
             assert.equal(instance.canUndo(), false);
             assert.equal(instance.canRedo(), true);
 
             instance.redo();
 
             assert.deepStrictEqual(instance.parts, changedParts);
+            assert.equal(instance.parts.front.material, "suede");
+            assert.equal(instance.parts.front.color, "black");
             assert.equal(instance.canUndo(), true);
             assert.equal(instance.canRedo(), false);
 
