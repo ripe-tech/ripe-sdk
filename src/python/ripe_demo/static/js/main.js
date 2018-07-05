@@ -72,10 +72,25 @@ window.onload = function() {
         return faces.length > 0 ? faces[0] : null;
     };
 
-    var init = function() {
-        initHeader();
-        initConfigurator();
-        initInitials();
+    var init = function(instance) {
+        initBase(instance);
+        initHeader(instance);
+        initConfigurator(instance);
+        initInitials(instance);
+    };
+
+    var initBase = function() {
+        // registers for the key down event on the global document element
+        // to listen to some of the key strokes (global operations)
+        document.addEventListener("keydown", function(event) {
+            if (event.ctrlKey && event.keyCode === 90) {
+                ripe.undo();
+            }
+
+            if (event.ctrlKey && event.keyCode === 89) {
+                ripe.redo();
+            }
+        });
     };
 
     var initHeader = function() {
@@ -293,17 +308,5 @@ window.onload = function() {
     ripe.load();
     ripe.bind("ready", function() {
         init(ripe);
-    });
-
-    // registers for the key down event on the global document element
-    // to listen to some of the key strokes (global operations)
-    document.addEventListener("keydown", function(event) {
-        if (event.ctrlKey && event.keyCode === 90) {
-            ripe.undo();
-        }
-
-        if (event.ctrlKey && event.keyCode === 89) {
-            ripe.redo();
-        }
     });
 };
