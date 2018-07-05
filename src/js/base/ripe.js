@@ -36,9 +36,9 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
 
     this.ready = hasParts;
 
-    // listens for the pre parts event and saves the current
+    // listens for the post parts event and saves the current
     // configuration for the undo operation
-    this.bind("pre_parts", function(parts, options) {
+    this.bind("post_parts", function(parts, options) {
         if (options && ["undo", "redo"].indexOf(options.action) !== -1) {
             return;
         }
@@ -47,8 +47,13 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
             return;
         }
 
+        if (ripe.equal(this.parts, this.partsHistory[this.partsHistoryPointer])) {
+            return;
+        }
+
+        var _parts = ripe.clone(this.parts);
         this.partsHistory = this.partsHistory.slice(0, this.partsHistoryPointer + 1);
-        this.partsHistory.push(this.parts);
+        this.partsHistory.push(_parts);
         this.partsHistoryPointer = this.partsHistory.length - 1;
     });
 };
@@ -295,7 +300,7 @@ ripe.Ripe.prototype.undo = function() {
 
     this.partsHistoryPointer -= 1;
     var parts = this.partsHistory[this.partsHistoryPointer];
-    parts && this.setParts(parts, { action: "undo" });
+    parts && this.setParts(parts, false, { action: "undo" });
 };
 
 /**
@@ -311,7 +316,7 @@ ripe.Ripe.prototype.redo = function() {
 
     this.partsHistoryPointer += 1;
     var parts = this.partsHistory[this.partsHistoryPointer];
-    parts && this.setParts(parts, { action: "redo" });
+    parts && this.setParts(parts, false, { action: "redo" });
 };
 
 /**
@@ -321,7 +326,7 @@ ripe.Ripe.prototype.redo = function() {
  * current parts history stack.
  */
 ripe.Ripe.prototype.canUndo = function() {
-    return this.partsHistoryPointer > -1;
+    return this.partsHistoryPointer > 0;
 };
 
 /**

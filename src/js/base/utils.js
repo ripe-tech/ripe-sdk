@@ -90,3 +90,12 @@ ripe.clone = function(object) {
     var objectS = JSON.stringify(object);
     return JSON.parse(objectS);
 };
+
+ripe.equal = function(first, second) {
+    if (first === second) {
+        return true;
+    }
+    var firstS = JSON.stringify(first);
+    var secondS = JSON.stringify(second);
+    return firstS === secondS;
+};
