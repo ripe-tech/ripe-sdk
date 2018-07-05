@@ -191,19 +191,12 @@ ripe.Ripe.prototype.setParts = function(update, noUpdate, options) {
         update = this._partsList(update);
     }
 
-    if (!noUpdate) {
-        this.trigger("pre_parts", this.parts, options);
-    }
-
-    for (var index = 0; index < update.length; index++) {
-        var part = update[index];
-        this._setPart(part[0], part[1], part[2]);
-    }
-
     if (noUpdate) {
-        return;
+        return this._setParts(update);
     }
 
+    this.trigger("pre_parts", this.parts, options);
+    this._setParts(update);
     this.update();
     this.trigger("parts", this.parts, options);
     this.trigger("post_parts", this.parts, options);
@@ -365,6 +358,13 @@ ripe.Ripe.prototype._setPart = function(part, material, color) {
     this.trigger("pre_part", part, value);
     this.trigger("part", part, value);
     this.trigger("post_part", part, value);
+};
+
+ripe.Ripe.prototype._setParts = function(update) {
+    for (var index = 0; index < update.length; index++) {
+        var part = update[index];
+        this._setPart(part[0], part[1], part[2]);
+    }
 };
 
 ripe.Ripe.prototype._partsList = function(parts) {
