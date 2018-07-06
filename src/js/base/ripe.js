@@ -24,6 +24,8 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.historyPointer = -1;
     this.ready = false;
 
+    // extends the default options with the ones provided by the
+    // developer upon this initializer call
     options = ripe.assign(
         {
             options: false
