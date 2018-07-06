@@ -20,6 +20,8 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.engraving = null;
     this.children = this.children || [];
     this.plugins = this.plugins || [];
+    this.history = [];
+    this.historyPointer = -1;
     this.ready = false;
 
     options = ripe.assign(
@@ -86,6 +88,11 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     this.brand = brand;
     this.model = model;
 
+    // resets the history related values as the current
+    // model has changed and no previous history is possible
+    this.history = [];
+    this.historyPointer = -1;
+
     // sets the new options using the current options
     // as default values and sets the update flag to
     // true if it is not set
@@ -111,8 +118,6 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
         this,
         function(result) {
             result = result || this.parts;
-            this.history = [];
-            this.historyPointer = -1;
             if (this.ready === false) {
                 this.ready = true;
                 this.trigger("ready");
