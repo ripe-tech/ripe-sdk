@@ -265,6 +265,8 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.engraving = null;
     this.children = this.children || [];
     this.plugins = this.plugins || [];
+    this.history = [];
+    this.historyPointer = -1;
     this.ready = false;
 
     options = ripe.assign(
