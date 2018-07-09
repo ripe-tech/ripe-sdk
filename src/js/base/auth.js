@@ -7,6 +7,13 @@ if (typeof require !== "undefined") {
 }
 
 ripe.Ripe.prototype.auth = function(username, password, callback) {
-    //@todo implement the auth logic here with the proper sid
-    // this.sid = sdasd;
+    this.signin(
+        username,
+        password,
+        function(result) {
+            this.sid = result.sid;
+            this.trigger("auth");
+            callback && callback(result);
+        }.bind(this)
+    );
 };

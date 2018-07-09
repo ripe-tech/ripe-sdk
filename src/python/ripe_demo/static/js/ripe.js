@@ -759,6 +759,14 @@ ripe.RipeAPI = function(options) {
     return new ripe.Ripe(null, null, options);
 };
 
+ripe.Ripe.prototype.signin = function(username, password, callback) {
+    var query = "username=" + username + "&password=" + password;
+    var fullUrl = this.url + "signin?" + query;
+    return this._cacheURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
