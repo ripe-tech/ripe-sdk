@@ -1068,6 +1068,28 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     return this.url + "mask?" + query;
 };
 
+ripe.Ripe.prototype._buildQuery = function(params) {
+    var key;
+    var value;
+    var buffer = [];
+
+    if (Array.isArray(params)) {
+        for (var index = 0; index < params.length; index++) {
+            var tuple = params[index];
+            key = tuple[0];
+            value = tuple.length > 1 ? tuple[1] : "";
+            buffer.push(key + "=" + value);
+        }
+    } else {
+        for (key in params) {
+            value = params[key];
+            buffer.push(key + "=" + value);
+        }
+    }
+
+    return buffer.join("&");
+};
+
 if (typeof require !== "undefined") {
     // eslint-disable-next-line no-redeclare
     var base = require("../base");

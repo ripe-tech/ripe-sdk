@@ -56,4 +56,40 @@ describe("RipeAPI", function() {
             assert.notEqual(result.length, 0);
         });
     });
+
+    describe("#_buildQuery", function() {
+        it("should correctly generate a query string from array", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._buildQuery([["hello", "world"]]);
+
+            assert.equal(result, "hello=world");
+        });
+
+        it("should correctly generate a query string from object", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._buildQuery({
+                hello: "world"
+            });
+
+            assert.equal(result, "hello=world");
+        });
+
+        it("should correctly generate a query string from a complex array", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._buildQuery([
+                ["hello", "world"],
+                ["hello", "world2"],
+                ["world", "hello"],
+                ["world", "hello2"]
+            ]);
+
+            assert.equal(result, "hello=world&hello=world2&world=hello&world=hello2");
+        });
+    });
 });
