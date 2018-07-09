@@ -6,12 +6,17 @@ describe("API", function() {
     this.timeout(config.TEST_TIMEOUT);
 
     describe("#getSizes", function() {
-        it("should be able to retrieve sizes", () => {
+        it("should be able to retrieve sizes", async () => {
+            let result = null;
+
             const remote = ripe.RipeAPI();
 
-            // @todo must create a promise around this
-            // and await for this
-            remote.getSizes();
+            result = await new Promise((resolve, reject) => {
+                remote.getSizes(resolve);
+            });
+
+            assert.deepEqual(result.fr, ["female"]);
+            assert.deepEqual(result.uk, ["female", "male"]);
         });
     });
 });

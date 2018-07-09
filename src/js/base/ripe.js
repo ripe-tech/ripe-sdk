@@ -33,12 +33,10 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         options
     );
 
-    // in case both the brand and the model are defined tries to
-    // retrieve the remote configuration in order to properly
-    // configure some of the internal structures
-    if (brand && model && !options.noConfig) {
-        this.config(brand, model, options);
-    }
+    // runs the connfiguration operation on the current instance, using
+    // the requested parameters and options, multiple configuration
+    // operations may be executed over the object life-time
+    this.config(brand, model, options);
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
@@ -116,7 +114,7 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    var loadDefaults = !hasParts && this.useDefaults;
+    var loadDefaults = !hasParts && this.useDefaults && this.brand && this.model;
     var loadParts = loadDefaults
         ? this.getDefaults
         : function(callback) {
@@ -148,6 +146,13 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
 };
 
 ripe.Ripe.prototype.remote = function() {
+    // makes sure that both the brand and the model values are defined
+    // for the current instance as they are needed for the remove operation
+    // that are going to be performed
+    if (!this.brand || !this.model) {
+        return;
+    }
+
     // tries to determine if the combinations available should be
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
