@@ -1,4 +1,5 @@
 const api = require("./api");
+const auth = require("./auth");
 const base = require("./base");
 const compat = require("./compat");
 const interactable = require("./interactable");
@@ -8,6 +9,7 @@ const ripe = require("./ripe");
 const utils = require("./utils");
 
 Object.assign(module.exports, api);
+Object.assign(module.exports, auth);
 Object.assign(module.exports, base);
 Object.assign(module.exports, compat);
 Object.assign(module.exports, interactable);
