@@ -762,9 +762,12 @@ ripe.RipeAPI = function(options) {
 ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var query = "username=" + username + "&password=" + password;
-    var fullUrl = this.url + "signin?" + query;
+    var fullUrl = this.url + "signin";
     options.method = "POST";
+    options.params = {
+        username: username,
+        password: password
+    };
     return this._cacheURL(fullUrl, options, function(result) {
         callback && callback(result);
     });
@@ -939,16 +942,41 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
 ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
+
     var context = this;
-    var request = new XMLHttpRequest();
     var method = options.method || "GET";
+    var params = options.params || {};
+    var headers = options.headers || {};
     var data = options.data || null;
+    var contentType = options.contentType || null;
+
+    var query = this._buildQuery(params);
+    var isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
+    var hasQuery = url.indexOf("?") !== -1;
+    var separator = hasQuery ? "&" : "?";
+
+    if (isEmpty || data) {
+        url += separator + query;
+    } else {
+        contentType = "application/x-www-form-urlencoded";
+    }
+
+    var request = new XMLHttpRequest();
+
     request.addEventListener("load", function() {
         var isValid = this.status === 200;
         var result = JSON.parse(this.responseText);
         callback && callback.call(context, isValid ? result : null, isValid, this);
     });
+
     request.open(method, url);
+    for (var key in headers) {
+        var value = headers[key];
+        request.setRequestHeader(key, value);
+    }
+    if (contentType) {
+        request.setRequestHeader("Content-Type", contentType);
+    }
     if (data) {
         request.send(data);
     } else {
