@@ -10,6 +10,10 @@ if (typeof require !== "undefined") {
     var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
+ripe.RipeAPI = function(options) {
+    return new ripe.Ripe(null, null, options);
+};
+
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
