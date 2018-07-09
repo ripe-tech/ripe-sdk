@@ -771,6 +771,8 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
 };
 
 ripe.Ripe.prototype.getOrders = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var query = "sid=" + this.sid;
     var fullUrl = this.url + "orders?" + query;
     return this._cacheURL(fullUrl, function(result) {
