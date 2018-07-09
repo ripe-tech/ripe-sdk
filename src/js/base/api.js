@@ -19,7 +19,8 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     options = typeof options === "function" ? {} : options;
     var query = "username=" + username + "&password=" + password;
     var fullUrl = this.url + "signin?" + query;
-    return this._cacheURL(fullUrl, function(result) {
+    options.method = "POST";
+    return this._cacheURL(fullUrl, options, function(result) {
         callback && callback(result);
     });
 };
@@ -194,13 +195,18 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     var context = this;
     var request = new XMLHttpRequest();
     var method = options.method || "GET";
+    var data = options.data || null;
     request.addEventListener("load", function() {
         var isValid = this.status === 200;
         var result = JSON.parse(this.responseText);
         callback && callback.call(context, isValid ? result : null, isValid, this);
     });
     request.open(method, url);
-    request.send();
+    if (data) {
+        request.send(data);
+    } else {
+        request.send();
+    }
     return request;
 };
 
