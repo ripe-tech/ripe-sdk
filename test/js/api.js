@@ -2,7 +2,7 @@ const assert = require("assert");
 const config = require("./config");
 const ripe = require("../../src/js");
 
-describe("API", function() {
+describe("RipeAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
     describe("#getSizes", function() {
