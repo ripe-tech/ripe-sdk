@@ -14,9 +14,19 @@ ripe.RipeAPI = function(options) {
     return new ripe.Ripe(null, null, options);
 };
 
-ripe.Ripe.prototype.signin = function(username, password, callback) {
+ripe.Ripe.prototype.signin = function(username, password, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var query = "username=" + username + "&password=" + password;
     var fullUrl = this.url + "signin?" + query;
+    return this._cacheURL(fullUrl, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.getOrders = function(options, callback) {
+    var query = "sid=" + this.sid;
+    var fullUrl = this.url + "orders?" + query;
     return this._cacheURL(fullUrl, function(result) {
         callback && callback(result);
     });
@@ -65,7 +75,9 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     });
 };
 
-ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, callback) {
+ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
     var fullUrl = this.url + "sizes/size_to_native?" + query;
     return this._cacheURL(fullUrl, function(result) {
@@ -80,11 +92,15 @@ ripe.Ripe.prototype.getSizes = function(callback) {
     });
 };
 
-ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, callback) {
+ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+
     var query = "";
     var scale = null;
     var value = null;
     var gender = null;
+
     for (var index = 0; index < scales.length; index++) {
         scale = scales[index];
         value = values[index];
@@ -99,7 +115,9 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, callback) 
     });
 };
 
-ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, callback) {
+ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
     var fullUrl = this.url + "sizes/native_to_size?" + query;
     return this._cacheURL(fullUrl, function(result) {
@@ -107,11 +125,15 @@ ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, callback) {
     });
 };
 
-ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, callback) {
+ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+
     var query = "";
     var scale = null;
     var value = null;
     var gender = null;
+
     for (var index = 0; index < scales.length; index++) {
         scale = scales[index];
         value = values[index];
@@ -126,10 +148,11 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, callback) 
     });
 };
 
-ripe.Ripe.prototype._cacheURL = function(url, callback, options) {
+ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // runs the defaulting operatin on the provided options
     // optional parameter (ensures valid object there)
-    options = options || {};
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
 
     // builds the (base) key value fro the provided value
     // from options or used the default one
@@ -155,6 +178,7 @@ ripe.Ripe.prototype._cacheURL = function(url, callback, options) {
     // sets the result cache key on return
     return this._requestURL(
         url,
+        options,
         function(result, isValid, request) {
             if (isValid) {
                 this._cache[fullKey] = result;
@@ -164,15 +188,18 @@ ripe.Ripe.prototype._cacheURL = function(url, callback, options) {
     );
 };
 
-ripe.Ripe.prototype._requestURL = function(url, callback) {
+ripe.Ripe.prototype._requestURL = function(url, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var context = this;
     var request = new XMLHttpRequest();
+    var method = options.method || "GET";
     request.addEventListener("load", function() {
         var isValid = this.status === 200;
         var result = JSON.parse(this.responseText);
         callback && callback.call(context, isValid ? result : null, isValid, this);
     });
-    request.open("GET", url);
+    request.open(method, url);
     request.send();
     return request;
 };

@@ -871,7 +871,7 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, callback) 
     });
 };
 
-ripe.Ripe.prototype._cacheURL = function(url, callback, options) {
+ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // runs the defaulting operatin on the provided options
     // optional parameter (ensures valid object there)
     options = options || {};
