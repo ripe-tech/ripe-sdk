@@ -32,7 +32,13 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         },
         options
     );
-    this.config(brand, model, options);
+
+    // in case both the brand and the model are defined tries to
+    // retrieve the remote configuration in order to properly
+    // configure some of the internal structures
+    if (brand && model && !options.noConfig) {
+        this.config(brand, model, options);
+    }
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
