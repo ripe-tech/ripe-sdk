@@ -10,6 +10,10 @@ if (typeof require !== "undefined") {
     var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
+ripe.RipeAPI = function(options) {
+    return new ripe.Ripe(null, null, options);
+};
+
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
@@ -136,12 +140,12 @@ ripe.Ripe.prototype._cacheURL = function(url, callback, options) {
     // retrieves it and calls the callback with the value
     if (this._cache[fullKey] !== undefined && !options.force) {
         callback && callback(this._cache[fullKey]);
-        return;
+        return null;
     }
 
     // otherwise runs the "normal" request URL call and
     // sets the result cache key on return
-    this._requestURL(
+    return this._requestURL(
         url,
         function(result, isValid, request) {
             if (isValid) {

@@ -8,3 +8,4 @@ Object.assign(module.exports, visual);
 
 module.exports.VERSION = "__VERSION__";
 module.exports.Ripe = base.ripe.Ripe;
+module.exports.RipeAPI = base.ripe.RipeAPI;
