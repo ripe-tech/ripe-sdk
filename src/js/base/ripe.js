@@ -13,6 +13,10 @@ ripe.Ripe = function(brand, model, options) {
 
 ripe.Ripe.prototype = Object.create(ripe.Observable.prototype);
 
+ripe.RipeBase = function(brand, model, options) {
+    return new ripe.Ripe(brand, model, options);
+};
+
 ripe.Ripe.prototype.init = function(brand, model, options) {
     // sets the various values in the instance taking into
     // account the default values
