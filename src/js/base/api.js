@@ -38,6 +38,16 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
     });
 };
 
+ripe.Ripe.prototype.getOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+    var query = "sid=" + this.sid;
+    var url = this.url + "orders/" + String(number) + "?" + query;
+    return this._cacheURL(url, function(result) {
+        callback && callback(result);
+    });
+};
+
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;

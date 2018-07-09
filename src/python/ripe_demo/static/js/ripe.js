@@ -762,13 +762,13 @@ ripe.RipeAPI = function(options) {
 ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var fullUrl = this.url + "signin";
+    var url = this.url + "signin";
     options.method = "POST";
     options.params = {
         username: username,
         password: password
     };
-    return this._cacheURL(fullUrl, options, function(result) {
+    return this._cacheURL(url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -777,8 +777,18 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     var query = "sid=" + this.sid;
-    var fullUrl = this.url + "orders?" + query;
-    return this._cacheURL(fullUrl, function(result) {
+    var url = this.url + "orders?" + query;
+    return this._cacheURL(url, function(result) {
+        callback && callback(result);
+    });
+};
+
+ripe.Ripe.prototype.getOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+    var query = "sid=" + this.sid;
+    var url = this.url + "orders/" + String(number) + "?" + query;
+    return this._cacheURL(url, function(result) {
         callback && callback(result);
     });
 };
@@ -830,15 +840,15 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
-    var fullUrl = this.url + "sizes/size_to_native?" + query;
-    return this._cacheURL(fullUrl, function(result) {
+    var url = this.url + "sizes/size_to_native?" + query;
+    return this._cacheURL(url, function(result) {
         callback && callback(result);
     });
 };
 
 ripe.Ripe.prototype.getSizes = function(callback) {
-    var fullUrl = this.url + "sizes";
-    return this._cacheURL(fullUrl, function(result) {
+    var url = this.url + "sizes";
+    return this._cacheURL(url, function(result) {
         callback && callback(result);
     });
 };
@@ -860,8 +870,8 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
         query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
     }
 
-    var fullUrl = this.url + "sizes/size_to_native_b?" + query;
-    return this._cacheURL(fullUrl, function(result) {
+    var url = this.url + "sizes/size_to_native_b?" + query;
+    return this._cacheURL(url, function(result) {
         callback && callback(result);
     });
 };
@@ -870,8 +880,8 @@ ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callb
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
-    var fullUrl = this.url + "sizes/native_to_size?" + query;
-    return this._cacheURL(fullUrl, function(result) {
+    var url = this.url + "sizes/native_to_size?" + query;
+    return this._cacheURL(url, function(result) {
         callback && callback(result);
     });
 };
@@ -893,8 +903,8 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
         query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
     }
 
-    var fullUrl = this.url + "sizes/native_to_size_b?" + query;
-    return this._cacheURL(fullUrl, function(result) {
+    var url = this.url + "sizes/native_to_size_b?" + query;
+    return this._cacheURL(url, function(result) {
         callback && callback(result);
     });
 };
@@ -958,6 +968,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     if (isEmpty || data) {
         url += separator + query;
     } else {
+        data = query;
         contentType = "application/x-www-form-urlencoded";
     }
 
@@ -1027,11 +1038,11 @@ ripe.Ripe.prototype._getConfigURL = function(brand, model, variant) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
-    var fullUrl = this.url + "brands/" + brand + "/models/" + model + "/config";
+    var url = this.url + "brands/" + brand + "/models/" + model + "/config";
     if (variant) {
-        fullUrl += "?variant=" + variant;
+        url += "?variant=" + variant;
     }
-    return fullUrl;
+    return url;
 };
 
 ripe.Ripe.prototype._getPriceURL = function(options) {
@@ -1043,9 +1054,9 @@ ripe.Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
-    var fullUrl = this.url + "brands/" + brand + "/models/" + model + "/defaults";
-    fullUrl += variant ? "?variant=" + variant : "";
-    return fullUrl;
+    var url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
+    url += variant ? "?variant=" + variant : "";
+    return url;
 };
 
 ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {

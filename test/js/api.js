@@ -57,6 +57,28 @@ describe("RipeAPI", function() {
         });
     });
 
+    describe("#getOrder", function() {
+        it("should be able to retrieve an order information", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await new Promise((resolve, reject) => {
+                remote.auth("root", "root", resolve);
+            });
+
+            assert.equal(result.username, "root");
+            assert.notEqual(typeof result.sid, undefined);
+
+            result = await new Promise((resolve, reject) => {
+                remote.getOrder(853, resolve);
+            });
+
+            assert.equal(result.number, 853);
+            assert.equal(result.number_s, "#000853");
+        });
+    });
+
     describe("#_buildQuery", function() {
         it("should correctly generate a query string from array", async () => {
             let result = null;
