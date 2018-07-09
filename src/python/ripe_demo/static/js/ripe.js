@@ -258,6 +258,10 @@ ripe.Ripe = function(brand, model, options) {
 
 ripe.Ripe.prototype = Object.create(ripe.Observable.prototype);
 
+ripe.RipeBase = function(brand, model, options) {
+    return new ripe.Ripe(brand, model, options);
+};
+
 ripe.Ripe.prototype.init = function(brand, model, options) {
     // sets the various values in the instance taking into
     // account the default values
@@ -282,12 +286,6 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // the requested parameters and options, multiple configuration
     // operations may be executed over the object life-time
     this.config(brand, model, options);
-
-    // determines if the defaults for the selected model should
-    // be loaded so that the parts structure is initially populated
-    var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-
-    this.ready = hasParts;
 
     // listens for the post parts event and saves the current
     // configuration for the undo operation

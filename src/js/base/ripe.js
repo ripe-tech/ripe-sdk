@@ -42,12 +42,6 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // operations may be executed over the object life-time
     this.config(brand, model, options);
 
-    // determines if the defaults for the selected model should
-    // be loaded so that the parts structure is initially populated
-    var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-
-    this.ready = hasParts;
-
     // listens for the post parts event and saves the current
     // configuration for the undo operation
     this.bind("post_parts", function(parts, options) {
