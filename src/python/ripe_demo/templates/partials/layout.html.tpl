@@ -25,7 +25,8 @@
     <body class="{% block body_class %}ux wait-load{% endblock %}" data-url="{{ url|default('', True) }}"
              data-brand="{{ brand|default('', True) }}" data-model="{{ model|default('', True) }}"
              data-variant="{{ variant|default('', True) }}" data-country="{{ country|default('', True) }}"
-             data-currency="{{ currency|default('', True) }}" data-mode="{{ mode|default('full', True) }}">
+             data-currency="{{ currency|default('', True) }}" data-mode="{{ mode|default('full', True) }}"
+             data-client_id="{{ client_id|default('', True) }}" data-client_secret="{{ client_secret|default('', True) }}">
         <div id="header" class="header">
             {% block header %}
                 <div class="header-container">
