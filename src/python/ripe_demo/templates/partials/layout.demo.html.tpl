@@ -9,8 +9,9 @@
         <li id="get-combinations">Get Combinations</li>
     </ul>
     <ul class="oauth">
+        <li id="oauth-operation">Get Orders</li>
         <li id="oauth-login">OAuth Login</li>
-        <li id="oauth-operation">OAuth Operation</li>
+        <li id="oauth-logout">OAuth Logout</li>
     </ul>
     <div id="price" class="price"></div>
     {% if message %}

@@ -157,6 +157,7 @@ window.onload = function() {
 
     var initOAuth = function() {
         var oauthLogin = document.getElementById("oauth-login");
+        var oauthLogout = document.getElementById("oauth-logout");
         var oauthOperation = document.getElementById("oauth-operation");
 
         oauthLogin &&
@@ -171,6 +172,7 @@ window.onload = function() {
                     },
                     function() {
                         oauthLogin.style.display = "none";
+                        oauthLogout.style.display = "block";
                         oauthOperation.style.display = "block";
                     }
                 );
@@ -179,16 +181,18 @@ window.onload = function() {
         oauthOperation &&
             oauthOperation.addEventListener("click", function() {
                 ripe.getOrders(function(result) {
-                    console.info(result);
+                    alert("Retrieved " + String(result.length) + " orders");
                 });
             });
 
         if (ripe.isOAuth() && !ripe.isAuth()) {
             ripe.oauth();
             oauthLogin.style.display = "none";
+            oauthLogout.style.display = "block";
             oauthOperation.style.display = "block";
         } else {
             oauthLogin.style.display = "block";
+            oauthLogout.style.display = "none";
             oauthOperation.style.display = "none";
         }
     };
