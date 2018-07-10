@@ -309,6 +309,4 @@ window.onload = function() {
     ripe.bind("ready", function() {
         init(ripe);
     });
-
-    ripe.oauth();
 };

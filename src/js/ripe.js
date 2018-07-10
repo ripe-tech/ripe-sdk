@@ -774,10 +774,27 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     });
 };
 
+ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+    var url = this.webUrl + "admin/oauth/access_token"; //@todo change this
+    options.method = "POST";
+    options.params = {
+        code: code,
+        client_id: options.clientId || this.clientId,
+        client_secret: options.clientSecret || this.clientSecret,
+        redirect_uri: options.redirectUri || this.redirectUri,
+        grant_type: options.grantType || this.grantType || "authorization_code"
+    };
+    return this._cacheURL(url, options, function(result) {
+        callback && callback(result);
+    });
+};
+
 ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var url = this.url + "oauth/login";
+    var url = this.webUrl + "admin/oauth/login"; //@todo change this
     options.method = "POST";
     options.params = {
         access_token: accessToken
@@ -1147,6 +1164,28 @@ ripe.Ripe.prototype._buildQuery = function(params) {
     return buffer.join("&");
 };
 
+ripe.Ripe.prototype._unpackQuery = function(query) {
+    query = query[0] === "?" ? query.slice(1) : query;
+
+    var parts = query.split("&");
+    var options = {};
+
+    for (var index = 0; index < parts.length; index++) {
+        var part = parts[index];
+
+        if (part.indexOf("=") === -1) {
+            options[decodeURIComponent(part).trim()] = true;
+        } else {
+            var tuple = part.split("=");
+            var key = decodeURIComponent(tuple[0]).trim();
+            var value = decodeURIComponent(tuple[1]).trim();
+            options[key] = value;
+        }
+    }
+
+    return options;
+};
+
 if (typeof require !== "undefined") {
     // eslint-disable-next-line no-redeclare
     var base = require("./base");
@@ -1171,18 +1210,46 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
     );
 };
 
+ripe.Ripe.prototype.auth = function(username, password, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+
+    this.signin(
+        username,
+        password,
+        options,
+        function(result) {
+            this.sid = result.sid;
+            this.trigger("auth");
+            callback && callback(result);
+        }.bind(this)
+    );
+};
+
 ripe.Ripe.prototype.oauth = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
+    options = options || {};
 
     if (!window.localStorage) {
         throw new Error("No support for localStorage available");
     }
 
+    if (options.force) {
+        localStorage.removeItem("oauth_token");
+    }
+
+    var clientId;
+    var clientSecret;
+    var redirectUri;
+
+    var query = window.location.search || "";
+    var unpacked = this._unpackQuery(query);
+
     var oauthToken = localStorage.getItem("oauth_token");
 
     if (oauthToken) {
-        this.oauthLogin(
+        return this.oauthLogin(
             oauthToken,
             options,
             function(result) {
@@ -1191,21 +1258,51 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
                 callback && callback(result);
             }.bind(this)
         );
-    } else {
-        var url = this.webUrl + "admin/oauth/authorize";
-
-        var params = {
-            client_id: options.clientId || this.clientId,
-            redirect_uri: options.redirectUri || document.location,
-            response_type: options.responseType || "code",
-            scope: (options.scope || []).join(" ")
-        };
-
-        var data = this._buildQuery(params);
-        url = url + "?" + data;
-
-        document.location = url;
     }
+
+    if (unpacked.code) {
+        clientId = options.clientId || localStorage.getItem("oauth_client_id");
+        clientSecret = options.clientSecret || localStorage.getItem("oauth_client_secret");
+        redirectUri = options.redirectUri || localStorage.getItem("oauth_redirect_uri");
+        return this.oauthAccessToken(
+            unpacked.code,
+            {
+                clientId: clientId,
+                clientSecret: clientSecret,
+                redirectUri: redirectUri
+            },
+            function(result) {
+                localStorage.setItem("oauth_token", result.access_token);
+                this.oauth(callback);
+            }.bind(this)
+        );
+    }
+
+    var location = window.location;
+    var currentUrl =
+        location.protocol + "//" + location.host + "/" + location.pathname.split("/")[1];
+
+    clientId = options.clientId || this.clientId;
+    clientSecret = options.clientSecret || this.clientSecret;
+    redirectUri = options.redirectUri || currentUrl;
+
+    localStorage.setItem("oauth_client_id", clientId);
+    localStorage.setItem("oauth_client_secret", clientSecret);
+    localStorage.setItem("oauth_redirect_uri", redirectUri);
+
+    var url = this.webUrl + "admin/oauth/authorize";
+
+    var params = {
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        response_type: options.responseType || "code",
+        scope: (options.scope || []).join(" ")
+    };
+
+    var data = this._buildQuery(params);
+    url = url + "?" + data;
+
+    document.location = url;
 };
 
 if (typeof require !== "undefined") {

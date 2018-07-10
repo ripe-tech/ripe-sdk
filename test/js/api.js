@@ -123,4 +123,15 @@ describe("RipeAPI", function() {
             assert.equal(result, "ol%C3%A1=mundo");
         });
     });
+
+    describe("#_unpackQuery", function() {
+        it("should properly unescape characters", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._unpackQuery("ol%C3%A1=mundo");
+
+            assert.deepEqual(result, { olá: "mundo" });
+        });
+    });
 });
