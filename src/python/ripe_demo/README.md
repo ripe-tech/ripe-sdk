@@ -1,4 +1,4 @@
-# [![RIPE SDK Demo](res/logo.png)](http://www.platforme.com)
+# [RIPE SDK Demo](http://www.platforme.com)
 
 ## Configuration
 
