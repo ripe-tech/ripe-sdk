@@ -824,7 +824,6 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
         auth: true
     });
     options = this._build(options);
-    console.info(options);
     return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
