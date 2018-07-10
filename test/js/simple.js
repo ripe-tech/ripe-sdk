@@ -6,6 +6,17 @@ describe("Ripe", function() {
     this.timeout(config.TEST_TIMEOUT);
 
     describe("#main", function() {
+        it("should instance correctly", async () => {
+            const instance = new ripe.Ripe("swear", "vyner");
+
+            assert.equal(instance.initials, "");
+            assert.equal(instance.engraving, null);
+            assert.deepEqual(instance.children, []);
+            assert.deepEqual(instance.plugins, []);
+            assert.deepEqual(instance.history, []);
+            assert.equal(instance.historyPointer, -1);
+            assert.equal(instance.ready, false);
+        });
         it("should instance and retrieve values", async () => {
             let result = null;
 
