@@ -75,6 +75,7 @@ window.onload = function() {
     var init = function(instance) {
         initBase(instance);
         initHeader(instance);
+        initOAuth(instance);
         initConfigurator(instance);
         initInitials(instance);
     };
@@ -152,6 +153,27 @@ window.onload = function() {
                 parts.push(triplet);
             }
         });
+    };
+
+    var initOAuth = function() {
+        var oauthLogin = document.getElementById("oauth-login");
+        oauthLogin &&
+            oauthLogin.addEventListener("click", function() {
+                ripe.oauth(
+                    {
+                        clientId: "3b74ae5840066703d34bcd23abc4b72b",
+                        clientSecret:
+                            "2c72e679cdd5fa59388f40d2612b6177b6eb905442626bfa0031ec62c2ee8957",
+                        scope: ["admin"],
+                        force: true
+                    },
+                    function() {
+                        ripe.getOrders(function(result) {
+                            console.info(result);
+                        });
+                    }
+                );
+            });
     };
 
     var initConfigurator = function() {

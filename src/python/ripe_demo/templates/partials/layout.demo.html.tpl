@@ -8,6 +8,9 @@
         <li id="get-price">Get Price</li>
         <li id="get-combinations">Get Combinations</li>
     </ul>
+    <ul class="oauth">
+        <li id="oauth-login">OAuth Login</li>
+    </ul>
     <div id="price" class="price"></div>
     {% if message %}
         <div class="input">

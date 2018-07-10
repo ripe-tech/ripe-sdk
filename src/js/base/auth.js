@@ -49,14 +49,12 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
 
     if (options.force) {
         localStorage.removeItem("oauth_token");
+        localStorage.removeItem("oauth_scope");
     }
-
-    var clientId;
-    var clientSecret;
-    var redirectUri;
 
     var query = window.location.search || "";
     var unpacked = this._unpackQuery(query);
+    var code = typeof options.code === "undefined" ? unpacked.code : options.code;
 
     var oauthToken = localStorage.getItem("oauth_token");
 
@@ -72,31 +70,52 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
         );
     }
 
-    if (unpacked.code) {
-        clientId = options.clientId || localStorage.getItem("oauth_client_id");
-        clientSecret = options.clientSecret || localStorage.getItem("oauth_client_secret");
-        redirectUri = options.redirectUri || localStorage.getItem("oauth_redirect_uri");
+    if (code) {
+        var clientId = options.clientId || localStorage.getItem("oauth_client_id");
+        var clientSecret = options.clientSecret || localStorage.getItem("oauth_client_secret");
+        var redirectUri = options.redirectUri || localStorage.getItem("oauth_redirect_uri");
+        var scope = options.scope || localStorage.getItem("oauth_scope") || [];
+
         return this.oauthAccessToken(
-            unpacked.code,
+            code,
             {
                 clientId: clientId,
                 clientSecret: clientSecret,
                 redirectUri: redirectUri
             },
             function(result) {
-                localStorage.setItem("oauth_token", result.access_token);
-                this.oauth(callback);
+                if (result) {
+                    localStorage.setItem("oauth_token", result.access_token);
+                    localStorage.setItem("oauth_scope", result.scope);
+                    this.oauth(callback);
+                } else {
+                    this.oauth(
+                        {
+                            clientId: clientId,
+                            clientSecret: clientSecret,
+                            redirectUri: redirectUri,
+                            scope: scope,
+                            code: null,
+                            force: true
+                        },
+                        callback
+                    );
+                }
             }.bind(this)
         );
     }
 
+    return this.oauthRedirect(options, callback);
+};
+
+ripe.Ripe.prototype.oauthRedirect = function(options, callback) {
     var location = window.location;
     var currentUrl =
         location.protocol + "//" + location.host + "/" + location.pathname.split("/")[1];
 
-    clientId = options.clientId || this.clientId;
-    clientSecret = options.clientSecret || this.clientSecret;
-    redirectUri = options.redirectUri || currentUrl;
+    var clientId = options.clientId || this.clientId;
+    var clientSecret = options.clientSecret || this.clientSecret;
+    var redirectUri = options.redirectUri || currentUrl;
 
     localStorage.setItem("oauth_client_id", clientId);
     localStorage.setItem("oauth_client_secret", clientSecret);
