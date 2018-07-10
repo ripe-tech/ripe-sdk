@@ -33,7 +33,15 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
     var oauthToken = localStorage.getItem("oauth_token");
 
     if (oauthToken) {
-        // @todo support the call to the oauth auth endpoint
+        this.oauthLogin(
+            oauthToken,
+            options,
+            function(result) {
+                this.sid = result.sid;
+                this.trigger("auth");
+                callback && callback(result);
+            }.bind(this)
+        );
     } else {
         var url = this.webUrl + "admin/oauth/authorize";
 
@@ -41,7 +49,7 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
             client_id: options.clientId || this.clientId,
             redirect_uri: options.redirectUri || document.location,
             response_type: options.responseType || "code",
-            scope: ["feature1", "feature2"].join(" ")
+            scope: (options.scope || []).join(" ")
         };
 
         var data = this._buildQuery(params);

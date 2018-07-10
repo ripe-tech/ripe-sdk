@@ -28,6 +28,19 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     });
 };
 
+ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+    var url = this.url + "oauth/login";
+    options.method = "POST";
+    options.params = {
+        access_token: accessToken
+    };
+    return this._cacheURL(url, options, function(result) {
+        callback && callback(result);
+    });
+};
+
 ripe.Ripe.prototype.getOrders = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;

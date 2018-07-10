@@ -774,6 +774,19 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     });
 };
 
+ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+    var url = this.url + "oauth/login";
+    options.method = "POST";
+    options.params = {
+        access_token: accessToken
+    };
+    return this._cacheURL(url, options, function(result) {
+        callback && callback(result);
+    });
+};
+
 ripe.Ripe.prototype.getOrders = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
@@ -1169,7 +1182,15 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
     var oauthToken = localStorage.getItem("oauth_token");
 
     if (oauthToken) {
-        // @todo support the call to the oauth auth endpoint
+        this.oauthLogin(
+            oauthToken,
+            options,
+            function(result) {
+                this.sid = result.sid;
+                this.trigger("auth");
+                callback && callback(result);
+            }.bind(this)
+        );
     } else {
         var url = this.webUrl + "admin/oauth/authorize";
 
@@ -1177,7 +1198,7 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
             client_id: options.clientId || this.clientId,
             redirect_uri: options.redirectUri || document.location,
             response_type: options.responseType || "code",
-            scope: ["feature1", "feature2"].join(" ")
+            scope: (options.scope || []).join(" ")
         };
 
         var data = this._buildQuery(params);
