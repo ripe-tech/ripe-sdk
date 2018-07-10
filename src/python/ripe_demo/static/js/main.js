@@ -162,20 +162,18 @@ window.onload = function() {
 
         oauthLogin &&
             oauthLogin.addEventListener("click", function() {
-                ripe.oauth(
-                    {
-                        clientId: "3b74ae5840066703d34bcd23abc4b72b",
-                        clientSecret:
-                            "2c72e679cdd5fa59388f40d2612b6177b6eb905442626bfa0031ec62c2ee8957",
-                        scope: ["admin"],
-                        force: true
-                    },
-                    function() {
-                        oauthLogin.style.display = "none";
-                        oauthLogout.style.display = "block";
-                        oauthOperation.style.display = "block";
-                    }
-                );
+                ripe.oauth({
+                    clientId: "3b74ae5840066703d34bcd23abc4b72b",
+                    clientSecret:
+                        "2c72e679cdd5fa59388f40d2612b6177b6eb905442626bfa0031ec62c2ee8957",
+                    scope: ["admin"],
+                    force: true
+                });
+            });
+
+        oauthLogout &&
+            oauthLogout.addEventListener("click", function() {
+                ripe.unauth();
             });
 
         oauthOperation &&
@@ -185,16 +183,25 @@ window.onload = function() {
                 });
             });
 
-        if (ripe.isOAuth() && !ripe.isAuth()) {
+        if (ripe.isOAuthPending()) {
             ripe.oauth();
+        }
+
+        ripe.bind("auth", function() {
             oauthLogin.style.display = "none";
             oauthLogout.style.display = "block";
             oauthOperation.style.display = "block";
-        } else {
+        });
+
+        ripe.bind("unauth", function() {
             oauthLogin.style.display = "block";
             oauthLogout.style.display = "none";
             oauthOperation.style.display = "none";
-        }
+        });
+
+        oauthLogin.style.display = "block";
+        oauthLogout.style.display = "none";
+        oauthOperation.style.display = "none";
     };
 
     var initConfigurator = function() {
