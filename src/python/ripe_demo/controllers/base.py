@@ -24,3 +24,11 @@ class BaseController(appier.Controller):
             currency = self.field("currency"),
             mode = self.field("mode", "full")
         )
+
+    @appier.route("/oauth", "GET")
+    def oauth(self):
+        return self.template(
+            "oauth.html.tpl",
+            url = self.field("url"),
+            mode = self.field("mode", "oauth")
+        )

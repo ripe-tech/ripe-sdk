@@ -168,6 +168,7 @@ ripe.Ripe.prototype.setOptions = function(options) {
     this.options = options || {};
     this.variant = this.options.variant || null;
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
+    this.webUrl = this.options.webUrl || "https://sandbox.platforme.com/";
     this.parts = this.options.parts || {};
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
