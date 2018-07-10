@@ -113,5 +113,14 @@ describe("RipeAPI", function() {
 
             assert.equal(result, "hello=world&hello=world2&world=hello&world=hello2");
         });
+
+        it("should properly escape characters", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._buildQuery([["olá", "mundo"]]);
+
+            assert.equal(result, "ol%C3%A1=mundo");
+        });
     });
 });

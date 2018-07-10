@@ -1117,11 +1117,15 @@ ripe.Ripe.prototype._buildQuery = function(params) {
             var tuple = params[index];
             key = tuple[0];
             value = tuple.length > 1 ? tuple[1] : "";
+            key = encodeURIComponent(key);
+            value = encodeURIComponent(value);
             buffer.push(key + "=" + value);
         }
     } else {
         for (key in params) {
             value = params[key];
+            key = encodeURIComponent(key);
+            value = encodeURIComponent(value);
             buffer.push(key + "=" + value);
         }
     }
