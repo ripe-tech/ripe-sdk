@@ -13,6 +13,8 @@ window.onload = function() {
     var variant = _body.dataset.variant || "";
     var currency = _body.dataset.currency || "USD";
     var country = _body.dataset.country || "US";
+    var clientId = _body.dataset.client_id || null;
+    var clientSecret = _body.dataset.client_secret || null;
 
     var parts = [];
     var partsMap = {};
@@ -163,9 +165,8 @@ window.onload = function() {
         oauthLogin &&
             oauthLogin.addEventListener("click", function() {
                 ripe.oauth({
-                    clientId: "3b74ae5840066703d34bcd23abc4b72b",
-                    clientSecret:
-                        "2c72e679cdd5fa59388f40d2612b6177b6eb905442626bfa0031ec62c2ee8957",
+                    clientId: clientId,
+                    clientSecret: clientSecret,
                     scope: ["admin"],
                     force: true
                 });
