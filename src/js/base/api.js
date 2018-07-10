@@ -31,7 +31,7 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
 ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var url = this.webUrl + "admin/oauth/access_token"; //@todo change this
+    var url = this.url + "admin/oauth/access_token";
     options.method = "POST";
     options.params = {
         code: code,
@@ -48,7 +48,7 @@ ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
 ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var url = this.webUrl + "admin/oauth/login"; //@todo change this
+    var url = this.url + "admin/oauth/login";
     options.method = "POST";
     options.params = {
         access_token: accessToken

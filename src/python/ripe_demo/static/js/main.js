@@ -157,6 +157,8 @@ window.onload = function() {
 
     var initOAuth = function() {
         var oauthLogin = document.getElementById("oauth-login");
+        var oauthOperation = document.getElementById("oauth-operation");
+
         oauthLogin &&
             oauthLogin.addEventListener("click", function() {
                 ripe.oauth(
@@ -168,12 +170,27 @@ window.onload = function() {
                         force: true
                     },
                     function() {
-                        ripe.getOrders(function(result) {
-                            console.info(result);
-                        });
+                        oauthLogin.style.display = "none";
+                        oauthOperation.style.display = "block";
                     }
                 );
             });
+
+        oauthOperation &&
+            oauthOperation.addEventListener("click", function() {
+                ripe.getOrders(function(result) {
+                    console.info(result);
+                });
+            });
+
+        if (ripe.isOAuth() && !ripe.isAuth()) {
+            ripe.oauth();
+            oauthLogin.style.display = "none";
+            oauthOperation.style.display = "block";
+        } else {
+            oauthLogin.style.display = "block";
+            oauthOperation.style.display = "none";
+        }
     };
 
     var initConfigurator = function() {

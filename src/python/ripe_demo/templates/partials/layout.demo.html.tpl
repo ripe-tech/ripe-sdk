@@ -10,6 +10,7 @@
     </ul>
     <ul class="oauth">
         <li id="oauth-login">OAuth Login</li>
+        <li id="oauth-operation">OAuth Operation</li>
     </ul>
     <div id="price" class="price"></div>
     {% if message %}

@@ -777,7 +777,7 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
 ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var url = this.webUrl + "admin/oauth/access_token"; //@todo change this
+    var url = this.url + "admin/oauth/access_token";
     options.method = "POST";
     options.params = {
         code: code,
@@ -794,7 +794,7 @@ ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
 ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var url = this.webUrl + "admin/oauth/login"; //@todo change this
+    var url = this.url + "admin/oauth/login";
     options.method = "POST";
     options.params = {
         access_token: accessToken
@@ -1194,6 +1194,22 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+ripe.Ripe.prototype.isAuth = function() {
+    return Boolean(this.sid);
+};
+
+ripe.Ripe.prototype.isOAuth = function() {
+    if (!window.localStorage) {
+        return false;
+    }
+
+    if (!localStorage.getItem("oauth_token")) {
+        return false;
+    }
+
+    return true;
+};
+
 ripe.Ripe.prototype.auth = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
@@ -1251,9 +1267,23 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
             oauthToken,
             options,
             function(result) {
-                this.sid = result.sid;
-                this.trigger("auth");
-                callback && callback(result);
+                if (result) {
+                    this.sid = result.sid;
+                    this.trigger("auth");
+                    callback && callback(result);
+                } else {
+                    this.oauth(
+                        {
+                            clientId: clientId,
+                            clientSecret: clientSecret,
+                            redirectUri: redirectUri,
+                            scope: scope,
+                            code: null,
+                            force: true
+                        },
+                        callback
+                    );
+                }
             }.bind(this)
         );
     }
