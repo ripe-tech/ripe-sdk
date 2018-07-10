@@ -18,12 +18,16 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     var url = this.url + "signin";
-    options.method = "POST";
-    options.params = {
-        username: username,
-        password: password
-    };
-    return this._cacheURL(url, options, function(result) {
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        params: {
+            username: username,
+            password: password
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -32,15 +36,19 @@ ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     var url = this.url + "admin/oauth/access_token";
-    options.method = "POST";
-    options.params = {
-        code: code,
-        client_id: options.clientId || this.clientId,
-        client_secret: options.clientSecret || this.clientSecret,
-        redirect_uri: options.redirectUri || this.redirectUri,
-        grant_type: options.grantType || this.grantType || "authorization_code"
-    };
-    return this._cacheURL(url, options, function(result) {
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        params: {
+            code: code,
+            client_id: options.clientId || this.clientId,
+            client_secret: options.clientSecret || this.clientSecret,
+            redirect_uri: options.redirectUri || this.redirectUri,
+            grant_type: options.grantType || this.grantType || "authorization_code"
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -49,11 +57,14 @@ ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     var url = this.url + "admin/oauth/login";
-    options.method = "POST";
-    options.params = {
-        access_token: accessToken
-    };
-    return this._cacheURL(url, options, function(result) {
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        params: {
+            access_token: accessToken
+        }
+    });
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -61,9 +72,14 @@ ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
 ripe.Ripe.prototype.getOrders = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var query = "sid=" + this.sid;
-    var url = this.url + "orders?" + query;
-    return this._cacheURL(url, function(result) {
+    var url = this.url + "orders";
+    options = Object.assign(options, {
+        url: url,
+        auth: true
+    });
+    options = this._build(options);
+    console.info(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -71,9 +87,13 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
 ripe.Ripe.prototype.getOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var query = "sid=" + this.sid;
-    var url = this.url + "orders/" + String(number) + "?" + query;
-    return this._cacheURL(url, function(result) {
+    var url = this.url + "orders/" + String(number);
+    options = Object.assign(options, {
+        url: url,
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -209,13 +229,17 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // assuming no request payload
     var fullKey = key + ":" + url;
 
+    // determines if the current request should be cached, obeys
+    // some of the basic rules for that behaviour
+    var cached = !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
+
     // initializes the cache object in the current instance
     // in case it does not exists already
     this._cache = this._cache === undefined ? {} : this._cache;
 
     // in case there's already a valid value in cache,
     // retrieves it and calls the callback with the value
-    if (this._cache[fullKey] !== undefined && !options.force) {
+    if (this._cache[fullKey] !== undefined && cached) {
         callback && callback(this._cache[fullKey]);
         return null;
     }
@@ -226,7 +250,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
         url,
         options,
         function(result, isValid, request) {
-            if (isValid) {
+            if (isValid && cached) {
                 this._cache[fullKey] = result;
             }
             callback && callback(result, isValid, request);
@@ -390,6 +414,21 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     }
 
     return this.url + "mask?" + query;
+};
+
+ripe.Ripe.prototype._build = function(options) {
+    var url = options.url || "";
+    var method = options.method || "GET";
+    var params = options.params || {};
+    var auth = options.auth || false;
+    if (auth) {
+        params.sid = this.sid;
+    }
+    options.url = url;
+    options.method = method;
+    options.params = params;
+    options.auth = auth;
+    return options;
 };
 
 ripe.Ripe.prototype._buildQuery = function(params) {

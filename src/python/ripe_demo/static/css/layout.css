@@ -42,6 +42,7 @@ body[data-mode*=header] .operations {
     display: block;
 }
 
+.oauth li,
 .operations li {
     border-radius: 18px 18px 18px 18px;
     -o-border-radius: 18px 18px 18px 18px;
@@ -51,6 +52,7 @@ body[data-mode*=header] .operations {
     -webkit-border-radius: 18px 18px 18px 18px;
 }
 
+.oauth li:active,
 .operations li:active {
     background-color: #e0e0e0;
 }
