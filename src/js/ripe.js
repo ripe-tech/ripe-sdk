@@ -1142,10 +1142,14 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-ripe.Ripe.prototype.auth = function(username, password, callback) {
+ripe.Ripe.prototype.auth = function(username, password, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+
     this.signin(
         username,
         password,
+        options,
         function(result) {
             this.sid = result.sid;
             this.trigger("auth");
@@ -1154,7 +1158,10 @@ ripe.Ripe.prototype.auth = function(username, password, callback) {
     );
 };
 
-ripe.Ripe.prototype.oauth = function(callback) {
+ripe.Ripe.prototype.oauth = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+
     if (!window.localStorage) {
         throw new Error("No support for localStorage available");
     }
@@ -1162,15 +1169,14 @@ ripe.Ripe.prototype.oauth = function(callback) {
     var oauthToken = localStorage.getItem("oauth_token");
 
     if (oauthToken) {
-        // @todo tentar chamar o oauth login para obter o sid
-        // como deve de ser
+        // @todo support the call to the oauth auth endpoint
     } else {
         var url = this.webUrl + "admin/oauth/authorize";
 
         var params = {
-            client_id: this.clientId,
-            redirect_uri: document.location,
-            response_type: "code",
+            client_id: options.clientId || this.clientId,
+            redirect_uri: options.redirectUri || document.location,
+            response_type: options.responseType || "code",
             scope: ["feature1", "feature2"].join(" ")
         };
 
