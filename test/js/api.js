@@ -165,10 +165,11 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
             result = remote._buildQuery({
-                hello: ["world", "world2"]
+                hello: ["world", "world2"],
+                world: ["hello", "hello2"]
             });
 
-            assert.equal(result, "hello=world&hello=world2");
+            assert.equal(result, "hello=world&hello=world2&world=hello&world=hello2");
         });
 
         it("should properly escape characters", async () => {
