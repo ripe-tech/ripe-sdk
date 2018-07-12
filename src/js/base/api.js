@@ -114,8 +114,8 @@ ripe.Ripe.prototype.getPrice = function(options, callback) {
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var defaultsURL = this._getDefaultsParams();
-    return this._cacheURL(defaultsURL, function(result) {
+    options = this._getDefaultsOptions(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback(result ? result.parts : null);
     });
 };
@@ -367,7 +367,7 @@ ripe.Ripe.prototype._getPriceURL = function(options) {
             password: password
         }
     }); */
-ripe.Ripe.prototype._getDefaultsOptions = function(brand, model, variant, options) {
+ripe.Ripe.prototype._getDefaultsOptions = function(options, brand, model, variant) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
