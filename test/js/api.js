@@ -36,6 +36,23 @@ describe("RipeAPI", function() {
         });
     });
 
+    describe("#sizeToNativeB", function() {
+        it("should be able to convert sizes in bulk", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await new Promise((resolve, reject) => {
+                remote.sizeToNativeB(["fr"], [42], ["female"], resolve);
+            });
+
+            assert.equal(result.length, 1);
+            assert.equal(result[0].scale, "fr");
+            assert.equal(result[0].value, 31);
+            assert.equal(result[0].native, 31);
+        });
+    });
+
     describe("#getOrders", function() {
         it("should be able to retrieve orders", async () => {
             let result = null;

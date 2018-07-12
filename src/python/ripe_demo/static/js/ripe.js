@@ -821,6 +821,7 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
     var url = this.url + "orders";
     options = Object.assign(options, {
         url: url,
+        method: "GET",
         auth: true
     });
     options = this._build(options);
@@ -835,6 +836,7 @@ ripe.Ripe.prototype.getOrder = function(number, options, callback) {
     var url = this.url + "orders/" + String(number);
     options = Object.assign(options, {
         url: url,
+        method: "GET",
         auth: true
     });
     options = this._build(options);
@@ -890,6 +892,20 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     });
 };
 
+ripe.Ripe.prototype.getSizes = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+    var url = this.url + "sizes";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
+        callback && callback(result);
+    });
+};
+
 ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
@@ -909,39 +925,34 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
     });
 };
 
-ripe.Ripe.prototype.getSizes = function(options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
-    var url = this.url + "sizes";
-    options = Object.assign(options, {
-        url: url,
-        method: "GET"
-    });
-    options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
-};
-
 ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
 
-    var query = "";
-    var scale = null;
-    var value = null;
-    var gender = null;
+    var scalesP = [];
+    var valuesP = [];
+    var gendersP = [];
 
     for (var index = 0; index < scales.length; index++) {
-        scale = scales[index];
-        value = values[index];
-        gender = genders[index];
-        var prefix = index === 0 ? "" : "&";
-        query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
+        scalesP.push(scales[index]);
+        valuesP.push(values[index]);
+        gendersP.push(genders[index]);
     }
 
-    var url = this.url + "sizes/size_to_native_b?" + query;
-    return this._cacheURL(url, function(result) {
+    var url = this.url + "sizes/size_to_native_b";
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scales: scalesP,
+            values: valuesP,
+            genders: gendersP
+        }
+    });
+    options = this._build(options);
+
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
