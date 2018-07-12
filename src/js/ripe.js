@@ -960,9 +960,18 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
 ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
-    var url = this.url + "sizes/native_to_size?" + query;
-    return this._cacheURL(url, function(result) {
+    var url = this.url + "sizes/native_to_size";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scale: scale,
+            value: value,
+            gender: gender
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -971,21 +980,30 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
 
-    var query = "";
-    var scale = null;
-    var value = null;
-    var gender = null;
+    var scalesP = [];
+    var valuesP = [];
+    var gendersP = [];
 
     for (var index = 0; index < scales.length; index++) {
-        scale = scales[index];
-        value = values[index];
-        gender = genders[index];
-        var prefix = index === 0 ? "" : "&";
-        query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
+        scalesP.push(scales[index]);
+        valuesP.push(values[index]);
+        gendersP.push(genders[index]);
     }
 
-    var url = this.url + "sizes/native_to_size_b?" + query;
-    return this._cacheURL(url, function(result) {
+    var url = this.url + "sizes/native_to_size_b";
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scales: scalesP,
+            values: valuesP,
+            genders: gendersP
+        }
+    });
+    options = this._build(options);
+
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };

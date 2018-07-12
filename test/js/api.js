@@ -53,6 +53,35 @@ describe("RipeAPI", function() {
         });
     });
 
+    describe("#nativetoSize", function() {
+        it("should be able to convert sizes", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await new Promise((resolve, reject) => {
+                remote.nativeToSize("fr", 31, "female", resolve);
+            });
+
+            assert.equal(result.value, 42);
+        });
+    });
+
+    describe("#nativetoSizeB", function() {
+        it("should be able to convert sizes in bulk", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await new Promise((resolve, reject) => {
+                remote.nativeToSizeB(["fr"], [31], ["female"], resolve);
+            });
+
+            assert.equal(result.length, 1);
+            assert.equal(result[0].value, 42);
+        });
+    });
+
     describe("#getOrders", function() {
         it("should be able to retrieve orders", async () => {
             let result = null;
