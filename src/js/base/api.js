@@ -114,7 +114,7 @@ ripe.Ripe.prototype.getPrice = function(options, callback) {
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var defaultsURL = this._getDefaultsURL();
+    var defaultsURL = this._getDefaultsParams();
     return this._cacheURL(defaultsURL, function(result) {
         callback(result ? result.parts : null);
     });
@@ -358,13 +358,28 @@ ripe.Ripe.prototype._getPriceURL = function(options) {
     return this.url + "config/price" + "?" + query;
 };
 
-ripe.Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
+/* tenho de alterar um mapa de options e nao devolver um url */
+/* tions = Object.assign(options, {
+        url: url,
+        method: "POST",
+        params: {
+            username: username,
+            password: password
+        }
+    }); */
+ripe.Ripe.prototype._getDefaultsOptions = function(brand, model, variant, options) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
     var url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
-    url += variant ? "?variant=" + variant : "";
-    return url;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            variant: variant
+        }
+    });
+    return options;
 };
 
 ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
