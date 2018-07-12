@@ -75,6 +75,7 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
     var url = this.url + "orders";
     options = Object.assign(options, {
         url: url,
+        method: "GET",
         auth: true
     });
     options = this._build(options);
@@ -89,6 +90,7 @@ ripe.Ripe.prototype.getOrder = function(number, options, callback) {
     var url = this.url + "orders/" + String(number);
     options = Object.assign(options, {
         url: url,
+        method: "GET",
         auth: true
     });
     options = this._build(options);
@@ -100,21 +102,24 @@ ripe.Ripe.prototype.getOrder = function(number, options, callback) {
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var configURL = this._getConfigURL();
-    return this._cacheURL(configURL, callback);
+    options = this._getConfigOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var priceURL = this._getPriceURL();
-    return this._cacheURL(priceURL, callback);
+    options = this._getPriceOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     options = this._getDefaultsOptions(options);
+    options = this._build(options);
     return this._cacheURL(options.url, options, function(result) {
         callback(result ? result.parts : null);
     });
@@ -134,8 +139,9 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var combinationsURL = this._getCombinationsURL();
-    return this._cacheURL(combinationsURL, function(result) {
+    options = this._getCombinationsOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result.combinations);
     });
 };
@@ -143,16 +149,32 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
 ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
-    var url = this.url + "sizes/size_to_native?" + query;
-    return this._cacheURL(url, function(result) {
+    var url = this.url + "sizes/size_to_native";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scale: scale,
+            value: value,
+            gender: gender
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
 
-ripe.Ripe.prototype.getSizes = function(callback) {
+ripe.Ripe.prototype.getSizes = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
     var url = this.url + "sizes";
-    return this._cacheURL(url, function(result) {
+    options = Object.assign(options, {
+        url: url,
+        method: "GET"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -342,54 +364,122 @@ ripe.Ripe.prototype._getQuery = function(options) {
     return buffer.join("&");
 };
 
-ripe.Ripe.prototype._getConfigURL = function(brand, model, variant) {
+ripe.Ripe.prototype._getQueryOptions = function(options) {
+    options = options || {};
+
+    var params = options.params || {};
+    options.params = params;
+
+    var brand = options.brand === undefined ? this.brand : options.brand;
+    var model = options.model === undefined ? this.model : options.model;
+    var variant = options.variant === undefined ? this.variant : options.variant;
+    var frame = options.frame === undefined ? this.frame : options.frame;
+    var parts = options.parts === undefined ? this.parts : options.parts;
+    var engraving = options.engraving === undefined ? this.engraving : options.engraving;
+    var country = options.country === undefined ? this.country : options.country;
+    var currency = options.currency === undefined ? this.currency : options.currency;
+
+    if (brand) {
+        params.brand = brand;
+    }
+
+    if (model) {
+        params.model = model;
+    }
+
+    if (variant) {
+        params.variant = variant;
+    }
+
+    if (frame) {
+        params.frame = frame;
+    }
+
+    if (engraving) {
+        params.engraving = engraving;
+    }
+
+    if (country) {
+        params.country = country;
+    }
+
+    if (currency) {
+        params.currency = currency;
+    }
+
+    params.p = [];
+
+    for (var part in parts) {
+        var value = parts[part];
+        var material = value.material;
+        var color = value.color;
+        if (!material) {
+            continue;
+        }
+        if (!color) {
+            continue;
+        }
+        params.p.push(part + ":" + material + ":" + color);
+    }
+
+    return options;
+};
+
+ripe.Ripe.prototype._getConfigOptions = function(options, brand, model, variant) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
+    var params = {};
     var url = this.url + "brands/" + brand + "/models/" + model + "/config";
     if (variant) {
-        url += "?variant=" + variant;
+        params.variant = variant;
     }
-    return url;
-};
-
-ripe.Ripe.prototype._getPriceURL = function(options) {
-    var query = this._getQuery(options);
-    return this.url + "config/price" + "?" + query;
-};
-
-/* tenho de alterar um mapa de options e nao devolver um url */
-/* tions = Object.assign(options, {
+    return Object.assign(options, {
         url: url,
-        method: "POST",
-        params: {
-            username: username,
-            password: password
-        }
-    }); */
+        method: "GET",
+        params: params
+    });
+};
+
+ripe.Ripe.prototype._getPriceOptions = function(options) {
+    var url = this.url + "config/price";
+    options = this._getQueryOptions(options);
+    return Object.assign(options, {
+        url: url,
+        method: "GET"
+    });
+};
+
 ripe.Ripe.prototype._getDefaultsOptions = function(options, brand, model, variant) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
     var url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
-    options = Object.assign(options, {
+    return Object.assign(options, {
         url: url,
         method: "GET",
         params: {
             variant: variant
         }
     });
-    return options;
 };
 
-ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
+ripe.Ripe.prototype._getCombinationsOptions = function(options, brand, model, variant, useName) {
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
-    var useNameS = useName ? "1" : "0";
-    var query = "use_name=" + useNameS;
-    query += variant ? "&variant=" + variant : "";
-    return this.url + "brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
+    var params = {
+        use_name: useName ? "1" : "0"
+    };
+    var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
+    if (variant) {
+        params.variant = variant;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
 };
 
 ripe.Ripe.prototype._getImageURL = function(options) {
@@ -448,10 +538,11 @@ ripe.Ripe.prototype._build = function(options) {
 ripe.Ripe.prototype._buildQuery = function(params) {
     var key;
     var value;
+    var index;
     var buffer = [];
 
     if (Array.isArray(params)) {
-        for (var index = 0; index < params.length; index++) {
+        for (index = 0; index < params.length; index++) {
             var tuple = params[index];
             key = tuple[0];
             value = tuple.length > 1 ? tuple[1] : "";
@@ -463,8 +554,16 @@ ripe.Ripe.prototype._buildQuery = function(params) {
         for (key in params) {
             value = params[key];
             key = encodeURIComponent(key);
-            value = encodeURIComponent(value);
-            buffer.push(key + "=" + value);
+            if (Array.isArray(value)) {
+                for (index = 0; index < value.length; index++) {
+                    var _value = value[index];
+                    _value = encodeURIComponent(_value);
+                    buffer.push(key + "=" + _value);
+                }
+            } else {
+                value = encodeURIComponent(value);
+                buffer.push(key + "=" + value);
+            }
         }
     }
 

@@ -114,6 +114,17 @@ describe("RipeAPI", function() {
             assert.equal(result, "hello=world&hello=world2&world=hello&world=hello2");
         });
 
+        it("should correctly generate a query string from a complex object", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._buildQuery({
+                hello: ["world", "world2"]
+            });
+
+            assert.equal(result, "hello=world&hello=world2");
+        });
+
         it("should properly escape characters", async () => {
             let result = null;
 
