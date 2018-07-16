@@ -36,6 +36,52 @@ describe("RipeAPI", function() {
         });
     });
 
+    describe("#sizeToNativeB", function() {
+        it("should be able to convert sizes in bulk", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await new Promise((resolve, reject) => {
+                remote.sizeToNativeB(["fr"], [42], ["female"], resolve);
+            });
+
+            assert.equal(result.length, 1);
+            assert.equal(result[0].scale, "fr");
+            assert.equal(result[0].value, 31);
+            assert.equal(result[0].native, 31);
+        });
+    });
+
+    describe("#nativetoSize", function() {
+        it("should be able to convert sizes", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await new Promise((resolve, reject) => {
+                remote.nativeToSize("fr", 31, "female", resolve);
+            });
+
+            assert.equal(result.value, 42);
+        });
+    });
+
+    describe("#nativetoSizeB", function() {
+        it("should be able to convert sizes in bulk", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await new Promise((resolve, reject) => {
+                remote.nativeToSizeB(["fr"], [31], ["female"], resolve);
+            });
+
+            assert.equal(result.length, 1);
+            assert.equal(result[0].value, 42);
+        });
+    });
+
     describe("#getOrders", function() {
         it("should be able to retrieve orders", async () => {
             let result = null;
@@ -110,6 +156,18 @@ describe("RipeAPI", function() {
                 ["world", "hello"],
                 ["world", "hello2"]
             ]);
+
+            assert.equal(result, "hello=world&hello=world2&world=hello&world=hello2");
+        });
+
+        it("should correctly generate a query string from a complex object", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._buildQuery({
+                hello: ["world", "world2"],
+                world: ["hello", "hello2"]
+            });
 
             assert.equal(result, "hello=world&hello=world2&world=hello&world=hello2");
         });

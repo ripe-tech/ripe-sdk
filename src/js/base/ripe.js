@@ -112,7 +112,8 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    var loadDefaults = !hasParts && this.useDefaults && this.brand && this.model;
+    var hasModel = Boolean(this.brand && this.model);
+    var loadDefaults = !hasParts && this.useDefaults && hasModel;
     var loadParts = loadDefaults
         ? this.getDefaults
         : function(callback) {
@@ -125,6 +126,9 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
             if (this.ready === false) {
                 this.ready = true;
                 this.trigger("ready");
+            }
+            if (hasModel === false) {
+                return;
             }
             this.setParts(result);
             this.remote();

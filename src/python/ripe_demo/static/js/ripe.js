@@ -357,7 +357,8 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    var loadDefaults = !hasParts && this.useDefaults && this.brand && this.model;
+    var hasModel = Boolean(this.brand && this.model);
+    var loadDefaults = !hasParts && this.useDefaults && hasModel;
     var loadParts = loadDefaults
         ? this.getDefaults
         : function(callback) {
@@ -370,6 +371,9 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
             if (this.ready === false) {
                 this.ready = true;
                 this.trigger("ready");
+            }
+            if (hasModel === false) {
+                return;
             }
             this.setParts(result);
             this.remote();
@@ -821,6 +825,7 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
     var url = this.url + "orders";
     options = Object.assign(options, {
         url: url,
+        method: "GET",
         auth: true
     });
     options = this._build(options);
@@ -835,6 +840,7 @@ ripe.Ripe.prototype.getOrder = function(number, options, callback) {
     var url = this.url + "orders/" + String(number);
     options = Object.assign(options, {
         url: url,
+        method: "GET",
         auth: true
     });
     options = this._build(options);
@@ -846,22 +852,25 @@ ripe.Ripe.prototype.getOrder = function(number, options, callback) {
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var configURL = this._getConfigURL();
-    return this._cacheURL(configURL, callback);
+    options = this._getConfigOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var priceURL = this._getPriceURL();
-    return this._cacheURL(priceURL, callback);
+    options = this._getPriceOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var defaultsURL = this._getDefaultsURL();
-    return this._cacheURL(defaultsURL, function(result) {
+    options = this._getDefaultsOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback(result ? result.parts : null);
     });
 };
@@ -880,25 +889,42 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var combinationsURL = this._getCombinationsURL();
-    return this._cacheURL(combinationsURL, function(result) {
+    options = this._getCombinationsOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result.combinations);
+    });
+};
+
+ripe.Ripe.prototype.getSizes = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+    var url = this.url + "sizes";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
+        callback && callback(result);
     });
 };
 
 ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
-    var url = this.url + "sizes/size_to_native?" + query;
-    return this._cacheURL(url, function(result) {
-        callback && callback(result);
+    var url = this.url + "sizes/size_to_native";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scale: scale,
+            value: value,
+            gender: gender
+        }
     });
-};
-
-ripe.Ripe.prototype.getSizes = function(callback) {
-    var url = this.url + "sizes";
-    return this._cacheURL(url, function(result) {
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -907,21 +933,30 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
 
-    var query = "";
-    var scale = null;
-    var value = null;
-    var gender = null;
+    var scalesP = [];
+    var valuesP = [];
+    var gendersP = [];
 
     for (var index = 0; index < scales.length; index++) {
-        scale = scales[index];
-        value = values[index];
-        gender = genders[index];
-        var prefix = index === 0 ? "" : "&";
-        query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
+        scalesP.push(scales[index]);
+        valuesP.push(values[index]);
+        gendersP.push(genders[index]);
     }
 
-    var url = this.url + "sizes/size_to_native_b?" + query;
-    return this._cacheURL(url, function(result) {
+    var url = this.url + "sizes/size_to_native_b";
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scales: scalesP,
+            values: valuesP,
+            genders: gendersP
+        }
+    });
+    options = this._build(options);
+
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -929,9 +964,18 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
 ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var query = "scale=" + scale + "&value=" + value + "&gender=" + gender;
-    var url = this.url + "sizes/native_to_size?" + query;
-    return this._cacheURL(url, function(result) {
+    var url = this.url + "sizes/native_to_size";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scale: scale,
+            value: value,
+            gender: gender
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -940,21 +984,30 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
 
-    var query = "";
-    var scale = null;
-    var value = null;
-    var gender = null;
+    var scalesP = [];
+    var valuesP = [];
+    var gendersP = [];
 
     for (var index = 0; index < scales.length; index++) {
-        scale = scales[index];
-        value = values[index];
-        gender = genders[index];
-        var prefix = index === 0 ? "" : "&";
-        query += prefix + "scales=" + scale + "&values=" + value + "&genders=" + gender;
+        scalesP.push(scales[index]);
+        valuesP.push(values[index]);
+        gendersP.push(genders[index]);
     }
 
-    var url = this.url + "sizes/native_to_size_b?" + query;
-    return this._cacheURL(url, function(result) {
+    var url = this.url + "sizes/native_to_size_b";
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scales: scalesP,
+            values: valuesP,
+            genders: gendersP
+        }
+    });
+    options = this._build(options);
+
+    return this._cacheURL(options.url, options, function(result) {
         callback && callback(result);
     });
 };
@@ -1102,10 +1155,12 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     return request;
 };
 
-ripe.Ripe.prototype._getQuery = function(options) {
+ripe.Ripe.prototype._getQueryOptions = function(options) {
     options = options || {};
 
-    var buffer = [];
+    var params = options.params || {};
+    options.params = params;
+
     var brand = options.brand === undefined ? this.brand : options.brand;
     var model = options.model === undefined ? this.model : options.model;
     var variant = options.variant === undefined ? this.variant : options.variant;
@@ -1115,10 +1170,35 @@ ripe.Ripe.prototype._getQuery = function(options) {
     var country = options.country === undefined ? this.country : options.country;
     var currency = options.currency === undefined ? this.currency : options.currency;
 
-    brand && buffer.push("brand=" + brand);
-    model && buffer.push("model=" + model);
-    variant && buffer.push("variant=" + variant);
-    frame && buffer.push("frame=" + frame);
+    if (brand) {
+        params.brand = brand;
+    }
+
+    if (model) {
+        params.model = model;
+    }
+
+    if (variant) {
+        params.variant = variant;
+    }
+
+    if (frame) {
+        params.frame = frame;
+    }
+
+    if (engraving) {
+        params.engraving = engraving;
+    }
+
+    if (country) {
+        params.country = country;
+    }
+
+    if (currency) {
+        params.currency = currency;
+    }
+
+    params.p = [];
 
     for (var part in parts) {
         var value = parts[part];
@@ -1130,87 +1210,162 @@ ripe.Ripe.prototype._getQuery = function(options) {
         if (!color) {
             continue;
         }
-        buffer.push("p=" + part + ":" + material + ":" + color);
+        params.p.push(part + ":" + material + ":" + color);
     }
 
-    engraving && buffer.push("engraving=" + engraving);
-    country && buffer.push("country=" + country);
-    currency && buffer.push("currency=" + currency);
-
-    return buffer.join("&");
+    return options;
 };
 
-ripe.Ripe.prototype._getConfigURL = function(brand, model, variant) {
+ripe.Ripe.prototype._getQuery = function(options) {
+    options = this._getQueryOptions(options);
+    return this._buildQuery(options.params);
+};
+
+ripe.Ripe.prototype._getConfigOptions = function(options, brand, model, variant) {
+    options = options || {};
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
+    var params = {};
     var url = this.url + "brands/" + brand + "/models/" + model + "/config";
     if (variant) {
-        url += "?variant=" + variant;
+        params.variant = variant;
     }
-    return url;
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
 };
 
-ripe.Ripe.prototype._getPriceURL = function(options) {
-    var query = this._getQuery(options);
-    return this.url + "config/price" + "?" + query;
+ripe.Ripe.prototype._getPriceOptions = function(options) {
+    options = options || {};
+    var url = this.url + "config/price";
+    options = this._getQueryOptions(options);
+    return Object.assign(options, {
+        url: url,
+        method: "GET"
+    });
 };
 
-ripe.Ripe.prototype._getDefaultsURL = function(brand, model, variant) {
+ripe.Ripe.prototype._getDefaultsOptions = function(options, brand, model, variant) {
+    options = options || {};
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
     var url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
-    url += variant ? "?variant=" + variant : "";
-    return url;
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            variant: variant
+        }
+    });
 };
 
-ripe.Ripe.prototype._getCombinationsURL = function(brand, model, variant, useName) {
+ripe.Ripe.prototype._getCombinationsOptions = function(options, brand, model, variant, useName) {
+    options = options || {};
     brand = brand || this.brand;
     model = model || this.model;
     variant = variant || this.variant;
-    var useNameS = useName ? "1" : "0";
-    var query = "use_name=" + useNameS;
-    query += variant ? "&variant=" + variant : "";
-    return this.url + "brands/" + brand + "/models/" + model + "/combinations" + "?" + query;
+    var params = {
+        use_name: useName ? "1" : "0"
+    };
+    var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
+    if (variant) {
+        params.variant = variant;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
 };
 
-ripe.Ripe.prototype._getImageURL = function(options) {
-    // ensures that some of the extra query options are not
-    // sent unless they are explictly defined (exception)
+ripe.Ripe.prototype._getImageOptions = function(options) {
     options = options || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
 
-    var query = this._getQuery(options);
+    options = this._getQueryOptions(options);
 
-    query += options.format ? "&format=" + options.format : "";
-    query += options.width ? "&width=" + options.width : "";
-    query += options.height ? "&height=" + options.height : "";
-    query += options.size ? "&size=" + options.size : "";
-    query += options.background ? "&background=" + options.background : "";
-    query += options.crop ? "&crop=" + (options.crop ? 1 : 0) : "";
-    query += options.profile ? "&initials_profile=" + options.profile.join(",") : "";
+    var params = options.params || {};
+    options.params = params;
+
+    if (options.format) {
+        params.format = options.format;
+    }
+
+    if (options.width) {
+        params.width = options.width;
+    }
+
+    if (options.height) {
+        params.height = options.height;
+    }
+
+    if (options.size) {
+        params.size = options.size;
+    }
+
+    if (options.background) {
+        params.background = options.background;
+    }
+
+    if (options.crop) {
+        params.crop = options.crop ? "1" : "0";
+    }
+
+    if (options.initials_profile) {
+        params.initials_profile = options.profile.join(",");
+    }
 
     var initials = options.initials === "" ? "$empty" : options.initials;
-    query += initials ? "&initials=" + encodeURIComponent(initials) : "";
+    if (options.initials) {
+        params.initials = initials;
+    }
 
-    return this.url + "compose?" + query;
+    var url = this.url + "compose";
+
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
 };
 
-ripe.Ripe.prototype._getMaskURL = function(options) {
+ripe.Ripe.prototype._getMaskOptions = function(options) {
     options = options || {};
     options.parts = options.parts || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
 
-    var query = this._getQuery(options);
+    options = this._getQueryOptions(options);
+
+    var params = options.params || {};
+    options.params = params;
 
     if (options.part) {
-        query += "&part=" + options.part;
+        params.part = options.part;
     }
 
-    return this.url + "mask?" + query;
+    var url = this.url + "mask";
+
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+ripe.Ripe.prototype._getImageURL = function(options) {
+    options = this._getImageOptions(options);
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+ripe.Ripe.prototype._getMaskURL = function(options) {
+    options = this._getMaskOptions(options);
+    return options.url + "?" + this._buildQuery(options.params);
 };
 
 ripe.Ripe.prototype._build = function(options) {
@@ -1231,10 +1386,11 @@ ripe.Ripe.prototype._build = function(options) {
 ripe.Ripe.prototype._buildQuery = function(params) {
     var key;
     var value;
+    var index;
     var buffer = [];
 
     if (Array.isArray(params)) {
-        for (var index = 0; index < params.length; index++) {
+        for (index = 0; index < params.length; index++) {
             var tuple = params[index];
             key = tuple[0];
             value = tuple.length > 1 ? tuple[1] : "";
@@ -1243,11 +1399,22 @@ ripe.Ripe.prototype._buildQuery = function(params) {
             buffer.push(key + "=" + value);
         }
     } else {
-        for (key in params) {
+        var keys = Object.keys(params);
+        keys.sort();
+        for (index = 0; index < keys.length; index++) {
+            key = keys[index];
             value = params[key];
             key = encodeURIComponent(key);
-            value = encodeURIComponent(value);
-            buffer.push(key + "=" + value);
+            if (Array.isArray(value)) {
+                for (var _index = 0; _index < value.length; _index++) {
+                    var _value = value[_index];
+                    _value = encodeURIComponent(_value);
+                    buffer.push(key + "=" + _value);
+                }
+            } else {
+                value = encodeURIComponent(value);
+                buffer.push(key + "=" + value);
+            }
         }
     }
 
