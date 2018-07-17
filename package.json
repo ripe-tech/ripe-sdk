@@ -28,6 +28,7 @@
         "src/js/index.js",
         "src/js/ripe.js",
         "src/js/ripe-min.js",
+        "src/js/api/**/*.js",
         "src/js/base/**/*.js",
         "src/js/plugins/**/*.js",
         "src/js/visual/**/*.js",

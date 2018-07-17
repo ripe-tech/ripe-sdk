@@ -16,7 +16,7 @@ describe("RipeAPI", function() {
             });
 
             assert.deepEqual(result.fr, ["female"]);
-            assert.deepEqual(result.uk, ["female", "male"]);
+            assert.deepEqual(result.uk, ["male", "female"]);
         });
     });
 
