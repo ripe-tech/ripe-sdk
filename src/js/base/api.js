@@ -301,7 +301,6 @@ ripe.Ripe.prototype.cancelOrder = function(number, options, callback) {
 ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-
     var url = this.url + "orders/" + String(number) + "/" + status;
     options = Object.assign(options, {
         url: url,
