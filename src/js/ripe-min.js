@@ -64,7 +64,7 @@ if(options.height){params.height=options.height;}
 if(options.size){params.size=options.size;}
 if(options.background){params.background=options.background;}
 if(options.crop){params.crop=options.crop?"1":"0";}
-if(options.initials_profile){params.initials_profile=options.profile.join(",");}
+if(options.profile){params.initials_profile=options.profile.join(",");}
 var initials=options.initials===""?"$empty":options.initials;if(options.initials){params.initials=initials;}
 var url=this.url+"compose";return Object.assign(options,{url:url,method:"GET",params:params});};ripe.Ripe.prototype._getMaskOptions=function(options){options=options||{};options.parts=options.parts||{};options.country=options.country||null;options.currency=options.currency||null;options=this._getQueryOptions(options);var params=options.params||{};options.params=params;if(options.part){params.part=options.part;}
 var url=this.url+"mask";return Object.assign(options,{url:url,method:"GET",params:params});};ripe.Ripe.prototype._getImageURL=function(options){options=this._getImageOptions(options);return options.url+"?"+this._buildQuery(options.params);};ripe.Ripe.prototype._getMaskURL=function(options){options=this._getMaskOptions(options);return options.url+"?"+this._buildQuery(options.params);};ripe.Ripe.prototype._build=function(options){var url=options.url||"";var method=options.method||"GET";var params=options.params||{};var auth=options.auth||false;if(auth){params.sid=this.sid;}

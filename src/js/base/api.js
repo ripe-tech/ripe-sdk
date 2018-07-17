@@ -331,7 +331,7 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
         params.crop = options.crop ? "1" : "0";
     }
 
-    if (options.initials_profile) {
+    if (options.profile) {
         params.initials_profile = options.profile.join(",");
     }
 
