@@ -1295,8 +1295,10 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
     var clientId = options.clientId || localStorage.getItem("oauth_client_id");
     var clientSecret = options.clientSecret || localStorage.getItem("oauth_client_secret");
     var redirectUri = options.redirectUri || localStorage.getItem("oauth_redirect_uri");
-    var scope = options.scope || localStorage.getItem("oauth_scope") || [];
+    var scope = options.scope || (localStorage.getItem("oauth_scope") || "").split(",") || [];
     var oauthToken = options.oauthToken || localStorage.getItem("oauth_token");
+
+    scope && localStorage.setItem("oauth_scope", scope.join(","));
 
     if (oauthToken && clientId && clientSecret && redirectUri) {
         return this.oauthLogin(
@@ -1335,7 +1337,7 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
             function(result) {
                 if (result) {
                     localStorage.setItem("oauth_token", result.access_token);
-                    localStorage.setItem("oauth_scope", result.scope);
+                    result.scope && localStorage.setItem("oauth_scope", result.scope.join(","));
                     this.oauth(callback);
                 } else {
                     this.oauth(
