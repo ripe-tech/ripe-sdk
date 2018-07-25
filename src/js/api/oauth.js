@@ -21,9 +21,7 @@ ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
         }
     });
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
@@ -37,7 +35,5 @@ ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
             access_token: accessToken
         }
     });
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };

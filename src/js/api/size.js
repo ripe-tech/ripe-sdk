@@ -14,9 +14,7 @@ ripe.Ripe.prototype.getSizes = function(options, callback) {
         method: "GET"
     });
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
@@ -33,9 +31,7 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
         }
     });
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, callback) {
@@ -65,9 +61,7 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
     });
     options = this._build(options);
 
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
@@ -84,9 +78,7 @@ ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callb
         }
     });
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, callback) {
@@ -116,7 +108,5 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
     });
     options = this._build(options);
 
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };

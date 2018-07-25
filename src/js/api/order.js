@@ -15,9 +15,7 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
         auth: true
     });
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.getOrder = function(number, options, callback) {
@@ -30,9 +28,7 @@ ripe.Ripe.prototype.getOrder = function(number, options, callback) {
         auth: true
     });
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.createOrder = function(number, options, callback) {
@@ -81,7 +77,5 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
         method: "PUT"
     });
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };

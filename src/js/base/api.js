@@ -27,9 +27,7 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
         }
     });
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result);
-    });
+    return this._cacheURL(options.url, options, callback);
 };
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
@@ -53,19 +51,19 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
     options = typeof options === "function" ? {} : options;
     options = this._getDefaultsOptions(options);
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback(result ? result.parts : null);
+    return this._cacheURL(options.url, options, function(result, isValid) {
+        callback && callback(isValid ? result.parts : result, isValid);
     });
 };
 
 ripe.Ripe.prototype.getOptionals = function(options, callback) {
-    return this.getDefaults(options, function(defaults) {
+    return this.getDefaults(options, function(defaults, isValid) {
         var optionals = [];
         for (var name in defaults) {
             var part = defaults[name];
             part.optional && optionals.push(name);
         }
-        callback(optionals);
+        callback && callback(optionals, isValid);
     });
 };
 
@@ -74,8 +72,8 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     options = typeof options === "function" ? {} : options;
     options = this._getCombinationsOptions(options);
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result) {
-        callback && callback(result.combinations);
+    return this._cacheURL(options.url, options, function(result, isValid) {
+        callback && callback(isValid ? result.combinations : result, isValid);
     });
 };
 
@@ -149,9 +147,12 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     var request = new XMLHttpRequest();
 
     request.addEventListener("load", function() {
+        var result = null;
         var isValid = this.status === 200;
-        var result = JSON.parse(this.responseText);
-        callback && callback.call(context, isValid ? result : null, isValid, this);
+        try {
+            result = JSON.parse(this.responseText);
+        } catch (error) {}
+        callback && callback.call(context, result, isValid, this);
     });
 
     request.open(method, url);
