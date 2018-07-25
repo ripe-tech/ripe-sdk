@@ -1,6 +1,6 @@
 {
     "name": "ripe-sdk",
-    "version": "1.3.5",
+    "version": "1.3.6",
     "description": "The public SDK for RIPE Core",
     "keywords": [
         "js",
