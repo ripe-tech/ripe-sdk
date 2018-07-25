@@ -94,8 +94,8 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
         return this.oauthLogin(
             oauthToken,
             options,
-            function(result) {
-                if (result) {
+            function(result, isValid) {
+                if (isValid && result) {
                     this.sid = result.sid;
                     this.trigger("auth");
                     callback && callback(result);
@@ -124,8 +124,8 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
                 clientSecret: clientSecret,
                 redirectUri: redirectUri
             },
-            function(result) {
-                if (result) {
+            function(result, isValid) {
+                if (isValid && result) {
                     localStorage.setItem("oauth_token", result.access_token);
                     result.scope && localStorage.setItem("oauth_scope", result.scope.join(","));
                     this.oauth(callback);
