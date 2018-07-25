@@ -801,19 +801,19 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
     options = typeof options === "function" ? {} : options;
     options = this._getDefaultsOptions(options);
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result, isValid) {
-        callback && callback(isValid ? result.parts : result, isValid);
+    return this._cacheURL(options.url, options, function(result, isValid, request) {
+        callback && callback(isValid ? result.parts : result, isValid, request);
     });
 };
 
 ripe.Ripe.prototype.getOptionals = function(options, callback) {
-    return this.getDefaults(options, function(defaults, isValid) {
+    return this.getDefaults(options, function(defaults, isValid, request) {
         var optionals = [];
         for (var name in defaults) {
             var part = defaults[name];
             part.optional && optionals.push(name);
         }
-        callback && callback(optionals, isValid);
+        callback && callback(optionals, isValid, request);
     });
 };
 
@@ -822,8 +822,8 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     options = typeof options === "function" ? {} : options;
     options = this._getCombinationsOptions(options);
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result, isValid) {
-        callback && callback(isValid ? result.combinations : result, isValid);
+    return this._cacheURL(options.url, options, function(result, isValid, request) {
+        callback && callback(isValid ? result.combinations : result, isValid, request);
     });
 };
 
@@ -853,7 +853,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // in case there's already a valid value in cache,
     // retrieves it and calls the callback with the value
     if (this._cache[fullKey] !== undefined && cached) {
-        callback && callback(this._cache[fullKey]);
+        callback && callback(this._cache[fullKey], true, null);
         return null;
     }
 
