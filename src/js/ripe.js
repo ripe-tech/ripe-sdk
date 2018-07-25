@@ -844,7 +844,8 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
 
     // determines if the current request should be cached, obeys
     // some of the basic rules for that behaviour
-    var cached = !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
+    var cached = typeof options.cached === "undefined" ? true : options.cached;
+    cached = cached && !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
 
     // initializes the cache object in the current instance
     // in case it does not exists already
