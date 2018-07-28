@@ -840,7 +840,8 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // creates the full key by adding the base key to the
     // URL value (including query string), this is unique
     // assuming no request payload
-    var fullKey = key + ":" + url;
+    var query = this._buildQuery(options.params || {});
+    var fullKey = key + ":" + url + ":" + query;
 
     // determines if the current request should be cached, obeys
     // some of the basic rules for that behaviour
