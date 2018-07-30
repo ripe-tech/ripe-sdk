@@ -1397,11 +1397,11 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-ripe.Ripe.prototype.getLocale = function(value, locale, options, callback) {
-    return this.getLocaleMultiple(value, locale, options, callback);
+ripe.Ripe.prototype.locale = function(value, locale, options, callback) {
+    return this.localeMultiple(value, locale, options, callback);
 };
 
-ripe.Ripe.prototype.getLocaleMultiple = function(values, locale, options, callback) {
+ripe.Ripe.prototype.localeMultiple = function(values, locale, options, callback) {
     values = typeof values === "string" ? [values] : values;
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
