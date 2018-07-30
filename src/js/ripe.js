@@ -1404,7 +1404,7 @@ ripe.Ripe.prototype.getLocale = function(values, locale, options, callback) {
     var url = this.url + "locale";
     options = Object.assign(options, {
         url: url,
-        method: "POST",
+        method: "GET",
         params: {
             values: values,
             locale: locale
