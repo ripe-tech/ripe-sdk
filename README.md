@@ -224,6 +224,20 @@ To reduce the number of requests when you need to convert several size options y
 - `nativeToSizeB(scales, values, genders)`
 
 
+## 9. Authentication
+
+When using API methods that require special permissions you can use the following methods to authenticate your application: `auth(username, password, callback)`, for login with username and password, or OAuth authentication with `oauth`:
+
+```javascript
+if (ripe.isOAuthPending()) {
+    ripe.oauth({
+        clientId: clientId,
+        clientSecret: clientSecret,
+        scope: ["admin"]
+    });
+}
+```
+
 ## Appendix
 
 ### Options
