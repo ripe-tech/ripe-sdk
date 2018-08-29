@@ -3418,10 +3418,10 @@ ripe.Image.prototype.update = function(state) {
 
     // updates the image DOM element with the values of the image
     // including requested size and URL
-    if (width !== null) {
+    if (width) {
         this.element.width = width;
     }
-    if (height !== null) {
+    if (height) {
         this.element.height = height;
     }
     this.element.src = url;
