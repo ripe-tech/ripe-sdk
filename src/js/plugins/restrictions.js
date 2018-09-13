@@ -219,7 +219,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(
                 var _color = _item.color;
                 var _key = this._getRestrictionKey(null, _material, _color);
 
-                if (_key === materialColorKey) {
+                if (__index === _index) {
                     continue;
                 }
 
