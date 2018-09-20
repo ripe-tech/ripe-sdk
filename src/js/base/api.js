@@ -157,6 +157,10 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         callback && callback.call(context, result, isValid, this);
     });
 
+    request.addEventListener("loadend", function() {
+        context.trigger("post_request", request, options);
+    });
+
     request.open(method, url);
     for (var key in headers) {
         var value = headers[key];
@@ -165,6 +169,9 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     if (contentType) {
         request.setRequestHeader("Content-Type", contentType);
     }
+
+    this.trigger("pre_request", request, options);
+
     if (data) {
         request.send(data);
     } else {

@@ -9,6 +9,9 @@ if (typeof require !== "undefined") {
 ripe.Ripe = function(brand, model, options) {
     ripe.Observable.call(this);
     ripe.Ripe.prototype.init.call(this, brand, model, options);
+
+    var diagPlugin = new ripe.Ripe.plugins.DiagPlugin();
+    this.addPlugin(diagPlugin);
 };
 
 ripe.Ripe.prototype = Object.create(ripe.Observable.prototype);
