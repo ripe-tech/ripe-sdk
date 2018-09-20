@@ -1683,7 +1683,8 @@ ripe.Ripe.plugins.Plugin = function() {
     ripe.Observable.call(this);
 };
 
-ripe.assign(ripe.Ripe.plugins.Plugin.prototype, ripe.Observable.prototype);
+ripe.Ripe.plugins.Plugin.prototype = Object.create(ripe.Observable.prototype);
+ripe.Ripe.plugins.Plugin.prototype.constructor = ripe.Ripe.plugins.Plugin;
 
 ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
     this.owner = owner;
@@ -1715,6 +1716,7 @@ ripe.Ripe.plugins.DiagPlugin = function(options) {
 };
 
 ripe.Ripe.plugins.DiagPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.DiagPlugin.prototype.constructor = ripe.Ripe.plugins.DiagPlugin;
 
 ripe.Ripe.plugins.DiagPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
@@ -1748,7 +1750,8 @@ ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
 };
 
 ripe.Ripe.plugins.DiagPlugin.prototype._getPluginName = function(plugin) {
-    for (var key in ripe.Ripe.plugins) {
+    var key = "";
+    for (key in ripe.Ripe.plugins) {
         if (plugin.constructor === ripe.Ripe.plugins[key]) {
             return key;
         }
@@ -1773,6 +1776,7 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.RestrictionsPlugin.prototype.constructor = ripe.Ripe.plugins.RestrictionsPlugin;
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
@@ -2158,6 +2162,7 @@ ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugin;
 
 ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);

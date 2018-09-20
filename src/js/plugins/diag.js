@@ -12,6 +12,7 @@ ripe.Ripe.plugins.DiagPlugin = function(options) {
 };
 
 ripe.Ripe.plugins.DiagPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.DiagPlugin.prototype.constructor = ripe.Ripe.plugins.DiagPlugin;
 
 ripe.Ripe.plugins.DiagPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
@@ -45,7 +46,8 @@ ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
 };
 
 ripe.Ripe.plugins.DiagPlugin.prototype._getPluginName = function(plugin) {
-    for (var key in ripe.Ripe.plugins) {
+    var key = "";
+    for (key in ripe.Ripe.plugins) {
         if (plugin.constructor === ripe.Ripe.plugins[key]) {
             return key;
         }
