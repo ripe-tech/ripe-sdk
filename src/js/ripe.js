@@ -917,6 +917,10 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         callback && callback.call(context, result, isValid, this);
     });
 
+    request.addEventListener("loadstart", function() {
+        context.trigger("pre_request", request, options);
+    });
+
     request.addEventListener("loadend", function() {
         context.trigger("post_request", request, options);
     });
@@ -930,7 +934,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         request.setRequestHeader("Content-Type", contentType);
     }
 
-    this.trigger("pre_request", request, options);
+    this.trigger("build_request", request, options);
 
     if (data) {
         request.send(data);
@@ -1721,12 +1725,12 @@ ripe.Ripe.plugins.DiagPlugin.prototype.constructor = ripe.Ripe.plugins.DiagPlugi
 ripe.Ripe.plugins.DiagPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
-    this.owner.bind("pre_request", this.preRequestCallback);
+    this.owner.bind("build_request", this.preRequestCallback);
 };
 
 ripe.Ripe.plugins.DiagPlugin.prototype.unregister = function(owner) {
     this.options = null;
-    this.owner.unbind("pre_request", this.preRequestCallback);
+    this.owner.unbind("build_request", this.preRequestCallback);
 
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
