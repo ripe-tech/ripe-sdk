@@ -17,6 +17,7 @@ describe("Ripe", function() {
             assert.strictEqual(instance.historyPointer, -1);
             assert.strictEqual(instance.ready, false);
         });
+
         it("should instance and retrieve values", async () => {
             let result = null;
 
@@ -43,6 +44,7 @@ describe("Ripe", function() {
             assert.strictEqual(result.total.country, "US");
             assert.strictEqual(result.total.currency, "EUR");
         });
+
         it("should instance and retrieve config", async () => {
             let result = null;
 
@@ -59,6 +61,7 @@ describe("Ripe", function() {
 
             assert.strictEqual(result.hidden.indexOf("shadow") !== -1, true);
         });
+
         it("should instance with custom options", async () => {
             const instance = new ripe.Ripe("swear", "vyner", {
                 noDefaults: true,
@@ -72,6 +75,7 @@ describe("Ripe", function() {
 
             assert.strictEqual(Object.keys(instance.parts).length, 0);
         });
+
         it("should set parts and undo", async () => {
             const instance = new ripe.Ripe("swear", "vyner", {
                 noCombinations: true

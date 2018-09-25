@@ -17,6 +17,7 @@ describe("Visual", function() {
             assert.strictEqual(instance.children.length, 1);
             assert.strictEqual(instance.children[0], interactable);
         });
+
         it("should deinit instance and unbind interactable", () => {
             const instance = new base.ripe.Ripe("myswear", "vyner");
             const interactable = new base.ripe.Interactable(instance);
@@ -27,6 +28,7 @@ describe("Visual", function() {
             assert.strictEqual(interactable.owner, null);
             assert.strictEqual(instance.children.length, 0);
         });
+
         it("should instance image and load frame", () => {
             const dom = new jsdom.JSDOM("<img id='image' />");
             const imageElement = dom.window.document.getElementById("image");
@@ -46,6 +48,7 @@ describe("Visual", function() {
 
             assert.strictEqual(imageElement.src.includes("frame=10"), true);
         });
+
         it("should deinit image and stop updating", () => {
             const dom = new jsdom.JSDOM("<img id='image' />");
             const imageElement = dom.window.document.getElementById("image");
