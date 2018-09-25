@@ -13,8 +13,7 @@ ripe.Visual = function(owner, element, options) {
     ripe.Interactable.call(this, owner, options);
 };
 
-ripe.assign(ripe.Visual.prototype, ripe.Observable.prototype);
-ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
+ripe.Visual.prototype = ripe.build(ripe.Observable.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {

@@ -11,7 +11,7 @@ ripe.Ripe.plugins.DiagPlugin = function(options) {
     this.preRequestCallback = this._setHeaders.bind(this);
 };
 
-ripe.Ripe.plugins.DiagPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.DiagPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.DiagPlugin.prototype.constructor = ripe.Ripe.plugins.DiagPlugin;
 
 ripe.Ripe.plugins.DiagPlugin.prototype.register = function(owner) {

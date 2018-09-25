@@ -13,7 +13,7 @@ ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
 };
 
-ripe.Image.prototype = Object.create(ripe.Visual.prototype);
+ripe.Image.prototype = ripe.build(ripe.Visual.prototype);
 
 ripe.Image.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);

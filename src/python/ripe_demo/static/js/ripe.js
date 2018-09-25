@@ -47,6 +47,10 @@ ripe.assign = function(target) {
     return to;
 };
 
+ripe.build = function() {
+    return ripe.assign.apply(this, arguments);
+};
+
 // eslint-disable-next-line no-use-before-define
 if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
     var XMLHttpRequest = null;
@@ -257,7 +261,7 @@ ripe.Ripe = function(brand, model, options) {
     ripe.Ripe.prototype.init.call(this, brand, model, options);
 };
 
-ripe.Ripe.prototype = Object.create(ripe.Observable.prototype);
+ripe.Ripe.prototype = ripe.build(ripe.Observable.prototype);
 
 ripe.RipeBase = function(brand, model, options) {
     return new ripe.Ripe(brand, model, options);
@@ -1688,7 +1692,7 @@ ripe.Ripe.plugins.Plugin = function() {
     ripe.Observable.call(this);
 };
 
-ripe.Ripe.plugins.Plugin.prototype = Object.create(ripe.Observable.prototype);
+ripe.Ripe.plugins.Plugin.prototype = ripe.build(ripe.Observable.prototype);
 ripe.Ripe.plugins.Plugin.prototype.constructor = ripe.Ripe.plugins.Plugin;
 
 ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
@@ -1720,7 +1724,7 @@ ripe.Ripe.plugins.DiagPlugin = function(options) {
     this.preRequestCallback = this._setHeaders.bind(this);
 };
 
-ripe.Ripe.plugins.DiagPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.DiagPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.DiagPlugin.prototype.constructor = ripe.Ripe.plugins.DiagPlugin;
 
 ripe.Ripe.plugins.DiagPlugin.prototype.register = function(owner) {
@@ -1780,7 +1784,7 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
     this.partCallback = this._applyRestrictions.bind(this);
 };
 
-ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.RestrictionsPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.constructor = ripe.Ripe.plugins.RestrictionsPlugin;
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
@@ -2166,7 +2170,7 @@ ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
     this.partCallback = this._applySync.bind(this);
 };
 
-ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.SyncPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugin;
 
 ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
@@ -2294,8 +2298,7 @@ ripe.Visual = function(owner, element, options) {
     ripe.Interactable.call(this, owner, options);
 };
 
-ripe.assign(ripe.Visual.prototype, ripe.Observable.prototype);
-ripe.assign(ripe.Visual.prototype, ripe.Interactable.prototype);
+ripe.Visual.prototype = ripe.build(ripe.Observable.prototype, ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {
@@ -2371,7 +2374,7 @@ ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
 };
 
-ripe.Configurator.prototype = Object.create(ripe.Visual.prototype);
+ripe.Configurator.prototype = ripe.build(ripe.Visual.prototype);
 
 ripe.Configurator.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
@@ -3444,7 +3447,7 @@ ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
 };
 
-ripe.Image.prototype = Object.create(ripe.Visual.prototype);
+ripe.Image.prototype = ripe.build(ripe.Visual.prototype);
 
 ripe.Image.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);

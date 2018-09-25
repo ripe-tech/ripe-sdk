@@ -11,7 +11,7 @@ ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
     this.partCallback = this._applySync.bind(this);
 };
 
-ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.SyncPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugin;
 
 ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {

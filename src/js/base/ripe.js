@@ -11,7 +11,7 @@ ripe.Ripe = function(brand, model, options) {
     ripe.Ripe.prototype.init.call(this, brand, model, options);
 };
 
-ripe.Ripe.prototype = Object.create(ripe.Observable.prototype);
+ripe.Ripe.prototype = ripe.build(ripe.Observable.prototype);
 
 ripe.RipeBase = function(brand, model, options) {
     return new ripe.Ripe(brand, model, options);

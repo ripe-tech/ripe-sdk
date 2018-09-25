@@ -37,6 +37,12 @@ ripe.assign = function(target) {
     return to;
 };
 
+ripe.build = function() {
+    const _arguments = Array.prototype.slice.call(arguments);
+    _arguments.unshift({});
+    return ripe.assign.apply(this, _arguments);
+};
+
 // eslint-disable-next-line no-use-before-define
 if (typeof require !== "undefined" && typeof XMLHttpRequest === "undefined") {
     var XMLHttpRequest = null;

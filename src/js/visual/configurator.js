@@ -24,7 +24,7 @@ ripe.Configurator = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
 };
 
-ripe.Configurator.prototype = Object.create(ripe.Visual.prototype);
+ripe.Configurator.prototype = ripe.build(ripe.Visual.prototype);
 
 ripe.Configurator.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);

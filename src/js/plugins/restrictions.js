@@ -14,7 +14,7 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
     this.partCallback = this._applyRestrictions.bind(this);
 };
 
-ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.RestrictionsPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.constructor = ripe.Ripe.plugins.RestrictionsPlugin;
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
