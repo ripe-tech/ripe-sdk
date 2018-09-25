@@ -51,7 +51,7 @@
     },
     "devDependencies": {
         "eslint": "^5.6.0",
-        "eslint-config-hive": "^0.1.5",
+        "eslint-config-hive": "^0.1.6",
         "gulp": "^3.9.1",
         "gulp-cli": "^2.0.1",
         "gulp-count": "^1.0.0",

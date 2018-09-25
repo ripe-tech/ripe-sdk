@@ -449,7 +449,7 @@ ripe.Ripe.prototype.setOptions = function(options) {
             : this.options.useCombinations;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
-    this.noDiag = this.options.noDiag === undefined ? true : this.options.noDiag;
+    this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
     this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
 
     // runs the background color normalization process that removes
