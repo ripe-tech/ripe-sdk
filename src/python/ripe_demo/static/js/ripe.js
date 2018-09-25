@@ -48,7 +48,9 @@ ripe.assign = function(target) {
 };
 
 ripe.build = function() {
-    return ripe.assign.apply(this, arguments);
+    const _arguments = Array.prototype.slice.call(arguments);
+    _arguments.unshift({});
+    return ripe.assign.apply(this, _arguments);
 };
 
 // eslint-disable-next-line no-use-before-define
