@@ -11,7 +11,8 @@ ripe.Ripe.plugins.Plugin = function() {
     ripe.Observable.call(this);
 };
 
-ripe.assign(ripe.Ripe.plugins.Plugin.prototype, ripe.Observable.prototype);
+ripe.Ripe.plugins.Plugin.prototype = Object.create(ripe.Observable.prototype);
+ripe.Ripe.plugins.Plugin.prototype.constructor = ripe.Ripe.plugins.Plugin;
 
 ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
     this.owner = owner;

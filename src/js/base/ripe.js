@@ -62,6 +62,14 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.history.push(_parts);
         this.historyPointer = this.history.length - 1;
     });
+
+    // if diagnotisc headers have not been disabled then
+    // registers the diag plugin to automatically add
+    // diagnostic headers to every remote request
+    if (this.useDiag) {
+        var diagPlugin = new ripe.Ripe.plugins.DiagPlugin();
+        this.addPlugin(diagPlugin);
+    }
 };
 
 ripe.Ripe.prototype.deinit = function() {
@@ -189,6 +197,8 @@ ripe.Ripe.prototype.setOptions = function(options) {
             : this.options.useCombinations;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
+    this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
+    this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
 
     // runs the background color normalization process that removes
     // the typical cardinal character from the definition

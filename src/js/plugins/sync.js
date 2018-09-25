@@ -12,6 +12,7 @@ ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugin;
 
 ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);

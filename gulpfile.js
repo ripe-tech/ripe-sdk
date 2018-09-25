@@ -23,13 +23,13 @@ var paths = {
 gulp.task("build-js", () => {
     return gulp
         .src(paths.scripts)
+        .pipe(replace("__VERSION__", _package.version))
         .pipe(
             uglifyes({
                 mangle: false,
                 ecma: 5
             })
         )
-        .pipe(replace("__VERSION__", _package.version))
         .pipe(size())
         .pipe(
             size({

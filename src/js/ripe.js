@@ -308,6 +308,14 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.history.push(_parts);
         this.historyPointer = this.history.length - 1;
     });
+
+    // if diagnotisc headers have not been disabled then
+    // registers the diag plugin to automatically add
+    // diagnostic headers to every remote request
+    if (this.useDiag) {
+        var diagPlugin = new ripe.Ripe.plugins.DiagPlugin();
+        this.addPlugin(diagPlugin);
+    }
 };
 
 ripe.Ripe.prototype.deinit = function() {
@@ -435,6 +443,8 @@ ripe.Ripe.prototype.setOptions = function(options) {
             : this.options.useCombinations;
     this.noPrice = this.options.noPrice === undefined ? false : this.options.noPrice;
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
+    this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
+    this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
 
     // runs the background color normalization process that removes
     // the typical cardinal character from the definition
@@ -908,6 +918,14 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         callback && callback.call(context, result, isValid, this);
     });
 
+    request.addEventListener("loadstart", function() {
+        context.trigger("pre_request", request, options);
+    });
+
+    request.addEventListener("loadend", function() {
+        context.trigger("post_request", request, options);
+    });
+
     request.open(method, url);
     for (var key in headers) {
         var value = headers[key];
@@ -916,6 +934,9 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     if (contentType) {
         request.setRequestHeader("Content-Type", contentType);
     }
+
+    this.trigger("build_request", request, options);
+
     if (data) {
         request.send(data);
     } else {
@@ -1667,7 +1688,8 @@ ripe.Ripe.plugins.Plugin = function() {
     ripe.Observable.call(this);
 };
 
-ripe.assign(ripe.Ripe.plugins.Plugin.prototype, ripe.Observable.prototype);
+ripe.Ripe.plugins.Plugin.prototype = Object.create(ripe.Observable.prototype);
+ripe.Ripe.plugins.Plugin.prototype.constructor = ripe.Ripe.plugins.Plugin;
 
 ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
     this.owner = owner;
@@ -1692,6 +1714,63 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+ripe.Ripe.plugins.DiagPlugin = function(options) {
+    ripe.Ripe.plugins.Plugin.call(this);
+    this.options = options || {};
+    this.preRequestCallback = this._setHeaders.bind(this);
+};
+
+ripe.Ripe.plugins.DiagPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.DiagPlugin.prototype.constructor = ripe.Ripe.plugins.DiagPlugin;
+
+ripe.Ripe.plugins.DiagPlugin.prototype.register = function(owner) {
+    ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
+
+    this.owner.bind("build_request", this.preRequestCallback);
+};
+
+ripe.Ripe.plugins.DiagPlugin.prototype.unregister = function(owner) {
+    this.options = null;
+    this.owner.unbind("build_request", this.preRequestCallback);
+
+    ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
+};
+
+ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
+    request.setRequestHeader("X-Ripe-Sdk-Version", "__VERSION__");
+
+    var plugins = [];
+    var index = null;
+
+    for (index = 0; index < this.owner.plugins.length; index++) {
+        var plugin = this.owner.plugins[index];
+        var pluginName = this._getPluginName(plugin);
+        pluginName && plugins.push(pluginName);
+    }
+
+    var pluginsS = plugins.join(", ");
+    pluginsS && request.setRequestHeader("X-Ripe-Sdk-Plugins", pluginsS);
+
+    this.owner.brand && request.setRequestHeader("X-Ripe-Sdk-Vendor", this.owner.brand);
+};
+
+ripe.Ripe.plugins.DiagPlugin.prototype._getPluginName = function(plugin) {
+    var key = "";
+    for (key in ripe.Ripe.plugins) {
+        if (plugin.constructor === ripe.Ripe.plugins[key]) {
+            return key;
+        }
+    }
+    return null;
+};
+
+if (typeof require !== "undefined") {
+    // eslint-disable-next-line no-redeclare
+    var base = require("./base");
+    // eslint-disable-next-line no-redeclare
+    var ripe = base.ripe;
+}
+
 ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
     ripe.Ripe.plugins.Plugin.call(this);
     options = options || {};
@@ -1702,6 +1781,7 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.RestrictionsPlugin.prototype.constructor = ripe.Ripe.plugins.RestrictionsPlugin;
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
@@ -2087,6 +2167,7 @@ ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype = Object.create(ripe.Ripe.plugins.Plugin.prototype);
+ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugin;
 
 ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
