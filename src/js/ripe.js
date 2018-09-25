@@ -43,6 +43,7 @@ ripe.assign = function(target) {
             }
         }
     }
+
     return to;
 };
 
