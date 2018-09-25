@@ -18,19 +18,19 @@ describe("Compat", function() {
             };
             const result = ripe.ripe.assign(target, origin);
 
-            assert.deepEqual(target, {
+            assert.deepStrictEqual(target, {
                 a: 1,
                 b: 2,
                 c: 3,
                 d: 5
             });
-            assert.deepEqual(result, {
+            assert.deepStrictEqual(result, {
                 a: 1,
                 b: 2,
                 c: 3,
                 d: 5
             });
-            assert.deepEqual(origin, {
+            assert.deepStrictEqual(origin, {
                 a: 1,
                 b: 2,
                 c: 3
@@ -53,7 +53,7 @@ describe("Compat", function() {
             };
             const result = ripe.ripe.assign(target, originFirst, originSecond);
 
-            assert.deepEqual(target, {
+            assert.deepStrictEqual(target, {
                 a: 1,
                 b: 2,
                 c: 3,
@@ -61,7 +61,7 @@ describe("Compat", function() {
                 e: 6,
                 f: 7
             });
-            assert.deepEqual(result, {
+            assert.deepStrictEqual(result, {
                 a: 1,
                 b: 2,
                 c: 3,
@@ -69,12 +69,12 @@ describe("Compat", function() {
                 e: 6,
                 f: 7
             });
-            assert.deepEqual(originFirst, {
+            assert.deepStrictEqual(originFirst, {
                 a: 1,
                 b: 2,
                 c: 3
             });
-            assert.deepEqual(originSecond, {
+            assert.deepStrictEqual(originSecond, {
                 e: 6,
                 f: 7
             });
@@ -90,12 +90,12 @@ describe("Compat", function() {
             };
             const result = ripe.ripe.build(origin);
 
-            assert.deepEqual(result, {
+            assert.deepStrictEqual(result, {
                 a: 1,
                 b: 2,
                 c: 3
             });
-            assert.deepEqual(origin, {
+            assert.deepStrictEqual(origin, {
                 a: 1,
                 b: 2,
                 c: 3
@@ -114,19 +114,19 @@ describe("Compat", function() {
             };
             const result = ripe.ripe.build(originFirst, originSecond);
 
-            assert.deepEqual(result, {
+            assert.deepStrictEqual(result, {
                 a: 1,
                 b: 2,
                 c: 3,
                 d: 4,
                 e: 5
             });
-            assert.deepEqual(originFirst, {
+            assert.deepStrictEqual(originFirst, {
                 a: 1,
                 b: 2,
                 c: 3
             });
-            assert.deepEqual(originSecond, {
+            assert.deepStrictEqual(originSecond, {
                 d: 4,
                 e: 5
             });
