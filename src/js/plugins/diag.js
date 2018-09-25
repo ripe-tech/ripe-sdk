@@ -39,9 +39,13 @@ ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
         pluginName && plugins.push(pluginName);
     }
 
+    // creates the list of plugins (as a string) to be sent to the
+    // server side (single element only)
     var pluginsS = plugins.join(", ");
     pluginsS && request.setRequestHeader("X-Ripe-Sdk-Plugins", pluginsS);
 
+    // in case the brand value is defined in the owner it is also added
+    // to the list of headers in the request
     this.owner.brand && request.setRequestHeader("X-Ripe-Sdk-Vendor", this.owner.brand);
 };
 
