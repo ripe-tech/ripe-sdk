@@ -15,8 +15,8 @@ describe("RipeAPI", function() {
                 remote.getSizes(resolve);
             });
 
-            assert.deepEqual(result.fr, ["female"]);
-            assert.deepEqual(result.uk, ["male", "female"]);
+            assert.deepStrictEqual(result.fr, ["female"]);
+            assert.deepStrictEqual(result.uk, ["male", "female"]);
         });
     });
 
@@ -189,7 +189,7 @@ describe("RipeAPI", function() {
             const remote = ripe.RipeAPI();
             result = remote._unpackQuery("ol%C3%A1=mundo");
 
-            assert.deepEqual(result, { olá: "mundo" });
+            assert.deepStrictEqual(result, { olá: "mundo" });
         });
     });
 });

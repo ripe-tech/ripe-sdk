@@ -11,8 +11,8 @@ describe("Ripe", function() {
 
             assert.strictEqual(instance.initials, "");
             assert.strictEqual(instance.engraving, null);
-            assert.deepEqual(instance.children, []);
-            assert.deepEqual(instance.history, []);
+            assert.deepStrictEqual(instance.children, []);
+            assert.deepStrictEqual(instance.history, []);
             assert.strictEqual(instance.plugins.length, 1);
             assert.strictEqual(instance.historyPointer, -1);
             assert.strictEqual(instance.ready, false);
