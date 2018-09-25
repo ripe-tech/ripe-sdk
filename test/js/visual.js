@@ -12,10 +12,10 @@ describe("Visual", function() {
             const interactable = new base.ripe.Interactable(instance);
             const _interactable = instance.bindInteractable(interactable);
 
-            assert.equal(interactable, _interactable);
-            assert.equal(interactable.owner, instance);
-            assert.equal(instance.children.length, 1);
-            assert.equal(instance.children[0], interactable);
+            assert.strictEqual(interactable, _interactable);
+            assert.strictEqual(interactable.owner, instance);
+            assert.strictEqual(instance.children.length, 1);
+            assert.strictEqual(instance.children[0], interactable);
         });
         it("should deinit instance and unbind interactable", () => {
             const instance = new base.ripe.Ripe("myswear", "vyner");
@@ -24,8 +24,8 @@ describe("Visual", function() {
             instance.bindInteractable(interactable);
             instance.deinit();
 
-            assert.equal(interactable.owner, null);
-            assert.equal(instance.children.length, 0);
+            assert.strictEqual(interactable.owner, null);
+            assert.strictEqual(instance.children.length, 0);
         });
         it("should instance image and load frame", () => {
             const dom = new jsdom.JSDOM("<img id='image' />");
@@ -35,16 +35,16 @@ describe("Visual", function() {
                 frame: "side-9"
             });
 
-            assert.equal(image.frame, "side-9");
-            assert.equal(imageElement.src, "");
+            assert.strictEqual(image.frame, "side-9");
+            assert.strictEqual(imageElement.src, "");
 
             image.update();
 
-            assert.equal(imageElement.src.includes("frame=9"), true);
+            assert.strictEqual(imageElement.src.includes("frame=9"), true);
 
             image.setFrame("side-10");
 
-            assert.equal(imageElement.src.includes("frame=10"), true);
+            assert.strictEqual(imageElement.src.includes("frame=10"), true);
         });
         it("should deinit image and stop updating", () => {
             const dom = new jsdom.JSDOM("<img id='image' />");
@@ -54,9 +54,9 @@ describe("Visual", function() {
 
             instance.deinit();
 
-            assert.equal(image.owner, null);
-            assert.equal(image.element, null);
-            assert.equal(image.callbacks, null);
+            assert.strictEqual(image.owner, null);
+            assert.strictEqual(image.element, null);
+            assert.strictEqual(image.callbacks, null);
         });
     });
 });

@@ -30,9 +30,9 @@ describe("RipeAPI", function() {
                 remote.sizeToNative("fr", 42, "female", resolve);
             });
 
-            assert.equal(result.scale, "fr");
-            assert.equal(result.value, 31);
-            assert.equal(result.native, 31);
+            assert.strictEqual(result.scale, "fr");
+            assert.strictEqual(result.value, 31);
+            assert.strictEqual(result.native, 31);
         });
     });
 
@@ -46,10 +46,10 @@ describe("RipeAPI", function() {
                 remote.sizeToNativeB(["fr"], [42], ["female"], resolve);
             });
 
-            assert.equal(result.length, 1);
-            assert.equal(result[0].scale, "fr");
-            assert.equal(result[0].value, 31);
-            assert.equal(result[0].native, 31);
+            assert.strictEqual(result.length, 1);
+            assert.strictEqual(result[0].scale, "fr");
+            assert.strictEqual(result[0].value, 31);
+            assert.strictEqual(result[0].native, 31);
         });
     });
 
@@ -63,7 +63,7 @@ describe("RipeAPI", function() {
                 remote.nativeToSize("fr", 31, "female", resolve);
             });
 
-            assert.equal(result.value, 42);
+            assert.strictEqual(result.value, 42);
         });
     });
 
@@ -77,8 +77,8 @@ describe("RipeAPI", function() {
                 remote.nativeToSizeB(["fr"], [31], ["female"], resolve);
             });
 
-            assert.equal(result.length, 1);
-            assert.equal(result[0].value, 42);
+            assert.strictEqual(result.length, 1);
+            assert.strictEqual(result[0].value, 42);
         });
     });
 
@@ -92,14 +92,14 @@ describe("RipeAPI", function() {
                 remote.auth("root", "root", resolve);
             });
 
-            assert.equal(result.username, "root");
-            assert.notEqual(typeof result.sid, undefined);
+            assert.strictEqual(result.username, "root");
+            assert.notStrictEqual(typeof result.sid, undefined);
 
             result = await new Promise((resolve, reject) => {
                 remote.getOrders(resolve);
             });
 
-            assert.notEqual(result.length, 0);
+            assert.notStrictEqual(result.length, 0);
         });
     });
 
@@ -113,15 +113,15 @@ describe("RipeAPI", function() {
                 remote.auth("root", "root", resolve);
             });
 
-            assert.equal(result.username, "root");
-            assert.notEqual(typeof result.sid, undefined);
+            assert.strictEqual(result.username, "root");
+            assert.notStrictEqual(typeof result.sid, undefined);
 
             result = await new Promise((resolve, reject) => {
                 remote.getOrder(853, resolve);
             });
 
-            assert.equal(result.number, 853);
-            assert.equal(result.number_s, "#000853");
+            assert.strictEqual(result.number, 853);
+            assert.strictEqual(result.number_s, "#000853");
         });
     });
 
@@ -132,7 +132,7 @@ describe("RipeAPI", function() {
             const remote = ripe.RipeAPI();
             result = remote._buildQuery([["hello", "world"]]);
 
-            assert.equal(result, "hello=world");
+            assert.strictEqual(result, "hello=world");
         });
 
         it("should correctly generate a query string from object", async () => {
@@ -143,7 +143,7 @@ describe("RipeAPI", function() {
                 hello: "world"
             });
 
-            assert.equal(result, "hello=world");
+            assert.strictEqual(result, "hello=world");
         });
 
         it("should correctly generate a query string from a complex array", async () => {
@@ -157,7 +157,7 @@ describe("RipeAPI", function() {
                 ["world", "hello2"]
             ]);
 
-            assert.equal(result, "hello=world&hello=world2&world=hello&world=hello2");
+            assert.strictEqual(result, "hello=world&hello=world2&world=hello&world=hello2");
         });
 
         it("should correctly generate a query string from a complex object", async () => {
@@ -169,7 +169,7 @@ describe("RipeAPI", function() {
                 world: ["hello", "hello2"]
             });
 
-            assert.equal(result, "hello=world&hello=world2&world=hello&world=hello2");
+            assert.strictEqual(result, "hello=world&hello=world2&world=hello&world=hello2");
         });
 
         it("should properly escape characters", async () => {
@@ -178,7 +178,7 @@ describe("RipeAPI", function() {
             const remote = ripe.RipeAPI();
             result = remote._buildQuery([["olá", "mundo"]]);
 
-            assert.equal(result, "ol%C3%A1=mundo");
+            assert.strictEqual(result, "ol%C3%A1=mundo");
         });
     });
 

@@ -15,8 +15,8 @@ describe("Auth", function() {
                 remote.auth("root", "root", resolve);
             });
 
-            assert.equal(result.username, "root");
-            assert.notEqual(typeof result.sid, undefined);
+            assert.strictEqual(result.username, "root");
+            assert.notStrictEqual(typeof result.sid, undefined);
         });
     });
 });

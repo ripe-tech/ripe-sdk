@@ -88,8 +88,8 @@ describe("Restrictions", function() {
                 material: mockRipe.parts.bottom.material,
                 color: mockRipe.parts.bottom.color
             });
-            assert.equal(mockRipe.parts.bottom.color, "white");
-            assert.equal(mockRipe.parts.upper.color, "white");
+            assert.strictEqual(mockRipe.parts.bottom.color, "white");
+            assert.strictEqual(mockRipe.parts.upper.color, "white");
         });
     });
 

@@ -44,8 +44,8 @@ describe("Sync", function() {
                 material: "nappa",
                 color: "white"
             });
-            assert.equal(mockRipe.parts.bottom.color, "white");
-            assert.equal(mockRipe.parts.upper.color, "white");
+            assert.strictEqual(mockRipe.parts.bottom.color, "white");
+            assert.strictEqual(mockRipe.parts.upper.color, "white");
         });
 
         it("should apply object sync rules", () => {
@@ -76,8 +76,8 @@ describe("Sync", function() {
             syncPlugin.register(mockRipe);
 
             syncPlugin._applySync();
-            assert.equal(mockRipe.parts.bottom.material, "nappa");
-            assert.equal(mockRipe.parts.bottom.color, "black");
+            assert.strictEqual(mockRipe.parts.bottom.material, "nappa");
+            assert.strictEqual(mockRipe.parts.bottom.color, "black");
 
             mockRipe.parts.bottom.material = "suede";
             mockRipe.parts.bottom.color = "white";
@@ -85,10 +85,10 @@ describe("Sync", function() {
                 material: "suede",
                 color: "white"
             });
-            assert.equal(mockRipe.parts.bottom.material, "suede");
-            assert.equal(mockRipe.parts.bottom.color, "white");
-            assert.equal(mockRipe.parts.upper.material, "suede");
-            assert.equal(mockRipe.parts.upper.color, "white");
+            assert.strictEqual(mockRipe.parts.bottom.material, "suede");
+            assert.strictEqual(mockRipe.parts.bottom.color, "white");
+            assert.strictEqual(mockRipe.parts.upper.material, "suede");
+            assert.strictEqual(mockRipe.parts.upper.color, "white");
         });
 
         it("should apply part-material sync rules", () => {
@@ -122,7 +122,7 @@ describe("Sync", function() {
             syncPlugin.register(mockRipe);
 
             syncPlugin._applySync();
-            assert.equal(mockRipe.parts.bottom.material, "suede");
+            assert.strictEqual(mockRipe.parts.bottom.material, "suede");
 
             mockRipe.parts.bottom.material = "suede";
             mockRipe.parts.bottom.color = "white";
@@ -130,10 +130,10 @@ describe("Sync", function() {
                 material: "suede",
                 color: "white"
             });
-            assert.equal(mockRipe.parts.bottom.material, "suede");
-            assert.equal(mockRipe.parts.bottom.color, "white");
-            assert.equal(mockRipe.parts.upper.material, "nappa");
-            assert.equal(mockRipe.parts.upper.color, "white");
+            assert.strictEqual(mockRipe.parts.bottom.material, "suede");
+            assert.strictEqual(mockRipe.parts.bottom.color, "white");
+            assert.strictEqual(mockRipe.parts.upper.material, "nappa");
+            assert.strictEqual(mockRipe.parts.upper.color, "white");
         });
 
         it("should apply part-color sync rules", () => {
@@ -173,20 +173,20 @@ describe("Sync", function() {
                 material: "suede",
                 color: "red"
             });
-            assert.equal(mockRipe.parts.bottom.material, "suede");
-            assert.equal(mockRipe.parts.bottom.color, "red");
-            assert.equal(mockRipe.parts.upper.material, "nappa");
-            assert.equal(mockRipe.parts.upper.color, "black");
+            assert.strictEqual(mockRipe.parts.bottom.material, "suede");
+            assert.strictEqual(mockRipe.parts.bottom.color, "red");
+            assert.strictEqual(mockRipe.parts.upper.material, "nappa");
+            assert.strictEqual(mockRipe.parts.upper.color, "black");
 
             mockRipe.parts.bottom.color = "white";
             syncPlugin._applySync("bottom", {
                 material: "suede",
                 color: "white"
             });
-            assert.equal(mockRipe.parts.bottom.material, "suede");
-            assert.equal(mockRipe.parts.bottom.color, "white");
-            assert.equal(mockRipe.parts.upper.material, "nappa");
-            assert.equal(mockRipe.parts.upper.color, "white");
+            assert.strictEqual(mockRipe.parts.bottom.material, "suede");
+            assert.strictEqual(mockRipe.parts.bottom.color, "white");
+            assert.strictEqual(mockRipe.parts.upper.material, "nappa");
+            assert.strictEqual(mockRipe.parts.upper.color, "white");
         });
 
         it("should apply part-material-color sync rules", () => {
@@ -230,10 +230,10 @@ describe("Sync", function() {
                 material: "suede",
                 color: "red"
             });
-            assert.equal(mockRipe.parts.bottom.material, "suede");
-            assert.equal(mockRipe.parts.bottom.color, "red");
-            assert.equal(mockRipe.parts.upper.material, "nappa");
-            assert.equal(mockRipe.parts.upper.color, "green");
+            assert.strictEqual(mockRipe.parts.bottom.material, "suede");
+            assert.strictEqual(mockRipe.parts.bottom.color, "red");
+            assert.strictEqual(mockRipe.parts.upper.material, "nappa");
+            assert.strictEqual(mockRipe.parts.upper.color, "green");
         });
     });
 });
