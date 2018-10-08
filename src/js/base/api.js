@@ -260,6 +260,9 @@ ripe.Ripe.prototype._getConfigOptions = function(options, brand, model, variant)
     if (variant) {
         params.variant = variant;
     }
+    if (this.country) {
+        params.country = this.country;
+    }
     return Object.assign(options, {
         url: url,
         method: "GET",
