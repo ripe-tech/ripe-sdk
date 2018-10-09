@@ -287,10 +287,7 @@ ripe.Ripe.prototype._getDefaultsOptions = function(options) {
     var url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
     return Object.assign(options, {
         url: url,
-        method: "GET",
-        params: {
-            variant: variant
-        }
+        method: "GET"
     });
 };
 
