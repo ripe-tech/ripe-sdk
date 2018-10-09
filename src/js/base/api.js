@@ -280,11 +280,10 @@ ripe.Ripe.prototype._getPriceOptions = function(options) {
     });
 };
 
-ripe.Ripe.prototype._getDefaultsOptions = function(options, brand, model, variant) {
+ripe.Ripe.prototype._getDefaultsOptions = function(options) {
     options = options || {};
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
+    var brand = options.brand === undefined ? this.brand : options.brand;
+    var model = options.model === undefined ? this.model : options.model;
     var url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
     return Object.assign(options, {
         url: url,
@@ -295,17 +294,20 @@ ripe.Ripe.prototype._getDefaultsOptions = function(options, brand, model, varian
     });
 };
 
-ripe.Ripe.prototype._getCombinationsOptions = function(options, brand, model, variant, useName) {
+ripe.Ripe.prototype._getCombinationsOptions = function(options) {
     options = options || {};
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
-    var params = {
-        use_name: useName ? "1" : "0"
-    };
+    var brand = options.brand === undefined ? this.brand : options.brand;
+    var model = options.model === undefined ? this.model : options.model;
     var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
-    if (variant) {
-        params.variant = variant;
+    var params = {};
+    if (options.resolve !== undefined) {
+        params.resolve = options.resolve;
+    }
+    if (options.sort !== undefined) {
+        params.sort = options.sort;
+    }
+    if (options.use_name !== undefined) {
+        params.use_name = options.use_name;
     }
     return Object.assign(options, {
         url: url,
