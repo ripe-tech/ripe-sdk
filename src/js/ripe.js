@@ -1017,23 +1017,16 @@ ripe.Ripe.prototype._getQuery = function(options) {
     return this._buildQuery(options.params);
 };
 
-ripe.Ripe.prototype._getConfigOptions = function(options, brand, model, variant) {
+ripe.Ripe.prototype._getConfigOptions = function(options) {
     options = options || {};
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
-    var params = {};
-    var url = this.url + "brands/" + brand + "/models/" + model + "/config";
-    if (variant) {
-        params.variant = variant;
-    }
-    if (this.country) {
-        params.country = this.country;
+    options = this._getQueryOptions(options);
+    var url = this.url + "brands/" + options.brand + "/models/" + options.model + "/config";
+    if (options.filter !== undefined) {
+        options.params.filter = options.filter;
     }
     return Object.assign(options, {
         url: url,
-        method: "GET",
-        params: params
+        method: "GET"
     });
 };
 
