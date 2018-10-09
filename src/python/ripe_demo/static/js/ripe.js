@@ -1019,14 +1019,21 @@ ripe.Ripe.prototype._getQuery = function(options) {
 
 ripe.Ripe.prototype._getConfigOptions = function(options) {
     options = options || {};
-    options = this._getQueryOptions(options);
-    var url = this.url + "brands/" + options.brand + "/models/" + options.model + "/config";
+    var brand = options.brand === undefined ? this.brand : options.brand;
+    var model = options.model === undefined ? this.model : options.model;
+    var url = this.url + "brands/" + brand + "/models/" + model + "/config";
+    var country = options.country === undefined ? this.country : options.country;
+    var params = {};
+    if (country) {
+        params.country = country;
+    }
     if (options.filter !== undefined) {
-        options.params.filter = options.filter;
+        params.filter = options.filter;
     }
     return Object.assign(options, {
         url: url,
-        method: "GET"
+        method: "GET",
+        params: {}
     });
 };
 
