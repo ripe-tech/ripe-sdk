@@ -1017,20 +1017,23 @@ ripe.Ripe.prototype._getQuery = function(options) {
     return this._buildQuery(options.params);
 };
 
-ripe.Ripe.prototype._getConfigOptions = function(options, brand, model, variant) {
+ripe.Ripe.prototype._getConfigOptions = function(options) {
     options = options || {};
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
-    var params = {};
+    var brand = options.brand === undefined ? this.brand : options.brand;
+    var model = options.model === undefined ? this.model : options.model;
+    var country = options.country === undefined ? this.country : options.country;
     var url = this.url + "brands/" + brand + "/models/" + model + "/config";
-    if (variant) {
-        params.variant = variant;
+    var params = {};
+    if (country) {
+        params.country = country;
+    }
+    if (options.filter !== undefined) {
+        params.filter = options.filter;
     }
     return Object.assign(options, {
         url: url,
         method: "GET",
-        params: params
+        params: {}
     });
 };
 
@@ -1044,32 +1047,31 @@ ripe.Ripe.prototype._getPriceOptions = function(options) {
     });
 };
 
-ripe.Ripe.prototype._getDefaultsOptions = function(options, brand, model, variant) {
+ripe.Ripe.prototype._getDefaultsOptions = function(options) {
     options = options || {};
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
+    var brand = options.brand === undefined ? this.brand : options.brand;
+    var model = options.model === undefined ? this.model : options.model;
     var url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
     return Object.assign(options, {
         url: url,
-        method: "GET",
-        params: {
-            variant: variant
-        }
+        method: "GET"
     });
 };
 
-ripe.Ripe.prototype._getCombinationsOptions = function(options, brand, model, variant, useName) {
+ripe.Ripe.prototype._getCombinationsOptions = function(options) {
     options = options || {};
-    brand = brand || this.brand;
-    model = model || this.model;
-    variant = variant || this.variant;
-    var params = {
-        use_name: useName ? "1" : "0"
-    };
+    var brand = options.brand === undefined ? this.brand : options.brand;
+    var model = options.model === undefined ? this.model : options.model;
     var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
-    if (variant) {
-        params.variant = variant;
+    var params = {};
+    if (options.resolve !== undefined) {
+        params.resolve = options.resolve;
+    }
+    if (options.sort !== undefined) {
+        params.sort = options.sort;
+    }
+    if (options.use_name !== undefined) {
+        params.use_name = options.use_name;
     }
     return Object.assign(options, {
         url: url,
@@ -1088,36 +1090,36 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
     var params = options.params || {};
     options.params = params;
 
-    if (options.format) {
+    if (options.format !== undefined) {
         params.format = options.format;
     }
 
-    if (options.width) {
+    if (options.width !== undefined) {
         params.width = options.width;
     }
 
-    if (options.height) {
+    if (options.height !== undefined) {
         params.height = options.height;
     }
 
-    if (options.size) {
+    if (options.size !== undefined) {
         params.size = options.size;
     }
 
-    if (options.background) {
+    if (options.background !== undefined) {
         params.background = options.background;
     }
 
-    if (options.crop) {
+    if (options.crop !== undefined) {
         params.crop = options.crop ? "1" : "0";
     }
 
-    if (options.profile) {
+    if (options.profile !== undefined) {
         params.initials_profile = options.profile.join(",");
     }
 
     var initials = options.initials === "" ? "$empty" : options.initials;
-    if (options.initials) {
+    if (options.initials !== undefined) {
         params.initials = initials;
     }
 
@@ -1141,7 +1143,7 @@ ripe.Ripe.prototype._getMaskOptions = function(options) {
     var params = options.params || {};
     options.params = params;
 
-    if (options.part) {
+    if (options.part !== undefined) {
         params.part = options.part;
     }
 
