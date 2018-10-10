@@ -1021,8 +1021,8 @@ ripe.Ripe.prototype._getConfigOptions = function(options) {
     options = options || {};
     var brand = options.brand === undefined ? this.brand : options.brand;
     var model = options.model === undefined ? this.model : options.model;
-    var url = this.url + "brands/" + brand + "/models/" + model + "/config";
     var country = options.country === undefined ? this.country : options.country;
+    var url = this.url + "brands/" + brand + "/models/" + model + "/config";
     var params = {};
     if (country) {
         params.country = country;
@@ -1090,36 +1090,36 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
     var params = options.params || {};
     options.params = params;
 
-    if (options.format) {
+    if (options.format !== undefined) {
         params.format = options.format;
     }
 
-    if (options.width) {
+    if (options.width !== undefined) {
         params.width = options.width;
     }
 
-    if (options.height) {
+    if (options.height !== undefined) {
         params.height = options.height;
     }
 
-    if (options.size) {
+    if (options.size !== undefined) {
         params.size = options.size;
     }
 
-    if (options.background) {
+    if (options.background !== undefined) {
         params.background = options.background;
     }
 
-    if (options.crop) {
+    if (options.crop !== undefined) {
         params.crop = options.crop ? "1" : "0";
     }
 
-    if (options.profile) {
+    if (options.profile !== undefined) {
         params.initials_profile = options.profile.join(",");
     }
 
     var initials = options.initials === "" ? "$empty" : options.initials;
-    if (options.initials) {
+    if (options.initials !== undefined) {
         params.initials = initials;
     }
 
@@ -1143,7 +1143,7 @@ ripe.Ripe.prototype._getMaskOptions = function(options) {
     var params = options.params || {};
     options.params = params;
 
-    if (options.part) {
+    if (options.part !== undefined) {
         params.part = options.part;
     }
 
