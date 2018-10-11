@@ -266,7 +266,7 @@ ripe.Ripe.prototype._getConfigOptions = function(options) {
     return Object.assign(options, {
         url: url,
         method: "GET",
-        params: {}
+        params: params
     });
 };
 
