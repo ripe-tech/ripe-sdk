@@ -1062,11 +1062,13 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options) {
     options = options || {};
     var brand = options.brand === undefined ? this.brand : options.brand;
     var model = options.model === undefined ? this.model : options.model;
+    var useName =
+        options.useName !== undefined || options.useName !== null ? options.useName : false;
     var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
-    var useName = options.use_name === undefined || options.use_name === null ? "0" : options.use_name;
-    var params = {
-        use_name: useName
-    };
+    var params = {};
+    if (useName !== undefined && useName !== null) {
+        params.use_name = useName ? "1" : "0";
+    }
     if (options.resolve !== undefined && options.resolve !== null) {
         params.resolve = options.resolve;
     }

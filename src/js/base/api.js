@@ -295,13 +295,12 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options) {
     options = options || {};
     var brand = options.brand === undefined ? this.brand : options.brand;
     var model = options.model === undefined ? this.model : options.model;
-    var useName = options.useName === undefined || options.useName === null ? false : options.useName;
+    var useName =
+        options.useName !== undefined || options.useName !== null ? options.useName : false;
     var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
-    var params = {
-        use_name: useName
-    };
+    var params = {};
     if (useName !== undefined && useName !== null) {
-        params.resolve = useName ? "1" : "0";
+        params.use_name = useName ? "1" : "0";
     }
     if (options.resolve !== undefined && options.resolve !== null) {
         params.resolve = options.resolve;
