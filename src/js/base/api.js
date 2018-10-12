@@ -199,31 +199,31 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
     var country = options.country === undefined ? this.country : options.country;
     var currency = options.currency === undefined ? this.currency : options.currency;
 
-    if (brand) {
+    if (brand !== undefined && brand !== null) {
         params.brand = brand;
     }
 
-    if (model) {
+    if (model !== undefined && model !== null) {
         params.model = model;
     }
 
-    if (variant) {
+    if (variant !== undefined && variant !== null) {
         params.variant = variant;
     }
 
-    if (frame) {
+    if (frame !== undefined && frame !== null) {
         params.frame = frame;
     }
 
-    if (engraving) {
+    if (engraving !== undefined && engraving !== null) {
         params.engraving = engraving;
     }
 
-    if (country) {
+    if (country !== undefined && country !== null) {
         params.country = country;
     }
 
-    if (currency) {
+    if (currency !== undefined && currency !== null) {
         params.currency = currency;
     }
 
@@ -257,10 +257,10 @@ ripe.Ripe.prototype._getConfigOptions = function(options) {
     var country = options.country === undefined ? this.country : options.country;
     var url = this.url + "brands/" + brand + "/models/" + model + "/config";
     var params = {};
-    if (country) {
+    if (country !== undefined && country !== null) {
         params.country = country;
     }
-    if (options.filter !== undefined) {
+    if (options.filter !== undefined && options.filter !== null) {
         params.filter = options.filter;
     }
     return Object.assign(options, {
@@ -297,13 +297,13 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options) {
     var model = options.model === undefined ? this.model : options.model;
     var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
     var params = {};
-    if (options.resolve !== undefined) {
+    if (options.resolve !== undefined && options.resolve !== null) {
         params.resolve = options.resolve;
     }
-    if (options.sort !== undefined) {
+    if (options.sort !== undefined && options.sort !== null) {
         params.sort = options.sort;
     }
-    if (options.use_name !== undefined) {
+    if (options.use_name !== undefined && options.use_name !== null) {
         params.use_name = options.use_name;
     }
     return Object.assign(options, {
@@ -323,36 +323,36 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
     var params = options.params || {};
     options.params = params;
 
-    if (options.format !== undefined) {
+    if (options.format !== undefined && options.format !== null) {
         params.format = options.format;
     }
 
-    if (options.width !== undefined) {
+    if (options.width !== undefined && options.width !== null) {
         params.width = options.width;
     }
 
-    if (options.height !== undefined) {
+    if (options.height !== undefined && options.height !== null) {
         params.height = options.height;
     }
 
-    if (options.size !== undefined) {
+    if (options.size !== undefined && options.size !== null) {
         params.size = options.size;
     }
 
-    if (options.background !== undefined) {
+    if (options.background !== undefined && options.background !== null) {
         params.background = options.background;
     }
 
-    if (options.crop !== undefined) {
+    if (options.crop !== undefined && options.crop !== null) {
         params.crop = options.crop ? "1" : "0";
     }
 
-    if (options.profile !== undefined) {
+    if (options.profile !== undefined && options.profile !== null) {
         params.initials_profile = options.profile.join(",");
     }
 
     var initials = options.initials === "" ? "$empty" : options.initials;
-    if (options.initials !== undefined) {
+    if (options.initials !== undefined && options.initials !== null) {
         params.initials = initials;
     }
 
@@ -376,7 +376,7 @@ ripe.Ripe.prototype._getMaskOptions = function(options) {
     var params = options.params || {};
     options.params = params;
 
-    if (options.part !== undefined) {
+    if (options.part !== undefined && options.part !== null) {
         params.part = options.part;
     }
 
@@ -404,7 +404,7 @@ ripe.Ripe.prototype._build = function(options) {
     var method = options.method || "GET";
     var params = options.params || {};
     var auth = options.auth || false;
-    if (auth) {
+    if (auth !== undefined && auth !== null) {
         params.sid = this.sid;
     }
     options.url = url;

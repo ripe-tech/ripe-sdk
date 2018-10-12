@@ -137,7 +137,10 @@ describe("RipeAPI", function() {
                 model: "vyner"
             });
 
-            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/brands/swear/models/vyner/config");
+            assert.strictEqual(
+                result.url,
+                "https://sandbox.platforme.com/api/brands/swear/models/vyner/config"
+            );
             assert.strictEqual(result.params.country, "PT");
         });
     });
