@@ -151,7 +151,7 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
             result = remote._getCombinationsOptions();
-console.log(result);
+
             assert.strictEqual(result.params.use_name, "0");
         });
     });
