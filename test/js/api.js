@@ -125,12 +125,11 @@ describe("RipeAPI", function() {
         });
     });
 
-    describe("#__getConfigOptions", function() {
+    describe("#_getConfigOptions", function() {
         it("should include country in params", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI({
-                url: "https://swear.platforme.com/api/",
                 country: "PT"
             });
             result = remote._getConfigOptions({
@@ -138,7 +137,7 @@ describe("RipeAPI", function() {
                 model: "vyner"
             });
 
-            assert.strictEqual(result.url, "https://swear.platforme.com/api/brands/swear/models/vyner/config");
+            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/brands/swear/models/vyner/config");
             assert.strictEqual(result.params.country, "PT");
         });
     });
