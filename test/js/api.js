@@ -146,7 +146,7 @@ describe("RipeAPI", function() {
     });
     
     describe("#_getCombinationsOptions", function() {
-        it("should include use_name be 0 as default", async () => {
+        it("should include use_name as 0 by default", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI();
@@ -157,7 +157,7 @@ describe("RipeAPI", function() {
     });
     
     describe("#_getCombinationsOptions", function() {
-        it("should include use_name be 1 when explicitly defined", async () => {
+        it("should include use_name as 1 when explicitly defined", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI();
