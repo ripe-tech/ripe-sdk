@@ -144,6 +144,30 @@ describe("RipeAPI", function() {
             assert.strictEqual(result.params.country, "PT");
         });
     });
+    
+    describe("#_getCombinationsOptions", function() {
+        it("should include use_name be 0 as default", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._getCombinationsOptions();
+
+            assert.strictEqual(result.options.use_name, "0");
+        });
+    });
+    
+    describe("#_getCombinationsOptions", function() {
+        it("should include use_name be 1 when explicitly defined", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._getCombinationsOptions({
+            	use_name: "1"
+            });
+
+            assert.strictEqual(result.options.use_name, "1");
+        });
+    });
 
     describe("#_buildQuery", function() {
         it("should correctly generate a query string from array", async () => {

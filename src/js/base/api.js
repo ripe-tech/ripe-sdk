@@ -296,15 +296,15 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options) {
     var brand = options.brand === undefined ? this.brand : options.brand;
     var model = options.model === undefined ? this.model : options.model;
     var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
-    var params = {};
+    var useName = options.use_name !== undefined && options.use_name !== null ? "0" : options.use_name;
+    var params = {
+        use_name = useName;
+    }
     if (options.resolve !== undefined && options.resolve !== null) {
         params.resolve = options.resolve;
     }
     if (options.sort !== undefined && options.sort !== null) {
         params.sort = options.sort;
-    }
-    if (options.use_name !== undefined && options.use_name !== null) {
-        params.use_name = options.use_name;
     }
     return Object.assign(options, {
         url: url,
