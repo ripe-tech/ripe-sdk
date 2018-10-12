@@ -145,6 +145,30 @@ describe("RipeAPI", function() {
         });
     });
 
+    describe("#_getCombinationsOptions", function() {
+        it("should include use_name as 0 by default", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._getCombinationsOptions();
+
+            assert.strictEqual(result.params.use_name, "0");
+        });
+    });
+
+    describe("#_getCombinationsOptions", function() {
+        it("should include use_name as 1 when explicitly defined", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._getCombinationsOptions({
+                useName: true
+            });
+
+            assert.strictEqual(result.params.use_name, "1");
+        });
+    });
+
     describe("#_buildQuery", function() {
         it("should correctly generate a query string from array", async () => {
             let result = null;
