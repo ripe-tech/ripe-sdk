@@ -1171,7 +1171,7 @@ ripe.Ripe.prototype._build = function(options) {
     var method = options.method || "GET";
     var params = options.params || {};
     var auth = options.auth || false;
-    if (auth !== undefined && auth !== null) {
+    if (auth && this.sid !== undefined && this.sid !== null) {
         params.sid = this.sid;
     }
     options.url = url;
