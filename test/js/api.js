@@ -162,7 +162,7 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
             result = remote._getCombinationsOptions({
-            	use_name: "1"
+                use_name: "1"
             });
 
             assert.strictEqual(result.params.use_name, "1");
