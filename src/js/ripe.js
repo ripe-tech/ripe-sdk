@@ -1065,8 +1065,8 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options) {
     var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
     var useName = options.use_name !== undefined && options.use_name !== null ? "0" : options.use_name;
     var params = {
-        use_name = useName;
-    }
+        use_name: useName
+    };
     if (options.resolve !== undefined && options.resolve !== null) {
         params.resolve = options.resolve;
     }

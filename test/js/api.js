@@ -151,8 +151,8 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
             result = remote._getCombinationsOptions();
-
-            assert.strictEqual(result.options.use_name, "0");
+console.log(result);
+            assert.strictEqual(result.params.use_name, "0");
         });
     });
     
@@ -165,7 +165,7 @@ describe("RipeAPI", function() {
             	use_name: "1"
             });
 
-            assert.strictEqual(result.options.use_name, "1");
+            assert.strictEqual(result.params.use_name, "1");
         });
     });
 
