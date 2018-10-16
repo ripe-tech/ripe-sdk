@@ -435,6 +435,7 @@ ripe.Ripe.prototype.setOptions = function(options) {
     this.webUrl = this.options.webUrl || "https://sandbox.platforme.com/";
     this.parts = this.options.parts || {};
     this.country = this.options.country || null;
+    this.flag = this.options.flag || null;
     this.currency = this.options.currency || null;
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
@@ -964,6 +965,7 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
     var parts = options.parts === undefined ? this.parts : options.parts;
     var engraving = options.engraving === undefined ? this.engraving : options.engraving;
     var country = options.country === undefined ? this.country : options.country;
+    var flag = options.flag === undefined ? this.flag : options.flag;
     var currency = options.currency === undefined ? this.currency : options.currency;
 
     if (brand !== undefined && brand !== null) {
@@ -988,6 +990,10 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
 
     if (country !== undefined && country !== null) {
         params.country = country;
+    }
+
+    if (flag !== undefined && flag !== null) {
+        params.flag = flag;
     }
 
     if (currency !== undefined && currency !== null) {
@@ -1022,10 +1028,14 @@ ripe.Ripe.prototype._getConfigOptions = function(options) {
     var brand = options.brand === undefined ? this.brand : options.brand;
     var model = options.model === undefined ? this.model : options.model;
     var country = options.country === undefined ? this.country : options.country;
+    var flag = options.flag === undefined ? this.flag : options.flag;
     var url = this.url + "brands/" + brand + "/models/" + model + "/config";
     var params = {};
     if (country !== undefined && country !== null) {
         params.country = country;
+    }
+    if (flag !== undefined && flag !== null) {
+        params.flag = flag;
     }
     if (options.filter !== undefined && options.filter !== null) {
         params.filter = options.filter;
