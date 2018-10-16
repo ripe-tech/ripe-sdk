@@ -183,8 +183,8 @@ ripe.Ripe.prototype.setOptions = function(options) {
     this.webUrl = this.options.webUrl || "https://sandbox.platforme.com/";
     this.parts = this.options.parts || {};
     this.country = this.options.country || null;
-    this.flag = this.options.flag || null;
     this.currency = this.options.currency || null;
+    this.flag = this.options.flag || null;
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
     this.noDefaults = this.options.noDefaults === undefined ? false : this.options.noDefaults;
