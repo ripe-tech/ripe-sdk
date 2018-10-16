@@ -198,6 +198,7 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
     var engraving = options.engraving === undefined ? this.engraving : options.engraving;
     var country = options.country === undefined ? this.country : options.country;
     var currency = options.currency === undefined ? this.currency : options.currency;
+    var flag = options.flag === undefined ? this.flag : options.flag;
 
     if (brand !== undefined && brand !== null) {
         params.brand = brand;
@@ -225,6 +226,10 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
 
     if (currency !== undefined && currency !== null) {
         params.currency = currency;
+    }
+
+    if (flag !== undefined && flag !== null) {
+        params.flag = flag;
     }
 
     params.p = [];
@@ -255,10 +260,14 @@ ripe.Ripe.prototype._getConfigOptions = function(options) {
     var brand = options.brand === undefined ? this.brand : options.brand;
     var model = options.model === undefined ? this.model : options.model;
     var country = options.country === undefined ? this.country : options.country;
+    var flag = options.flag === undefined ? this.flag : options.flag;
     var url = this.url + "brands/" + brand + "/models/" + model + "/config";
     var params = {};
     if (country !== undefined && country !== null) {
         params.country = country;
+    }
+    if (flag !== undefined && flag !== null) {
+        params.flag = flag;
     }
     if (options.filter !== undefined && options.filter !== null) {
         params.filter = options.filter;
