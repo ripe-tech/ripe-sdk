@@ -143,7 +143,7 @@ describe("RipeAPI", function() {
             );
             assert.strictEqual(result.params.country, "PT");
         });
-        
+
         it("should include flag in params", async () => {
             let result = null;
 
