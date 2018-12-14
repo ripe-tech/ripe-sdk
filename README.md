@@ -136,6 +136,7 @@ If you need to explicitly retrieve the product's customization information you c
 - `getDefaults`: to get the product's default customization.
 - `getFrames`: to get all the product's frames.
 - `getPrice`: to get the product's pricing information.
+- `getFactory`: to get the factory information where the model is made, specifically its name and the estimated production time in days.
 
 These functions receive a callback function as a parameter as shown below:
 ```javascript
