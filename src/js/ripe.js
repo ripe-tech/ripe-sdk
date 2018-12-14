@@ -1107,8 +1107,7 @@ ripe.Ripe.prototype._getFactoryOptions = function(options) {
     var url = this.url + "brands/" + brand + "/models/" + model + "/factory";
     return Object.assign(options, {
         url: url,
-        method: "GET",
-        params: {}
+        method: "GET"
     });
 };
 
