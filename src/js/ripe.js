@@ -845,6 +845,14 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     });
 };
 
+ripe.Ripe.prototype.getFactory = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+    options = this._getFactoryOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
 ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // runs the defaulting operatin on the provided options
     // optional parameter (ensures valid object there)
@@ -1089,6 +1097,17 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options) {
         url: url,
         method: "GET",
         params: params
+    });
+};
+
+ripe.Ripe.prototype._getFactoryOptions = function(options) {
+    options = options || {};
+    var brand = options.brand === undefined ? this.brand : options.brand;
+    var model = options.model === undefined ? this.model : options.model;
+    var url = this.url + "brands/" + brand + "/models/" + model + "/factory";
+    return Object.assign(options, {
+        url: url,
+        method: "GET"
     });
 };
 

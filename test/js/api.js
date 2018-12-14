@@ -117,11 +117,11 @@ describe("RipeAPI", function() {
             assert.notStrictEqual(typeof result.sid, undefined);
 
             result = await new Promise((resolve, reject) => {
-                remote.getOrder(853, resolve);
+                remote.getOrder(4488, resolve);
             });
 
-            assert.strictEqual(result.number, 853);
-            assert.strictEqual(result.number_s, "#000853");
+            assert.strictEqual(result.number, 4488);
+            assert.strictEqual(result.number_s, "#004488");
         });
     });
 
