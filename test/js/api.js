@@ -175,6 +175,19 @@ describe("RipeAPI", function() {
     });
 
     describe("#_getCombinationsOptions", function() {
+        it("should include filter as 1 when explicitly defined", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._getCombinationsOptions({
+                filter: true
+            });
+
+            assert.strictEqual(result.params.filter, "1");
+        });
+    });
+
+    describe("#_getCombinationsOptions", function() {
         it("should include use_name as 1 when explicitly defined", async () => {
             let result = null;
 
