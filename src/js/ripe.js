@@ -1046,7 +1046,7 @@ ripe.Ripe.prototype._getConfigOptions = function(options) {
         params.flag = flag;
     }
     if (options.filter !== undefined && options.filter !== null) {
-        params.filter = options.filter;
+        params.filter = options.filter ? "1" : "0";
     }
     return Object.assign(options, {
         url: url,
@@ -1082,16 +1082,27 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options) {
     var model = options.model === undefined ? this.model : options.model;
     var useName =
         options.useName !== undefined && options.useName !== null ? options.useName : false;
+    var country = options.country === undefined ? this.country : options.country;
+    var flag = options.flag === undefined ? this.flag : options.flag;
     var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
     var params = {};
     if (useName !== undefined && useName !== null) {
         params.use_name = useName ? "1" : "0";
     }
+    if (country !== undefined && country !== null) {
+        params.country = country;
+    }
+    if (flag !== undefined && flag !== null) {
+        params.flag = flag;
+    }
     if (options.resolve !== undefined && options.resolve !== null) {
-        params.resolve = options.resolve;
+        params.resolve = options.resolve ? "1" : "0";
     }
     if (options.sort !== undefined && options.sort !== null) {
-        params.sort = options.sort;
+        params.sort = options.sort ? "1" : "0";
+    }
+    if (options.filter !== undefined && options.filter !== null) {
+        params.filter = options.filter ? "1" : "0";
     }
     return Object.assign(options, {
         url: url,
