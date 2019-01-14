@@ -41,19 +41,14 @@ ripe.bind("price", function(value) {
 });
 ```
 
-### Combinations
+### Config
 
-Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
+Called when a new model configuration has been loaded. You should use this to retrieve the model's configuration data , ie: when populating the customization options on your UI.
 
 ```javascript
-ripe.bind("combinations", function(value) {
-    for (var index = 0; index < value.length; index++) {
-        var triplet = value[index];
-        var part = triplet[0];
-        var material = triplet[1];
-        var color = triplet[2];
-        addOption(part, material, color);
-    }
+ripe.bind("config", function(config) {
+    var parts = config.parts;
+    // (...)
 });
 ```
 
@@ -167,13 +162,13 @@ Subscribe to the event `loaded` and you will know when your configurator is load
 
 This element supports the following methods:
 
-| Method | Params | Description |
-| --- | --- | --- |
-| `changeFrame` | <ul><li>`frame` *(string), named frame defined in the "view-position" format. Eg.: "side-0"*</li><li>`options` *(JSON object with optional fields)*:  `duration`: *(number)* total duration, in milliseconds, of the animation; `type`: *(string)* the animation style you want, wich can be "simple" (fade in), "cross" (crossfade) or null (without any style)*; `preventDrag`: *(boolean)* to choose if drag actions during an animated change of frames should be ignored. "True" by default</li></ul> | displays a new frame, with an animation from the starting frame |
-| `highlight` | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul> | highlights a product's part |
-| `lowlight` | <ul><li>`options` *(JSON object with optional fields)*</li></ul> | removes any highlight from the product |
-| `selectPart` | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul> | selects a given product's part |
-| `deselectPart` | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul> | removes selection from a given product's part |
+| Method         | Params                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Description                                                     |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `changeFrame`  | <ul><li>`frame` *(string), named frame defined in the "view-position" format. Eg.: "side-0"*</li><li>`options` *(JSON object with optional fields)*:  `duration`: *(number)* total duration, in milliseconds, of the animation; `type`: *(string)* the animation style you want, wich can be "simple" (fade in), "cross" (crossfade) or null (without any style)*; `preventDrag`: *(boolean)* to choose if drag actions during an animated change of frames should be ignored. "True" by default</li></ul> | displays a new frame, with an animation from the starting frame |
+| `highlight`    | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                     | highlights a product's part                                     |
+| `lowlight`     | <ul><li>`options` *(JSON object with optional fields)*</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                           | removes any highlight from the product                          |
+| `selectPart`   | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                     | selects a given product's part                                  |
+| `deselectPart` | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                     | removes selection from a given product's part                   |
 
 ```javascript
 var element = document.getElementById("config");
@@ -243,29 +238,29 @@ if (ripe.isOAuthPending()) {
 
 ### Options
 
-| Name | Type | Description |
-| --- | --- | --- |
-| `backgroundColor` | *string* | RGB format color value of the background ( no need to pass the "#" signal ). No background by default. Example: "cccccc" |
-| `country` | *string* | Two letters standard country codes defined in *ISO 3166-1 alpha-2* codes. "US" by default. Example: "PT" |
-| `currency` | *string* | Standard currency codes defined in *ISO 4217* codes. "USD" by default. Example: "EUR" |
-| `frames` | *array of strings* | All the frames to be used in the customization. Example: ["top", "bottom", "1", "2"] |
-| `format` | *string* | One of the valid image formats: 'jpeg', 'webp', 'sgi' or 'png' | "jpeg" by default |
-| `maskDuration` | *number* | Specifies how many milliseconds the mask animation takes to complete. 150 by default |
-| `maskOpacity` | *number* | Specifies the opacity value of the the masks used to highlight/select parts. 0.4 by default |
-| `maxSize` | *number* | Maximum value for frame image size. 1000px by default |
-| `noCombinations` | *boolean* | Defines if the combinations are loaded or not. False (loading) by default |
-| `noDefaults` | *boolean* | Defines if the defaults are loaded or not. False (loading) by default |
-| `noMasks` | *boolean* | Used to negate the `useMasks` option |
-| `noPrice` | *boolean* | Used to negate the `usePrice` option |
-| `parts` | *JSON Object* | Defines the product initial parts. Each key is a part's name built with color and material information. Example: `var parts = { "sole": { "material": "nappa", "color": "white" }, ... }` |
-| `sensitivity` | *string* | Defines the degree of sensitivity of the dragging interaction. 40 by default. |
-| `size` | *number* | Initial size value of a frame image that is going to be composed. By default it's 1000px. |
-| `url` | *string* | The base `url` of the server where the product is configured |
-| `variant` | *string* | Variant of the customizable product |
-| `useChain` | *boolean* | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default. |
-| `useMasks` | *boolean* | Enables masks on selection/highlight. True by default |
-| `usePrice` | *boolean* | Enables the fetch price feature everytime a new part is set. True by default. |
-| `useSync` | *boolean* | Enables the part synchronisation feature. False by default. |
+| Name              | Type               | Description                                                                                                                                                                               |
+| ----------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `backgroundColor` | *string*           | RGB format color value of the background ( no need to pass the "#" signal ). No background by default. Example: "cccccc"                                                                  |
+| `country`         | *string*           | Two letters standard country codes defined in *ISO 3166-1 alpha-2* codes. "US" by default. Example: "PT"                                                                                  |
+| `currency`        | *string*           | Standard currency codes defined in *ISO 4217* codes. "USD" by default. Example: "EUR"                                                                                                     |
+| `frames`          | *array of strings* | All the frames to be used in the customization. Example: ["top", "bottom", "1", "2"]                                                                                                      |
+| `format`          | *string*           | One of the valid image formats: 'jpeg', 'webp', 'sgi' or 'png'. "jpeg" by default                                                                                                         |
+| `maskDuration`    | *number*           | Specifies how many milliseconds the mask animation takes to complete. 150 by default                                                                                                      |
+| `maskOpacity`     | *number*           | Specifies the opacity value of the the masks used to highlight/select parts. 0.4 by default                                                                                               |
+| `maxSize`         | *number*           | Maximum value for frame image size. 1000px by default                                                                                                                                     |
+| `noCombinations`  | *boolean*          | Defines if the combinations are loaded or not. False (loading) by default                                                                                                                 |
+| `noDefaults`      | *boolean*          | Defines if the defaults are loaded or not. False (loading) by default                                                                                                                     |
+| `noMasks`         | *boolean*          | Used to negate the `useMasks` option                                                                                                                                                      |
+| `noPrice`         | *boolean*          | Used to negate the `usePrice` option                                                                                                                                                      |
+| `parts`           | *JSON Object*      | Defines the product initial parts. Each key is a part's name built with color and material information. Example: `var parts = { "sole": { "material": "nappa", "color": "white" }, ... }` |
+| `sensitivity`     | *string*           | Defines the degree of sensitivity of the dragging interaction. 40 by default.                                                                                                             |
+| `size`            | *number*           | Initial size value of a frame image that is going to be composed. By default it's 1000px.                                                                                                 |
+| `url`             | *string*           | The base `url` of the server where the product is configured                                                                                                                              |
+| `variant`         | *string*           | Variant of the customizable product                                                                                                                                                       |
+| `useChain`        | *boolean*          | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default.                                             |
+| `useMasks`        | *boolean*          | Enables masks on selection/highlight. True by default                                                                                                                                     |
+| `usePrice`        | *boolean*          | Enables the fetch price feature everytime a new part is set. True by default.                                                                                                             |
+| `useSync`         | *boolean*          | Enables the part synchronisation feature. False by default.                                                                                                                               |
 
 ## Browser Support
 
