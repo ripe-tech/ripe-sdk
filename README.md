@@ -52,6 +52,22 @@ ripe.bind("config", function(config) {
 });
 ```
 
+### Combinations
+
+Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`. 
+
+```javascript
+ripe.bind("combinations", function(value) {
+    for (var index = 0; index < value.length; index++) {
+        var triplet = value[index];
+        var part = triplet[0];
+        var material = triplet[1];
+        var color = triplet[2];
+        // (...)
+    }
+});
+```
+
 ### Parts
 
 Notifies you when all the product's parts have changed.
