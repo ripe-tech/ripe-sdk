@@ -41,9 +41,20 @@ ripe.bind("price", function(value) {
 });
 ```
 
+### Config
+
+Called when a new model configuration has been loaded. You should use this to retrieve the model's configuration data , ie: when populating the customization options on your UI.
+
+```javascript
+ripe.bind("config", function(config) {
+    var parts = config.parts;
+    // (...)
+});
+```
+
 ### Combinations
 
-Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`. You should use this to populate the customization options on your UI.
+Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`. 
 
 ```javascript
 ripe.bind("combinations", function(value) {
@@ -52,7 +63,7 @@ ripe.bind("combinations", function(value) {
         var part = triplet[0];
         var material = triplet[1];
         var color = triplet[2];
-        addOption(part, material, color);
+        // (...)
     }
 });
 ```
