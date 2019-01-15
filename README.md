@@ -54,7 +54,7 @@ ripe.bind("config", function(config) {
 
 ### Combinations
 
-Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`. 
+Called when the possible customization combinations of the product are loaded. Each combination is a triplet formed by `part`, `material` and `color`.
 
 ```javascript
 ripe.bind("combinations", function(value) {

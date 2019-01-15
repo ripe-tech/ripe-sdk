@@ -48,12 +48,12 @@ gulp.task("move-css", () => {
     return gulp.src(paths.maincss).pipe(gulp.dest("src/python/ripe_demo/static/css"));
 });
 
-gulp.task("compress", ["build-js"], () => {
+gulp.task("compress", gulp.series("build-js", () => {
     return gulp
         .src(paths.dist)
         .pipe(zip("dist.zip"))
         .pipe(gulp.dest("build"));
-});
+}));
 
 gulp.task("mark", () => {
     return gulp
@@ -92,8 +92,8 @@ gulp.task("watch-css", () => {
     gulp.watch(paths.css, ["move-css"]);
 });
 
-gulp.task("watch", ["build", "watch-js", "watch-css"]);
+gulp.task("build", gulp.series("build-js", "move-js", "move-css", "compress"));
 
-gulp.task("build", ["build-js", "move-js", "move-css", "compress"]);
+gulp.task("watch", gulp.series("build", "watch-js", "watch-css"));
 
-gulp.task("default", ["build"]);
+gulp.task("default", gulp.series("build"));
