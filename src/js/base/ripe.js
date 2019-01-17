@@ -92,7 +92,7 @@ ripe.Ripe.prototype.load = function() {
     this.update();
 };
 
-ripe.Ripe.prototype.unload = function() { };
+ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.config = function(brand, model, options) {
     // sets the most structural values of this entity
@@ -125,8 +125,8 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     var loadParts = loadDefaults
         ? this.getDefaults
         : function(callback) {
-            setTimeout(callback);
-        };
+              setTimeout(callback);
+          };
     loadParts.call(
         this,
         function(result) {

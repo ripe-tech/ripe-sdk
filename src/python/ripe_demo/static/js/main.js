@@ -125,13 +125,13 @@ window.onload = function() {
 
         getCombinations &&
             getCombinations.addEventListener("click", async function() {
-                let { result, ...rest } = await ripe.getCombinationsP();
+                let { result } = await ripe.getCombinationsP();
                 alert(
                     "There are <strong>" +
-                    String(result.length.formatMoney(0)) +
-                    "</strong> combinations with <strong>" +
-                    String(unique().formatMoney(0)) +
-                    "</strong> possible compositions"
+                        String(result.length.formatMoney(0)) +
+                        "</strong> combinations with <strong>" +
+                        String(unique().formatMoney(0)) +
+                        "</strong> possible compositions"
                 );
             });
 

@@ -47,7 +47,8 @@ var paths = {
 };
 
 gulp.task("build-js", () => {
-    return gulp.src(paths.scripts)
+    return gulp
+        .src(paths.scripts)
         .pipe(replace("__VERSION__", _package.version))
         .pipe(
             terser({
@@ -66,13 +67,12 @@ gulp.task("build-js", () => {
 });
 
 gulp.task("build-package-js", () => {
-    return gulp.src([paths.polyfill].concat(paths.basefiles))
+    return gulp
+        .src([paths.polyfill].concat(paths.basefiles))
         .pipe(replace("__VERSION__", _package.version))
         .pipe(
             babel({
-                presets: [
-                    ["@babel/preset-env"]
-                ]
+                presets: [["@babel/preset-env"]]
             })
         )
         .pipe(concat("ripe.js"))
@@ -84,8 +84,8 @@ gulp.task("build-package-js", () => {
                 ecma: 5
             })
         )
-        .pipe(gulp.dest("dist"))
-})
+        .pipe(gulp.dest("dist"));
+});
 
 gulp.task("move-js", () => {
     return gulp.src(paths.mainjs).pipe(gulp.dest("src/python/ripe_demo/static/js"));
@@ -95,12 +95,15 @@ gulp.task("move-css", () => {
     return gulp.src(paths.maincss).pipe(gulp.dest("src/python/ripe_demo/static/css"));
 });
 
-gulp.task("compress", gulp.series("build-js", () => {
-    return gulp
-        .src(paths.dist)
-        .pipe(zip("dist.zip"))
-        .pipe(gulp.dest("build"));
-}));
+gulp.task(
+    "compress",
+    gulp.series("build-js", () => {
+        return gulp
+            .src(paths.dist)
+            .pipe(zip("dist.zip"))
+            .pipe(gulp.dest("build"));
+    })
+);
 
 gulp.task("mark", () => {
     return gulp
