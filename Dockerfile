@@ -13,6 +13,8 @@ ENV CACHE 86400
 ENV CORS 1
 ENV BASE_PATH /dist
 
+ADD package.json /
+ADD gulpfile.js /
 ADD src /src
 
 RUN apk update && apk add nodejs npm

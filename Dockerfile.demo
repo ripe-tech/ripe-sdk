@@ -11,6 +11,8 @@ ENV SERVER_ENCODING gzip
 ENV HOST 0.0.0.0
 ENV PORT 8080
 
+ADD package.json /
+ADD gulpfile.js /
 ADD requirements.txt /
 ADD extra.txt /
 ADD src /src
