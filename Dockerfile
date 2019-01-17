@@ -21,5 +21,6 @@ RUN apk update && apk add nodejs npm
 RUN pip3 install --upgrade netius
 RUN npm install
 RUN npm run build
+RUN ln -s . dist/js && ln -s . dist/css
 
 CMD ["/usr/bin/python3", "-m", "netius.extra.filea"]
