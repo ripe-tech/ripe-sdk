@@ -42,7 +42,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // operations may be executed over the object life-time
     this.config(brand, model, options);
 
-    // listens for the post parts event and saves the current configuration~
+    // listens for the post parts event and saves the current configuration
     // for the undo operations (history control)
     this.bind("post_parts", function(parts, options) {
         if (options && ["undo", "redo"].indexOf(options.action) !== -1) {

@@ -77,6 +77,14 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     });
 };
 
+ripe.Ripe.prototype.getCombinationsP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getCombinations(options, (result, isValid, request) => {
+            isValid ? resolve({ result: result, request: request }) : reject(new Error());
+        });
+    });
+};
+
 ripe.Ripe.prototype.getFactory = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;

@@ -124,16 +124,15 @@ window.onload = function() {
             });
 
         getCombinations &&
-            getCombinations.addEventListener("click", function() {
-                ripe.getCombinations(function(value) {
-                    alert(
-                        "There are <strong>" +
-                            String(value.length.formatMoney(0)) +
-                            "</strong> combinations with <strong>" +
-                            String(unique().formatMoney(0)) +
-                            "</strong> possible compositions"
-                    );
-                });
+            getCombinations.addEventListener("click", async function() {
+                let { result } = await ripe.getCombinationsP();
+                alert(
+                    "There are <strong>" +
+                        String(result.length.formatMoney(0)) +
+                        "</strong> combinations with <strong>" +
+                        String(unique().formatMoney(0)) +
+                        "</strong> possible compositions"
+                );
             });
 
         ripe.bind("price", function(value) {
