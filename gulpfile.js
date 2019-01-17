@@ -89,6 +89,7 @@ gulp.task("build-package-js", () => {
     return gulp
         .src([paths.polyfill].concat(paths.basefiles))
         .pipe(sourcemaps.init())
+        .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))
         .pipe(
             babel({
@@ -104,6 +105,7 @@ gulp.task("build-package-min", () => {
     return gulp
         .src([paths.polyfill].concat(paths.basefiles))
         .pipe(sourcemaps.init())
+        .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))
         .pipe(
             babel({
