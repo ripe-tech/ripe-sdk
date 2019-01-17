@@ -80,7 +80,7 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
 ripe.Ripe.prototype.getCombinationsP = function(options) {
     return new Promise((resolve, reject) => {
         this.getCombinations(options, (result, isValid, request) => {
-            isValid ? resolve({ result: result, request: request }) : reject();
+            isValid ? resolve({ result: result, request: request }) : reject(new Error());
         });
     });
 };
@@ -169,7 +169,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         var isValid = this.status === 200;
         try {
             result = JSON.parse(this.responseText);
-        } catch (error) {}
+        } catch (error) { }
         callback && callback.call(context, result, isValid, this);
     });
 
