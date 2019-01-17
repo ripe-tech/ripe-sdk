@@ -50,12 +50,6 @@ gulp.task("build-js", () => {
     return gulp
         .src(paths.scripts)
         .pipe(replace("__VERSION__", _package.version))
-        .pipe(
-            terser({
-                mangle: false,
-                ecma: 5
-            })
-        )
         .pipe(size())
         .pipe(
             size({
