@@ -4,6 +4,7 @@
 session.shelve*
 
 .DS_Store
+ripe.js
 dist.zip
 package-lock.json
 

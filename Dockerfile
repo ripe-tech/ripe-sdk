@@ -11,10 +11,13 @@ ENV HOST 0.0.0.0
 ENV PORT 8080
 ENV CACHE 86400
 ENV CORS 1
-ENV BASE_PATH /src
+ENV BASE_PATH /dist
 
 ADD src /src
 
+RUN apk update && apk add nodejs npm
 RUN pip3 install --upgrade netius
+RUN npm install
+RUN npm run build
 
 CMD ["/usr/bin/python3", "-m", "netius.extra.filea"]
