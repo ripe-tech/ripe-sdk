@@ -1,3 +1,4 @@
+const log = require("fancy-log");
 const gulp = require("gulp");
 const zip = require("gulp-zip");
 const size = require("gulp-size");
@@ -12,7 +13,7 @@ const terser = require("gulp-terser");
 const replace = require("gulp-replace");
 const _package = require("./package.json");
 
-var paths = {
+const paths = {
     mainjs: "dist/ripe.js",
     maincss: "src/css/ripe.css",
     scripts: "src/js/**/*.js",
@@ -57,7 +58,30 @@ gulp.task("build-js", () => {
             })
         )
         .pipe(gulp.dest("dist"))
-        .pipe(count("## js files copied"));
+        .pipe(
+            count({
+                message: "## js files copied",
+                logger: msg => log(msg)
+            })
+        );
+});
+
+gulp.task("build-css", () => {
+    return gulp
+        .src(paths.css)
+        .pipe(size())
+        .pipe(
+            size({
+                gzip: true
+            })
+        )
+        .pipe(gulp.dest("dist"))
+        .pipe(
+            count({
+                message: "## css files copied",
+                logger: msg => log(msg)
+            })
+        );
 });
 
 gulp.task("build-package-js", () => {
@@ -91,7 +115,7 @@ gulp.task("move-css", () => {
 
 gulp.task(
     "compress",
-    gulp.series("build-js", () => {
+    gulp.series("build-js", "build-css", () => {
         return gulp
             .src(paths.dist)
             .pipe(zip("dist.zip"))
@@ -136,7 +160,10 @@ gulp.task("watch-css", () => {
     gulp.watch(paths.css, ["move-css"]);
 });
 
-gulp.task("build", gulp.series("build-js", "build-package-js", "move-js", "move-css", "compress"));
+gulp.task(
+    "build",
+    gulp.series("build-js", "build-css", "build-package-js", "move-js", "move-css", "compress")
+);
 
 gulp.task("watch", gulp.series("build", "watch-js", "watch-css"));
 
