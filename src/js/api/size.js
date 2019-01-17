@@ -8,7 +8,7 @@ if (typeof require !== "undefined") {
 ripe.Ripe.prototype.getSizes = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var url = this.url + "sizes";
+    const url = this.url + "sizes";
     options = Object.assign(options, {
         url: url,
         method: "GET"
@@ -20,7 +20,7 @@ ripe.Ripe.prototype.getSizes = function(options, callback) {
 ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var url = this.url + "sizes/size_to_native";
+    const url = this.url + "sizes/size_to_native";
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -38,17 +38,17 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
 
-    var scalesP = [];
-    var valuesP = [];
-    var gendersP = [];
+    const scalesP = [];
+    const valuesP = [];
+    const gendersP = [];
 
-    for (var index = 0; index < scales.length; index++) {
+    for (let index = 0; index < scales.length; index++) {
         scalesP.push(scales[index]);
         valuesP.push(values[index]);
         gendersP.push(genders[index]);
     }
 
-    var url = this.url + "sizes/size_to_native_b";
+    const url = this.url + "sizes/size_to_native_b";
 
     options = Object.assign(options, {
         url: url,
@@ -67,7 +67,7 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
 ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var url = this.url + "sizes/native_to_size";
+    const url = this.url + "sizes/native_to_size";
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -85,17 +85,17 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
 
-    var scalesP = [];
-    var valuesP = [];
-    var gendersP = [];
+    const scalesP = [];
+    const valuesP = [];
+    const gendersP = [];
 
-    for (var index = 0; index < scales.length; index++) {
+    for (let index = 0; index < scales.length; index++) {
         scalesP.push(scales[index]);
         valuesP.push(values[index]);
         gendersP.push(genders[index]);
     }
 
-    var url = this.url + "sizes/native_to_size_b";
+    const url = this.url + "sizes/native_to_size_b";
 
     options = Object.assign(options, {
         url: url,
