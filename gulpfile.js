@@ -8,13 +8,14 @@ const mocha = require("gulp-mocha");
 const jsdoc = require("gulp-jsdoc3");
 const concat = require("gulp-concat");
 const eslint = require("gulp-eslint");
-const rename = require("gulp-rename");
 const terser = require("gulp-terser");
 const replace = require("gulp-replace");
+const sourcemaps = require("gulp-sourcemaps");
 const _package = require("./package.json");
 
 const paths = {
     mainjs: "dist/ripe.js",
+    mainmap: "dist/ripe.js.map",
     maincss: "src/css/ripe.css",
     scripts: "src/js/**/*.js",
     bscripts: "src/js/*/**/*.js",
@@ -87,6 +88,7 @@ gulp.task("build-css", () => {
 gulp.task("build-package-js", () => {
     return gulp
         .src([paths.polyfill].concat(paths.basefiles))
+        .pipe(sourcemaps.init())
         .pipe(replace("__VERSION__", _package.version))
         .pipe(
             babel({
@@ -94,19 +96,35 @@ gulp.task("build-package-js", () => {
             })
         )
         .pipe(concat("ripe.js"))
-        .pipe(gulp.dest("dist"))
-        .pipe(rename("ripe.min.js"))
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest("dist"));
+});
+
+gulp.task("build-package-min", () => {
+    return gulp
+        .src([paths.polyfill].concat(paths.basefiles))
+        .pipe(sourcemaps.init())
+        .pipe(replace("__VERSION__", _package.version))
+        .pipe(
+            babel({
+                presets: [["@babel/preset-env"]]
+            })
+        )
+        .pipe(concat("ripe.min.js"))
         .pipe(
             terser({
                 mangle: false,
                 ecma: 5
             })
         )
+        .pipe(sourcemaps.write("."))
         .pipe(gulp.dest("dist"));
 });
 
 gulp.task("move-js", () => {
-    return gulp.src(paths.mainjs).pipe(gulp.dest("src/python/ripe_demo/static/js"));
+    return gulp
+        .src([paths.mainjs, paths.mainmap])
+        .pipe(gulp.dest("src/python/ripe_demo/static/js"));
 });
 
 gulp.task("move-css", () => {
@@ -153,7 +171,10 @@ gulp.task("docs", cb => {
 });
 
 gulp.task("watch-js", () => {
-    gulp.watch(paths.scripts, gulp.series("build-js", "build-package-js", "move-js", "compress"));
+    gulp.watch(
+        paths.scripts,
+        gulp.series("build-js", "build-package-js", "build-package-min", "move-js", "compress")
+    );
 });
 
 gulp.task("watch-css", () => {
@@ -162,7 +183,15 @@ gulp.task("watch-css", () => {
 
 gulp.task(
     "build",
-    gulp.series("build-js", "build-css", "build-package-js", "move-js", "move-css", "compress")
+    gulp.series(
+        "build-js",
+        "build-css",
+        "build-package-js",
+        "build-package-min",
+        "move-js",
+        "move-css",
+        "compress"
+    )
 );
 
 gulp.task("watch", gulp.parallel("build", "watch-js", "watch-css"));
