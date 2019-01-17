@@ -153,11 +153,11 @@ gulp.task("docs", cb => {
 });
 
 gulp.task("watch-js", () => {
-    gulp.watch(paths.scripts, ["build-js", "move-js", "compress"]);
+    gulp.watch(paths.scripts, gulp.series("build-js", "build-package-js", "move-js", "compress"));
 });
 
 gulp.task("watch-css", () => {
-    gulp.watch(paths.css, ["move-css"]);
+    gulp.watch(paths.css, gulp.series("move-css"));
 });
 
 gulp.task(
@@ -165,6 +165,6 @@ gulp.task(
     gulp.series("build-js", "build-css", "build-package-js", "move-js", "move-css", "compress")
 );
 
-gulp.task("watch", gulp.series("build", "watch-js", "watch-css"));
+gulp.task("watch", gulp.parallel("build", "watch-js", "watch-css"));
 
 gulp.task("default", gulp.series("build"));
