@@ -17,7 +17,7 @@ ripe.RipeAPI = function(options) {
 ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
-    var url = this.url + "signin";
+    const url = this.url + "signin";
     options = Object.assign(options, {
         url: url,
         method: "POST",
@@ -58,9 +58,9 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
 
 ripe.Ripe.prototype.getOptionals = function(options, callback) {
     return this.getDefaults(options, function(defaults, isValid, request) {
-        var optionals = [];
-        for (var name in defaults) {
-            var part = defaults[name];
+        const optionals = [];
+        for (const name in defaults) {
+            const part = defaults[name];
             part.optional && optionals.push(name);
         }
         callback && callback(optionals, isValid, request);
@@ -101,17 +101,17 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
 
     // builds the (base) key value for the provided value
     // from options or used the default one
-    var key = options.key || "default";
+    const key = options.key || "default";
 
     // creates the full key by adding the base key to the
     // URL value (including query string), this is unique
     // assuming no request payload
-    var query = this._buildQuery(options.params || {});
-    var fullKey = key + ":" + url + ":" + query;
+    const query = this._buildQuery(options.params || {});
+    const fullKey = key + ":" + url + ":" + query;
 
     // determines if the current request should be cached, obeys
     // some of the basic rules for that behaviour
-    var cached = typeof options.cached === "undefined" ? true : options.cached;
+    let cached = typeof options.cached === "undefined" ? true : options.cached;
     cached = cached && !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
 
     // initializes the cache object in the current instance
@@ -143,17 +143,17 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
 
-    var context = this;
-    var method = options.method || "GET";
-    var params = options.params || {};
-    var headers = options.headers || {};
-    var data = options.data || null;
-    var contentType = options.contentType || null;
+    const context = this;
+    const method = options.method || "GET";
+    const params = options.params || {};
+    const headers = options.headers || {};
+    let data = options.data || null;
+    let contentType = options.contentType || null;
 
-    var query = this._buildQuery(params);
-    var isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
-    var hasQuery = url.indexOf("?") !== -1;
-    var separator = hasQuery ? "&" : "?";
+    const query = this._buildQuery(params);
+    const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
+    const hasQuery = url.indexOf("?") !== -1;
+    const separator = hasQuery ? "&" : "?";
 
     if (isEmpty || data) {
         url += separator + query;
@@ -162,11 +162,11 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         contentType = "application/x-www-form-urlencoded";
     }
 
-    var request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
 
     request.addEventListener("load", function() {
-        var result = null;
-        var isValid = this.status === 200;
+        let result = null;
+        const isValid = this.status === 200;
         try {
             result = JSON.parse(this.responseText);
         } catch (error) {}
@@ -182,8 +182,8 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     });
 
     request.open(method, url);
-    for (var key in headers) {
-        var value = headers[key];
+    for (const key in headers) {
+        const value = headers[key];
         request.setRequestHeader(key, value);
     }
     if (contentType) {
@@ -203,18 +203,18 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
 ripe.Ripe.prototype._getQueryOptions = function(options) {
     options = options || {};
 
-    var params = options.params || {};
+    const params = options.params || {};
     options.params = params;
 
-    var brand = options.brand === undefined ? this.brand : options.brand;
-    var model = options.model === undefined ? this.model : options.model;
-    var variant = options.variant === undefined ? this.variant : options.variant;
-    var frame = options.frame === undefined ? this.frame : options.frame;
-    var parts = options.parts === undefined ? this.parts : options.parts;
-    var engraving = options.engraving === undefined ? this.engraving : options.engraving;
-    var country = options.country === undefined ? this.country : options.country;
-    var currency = options.currency === undefined ? this.currency : options.currency;
-    var flag = options.flag === undefined ? this.flag : options.flag;
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const frame = options.frame === undefined ? this.frame : options.frame;
+    const parts = options.parts === undefined ? this.parts : options.parts;
+    const engraving = options.engraving === undefined ? this.engraving : options.engraving;
+    const country = options.country === undefined ? this.country : options.country;
+    const currency = options.currency === undefined ? this.currency : options.currency;
+    const flag = options.flag === undefined ? this.flag : options.flag;
 
     if (brand !== undefined && brand !== null) {
         params.brand = brand;
@@ -250,10 +250,10 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
 
     params.p = [];
 
-    for (var part in parts) {
-        var value = parts[part];
-        var material = value.material;
-        var color = value.color;
+    for (const part in parts) {
+        const value = parts[part];
+        const material = value.material;
+        const color = value.color;
         if (!material) {
             continue;
         }
@@ -273,12 +273,12 @@ ripe.Ripe.prototype._getQuery = function(options) {
 
 ripe.Ripe.prototype._getConfigOptions = function(options) {
     options = options || {};
-    var brand = options.brand === undefined ? this.brand : options.brand;
-    var model = options.model === undefined ? this.model : options.model;
-    var country = options.country === undefined ? this.country : options.country;
-    var flag = options.flag === undefined ? this.flag : options.flag;
-    var url = this.url + "brands/" + brand + "/models/" + model + "/config";
-    var params = {};
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const country = options.country === undefined ? this.country : options.country;
+    const flag = options.flag === undefined ? this.flag : options.flag;
+    const url = this.url + "brands/" + brand + "/models/" + model + "/config";
+    const params = {};
     if (country !== undefined && country !== null) {
         params.country = country;
     }
@@ -297,7 +297,7 @@ ripe.Ripe.prototype._getConfigOptions = function(options) {
 
 ripe.Ripe.prototype._getPriceOptions = function(options) {
     options = options || {};
-    var url = this.url + "config/price";
+    const url = this.url + "config/price";
     options = this._getQueryOptions(options);
     return Object.assign(options, {
         url: url,
@@ -307,9 +307,9 @@ ripe.Ripe.prototype._getPriceOptions = function(options) {
 
 ripe.Ripe.prototype._getDefaultsOptions = function(options) {
     options = options || {};
-    var brand = options.brand === undefined ? this.brand : options.brand;
-    var model = options.model === undefined ? this.model : options.model;
-    var url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
     return Object.assign(options, {
         url: url,
         method: "GET"
@@ -318,14 +318,14 @@ ripe.Ripe.prototype._getDefaultsOptions = function(options) {
 
 ripe.Ripe.prototype._getCombinationsOptions = function(options) {
     options = options || {};
-    var brand = options.brand === undefined ? this.brand : options.brand;
-    var model = options.model === undefined ? this.model : options.model;
-    var useName =
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const useName =
         options.useName !== undefined && options.useName !== null ? options.useName : false;
-    var country = options.country === undefined ? this.country : options.country;
-    var flag = options.flag === undefined ? this.flag : options.flag;
-    var url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
-    var params = {};
+    const country = options.country === undefined ? this.country : options.country;
+    const flag = options.flag === undefined ? this.flag : options.flag;
+    const url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
+    const params = {};
     if (useName !== undefined && useName !== null) {
         params.use_name = useName ? "1" : "0";
     }
@@ -353,9 +353,9 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options) {
 
 ripe.Ripe.prototype._getFactoryOptions = function(options) {
     options = options || {};
-    var brand = options.brand === undefined ? this.brand : options.brand;
-    var model = options.model === undefined ? this.model : options.model;
-    var url = this.url + "brands/" + brand + "/models/" + model + "/factory";
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const url = this.url + "brands/" + brand + "/models/" + model + "/factory";
     return Object.assign(options, {
         url: url,
         method: "GET"
@@ -369,7 +369,7 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
 
     options = this._getQueryOptions(options);
 
-    var params = options.params || {};
+    const params = options.params || {};
     options.params = params;
 
     if (options.format !== undefined && options.format !== null) {
@@ -400,12 +400,12 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
         params.initials_profile = options.profile.join(",");
     }
 
-    var initials = options.initials === "" ? "$empty" : options.initials;
+    const initials = options.initials === "" ? "$empty" : options.initials;
     if (options.initials !== undefined && options.initials !== null) {
         params.initials = initials;
     }
 
-    var url = this.url + "compose";
+    const url = this.url + "compose";
 
     return Object.assign(options, {
         url: url,
@@ -422,14 +422,14 @@ ripe.Ripe.prototype._getMaskOptions = function(options) {
 
     options = this._getQueryOptions(options);
 
-    var params = options.params || {};
+    const params = options.params || {};
     options.params = params;
 
     if (options.part !== undefined && options.part !== null) {
         params.part = options.part;
     }
 
-    var url = this.url + "mask";
+    const url = this.url + "mask";
 
     return Object.assign(options, {
         url: url,
@@ -449,10 +449,10 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
 };
 
 ripe.Ripe.prototype._build = function(options) {
-    var url = options.url || "";
-    var method = options.method || "GET";
-    var params = options.params || {};
-    var auth = options.auth || false;
+    const url = options.url || "";
+    const method = options.method || "GET";
+    const params = options.params || {};
+    const auth = options.auth || false;
     if (auth && this.sid !== undefined && this.sid !== null) {
         params.sid = this.sid;
     }
@@ -464,14 +464,14 @@ ripe.Ripe.prototype._build = function(options) {
 };
 
 ripe.Ripe.prototype._buildQuery = function(params) {
-    var key;
-    var value;
-    var index;
-    var buffer = [];
+    let key;
+    let value;
+    let index;
+    const buffer = [];
 
     if (Array.isArray(params)) {
         for (index = 0; index < params.length; index++) {
-            var tuple = params[index];
+            const tuple = params[index];
             key = tuple[0];
             value = tuple.length > 1 ? tuple[1] : "";
             key = encodeURIComponent(key);
@@ -479,15 +479,15 @@ ripe.Ripe.prototype._buildQuery = function(params) {
             buffer.push(key + "=" + value);
         }
     } else {
-        var keys = Object.keys(params);
+        const keys = Object.keys(params);
         keys.sort();
         for (index = 0; index < keys.length; index++) {
             key = keys[index];
             value = params[key];
             key = encodeURIComponent(key);
             if (Array.isArray(value)) {
-                for (var _index = 0; _index < value.length; _index++) {
-                    var _value = value[_index];
+                for (let _index = 0; _index < value.length; _index++) {
+                    let _value = value[_index];
                     _value = encodeURIComponent(_value);
                     buffer.push(key + "=" + _value);
                 }
@@ -504,18 +504,18 @@ ripe.Ripe.prototype._buildQuery = function(params) {
 ripe.Ripe.prototype._unpackQuery = function(query) {
     query = query[0] === "?" ? query.slice(1) : query;
 
-    var parts = query.split("&");
-    var options = {};
+    const parts = query.split("&");
+    const options = {};
 
-    for (var index = 0; index < parts.length; index++) {
-        var part = parts[index];
+    for (let index = 0; index < parts.length; index++) {
+        const part = parts[index];
 
         if (part.indexOf("=") === -1) {
             options[decodeURIComponent(part).trim()] = true;
         } else {
-            var tuple = part.split("=");
-            var key = decodeURIComponent(tuple[0]).trim();
-            var value = decodeURIComponent(tuple[1]).trim();
+            const tuple = part.split("=");
+            const key = decodeURIComponent(tuple[0]).trim();
+            const value = decodeURIComponent(tuple[1]).trim();
             options[key] = value;
         }
     }
