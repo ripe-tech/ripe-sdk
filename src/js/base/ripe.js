@@ -184,6 +184,7 @@ ripe.Ripe.prototype.setOptions = function(options) {
     this.parts = this.options.parts || {};
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
+    this.locale = this.options.locale || null;
     this.flag = this.options.flag || null;
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
