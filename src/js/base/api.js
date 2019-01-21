@@ -185,7 +185,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         const isValid = this.status === 200;
         try {
             result = JSON.parse(this.responseText);
-        } catch (error) {}
+        } catch (error) { }
         callback && callback.call(context, result, isValid, this);
     });
 
@@ -387,10 +387,10 @@ ripe.Ripe.prototype._getLocaleModelOptions = function(options) {
     const url = this.url + "builds/" + brand + "/locale/" + locale;
     const params = {};
     if (model !== undefined && model !== null) {
-        params.model = model
+        params.model = model;
     }
     if (options.compatibility !== undefined && options.compatibility !== null) {
-        params.compatibility = compatibility ? "1" : "0";
+        params.compatibility = options.compatibility ? "1" : "0";
     }
     if (options.prefix !== undefined && options.prefix !== null) {
         params.prefix = options.prefix;
