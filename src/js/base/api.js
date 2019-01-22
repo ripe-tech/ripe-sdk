@@ -185,7 +185,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         const isValid = this.status === 200;
         try {
             result = JSON.parse(this.responseText);
-        } catch (error) { }
+        } catch (error) {}
         callback && callback.call(context, result, isValid, this);
     });
 
@@ -503,6 +503,19 @@ ripe.Ripe.prototype._build = function(options) {
     return options;
 };
 
+/**
+ * Builds a GET query string from the provided Array of
+ * Object parameter.
+ *
+ * If the provided parameter is an Array order of the GET
+ * parameters is preserved, otherwise alphabethical order
+ * is going to be used.
+ *
+ * @param {Object} params The object or array that contains
+ * the sequence of parameeters for the generated GET query.
+ * @returns {String} The GET query string that should contain
+ * the complete set of passed arguments (serialization).
+ */
 ripe.Ripe.prototype._buildQuery = function(params) {
     let key;
     let value;
@@ -544,6 +557,9 @@ ripe.Ripe.prototype._buildQuery = function(params) {
 /**
  * Unpacks the provided query string into it's components inside
  * a key, value object for easy usage.
+ *
+ * This operation is considered to be the opposite of the `_buildQuery`
+ * operation.
  *
  * @param {String} The GET query string that is going to be parsed
  * for the creation of the output Object.
