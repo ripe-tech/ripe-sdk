@@ -12,19 +12,19 @@ ripe.Observable = function() {
 ripe.Observable.prototype.init = function() {};
 
 ripe.Observable.prototype.addCallback = function(event, callback) {
-    var callbacks = this.callbacks[event] || [];
+    const callbacks = this.callbacks[event] || [];
     callbacks.push(callback);
     this.callbacks[event] = callbacks;
 };
 
 ripe.Observable.prototype.removeCallback = function(event, callback) {
-    var callbacks = this.callbacks[event] || [];
+    const callbacks = this.callbacks[event] || [];
     if (!callback) {
         delete this.callbacks[event];
         return;
     }
 
-    var index = callbacks.indexOf(callback);
+    const index = callbacks.indexOf(callback);
     if (index === -1) {
         return;
     }
@@ -33,9 +33,9 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
 };
 
 ripe.Observable.prototype.runCallbacks = function(event) {
-    var callbacks = this.callbacks[event] || [];
-    for (var index = 0; index < callbacks.length; index++) {
-        var callback = callbacks[index];
+    const callbacks = this.callbacks[event] || [];
+    for (let index = 0; index < callbacks.length; index++) {
+        const callback = callbacks[index];
         callback.apply(this, Array.prototype.slice.call(arguments, 1));
     }
 };

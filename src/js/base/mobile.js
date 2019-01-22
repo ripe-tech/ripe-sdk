@@ -12,15 +12,15 @@ ripe.touchHandler = function(element, options) {
     }
 
     options = options || {};
-    var SAFE = options.safe === undefined ? true : options.safe;
-    var VALID = options.valid || ["DIV", "IMG", "SPAN", "CANVAS"];
+    const SAFE = options.safe === undefined ? true : options.safe;
+    const VALID = options.valid || ["DIV", "IMG", "SPAN", "CANVAS"];
 
-    var eventHandler = function(event) {
+    const eventHandler = function(event) {
         // retrieves the complete set of touches and uses
         // only the first one for type reference
-        var touches = event.changedTouches;
-        var first = touches[0];
-        var type = "";
+        const touches = event.changedTouches;
+        const first = touches[0];
+        let type = "";
 
         // switches over the type of touch event associating
         // the proper equivalent mouse enve to each of them
@@ -44,7 +44,7 @@ ripe.touchHandler = function(element, options) {
         // verifies if the current event is considered to be valid,
         // this occurs if the target of the type of the target is
         // considered to be valid according to the current rules
-        var isValid = VALID.indexOf(first.target.tagName) === -1;
+        const isValid = VALID.indexOf(first.target.tagName) === -1;
         if (SAFE && isValid) {
             return;
         }
@@ -52,7 +52,7 @@ ripe.touchHandler = function(element, options) {
         // creates the new mouse event that will emulate the
         // touch event that has just been raised, it should
         // be completly equivalent to the original touch
-        var mouseEvent = document.createEvent("MouseEvent");
+        const mouseEvent = document.createEvent("MouseEvent");
         mouseEvent.initMouseEvent(
             type,
             true,
