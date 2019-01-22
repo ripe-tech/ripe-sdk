@@ -76,8 +76,8 @@ ripe.fixEvent = function(event) {
         return event;
     }
 
-    const _target = event.target || event.srcElement;
-    const rect = _target.getBoundingClientRect();
+    const target = event.target || event.srcElement;
+    const rect = target.getBoundingClientRect();
 
     try {
         event.offsetX = event.clientX - rect.left;
