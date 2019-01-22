@@ -6,7 +6,7 @@ if (typeof require !== "undefined") {
 }
 
 ripe.createElement = function(tagName, className) {
-    var element = tagName && document.createElement(tagName);
+    const element = tagName && document.createElement(tagName);
     element.className = className || "";
     return element;
 };
@@ -14,17 +14,17 @@ ripe.createElement = function(tagName, className) {
 ripe.animateProperty = function(element, property, initial, final, duration, callback) {
     // sets the initial value for the property
     element.style[property] = initial;
-    var last = new Date();
+    let last = new Date();
 
-    var frame = function() {
+    const frame = function() {
         // checks how much time has passed since the last animation frame
-        var current = new Date();
-        var timeDelta = current - last;
-        var animationDelta = (timeDelta * (final - initial)) / duration;
+        const current = new Date();
+        const timeDelta = current - last;
+        const animationDelta = (timeDelta * (final - initial)) / duration;
 
         // adjusts the value by the correspondent amount
         // making sure it doens't surpass the final value
-        var value = parseFloat(element.style[property]);
+        let value = parseFloat(element.style[property]);
         value += animationDelta;
         value = final > initial ? Math.min(value, final) : Math.max(value, final);
         element.style[property] = value;
@@ -33,12 +33,12 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
         // checks if the animation has finished and if it is then
         // fires the callback if it's set. Otherwise, requests a
         // new animation frame to proceed with the animation
-        var incrementAnimation = final > initial && value < final;
-        var decrementAnimation = final < initial && value > final;
+        const incrementAnimation = final > initial && value < final;
+        const decrementAnimation = final < initial && value > final;
         if (incrementAnimation || decrementAnimation) {
             // sets the id of the animation frame on the element
             // so that it can be canceled if necessary
-            var id = requestAnimationFrame(frame);
+            const id = requestAnimationFrame(frame);
             element.dataset.animation_id = id;
         } else {
             callback && callback();
@@ -64,9 +64,9 @@ ripe.frameNameHack = function(frame) {
     if (!frame) {
         return "";
     }
-    var _frame = ripe.parseFrameKey(frame);
-    var view = _frame[0];
-    var position = _frame[1];
+    const _frame = ripe.parseFrameKey(frame);
+    const view = _frame[0];
+    let position = _frame[1];
     position = view === "side" ? position : view;
     return position;
 };
@@ -76,8 +76,8 @@ ripe.fixEvent = function(event) {
         return event;
     }
 
-    var _target = event.target || event.srcElement;
-    var rect = _target.getBoundingClientRect();
+    const _target = event.target || event.srcElement;
+    const rect = _target.getBoundingClientRect();
     event.offsetX = event.clientX - rect.left;
     event.offsetY = event.clientY - rect.top;
     return event;
@@ -87,7 +87,7 @@ ripe.clone = function(object) {
     if (object === undefined) {
         return object;
     }
-    var objectS = JSON.stringify(object);
+    const objectS = JSON.stringify(object);
     return JSON.parse(objectS);
 };
 
@@ -95,7 +95,7 @@ ripe.equal = function(first, second) {
     if (first === second) {
         return true;
     }
-    var firstS = JSON.stringify(first);
-    var secondS = JSON.stringify(second);
+    const firstS = JSON.stringify(first);
+    const secondS = JSON.stringify(second);
     return firstS === secondS;
 };
