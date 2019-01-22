@@ -6,7 +6,7 @@ const plugins = require("../../src/js/plugins");
 const MockRipe = function(partOptions, optionals) {
     const mockRipe = new base.ripe.Observable();
 
-    var defaults = {};
+    const defaults = {};
     optionals = optionals || [];
     optionals.forEach(function(optional) {
         defaults[optional] = {
