@@ -135,6 +135,10 @@ window.onload = function() {
                 );
             });
 
+        ripe.bind("error", function(error, description) {
+            alert(error);
+        });
+
         ripe.bind("price", function(value) {
             var price = document.getElementById("price");
             if (!value || !value.total) {
@@ -157,9 +161,9 @@ window.onload = function() {
     };
 
     var initOAuth = function() {
-        var oauthLogin = document.getElementById("oauth-login");
-        var oauthLogout = document.getElementById("oauth-logout");
-        var oauthOperation = document.getElementById("oauth-operation");
+        let oauthLogin = document.getElementById("oauth-login");
+        let oauthLogout = document.getElementById("oauth-logout");
+        let oauthOperation = document.getElementById("oauth-operation");
 
         oauthLogin &&
             oauthLogin.addEventListener("click", function() {
@@ -186,6 +190,10 @@ window.onload = function() {
         if (ripe.isOAuthPending()) {
             ripe.oauth();
         }
+
+        oauthLogin = oauthLogin || { style: {} };
+        oauthLogout = oauthLogout || { style: {} };
+        oauthOperation = oauthOperation || { style: {} };
 
         ripe.bind("auth", function() {
             oauthLogin.style.display = "none";
@@ -357,6 +365,11 @@ window.onload = function() {
     // to values from the server side
     ripe.load();
     ripe.bind("ready", function() {
-        init(ripe);
+        try {
+            init(ripe);
+        } catch (exception) {
+            this.trigger("error", exception);
+            throw exception;
+        }
     });
 };
