@@ -101,7 +101,10 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
     const unpacked = this._unpackQuery(query);
     const code = typeof options.code === "undefined" ? unpacked.code : options.code;
     const error = typeof options.error === "undefined" ? unpacked.error : options.error;
-    const errorDescription = typeof options.error_description === "undefined" ? unpacked.error_description : options.error_description;
+    const errorDescription =
+        typeof options.error_description === "undefined"
+            ? unpacked.error_description
+            : options.error_description;
 
     if (error || errorDescription) {
         throw new Error(`OAuth error ${error} '${errorDescription}'`);
