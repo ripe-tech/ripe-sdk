@@ -579,8 +579,8 @@ ripe.Ripe.prototype._unpackQuery = function(query) {
             options[decodeURIComponent(part).trim()] = true;
         } else {
             const tuple = part.split("=");
-            const key = decodeURIComponent(tuple[0]).trim();
-            const value = decodeURIComponent(tuple[1]).trim();
+            const key = decodeURIComponent(tuple[0].replace(/\+/g, "%20")).trim();
+            const value = decodeURIComponent(tuple[1].replace(/\+/g, "%20")).trim();
             options[key] = value;
         }
     }

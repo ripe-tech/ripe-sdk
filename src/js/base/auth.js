@@ -23,17 +23,25 @@ ripe.Ripe.prototype.isOAuth = function() {
 };
 
 ripe.Ripe.prototype.isOAuthCode = function() {
-    var query = window.location.search || "";
-    var unpacked = this._unpackQuery(query);
-    var code = unpacked.code;
+    const query = window.location.search || "";
+    const unpacked = this._unpackQuery(query);
+    const code = unpacked.code;
     return Boolean(code);
+};
+
+ripe.Ripe.prototype.isOAuthError = function() {
+    const query = window.location.search || "";
+    const unpacked = this._unpackQuery(query);
+    const error = unpacked.error;
+    const errorDescription = unpacked.error_description;
+    return Boolean(error) && Boolean(errorDescription);
 };
 
 ripe.Ripe.prototype.isOAuthPending = function() {
     if (this.isAuth()) {
         return false;
     }
-    return this.isOAuth() || this.isOAuthCode();
+    return this.isOAuth() || this.isOAuthCode() || this.isOAuthError();
 };
 
 ripe.Ripe.prototype.auth = function(username, password, options, callback) {
@@ -65,6 +73,17 @@ ripe.Ripe.prototype.unauth = function(options, callback) {
     callback && callback();
 };
 
+/**
+ * Responsible for the begining of the OAuth based authentication process
+ * may either start the redirection process (in case no valid token is found)
+ * or try to revalidate the session with the currently existing tokens or session ID.
+ *
+ * @param {Object} options The set of options used for the OAuth process, should
+ * include client identifier and secret.
+ * @param {Function} callback The callback to be called once the loging or the access
+ * token retrieval functions are finished.
+ * @returns {Object} Either an invalid/unset value or the result of the login operation.
+ */
 ripe.Ripe.prototype.oauth = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
@@ -78,15 +97,21 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
         this.unauth();
     }
 
-    var query = window.location.search || "";
-    var unpacked = this._unpackQuery(query);
-    var code = typeof options.code === "undefined" ? unpacked.code : options.code;
+    const query = window.location.search || "";
+    const unpacked = this._unpackQuery(query);
+    const code = typeof options.code === "undefined" ? unpacked.code : options.code;
+    const error = typeof options.error === "undefined" ? unpacked.error : options.error;
+    const errorDescription = typeof options.error_description === "undefined" ? unpacked.error_description : options.error_description;
 
-    var clientId = options.clientId || localStorage.getItem("oauth_client_id");
-    var clientSecret = options.clientSecret || localStorage.getItem("oauth_client_secret");
-    var redirectUri = options.redirectUri || localStorage.getItem("oauth_redirect_uri");
-    var scope = options.scope || (localStorage.getItem("oauth_scope") || "").split(",") || [];
-    var oauthToken = options.oauthToken || localStorage.getItem("oauth_token");
+    if (error || errorDescription) {
+        throw new Error(`OAuth error ${error} '${errorDescription}'`);
+    }
+
+    const clientId = options.clientId || localStorage.getItem("oauth_client_id");
+    const clientSecret = options.clientSecret || localStorage.getItem("oauth_client_secret");
+    const redirectUri = options.redirectUri || localStorage.getItem("oauth_redirect_uri");
+    const scope = options.scope || (localStorage.getItem("oauth_scope") || "").split(",") || [];
+    const oauthToken = options.oauthToken || localStorage.getItem("oauth_token");
 
     scope && localStorage.setItem("oauth_scope", scope.join(","));
 
@@ -150,28 +175,28 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
 };
 
 ripe.Ripe.prototype.oauthRedirect = function(options, callback) {
-    var location = window.location;
-    var currentUrl =
+    const location = window.location;
+    const currentUrl =
         location.protocol + "//" + location.host + "/" + location.pathname.split("/")[1];
 
-    var clientId = options.clientId || this.clientId;
-    var clientSecret = options.clientSecret || this.clientSecret;
-    var redirectUri = options.redirectUri || currentUrl;
+    const clientId = options.clientId || this.clientId;
+    const clientSecret = options.clientSecret || this.clientSecret;
+    const redirectUri = options.redirectUri || currentUrl;
 
     localStorage.setItem("oauth_client_id", clientId);
     localStorage.setItem("oauth_client_secret", clientSecret);
     localStorage.setItem("oauth_redirect_uri", redirectUri);
 
-    var url = this.webUrl + "admin/oauth/authorize";
+    let url = this.webUrl + "admin/oauth/authorize";
 
-    var params = {
+    const params = {
         client_id: clientId,
         redirect_uri: redirectUri,
         response_type: options.responseType || "code",
         scope: (options.scope || []).join(" ")
     };
 
-    var data = this._buildQuery(params);
+    const data = this._buildQuery(params);
     url = url + "?" + data;
 
     document.location = url;
