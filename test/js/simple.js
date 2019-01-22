@@ -82,7 +82,7 @@ describe("Ripe", function() {
             });
             instance.load();
 
-            var initialParts = await new Promise((resolve, reject) => {
+            const initialParts = await new Promise((resolve, reject) => {
                 instance.bind("parts", resolve);
             });
 
@@ -100,7 +100,7 @@ describe("Ripe", function() {
             assert.strictEqual(instance.parts.front.color, "white");
 
             instance.setPart("front", "suede", "black");
-            var changedParts = Object.assign({}, instance.parts);
+            const changedParts = Object.assign({}, instance.parts);
 
             assert.strictEqual(instance.parts.front.material, "suede");
             assert.strictEqual(instance.parts.front.color, "black");
