@@ -30,14 +30,6 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.getConfig = function(options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
-    options = this._getConfigOptions(options);
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
@@ -222,30 +214,6 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
 ripe.Ripe.prototype._getQuery = function(options) {
     options = this._getQueryOptions(options);
     return this._buildQuery(options.params);
-};
-
-ripe.Ripe.prototype._getConfigOptions = function(options) {
-    options = options || {};
-    const brand = options.brand === undefined ? this.brand : options.brand;
-    const model = options.model === undefined ? this.model : options.model;
-    const country = options.country === undefined ? this.country : options.country;
-    const flag = options.flag === undefined ? this.flag : options.flag;
-    const url = this.url + "brands/" + brand + "/models/" + model + "/config";
-    const params = {};
-    if (country !== undefined && country !== null) {
-        params.country = country;
-    }
-    if (flag !== undefined && flag !== null) {
-        params.flag = flag;
-    }
-    if (options.filter !== undefined && options.filter !== null) {
-        params.filter = options.filter ? "1" : "0";
-    }
-    return Object.assign(options, {
-        url: url,
-        method: "GET",
-        params: params
-    });
 };
 
 ripe.Ripe.prototype._getPriceOptions = function(options) {
