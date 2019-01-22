@@ -93,6 +93,22 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+    options = this._getLocaleModelOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.getLocaleModelP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getLocaleModel(options, (result, isValid, request) => {
+            isValid ? resolve({ result: result, request: request }) : reject(new Error());
+        });
+    });
+};
+
 ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // runs the defaulting operatin on the provided options
     // optional parameter (ensures valid object there)
@@ -169,7 +185,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         const isValid = this.status === 200;
         try {
             result = JSON.parse(this.responseText);
-        } catch (error) {}
+        } catch (error) { }
         callback && callback.call(context, result, isValid, this);
     });
 
@@ -359,6 +375,30 @@ ripe.Ripe.prototype._getFactoryOptions = function(options) {
     return Object.assign(options, {
         url: url,
         method: "GET"
+    });
+};
+
+ripe.Ripe.prototype._getLocaleModelOptions = function(options) {
+    options = options || {};
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const locale =
+        options.locale !== undefined && options.locale !== null ? options.locale : this.locale;
+    const url = this.url + "builds/" + brand + "/locale/" + locale;
+    const params = {};
+    if (model !== undefined && model !== null) {
+        params.model = model;
+    }
+    if (options.compatibility !== undefined && options.compatibility !== null) {
+        params.compatibility = options.compatibility ? "1" : "0";
+    }
+    if (options.prefix !== undefined && options.prefix !== null) {
+        params.prefix = options.prefix;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
     });
 };
 
