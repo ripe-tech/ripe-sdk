@@ -38,20 +38,20 @@ ripe.Image.prototype.init = function() {
 };
 
 ripe.Image.prototype.update = function(state) {
-    var frame = this.element.dataset.frame || this.frame;
-    var size = this.element.dataset.size || this.size;
-    var width = this.element.dataset.width || this.width;
-    var height = this.element.dataset.height || this.height;
-    var crop = this.element.dataset.crop || this.crop;
+    const frame = this.element.dataset.frame || this.frame;
+    const size = this.element.dataset.size || this.size;
+    const width = this.element.dataset.width || this.width;
+    const height = this.element.dataset.height || this.height;
+    const crop = this.element.dataset.crop || this.crop;
 
     this.initials = state !== undefined ? state.initials : this.initials;
     this.engraving = state !== undefined ? state.engraving : this.engraving;
 
-    var initialsSpec = this.showInitials
+    const initialsSpec = this.showInitials
         ? this.initialsBuilder(this.initials, this.engraving, this.element)
         : {};
 
-    var url = this.owner._getImageURL({
+    const url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size,
         width: width,
@@ -103,7 +103,7 @@ ripe.Image.prototype._registerHandlers = function() {
     this.element.addEventListener("load", this.loadListener);
 
     // eslint-disable-next-line no-undef
-    var Observer = MutationObserver || WebKitMutationObserver;
+    const Observer = MutationObserver || WebKitMutationObserver;
     this._observer = Observer
         ? new Observer(
               function(mutations) {

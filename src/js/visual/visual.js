@@ -43,7 +43,7 @@ ripe.Visual.prototype.deinit = function() {
 ripe.Visual.prototype._addElementHandler = function(event, callback) {
     this.element.addEventListener(event, callback);
 
-    var callbacks = this.elementEvents[event] || [];
+    const callbacks = this.elementEvents[event] || [];
     callbacks.push(callback);
     this.elementEvents[event] = callbacks;
 };
@@ -52,10 +52,10 @@ ripe.Visual.prototype._addElementHandler = function(event, callback) {
  * Unbinds all the events from the DOM element.
  */
 ripe.Visual.prototype._removeElementHandlers = function() {
-    for (var event in this.elementEvents) {
-        var callbacks = this.elementEvents[event];
-        for (var index = 0; index < callbacks.length; index++) {
-            var callback = callbacks[index];
+    for (const event in this.elementEvents) {
+        const callbacks = this.elementEvents[event];
+        for (let index = 0; index < callbacks.length; index++) {
+            const callback = callbacks[index];
             this.element.removeEventListener(event, callback);
         }
     }
