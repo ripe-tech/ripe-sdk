@@ -488,6 +488,19 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     return options.url + "?" + this._buildQuery(options.params);
 };
 
+/**
+ * Runs the options object building operation meaning that a series
+ * of default values are going to be added to the provided options
+ * so that it becomes as compatible as possible.
+ *
+ * If authentioncation is required the current session identifier is
+ * also added to the request.
+ *
+ * @param {Object} options The HTTP request options object that is
+ * going to be completed with default information and session info.
+ * @returns {Object} The same options object references that has been
+ * provided with the proper default information populated.
+ */
 ripe.Ripe.prototype._build = function(options) {
     const url = options.url || "";
     const method = options.method || "GET";
@@ -504,17 +517,15 @@ ripe.Ripe.prototype._build = function(options) {
 };
 
 /**
- * Builds a GET query string from the provided Array of
- * Object parameter.
+ * Builds a GET query string from the provided Array or Object parameter.
  *
- * If the provided parameter is an Array order of the GET
- * parameters is preserved, otherwise alphabethical order
- * is going to be used.
+ * If the provided parameter is an Array order of the GET parameters is
+ * preserved, otherwise alphabethical order is going to be used.
  *
- * @param {Object} params The object or array that contains
- * the sequence of parameeters for the generated GET query.
- * @returns {String} The GET query string that should contain
- * the complete set of passed arguments (serialization).
+ * @param {Object} params The object or array that contains the sequence
+ * of parameeters for the generated GET query.
+ * @returns {String} The GET query string that should contain the complete
+ * set of passed arguments (serialization).
  */
 ripe.Ripe.prototype._buildQuery = function(params) {
     let key;
