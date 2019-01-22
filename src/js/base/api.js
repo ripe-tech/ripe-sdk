@@ -541,6 +541,15 @@ ripe.Ripe.prototype._buildQuery = function(params) {
     return buffer.join("&");
 };
 
+/**
+ * Unpacks the provided query string into it's components inside
+ * a key, value object for easy usage.
+ *
+ * @param {String} The GET query string that is going to be parsed
+ * for the creation of the output Object.
+ * @returns {Object} The object that contains the key, value information
+ * on the query string.
+ */
 ripe.Ripe.prototype._unpackQuery = function(query) {
     query = query[0] === "?" ? query.slice(1) : query;
 
