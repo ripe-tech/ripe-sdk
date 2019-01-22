@@ -350,7 +350,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
     while (indexM !== materialsIndex) {
         indexM = indexM === null ? materialsIndex : indexM;
 
-        let material = part.materials[indexM];
+        const material = part.materials[indexM];
         colors = material.colors;
         for (let index = 0; index < colors.length; index++) {
             color = colors[index];
