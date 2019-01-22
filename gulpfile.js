@@ -34,6 +34,8 @@ const paths = {
         "src/js/base/utils.js",
         "src/js/base/api.js",
         "src/js/base/auth.js",
+        "src/js/api/brand.js",
+        "src/js/api/build.js",
         "src/js/api/locale.js",
         "src/js/api/oauth.js",
         "src/js/api/order.js",
