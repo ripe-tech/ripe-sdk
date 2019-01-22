@@ -22,7 +22,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     this.owner.bind("part", this.partCallback);
 
     // resets the current selection to trigger the sync operation
-    var initialParts = ripe.clone(this.owner.parts);
+    const initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
 
     this.owner.bind(
@@ -48,11 +48,11 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
  * into object rules.
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
-    var _rules = {};
-    for (var ruleName in rules) {
-        var rule = rules[ruleName];
-        for (var index = 0; index < rule.length; index++) {
-            var part = rule[index];
+    const _rules = {};
+    for (const ruleName in rules) {
+        const rule = rules[ruleName];
+        for (let index = 0; index < rule.length; index++) {
+            let part = rule[index];
             if (typeof part === "string") {
                 part = {
                     part: part
@@ -66,12 +66,12 @@ ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
-    for (var key in this.rules) {
+    for (const key in this.rules) {
         // if a part was selected and it is part of
         // the rule then its value is used otherwise
         // the first part of the rule is used
-        var rule = this.rules[key];
-        var firstPart = rule[0];
+        const rule = this.rules[key];
+        const firstPart = rule[0];
         name = name || firstPart.part;
         value = value || this.owner.parts[name];
 
@@ -84,8 +84,8 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
         // iterates through the parts of the rule and
         // sets their material and color according to
         // the sync rule
-        for (var index = 0; index < rule.length; index++) {
-            var _part = rule[index];
+        for (let index = 0; index < rule.length; index++) {
+            const _part = rule[index];
             if (_part.part === name) {
                 continue;
             }
@@ -110,13 +110,13 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
  * @param {Object} value The material and color of the part.
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._shouldSync = function(rule, name, value) {
-    for (var index = 0; index < rule.length; index++) {
-        var rulePart = rule[index];
-        var part = rulePart.part;
-        var material = rulePart.material;
-        var color = rulePart.color;
-        var materialSync = !material || material === value.material;
-        var colorSync = !color || color === value.color;
+    for (let index = 0; index < rule.length; index++) {
+        const rulePart = rule[index];
+        const part = rulePart.part;
+        const material = rulePart.material;
+        const color = rulePart.color;
+        const materialSync = !material || material === value.material;
+        const colorSync = !color || color === value.color;
         if (part === name && materialSync && colorSync) {
             return true;
         }

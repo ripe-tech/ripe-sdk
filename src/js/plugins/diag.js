@@ -30,18 +30,21 @@ ripe.Ripe.plugins.DiagPlugin.prototype.unregister = function(owner) {
 ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
     request.setRequestHeader("X-Ripe-Sdk-Version", "__VERSION__");
 
-    var plugins = [];
-    var index = null;
+    // creates the array that is going to hold the complete set of
+    // plugins registered in the owner
+    const plugins = [];
 
-    for (index = 0; index < this.owner.plugins.length; index++) {
-        var plugin = this.owner.plugins[index];
-        var pluginName = this._getPluginName(plugin);
+    // iterates over the complete set of plugins registered in the
+    // owner to add their names to the plugins list
+    for (let index = 0; index < this.owner.plugins.length; index++) {
+        const plugin = this.owner.plugins[index];
+        const pluginName = this._getPluginName(plugin);
         pluginName && plugins.push(pluginName);
     }
 
     // creates the list of plugins (as a string) to be sent to the
     // server side (single element only)
-    var pluginsS = plugins.join(", ");
+    const pluginsS = plugins.join(", ");
     pluginsS && request.setRequestHeader("X-Ripe-Sdk-Plugins", pluginsS);
 
     // in case the brand value is defined in the owner it is also added
@@ -50,8 +53,7 @@ ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
 };
 
 ripe.Ripe.plugins.DiagPlugin.prototype._getPluginName = function(plugin) {
-    var key = "";
-    for (key in ripe.Ripe.plugins) {
+    for (let key in ripe.Ripe.plugins) {
         if (plugin.constructor === ripe.Ripe.plugins[key]) {
             return key;
         }
