@@ -156,6 +156,7 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
     const variant = options.variant === undefined ? this.variant : options.variant;
     const frame = options.frame === undefined ? this.frame : options.frame;
     const parts = options.parts === undefined ? this.parts : options.parts;
+    const initials = options.initials === undefined ? this.initials : options.initials;
     const engraving = options.engraving === undefined ? this.engraving : options.engraving;
     const country = options.country === undefined ? this.country : options.country;
     const currency = options.currency === undefined ? this.currency : options.currency;
@@ -175,6 +176,10 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
 
     if (frame !== undefined && frame !== null) {
         params.frame = frame;
+    }
+
+    if (initials !== undefined && initials !== null) {
+        params.initials = initials;
     }
 
     if (engraving !== undefined && engraving !== null) {
