@@ -156,7 +156,6 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
     const variant = options.variant === undefined ? this.variant : options.variant;
     const frame = options.frame === undefined ? this.frame : options.frame;
     const parts = options.parts === undefined ? this.parts : options.parts;
-    const initials = options.initials === undefined ? this.initials : options.initials;
     const engraving = options.engraving === undefined ? this.engraving : options.engraving;
     const country = options.country === undefined ? this.country : options.country;
     const currency = options.currency === undefined ? this.currency : options.currency;
@@ -177,10 +176,6 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
 
     if (frame !== undefined && frame !== null) {
         params.frame = frame;
-    }
-
-    if (full && initials !== undefined && initials !== null) {
-        params.initials = initials;
     }
 
     if (full && engraving !== undefined && engraving !== null) {
@@ -224,8 +219,19 @@ ripe.Ripe.prototype._getQuery = function(options) {
 
 ripe.Ripe.prototype._getPriceOptions = function(options) {
     options = options || {};
-    const url = this.url + "config/price";
     options = this._getQueryOptions(options);
+
+    const params = options.params || {};
+    options.params = params;
+
+    const initials = options.initials === "" ? "$empty" : options.initials;
+
+    if (initials !== undefined && initials !== null) {
+        params.initials = initials;
+    }
+
+    const url = this.url + "config/price";
+
     return Object.assign(options, {
         url: url,
         method: "GET"
@@ -241,6 +247,8 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
 
     const params = options.params || {};
     options.params = params;
+
+    const initials = options.initials === "" ? "$empty" : options.initials;
 
     if (options.format !== undefined && options.format !== null) {
         params.format = options.format;
@@ -270,8 +278,7 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
         params.initials_profile = options.profile.join(",");
     }
 
-    const initials = options.initials === "" ? "$empty" : options.initials;
-    if (options.initials !== undefined && options.initials !== null) {
+    if (initials !== undefined && initials !== null) {
         params.initials = initials;
     }
 
