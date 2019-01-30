@@ -40,7 +40,7 @@ ripe.Interactable.prototype.init = function() {
  *
  * @param {Object} state The new configuration state.
  */
-ripe.Interactable.prototype.update = function(state) { };
+ripe.Interactable.prototype.update = function(state) {};
 
 /**
  * The deinitializer of the class, called whenever this
