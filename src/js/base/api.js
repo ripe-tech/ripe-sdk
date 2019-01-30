@@ -161,6 +161,7 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
     const country = options.country === undefined ? this.country : options.country;
     const currency = options.currency === undefined ? this.currency : options.currency;
     const flag = options.flag === undefined ? this.flag : options.flag;
+    const full = options.full === undefined ? true : options.full;
 
     if (brand !== undefined && brand !== null) {
         params.brand = brand;
@@ -178,23 +179,23 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
         params.frame = frame;
     }
 
-    if (initials !== undefined && initials !== null) {
+    if (full && initials !== undefined && initials !== null) {
         params.initials = initials;
     }
 
-    if (engraving !== undefined && engraving !== null) {
+    if (full && engraving !== undefined && engraving !== null) {
         params.engraving = engraving;
     }
 
-    if (country !== undefined && country !== null) {
+    if (full && country !== undefined && country !== null) {
         params.country = country;
     }
 
-    if (currency !== undefined && currency !== null) {
+    if (full && currency !== undefined && currency !== null) {
         params.currency = currency;
     }
 
-    if (flag !== undefined && flag !== null) {
+    if (full && flag !== undefined && flag !== null) {
         params.flag = flag;
     }
 
@@ -235,8 +236,7 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
     options = options || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
-
-    options = this._getQueryOptions(options);
+    options.full = options.full || false;
 
     const params = options.params || {};
     options.params = params;
