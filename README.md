@@ -1,6 +1,6 @@
 # [![RIPE SDK](res/logo.png)](http://www.platforme.com)
 
-The public SDK for [RIPE Core](https://github.com/ripe-tech/ripe-core) written in vanilla ECMAScript v5.
+The public SDK for [RIPE Core](https://github.com/ripe-tech/ripe-core) written in vanilla ECMAScript v6.
 
 ## 1. Initialization
 
