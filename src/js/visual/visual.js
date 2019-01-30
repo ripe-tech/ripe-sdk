@@ -9,15 +9,13 @@ ripe.Visual = function(owner, element, options) {
     this.element = element;
     this.elementEvents = {};
 
-    ripe.Observable.call(this);
     ripe.Interactable.call(this, owner, options);
 };
 
-ripe.Visual.prototype = ripe.build(ripe.Observable.prototype, ripe.Interactable.prototype);
+ripe.Visual.prototype = ripe.build(ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
 ripe.Visual.prototype.init = function() {
-    ripe.Observable.prototype.init.call(this);
     ripe.Interactable.prototype.init.call(this);
 };
 
@@ -26,7 +24,6 @@ ripe.Visual.prototype.deinit = function() {
     this.element = null;
     this.elementEvents = null;
 
-    ripe.Observable.prototype.deinit.call(this);
     ripe.Interactable.prototype.deinit.call(this);
 };
 

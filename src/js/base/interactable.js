@@ -16,17 +16,23 @@ if (typeof require !== "undefined") {
  * interactable instance to be created.
  */
 ripe.Interactable = function(owner, options) {
+    ripe.Observable.call(this);
+
     this.owner = owner;
     this.options = options || {};
 
     this.init();
 };
 
+ripe.Interactable.prototype = ripe.build(ripe.Observable.prototype);
+
 /**
  * The initializer of the class, called whenever this interactable
  * is going to become active.
  */
-ripe.Interactable.prototype.init = function() {};
+ripe.Interactable.prototype.init = function() {
+    ripe.Observable.prototype.init.call(this);
+};
 
 /**
  * Callback function to be called when the owner configurator has
@@ -34,7 +40,7 @@ ripe.Interactable.prototype.init = function() {};
  *
  * @param {Object} state The new configuration state.
  */
-ripe.Interactable.prototype.update = function(state) {};
+ripe.Interactable.prototype.update = function(state) { };
 
 /**
  * The deinitializer of the class, called whenever this
@@ -42,4 +48,6 @@ ripe.Interactable.prototype.update = function(state) {};
  */
 ripe.Interactable.prototype.deinit = function() {
     this.owner = null;
+
+    ripe.Observable.prototype.deinit.call(this);
 };
