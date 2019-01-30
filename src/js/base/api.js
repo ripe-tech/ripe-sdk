@@ -236,7 +236,6 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
     options = options || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
-    options.full = options.full || false;
 
     const params = options.params || {};
     options.params = params;
