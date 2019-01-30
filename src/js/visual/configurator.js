@@ -589,12 +589,15 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options, callb
     // constructs the URL for the mask and updates it
     this._loadMask(maskImage, view, position, options);
 
-    // builds the URL that will be set on the image
+    // builds the URL that will be set on the image, notice that both
+    // the full URL mode is avoided so that no extra parameters are
+    // added to the image composition (not required)
     const url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size,
         width: width,
-        height: height
+        height: height,
+        full: false
     });
 
     // creates a callback to be called when the frame

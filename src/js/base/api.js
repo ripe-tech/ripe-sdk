@@ -237,6 +237,8 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
     options.country = options.country || null;
     options.currency = options.currency || null;
 
+    options = this._getQueryOptions(options);
+
     const params = options.params || {};
     options.params = params;
 
