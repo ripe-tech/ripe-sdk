@@ -44,22 +44,32 @@ ripe.Configurator.prototype.init = function() {
     this.position = this.options.position || 0;
     this.ready = false;
     this._observer = null;
+    this._ownerBinds = {};
 
-    this.owner.bind("parts", function(parts) {
+    this._ownerBinds["parts"] = this.owner.bind("parts", function(parts) {
         this.parts = parts;
     });
 
-    this.owner.bind(
+    this._ownerBinds["selected_part"] = this.owner.bind(
         "selected_part",
         function(part) {
             this.highlight(part);
         }.bind(this)
     );
 
-    this.owner.bind(
+    this._ownerBinds["deselected_part"] = this.owner.bind(
         "deselected_part",
         function(part) {
             this.lowlight();
+        }.bind(this)
+    );
+
+    // registes for the selected part event on the owner
+    // so that we can highlight the associated part
+    this._ownerBinds["selected_part"] = this.owner.bind(
+        "selected_part",
+        function(part) {
+            this.highlight(part);
         }.bind(this)
     );
 
@@ -82,7 +92,7 @@ ripe.Configurator.prototype.init = function() {
         }.bind(this)
     );
 
-    this.owner.bind(
+    this._ownerBinds["config"] = this.owner.bind(
         "config",
         function() {
             this._updateConfig();
@@ -189,6 +199,10 @@ ripe.Configurator.prototype.update = function(state, options) {
 ripe.Configurator.prototype.deinit = function() {
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
+    }
+
+    for (var bind in this._ownerBinds) {
+        this.owner.unbind(bind, this._ownerBinds[bind]);
     }
 
     this._removeElementHandlers();
@@ -667,10 +681,10 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     } else {
         maskImage.onload = draw
             ? function() {
-                  setTimeout(function() {
-                      self._drawMask(maskImage);
-                  }, 150);
-              }
+                setTimeout(function() {
+                    self._drawMask(maskImage);
+                }, 150);
+            }
             : null;
         maskImage.addEventListener("error", function() {
             this.removeAttribute("src");
@@ -849,15 +863,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
     const area = this.element.querySelector(".area");
     const back = this.element.querySelector(".back");
 
-    // registes for the selected part event on the owner
-    // so that we can highlight the associated part
-    this.owner.bind(
-        "selected_part",
-        function(part) {
-            this.highlight(part);
-        }.bind(this)
-    );
-
     // binds the mousedown event on the element to prepare
     // it for drag movements
     this._addElementHandler("mousedown", function(event) {
@@ -1001,12 +1006,12 @@ ripe.Configurator.prototype._registerHandlers = function() {
     const Observer = MutationObserver || WebKitMutationObserver;
     this._observer = Observer
         ? new Observer(function(mutations) {
-              for (let index = 0; index < mutations.length; index++) {
-                  const mutation = mutations[index];
-                  mutation.type === "style" && self.resize();
-                  mutation.type === "attributes" && self.update();
-              }
-          })
+            for (let index = 0; index < mutations.length; index++) {
+                const mutation = mutations[index];
+                mutation.type === "style" && self.resize();
+                mutation.type === "attributes" && self.update();
+            }
+        })
         : null;
     this._observer &&
         this._observer.observe(this.element, {
