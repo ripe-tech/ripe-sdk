@@ -6,9 +6,8 @@ if (typeof require !== "undefined") {
 }
 
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
-    options = options || {};
+    this.options = options || {};
     this.rules = this._normalizeRules(rules);
-    this.partCallback = this._applySync.bind(this);
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
@@ -19,13 +18,13 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
 
     // binds to the part event to change the necessary parts
     // so that they comply with the product's sync rules
-    this.owner.bind("part", this.partCallback);
+    this._partBind = this.owner.bind("part", this._applySync.bind(this));
 
     // resets the current selection to trigger the sync operation
     const initialParts = ripe.clone(this.owner.parts);
     this.owner.setParts(initialParts);
 
-    this.owner.bind(
+    this.configBind = this.owner.bind(
         "config",
         function() {
             this.owner && this.unregister(this.owner);
@@ -34,7 +33,8 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
-    this.owner.unbind("part", this.partCallback);
+    this.owner && this.owner.unbind("part", this._partBind);
+    this.owner && this.owner.unbind("config", this._configBind);
 
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
