@@ -50,26 +50,21 @@ ripe.Configurator.prototype.init = function() {
         this.parts = parts;
     });
 
-    this._ownerBinds["selected_part"] = this.owner.bind(
-        "selected_part",
-        function(part) {
-            this.highlight(part);
-        }.bind(this)
-    );
-
-    this._ownerBinds["deselected_part"] = this.owner.bind(
-        "deselected_part",
-        function(part) {
-            this.lowlight();
-        }.bind(this)
-    );
-
-    // registes for the selected part event on the owner
+    // registers for the selected part event on the owner
     // so that we can highlight the associated part
     this._ownerBinds["selected_part"] = this.owner.bind(
         "selected_part",
         function(part) {
             this.highlight(part);
+        }.bind(this)
+    );
+
+    // registers for the deselected part event on the owner
+    // so that we can remove the highligt of the associated part
+    this._ownerBinds["deselected_part"] = this.owner.bind(
+        "deselected_part",
+        function(part) {
+            this.lowlight();
         }.bind(this)
     );
 
@@ -681,10 +676,10 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     } else {
         maskImage.onload = draw
             ? function() {
-                setTimeout(function() {
-                    self._drawMask(maskImage);
-                }, 150);
-            }
+                  setTimeout(function() {
+                      self._drawMask(maskImage);
+                  }, 150);
+              }
             : null;
         maskImage.addEventListener("error", function() {
             this.removeAttribute("src");
@@ -1006,12 +1001,12 @@ ripe.Configurator.prototype._registerHandlers = function() {
     const Observer = MutationObserver || WebKitMutationObserver;
     this._observer = Observer
         ? new Observer(function(mutations) {
-            for (let index = 0; index < mutations.length; index++) {
-                const mutation = mutations[index];
-                mutation.type === "style" && self.resize();
-                mutation.type === "attributes" && self.update();
-            }
-        })
+              for (let index = 0; index < mutations.length; index++) {
+                  const mutation = mutations[index];
+                  mutation.type === "style" && self.resize();
+                  mutation.type === "attributes" && self.update();
+              }
+          })
         : null;
     this._observer &&
         this._observer.observe(this.element, {
