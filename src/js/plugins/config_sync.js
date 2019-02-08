@@ -6,6 +6,8 @@ if (typeof require !== "undefined") {
 }
 
 ripe.Ripe.plugins.ConfigSyncPlugin = function(options) {
+    ripe.Ripe.plugins.Plugin.call(this);
+
     this.options = options || {};
 };
 
@@ -15,13 +17,11 @@ ripe.Ripe.plugins.ConfigSyncPlugin.prototype.constructor = ripe.Ripe.plugins.Con
 ripe.Ripe.plugins.ConfigSyncPlugin.prototype.register = async function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
-    this.configBind = this.owner.bind(
-        "config",
-        function() {
-            this.syncPlugin.unregister(this.owner);
-            this._createSyncPlugin();
-        }.bind(this)
-    );
+    this.configBind = this.owner.bind("config", async () => {
+        this.syncPlugin.unregister(this.owner);
+        await this._createSyncPlugin();
+        this.trigger("config");
+    });
 
     await this._createSyncPlugin();
 };
