@@ -27,9 +27,9 @@ const paths = {
     basefiles: [
         "src/js/base/base.js",
         "src/js/base/compat.js",
+        "src/js/base/observable.js",
         "src/js/base/interactable.js",
         "src/js/base/mobile.js",
-        "src/js/base/observable.js",
         "src/js/base/ripe.js",
         "src/js/base/utils.js",
         "src/js/base/api.js",
