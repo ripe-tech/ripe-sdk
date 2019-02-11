@@ -242,7 +242,7 @@ describe("Sync", function() {
             };
             mockRipe.setParts(initialParts);
 
-            const syncPlugin = new plugins.ripe.Ripe.plugins.ConfigSyncPlugin();
+            const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin({}, { loadConfig: true });
             await syncPlugin.register(mockRipe);
 
             assert.deepStrictEqual(initialParts, mockRipe.parts);
@@ -261,7 +261,7 @@ describe("Sync", function() {
                 instance.bind("parts", resolve);
             });
 
-            const syncPlugin = new plugins.ripe.Ripe.plugins.ConfigSyncPlugin();
+            const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin({}, { loadConfig: true });
             await syncPlugin.register(instance);
             assert.strictEqual(instance.parts.hardware.color, "silver");
             assert.strictEqual(instance.parts.logo.color, "silver");
