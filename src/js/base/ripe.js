@@ -385,9 +385,21 @@ ripe.Ripe.prototype._getState = function() {
 
 ripe.Ripe.prototype._setPart = function(part, material, color) {
     var value = this.parts[part] || {};
-    value.material = material;
-    value.color = color;
-    this.parts[part] = value;
+
+    // if the material or color are not set then this
+    // is considered a removal operation and the part
+    // is removed from the parts structure
+    if (!material || !color) {
+        delete this.parts[part];
+        value = {};
+    }
+    // otherwise the new part value is set
+    else {
+        value.material = material;
+        value.color = color;
+        this.parts[part] = value;
+    }
+
     this.trigger("pre_part", part, value);
     this.trigger("part", part, value);
     this.trigger("post_part", part, value);
