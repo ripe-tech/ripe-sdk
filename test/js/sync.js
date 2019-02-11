@@ -6,6 +6,7 @@ const plugins = require("../../src/js/plugins");
 
 const MockRipe = function() {
     const mockRipe = new base.ripe.Observable();
+    mockRipe.ready = true;
     mockRipe.setPart = function(part, material, color) {
         this.parts[part] = {
             material: material,
