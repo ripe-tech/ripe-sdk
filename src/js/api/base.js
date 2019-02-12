@@ -9,7 +9,7 @@ ripe.Ripe.prototype.resolveProductId = function(productId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     const url = this.url + "config/resolve/" + productId;
-    options = { url: url, ...options };
+    options = Object.assign({ url: url }, options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
