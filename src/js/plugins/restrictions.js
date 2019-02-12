@@ -17,7 +17,7 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
 ripe.Ripe.plugins.RestrictionsPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.constructor = ripe.Ripe.plugins.RestrictionsPlugin;
 
-ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = async function(owner) {
+ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
     this.owner.getConfig(
@@ -50,7 +50,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = async function(owner) 
     );
 };
 
-ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = async function(owner) {
+ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
     this.partsOptions = null;
     this.options = null;
     this.owner.unbind("part", this.partCallback);
