@@ -443,6 +443,7 @@ ripe.Configurator.prototype._initLayout = function() {
     this.element.appendChild(framesBuffer);
     this.element.appendChild(masksBuffer);
 
+    // populates the buffers taking into account the frames of the model
     this._populateBuffers();
 
     // set the size of area, frontMask, back and mask
@@ -509,6 +510,9 @@ ripe.Configurator.prototype._updateConfig = function() {
     // is being loaded
     this.ready = false;
 
+    // removes the highlight from any part
+    this.lowlight();
+
     // updates the parts list for the new product
     this._initPartsList();
 
@@ -516,8 +520,6 @@ ripe.Configurator.prototype._updateConfig = function() {
     this.owner.getFrames(
         function(frames) {
             this.frames = frames;
-
-            this._populateBuffers();
 
             // tries to keep the current view and position
             // if the new model supports it otherwise
@@ -542,6 +544,8 @@ ripe.Configurator.prototype._updateConfig = function() {
                     delete this._lastFrame[view];
                 }
             }
+
+            this._populateBuffers();
 
             // shows the new product with a crossfade effect
             // and starts responding to updates again
