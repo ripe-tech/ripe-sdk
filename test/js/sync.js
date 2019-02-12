@@ -246,6 +246,11 @@ describe("Sync", function() {
             const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin();
             syncPlugin.register(mockRipe);
 
+            mockRipe.trigger("config");
+            await new Promise((resolve, reject) => {
+                syncPlugin.bind("config", resolve);
+            });
+
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
             mockRipe.setPart("bottom", "nappa", "white");

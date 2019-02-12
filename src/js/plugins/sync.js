@@ -22,12 +22,14 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     // listens for model changes and if the loadConfig option is
     // set then retrieves the new model's config, otherwise
     // unregisters itself as its rules are no longer valid
-    this.configBind = this.manual ? null : this.owner.bind("config", async () => {
-        this.rules = this._normalizeRules(null);
-        const { result } = await this.owner.getConfigP();
-        this.rules = this._normalizeRules(result.sync);
-        this.trigger("config");
-    });
+    this.configBind = this.manual
+        ? null
+        : this.owner.bind("config", async () => {
+              this.rules = this._normalizeRules(null);
+              const { result } = await this.owner.getConfigP();
+              this.rules = this._normalizeRules(result.sync);
+              this.trigger("config");
+          });
 
     // binds to the part event to change the necessary parts
     // so that they comply with the product's sync rules
@@ -113,13 +115,11 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
             // no such part is found throws an error
             const target = this.owner.parts[_part.part];
             if (!target) {
-               throw new Error(`Target part for rule not found '${_part.part}'`);
+                throw new Error(`Target part for rule not found '${_part.part}'`);
             }
 
             if (_part.color === undefined) {
-                target.material = _part.material
-                    ? _part.material
-                    : value.material;
+                target.material = _part.material ? _part.material : value.material;
             }
 
             target.color = _part.color ? _part.color : value.color;
