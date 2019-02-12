@@ -21,8 +21,8 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = async function(owner) {
     this._partBind = this.owner.bind("part", this._applySync.bind(this));
 
     // if the loadConfig option is set and the owner is ready
-    // then retrieves its config sync rules
-    this.loadConfig && this.owner.ready && (await this._loadConfigRules());
+    // then retrieves its config sync rules (re-retrieval)
+    !this.manual && this.owner.ready && (this._loadConfigRules());
 
     // resets the current selection to trigger the sync operation
     const initialParts = ripe.clone(this.owner.parts);
