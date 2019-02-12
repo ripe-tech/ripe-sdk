@@ -443,9 +443,6 @@ ripe.Configurator.prototype._initLayout = function() {
     this.element.appendChild(framesBuffer);
     this.element.appendChild(masksBuffer);
 
-    // populates the buffers taking into account the frames of the model
-    this._populateBuffers();
-
     // set the size of area, frontMask, back and mask
     this.resize();
 
@@ -521,6 +518,10 @@ ripe.Configurator.prototype._updateConfig = function() {
         function(frames) {
             this.frames = frames;
 
+            // populates the buffers taking into account
+            // the frames of the model
+            this._populateBuffers();
+
             // tries to keep the current view and position
             // if the new model supports it otherwise
             // changes to a supported frame
@@ -544,8 +545,6 @@ ripe.Configurator.prototype._updateConfig = function() {
                     delete this._lastFrame[view];
                 }
             }
-
-            this._populateBuffers();
 
             // shows the new product with a crossfade effect
             // and starts responding to updates again
