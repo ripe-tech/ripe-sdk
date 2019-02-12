@@ -216,7 +216,7 @@ ripe.Ripe.prototype.setOptions = function(options) {
 
 ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate, options) {
     if (noUpdate) {
-        return this._setPart(part, material, color);
+        return this._setPart(part, material, color, noUpdate);
     }
 
     this.trigger("pre_parts", this.parts, options);

@@ -261,10 +261,8 @@ describe("Sync", function() {
             instance.load();
 
             await new Promise((resolve, reject) => {
-                instance.bind("config", resolve);
+                syncPlugin.bind("config", resolve);
             });
-
-            console.info(instance.parts);
 
             assert.strictEqual(instance.parts.hardware.color, "silver");
             assert.strictEqual(instance.parts.logo.color, "silver");
