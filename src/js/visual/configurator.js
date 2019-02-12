@@ -73,12 +73,14 @@ ripe.Configurator.prototype.init = function() {
     // to a view for better user experience
     this._lastFrame = {};
 
-    // creates the necessary dom elemnts and runs
+    // creates the necessary DOM elemnts and runs
     // the intial layout update operation if the
     // owner has a model set
     this._initLayout();
-    this.owner.model && this._updateConfig();
+    this.owner.brand && this.owner.model && this._updateConfig();
 
+    // registers for the config change request event to 
+    // be able to properly update the internal structures
     this._ownerBinds["config"] = this.owner.bind(
         "config",
         function() {
@@ -513,9 +515,14 @@ ripe.Configurator.prototype._updateConfig = function() {
     // updates the parts list for the new product
     this._initPartsList();
 
-    // retrieves the new product frames and sets them
+    // retrieves the new product frame object and sets it
+    // under the current state, adapting then the internal
+    // structures to accomodate the possible changes in the
+    // frame structure
     this.owner.getFrames(
         function(frames) {
+            // updates the internal reference to the frames
+            // model (to be used from now on)
             this.frames = frames;
 
             // populates the buffers taking into account
