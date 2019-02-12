@@ -44,19 +44,24 @@ ripe.Configurator.prototype.init = function() {
     this.position = this.options.position || 0;
     this.ready = false;
     this._observer = null;
+    this._ownerBinds = {};
 
-    this.owner.bind("parts", function(parts) {
+    this._ownerBinds["parts"] = this.owner.bind("parts", function(parts) {
         this.parts = parts;
     });
 
-    this.owner.bind(
+    // registers for the selected part event on the owner
+    // so that we can highlight the associated part
+    this._ownerBinds["selected_part"] = this.owner.bind(
         "selected_part",
         function(part) {
             this.highlight(part);
         }.bind(this)
     );
 
-    this.owner.bind(
+    // registers for the deselected part event on the owner
+    // so that we can remove the highligt of the associated part
+    this._ownerBinds["deselected_part"] = this.owner.bind(
         "deselected_part",
         function(part) {
             this.lowlight();
@@ -82,7 +87,7 @@ ripe.Configurator.prototype.init = function() {
         }.bind(this)
     );
 
-    this.owner.bind(
+    this._ownerBinds["config"] = this.owner.bind(
         "config",
         function() {
             this._updateConfig();
@@ -189,6 +194,10 @@ ripe.Configurator.prototype.update = function(state, options) {
 ripe.Configurator.prototype.deinit = function() {
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
+    }
+
+    for (var bind in this._ownerBinds) {
+        this.owner.unbind(bind, this._ownerBinds[bind]);
     }
 
     this._removeElementHandlers();
@@ -848,15 +857,6 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // are going to be used for event handler operations
     const area = this.element.querySelector(".area");
     const back = this.element.querySelector(".back");
-
-    // registes for the selected part event on the owner
-    // so that we can highlight the associated part
-    this.owner.bind(
-        "selected_part",
-        function(part) {
-            this.highlight(part);
-        }.bind(this)
-    );
 
     // binds the mousedown event on the element to prepare
     // it for drag movements
