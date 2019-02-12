@@ -243,7 +243,7 @@ describe("Sync", function() {
             };
             mockRipe.setParts(initialParts);
 
-            const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin({}, { });
+            const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin();
             syncPlugin.register(mockRipe);
 
             assert.deepStrictEqual(initialParts, mockRipe.parts);
