@@ -73,20 +73,14 @@ ripe.Configurator.prototype.init = function() {
     // to a view for better user experience
     this._lastFrame = {};
 
-    // ues the owner to retrieve the complete set of frames
-    // that are available for the current model and runs
-    // the intial layout update operation on result
-    this.owner.getFrames(
-        function(frames) {
-            this.frames = frames;
-            this._initLayout();
-            this._initPartsList();
-            this.ready = true;
-            this.trigger("ready");
-            this.update();
-        }.bind(this)
-    );
+    // creates the necessary DOM elemnts and runs
+    // the intial layout update operation if the
+    // owner has a model set
+    this._initLayout();
+    this.owner.brand && this.owner.model && this._updateConfig();
 
+    // registers for the config change request event to 
+    // be able to properly update the internal structures
     this._ownerBinds["config"] = this.owner.bind(
         "config",
         function() {
@@ -451,8 +445,6 @@ ripe.Configurator.prototype._initLayout = function() {
     this.element.appendChild(framesBuffer);
     this.element.appendChild(masksBuffer);
 
-    this._populateBuffers();
-
     // set the size of area, frontMask, back and mask
     this.resize();
 
@@ -517,13 +509,25 @@ ripe.Configurator.prototype._updateConfig = function() {
     // is being loaded
     this.ready = false;
 
+    // removes the highlight from any part
+    this.lowlight();
+
     // updates the parts list for the new product
     this._initPartsList();
 
-    // retrieves the new product frames and sets them
+    // retrieves the new product frame object and sets it
+    // under the current state, adapting then the internal
+    // structures to accomodate the possible changes in the
+    // frame structure
     this.owner.getFrames(
         function(frames) {
+            // updates the internal reference to the frames
+            // model (to be used from now on)
             this.frames = frames;
+
+            // populates the buffers taking into account
+            // the frames of the model
+            this._populateBuffers();
 
             // tries to keep the current view and position
             // if the new model supports it otherwise
@@ -552,6 +556,7 @@ ripe.Configurator.prototype._updateConfig = function() {
             // shows the new product with a crossfade effect
             // and starts responding to updates again
             this.ready = true;
+            this.trigger("ready");
             this.update(
                 {},
                 {
