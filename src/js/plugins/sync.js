@@ -7,7 +7,10 @@ if (typeof require !== "undefined") {
 
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
     ripe.Ripe.plugins.Plugin.call(this);
-    this.config(rules, options);
+
+    options = options || {};
+    this.rules = this._normalizeRules(rules);
+    this.manual = options.manual || false;
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
@@ -16,26 +19,16 @@ ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugi
 ripe.Ripe.plugins.SyncPlugin.prototype.register = async function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
-    // binds to the part event to change the necessary parts
-    // so that they comply with the product's sync rules
-    this._partBind = this.owner.bind("part", this._applySync.bind(this));
-
-    // if the loadConfig option is set and the owner is ready
-    // then retrieves its config sync rules (re-retrieval)
-    !this.manual && this.owner.ready && (this._loadConfigRules());
-
-    // resets the current selection to trigger the sync operation
-    const initialParts = ripe.clone(this.owner.parts);
-    this.owner.setParts(initialParts);
-
     // listens for model changes and if the loadConfig option is
     // set then retrieves the new model's config, otherwise
     // unregisters itself as its rules are no longer valid
-    this.configBind = this.owner.bind("config", () => {
-        this.options.loadConfig
-            ? this.config({}, this.options)
-            : this.owner && this.unregister(this.owner);
+    this.configBind = this.owner.bind("config", config => {
+        this.rules = this._normalizeRules(config.sync);
     });
+
+    // binds to the part event to change the necessary parts
+    // so that they comply with the product's sync rules
+    this._partBind = this.owner.bind("part", this._applySync.bind(this));
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
@@ -43,38 +36,6 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
     this.owner && this.owner.unbind("config", this._configBind);
 
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
-};
-
-/**
- * Sets the synchronization rules to be enforced on the model's
- * parts. If loadConfig is set to true on the options object
- * then the provided rules are ignored and rules declared on
- * the current model's config are used instead.
- *
- * @param {Object} rules The sync rules to be enforced.
- * @param {Object} options The plugin options
- */
-ripe.Ripe.plugins.SyncPlugin.prototype.config = async function(rules, options) {
-    // checks if the loadConfig option is set and
-    // if not then uses the provided rules
-    this.options = options || {};
-    this.loadConfig = this.options.loadConfig || false;
-    this.rules = this.loadConfig ? {} : this._normalizeRules(rules);
-    this.ready = !this.loadConfig;
-
-    // if the loadConfig option is set and the plugin
-    // has been registered then retrieves the sync
-    // rules from the owner's config
-    this.loadConfig && this.owner && (await this._loadConfigRules());
-
-    // once the rules are then starts enforcing them
-    this.ready = true;
-    this.trigger("config");
-};
-
-ripe.Ripe.plugins.SyncPlugin.prototype._loadConfigRules = async function() {
-    const { result } = await this.owner.getConfigP();
-    this.rules = this._normalizeRules(result.sync);
 };
 
 /**
