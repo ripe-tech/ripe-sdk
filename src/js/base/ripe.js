@@ -36,6 +36,21 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         },
         options
     );
+    this.setOptions(options);
+
+    // iterates over all the plugins present in the options (meant
+    // to be registered) and adds them to the current instance
+    for (const plugin of options.plugins || []) {
+        this.addPlugin(plugin);
+    }
+
+    // if diagnotisc headers have not been disabled then
+    // registers the diag plugin to automatically add
+    // diagnostic headers to every remote request
+    if (this.useDiag) {
+        var diagPlugin = new ripe.Ripe.plugins.DiagPlugin();
+        this.addPlugin(diagPlugin);
+    }
 
     // runs the connfiguration operation on the current instance, using
     // the requested parameters and options, multiple configuration
@@ -62,14 +77,6 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         this.history.push(_parts);
         this.historyPointer = this.history.length - 1;
     });
-
-    // if diagnotisc headers have not been disabled then
-    // registers the diag plugin to automatically add
-    // diagnostic headers to every remote request
-    if (this.useDiag) {
-        var diagPlugin = new ripe.Ripe.plugins.DiagPlugin();
-        this.addPlugin(diagPlugin);
-    }
 };
 
 ripe.Ripe.prototype.deinit = function() {

@@ -13,6 +13,14 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+ripe.Ripe.prototype.getConfigP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getConfig(options, (result, isValid, request) => {
+            isValid ? resolve({ result: result, request: request }) : reject(new Error());
+        });
+    });
+};
+
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;

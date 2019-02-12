@@ -7,7 +7,7 @@ describe("Ripe", function() {
 
     describe("#main", function() {
         it("should instance correctly", async () => {
-            const instance = new ripe.Ripe("swear", "vyner");
+            const instance = await new ripe.Ripe("swear", "vyner");
 
             assert.strictEqual(instance.initials, "");
             assert.strictEqual(instance.engraving, null);
