@@ -14,12 +14,12 @@ ripe.Ripe.plugins.Plugin = function() {
 ripe.Ripe.plugins.Plugin.prototype = ripe.build(ripe.Observable.prototype);
 ripe.Ripe.plugins.Plugin.prototype.constructor = ripe.Ripe.plugins.Plugin;
 
-ripe.Ripe.plugins.Plugin.prototype.register = function(owner) {
+ripe.Ripe.plugins.Plugin.prototype.register = async function(owner) {
     this.owner = owner;
     ripe.Observable.prototype.init.call(this);
 };
 
-ripe.Ripe.plugins.Plugin.prototype.unregister = function(owner) {
+ripe.Ripe.plugins.Plugin.prototype.unregister = async function(owner) {
     this.owner = null;
     ripe.Observable.prototype.deinit.call(this);
 };

@@ -17,7 +17,7 @@ ripe.RipeBase = function(brand, model, options) {
     return new ripe.Ripe(brand, model, options);
 };
 
-ripe.Ripe.prototype.init = function(brand, model, options) {
+ripe.Ripe.prototype.init = async function(brand, model, options) {
     // sets the various values in the instance taking into
     // account the default values
     this.initials = "";
@@ -41,7 +41,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // iterates over all the plugins present in the options (meant
     // to be registered) and adds them to the current instance
     for (const plugin of options.plugins || []) {
-        this.addPlugin(plugin);
+        await this.addPlugin(plugin);
     }
 
     // if diagnotisc headers have not been disabled then
@@ -49,7 +49,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // diagnostic headers to every remote request
     if (this.useDiag) {
         var diagPlugin = new ripe.Ripe.plugins.DiagPlugin();
-        this.addPlugin(diagPlugin);
+        await this.addPlugin(diagPlugin);
     }
 
     // runs the connfiguration operation on the current instance, using
@@ -79,7 +79,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     });
 };
 
-ripe.Ripe.prototype.deinit = function() {
+ripe.Ripe.prototype.deinit = async function() {
     var index = null;
 
     for (index = this.children.length - 1; index >= 0; index--) {
@@ -89,7 +89,7 @@ ripe.Ripe.prototype.deinit = function() {
 
     for (index = this.plugins.length - 1; index >= 0; index--) {
         var plugin = this.plugins[index];
-        this.removePlugin(plugin);
+        await this.removePlugin(plugin);
     }
 
     ripe.Observable.prototype.deinit.call(this);
@@ -372,13 +372,13 @@ ripe.Ripe.prototype.canRedo = function() {
     return this.history.length - 1 > this.historyPointer;
 };
 
-ripe.Ripe.prototype.addPlugin = function(plugin) {
-    plugin.register(this);
+ripe.Ripe.prototype.addPlugin = async function(plugin) {
+    await plugin.register(this);
     this.plugins.push(plugin);
 };
 
-ripe.Ripe.prototype.removePlugin = function(plugin) {
-    plugin.unregister(this);
+ripe.Ripe.prototype.removePlugin = async function(plugin) {
+    await plugin.unregister(this);
     this.plugins.splice(this.plugins.indexOf(plugin), 1);
 };
 

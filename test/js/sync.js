@@ -264,6 +264,8 @@ describe("Sync", function() {
                 instance.bind("config", resolve);
             });
 
+            console.info(instance.parts);
+
             assert.strictEqual(instance.parts.hardware.color, "silver");
             assert.strictEqual(instance.parts.logo.color, "silver");
 

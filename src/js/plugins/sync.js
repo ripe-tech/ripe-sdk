@@ -16,14 +16,14 @@ ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
 ripe.Ripe.plugins.SyncPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugin;
 
-ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
+ripe.Ripe.plugins.SyncPlugin.prototype.register = async function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
     // listens for model changes and if the loadConfig option is
     // set then retrieves the new model's config, otherwise
     // unregisters itself as its rules are no longer valid
     this.configBind = this.manual ? null : this.owner.bind("config", async () => {
-        const { result } = await this.owner.getConfigP();
+        const { result } = await this.getConfigP();
         this.rules = this._normalizeRules(result.sync);
     });
 
@@ -32,7 +32,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     this._partBind = this.owner.bind("part", this._applySync.bind(this));
 };
 
-ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
+ripe.Ripe.plugins.SyncPlugin.prototype.unregister = async function(owner) {
     this.owner && this.owner.unbind("part", this._partBind);
     this.owner && this.owner.unbind("config", this._configBind);
 
