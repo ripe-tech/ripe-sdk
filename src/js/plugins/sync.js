@@ -23,6 +23,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     // set then retrieves the new model's config, otherwise
     // unregisters itself as its rules are no longer valid
     this.configBind = this.manual ? null : this.owner.bind("config", async () => {
+        this.rules = this._normalizeRules(null);
         const { result } = await this.owner.getConfigP();
         this.rules = this._normalizeRules(result.sync);
         this.trigger("config");
@@ -50,6 +51,11 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
     const _rules = {};
+
+    if (!rules) {
+        return _rules;
+    }
+
     for (const ruleName in rules) {
         const rule = rules[ruleName];
         for (let index = 0; index < rule.length; index++) {
