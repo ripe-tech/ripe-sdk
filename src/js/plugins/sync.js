@@ -50,6 +50,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
  *
  * @param {Array} rules The rules that will be normalized
  * into object rules.
+ * @returns {Object} The normalized version of the rules.
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
     const _rules = {};
@@ -136,6 +137,8 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
  * @param {String} name The name of the part that may be
  * affected by the rule.
  * @param {Object} value The material and color of the part.
+ * @returns {Boolean} If the provided rule is valid for the provided
+ * part and value (material and color).
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._shouldSync = function(rule, name, value) {
     for (let index = 0; index < rule.length; index++) {
