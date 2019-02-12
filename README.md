@@ -186,6 +186,13 @@ This element supports the following methods:
 | `selectPart`   | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                     | selects a given product's part                                  |
 | `deselectPart` | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                     | removes selection from a given product's part                   |
 
+This element supports the following events:
+
+| Event     | Description                                                                                                                       |                                                                                                                                                                                                                                                                                                                                                                                                     | Description                                                     |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `ready`   | Triggered upon first loading of the model's internal frame structure (once per model load)                                        |
+| `loaded`  | Triggered when the configurator finishes loading all of the internal frames, and is ready for interaction (once per part setting) |
+
 ```javascript
 var element = document.getElementById("config");
 var configurator = ripe.bindConfigurator(element, {});

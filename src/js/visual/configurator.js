@@ -79,7 +79,7 @@ ripe.Configurator.prototype.init = function() {
     this._initLayout();
     this.owner.brand && this.owner.model && this._updateConfig();
 
-    // registers for the config change request event to 
+    // registers for the config change request event to
     // be able to properly update the internal structures
     this._ownerBinds["config"] = this.owner.bind(
         "config",
