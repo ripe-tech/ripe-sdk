@@ -25,6 +25,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     this.configBind = this.manual ? null : this.owner.bind("config", async () => {
         const { result } = await this.owner.getConfigP();
         this.rules = this._normalizeRules(result.sync);
+        this.trigger("config");
     });
 
     // binds to the part event to change the necessary parts
@@ -92,18 +93,30 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
 
         // iterates through the parts of the rule and
         // sets their material and color according to
-        // the sync rule
+        // the sync rule in case there's a match
         for (let index = 0; index < rule.length; index++) {
             const _part = rule[index];
+
+            // in case the current rule definition references the current
+            // part in rule deinition, ignores the current loop
             if (_part.part === name) {
                 continue;
             }
+
+            // tries to find the target part configuration an in case
+            // no such part is found throws an error
+            const target = this.owner.parts[_part.part];
+            if (!target) {
+               throw new Error(`Target part for rule not found '${_part.part}'`);
+            }
+
             if (_part.color === undefined) {
-                this.owner.parts[_part.part].material = _part.material
+                target.material = _part.material
                     ? _part.material
                     : value.material;
             }
-            this.owner.parts[_part.part].color = _part.color ? _part.color : value.color;
+
+            target.color = _part.color ? _part.color : value.color;
         }
     }
 };
