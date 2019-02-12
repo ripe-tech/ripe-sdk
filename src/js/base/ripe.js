@@ -36,6 +36,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         },
         options
     );
+    this.setOptions(options);
 
     // iterates over all the plugins present in the options (meant
     // to be registered) and adds them to the current instance

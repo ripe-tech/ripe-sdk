@@ -16,14 +16,15 @@ ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
 ripe.Ripe.plugins.SyncPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugin;
 
-ripe.Ripe.plugins.SyncPlugin.prototype.register = async function(owner) {
+ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
     // listens for model changes and if the loadConfig option is
     // set then retrieves the new model's config, otherwise
     // unregisters itself as its rules are no longer valid
-    this.configBind = this.owner.bind("config", config => {
-        this.rules = this._normalizeRules(config.sync);
+    this.configBind = this.manual ? null : this.owner.bind("config", async () => {
+        const { result } = await this.owner.getConfigP();
+        this.rules = this._normalizeRules(result.sync);
     });
 
     // binds to the part event to change the necessary parts
@@ -65,7 +66,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
 };
 
 /**
- * Checks if any of the sync rules contains the provided part
+ * Checks if any of the sync rules contain the provided part
  * meaning that the other parts of the rule have to
  * be changed accordingly.
  *
@@ -74,12 +75,6 @@ ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
  * @param {Object} value The material and color of the part.
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
-    // if the plugin is not ready, meaning that the
-    // sync rules are not loaded yet, then does nothing
-    if (!this.ready) {
-        return;
-    }
-
     for (const key in this.rules) {
         // if a part was selected and it is part of
         // the rule then its value is used otherwise
