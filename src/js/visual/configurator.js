@@ -73,19 +73,11 @@ ripe.Configurator.prototype.init = function() {
     // to a view for better user experience
     this._lastFrame = {};
 
-    // ues the owner to retrieve the complete set of frames
-    // that are available for the current model and runs
-    // the intial layout update operation on result
-    this.owner.getFrames(
-        function(frames) {
-            this.frames = frames;
-            this._initLayout();
-            this._initPartsList();
-            this.ready = true;
-            this.trigger("ready");
-            this.update();
-        }.bind(this)
-    );
+    // creates the necessary dom elemnts and runs
+    // the intial layout update operation if the
+    // owner has a model set
+    this._initLayout();
+    this.owner.model && this._updateConfig();
 
     this._ownerBinds["config"] = this.owner.bind(
         "config",
@@ -525,6 +517,8 @@ ripe.Configurator.prototype._updateConfig = function() {
         function(frames) {
             this.frames = frames;
 
+            this._populateBuffers();
+
             // tries to keep the current view and position
             // if the new model supports it otherwise
             // changes to a supported frame
@@ -552,6 +546,7 @@ ripe.Configurator.prototype._updateConfig = function() {
             // shows the new product with a crossfade effect
             // and starts responding to updates again
             this.ready = true;
+            this.trigger("ready");
             this.update(
                 {},
                 {
