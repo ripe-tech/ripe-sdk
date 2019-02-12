@@ -1,3 +1,4 @@
+const base = require("./base");
 const brand = require("./brand");
 const build = require("./build");
 const locale = require("./locale");
@@ -5,6 +6,7 @@ const oauth = require("./oauth");
 const order = require("./order");
 const size = require("./size");
 
+Object.assign(module.exports, base);
 Object.assign(module.exports, brand);
 Object.assign(module.exports, build);
 Object.assign(module.exports, locale);
