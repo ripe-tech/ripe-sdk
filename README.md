@@ -43,14 +43,11 @@ ripe.bind("price", function(value) {
 
 ### Config
 
-Called when a new model configuration has been loaded. You should use this to retrieve the model's configuration data , ie: when populating the customization options on your UI.
+Called when a new model configuration has been loaded. You should use this to explore the model's configuration data, ie: when populating the customization options on your UI.
 
 ```javascript
-ripe.bind("config", function() {
-    this.getConfig(function(config) {
-        var parts = config.parts;
-        // (...)
-    });
+ripe.bind("config", function(config) {
+    var parts = config.parts;
 });
 ```
 

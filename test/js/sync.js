@@ -7,6 +7,7 @@ const plugins = require("../../src/js/plugins");
 const MockRipe = function() {
     const mockRipe = new base.ripe.Observable();
     mockRipe.ready = true;
+    mockRipe.loadedConfig = {};
     mockRipe.setPart = function(part, material, color) {
         this.parts[part] = {
             material: material,
@@ -236,21 +237,13 @@ describe("Sync", function() {
                 full: ["upper", "bottom"]
             };
             const mockRipe = new MockRipe();
-            mockRipe.getConfigP = async () => {
-                return new Promise((resolve, reject) => {
-                    resolve({ result: { sync } });
-                });
-            };
+            mockRipe.loadedConfig = { sync: sync };
             mockRipe.setParts(initialParts);
 
             const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin();
             syncPlugin.register(mockRipe);
-            const promise = new Promise((resolve, reject) => {
-                syncPlugin.bind("config", resolve);
-            });
 
-            mockRipe.trigger("config");
-            await promise;
+            mockRipe.trigger("config", mockRipe.loadedConfig);
 
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
@@ -261,16 +254,11 @@ describe("Sync", function() {
         });
 
         it("should update sync rules when config changes", async () => {
-            let promise;
-
             const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin();
-            promise = new Promise((resolve, reject) => {
-                syncPlugin.bind("config", resolve);
-            });
-
             const instance = new ripe.Ripe("swear", "vyner", { plugins: [syncPlugin] });
-            instance.load();
-            await promise;
+            await new Promise((resolve, reject) => {
+                instance.bind("config", resolve);
+            });
 
             assert.strictEqual(instance.parts.hardware.color, "silver");
             assert.strictEqual(instance.parts.logo.color, "silver");
@@ -280,12 +268,7 @@ describe("Sync", function() {
             assert.strictEqual(instance.parts.hardware.color, "bronze");
             assert.strictEqual(instance.parts.logo.color, "bronze");
 
-            promise = new Promise((resolve, reject) => {
-                syncPlugin.bind("config", resolve);
-            });
-
-            instance.config("swear", "maltby");
-            await promise;
+            await instance.config("swear", "maltby");
 
             assert.strictEqual(instance.parts.fringe_hardware.color, "silver");
             assert.strictEqual(instance.parts.logo.color, "silver");
