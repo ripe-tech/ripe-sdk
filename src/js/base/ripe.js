@@ -64,19 +64,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
         if (options && ["undo", "redo"].indexOf(options.action) !== -1) {
             return;
         }
-
-        if (!this.parts || !Object.keys(this.parts).length) {
-            return;
-        }
-
-        if (ripe.equal(this.parts, this.history[this.historyPointer])) {
-            return;
-        }
-
-        var _parts = ripe.clone(this.parts);
-        this.history = this.history.slice(0, this.historyPointer + 1);
-        this.history.push(_parts);
-        this.historyPointer = this.history.length - 1;
+        this._addHistory();
     });
 };
 
@@ -159,6 +147,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
         return;
     }
     this.setParts(parts, true);
+    this._addHistory();
     this.remote();
     this.update();
 };
@@ -422,6 +411,21 @@ ripe.Ripe.prototype._partsList = function(parts) {
         partsList.push([part, value.material, value.color]);
     }
     return partsList;
+};
+
+ripe.Ripe.prototype._addHistory = function() {
+    if (!this.parts || !Object.keys(this.parts).length) {
+        return;
+    }
+
+    if (ripe.equal(this.parts, this.history[this.historyPointer])) {
+        return;
+    }
+
+    var _parts = ripe.clone(this.parts);
+    this.history = this.history.slice(0, this.historyPointer + 1);
+    this.history.push(_parts);
+    this.historyPointer = this.history.length - 1;
 };
 
 // eslint-disable-next-line no-unused-vars
