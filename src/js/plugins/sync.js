@@ -22,7 +22,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     // listens for model changes and if the loadConfig option is
     // set then retrieves the new model's config, otherwise
     // unregisters itself as its rules are no longer valid
-    this.configBind = this.manual
+    this._configBind = this.manual
         ? null
         : this.owner.bind("config", async () => {
               this.rules = this._normalizeRules(null);
