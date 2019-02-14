@@ -1,14 +1,27 @@
 const assert = require("assert");
 const config = require("./config");
+const ripe = require("../../src/js");
 const base = require("../../src/js/base");
 const plugins = require("../../src/js/plugins");
 
 const MockRipe = function() {
     const mockRipe = new base.ripe.Observable();
+    mockRipe.ready = true;
+    mockRipe.loadedConfig = {};
+    mockRipe.setPart = function(part, material, color) {
+        this.parts[part] = {
+            material: material,
+            color: color
+        };
+        this.trigger("part", part, {
+            material: material,
+            color: color
+        });
+    };
     mockRipe.setParts = function(parts) {
         this.parts = parts;
     };
-    mockRipe.bind = function(name, callback) {};
+
     return mockRipe;
 };
 
@@ -39,11 +52,7 @@ describe("Sync", function() {
             syncPlugin._applySync();
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
-            mockRipe.parts.bottom.color = "white";
-            syncPlugin._applySync("bottom", {
-                material: "nappa",
-                color: "white"
-            });
+            mockRipe.setPart("bottom", "nappa", "white");
             assert.strictEqual(mockRipe.parts.bottom.color, "white");
             assert.strictEqual(mockRipe.parts.upper.color, "white");
         });
@@ -79,12 +88,7 @@ describe("Sync", function() {
             assert.strictEqual(mockRipe.parts.bottom.material, "nappa");
             assert.strictEqual(mockRipe.parts.bottom.color, "black");
 
-            mockRipe.parts.bottom.material = "suede";
-            mockRipe.parts.bottom.color = "white";
-            syncPlugin._applySync("bottom", {
-                material: "suede",
-                color: "white"
-            });
+            mockRipe.setPart("bottom", "suede", "white");
             assert.strictEqual(mockRipe.parts.bottom.material, "suede");
             assert.strictEqual(mockRipe.parts.bottom.color, "white");
             assert.strictEqual(mockRipe.parts.upper.material, "suede");
@@ -124,12 +128,7 @@ describe("Sync", function() {
             syncPlugin._applySync();
             assert.strictEqual(mockRipe.parts.bottom.material, "suede");
 
-            mockRipe.parts.bottom.material = "suede";
-            mockRipe.parts.bottom.color = "white";
-            syncPlugin._applySync("bottom", {
-                material: "suede",
-                color: "white"
-            });
+            mockRipe.setPart("bottom", "suede", "white");
             assert.strictEqual(mockRipe.parts.bottom.material, "suede");
             assert.strictEqual(mockRipe.parts.bottom.color, "white");
             assert.strictEqual(mockRipe.parts.upper.material, "nappa");
@@ -168,21 +167,13 @@ describe("Sync", function() {
             syncPlugin._applySync();
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
-            mockRipe.parts.bottom.color = "red";
-            syncPlugin._applySync("bottom", {
-                material: "suede",
-                color: "red"
-            });
+            mockRipe.setPart("bottom", "suede", "red");
             assert.strictEqual(mockRipe.parts.bottom.material, "suede");
             assert.strictEqual(mockRipe.parts.bottom.color, "red");
             assert.strictEqual(mockRipe.parts.upper.material, "nappa");
             assert.strictEqual(mockRipe.parts.upper.color, "black");
 
-            mockRipe.parts.bottom.color = "white";
-            syncPlugin._applySync("bottom", {
-                material: "suede",
-                color: "white"
-            });
+            mockRipe.setPart("bottom", "suede", "white");
             assert.strictEqual(mockRipe.parts.bottom.material, "suede");
             assert.strictEqual(mockRipe.parts.bottom.color, "white");
             assert.strictEqual(mockRipe.parts.upper.material, "nappa");
@@ -224,16 +215,68 @@ describe("Sync", function() {
             syncPlugin._applySync();
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
-            mockRipe.parts.bottom.material = "suede";
-            mockRipe.parts.bottom.color = "red";
-            syncPlugin._applySync("bottom", {
-                material: "suede",
-                color: "red"
-            });
+            mockRipe.setPart("bottom", "suede", "red");
             assert.strictEqual(mockRipe.parts.bottom.material, "suede");
             assert.strictEqual(mockRipe.parts.bottom.color, "red");
             assert.strictEqual(mockRipe.parts.upper.material, "nappa");
             assert.strictEqual(mockRipe.parts.upper.color, "green");
+        });
+
+        it("should apply config sync rules", async () => {
+            const initialParts = {
+                upper: {
+                    material: "nappa",
+                    color: "black"
+                },
+                bottom: {
+                    material: "nappa",
+                    color: "black"
+                }
+            };
+            const sync = {
+                full: ["upper", "bottom"]
+            };
+            const mockRipe = new MockRipe();
+            mockRipe.loadedConfig = { sync: sync };
+            mockRipe.setParts(initialParts);
+
+            const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin();
+            syncPlugin.register(mockRipe);
+
+            mockRipe.trigger("config", mockRipe.loadedConfig);
+
+            assert.deepStrictEqual(initialParts, mockRipe.parts);
+
+            mockRipe.setPart("bottom", "nappa", "white");
+
+            assert.strictEqual(mockRipe.parts.bottom.color, "white");
+            assert.strictEqual(mockRipe.parts.upper.color, "white");
+        });
+
+        it("should update sync rules when config changes", async () => {
+            const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin();
+            const instance = new ripe.Ripe("swear", "vyner", { plugins: [syncPlugin] });
+            await new Promise((resolve, reject) => {
+                instance.bind("config", resolve);
+            });
+
+            assert.strictEqual(instance.parts.hardware.color, "silver");
+            assert.strictEqual(instance.parts.logo.color, "silver");
+
+            instance.setPart("hardware", "metal", "bronze");
+
+            assert.strictEqual(instance.parts.hardware.color, "bronze");
+            assert.strictEqual(instance.parts.logo.color, "bronze");
+
+            await instance.config("swear", "maltby");
+
+            assert.strictEqual(instance.parts.fringe_hardware.color, "silver");
+            assert.strictEqual(instance.parts.logo.color, "silver");
+
+            instance.setPart("fringe_hardware", "metal", "bronze");
+
+            assert.strictEqual(instance.parts.fringe_hardware.color, "bronze");
+            assert.strictEqual(instance.parts.logo.color, "bronze");
         });
     });
 });

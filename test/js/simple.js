@@ -7,7 +7,7 @@ describe("Ripe", function() {
 
     describe("#main", function() {
         it("should instance correctly", async () => {
-            const instance = new ripe.Ripe("swear", "vyner");
+            const instance = await new ripe.Ripe("swear", "vyner");
 
             assert.strictEqual(instance.initials, "");
             assert.strictEqual(instance.engraving, null);
@@ -25,7 +25,7 @@ describe("Ripe", function() {
             instance.load();
 
             await new Promise((resolve, reject) => {
-                instance.bind("parts", resolve);
+                instance.bind("config", resolve);
             });
 
             result = await new Promise((resolve, reject) => {
@@ -52,7 +52,7 @@ describe("Ripe", function() {
             instance.load();
 
             await new Promise((resolve, reject) => {
-                instance.bind("parts", resolve);
+                instance.bind("config", resolve);
             });
 
             result = await new Promise((resolve, reject) => {
@@ -70,7 +70,7 @@ describe("Ripe", function() {
             instance.load();
 
             await new Promise((resolve, reject) => {
-                instance.bind("parts", resolve);
+                instance.bind("config", resolve);
             });
 
             assert.strictEqual(Object.keys(instance.parts).length, 0);

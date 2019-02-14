@@ -6,9 +6,12 @@ if (typeof require !== "undefined") {
 }
 
 ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
+    ripe.Ripe.plugins.Plugin.call(this);
+
     options = options || {};
     this.rules = this._normalizeRules(rules);
-    this.partCallback = this._applySync.bind(this);
+    this.manual = Boolean(options.manual || rules);
+    this.auto = !this.manual;
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
@@ -17,24 +20,30 @@ ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugi
 ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
+    // sets the initial set of rules from the owner, in case the
+    // auto mode is enabled for the current instance
+    this.rules =
+        this.auto && owner.loadedConfig
+            ? this._normalizeRules(owner.loadedConfig.sync)
+            : this.rules;
+
+    // listens for model changes and if the loadConfig option is
+    // set then retrieves the new model's config, otherwise
+    // unregisters itself as its rules are no longer valid
+    this.configBind = this.manual
+        ? null
+        : this.owner.bind("config", config => {
+              this.rules = this._normalizeRules(config.sync);
+          });
+
     // binds to the part event to change the necessary parts
     // so that they comply with the product's sync rules
-    this.owner.bind("part", this.partCallback);
-
-    // resets the current selection to trigger the sync operation
-    const initialParts = ripe.clone(this.owner.parts);
-    this.owner.setParts(initialParts);
-
-    this.owner.bind(
-        "config",
-        function() {
-            this.owner && this.unregister(this.owner);
-        }.bind(this)
-    );
+    this._partBind = this.owner.bind("part", this._applySync.bind(this));
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
-    this.owner.unbind("part", this.partCallback);
+    this.owner && this.owner.unbind("part", this._partBind);
+    this.owner && this.owner.unbind("config", this._configBind);
 
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
@@ -46,9 +55,15 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
  *
  * @param {Array} rules The rules that will be normalized
  * into object rules.
+ * @returns {Object} The normalized version of the rules.
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
     const _rules = {};
+
+    if (!rules) {
+        return _rules;
+    }
+
     for (const ruleName in rules) {
         const rule = rules[ruleName];
         for (let index = 0; index < rule.length; index++) {
@@ -65,6 +80,15 @@ ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
     return _rules;
 };
 
+/**
+ * Checks if any of the sync rules contain the provided part
+ * meaning that the other parts of the rule have to
+ * be changed accordingly.
+ *
+ * @param {String} name The name of the part that may be
+ * affected by a rule.
+ * @param {Object} value The material and color of the part.
+ */
 ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
     for (const key in this.rules) {
         // if a part was selected and it is part of
@@ -83,18 +107,28 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
 
         // iterates through the parts of the rule and
         // sets their material and color according to
-        // the sync rule
+        // the sync rule in case there's a match
         for (let index = 0; index < rule.length; index++) {
             const _part = rule[index];
+
+            // in case the current rule definition references the current
+            // part in rule deinition, ignores the current loop
             if (_part.part === name) {
                 continue;
             }
-            if (_part.color === undefined) {
-                this.owner.parts[_part.part].material = _part.material
-                    ? _part.material
-                    : value.material;
+
+            // tries to find the target part configuration an in case
+            // no such part is found throws an error
+            const target = this.owner.parts[_part.part];
+            if (!target) {
+                throw new Error(`Target part for rule not found '${_part.part}'`);
             }
-            this.owner.parts[_part.part].color = _part.color ? _part.color : value.color;
+
+            if (_part.color === undefined) {
+                target.material = _part.material ? _part.material : value.material;
+            }
+
+            target.color = _part.color ? _part.color : value.color;
         }
     }
 };
@@ -108,6 +142,8 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
  * @param {String} name The name of the part that may be
  * affected by the rule.
  * @param {Object} value The material and color of the part.
+ * @returns {Boolean} If the provided rule is valid for the provided
+ * part and value (material and color).
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._shouldSync = function(rule, name, value) {
     for (let index = 0; index < rule.length; index++) {
