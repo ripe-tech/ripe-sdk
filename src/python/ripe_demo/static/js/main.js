@@ -124,15 +124,16 @@ window.onload = function() {
             });
 
         getCombinations &&
-            getCombinations.addEventListener("click", async function() {
-                let { result } = await ripe.getCombinationsP();
-                alert(
-                    "There are <strong>" +
-                        String(result.length.formatMoney(0)) +
-                        "</strong> combinations with <strong>" +
-                        String(unique().formatMoney(0)) +
-                        "</strong> possible compositions"
-                );
+            getCombinations.addEventListener("click", function() {
+                ripe.getCombinations(function(combinations) {
+                    alert(
+                        "There are <strong>" +
+                            String(combinations.length.formatMoney(0)) +
+                            "</strong> combinations with <strong>" +
+                            String(unique().formatMoney(0)) +
+                            "</strong> possible compositions"
+                    );
+                });
             });
 
         ripe.bind("error", function(error, description) {
@@ -216,7 +217,12 @@ window.onload = function() {
         // loads the config of the product to retrieve the
         // complete configuration of the product and be able
         // to define the visible frames and apply restrictions
-        ripe.getConfig(function(result) {
+        var caller = ripe.loadedConfig
+            ? function(callback) {
+                  callback(ripe.loadedConfig);
+              }
+            : ripe.getConfig;
+        caller(function(result) {
             var frame0 = document.getElementById("frame-0");
             var frame6 = document.getElementById("frame-6");
             var frameTop = document.getElementById("frame-top");
@@ -333,7 +339,12 @@ window.onload = function() {
         // loads the configuration to try to discover the profiles
         // that are available for the current model and build the
         // associated drop down with these values
-        ripe.getConfig(function(result) {
+        var caller = ripe.loadedConfig
+            ? function(callback) {
+                  callback(ripe.loadedConfig);
+              }
+            : ripe.getConfig;
+        caller(function(result) {
             var initials = result.initials || {};
             var profiles = initials.$profiles || {};
             var profilesKeys = Object.keys(profiles);

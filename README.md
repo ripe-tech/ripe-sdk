@@ -43,12 +43,11 @@ ripe.bind("price", function(value) {
 
 ### Config
 
-Called when a new model configuration has been loaded. You should use this to retrieve the model's configuration data , ie: when populating the customization options on your UI.
+Called when a new model configuration has been loaded. You should use this to explore the model's configuration data, ie: when populating the customization options on your UI.
 
 ```javascript
 ripe.bind("config", function(config) {
     var parts = config.parts;
-    // (...)
 });
 ```
 
@@ -185,6 +184,14 @@ This element supports the following methods:
 | `lowlight`     | <ul><li>`options` *(JSON object with optional fields)*</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                           | removes any highlight from the product                          |
 | `selectPart`   | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                     | selects a given product's part                                  |
 | `deselectPart` | <ul><li>`part` *(string), named part*</li><li>`options` *(JSON object with optional fields)*</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                     | removes selection from a given product's part                   |
+
+This element supports the following events:
+
+| Event           | Description                                                                                                                       |                                                                                                                                                                                                                                                                                                                                                                                                     | Description                                                     |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `ready`         | Triggered upon first loading of the model's internal frame structure (once per model load)                                        |
+| `loaded`        | Triggered when the configurator finishes loading all of the internal frames, and is ready for interaction (once per part setting) |
+| `changed_frame` | Raises whenever there's a rotation in the cofigurator viewport (viewable frame has changed)                                       |
 
 ```javascript
 var element = document.getElementById("config");
