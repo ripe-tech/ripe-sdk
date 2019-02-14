@@ -33,4 +33,4 @@ ripe.Ripe.prototype.getSwatchURL = function(material, color, options) {
         format: format
     });
     return `${this.url}swatch?${query}`;
-}; 
+};
