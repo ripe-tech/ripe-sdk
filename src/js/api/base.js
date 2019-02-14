@@ -17,7 +17,20 @@ ripe.Ripe.prototype.resolveProductId = function(productId, options, callback) {
 ripe.Ripe.prototype.resolveProductIdP = function(options) {
     return new Promise((resolve, reject) => {
         this.resolveProductId(options, (result, isValid, request) => {
-            isValid ? resolve({ result: result, request: request }) : reject(new Error());
+            isValid ? resolve(result) : reject(new Error());
         });
     });
 };
+
+ripe.Ripe.prototype.getSwatchURL = function(material, color, options) {
+    options = options || {};
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const format = options.format === undefined ? "png" : options.format;
+    const query = this._buildQuery({
+        material: material,
+        color: color,
+        brand: brand,
+        format: format
+    });
+    return `${this.url}swatch?${query}`;
+}; 
