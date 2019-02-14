@@ -82,11 +82,11 @@ describe("Ripe", function() {
             });
             instance.load();
 
-            await new Promise((resolve, reject) => {
-                instance.bind("config", resolve);
+            const initialParts = await new Promise((resolve, reject) => {
+                instance.bind("parts", resolve);
             });
 
-            const initialParts = Object.assign({}, instance.parts);
+            assert.deepStrictEqual(instance.parts, initialParts);
             assert.strictEqual(instance.canUndo(), false);
             assert.strictEqual(instance.canRedo(), false);
 
