@@ -61,22 +61,15 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // listens for the post parts event and saves the current configuration
     // for the undo operations (history control)
     this.bind("post_parts", function(parts, options) {
+        // in case the current opertion was an undo and redo one there's
+        // nothing to be done (no history stack change)
         if (options && ["undo", "redo"].indexOf(options.action) !== -1) {
             return;
         }
 
-        if (!this.parts || !Object.keys(this.parts).length) {
-            return;
-        }
-
-        if (ripe.equal(this.parts, this.history[this.historyPointer])) {
-            return;
-        }
-
-        var _parts = ripe.clone(this.parts);
-        this.history = this.history.slice(0, this.historyPointer + 1);
-        this.history.push(_parts);
-        this.historyPointer = this.history.length - 1;
+        // pushes the current state of the configuration (parts) into
+        // the history stack allowing undo and redo
+        this._pushHistory();
     });
 };
 
@@ -155,10 +148,16 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
         this.ready = true;
         this.trigger("ready");
     }
+
+    // in case there's no model defined in the current instance then there's
+    // nothing more possible to be done, reeturns the control flow
     if (hasModel === false) {
         return;
     }
-    this.setParts(parts, true);
+
+    // updates the parts of the current instance and triggers the remove and
+    // local update operations, as expected
+    this.setParts(parts, false, { noPartEvents: true });
     this.remote();
     this.update();
 };
@@ -233,11 +232,11 @@ ripe.Ripe.prototype.setParts = function(update, noEvents, options) {
     }
 
     if (noEvents) {
-        return this._setParts(update, noEvents);
+        return this._setParts(update, options && options.noPartEvents);
     }
 
     this.trigger("pre_parts", this.parts, options);
-    this._setParts(update, noEvents);
+    this._setParts(update, options && options.noPartEvents);
     this.update();
     this.trigger("parts", this.parts, options);
     this.trigger("post_parts", this.parts, options);
@@ -398,11 +397,14 @@ ripe.Ripe.prototype._setPart = function(part, material, color, noEvents) {
     var value = this.parts[part] || {};
     value.material = material;
     value.color = color;
-    this.parts[part] = value;
+
     if (noEvents) {
+        this.parts[part] = value;
         return;
     }
+
     this.trigger("pre_part", part, value);
+    this.parts[part] = value;
     this.trigger("part", part, value);
     this.trigger("post_part", part, value);
 };
@@ -422,6 +424,21 @@ ripe.Ripe.prototype._partsList = function(parts) {
         partsList.push([part, value.material, value.color]);
     }
     return partsList;
+};
+
+ripe.Ripe.prototype._pushHistory = function() {
+    if (!this.parts || !Object.keys(this.parts).length) {
+        return;
+    }
+
+    if (ripe.equal(this.parts, this.history[this.historyPointer])) {
+        return;
+    }
+
+    var _parts = ripe.clone(this.parts);
+    this.history = this.history.slice(0, this.historyPointer + 1);
+    this.history.push(_parts);
+    this.historyPointer = this.history.length - 1;
 };
 
 // eslint-disable-next-line no-unused-vars
