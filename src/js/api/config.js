@@ -21,16 +21,3 @@ ripe.Ripe.prototype.resolveProductIdP = function(options) {
         });
     });
 };
-
-ripe.Ripe.prototype.getSwatchURL = function(material, color, options) {
-    options = options || {};
-    const brand = options.brand === undefined ? this.brand : options.brand;
-    const format = options.format === undefined ? "png" : options.format;
-    const query = this._buildQuery({
-        material: material,
-        color: color,
-        brand: brand,
-        format: format
-    });
-    return `${this.url}swatch?${query}`;
-};

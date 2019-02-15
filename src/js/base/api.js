@@ -114,7 +114,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         const isValid = this.status === 200;
         try {
             result = JSON.parse(this.responseText);
-        } catch (error) {}
+        } catch (error) { }
         callback && callback.call(context, result, isValid, this);
     });
 
@@ -315,6 +315,32 @@ ripe.Ripe.prototype._getMaskOptions = function(options) {
     });
 };
 
+ripe.Ripe.prototype._getSwatchOptions = function(options) {
+    options = options || {};
+    options = this._getQueryOptions(options);
+
+    const params = options.params || {};
+    options.params = params;
+
+    if (options.material !== undefined && options.material !== null) {
+        params.material = options.material;
+    }
+    if (options.color !== undefined && options.color !== null) {
+        params.color = options.color;
+    }
+    if (options.format !== undefined && options.format !== null) {
+        params.format = options.format;
+    }
+
+    const url = this.url + "swatch";
+
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
 ripe.Ripe.prototype._getImageURL = function(options) {
     options = this._getImageOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
@@ -322,6 +348,12 @@ ripe.Ripe.prototype._getImageURL = function(options) {
 
 ripe.Ripe.prototype._getMaskURL = function(options) {
     options = this._getMaskOptions(options);
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+ripe.Ripe.prototype._getSwatchURL = function(material, color, options) {
+    options = Object.assign({ material: material, color: color }, options);
+    options = this._getSwatchOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
 
