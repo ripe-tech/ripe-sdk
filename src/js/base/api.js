@@ -114,7 +114,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         const isValid = this.status === 200;
         try {
             result = JSON.parse(this.responseText);
-        } catch (error) { }
+        } catch (error) {}
         callback && callback.call(context, result, isValid, this);
     });
 

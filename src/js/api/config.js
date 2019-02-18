@@ -5,7 +5,7 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-ripe.Ripe.prototype.resolveProductId = function(productId, options, callback) {
+ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;
     const url = this.url + "config/resolve/" + productId;
@@ -14,7 +14,7 @@ ripe.Ripe.prototype.resolveProductId = function(productId, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.resolveProductIdP = function(options) {
+ripe.Ripe.prototype.configResolveP = function(options) {
     return new Promise((resolve, reject) => {
         this.resolveProductId(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new Error());
