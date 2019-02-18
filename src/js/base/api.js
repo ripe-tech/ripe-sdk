@@ -325,9 +325,11 @@ ripe.Ripe.prototype._getSwatchOptions = function(options) {
     if (options.material !== undefined && options.material !== null) {
         params.material = options.material;
     }
+
     if (options.color !== undefined && options.color !== null) {
         params.color = options.color;
     }
+
     if (options.format !== undefined && options.format !== null) {
         params.format = options.format;
     }
