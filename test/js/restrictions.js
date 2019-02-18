@@ -191,9 +191,6 @@ describe("Restrictions", function() {
 
     describe("#auto", function() {
         it("should load restrictions from ripe instance", async () => {
-            let promise;
-            let config;
-
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin();
             const instance = new ripe.Ripe("swear", "vyner", { plugins: [restrictionsPlugin] });
             instance.load();
@@ -201,18 +198,22 @@ describe("Restrictions", function() {
                 instance.bind("config", resolve);
             });
 
-            config = instance.loadedConfig;
-            assert.deepStrictEqual(restrictionsPlugin.restrictions, config.restrictions);
-            assert.deepStrictEqual(restrictionsPlugin.partsOptions, config.parts);
+            assert.deepStrictEqual(
+                restrictionsPlugin.restrictions,
+                instance.loadedConfig.restrictions
+            );
+            assert.deepStrictEqual(restrictionsPlugin.partsOptions, instance.loadedConfig.parts);
 
             instance.config("toga_pulla", "elvis");
             await new Promise((resolve, reject) => {
                 instance.bind("config", resolve);
             });
 
-            config = instance.loadedConfig;
-            assert.deepStrictEqual(restrictionsPlugin.restrictions, config.restrictions);
-            assert.deepStrictEqual(restrictionsPlugin.partsOptions, config.parts);
+            assert.deepStrictEqual(
+                restrictionsPlugin.restrictions,
+                instance.loadedConfig.restrictions
+            );
+            assert.deepStrictEqual(restrictionsPlugin.partsOptions, instance.loadedConfig.parts);
         });
     });
 });
