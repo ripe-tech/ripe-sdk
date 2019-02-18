@@ -187,7 +187,7 @@ This element supports the following methods:
 
 This element supports the following events:
 
-| Event           | Description                                                                                                                       |                                                                                                                                                                                                                                                                                                                                                                                                     | Description                                                     |
+| Event           | Description                                                                                                                       |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `ready`         | Triggered upon first loading of the model's internal frame structure (once per model load)                                        |
 | `loaded`        | Triggered when the configurator finishes loading all of the internal frames, and is ready for interaction (once per part setting) |
