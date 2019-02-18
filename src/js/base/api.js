@@ -351,8 +351,7 @@ ripe.Ripe.prototype._getMaskURL = function(options) {
     return options.url + "?" + this._buildQuery(options.params);
 };
 
-ripe.Ripe.prototype._getSwatchURL = function(material, color, options) {
-    options = Object.assign({ material: material, color: color }, options);
+ripe.Ripe.prototype._getSwatchURL = function(options) {
     options = this._getSwatchOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
