@@ -394,6 +394,8 @@ ripe.Ripe.prototype._getState = function() {
 };
 
 ripe.Ripe.prototype._setPart = function(part, material, color, noEvents) {
+    // ensures that there's one valid configuration loaded
+    // in the current instance, required for part setting
     if (!this.loadedConfig) {
         throw Error("Model config is not loaded");
     }
@@ -414,12 +416,20 @@ ripe.Ripe.prototype._setPart = function(part, material, color, noEvents) {
     value.color = remove ? null : color;
 
     if (noEvents) {
-        remove ? delete this.parts[part] : (this.parts[part] = value);
+        if (remove) {
+            delete this.parts[part];
+        } else {
+            this.parts[part] = value;
+        }
         return;
     }
 
     this.trigger("pre_part", part, value);
-    remove ? delete this.parts[part] : (this.parts[part] = value);
+    if (remove) {
+        delete this.parts[part];
+    } else {
+        this.parts[part] = value;
+    }
     this.trigger("part", part, value);
     this.trigger("post_part", part, value);
 };
