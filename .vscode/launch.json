@@ -13,7 +13,8 @@
             "env": {
                 "PYTHONPATH": "${workspaceRoot}/src/python/ripe_demo:{env.PYTHONPATH}"
             }
-        }, {
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Mocha Current File",
