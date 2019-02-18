@@ -26,6 +26,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.plugins = this.plugins || [];
     this.history = [];
     this.historyPointer = -1;
+    this.loadedConfig = null;
     this.ready = false;
 
     // extends the default options with the ones provided by the
@@ -60,22 +61,15 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // listens for the post parts event and saves the current configuration
     // for the undo operations (history control)
     this.bind("post_parts", function(parts, options) {
+        // in case the current opertion was an undo and redo one there's
+        // nothing to be done (no history stack change)
         if (options && ["undo", "redo"].indexOf(options.action) !== -1) {
             return;
         }
 
-        if (!this.parts || !Object.keys(this.parts).length) {
-            return;
-        }
-
-        if (ripe.equal(this.parts, this.history[this.historyPointer])) {
-            return;
-        }
-
-        var _parts = ripe.clone(this.parts);
-        this.history = this.history.slice(0, this.historyPointer + 1);
-        this.history.push(_parts);
-        this.historyPointer = this.history.length - 1;
+        // pushes the current state of the configuration (parts) into
+        // the history stack allowing undo and redo
+        this._pushHistory();
     });
 };
 
@@ -101,7 +95,7 @@ ripe.Ripe.prototype.load = function() {
 
 ripe.Ripe.prototype.unload = function() {};
 
-ripe.Ripe.prototype.config = function(brand, model, options) {
+ripe.Ripe.prototype.config = async function(brand, model, options) {
     // sets the most structural values of this entity
     // that represent the configuration to be used
     this.brand = brand;
@@ -124,32 +118,18 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
     );
     this.setOptions(options);
 
+    // determines if a valid model is currently defined for the ripe
+    // instance, as this is going to change some logic behaviour
+    var hasModel = Boolean(this.brand && this.model);
+
+    // retrieves the configuration for the currently loaded model so
+    // that others may use it freely (cache mechanism)
+    this.loadedConfig = hasModel ? await this.getConfigP() : null;
+
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    var hasModel = Boolean(this.brand && this.model);
     var loadDefaults = !hasParts && this.useDefaults && hasModel;
-    var loadParts = loadDefaults
-        ? this.getDefaults
-        : function(callback) {
-              setTimeout(callback);
-          };
-    loadParts.call(
-        this,
-        function(result) {
-            result = result || this.parts;
-            if (this.ready === false) {
-                this.ready = true;
-                this.trigger("ready");
-            }
-            if (hasModel === false) {
-                return;
-            }
-            this.setParts(result);
-            this.remote();
-            this.update();
-        }.bind(this)
-    );
 
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
@@ -159,7 +139,27 @@ ripe.Ripe.prototype.config = function(brand, model, options) {
 
     // triggers the config event notifying any listener that the (base)
     // configuration for this main RIPE instance has changed
-    this.trigger("config");
+    this.trigger("config", this.loadedConfig);
+
+    // determines the proper initial parts for the model taking into account
+    // if the defaults should be loaded
+    const parts = loadDefaults ? this.loadedConfig.defaults : this.parts;
+    if (this.ready === false) {
+        this.ready = true;
+        this.trigger("ready");
+    }
+
+    // in case there's no model defined in the current instance then there's
+    // nothing more possible to be done, reeturns the control flow
+    if (hasModel === false) {
+        return;
+    }
+
+    // updates the parts of the current instance and triggers the remove and
+    // local update operations, as expected
+    this.setParts(parts, false, { noPartEvents: true });
+    this.remote();
+    this.update();
 };
 
 ripe.Ripe.prototype.remote = function() {
@@ -214,8 +214,8 @@ ripe.Ripe.prototype.setOptions = function(options) {
     this.backgroundColor = this.backgroundColor.replace("#", "");
 };
 
-ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate, options) {
-    if (noUpdate) {
+ripe.Ripe.prototype.setPart = function(part, material, color, noEvents, options) {
+    if (noEvents) {
         return this._setPart(part, material, color);
     }
 
@@ -226,50 +226,53 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noUpdate, options)
     this.trigger("post_parts", this.parts, options);
 };
 
-ripe.Ripe.prototype.setParts = function(update, noUpdate, options) {
+ripe.Ripe.prototype.setParts = function(update, noEvents, options) {
     if (typeof update === "object" && !Array.isArray(update)) {
         update = this._partsList(update);
     }
 
-    if (noUpdate) {
-        return this._setParts(update);
+    if (noEvents) {
+        return this._setParts(update, options && options.noPartEvents);
     }
 
     this.trigger("pre_parts", this.parts, options);
-    this._setParts(update);
+    this._setParts(update, options && options.noPartEvents);
     this.update();
     this.trigger("parts", this.parts, options);
     this.trigger("post_parts", this.parts, options);
 };
 
-ripe.Ripe.prototype.setInitials = function(initials, engraving, noUpdate) {
+ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
     this.initials = initials;
     this.engraving = engraving;
 
-    if (noUpdate) {
+    if (noEvents) {
         return;
     }
     this.update();
 };
 
-ripe.Ripe.prototype.getFrames = function(callback) {
+ripe.Ripe.prototype.getLoadedConfig = function() {
+    return this.loadedConfig;
+};
+
+ripe.Ripe.prototype.getFrames = async function(callback) {
     if (this.options.frames) {
         callback(this.options.frames);
         return;
     }
 
-    this.getConfig(function(config) {
-        var frames = {};
-        var faces = config["faces"];
-        for (var index = 0; index < faces.length; index++) {
-            var face = faces[index];
-            frames[face] = 1;
-        }
+    const config = this.loadedConfig ? this.loadedConfig : await this.getConfigP();
+    var frames = {};
+    var faces = config["faces"];
+    for (var index = 0; index < faces.length; index++) {
+        var face = faces[index];
+        frames[face] = 1;
+    }
 
-        var sideFrames = config["frames"];
-        frames["side"] = sideFrames;
-        callback && callback(frames);
-    });
+    var sideFrames = config["frames"];
+    frames["side"] = sideFrames;
+    callback && callback(frames);
 };
 
 ripe.Ripe.prototype.bindImage = function(element, options) {
@@ -390,20 +393,51 @@ ripe.Ripe.prototype._getState = function() {
     };
 };
 
-ripe.Ripe.prototype._setPart = function(part, material, color) {
-    var value = this.parts[part] || {};
-    value.material = material;
-    value.color = color;
-    this.parts[part] = value;
+ripe.Ripe.prototype._setPart = function(part, material, color, noEvents) {
+    // ensures that there's one valid configuration loaded
+    // in the current instance, required for part setting
+    if (!this.loadedConfig) {
+        throw Error("Model config is not loaded");
+    }
+
+    // if the material or color are not set then this
+    // is considered a removal operation and the part
+    // is removed from the parts structure if it's
+    // optional or an error is thrown if it's required
+    const partInfo = this.loadedConfig.defaults[part];
+    const isRequired = partInfo.optional !== true;
+    const remove = Boolean(material && color) === false;
+    if (isRequired && remove) {
+        throw Error(`Part '${part}' can't be removed`);
+    }
+
+    const value = this.parts[part] || {};
+    value.material = remove ? null : material;
+    value.color = remove ? null : color;
+
+    if (noEvents) {
+        if (remove) {
+            delete this.parts[part];
+        } else {
+            this.parts[part] = value;
+        }
+        return;
+    }
+
     this.trigger("pre_part", part, value);
+    if (remove) {
+        delete this.parts[part];
+    } else {
+        this.parts[part] = value;
+    }
     this.trigger("part", part, value);
     this.trigger("post_part", part, value);
 };
 
-ripe.Ripe.prototype._setParts = function(update) {
+ripe.Ripe.prototype._setParts = function(update, noEvents) {
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
-        this._setPart(part[0], part[1], part[2]);
+        this._setPart(part[0], part[1], part[2], noEvents);
     }
 };
 
@@ -415,6 +449,21 @@ ripe.Ripe.prototype._partsList = function(parts) {
         partsList.push([part, value.material, value.color]);
     }
     return partsList;
+};
+
+ripe.Ripe.prototype._pushHistory = function() {
+    if (!this.parts || !Object.keys(this.parts).length) {
+        return;
+    }
+
+    if (ripe.equal(this.parts, this.history[this.historyPointer])) {
+        return;
+    }
+
+    var _parts = ripe.clone(this.parts);
+    this.history = this.history.slice(0, this.historyPointer + 1);
+    this.history.push(_parts);
+    this.historyPointer = this.history.length - 1;
 };
 
 // eslint-disable-next-line no-unused-vars

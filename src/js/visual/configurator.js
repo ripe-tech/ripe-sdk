@@ -456,18 +456,17 @@ ripe.Configurator.prototype._initLayout = function() {
     this._registerHandlers();
 };
 
-ripe.Configurator.prototype._initPartsList = function() {
+ripe.Configurator.prototype._initPartsList = async function() {
     // creates a set of sorted parts to be used on the
     // highlight operation (considers only the default ones)
     this.partsList = [];
-    this.owner.getConfig(
-        function(config) {
-            const defaults = config.defaults || {};
-            this.hiddenParts = config.hidden || [];
-            this.partsList = Object.keys(defaults);
-            this.partsList.sort();
-        }.bind(this)
-    );
+    const config = this.owner.loadedConfig
+        ? this.owner.loadedConfig
+        : await this.owner.getConfigP();
+    const defaults = config.defaults || {};
+    this.hiddenParts = config.hidden || [];
+    this.partsList = Object.keys(defaults);
+    this.partsList.sort();
 };
 
 ripe.Configurator.prototype._populateBuffers = function() {

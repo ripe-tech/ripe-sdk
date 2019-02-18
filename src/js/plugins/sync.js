@@ -10,7 +10,8 @@ ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
 
     options = options || {};
     this.rules = this._normalizeRules(rules);
-    this.manual = options.manual || false;
+    this.manual = Boolean(options.manual || rules);
+    this.auto = !this.manual;
 };
 
 ripe.Ripe.plugins.SyncPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
@@ -19,16 +20,20 @@ ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugi
 ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
+    // sets the initial set of rules from the owner, in case the
+    // auto mode is enabled for the current instance
+    this.rules =
+        this.auto && owner.loadedConfig
+            ? this._normalizeRules(owner.loadedConfig.sync)
+            : this.rules;
+
     // listens for model changes and if the loadConfig option is
     // set then retrieves the new model's config, otherwise
     // unregisters itself as its rules are no longer valid
     this._configBind = this.manual
         ? null
-        : this.owner.bind("config", async () => {
-              this.rules = this._normalizeRules(null);
-              const { result } = await this.owner.getConfigP();
-              this.rules = this._normalizeRules(result.sync);
-              this.trigger("config");
+        : this.owner.bind("config", config => {
+              this.rules = this._normalizeRules(config.sync);
           });
 
     // binds to the part event to change the necessary parts

@@ -25,7 +25,7 @@ describe("Ripe", function() {
             instance.load();
 
             await new Promise((resolve, reject) => {
-                instance.bind("parts", resolve);
+                instance.bind("config", resolve);
             });
 
             result = await new Promise((resolve, reject) => {
@@ -52,7 +52,7 @@ describe("Ripe", function() {
             instance.load();
 
             await new Promise((resolve, reject) => {
-                instance.bind("parts", resolve);
+                instance.bind("config", resolve);
             });
 
             result = await new Promise((resolve, reject) => {
@@ -70,7 +70,7 @@ describe("Ripe", function() {
             instance.load();
 
             await new Promise((resolve, reject) => {
-                instance.bind("parts", resolve);
+                instance.bind("config", resolve);
             });
 
             assert.strictEqual(Object.keys(instance.parts).length, 0);
