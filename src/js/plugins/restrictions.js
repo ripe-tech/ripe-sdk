@@ -95,7 +95,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
 
     for (let index = 0; index < newParts.length; index++) {
         const newPart = newParts[index];
-        const oldPart = this.owner.parts[newPart.name];
+        const oldPart = this.owner.parts[newPart.name] || {};
 
         // if a change was made due to the restrictions
         // then adds it to the changes array
@@ -300,9 +300,12 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isComplete = function(parts) {
     }
 
     // iterates through the part options and checks
-    // if all of them are set
+    // if all non optional parts are set
     for (let index = 0; index < this.partsOptions.length; index++) {
         part = this.partsOptions[index];
+        if (this.optionals.indexOf(part.name) !== -1) {
+            continue;
+        }
         if (partsS.indexOf(part.name) === -1) {
             return false;
         }

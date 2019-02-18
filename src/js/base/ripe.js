@@ -394,17 +394,42 @@ ripe.Ripe.prototype._getState = function() {
 };
 
 ripe.Ripe.prototype._setPart = function(part, material, color, noEvents) {
-    var value = this.parts[part] || {};
-    value.material = material;
-    value.color = color;
+    // ensures that there's one valid configuration loaded
+    // in the current instance, required for part setting
+    if (!this.loadedConfig) {
+        throw Error("Model config is not loaded");
+    }
+
+    // if the material or color are not set then this
+    // is considered a removal operation and the part
+    // is removed from the parts structure if it's
+    // optional or an error is thrown if it's required
+    const partInfo = this.loadedConfig.defaults[part];
+    const isRequired = partInfo.optional !== true;
+    const remove = Boolean(material && color) === false;
+    if (isRequired && remove) {
+        throw Error(`Part '${part}' can't be removed`);
+    }
+
+    const value = this.parts[part] || {};
+    value.material = remove ? null : material;
+    value.color = remove ? null : color;
 
     if (noEvents) {
-        this.parts[part] = value;
+        if (remove) {
+            delete this.parts[part];
+        } else {
+            this.parts[part] = value;
+        }
         return;
     }
 
     this.trigger("pre_part", part, value);
-    this.parts[part] = value;
+    if (remove) {
+        delete this.parts[part];
+    } else {
+        this.parts[part] = value;
+    }
     this.trigger("part", part, value);
     this.trigger("post_part", part, value);
 };
