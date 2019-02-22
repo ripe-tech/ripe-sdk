@@ -41,7 +41,7 @@ ripe.Observable.prototype.runCallbacks = function(event) {
         let result = callback.apply(this, Array.prototype.slice.call(arguments, 1));
         result !== undefined && result !== null && results.push(result);
     }
-    return results;
+    return Promise.all(results);
 };
 
 ripe.Observable.prototype.deinit = function() {
