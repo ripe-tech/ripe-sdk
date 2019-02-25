@@ -96,6 +96,10 @@ ripe.Ripe.prototype.load = function() {
 ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.config = async function(brand, model, options) {
+    // triggers the 'pre_config' event with the current
+    // configuration so that the listeners can cleanup if needed
+    await this.trigger("pre_config", this.loadedConfig);
+
     // sets the most structural values of this entity
     // that represent the configuration to be used
     this.brand = brand;
@@ -138,8 +142,9 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     this.ready = update ? this.ready : hasParts;
 
     // triggers the config event notifying any listener that the (base)
-    // configuration for this main RIPE instance has changed
-    this.trigger("config", this.loadedConfig);
+    // configuration for this main RIPE instance has changed and waits
+    // for the listeners to conclude their operations
+    await this.trigger("config", this.loadedConfig);
 
     // determines the proper initial parts for the model taking into account
     // if the defaults should be loaded
@@ -160,6 +165,10 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     this.setParts(parts, false, { noPartEvents: true });
     this.remote();
     this.update();
+
+    // notifies that the config has changed and waits
+    // for listeners before concluding the config operation
+    await this.trigger("post_config", this.loadedConfig);
 };
 
 ripe.Ripe.prototype.remote = function() {
@@ -316,13 +325,7 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this.trigger("update");
 
-    this.ready &&
-        this.usePrice &&
-        this.getPrice(
-            function(value) {
-                this.trigger("price", value);
-            }.bind(this)
-        );
+    this.ready && this.usePrice && this.getPrice(value => this.trigger("price", value));
 };
 
 /**
