@@ -160,14 +160,16 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
         return;
     }
 
-    // updates the parts of the current instance
+    // updates the parts of the current instance so that the internals of it
+    // reflect the newly loaded configuration
     this.setParts(parts, false, { noPartEvents: true });
 
-    // notifies that the config has changed and waits
-    // for listeners before concluding the config operation
+    // notifies that the config has changed and waits for listeners before
+    // concluding the config operation
     await this.trigger("post_config", this.loadedConfig);
 
-    // triggers the remove and local update operations
+    // triggers the remove and local update operations, that should be executed
+    // only after the complete set of post confirm promises are met
     this.remote();
     this.update();
 };
