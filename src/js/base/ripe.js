@@ -96,9 +96,9 @@ ripe.Ripe.prototype.load = function() {
 ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.config = async function(brand, model, options) {
-    // triggers the 'pre_config' event with the current
-    // configuration so that the listeners can cleanup if needed
-    await this.trigger("pre_config", this.loadedConfig);
+    // triggers the 'pre_config' event so that
+    // the listeners can cleanup if needed
+    await this.trigger("pre_config");
 
     // sets the most structural values of this entity
     // that represent the configuration to be used
@@ -160,15 +160,16 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
         return;
     }
 
-    // updates the parts of the current instance and triggers the remove and
-    // local update operations, as expected
+    // updates the parts of the current instance
     this.setParts(parts, false, { noPartEvents: true });
-    this.remote();
-    this.update();
 
     // notifies that the config has changed and waits
     // for listeners before concluding the config operation
     await this.trigger("post_config", this.loadedConfig);
+
+    // triggers the remove and local update operations
+    this.remote();
+    this.update();
 };
 
 ripe.Ripe.prototype.remote = function() {
