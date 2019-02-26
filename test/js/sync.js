@@ -257,7 +257,7 @@ describe("Sync", function() {
             const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin();
             const instance = new ripe.Ripe("swear", "vyner", { plugins: [syncPlugin] });
             await new Promise((resolve, reject) => {
-                instance.bind("config", resolve);
+                instance.bind("post_config", resolve);
             });
 
             assert.strictEqual(instance.parts.hardware.color, "silver");

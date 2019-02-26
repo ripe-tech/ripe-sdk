@@ -34,6 +34,9 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
 };
 
 ripe.Observable.prototype.runCallbacks = function(event) {
+    if (!this.callbacks) {
+        return Promise.all([null]);
+    }
     const callbacks = this.callbacks[event] || [];
     const results = [];
     for (let index = 0; index < callbacks.length; index++) {

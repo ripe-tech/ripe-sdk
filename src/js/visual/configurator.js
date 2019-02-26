@@ -81,12 +81,9 @@ ripe.Configurator.prototype.init = function() {
 
     // registers for the config change request event to
     // be able to properly update the internal structures
-    this._ownerBinds["config"] = this.owner.bind(
-        "config",
-        function() {
-            this._updateConfig();
-        }.bind(this)
-    );
+    this._ownerBinds["config"] = this.owner.bind("config", config => {
+        config && this._updateConfig();
+    });
 };
 
 ripe.Configurator.prototype.resize = function(size) {
