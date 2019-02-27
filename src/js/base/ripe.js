@@ -157,6 +157,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     // in case there's no model defined in the current instance then there's
     // nothing more possible to be done, reeturns the control flow
     if (hasModel === false) {
+        await this.trigger("post_config", this.loadedConfig);
         return;
     }
 
