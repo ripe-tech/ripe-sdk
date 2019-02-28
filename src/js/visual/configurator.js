@@ -558,12 +558,11 @@ ripe.Configurator.prototype._updateConfig = function() {
     );
 };
 
-ripe.Configurator.prototype._loadFrame = function(view, position, options, callback) {
+ripe.Configurator.prototype._loadFrame = function(view, position, options = {}, callback) {
     // runs the defaulting operation on all of the parameters
     // sent to the load frame operation (defaulting)
     view = view || this.element.dataset.view || "side";
     position = position || this.element.dataset.position || 0;
-    options = options || {};
 
     const frame = ripe.getFrameKey(view, position);
 
