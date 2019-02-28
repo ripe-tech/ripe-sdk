@@ -27,7 +27,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
 
     // registers for the config option so that it's possible to change
     // its value according to the newly generated configuration
-    this._configBind = this.manual ? null : this.owner.bind("config", () => this._config());
+    this._postConfigBind = this.manual
+        ? null
+        : this.owner.bind("post_config", () => this._config());
 
     // binds to the pre parts event so that the parts can be
     // changed so that they comply with the product's restrictions
@@ -38,7 +40,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
     this.partsOptions = null;
     this.options = null;
     this.owner && this.owner.unbind("part", this._partBind);
-    this.owner && this.owner.unbind("config", this._configBind);
+    this.owner && this.owner.unbind("post_config", this._postConfigBind);
 
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
