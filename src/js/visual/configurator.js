@@ -1042,7 +1042,7 @@ ripe.Configurator.prototype._parseDrag = function() {
     if (sensitivity * percentY > verticalThreshold) {
         nextView = view === "top" ? "side" : "bottom";
         this.referenceY = mousePosY;
-    } else if (sensitivity * percentY < -verticalThreshold) {
+    } else if (sensitivity * percentY < verticalThreshold * -1) {
         nextView = view === "bottom" ? "side" : "top";
         this.referenceY = mousePosY;
     }
