@@ -10,7 +10,8 @@ if (typeof require !== "undefined") {
     var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
-ripe.RipeAPI = function(options) {
+ripe.RipeAPI = function(options = {}) {
+    options.cached = typeof options.cached === "undefined" ? false : options.cached;
     return new ripe.Ripe(null, null, options);
 };
 
