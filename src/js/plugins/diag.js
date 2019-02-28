@@ -5,9 +5,9 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-ripe.Ripe.plugins.DiagPlugin = function(options) {
+ripe.Ripe.plugins.DiagPlugin = function(options = {}) {
     ripe.Ripe.plugins.Plugin.call(this);
-    this.options = options || {};
+    this.options = options;
     this.preRequestCallback = this._setHeaders.bind(this);
 };
 

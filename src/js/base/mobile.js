@@ -5,13 +5,12 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-ripe.touchHandler = function(element, options) {
+ripe.touchHandler = function(element, options = {}) {
     // eslint-disable-next-line no-undef
     if (typeof Mobile !== "undefined" && Mobile.touchHandler) {
         return;
     }
 
-    options = options || {};
     const SAFE = options.safe === undefined ? true : options.safe;
     const VALID = options.valid || ["DIV", "IMG", "SPAN", "CANVAS"];
 

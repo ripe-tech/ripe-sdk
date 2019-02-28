@@ -21,8 +21,7 @@ ripe.Ripe.prototype.getLocaleModelP = function(options) {
     });
 };
 
-ripe.Ripe.prototype._getLocaleModelOptions = function(options) {
-    options = options || {};
+ripe.Ripe.prototype._getLocaleModelOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const locale =

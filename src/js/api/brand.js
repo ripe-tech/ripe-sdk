@@ -68,8 +68,7 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype._getConfigOptions = function(options) {
-    options = options || {};
+ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const country = options.country === undefined ? this.country : options.country;
@@ -92,8 +91,7 @@ ripe.Ripe.prototype._getConfigOptions = function(options) {
     });
 };
 
-ripe.Ripe.prototype._getDefaultsOptions = function(options) {
-    options = options || {};
+ripe.Ripe.prototype._getDefaultsOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
@@ -103,8 +101,7 @@ ripe.Ripe.prototype._getDefaultsOptions = function(options) {
     });
 };
 
-ripe.Ripe.prototype._getCombinationsOptions = function(options) {
-    options = options || {};
+ripe.Ripe.prototype._getCombinationsOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const useName =
@@ -138,8 +135,7 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options) {
     });
 };
 
-ripe.Ripe.prototype._getFactoryOptions = function(options) {
-    options = options || {};
+ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const url = this.url + "brands/" + brand + "/models/" + model + "/factory";

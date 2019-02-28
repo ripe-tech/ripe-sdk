@@ -15,11 +15,11 @@ if (typeof require !== "undefined") {
  * @param {Object} options The options to be used to configure the
  * interactable instance to be created.
  */
-ripe.Interactable = function(owner, options) {
+ripe.Interactable = function(owner, options = {}) {
     ripe.Observable.call(this);
 
     this.owner = owner;
-    this.options = options || {};
+    this.options = options;
 
     this.init();
 };

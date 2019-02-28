@@ -5,10 +5,9 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-ripe.Ripe.plugins.SyncPlugin = function(rules, options) {
+ripe.Ripe.plugins.SyncPlugin = function(rules, options = {}) {
     ripe.Ripe.plugins.Plugin.call(this);
 
-    options = options || {};
     this.rules = this._normalizeRules(rules);
     this.manual = Boolean(options.manual || rules);
     this.auto = !this.manual;

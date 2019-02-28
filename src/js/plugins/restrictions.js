@@ -5,10 +5,9 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options) {
+ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options = {}) {
     ripe.Ripe.plugins.Plugin.call(this);
-
-    options = options || {};
+    this.token = options.token || ":";
     this.restrictions = restrictions;
     this.restrictionsMap = this._buildRestrictionsMap(restrictions);
     this.manual = Boolean(options.manual || restrictions);

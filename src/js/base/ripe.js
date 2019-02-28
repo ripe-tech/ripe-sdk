@@ -96,6 +96,10 @@ ripe.Ripe.prototype.load = function() {
 ripe.Ripe.prototype.unload = function() {};
 
 ripe.Ripe.prototype.config = async function(brand, model, options) {
+    // triggers the 'pre_config' event so that
+    // the listeners can cleanup if needed
+    await this.trigger("pre_config");
+
     // sets the most structural values of this entity
     // that represent the configuration to be used
     this.brand = brand;
@@ -138,8 +142,9 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     this.ready = update ? this.ready : hasParts;
 
     // triggers the config event notifying any listener that the (base)
-    // configuration for this main RIPE instance has changed
-    this.trigger("config", this.loadedConfig);
+    // configuration for this main RIPE instance has changed and waits
+    // for the listeners to conclude their operations
+    await this.trigger("config", this.loadedConfig);
 
     // determines the proper initial parts for the model taking into account
     // if the defaults should be loaded
@@ -152,12 +157,20 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     // in case there's no model defined in the current instance then there's
     // nothing more possible to be done, reeturns the control flow
     if (hasModel === false) {
+        await this.trigger("post_config", this.loadedConfig);
         return;
     }
 
-    // updates the parts of the current instance and triggers the remove and
-    // local update operations, as expected
+    // updates the parts of the current instance so that the internals of it
+    // reflect the newly loaded configuration
     this.setParts(parts, false, { noPartEvents: true });
+
+    // notifies that the config has changed and waits for listeners before
+    // concluding the config operation
+    await this.trigger("post_config", this.loadedConfig);
+
+    // triggers the remove and local update operations, that should be executed
+    // only after the complete set of post confirm promises are met
     this.remote();
     this.update();
 };
@@ -183,8 +196,8 @@ ripe.Ripe.prototype.remote = function() {
         );
 };
 
-ripe.Ripe.prototype.setOptions = function(options) {
-    this.options = options || {};
+ripe.Ripe.prototype.setOptions = function(options = {}) {
+    this.options = options;
     this.variant = this.options.variant || null;
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.webUrl = this.options.webUrl || "https://sandbox.platforme.com/";
@@ -316,13 +329,7 @@ ripe.Ripe.prototype.update = function(state) {
 
     this.ready && this.trigger("update");
 
-    this.ready &&
-        this.usePrice &&
-        this.getPrice(
-            function(value) {
-                this.trigger("price", value);
-            }.bind(this)
-        );
+    this.ready && this.usePrice && this.getPrice(value => this.trigger("price", value));
 };
 
 /**
