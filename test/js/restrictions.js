@@ -89,7 +89,7 @@ describe("Restrictions", function() {
                 { manual: true }
             );
             restrictionsPlugin.register(mockRipe);
-            mockRipe.trigger("config");
+            mockRipe.trigger("post_config");
 
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
@@ -151,7 +151,7 @@ describe("Restrictions", function() {
 
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
-            mockRipe.trigger("config");
+            mockRipe.trigger("post_config");
 
             mockRipe.setPart("logo", "metal", "gold");
             assert.deepStrictEqual(
@@ -195,7 +195,7 @@ describe("Restrictions", function() {
             const instance = new ripe.Ripe("swear", "vyner", { plugins: [restrictionsPlugin] });
             instance.load();
             await new Promise((resolve, reject) => {
-                instance.bind("config", resolve);
+                instance.bind("post_config", resolve);
             });
 
             assert.deepStrictEqual(
@@ -206,7 +206,7 @@ describe("Restrictions", function() {
 
             instance.config("toga_pulla", "elvis");
             await new Promise((resolve, reject) => {
-                instance.bind("config", resolve);
+                instance.bind("post_config", resolve);
             });
 
             assert.deepStrictEqual(
