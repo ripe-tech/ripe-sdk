@@ -10,7 +10,9 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options = {}) {
     this.token = options.token || ":";
     this.restrictions = restrictions;
     this.restrictionsMap = this._buildRestrictionsMap(restrictions);
-    this.partCallback = this._applyRestrictions.bind(this);
+    this.manual = Boolean(options.manual || restrictions);
+    this.auto = !this.manual;
+    this.token = options.token || ":";
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
@@ -19,42 +21,43 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.constructor = ripe.Ripe.plugins.R
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
-    this.owner.getConfig(
-        {},
-        function(config) {
-            this.partsOptions = config.parts;
-            const optionals = [];
-            for (const name in config.defaults) {
-                const part = config.defaults[name];
-                part.optional && optionals.push(name);
-            }
-            this.optionals = optionals;
+    // runs the initial configuration, should take into account if
+    // a valid configuration is currently loaded
+    this._config();
 
-            // binds to the pre parts event so that the parts can be
-            // changed so that they comply with the product's restrictions
-            this.owner.bind("part", this.partCallback);
+    // registers for the config option so that it's possible to change
+    // its value according to the newly generated configuration
+    this._configBind = this.manual ? null : this.owner.bind("config", () => this._config());
 
-            // resets the current selection to trigger
-            // the restrictions operation
-            const initialParts = ripe.clone(this.owner.parts);
-            this.owner.setParts(initialParts);
-        }.bind(this)
-    );
-
-    this.owner.bind(
-        "config",
-        function() {
-            this.owner && this.unregister(this.owner);
-        }.bind(this)
-    );
+    // binds to the pre parts event so that the parts can be
+    // changed so that they comply with the product's restrictions
+    this._partBind = this.owner.bind("part", this._applyRestrictions.bind(this));
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
     this.partsOptions = null;
     this.options = null;
-    this.owner.unbind("part", this.partCallback);
+    this.owner && this.owner.unbind("part", this._partBind);
+    this.owner && this.owner.unbind("config", this._configBind);
 
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
+};
+
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._config = function() {
+    this.restrictions =
+        this.auto && this.owner.loadedConfig
+            ? this.owner.loadedConfig.restrictions
+            : this.restrictions;
+    this.restrictionsMap = this._buildRestrictionsMap(this.restrictions);
+
+    this.partsOptions = this.owner.loadedConfig ? this.owner.loadedConfig.parts : {};
+    const defaults = this.owner.loadedConfig ? this.owner.loadedConfig.defaults : {};
+    const optionals = [];
+    for (const name in defaults) {
+        const part = defaults[name];
+        part.optional && optionals.push(name);
+    }
+    this.optionals = optionals;
 };
 
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(name, value) {
@@ -184,6 +187,10 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._getRestrictionKey = function(
  */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(restrictions) {
     const restrictionsMap = {};
+
+    // in case the restrictions value to be applied is not valid returns
+    // the (currently) unset restrictions map immediately
+    if (!restrictions) return restrictionsMap;
 
     // iterates over the complete set of restrictions in the restrictions
     // list to process them and populate the restrictions map with a single

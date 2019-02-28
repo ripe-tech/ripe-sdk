@@ -1,5 +1,6 @@
 const assert = require("assert");
 const config = require("./config");
+const ripe = require("../../src/js");
 const base = require("../../src/js/base");
 const plugins = require("../../src/js/plugins");
 
@@ -13,16 +14,24 @@ const MockRipe = function(partOptions, optionals) {
             optional: true
         };
     });
-    mockRipe.getConfig = function(options, callback) {
-        callback({
-            defaults: defaults,
-            parts: partOptions
+    mockRipe.loadedConfig = {
+        defaults: defaults,
+        parts: partOptions
+    };
+    mockRipe.setPart = function(part, material, color) {
+        this.parts[part] = {
+            material: material,
+            color: color
+        };
+        this.trigger("part", part, {
+            material: material,
+            color: color
         });
     };
+
     mockRipe.setParts = function(parts) {
         this.parts = parts;
     };
-    mockRipe.bind = function(name, callback) {};
     return mockRipe;
 };
 
@@ -30,7 +39,7 @@ describe("Restrictions", function() {
     this.timeout(config.TEST_TIMEOUT);
 
     describe("#main", function() {
-        it("should apply restrictions", () => {
+        it("should apply restrictions", async () => {
             const initialParts = {
                 upper: {
                     material: "nappa",
@@ -76,25 +85,20 @@ describe("Restrictions", function() {
             mockRipe.setParts(initialParts);
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
-                restrictions
+                restrictions,
+                { manual: true }
             );
             restrictionsPlugin.register(mockRipe);
+            mockRipe.trigger("config");
 
-            restrictionsPlugin._applyRestrictions();
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
-            mockRipe.parts.bottom.color = "white";
-            restrictionsPlugin._applyRestrictions("bottom", {
-                material: mockRipe.parts.bottom.material,
-                color: mockRipe.parts.bottom.color
-            });
+            mockRipe.setPart("bottom", "nappa", "white");
             assert.strictEqual(mockRipe.parts.bottom.color, "white");
             assert.strictEqual(mockRipe.parts.upper.color, "white");
         });
-    });
 
-    describe("#optional", function() {
-        it("should remove optional part if needed", () => {
+        it("should remove optional part if needed", async () => {
             const initialParts = {
                 upper: {
                     material: "nappa",
@@ -140,17 +144,16 @@ describe("Restrictions", function() {
             mockRipe.setParts(initialParts);
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin(
-                restrictions
+                restrictions,
+                { manual: true }
             );
             restrictionsPlugin.register(mockRipe);
 
             assert.deepStrictEqual(initialParts, mockRipe.parts);
 
-            mockRipe.parts.logo = {
-                material: "metal",
-                color: "gold"
-            };
-            restrictionsPlugin._applyRestrictions("logo", mockRipe.parts.logo);
+            mockRipe.trigger("config");
+
+            mockRipe.setPart("logo", "metal", "gold");
             assert.deepStrictEqual(
                 {
                     upper: {
@@ -183,6 +186,34 @@ describe("Restrictions", function() {
                 },
                 mockRipe.parts
             );
+        });
+    });
+
+    describe("#auto", function() {
+        it("should load restrictions from ripe instance", async () => {
+            const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin();
+            const instance = new ripe.Ripe("swear", "vyner", { plugins: [restrictionsPlugin] });
+            instance.load();
+            await new Promise((resolve, reject) => {
+                instance.bind("config", resolve);
+            });
+
+            assert.deepStrictEqual(
+                restrictionsPlugin.restrictions,
+                instance.loadedConfig.restrictions
+            );
+            assert.deepStrictEqual(restrictionsPlugin.partsOptions, instance.loadedConfig.parts);
+
+            instance.config("toga_pulla", "elvis");
+            await new Promise((resolve, reject) => {
+                instance.bind("config", resolve);
+            });
+
+            assert.deepStrictEqual(
+                restrictionsPlugin.restrictions,
+                instance.loadedConfig.restrictions
+            );
+            assert.deepStrictEqual(restrictionsPlugin.partsOptions, instance.loadedConfig.parts);
         });
     });
 });
