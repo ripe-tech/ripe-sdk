@@ -120,9 +120,7 @@ ripe.Configurator.prototype.resize = function(size) {
     );
 };
 
-ripe.Configurator.prototype.update = function(state, options) {
-    options = options || {};
-
+ripe.Configurator.prototype.update = function(state, options = {}) {
     if (this.ready === false) {
         return;
     }
@@ -198,12 +196,11 @@ ripe.Configurator.prototype.deinit = function() {
     ripe.Visual.prototype.deinit.call(this);
 };
 
-ripe.Configurator.prototype.changeFrame = function(frame, options) {
+ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const _frame = ripe.parseFrameKey(frame);
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
 
-    options = options || {};
     const duration = options.duration || this.duration;
     const type = options.type;
     let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
@@ -295,7 +292,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options) {
     );
 };
 
-ripe.Configurator.prototype.highlight = function(part, options) {
+ripe.Configurator.prototype.highlight = function(part, options = {}) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -304,10 +301,6 @@ ripe.Configurator.prototype.highlight = function(part, options) {
 
     // captures the current context to be used by clojure callbacks
     const self = this;
-
-    // runs the default operation for the parameters that this
-    // function receives
-    options = options || {};
 
     // determines the current position of the configurator so that
     // the proper mask URL may be created and properly loaded

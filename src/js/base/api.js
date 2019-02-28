@@ -57,7 +57,9 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
 
     // determines if the current request should be cached, obeys
     // some of the basic rules for that behaviour
-    let cached = typeof options.cached === "undefined" ? true : options.cached;
+    let cached = options.cached;
+    cached = typeof cached === "undefined" ? this.options.cached : cached;
+    cached = typeof cached === "undefined" ? true : cached;
     cached = cached && !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
 
     // initializes the cache object in the current instance
@@ -146,9 +148,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     return request;
 };
 
-ripe.Ripe.prototype._getQueryOptions = function(options) {
-    options = options || {};
-
+ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
     const params = options.params || {};
     options.params = params;
 
@@ -213,13 +213,12 @@ ripe.Ripe.prototype._getQueryOptions = function(options) {
     return options;
 };
 
-ripe.Ripe.prototype._getQuery = function(options) {
+ripe.Ripe.prototype._getQuery = function(options = {}) {
     options = this._getQueryOptions(options);
     return this._buildQuery(options.params);
 };
 
-ripe.Ripe.prototype._getPriceOptions = function(options) {
-    options = options || {};
+ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
     options = this._getQueryOptions(options);
 
     const params = options.params || {};
@@ -239,8 +238,7 @@ ripe.Ripe.prototype._getPriceOptions = function(options) {
     });
 };
 
-ripe.Ripe.prototype._getImageOptions = function(options) {
-    options = options || {};
+ripe.Ripe.prototype._getImageOptions = function(options = {}) {
     options.country = options.country || null;
     options.currency = options.currency || null;
 
@@ -292,8 +290,7 @@ ripe.Ripe.prototype._getImageOptions = function(options) {
     });
 };
 
-ripe.Ripe.prototype._getMaskOptions = function(options) {
-    options = options || {};
+ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     options.parts = options.parts || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
@@ -316,8 +313,7 @@ ripe.Ripe.prototype._getMaskOptions = function(options) {
     });
 };
 
-ripe.Ripe.prototype._getSwatchOptions = function(options) {
-    options = options || {};
+ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
     options = this._getQueryOptions(options);
 
     const params = options.params || {};

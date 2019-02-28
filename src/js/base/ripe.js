@@ -196,8 +196,8 @@ ripe.Ripe.prototype.remote = function() {
         );
 };
 
-ripe.Ripe.prototype.setOptions = function(options) {
-    this.options = options || {};
+ripe.Ripe.prototype.setOptions = function(options = {}) {
+    this.options = options;
     this.variant = this.options.variant || null;
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.webUrl = this.options.webUrl || "https://sandbox.platforme.com/";
