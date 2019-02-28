@@ -26,12 +26,12 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
             ? this._normalizeRules(owner.loadedConfig.sync)
             : this.rules;
 
-    // listens for model changes and if the loadConfig option is
-    // set then retrieves the new model's config, otherwise
+    // listens for model changes and if the load config option is
+    // set then retrieves the new model's post config, otherwise
     // unregisters itself as its rules are no longer valid
-    this._configBind = this.manual
+    this._postConfigBind = this.manual
         ? null
-        : this.owner.bind("config", config => {
+        : this.owner.bind("post_config", config => {
               this.rules = this._normalizeRules(config.sync);
           });
 
@@ -42,7 +42,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
 
 ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
     this.owner && this.owner.unbind("part", this._partBind);
-    this.owner && this.owner.unbind("config", this._configBind);
+    this.owner && this.owner.unbind("post_config", this._postConfigBind);
 
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
