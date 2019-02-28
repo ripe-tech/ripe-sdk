@@ -22,8 +22,12 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.constructor = ripe.Ripe.plugins.R
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
+    // runs the initial configuration, should take into account if
+    // a valid configuration is currently loaded
     this._config();
 
+    // registers for the config option so that it's possible to change
+    // its value according to the newly generated configuration
     this._configBind = this.manual ? null : this.owner.bind("config", () => this._config());
 
     // binds to the pre parts event so that the parts can be
@@ -185,9 +189,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._getRestrictionKey = function(
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(restrictions) {
     const restrictionsMap = {};
 
-    if (!restrictions) {
-        return restrictionsMap;
-    }
+    // in case the restrictions value to be applied is not valid returns
+    // the (currently) unset restrictions map immediately
+    if (!restrictions) return restrictionsMap;
 
     // iterates over the complete set of restrictions in the restrictions
     // list to process them and populate the restrictions map with a single
