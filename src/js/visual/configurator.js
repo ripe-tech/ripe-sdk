@@ -1055,7 +1055,7 @@ ripe.Configurator.prototype._parseDrag = function() {
     // retrieves the current view and its frames
     // and determines which one is the next frame
     const viewFrames = this.frames[nextView];
-    let nextPosition = parseInt(base - sensitivity * percentX * viewFrames / 24) % viewFrames;
+    let nextPosition = parseInt(base - (sensitivity * percentX * viewFrames) / 24) % viewFrames;
     nextPosition = nextPosition >= 0 ? nextPosition : viewFrames + nextPosition;
 
     // if the view changes then uses the last
