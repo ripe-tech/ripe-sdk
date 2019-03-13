@@ -314,10 +314,18 @@ ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
 };
 
 ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
-    options = this._getQueryOptions(options);
-
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
     const params = options.params || {};
     options.params = params;
+
+    if (brand !== undefined && brand !== null) {
+        params.brand = brand;
+    }
+
+    if (model !== undefined && model !== null) {
+        params.model = model;
+    }
 
     if (options.material !== undefined && options.material !== null) {
         params.material = options.material;
