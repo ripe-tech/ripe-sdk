@@ -31,6 +31,21 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+ripe.Ripe.prototype.signinPid = function(token, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+    const url = this.url + "signin_pid";
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        params: {
+            token: token
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" ? {} : options;

@@ -60,6 +60,21 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
     );
 };
 
+ripe.Ripe.prototype.authPid = function(token, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" ? {} : options;
+
+    this.signinPid(
+        token,
+        options,
+        function(result) {
+            this.sid = result.sid;
+            this.trigger("auth");
+            callback && callback(result);
+        }.bind(this)
+    );
+};
+
 ripe.Ripe.prototype.unauth = function(options, callback) {
     this.sid = null;
 
