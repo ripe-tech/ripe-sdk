@@ -7,7 +7,7 @@ if (typeof require !== "undefined") {
 
 ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getLocaleModelOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);

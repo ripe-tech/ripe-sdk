@@ -7,7 +7,7 @@ if (typeof require !== "undefined") {
 
 ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "config/resolve/" + productId;
     options = Object.assign({ url: url }, options);
     options = this._build(options);

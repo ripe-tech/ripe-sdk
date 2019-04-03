@@ -7,7 +7,7 @@ if (typeof require !== "undefined") {
 
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getConfigOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
@@ -23,7 +23,7 @@ ripe.Ripe.prototype.getConfigP = function(options) {
 
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getDefaultsOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, function(result, isValid, request) {
@@ -44,7 +44,7 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
 
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getCombinationsOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, function(result, isValid, request) {
@@ -62,7 +62,7 @@ ripe.Ripe.prototype.getCombinationsP = function(options) {
 
 ripe.Ripe.prototype.getFactory = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getFactoryOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);

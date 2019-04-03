@@ -17,7 +17,7 @@ ripe.RipeAPI = function(options = {}) {
 
 ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "signin";
     options = Object.assign(options, {
         url: url,
@@ -33,7 +33,7 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
 
 ripe.Ripe.prototype.signinPid = function(token, options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "signin_pid";
     options = Object.assign(options, {
         url: url,
@@ -48,7 +48,7 @@ ripe.Ripe.prototype.signinPid = function(token, options, callback) {
 
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getPriceOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
@@ -58,7 +58,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // runs the defaulting operatin on the provided options
     // optional parameter (ensures valid object there)
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
 
     // builds the (base) key value for the provided value
     // from options or used the default one
@@ -104,7 +104,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
 
 ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
 
     const context = this;
     const method = options.method || "GET";

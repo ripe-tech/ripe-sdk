@@ -46,7 +46,7 @@ ripe.Ripe.prototype.isOAuthPending = function() {
 
 ripe.Ripe.prototype.auth = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
 
     this.signin(
         username,
@@ -62,7 +62,7 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
 
 ripe.Ripe.prototype.authPid = function(token, options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
 
     this.signinPid(
         token,
@@ -101,7 +101,7 @@ ripe.Ripe.prototype.unauth = function(options, callback) {
  */
 ripe.Ripe.prototype.oauth = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     options = options || {};
 
     if (!window.localStorage) {

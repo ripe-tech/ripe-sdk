@@ -12,7 +12,7 @@ ripe.Ripe.prototype.locale = function(value, locale, options, callback) {
 ripe.Ripe.prototype.localeMultiple = function(values, locale, options, callback) {
     values = typeof values === "string" ? [values] : values;
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "locale";
     options = Object.assign(options, {
         url: url,

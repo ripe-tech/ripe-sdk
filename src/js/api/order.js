@@ -7,7 +7,7 @@ if (typeof require !== "undefined") {
 
 ripe.Ripe.prototype.getOrders = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "orders";
     options = Object.assign(options, {
         url: url,
@@ -20,7 +20,7 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
 
 ripe.Ripe.prototype.getOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "orders/" + String(number);
     options = Object.assign(options, {
         url: url,
@@ -45,7 +45,7 @@ ripe.Ripe.prototype.readyOrder = function(number, options, callback) {
 
 ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     options = Object.assign(options, {
         params: {
             tracking_number: trackingNumber,
@@ -69,7 +69,7 @@ ripe.Ripe.prototype.cancelOrder = function(number, options, callback) {
 
 ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "orders/" + String(number) + "/" + status;
     options = Object.assign(options, {
         url: url,
