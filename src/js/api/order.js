@@ -49,7 +49,7 @@ ripe.Ripe.prototype.getOrderP = function(number, options) {
 
 ripe.Ripe.prototype.searchOrders = function(filterString, options, callback) {
     callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" ? {} : options;
+    options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "orders/search";
     const params = {};
     if (filterString !== undefined && filterString !== null) {
