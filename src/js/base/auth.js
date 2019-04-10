@@ -52,10 +52,10 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
         username,
         password,
         options,
-        function(result) {
+        function(result, isValid, request) {
             this.sid = result.sid;
             this.trigger("auth");
-            callback && callback(result);
+            callback && callback(result, isValid, request);
         }.bind(this)
     );
 };
@@ -67,10 +67,10 @@ ripe.Ripe.prototype.authPid = function(token, options, callback) {
     this.signinPid(
         token,
         options,
-        function(result) {
+        function(result, isValid, request) {
             this.sid = result.sid;
             this.trigger("auth");
-            callback && callback(result);
+            callback && callback(result, isValid, request);
         }.bind(this)
     );
 };
@@ -145,11 +145,11 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
         return this.oauthLogin(
             oauthToken,
             options,
-            function(result, isValid) {
+            function(result, isValid, request) {
                 if (isValid && result) {
                     this.sid = result.sid;
                     this.trigger("auth");
-                    callback && callback(result);
+                    callback && callback(result, isValid, request);
                 } else {
                     this.oauth(
                         {
