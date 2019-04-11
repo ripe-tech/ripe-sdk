@@ -121,3 +121,13 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
+
+ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
+    options = options === undefined ? {} : options;
+    const url = this.url + "orders/" + String(number) + "/report";
+    options = Object.assign(options, {
+        url: url,
+        params: { key: key }
+    });
+    return options.url + "?" + this._buildQuery(options.params);
+};

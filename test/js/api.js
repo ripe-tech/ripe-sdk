@@ -125,6 +125,16 @@ describe("RipeAPI", function() {
         });
     });
 
+    describe("#_getOrderReportURL", function() {
+        it("should be able to generate a simple URL", async () => {
+            const remote = ripe.RipeAPI({
+                country: "PT"
+            });
+            const result = remote._getOrderReportURL(1234, "secret-key");
+            assert.strictEqual(result, "https://sandbox.platforme.com/api/orders/1234/report?key=secret-key");
+        });
+    });
+
     describe("#_getConfigOptions", function() {
         it("should include country in params", async () => {
             let result = null;

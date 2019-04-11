@@ -4,6 +4,7 @@
 session.shelve*
 
 .DS_Store
+.nyc_output
 
 dist.zip
 package-lock.json
@@ -12,6 +13,7 @@ package-lock.json
 /dist
 /docs
 /build
+/coverage
 /node_modules
 
 /src/python/ripe_demo/static/js/ripe.js
