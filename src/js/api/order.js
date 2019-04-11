@@ -131,3 +131,23 @@ ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
     });
     return options.url + "?" + this._buildQuery(options.params);
 };
+
+ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
+    options = options === undefined ? {} : options;
+    const url = this.url + "orders/" + String(number) + "/report.pdf";
+    options = Object.assign(options, {
+        url: url,
+        params: { key: key }
+    });
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
+    options = options === undefined ? {} : options;
+    const url = this.url + "orders/" + String(number) + "/report.png";
+    options = Object.assign(options, {
+        url: url,
+        params: { key: key }
+    });
+    return options.url + "?" + this._buildQuery(options.params);
+};

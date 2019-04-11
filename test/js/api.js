@@ -129,7 +129,43 @@ describe("RipeAPI", function() {
         it("should be able to generate a simple URL", async () => {
             const remote = ripe.RipeAPI();
             const result = remote._getOrderReportURL(1234, "secret-key");
-            assert.strictEqual(result, "https://sandbox.platforme.com/api/orders/1234/report?key=secret-key");
+            assert.strictEqual(
+                result,
+                "https://sandbox.platforme.com/api/orders/1234/report?key=secret-key"
+            );
+        });
+    });
+
+    describe("#_getOrderReportURL", function() {
+        it("should be able to generate a simple URL", async () => {
+            const remote = ripe.RipeAPI();
+            const result = remote._getOrderReportURL(1234, "secret-key");
+            assert.strictEqual(
+                result,
+                "https://sandbox.platforme.com/api/orders/1234/report?key=secret-key"
+            );
+        });
+    });
+
+    describe("#_getOrderReportPDFURL", function() {
+        it("should be able to generate a simple URL", async () => {
+            const remote = ripe.RipeAPI();
+            const result = remote._getOrderReportPDFURL(1234, "secret-key");
+            assert.strictEqual(
+                result,
+                "https://sandbox.platforme.com/api/orders/1234/report.pdf?key=secret-key"
+            );
+        });
+    });
+
+    describe("#_getOrderReportURL", function() {
+        it("should be able to generate a simple URL", async () => {
+            const remote = ripe.RipeAPI();
+            const result = remote._getOrderReportPNGURL(1234, "secret-key");
+            assert.strictEqual(
+                result,
+                "https://sandbox.platforme.com/api/orders/1234/report.png?key=secret-key"
+            );
         });
     });
 
