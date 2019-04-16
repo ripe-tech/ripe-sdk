@@ -5,6 +5,21 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @class
+ * @augments Interactable
+ * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+ * @param {Object} owner Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} element Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Visual = function(owner, element, options) {
     this.element = element;
     this.elementEvents = {};
@@ -36,6 +51,8 @@ ripe.Visual.prototype.deinit = function() {
  * handler is going to be registered.
  * @param {Function} callback The callback function to called once
  * the event is triggered.
+ *
+ * @private
  */
 ripe.Visual.prototype._addElementHandler = function(event, callback) {
     this.element.addEventListener(event, callback);
@@ -47,6 +64,8 @@ ripe.Visual.prototype._addElementHandler = function(event, callback) {
 
 /**
  * Unbinds all the events from the DOM element.
+ *
+ * @private
  */
 ripe.Visual.prototype._removeElementHandlers = function() {
     for (const event in this.elementEvents) {

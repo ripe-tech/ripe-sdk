@@ -5,12 +5,32 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @class
+ * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ */
 ripe.Observable = function() {
     this.callbacks = {};
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Observable.prototype.init = function() {};
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} event Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Observable.prototype.addCallback = function(event, callback) {
     const callbacks = this.callbacks[event] || [];
     callbacks.push(callback);
@@ -18,6 +38,15 @@ ripe.Observable.prototype.addCallback = function(event, callback) {
     return callback;
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} event Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Observable.prototype.removeCallback = function(event, callback) {
     const callbacks = this.callbacks[event] || [];
     if (!callback) {
@@ -33,6 +62,15 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
     this.callbacks[event] = callbacks;
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} event Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Observable.prototype.runCallbacks = function(event) {
     if (!this.callbacks) {
         return Promise.all([null]);
@@ -47,10 +85,28 @@ ripe.Observable.prototype.runCallbacks = function(event) {
     return Promise.all(results);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Observable.prototype.deinit = function() {
     this.callbacks = null;
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
+
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
+
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;

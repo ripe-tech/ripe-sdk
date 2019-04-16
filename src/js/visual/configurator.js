@@ -11,7 +11,9 @@ if (typeof require !== "undefined") {
  * used in connection with the main Ripe owner to provide an
  * interactive configuration experience inside a DOM.
  *
- * @constructor
+ * @class
+ * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ *
  * @param {Object} owner The owner (customizer instance) for
  * this configurator.
  * @param {Object} element The DOM element that is considered to
@@ -26,6 +28,10 @@ ripe.Configurator = function(owner, element, options) {
 
 ripe.Configurator.prototype = ripe.build(ripe.Visual.prototype);
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Configurator.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
@@ -86,6 +92,13 @@ ripe.Configurator.prototype.init = function() {
     });
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} size Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Configurator.prototype.resize = function(size) {
     if (this.element === undefined) {
         return;
@@ -120,6 +133,13 @@ ripe.Configurator.prototype.resize = function(size) {
     );
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Configurator.prototype.update = function(state, options = {}) {
     if (this.ready === false) {
         return;
@@ -180,6 +200,10 @@ ripe.Configurator.prototype.update = function(state, options = {}) {
     mustPreload && this._preload(this.options.useChain);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Configurator.prototype.deinit = function() {
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -196,6 +220,15 @@ ripe.Configurator.prototype.deinit = function() {
     ripe.Visual.prototype.deinit.call(this);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} frame Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const _frame = ripe.parseFrameKey(frame);
     const nextView = _frame[0];
@@ -294,6 +327,15 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     );
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} part Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Configurator.prototype.highlight = function(part, options = {}) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
@@ -353,6 +395,10 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Configurator.prototype.lowlight = function(options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
@@ -367,6 +413,10 @@ ripe.Configurator.prototype.lowlight = function(options) {
     this.element.classList.remove("highlight");
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Configurator.prototype.enterFullscreen = function(options) {
     if (this.element === undefined) {
         return;
@@ -376,6 +426,10 @@ ripe.Configurator.prototype.enterFullscreen = function(options) {
     this.resize(maxSize);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Configurator.prototype.leaveFullscreen = function(options) {
     if (this.element === undefined) {
         return;
@@ -392,6 +446,8 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
  * From a DOM prespective this is a synchronous operation,
  * meaning that after its execution the configurator is ready
  * to be manipulated.
+ *
+ * @private
  */
 ripe.Configurator.prototype._initLayout = function() {
     // clears the elements children

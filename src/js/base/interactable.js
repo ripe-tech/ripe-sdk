@@ -9,7 +9,10 @@ if (typeof require !== "undefined") {
  * Class that defines an entity that can be used to interact
  * with the customizer (abstract).
  *
- * @constructor
+ * @class
+ * @augments Observable
+ * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ *
  * @param {Object} owner The owner (customizer instance) for
  * this interactable.
  * @param {Object} options The options to be used to configure the

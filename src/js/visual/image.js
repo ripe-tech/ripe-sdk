@@ -9,12 +9,30 @@ if (typeof require !== "undefined") {
         typeof WebKitMutationObserver === "undefined" ? null : WebKitMutationObserver;
 }
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @class
+ * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ *
+ * @param {Object} owner Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} element Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
 };
 
 ripe.Image.prototype = ripe.build(ripe.Visual.prototype);
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Image.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
@@ -37,6 +55,13 @@ ripe.Image.prototype.init = function() {
     this._registerHandlers();
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} state Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Image.prototype.update = function(state) {
     const frame = this.element.dataset.frame || this.frame;
     const size = this.element.dataset.size || this.size;
@@ -78,6 +103,10 @@ ripe.Image.prototype.update = function(state) {
     this.element.src = url;
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Image.prototype.deinit = function() {
     this._unregisterHandlers();
     this._observer = null;
@@ -86,11 +115,25 @@ ripe.Image.prototype.deinit = function() {
     ripe.Visual.prototype.deinit.call(this);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} frame Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
     this.update();
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} builder Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
     this.initialsBuilder = builder;
     this.update();

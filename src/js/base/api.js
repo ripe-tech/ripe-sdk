@@ -10,11 +10,33 @@ if (typeof require !== "undefined") {
     var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @class
+ * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.RipeAPI = function(options = {}) {
     options.cached = typeof options.cached === "undefined" ? false : options.cached;
     return new ripe.Ripe(null, null, options);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} username Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} password Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -31,6 +53,17 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} token Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.signinPid = function(token, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -46,6 +79,15 @@ ripe.Ripe.prototype.signinPid = function(token, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -386,6 +428,8 @@ ripe.Ripe.prototype._getSwatchURL = function(options) {
  * If authentioncation is required the current session identifier is
  * also added to the request.
  *
+ * @private
+ *
  * @param {Object} options The HTTP request options object that is
  * going to be completed with default information and session info.
  * @returns {Object} The same options object references that has been
@@ -411,6 +455,8 @@ ripe.Ripe.prototype._build = function(options) {
  *
  * If the provided parameter is an Array order of the GET parameters is
  * preserved, otherwise alphabethical order is going to be used.
+ *
+ * @private
  *
  * @param {Object} params The object or array that contains the sequence
  * of parameeters for the generated GET query.
@@ -461,6 +507,8 @@ ripe.Ripe.prototype._buildQuery = function(params) {
  *
  * This operation is considered to be the opposite of the `_buildQuery`
  * operation.
+ *
+ * @private
  *
  * @param {String} The GET query string that is going to be parsed
  * for the creation of the output Object.
