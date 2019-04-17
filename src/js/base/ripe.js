@@ -7,19 +7,13 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- *
  * @class
  * @augments Observable
- * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * @classdesc Represents a customizable model.
  *
- * @param {Object} model Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} model Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {String} brand The brand of the model.
+ * @param {String} model The name of the model.
+ * @param {Object} options An object with the options to configure the Ripe instance.
  */
 ripe.Ripe = function(brand, model, options) {
     ripe.Observable.call(this);
@@ -28,6 +22,9 @@ ripe.Ripe = function(brand, model, options) {
 
 ripe.Ripe.prototype = ripe.build(ripe.Observable.prototype);
 
+/**
+ * @ignore
+ */
 ripe.RipeBase = function(brand, model, options) {
     return new ripe.Ripe(brand, model, options);
 };
@@ -407,6 +404,9 @@ ripe.Ripe.prototype.removePlugin = function(plugin) {
     this.plugins.splice(this.plugins.indexOf(plugin), 1);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts,
@@ -415,6 +415,9 @@ ripe.Ripe.prototype._getState = function() {
     };
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._setPart = function(part, material, color, noEvents) {
     // ensures that there's one valid configuration loaded
     // in the current instance, required for part setting
@@ -456,6 +459,9 @@ ripe.Ripe.prototype._setPart = function(part, material, color, noEvents) {
     this.trigger("post_part", part, value);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._setParts = function(update, noEvents) {
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
@@ -463,6 +469,9 @@ ripe.Ripe.prototype._setParts = function(update, noEvents) {
     }
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._partsList = function(parts) {
     parts = parts || this.parts;
     var partsList = [];
@@ -473,6 +482,9 @@ ripe.Ripe.prototype._partsList = function(parts) {
     return partsList;
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._pushHistory = function() {
     if (!this.parts || !Object.keys(this.parts).length) {
         return;
