@@ -94,7 +94,7 @@ ripe.Configurator.prototype.init = function() {
 };
 
 /**
- * Resizes the Configurator's DOM element to `size` pixels.
+ * Resizes the Configurator's DOM element to "size" pixels.
  *
  * @param {Number} size The number of pixels to resize to.
  */
@@ -138,9 +138,9 @@ ripe.Configurator.prototype.resize = function(size) {
  *
  * @param {Object} state The owner's state used to reflect during the Configurator's update
  * @param {Object} options Set of optional parameters to adjust the Configurator update.
- * Availale optional parameters: `animate` (if it's to animate the update, default: `false`),
- * `duration` (duration in milliseconds that the transtition should take), `callback` (callback
- * to be called at the end of the update) and `preload` (if it's to execute the pre-loading process).
+ * Availale optional parameters: "animate" (if it's to animate the update, default: "false"),
+ * "duration" (duration in milliseconds that the transtition should take), "callback" (callback
+ * to be called at the end of the update) and "preload" (if it's to execute the pre-loading process).
  */
 ripe.Configurator.prototype.update = function(state, options = {}) {
     if (this.ready === false) {
@@ -227,9 +227,9 @@ ripe.Configurator.prototype.deinit = function() {
  *
  * @param {Object} frame The new frame to display.
  * @param {Object} options Set of optional parameters to adjust the change frame.
- * Availale optional parameters: `type` (the animation style, "simple" (fade in), "cross" (crossfade)
- * or `null` (without any style), , `preventDrag` (if drag actions during an animated change of
- * frames should be ignored, default: `true`).
+ * Availale optional parameters: "type" (the animation style, "simple" (fade in), "cross" (crossfade)
+ * or "null" (without any style), , "preventDrag" (if drag actions during an animated change of
+ * frames should be ignored, default: "true").
  */
 ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const _frame = ripe.parseFrameKey(frame);
@@ -334,7 +334,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
  *
  * @param {String} part The part to highligth.
  * @param {Object} options Set of optional parameters to adjust the highlighting.
- * Availale optional parameters: `backgroundColor` color to use during the highlighting.
+ * Availale optional parameters: "backgroundColor" color to use during the highlighting.
  */
 ripe.Configurator.prototype.highlight = function(part, options = {}) {
     // verifiers if masks are meant to be used for the current model
