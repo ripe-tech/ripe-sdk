@@ -421,14 +421,14 @@ ripe.Ripe.prototype._getSwatchURL = function(options) {
 };
 
 /**
+ * @private
+ *
  * Runs the options object building operation meaning that a series
  * of default values are going to be added to the provided options
  * so that it becomes as compatible as possible.
  *
  * If authentioncation is required the current session identifier is
  * also added to the request.
- *
- * @private
  *
  * @param {Object} options The HTTP request options object that is
  * going to be completed with default information and session info.
@@ -451,12 +451,12 @@ ripe.Ripe.prototype._build = function(options) {
 };
 
 /**
+ * @private
+ *
  * Builds a GET query string from the provided Array or Object parameter.
  *
  * If the provided parameter is an Array order of the GET parameters is
  * preserved, otherwise alphabethical order is going to be used.
- *
- * @private
  *
  * @param {Object} params The object or array that contains the sequence
  * of parameeters for the generated GET query.
@@ -502,13 +502,13 @@ ripe.Ripe.prototype._buildQuery = function(params) {
 };
 
 /**
+ * @private
+ *
  * Unpacks the provided query string into it's components inside
  * a key, value object for easy usage.
  *
  * This operation is considered to be the opposite of the `_buildQuery`
  * operation.
- *
- * @private
  *
  * @param {String} The GET query string that is going to be parsed
  * for the creation of the output Object.

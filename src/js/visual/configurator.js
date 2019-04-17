@@ -439,6 +439,8 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
 };
 
 /**
+ * @private
+ *
  * Initializes the layout for the configurator element by
  * constructing all te child elements required for the proper
  * configurator functionality to work.
@@ -446,8 +448,6 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
  * From a DOM prespective this is a synchronous operation,
  * meaning that after its execution the configurator is ready
  * to be manipulated.
- *
- * @private
  */
 ripe.Configurator.prototype._initLayout = function() {
     // clears the elements children
