@@ -6,30 +6,28 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- *
  * @class
- * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * @classdesc An object that emits events.
+ * Listeners can bind to specific events and 
+ * be notified when the event is triggered.
  */
 ripe.Observable = function() {
     this.callbacks = {};
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @ignore
  */
 ripe.Observable.prototype.init = function() {};
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * 
+ * Binds to an event by providing a block that will receive the event payload as a
+ * parameter and return a Deferred that will be completed asynchronously.
  *
- * @param {Object} event Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {String} event Name of the event to bind to.
+ * @param {Function} callback Function to be executed when the event is triggered.
+ * @returns {Function} Returns the provided callback, to be used when unbinding from the event.
  */
 ripe.Observable.prototype.addCallback = function(event, callback) {
     const callbacks = this.callbacks[event] || [];
@@ -39,13 +37,10 @@ ripe.Observable.prototype.addCallback = function(event, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Unbinds the provided callback from an event.
  *
- * @param {Object} event Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {String} event The name of the event.
+ * @param {Function} callback The callback that was returned when the bind method was called.
  */
 ripe.Observable.prototype.removeCallback = function(event, callback) {
     const callbacks = this.callbacks[event] || [];
@@ -63,13 +58,11 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Triggers the event by calling all its bound callbacks with args as parameters.
  *
- * @param {Object} event Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {String} event The name of the event to be triggered.
+ * @returns {Promise} Returns a Promise of all results that will be completed 
+ * when all of the callbacks have finished processing the triggered event.
  */
 ripe.Observable.prototype.runCallbacks = function(event) {
     if (!this.callbacks) {
@@ -86,27 +79,24 @@ ripe.Observable.prototype.runCallbacks = function(event) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * The deinitializer of the class, called whenever this
+ * observable ceases its activity.
  */
 ripe.Observable.prototype.deinit = function() {
     this.callbacks = null;
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Alias to addCallback.
  */
 ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Alias to removeCallback.
  */
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Alias to runCallbacks.
  */
 ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
