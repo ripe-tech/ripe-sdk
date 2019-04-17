@@ -5,6 +5,9 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * @ignore
+ */
 ripe.touchHandler = function(element, options = {}) {
     // eslint-disable-next-line no-undef
     if (typeof Mobile !== "undefined" && Mobile.touchHandler) {
