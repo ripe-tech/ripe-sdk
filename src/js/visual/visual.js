@@ -30,10 +30,16 @@ ripe.Visual = function(owner, element, options) {
 ripe.Visual.prototype = ripe.build(ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
+/**
+ * @ignore
+ */
 ripe.Visual.prototype.init = function() {
     ripe.Interactable.prototype.init.call(this);
 };
 
+/**
+ * @ignore
+ */
 ripe.Visual.prototype.deinit = function() {
     this._removeElementHandlers();
     this.element = null;
