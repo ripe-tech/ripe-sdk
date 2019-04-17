@@ -23,7 +23,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
         const animationDelta = (timeDelta * (final - initial)) / duration;
 
         // adjusts the value by the correspondent amount
-        // making sure it doens't surpass the final value
+        // making sure it doesn't surpass the final value
         let value = parseFloat(element.style[property]);
         value += animationDelta;
         value = final > initial ? Math.min(value, final) : Math.max(value, final);
@@ -45,7 +45,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
         }
     };
 
-    // starts the animation process by runnig the initial
+    // starts the animation process by running the initial
     // call to the frame animation function
     frame();
 };
