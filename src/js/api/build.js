@@ -5,6 +5,15 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -13,6 +22,13 @@ ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.getLocaleModelP = function(options) {
     return new Promise((resolve, reject) => {
         this.getLocaleModel(options, (result, isValid, request) => {

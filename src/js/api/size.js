@@ -5,6 +5,15 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.getSizes = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -17,6 +26,21 @@ ripe.Ripe.prototype.getSizes = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} scale Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} value Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} gender Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -34,6 +58,21 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} scale Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} values Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} genders Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -64,6 +103,21 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} scale Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} value Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} gender Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -81,6 +135,21 @@ ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callb
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} scales Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} values Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} genders Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
