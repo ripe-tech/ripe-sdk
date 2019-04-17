@@ -30,8 +30,8 @@ ripe.Interactable = function(owner, options = {}) {
 ripe.Interactable.prototype = ripe.build(ripe.Observable.prototype);
 
 /**
- * The initializer of the class, called whenever this interactable
- * is going to become active.
+ * The initializer of the class, to be called (by the owner)
+ * whenever this interactable is going to become active.
  */
 ripe.Interactable.prototype.init = function() {
     ripe.Observable.prototype.init.call(this);
@@ -46,8 +46,9 @@ ripe.Interactable.prototype.init = function() {
 ripe.Interactable.prototype.update = function(state) {};
 
 /**
- * The deinitializer of the class, called whenever this
- * interactable should stop responding to updates.
+ * The deinitializer to be called (by the owner) when
+ * it should stop responding to updates so that any necessary 
+ * cleanup operations can be executed.
  */
 ripe.Interactable.prototype.deinit = function() {
     this.owner = null;
