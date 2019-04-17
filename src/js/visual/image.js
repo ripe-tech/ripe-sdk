@@ -10,18 +10,22 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- *
  * @class
- * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * @classdesc Class that reactively updates the image of an img element whenever 
+ * the state of its owner changes.
+ * An Image can be configured with the following options:
  *
- * @param {Object} owner Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} element Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Ripe} owner The Ripe instance to be shown.
+ * @param {Object} element The img element that should be updated.
+ * @param {Object} options An object with options to configure the image:
+ * - "showInitials" - A Boolean indicating if the owner's personalization should be shown (defaults to "true¨).
+ * - "initialsBuilder" - A function that receives the initials and engraving as Strings and the img element that
+ * will be used and returns a map with the initials and a profile list.
+ * - "frame" - The Ripe instance frame to display (defaults to "0").
+ * - "size" - The image size in pixels (defaults to "1000").
+ * - "width" - The image width in pixels (defaults to "null", meaning it will fallback to "size").
+ * - "height" - The image height in pixels (defaults to "null", meaning it will fallback to "size").
+ * - "crop" - A Boolean indicating if it is to crop the image composition.
  */
 ripe.Image = function(owner, element, options) {
     ripe.Visual.call(this, owner, element, options);
@@ -30,8 +34,11 @@ ripe.Image = function(owner, element, options) {
 ripe.Image.prototype = ripe.build(ripe.Visual.prototype);
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * The Image initializer, which is called (by the owner)
+ * whenever the Image is going to become active.
+ *
+ * Sets the various values for the Image taking into
+ * owner's default values.
  */
 ripe.Image.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
@@ -56,12 +63,11 @@ ripe.Image.prototype.init = function() {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * This function is called (by the owner) whenever its state changes
+ * so that the Image can update itself for the new state.
  *
- * @param {Object} state Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
+ * @param {Object} state An object containing the new state of the owner.
+  */
 ripe.Image.prototype.update = function(state) {
     const frame = this.element.dataset.frame || this.frame;
     const size = this.element.dataset.size || this.size;
@@ -104,8 +110,9 @@ ripe.Image.prototype.update = function(state) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * The Image deinitializer, to be called (by the owner) when
+ * it should stop responding to updates so that any necessary 
+ * cleanup operations can be executed.
  */
 ripe.Image.prototype.deinit = function() {
     this._unregisterHandlers();
@@ -116,11 +123,11 @@ ripe.Image.prototype.deinit = function() {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Updates the frame that the Image is referring to.
  *
- * @param {Object} frame Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {String} frame The Ripe instance frame to display.
+ * @param {Object} options An object with options to configure
+ * the setting of the frame.
  */
 ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
@@ -128,17 +135,21 @@ ripe.Image.prototype.setFrame = function(frame, options) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Updates the Image's "initialsBuilder" function.
  *
- * @param {Object} builder Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} builder The new "initialsBuilder" function
+ * to be used by the Image.
+ * @param {Object} options An object with options to configure
+ * the setting of the "initialsBuilder".
  */
 ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
     this.initialsBuilder = builder;
     this.update();
 };
 
+/**
+ * @ignore
+ */
 ripe.Image.prototype._registerHandlers = function() {
     this.loadListener = function() {
         this.trigger("loaded");
@@ -161,6 +172,9 @@ ripe.Image.prototype._registerHandlers = function() {
         });
 };
 
+/**
+ * @ignore
+ */
 ripe.Image.prototype._unregisterHandlers = function() {
     this.element.removeEventListener("load", this.loadListener);
     this._observer && this._observer.disconnect();
