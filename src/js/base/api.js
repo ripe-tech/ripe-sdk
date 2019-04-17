@@ -11,32 +11,15 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- *
  * @class
- * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @classdesc The API class to be instantiated. Implements all the API interfaces.
+ * @param {Object} options The options to be used to configure the API client.
  */
 ripe.RipeAPI = function(options = {}) {
     options.cached = typeof options.cached === "undefined" ? false : options.cached;
     return new ripe.Ripe(null, null, options);
 };
 
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- *
- * @param {Object} username Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} password Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
 ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -53,17 +36,6 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- *
- * @param {Object} token Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
 ripe.Ripe.prototype.signinPid = function(token, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -80,13 +52,13 @@ ripe.Ripe.prototype.signinPid = function(token, options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Retrieves the price for current customization.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An Object containing customization information that
+ * can be used to override the current customization, allowsing to set the
+ * "brand", "model" and "parts".
+ * @param {Function} callback Function with the result of the request.
+ * @requires {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -96,6 +68,9 @@ ripe.Ripe.prototype.getPrice = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // runs the defaulting operatin on the provided options
     // optional parameter (ensures valid object there)
@@ -144,6 +119,9 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     );
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -205,6 +183,9 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     return request;
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
     const params = options.params || {};
     options.params = params;
@@ -270,11 +251,17 @@ ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
     return options;
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getQuery = function(options = {}) {
     options = this._getQueryOptions(options);
     return this._buildQuery(options.params);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
     options = this._getQueryOptions(options);
 
@@ -295,6 +282,9 @@ ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getImageOptions = function(options = {}) {
     options.country = options.country || null;
     options.currency = options.currency || null;
@@ -347,6 +337,9 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     options.parts = options.parts || {};
     options.country = options.country || null;
@@ -370,6 +363,9 @@ ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
@@ -405,23 +401,32 @@ ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getImageURL = function(options) {
     options = this._getImageOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getMaskURL = function(options) {
     options = this._getMaskOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getSwatchURL = function(options) {
     options = this._getSwatchOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
 
 /**
- * @private
+ * @ignore
  *
  * Runs the options object building operation meaning that a series
  * of default values are going to be added to the provided options
@@ -451,7 +456,7 @@ ripe.Ripe.prototype._build = function(options) {
 };
 
 /**
- * @private
+ * @ignore
  *
  * Builds a GET query string from the provided Array or Object parameter.
  *
@@ -502,7 +507,7 @@ ripe.Ripe.prototype._buildQuery = function(params) {
 };
 
 /**
- * @private
+ * @ignore
  *
  * Unpacks the provided query string into it's components inside
  * a key, value object for easy usage.
