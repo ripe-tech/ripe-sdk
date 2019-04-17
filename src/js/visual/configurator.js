@@ -133,10 +133,10 @@ ripe.Configurator.prototype.resize = function(size) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * This function is called (by the owner) whenever its state changes
+ * so that the Configurator can update itself for the new state.
  *
- * @param {Object} state The owner's state used to reflect during the Configurator's update
+ * @param {Object} state An object containing the new state of the owner.
  * @param {Object} options Set of optional parameters to adjust the Configurator update.
  * Availale optional parameters: "animate" (if it's to animate the update, default: "false"),
  * "duration" (duration in milliseconds that the transtition should take), "callback" (callback
@@ -203,8 +203,9 @@ ripe.Configurator.prototype.update = function(state, options = {}) {
 };
 
 /**
- * The Configurator deinitializer, to be called whenever it
- * should stop responding to updates.
+ * The Configurator deinitializer, to be called (by the owner) when
+ * it should stop responding to updates so that any necessary 
+ * cleanup operations can be executed.
  */
 ripe.Configurator.prototype.deinit = function() {
     while (this.element.firstChild) {
