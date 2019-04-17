@@ -6,10 +6,6 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
 ripe.Ripe.prototype.isAuth = function() {
     return Boolean(this.sid);
 };
@@ -26,10 +22,6 @@ ripe.Ripe.prototype.isOAuth = function() {
     return true;
 };
 
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
 ripe.Ripe.prototype.isOAuthCode = function() {
     const query = window.location.search || "";
     const unpacked = this._unpackQuery(query);
@@ -37,10 +29,6 @@ ripe.Ripe.prototype.isOAuthCode = function() {
     return Boolean(code);
 };
 
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
 ripe.Ripe.prototype.isOAuthError = function() {
     const query = window.location.search || "";
     const unpacked = this._unpackQuery(query);
@@ -49,10 +37,6 @@ ripe.Ripe.prototype.isOAuthError = function() {
     return Boolean(error) && Boolean(errorDescription);
 };
 
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
 ripe.Ripe.prototype.isOAuthPending = function() {
     if (this.isAuth()) {
         return false;
@@ -60,10 +44,6 @@ ripe.Ripe.prototype.isOAuthPending = function() {
     return this.isOAuth() || this.isOAuthCode() || this.isOAuthError();
 };
 
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
 ripe.Ripe.prototype.auth = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -80,10 +60,6 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
     );
 };
 
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
 ripe.Ripe.prototype.authPid = function(token, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -99,10 +75,6 @@ ripe.Ripe.prototype.authPid = function(token, options, callback) {
     );
 };
 
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
 ripe.Ripe.prototype.authPidP = function(token, options) {
     return new Promise((resolve, reject) => {
         this.authPid(token, options, (result, isValid, request) => {
@@ -111,10 +83,6 @@ ripe.Ripe.prototype.authPidP = function(token, options) {
     });
 };
 
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- */
 ripe.Ripe.prototype.unauth = function(options, callback) {
     this.sid = null;
 
@@ -128,17 +96,6 @@ ripe.Ripe.prototype.unauth = function(options, callback) {
     callback && callback();
 };
 
-/**
- * Responsible for the begining of the OAuth based authentication process
- * may either start the redirection process (in case no valid token is found)
- * or try to revalidate the session with the currently existing tokens or session ID.
- *
- * @param {Object} options The set of options used for the OAuth process, should
- * include client identifier and secret.
- * @param {Function} callback The callback to be called once the loging or the access
- * token retrieval functions are finished.
- * @returns {Object} Either an invalid/unset value or the result of the login operation.
- */
 ripe.Ripe.prototype.oauth = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
