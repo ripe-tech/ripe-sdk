@@ -6,6 +6,8 @@ if (typeof require !== "undefined") {
 }
 
 /**
+ * @ignore
+ *
  * Assigns a certain set of values in the provided object to the
  * first parameter of the call (target).
  *
@@ -37,6 +39,9 @@ ripe.assign = function(target) {
     return to;
 };
 
+/**
+ * @ignore 
+ */
 ripe.build = function() {
     const _arguments = Array.prototype.slice.call(arguments);
     _arguments.unshift({});
