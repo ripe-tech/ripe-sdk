@@ -2,6 +2,23 @@
     "source": "./src/js",
     "destination": "./docs",
     "plugins": [{
-        "name": "esdoc-standard-plugin"
+        "name": "esdoc-standard-plugin",
+        "option": {
+            "unexportedIdentifier": {
+                "enable": true
+            },
+            "lint": {
+                "enable": true
+            },
+            "coverage": {
+                "enable": true
+            },
+            "accessor": {
+                "autoPrivate": true
+            },
+            "test": {
+                "source": "./test/js"
+            }
+        }
     }]
 }
