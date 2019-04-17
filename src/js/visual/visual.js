@@ -6,19 +6,13 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- *
  * @class
  * @augments Interactable
- * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-
- * @param {Object} owner Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} element Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @classdesc The superclass for visual representations of a Ripe instance.
+ *
+ * @param {Ripe} owner The Ripe instance to be represented.
+ * @param {Object} element The DOM element that should be updated.
+ * @param {Object} options The options to be used to configure the Visual representation.
  */
 ripe.Visual = function(owner, element, options) {
     this.element = element;
@@ -31,14 +25,17 @@ ripe.Visual.prototype = ripe.build(ripe.Interactable.prototype);
 ripe.Visual.constructor = ripe.Visual;
 
 /**
- * @ignore
+ * The initializer which is called (by the owner)
+ * whenever the Visual is going to become active.
  */
 ripe.Visual.prototype.init = function() {
     ripe.Interactable.prototype.init.call(this);
 };
 
 /**
- * @ignore
+ * The deinitializer to be called (by the owner) when
+ * it should stop responding to updates so that any necessary 
+ * cleanup operations can be executed.
  */
 ripe.Visual.prototype.deinit = function() {
     this._removeElementHandlers();
