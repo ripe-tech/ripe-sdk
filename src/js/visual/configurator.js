@@ -7,12 +7,10 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Class that defines an interactive configurator instace to be
+ * @class
+ * @classdesc Class that defines an interactive Configurator instace to be
  * used in connection with the main Ripe owner to provide an
  * interactive configuration experience inside a DOM.
- *
- * @class
- * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
  *
  * @param {Object} owner The owner (customizer instance) for
  * this configurator.
@@ -29,8 +27,11 @@ ripe.Configurator = function(owner, element, options) {
 ripe.Configurator.prototype = ripe.build(ripe.Visual.prototype);
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * The Configurator initializer, which is called whenever
+ * the Configurator is going to become active.
+ *
+ * Sets the various values for the Configurator taking into
+ * owner's default values.
  */
 ripe.Configurator.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
@@ -93,11 +94,9 @@ ripe.Configurator.prototype.init = function() {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Resizes the Configurator's DOM element to `size` pixels.
  *
- * @param {Object} size Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Number} size The number of pixels to resize to.
  */
 ripe.Configurator.prototype.resize = function(size) {
     if (this.element === undefined) {
@@ -137,8 +136,11 @@ ripe.Configurator.prototype.resize = function(size) {
  * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} state The owner's state used to reflect during the Configurator's update
+ * @param {Object} options Set of optional parameters to adjust the Configurator update.
+ * Availale optional parameters: `animate` (if it's to animate the update, default: `false`),
+ * `duration` (duration in milliseconds that the transtition should take), `callback` (callback
+ * to be called at the end of the update) and `preload` (if it's to execute the pre-loading process).
  */
 ripe.Configurator.prototype.update = function(state, options = {}) {
     if (this.ready === false) {
@@ -201,8 +203,8 @@ ripe.Configurator.prototype.update = function(state, options = {}) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * The Configurator deinitializer, to be called whenever it
+ * should stop responding to updates.
  */
 ripe.Configurator.prototype.deinit = function() {
     while (this.element.firstChild) {
@@ -221,13 +223,13 @@ ripe.Configurator.prototype.deinit = function() {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Displays a new frame, with an animation from the starting frame
  *
- * @param {Object} frame Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} frame The new frame to display.
+ * @param {Object} options Set of optional parameters to adjust the change frame.
+ * Availale optional parameters: `type` (the animation style, "simple" (fade in), "cross" (crossfade)
+ * or `null` (without any style), , `preventDrag` (if drag actions during an animated change of
+ * frames should be ignored, default: `true`).
  */
 ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const _frame = ripe.parseFrameKey(frame);
@@ -328,13 +330,11 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Highlights a models's part.
  *
- * @param {Object} part Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {String} part The part to highligth.
+ * @param {Object} options Set of optional parameters to adjust the highlighting.
+ * Availale optional parameters: `backgroundColor` color to use during the highlighting.
  */
 ripe.Configurator.prototype.highlight = function(part, options = {}) {
     // verifiers if masks are meant to be used for the current model
@@ -396,8 +396,10 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Removes the a highlighting of a models's part.
+ *
+ * @param {String} part The part to lowlight.
+ * @param {Object} options Set of optional parameters to adjust the lowlighting.
  */
 ripe.Configurator.prototype.lowlight = function(options) {
     // verifiers if masks are meant to be used for the current model
@@ -414,8 +416,9 @@ ripe.Configurator.prototype.lowlight = function(options) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Resizes the Configurator to the defined maximum size.
+ *
+ * @param {Object} options Set of optional parameters to adjust the resizing.
  */
 ripe.Configurator.prototype.enterFullscreen = function(options) {
     if (this.element === undefined) {
@@ -427,8 +430,9 @@ ripe.Configurator.prototype.enterFullscreen = function(options) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Resizes the Configurator to the prior defined size.
+ *
+ * @param {Object} options Set of optional parameters to adjust the resizing.
  */
 ripe.Configurator.prototype.leaveFullscreen = function(options) {
     if (this.element === undefined) {
@@ -439,8 +443,6 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
 };
 
 /**
- * @private
- *
  * Initializes the layout for the configurator element by
  * constructing all te child elements required for the proper
  * configurator functionality to work.
@@ -448,6 +450,8 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
  * From a DOM prespective this is a synchronous operation,
  * meaning that after its execution the configurator is ready
  * to be manipulated.
+ *
+ * @private
  */
 ripe.Configurator.prototype._initLayout = function() {
     // clears the elements children
