@@ -437,7 +437,7 @@ ripe.Ripe.prototype._getSwatchURL = function(options) {
  * going to be completed with default information and session info.
  * @returns {Object} The same options object references that has been
  * provided with the proper default information populated.
- * 
+ *
  * @ignore
  */
 ripe.Ripe.prototype._build = function(options) {
@@ -517,7 +517,7 @@ ripe.Ripe.prototype._buildQuery = function(params) {
  * for the creation of the output Object.
  * @returns {Object} The object that contains the key, value information
  * on the query string.
- * 
+ *
  * @ignore
  */
 ripe.Ripe.prototype._unpackQuery = function(query) {
