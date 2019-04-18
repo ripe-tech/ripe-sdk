@@ -6,13 +6,12 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Provides a list of all the available size scales.
+ * To be used to know what scales are available for size conversions.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getSizes = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -27,19 +26,16 @@ ripe.Ripe.prototype.getSizes = function(options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Converts a size value from the native scale to the corresponding value
+ * in the specified scale.
+ * The available scales, genders and sizes can be obtained with the getSizes.
  *
- * @param {Object} scale Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} value Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} gender Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {String} scale The scale which one wants to convert to.
+ * @param {Number} value The value which one wants to convert.
+ * @param {String} gender The gender of the scale and value to be converted.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -59,19 +55,15 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Converts multiple size values from the native scale to the corresponding
+ * values in the specified scales.
+ * The available scales, genders and sizes can be obtained with the method getSizes.
  *
- * @param {Object} scale Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} values Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} genders Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Array} scale A list of scales to convert to.
+ * @param {Array} values A list of values to convert.
+ * @param {Array} genders A list of genders corresponding to the values.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
  * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, callback) {
@@ -105,19 +97,14 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Converts a size value in the specified scale to the corresponding native size.
+ * The available scales, genders and sizes can be obtained with the method getSizes.
  *
- * @param {Object} scale Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} value Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} gender Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {String} scale The scale which one wants to convert from.
+ * @param {Number} value The value which one wants to convert.
+ * @param {String} gender The gender of the scale and value to be converted.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
  * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
@@ -138,20 +125,15 @@ ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callb
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Converts multiple size values to the corresponding native size.
+ * The available scales, genders and sizes can be obtained with the method getSizes.
  *
- * @param {Object} scales Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} values Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} genders Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-* @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @param {Array} scales A list of scales to convert from.
+ * @param {Array} values A list of values to convert.
+ * @param {Array} genders A list of genders corresponding to the values.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, callback) {
     callback = typeof options === "function" ? options : callback;
