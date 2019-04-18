@@ -6,12 +6,10 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Class that defines an entity that can be used to interact
- * with the customizer (abstract).
- *
  * @class
  * @augments Observable
- * @classdesc Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * @classdesc Class that defines an entity that can be used to interact
+ * with the customizer (abstract).
  *
  * @param {Object} owner The owner (customizer instance) for
  * this interactable.
