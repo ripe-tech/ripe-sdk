@@ -6,13 +6,16 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Returns the configuration information of a specific brand and model.
+ * If no model is provided then returns the information of the owner's current model.
+
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ *  - 'country' - the country where the model will be provided, some materials/colors might not be available.
+ *  - 'flag' - a specific flag that may change the provided materials/colors available.
+ *  - 'filter' - if the configuration should be filtered by the country and/or flag (defaults to 'true')
+ * @returns {Object} The model's configuration data.
  */
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -23,11 +26,16 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Returns the configuration information of a specific brand and model.
+ * If no model is provided then returns the information of the owner's current model.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ *  - 'country' - the country where the model will be provided, some materials/colors might not be available.
+ *  - 'flag' - a specific flag that may change the provided materials/colors available.
+ *  - 'filter** - if the configuration should be filtered by the country and/or flag (defaults to 'true')
+ * @returns {Promise} The model's configuration data.
  */
 ripe.Ripe.prototype.getConfigP = function(options) {
     return new Promise((resolve, reject) => {
@@ -38,13 +46,13 @@ ripe.Ripe.prototype.getConfigP = function(options) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Returns the default customization of a specific brand or model. If no model is provided
+ * then returns the defaults of the owner's current model.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ * @returns {Object} The model's default options.
  */
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -57,13 +65,13 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Returns the default customization of a specific brand or model.
+ * If no model is provided then returns the defaults of the owner's current model.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ * @returns {Object} The model's optional parts.
  */
 ripe.Ripe.prototype.getOptionals = function(options, callback) {
     return this.getDefaults(options, function(defaults, isValid, request) {
@@ -77,13 +85,13 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Returns the possible customization combinations of a specific brand or model.
+ * If no model is provided then returns the defaults of the owner's current model.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ * @returns {Object} The model's optional parts.
  */
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -96,11 +104,13 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Returns the possible customization combinations of a specific brand or model.
+ * If no model is provided then returns the defaults of the owner's current model.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ * @returns {Promise} The model's optional parts.
  */
 ripe.Ripe.prototype.getCombinationsP = function(options) {
     return new Promise((resolve, reject) => {
@@ -111,13 +121,15 @@ ripe.Ripe.prototype.getCombinationsP = function(options) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Returns the factory information where a model is made,
+ * specifically its name and the estimated production time in days.
+ * If no model is provided then returns the defaults of the owner's current model.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ * @param {Function} callback Function with the result of the request.
+ * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getFactory = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -127,6 +139,9 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
@@ -150,6 +165,9 @@ ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getDefaultsOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
@@ -160,6 +178,9 @@ ripe.Ripe.prototype._getDefaultsOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getCombinationsOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
@@ -194,6 +215,9 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
