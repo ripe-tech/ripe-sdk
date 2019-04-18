@@ -169,9 +169,10 @@ gulp.task("test", () => {
 });
 
 gulp.task("docs", cb => {
+    var config = require("./jsdoc.json");
     gulp.src(["README.md", paths.docs], {
         read: false
-    }).pipe(jsdoc(cb));
+    }).pipe(jsdoc(config, cb));
 });
 
 gulp.task("watch-js", () => {
