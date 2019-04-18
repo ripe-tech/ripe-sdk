@@ -8,8 +8,7 @@ if (typeof require !== "undefined") {
 /**
  * @class
  * @classdesc An object that emits events.
- * Listeners can bind to specific events and
- * be notified when the event is triggered.
+ * Listeners can bind to specific events and be notified when the event is triggered.
  */
 ripe.Observable = function() {
     this.callbacks = {};

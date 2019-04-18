@@ -129,7 +129,7 @@ ripe.Ripe.prototype.unload = function() {};
  *
  * @param {String} brand The brand of the model.
  * @param {String} model The name of the model.
- * @param {Object} options An object with the options to configure the Ripe instance.
+ * @param {Object} options An object with the options to configure the Ripe instance, such as:
  *  - 'parts' - The initial parts of the model.
  *  - 'country' - The country where the model will be sold.
  *  - 'currency' - The currency that should be used to calculate the price.
@@ -245,7 +245,7 @@ ripe.Ripe.prototype.remote = function() {
 /**
  * Sets Ripe instance options according to the defaulting policy.
  *
- * @param {Object} options An object with the options to configure the Ripe instance.
+ * @param {Object} options An object with the options to configure the Ripe instance, such as:
  *  - 'parts' - The initial parts of the model.
  *  - 'country' - The country where the model will be sold.
  *  - 'currency' - The currency that should be used to calculate the price.
@@ -291,7 +291,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
  * @param {String} part The part to be changed.
  * @param {String} material The material to change to.
  * @param {String} color The color to change to.
- * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults 'False').
+ * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults to 'false').
  * @param {Object} options An object with options to configure the operation (for internal use).
  */
 ripe.Ripe.prototype.setPart = function(part, material, color, noEvents, options) {
@@ -309,8 +309,8 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noEvents, options)
 /**
  * Allows changing the customization of a set of parts in bulk.
  *
- * @param {Object} parts A map or array with part, material, color triplets to be set.
- * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults 'False').
+ * @param {Object} parts An Object or array with part, material, color triplets to be set.
+ * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults to 'false').
  * @param {Object} options An object with options to configure the operation (for internal use).
  */
 ripe.Ripe.prototype.setParts = function(update, noEvents, options) {
@@ -334,7 +334,7 @@ ripe.Ripe.prototype.setParts = function(update, noEvents, options) {
  *
  * @param {String} initials The initials to be set.
  * @param {String} engraving The engraving to be set.
- * @param {Boolean} noUpdate If the update operation shouldn't be triggered (defaults 'False').
+ * @param {Boolean} noUpdate If the update operation shouldn't be triggered (defaults to 'false').
  */
 ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
     this.initials = initials;
@@ -349,7 +349,7 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
 /**
  * Returns the model's configuration loaded from the Platforme's system.
  *
- * @returns {Object} The model configuration.
+ * @returns {Object} The model's configuration.
  */
 ripe.Ripe.prototype.getLoadedConfig = function() {
     return this.loadedConfig;
