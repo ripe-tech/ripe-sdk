@@ -97,16 +97,16 @@ ripe.Ripe.prototype.unauth = function(options, callback) {
 };
 
 /**
-* Responsible for the begining of the OAuth based authentication process
-* may either start the redirection process (in case no valid token is found)
-* or try to revalidate the session with the currently existing tokens or session ID.
-*
-* @param {Object} options The set of options used for the OAuth process, should
-* include client identifier and secret.
-* @param {Function} callback The callback to be called once the loging or the access
-* token retrieval functions are finished.
-* @returns {Object} Either an invalid/unset value or the result of the login operation.
-*/
+ * Responsible for the begining of the OAuth based authentication process
+ * may either start the redirection process (in case no valid token is found)
+ * or try to revalidate the session with the currently existing tokens or session ID.
+ *
+ * @param {Object} options The set of options used for the OAuth process, should
+ * include client identifier and secret.
+ * @param {Function} callback The callback to be called once the loging or the access
+ * token retrieval functions are finished.
+ * @returns {Object} Either an invalid/unset value or the result of the login operation.
+ */
 ripe.Ripe.prototype.oauth = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
