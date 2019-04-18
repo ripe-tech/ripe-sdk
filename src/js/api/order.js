@@ -93,20 +93,7 @@ ripe.Ripe.prototype.getOrderP = function(number, options) {
 };
 
 /**
- * Gets the orders list, optionally filtered by a set of options.
- *
- * @param {Object} options An object of options to configure the request.
- * its results, such as:
- * - 'filters[]' - list of filters that the query will use to, operators such as
- * ('in', 'not_in', 'like', 'likei', 'llike', 'llikei', 'rlike', 'rlikei', 'contains'),
- * for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
- * - 'sort' - list of arguments to sort the results by and which direction
- * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
- * while (eg: 'id:descending')] would do it in descending order.
- * - 'skip' - the number of the first record to retrieve from the results.
- * - 'limit' - the number of results to retrieve.
- * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @ignore
  */
 ripe.Ripe.prototype.searchOrders = function(filterString, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -127,19 +114,7 @@ ripe.Ripe.prototype.searchOrders = function(filterString, options, callback) {
 };
 
 /**
- * Gets the orders list, optionally filtered by a set of options.
- *
- * @param {Object} options An object of options to configure the request.
- * its results, such as:
- * - 'filters[]' - list of filters that the query will use to, operators such as
- * ('in', 'not_in', 'like', 'likei', 'llike', 'llikei', 'rlike', 'rlikei', 'contains'),
- * for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
- * - 'sort' - list of arguments to sort the results by and which direction
- * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order.
- * while (eg: 'id:descending')] would do it in descending order.
- * - 'skip' - the number of the first record to retrieve from the results.
- * - 'limit' - the number of results to retrieve.
- * @return {Promise} The orders result list.
+ * @ignore
  */
 ripe.Ripe.prototype.searchOrdersP = function(filterString, options) {
     return new Promise((resolve, reject) => {
@@ -152,10 +127,8 @@ ripe.Ripe.prototype.searchOrdersP = function(filterString, options) {
 /**
  * Sets the order status to 'create'.
  *
- * @param {Object} number Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -164,13 +137,10 @@ ripe.Ripe.prototype.createOrder = function(number, options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Sets the order status to 'produce'.
  *
- * @param {Object} number Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -179,13 +149,10 @@ ripe.Ripe.prototype.produceOrder = function(number, options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Sets the order status to 'ready'.
  *
- * @param {Object} number Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -206,13 +173,10 @@ ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, op
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Sets the order status to 'receive'.
  *
- * @param {Object} number Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -221,13 +185,10 @@ ripe.Ripe.prototype.receiveOrder = function(number, options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Sets the order status to 'return'.
  *
- * @param {Object} number Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -236,13 +197,10 @@ ripe.Ripe.prototype.returnOrder = function(number, options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Sets the order status to 'cancel'.
  *
- * @param {Object} number Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
