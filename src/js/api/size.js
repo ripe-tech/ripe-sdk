@@ -72,6 +72,7 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
  * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -117,6 +118,7 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
  * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -149,6 +151,7 @@ ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callb
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
  * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+* @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, callback) {
     callback = typeof options === "function" ? options : callback;
