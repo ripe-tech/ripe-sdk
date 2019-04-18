@@ -46,8 +46,6 @@ ripe.Visual.prototype.deinit = function() {
 };
 
 /**
- * @ignore
- *
  * Utility function that binds an event to the interactable
  * DOM element and keeps a reference to it to unbind it
  * when no longer needed.
@@ -68,8 +66,6 @@ ripe.Visual.prototype._addElementHandler = function(event, callback) {
 };
 
 /**
- * @ignore
- *
  * Unbinds all the events from the DOM element.
  *
  * @ignore
