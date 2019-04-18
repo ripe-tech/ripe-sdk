@@ -21,7 +21,6 @@ ripe.Observable = function() {
 ripe.Observable.prototype.init = function() {};
 
 /**
- *
  * Binds to an event by providing a block that will receive the event payload as a
  * parameter and return a Deferred that will be completed asynchronously.
  *
