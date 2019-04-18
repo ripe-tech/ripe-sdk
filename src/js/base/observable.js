@@ -8,7 +8,7 @@ if (typeof require !== "undefined") {
 /**
  * @class
  * @classdesc An object that emits events.
- * Listeners can bind to specific events and 
+ * Listeners can bind to specific events and
  * be notified when the event is triggered.
  */
 ripe.Observable = function() {
@@ -21,7 +21,7 @@ ripe.Observable = function() {
 ripe.Observable.prototype.init = function() {};
 
 /**
- * 
+ *
  * Binds to an event by providing a block that will receive the event payload as a
  * parameter and return a Deferred that will be completed asynchronously.
  *
@@ -61,7 +61,7 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
  * Triggers the event by calling all its bound callbacks with args as parameters.
  *
  * @param {String} event The name of the event to be triggered.
- * @returns {Promise} Returns a Promise of all results that will be completed 
+ * @returns {Promise} Returns a Promise of all results that will be completed
  * when all of the callbacks have finished processing the triggered event.
  */
 ripe.Observable.prototype.runCallbacks = function(event) {

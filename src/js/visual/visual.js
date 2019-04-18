@@ -34,7 +34,7 @@ ripe.Visual.prototype.init = function() {
 
 /**
  * The deinitializer to be called (by the owner) when
- * it should stop responding to updates so that any necessary 
+ * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
 ripe.Visual.prototype.deinit = function() {

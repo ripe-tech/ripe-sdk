@@ -40,7 +40,7 @@ ripe.assign = function(target) {
 };
 
 /**
- * @ignore 
+ * @ignore
  */
 ripe.build = function() {
     const _arguments = Array.prototype.slice.call(arguments);

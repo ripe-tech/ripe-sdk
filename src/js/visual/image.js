@@ -11,7 +11,7 @@ if (typeof require !== "undefined") {
 
 /**
  * @class
- * @classdesc Class that reactively updates the image of an img element whenever 
+ * @classdesc Class that reactively updates the image of an img element whenever
  * the state of its owner changes.
  * An Image can be configured with the following options:
  *
@@ -67,7 +67,7 @@ ripe.Image.prototype.init = function() {
  * so that the Image can update itself for the new state.
  *
  * @param {Object} state An object containing the new state of the owner.
-  */
+ */
 ripe.Image.prototype.update = function(state) {
     const frame = this.element.dataset.frame || this.frame;
     const size = this.element.dataset.size || this.size;
@@ -111,7 +111,7 @@ ripe.Image.prototype.update = function(state) {
 
 /**
  * The Image deinitializer, to be called (by the owner) when
- * it should stop responding to updates so that any necessary 
+ * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
 ripe.Image.prototype.deinit = function() {

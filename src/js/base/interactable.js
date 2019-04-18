@@ -47,7 +47,7 @@ ripe.Interactable.prototype.update = function(state) {};
 
 /**
  * The deinitializer to be called (by the owner) when
- * it should stop responding to updates so that any necessary 
+ * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
 ripe.Interactable.prototype.deinit = function() {

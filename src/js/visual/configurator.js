@@ -204,7 +204,7 @@ ripe.Configurator.prototype.update = function(state, options = {}) {
 
 /**
  * The Configurator deinitializer, to be called (by the owner) when
- * it should stop responding to updates so that any necessary 
+ * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
 ripe.Configurator.prototype.deinit = function() {
