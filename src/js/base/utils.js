@@ -5,12 +5,18 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * @ignore
+ */
 ripe.createElement = function(tagName, className) {
     const element = tagName && document.createElement(tagName);
     element.className = className || "";
     return element;
 };
 
+/**
+ * @ignore
+ */
 ripe.animateProperty = function(element, property, initial, final, duration, callback) {
     // sets the initial value for the property
     element.style[property] = initial;
@@ -50,16 +56,25 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     frame();
 };
 
+/**
+ * @ignore
+ */
 ripe.getFrameKey = function(view, position, token) {
     token = token || "-";
     return view + token + position;
 };
 
+/**
+ * @ignore
+ */
 ripe.parseFrameKey = function(frame, token) {
     token = token || "-";
     return frame.split(token);
 };
 
+/**
+ * @ignore
+ */
 ripe.frameNameHack = function(frame) {
     if (!frame) {
         return "";
@@ -71,6 +86,9 @@ ripe.frameNameHack = function(frame) {
     return position;
 };
 
+/**
+ * @ignore
+ */
 ripe.fixEvent = function(event) {
     if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
         return event;
@@ -89,6 +107,9 @@ ripe.fixEvent = function(event) {
     return event;
 };
 
+/**
+ * @ignore
+ */
 ripe.clone = function(object) {
     if (object === undefined) {
         return object;
@@ -97,6 +118,9 @@ ripe.clone = function(object) {
     return JSON.parse(objectS);
 };
 
+/**
+ * @ignore
+ */
 ripe.equal = function(first, second) {
     if (first === second) {
         return true;
