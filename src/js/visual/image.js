@@ -13,12 +13,11 @@ if (typeof require !== "undefined") {
  * @class
  * @classdesc Class that reactively updates the image of an img element whenever
  * the state of its owner changes.
- * An Image can be configured with the following options:
  *
  * @param {Ripe} owner The Ripe instance to be shown.
  * @param {Object} element The img element that should be updated.
- * @param {Object} options An object with options to configure the image:
- * - 'showInitials' - A Boolean indicating if the owner's personalization should be shown (defaults to 'true').
+ * @param {Object} options An object with options to configure the image, such as:
+ * - 'showInitials' - A Boolean indicating if the owner's personalization should be shown (defaults to 'true¨).
  * - 'initialsBuilder' - A function that receives the initials and engraving as Strings and the img element that
  * will be used and returns a map with the initials and a profile list.
  * - 'frame' - The Ripe instance frame to display (defaults to '0').

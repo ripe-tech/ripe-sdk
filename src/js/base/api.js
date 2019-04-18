@@ -10,6 +10,11 @@ if (typeof require !== "undefined") {
     var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
+/**
+ * @class
+ * @classdesc The API class to be instantiated. Implements all the API interfaces.
+ * @param {Object} options The options to be used to configure the API client.
+ */
 ripe.RipeAPI = function(options = {}) {
     options.cached = typeof options.cached === "undefined" ? false : options.cached;
     return new ripe.Ripe(null, null, options);
@@ -46,6 +51,15 @@ ripe.Ripe.prototype.signinPid = function(token, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Retrieves the price for current customization.
+ *
+ * @param {Object} options An Object containing customization information that
+ * can be used to override the current customization, allowing to set the
+ * 'brand', 'model' and 'parts'.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -54,6 +68,9 @@ ripe.Ripe.prototype.getPrice = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // runs the defaulting operatin on the provided options
     // optional parameter (ensures valid object there)
@@ -102,6 +119,9 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     );
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -163,6 +183,9 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     return request;
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
     const params = options.params || {};
     options.params = params;
@@ -228,11 +251,17 @@ ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
     return options;
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getQuery = function(options = {}) {
     options = this._getQueryOptions(options);
     return this._buildQuery(options.params);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
     options = this._getQueryOptions(options);
 
@@ -253,6 +282,9 @@ ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getImageOptions = function(options = {}) {
     options.country = options.country || null;
     options.currency = options.currency || null;
@@ -305,6 +337,9 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     options.parts = options.parts || {};
     options.country = options.country || null;
@@ -328,6 +363,9 @@ ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
@@ -363,16 +401,25 @@ ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getImageURL = function(options) {
     options = this._getImageOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getMaskURL = function(options) {
     options = this._getMaskOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getSwatchURL = function(options) {
     options = this._getSwatchOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
@@ -390,6 +437,8 @@ ripe.Ripe.prototype._getSwatchURL = function(options) {
  * going to be completed with default information and session info.
  * @returns {Object} The same options object references that has been
  * provided with the proper default information populated.
+ * 
+ * @ignore
  */
 ripe.Ripe.prototype._build = function(options) {
     const url = options.url || "";
@@ -416,6 +465,8 @@ ripe.Ripe.prototype._build = function(options) {
  * of parameeters for the generated GET query.
  * @returns {String} The GET query string that should contain the complete
  * set of passed arguments (serialization).
+ *
+ * @ignore
  */
 ripe.Ripe.prototype._buildQuery = function(params) {
     let key;
@@ -466,6 +517,8 @@ ripe.Ripe.prototype._buildQuery = function(params) {
  * for the creation of the output Object.
  * @returns {Object} The object that contains the key, value information
  * on the query string.
+ * 
+ * @ignore
  */
 ripe.Ripe.prototype._unpackQuery = function(query) {
     query = query[0] === "?" ? query.slice(1) : query;

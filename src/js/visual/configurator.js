@@ -7,11 +7,11 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Class that defines an interactive configurator instace to be
+ * @class
+ * @classdesc Class that defines an interactive Configurator instace to be
  * used in connection with the main Ripe owner to provide an
  * interactive configuration experience inside a DOM.
  *
- * @constructor
  * @param {Object} owner The owner (customizer instance) for
  * this configurator.
  * @param {Object} element The DOM element that is considered to
@@ -26,6 +26,13 @@ ripe.Configurator = function(owner, element, options) {
 
 ripe.Configurator.prototype = ripe.build(ripe.Visual.prototype);
 
+/**
+ * The Configurator initializer, which is called whenever
+ * the Configurator is going to become active.
+ *
+ * Sets the various values for the Configurator taking into
+ * owner's default values.
+ */
 ripe.Configurator.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
@@ -86,6 +93,11 @@ ripe.Configurator.prototype.init = function() {
     });
 };
 
+/**
+ * Resizes the Configurator's DOM element to 'size' pixels.
+ *
+ * @param {Number} size The number of pixels to resize to.
+ */
 ripe.Configurator.prototype.resize = function(size) {
     if (this.element === undefined) {
         return;
@@ -120,6 +132,17 @@ ripe.Configurator.prototype.resize = function(size) {
     );
 };
 
+/**
+ * This function is called (by the owner) whenever its state changes
+ * so that the Configurator can update itself for the new state.
+ *
+ * @param {Object} state An object containing the new state of the owner.
+ * @param {Object} options Set of optional parameters to adjust the Configurator update, such as:
+ * - 'animate' - If it's to animate the update (defaults to 'false').
+ * - 'duration' - The duration in milliseconds that the transtition should take.
+ * - 'callback' - The callback to be called at the end of the update.
+ * - 'preload' - If it's to execute the pre-loading process.
+ */
 ripe.Configurator.prototype.update = function(state, options = {}) {
     if (this.ready === false) {
         return;
@@ -180,6 +203,11 @@ ripe.Configurator.prototype.update = function(state, options = {}) {
     mustPreload && this._preload(this.options.useChain);
 };
 
+/**
+ * The Configurator deinitializer, to be called (by the owner) when
+ * it should stop responding to updates so that any necessary
+ * cleanup operations can be executed.
+ */
 ripe.Configurator.prototype.deinit = function() {
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -196,6 +224,14 @@ ripe.Configurator.prototype.deinit = function() {
     ripe.Visual.prototype.deinit.call(this);
 };
 
+/**
+ * Displays a new frame, with an animation from the starting frame
+ *
+ * @param {Object} frame The new frame to display.
+ * @param {Object} options Set of optional parameters to adjust the change frame, such as:
+ * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or or 'null' (without any style).
+ * - 'preventDrag' - If drag actions during an animated change of frames should be ignored (defaults to 'true').
+ */
 ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const _frame = ripe.parseFrameKey(frame);
     const nextView = _frame[0];
@@ -294,6 +330,13 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     );
 };
 
+/**
+ * Highlights a models's part.
+ *
+ * @param {String} part The part to highligth.
+ * @param {Object} options Set of optional parameters to adjust the highlighting, such as:
+ * - 'backgroundColor' - The color to use during the highlighting.
+ */
 ripe.Configurator.prototype.highlight = function(part, options = {}) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
@@ -353,6 +396,12 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration);
 };
 
+/**
+ * Removes the a highlighting of a models's part.
+ *
+ * @param {String} part The part to lowlight.
+ * @param {Object} options Set of optional parameters to adjust the lowlighting.
+ */
 ripe.Configurator.prototype.lowlight = function(options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
@@ -367,6 +416,11 @@ ripe.Configurator.prototype.lowlight = function(options) {
     this.element.classList.remove("highlight");
 };
 
+/**
+ * Resizes the Configurator to the defined maximum size.
+ *
+ * @param {Object} options Set of optional parameters to adjust the resizing.
+ */
 ripe.Configurator.prototype.enterFullscreen = function(options) {
     if (this.element === undefined) {
         return;
@@ -376,6 +430,11 @@ ripe.Configurator.prototype.enterFullscreen = function(options) {
     this.resize(maxSize);
 };
 
+/**
+ * Resizes the Configurator to the prior defined size.
+ *
+ * @param {Object} options Set of optional parameters to adjust the resizing.
+ */
 ripe.Configurator.prototype.leaveFullscreen = function(options) {
     if (this.element === undefined) {
         return;
@@ -392,6 +451,8 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
  * From a DOM prespective this is a synchronous operation,
  * meaning that after its execution the configurator is ready
  * to be manipulated.
+ *
+ * @private
  */
 ripe.Configurator.prototype._initLayout = function() {
     // clears the elements children
@@ -448,6 +509,9 @@ ripe.Configurator.prototype._initLayout = function() {
     this._registerHandlers();
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._initPartsList = async function() {
     // creates a set of sorted parts to be used on the
     // highlight operation (considers only the default ones)
@@ -461,6 +525,9 @@ ripe.Configurator.prototype._initPartsList = async function() {
     this.partsList.sort();
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._populateBuffers = function() {
     const framesBuffer = this.element.getElementsByClassName("frames-buffer");
     const masksBuffer = this.element.getElementsByClassName("masks-buffer");
@@ -477,6 +544,9 @@ ripe.Configurator.prototype._populateBuffers = function() {
     }
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._populateBuffer = function(buffer) {
     while (buffer.firstChild) {
         buffer.removeChild(buffer.firstChild);
@@ -494,6 +564,9 @@ ripe.Configurator.prototype._populateBuffer = function(buffer) {
     }
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._updateConfig = function() {
     // sets ready to false to temporarily block
     // update requests while the new config
@@ -560,6 +633,9 @@ ripe.Configurator.prototype._updateConfig = function() {
     );
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._loadFrame = function(view, position, options = {}, callback) {
     // runs the defaulting operation on all of the parameters
     // sent to the load frame operation (defaulting)
@@ -645,6 +721,9 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options = {}, 
     image.dataset.loaded = false;
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._loadMask = function(maskImage, view, position, options) {
     // constructs the URL for the mask and then at the end of the
     // mask loading process runs the final update of the mask canvas
@@ -685,6 +764,9 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     }
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._drawMask = function(maskImage) {
     const mask = this.element.querySelector(".mask");
     const maskContext = mask.getContext("2d");
@@ -692,6 +774,9 @@ ripe.Configurator.prototype._drawMask = function(maskImage) {
     maskContext.drawImage(maskImage, 0, 0, mask.width, mask.height);
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._drawFrame = function(image, animate, duration, callback) {
     const area = this.element.querySelector(".area");
     const back = this.element.querySelector(".back");
@@ -733,6 +818,9 @@ ripe.Configurator.prototype._drawFrame = function(image, animate, duration, call
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._preload = function(useChain) {
     const position = this.element.dataset.position || 0;
     let index = this.index || 0;
@@ -844,6 +932,9 @@ ripe.Configurator.prototype._preload = function(useChain) {
     }
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._registerHandlers = function() {
     // captures the current context to be used inside clojures
     const self = this;
@@ -1017,6 +1108,9 @@ ripe.Configurator.prototype._registerHandlers = function() {
     ripe.touchHandler(this.element);
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._parseDrag = function() {
     // retrieves the last recorded mouse position
     // and the current one and calculates the
@@ -1068,6 +1162,9 @@ ripe.Configurator.prototype._parseDrag = function() {
     this.changeFrame(nextFrame);
 };
 
+/**
+ * @ignore
+ */
 ripe.Configurator.prototype._getCanvasIndex = function(canvas, x, y) {
     const canvasRealWidth = canvas.getBoundingClientRect().width;
     const mask = this.element.querySelector(".mask");

@@ -5,12 +5,18 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * @ignore
+ */
 ripe.createElement = function(tagName, className) {
     const element = tagName && document.createElement(tagName);
     element.className = className || "";
     return element;
 };
 
+/**
+ * @ignore
+ */
 ripe.animateProperty = function(element, property, initial, final, duration, callback) {
     // sets the initial value for the property
     element.style[property] = initial;
@@ -23,7 +29,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
         const animationDelta = (timeDelta * (final - initial)) / duration;
 
         // adjusts the value by the correspondent amount
-        // making sure it doens't surpass the final value
+        // making sure it doesn't surpass the final value
         let value = parseFloat(element.style[property]);
         value += animationDelta;
         value = final > initial ? Math.min(value, final) : Math.max(value, final);
@@ -45,21 +51,30 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
         }
     };
 
-    // starts the animation process by runnig the initial
+    // starts the animation process by running the initial
     // call to the frame animation function
     frame();
 };
 
+/**
+ * @ignore
+ */
 ripe.getFrameKey = function(view, position, token) {
     token = token || "-";
     return view + token + position;
 };
 
+/**
+ * @ignore
+ */
 ripe.parseFrameKey = function(frame, token) {
     token = token || "-";
     return frame.split(token);
 };
 
+/**
+ * @ignore
+ */
 ripe.frameNameHack = function(frame) {
     if (!frame) {
         return "";
@@ -71,6 +86,9 @@ ripe.frameNameHack = function(frame) {
     return position;
 };
 
+/**
+ * @ignore
+ */
 ripe.fixEvent = function(event) {
     if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
         return event;
@@ -89,6 +107,9 @@ ripe.fixEvent = function(event) {
     return event;
 };
 
+/**
+ * @ignore
+ */
 ripe.clone = function(object) {
     if (object === undefined) {
         return object;
@@ -97,6 +118,9 @@ ripe.clone = function(object) {
     return JSON.parse(objectS);
 };
 
+/**
+ * @ignore
+ */
 ripe.equal = function(first, second) {
     if (first === second) {
         return true;

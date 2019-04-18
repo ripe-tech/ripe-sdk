@@ -11,6 +11,8 @@ if (typeof require !== "undefined") {
  *
  * @param {String} target The target of the assign operation meaning
  * the object to which the values will be assigned.
+ * 
+ * @ignore
  */
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
@@ -37,6 +39,9 @@ ripe.assign = function(target) {
     return to;
 };
 
+/**
+ * @ignore
+ */
 ripe.build = function() {
     const _arguments = Array.prototype.slice.call(arguments);
     _arguments.unshift({});

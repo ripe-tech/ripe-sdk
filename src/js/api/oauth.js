@@ -5,6 +5,17 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} code Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -24,6 +35,17 @@ ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ *
+ * @param {Object} accessToken Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ */
 ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
