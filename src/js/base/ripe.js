@@ -29,6 +29,13 @@ ripe.RipeBase = function(brand, model, options) {
     return new ripe.Ripe(brand, model, options);
 };
 
+/**
+ * The initializer of the class, to be called whenever the instance
+ * is going to become active.
+ *
+ * Sets the various values for the Ripe instance taking into account
+ * the provided configuration and defaulting values policy.
+ */
 ripe.Ripe.prototype.init = function(brand, model, options) {
     // sets the various values in the instance taking into
     // account the default values
@@ -85,6 +92,10 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     });
 };
 
+/**
+ * The deinitializer to be called when it should stop responding
+ * to updates so that any necessary cleanup operations can be executed.
+ */
 ripe.Ripe.prototype.deinit = function() {
     var index = null;
 
@@ -101,12 +112,32 @@ ripe.Ripe.prototype.deinit = function() {
     ripe.Observable.prototype.deinit.call(this);
 };
 
+/**
+ * Explicit entry point to the initial update.
+ */
 ripe.Ripe.prototype.load = function() {
     this.update();
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype.unload = function() {};
 
+/**
+ * Sets the model to be customised.
+ *
+ * @param {String} brand The brand of the model.
+ * @param {String} model The name of the model.
+ * @param {Object} options An object with the options to configure the Ripe instance.
+ *  - 'parts' - The initial parts of the model.
+ *  - 'country' - The country where the model will be sold.
+ *  - 'currency' - The currency that should be used to calculate the price.
+ *  - 'locale' - The locale to be used by default when localizing values.
+ *  - 'flag' - A specific attribute of the model.
+ *  - 'useDefaults' - If the default parts of the model should be used when no initials parts are set.
+ *  - 'usePrice' - If the price should be automatically retrieved whenever there is a customization change.
+ */
 ripe.Ripe.prototype.config = async function(brand, model, options) {
     // triggers the 'pre_config' event so that
     // the listeners can cleanup if needed
@@ -187,6 +218,9 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     this.update();
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype.remote = function() {
     // makes sure that both the brand and the model values are defined
     // for the current instance as they are needed for the remove operation
@@ -208,6 +242,18 @@ ripe.Ripe.prototype.remote = function() {
         );
 };
 
+/**
+ * Sets Ripe instance options according to the defaulting policy.
+ *
+ * @param {Object} options An object with the options to configure the Ripe instance.
+ *  - 'parts' - The initial parts of the model.
+ *  - 'country' - The country where the model will be sold.
+ *  - 'currency' - The currency that should be used to calculate the price.
+ *  - 'locale' - The locale to be used by default when localizing values.
+ *  - 'flag' - A specific attribute of the model.
+ *  - 'useDefaults' - If the default parts of the model should be used when no initials parts are set.
+ *  - 'usePrice' - If the price should be automatically retrieved whenever there is a customization change.
+ */
 ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.options = options;
     this.variant = this.options.variant || null;
@@ -239,6 +285,15 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.backgroundColor = this.backgroundColor.replace("#", "");
 };
 
+/**
+ * Changes the customization of a part.
+ *
+ * @param {String} part The part to be changed.
+ * @param {String} material The material to change to.
+ * @param {String} color The color to change to.
+ * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults 'False').
+ * @param {Object} options An object with options to configure the operation (for internal use).
+ */
 ripe.Ripe.prototype.setPart = function(part, material, color, noEvents, options) {
     if (noEvents) {
         return this._setPart(part, material, color);
@@ -251,6 +306,13 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noEvents, options)
     this.trigger("post_parts", this.parts, options);
 };
 
+/**
+ * Allows changing the customization of a set of parts in bulk.
+ *
+ * @param {Object} parts A map or array with part, material, color triplets to be set.
+ * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults 'False').
+ * @param {Object} options An object with options to configure the operation (for internal use).
+ */
 ripe.Ripe.prototype.setParts = function(update, noEvents, options) {
     if (typeof update === "object" && !Array.isArray(update)) {
         update = this._partsList(update);
@@ -267,6 +329,13 @@ ripe.Ripe.prototype.setParts = function(update, noEvents, options) {
     this.trigger("post_parts", this.parts, options);
 };
 
+/**
+ * Changes the personalization of the model.
+ *
+ * @param {String} initials The initials to be set.
+ * @param {String} engraving The engraving to be set.
+ * @param {Boolean} noUpdate If the update operation shouldn't be triggered (defaults 'False').
+ */
 ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
     this.initials = initials;
     this.engraving = engraving;
@@ -277,10 +346,20 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
     this.update();
 };
 
+/**
+ * Returns the model's configuration loaded from the Platforme's system.
+ *
+ * @returns {Object} The model configuration.
+ */
 ripe.Ripe.prototype.getLoadedConfig = function() {
     return this.loadedConfig;
 };
 
+/**
+ * Returns the model's available frames.
+ *
+ * @returns {Promise} The model's available frames.
+ */
 ripe.Ripe.prototype.getFrames = async function(callback) {
     if (this.options.frames) {
         callback(this.options.frames);
@@ -300,37 +379,96 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
     callback && callback(frames);
 };
 
+/**
+ * Binds an Image to this Ripe instance.
+ *
+ * @param {Image} element The Image to be used by the Ripe instance.
+ * @param {Object} options An Object with options to configure the Image instance.
+ * @return {Image} The Image instance created.
+ */
 ripe.Ripe.prototype.bindImage = function(element, options) {
     var image = new ripe.Image(this, element, options);
     return this.bindInteractable(image);
 };
 
+/**
+ * Binds an Configurator to this Ripe instance.
+ *
+ * @param {Configurator} element The Configurator to be used by the Ripe instance.
+ * @param {Object} options An Object with options to configure the Configurator instance.
+ * @return {Configurator} The Configurator instance created.
+ */
 ripe.Ripe.prototype.bindConfigurator = function(element, options) {
     var config = new ripe.Configurator(this, element, options);
     return this.bindInteractable(config);
 };
 
-ripe.Ripe.prototype.bindInteractable = function(child) {
-    this.children.push(child);
-    return child;
+/**
+ * Binds an Interactable to this Ripe instance.
+ *
+ * @param {Interactable} element The Interactable to be used by the Ripe instance.
+ * @param {Object} options An Object with options to configure the Interactable instance.
+ * @return {Interactable} The Interactable instance created.
+ */
+ripe.Ripe.prototype.bindInteractable = function(element) {
+    this.children.push(element);
+    return element;
 };
 
-ripe.Ripe.prototype.unbindInteractable = function(child) {
-    child.deinit();
-    this.children.splice(this.children.indexOf(child), 1);
+/**
+ * Unbinds ab Interactable from this Ripe instance.
+ *
+ * @param {Interactable} element The Interactable instance to be unbound.
+ * @returns {Interactable} Returns the unbounded Interactable.
+ */
+ripe.Ripe.prototype.unbindInteractable = function(element) {
+    element.deinit();
+    this.children.splice(this.children.indexOf(element), 1);
 };
 
+/**
+ * Unbinds ab Image from this Ripe instance.
+ *
+ * @param {Image} element The Image instance to be unbound.
+ * @returns {Image} Returns the unbounded Image.
+ */
 ripe.Ripe.prototype.unbindImage = ripe.Ripe.prototype.unbindInteractable;
+
+/**
+ * Unbinds ab Configurator from this Ripe instance.
+ *
+ * @param {Configurator} element The Image instance to be unbound.
+ * @returns {Configurator} Returns the unbounded Configurator.
+ */
 ripe.Ripe.prototype.unbindConfigurator = ripe.Ripe.prototype.unbindInteractable;
 
+/**
+ * Selects a part of the model.
+ * Triggers a 'selected_part' event with the part.
+ *
+ * @param {String} part The name of the part to be selected.
+ * @param {Object} options An Object with options to configure the operation.
+ */
 ripe.Ripe.prototype.selectPart = function(part, options) {
     this.trigger("selected_part", part);
 };
 
+/**
+ * Deselects a part of the model.
+ * Triggers a 'deselected_part' event with the part.
+ *
+ * @param {String} part The name of the part to be deselected.
+ * @param {Object} options An Object with options to configure the operation.
+ */
 ripe.Ripe.prototype.deselectPart = function(part, options) {
     this.trigger("deselected_part", part);
 };
 
+/**
+ * Triggers the update of the children so that they represent the current state of the model.
+ *
+ * @param {Object} state An Object with the current customization and personalization.
+ */
 ripe.Ripe.prototype.update = function(state) {
     state = state || this._getState();
 
@@ -377,7 +515,7 @@ ripe.Ripe.prototype.redo = function() {
 /**
  * Indicates if there are part changes to undo.
  *
- * @returns {boolean} If there are changes to reverse in the
+ * @returns {Boolean} If there are changes to reverse in the
  * current parts history stack.
  */
 ripe.Ripe.prototype.canUndo = function() {
@@ -387,18 +525,28 @@ ripe.Ripe.prototype.canUndo = function() {
 /**
  * Indicates if there are part changes to redo.
  *
- * @returns {boolean} If there are changes to reapply pending
+ * @returns {Boolean} If there are changes to reapply pending
  * in the history stack.
  */
 ripe.Ripe.prototype.canRedo = function() {
     return this.history.length - 1 > this.historyPointer;
 };
 
+/**
+ * Registers a plugin to this Ripe instance.
+ *
+ * @param {Plugin} plugin The plugin to be registered.
+ */
 ripe.Ripe.prototype.addPlugin = function(plugin) {
     plugin.register(this);
     this.plugins.push(plugin);
 };
 
+/**
+ * Unregisters a plugin to this Ripe instance.
+ *
+ * @param {Plugin} plugin The plugin to be unregistered.
+ */
 ripe.Ripe.prototype.removePlugin = function(plugin) {
     plugin.unregister(this);
     this.plugins.splice(this.plugins.indexOf(plugin), 1);
