@@ -6,15 +6,12 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Gets the configuration of a product identified by its unique product ID.
  *
- * @param {Object} productId Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'url' - The base url.
+ * @param {Function} callback Function with the result of the request.
+ * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -26,11 +23,11 @@ ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Gets the configuration of a product identified by its unique product ID.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'url' - The base url.
+ * @return {Promise} The model's configuration data.
  */
 ripe.Ripe.prototype.configResolveP = function(options) {
     return new Promise((resolve, reject) => {
