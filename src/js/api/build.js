@@ -6,13 +6,17 @@ if (typeof require !== "undefined") {
 }
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Retrieves the bundle of part, materials and colors translations of a specific brand and model
+ * If no model is defined the retrieves the bundle of the owner's current model.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
- * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'brand' - The brand of the model.
+ * - 'model' - The name of the model.
+ * - 'locale' - The locale of the translations.
+ * - 'compatibility' - If compatibility mode should be enabled.
+ * - 'prefix' - A prefix to prepend to the locale keys (defaults to 'builds').
+ * @param {Function} callback Function with the result of the request.
+ * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -23,11 +27,16 @@ ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
 };
 
 /**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * Retrieves the bundle of part, materials and colors translations of a specific brand and model
+ * If no model is defined the retrieves the bundle of the owner's current model.
  *
- * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
- * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'brand' - The brand of the model.
+ * - 'model' - The name of the model.
+ * - 'locale' - The locale of the translations.
+ * - 'compatibility' - If compatibility mode should be enabled.
+ * - 'prefix' - A prefix to prepend to the locale keys (defaults to 'builds').
+ * @returns {Promise} The resolved locale data.
  */
 ripe.Ripe.prototype.getLocaleModelP = function(options) {
     return new Promise((resolve, reject) => {
@@ -37,6 +46,9 @@ ripe.Ripe.prototype.getLocaleModelP = function(options) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getLocaleModelOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
