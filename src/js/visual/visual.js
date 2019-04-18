@@ -46,8 +46,6 @@ ripe.Visual.prototype.deinit = function() {
 };
 
 /**
- * @private
- *
  * Utility function that binds an event to the interactable
  * DOM element and keeps a reference to it to unbind it
  * when no longer needed.
@@ -56,6 +54,8 @@ ripe.Visual.prototype.deinit = function() {
  * handler is going to be registered.
  * @param {Function} callback The callback function to called once
  * the event is triggered.
+ *
+ * @ignore
  */
 ripe.Visual.prototype._addElementHandler = function(event, callback) {
     this.element.addEventListener(event, callback);
@@ -66,9 +66,9 @@ ripe.Visual.prototype._addElementHandler = function(event, callback) {
 };
 
 /**
- * @private
- *
  * Unbinds all the events from the DOM element.
+ *
+ * @ignore
  */
 ripe.Visual.prototype._removeElementHandlers = function() {
     for (const event in this.elementEvents) {

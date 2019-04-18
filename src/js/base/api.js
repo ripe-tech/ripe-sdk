@@ -426,8 +426,6 @@ ripe.Ripe.prototype._getSwatchURL = function(options) {
 };
 
 /**
- * @ignore
- *
  * Runs the options object building operation meaning that a series
  * of default values are going to be added to the provided options
  * so that it becomes as compatible as possible.
@@ -439,6 +437,8 @@ ripe.Ripe.prototype._getSwatchURL = function(options) {
  * going to be completed with default information and session info.
  * @returns {Object} The same options object references that has been
  * provided with the proper default information populated.
+ * 
+ * @ignore
  */
 ripe.Ripe.prototype._build = function(options) {
     const url = options.url || "";
@@ -456,8 +456,6 @@ ripe.Ripe.prototype._build = function(options) {
 };
 
 /**
- * @ignore
- *
  * Builds a GET query string from the provided Array or Object parameter.
  *
  * If the provided parameter is an Array order of the GET parameters is
@@ -467,6 +465,8 @@ ripe.Ripe.prototype._build = function(options) {
  * of parameeters for the generated GET query.
  * @returns {String} The GET query string that should contain the complete
  * set of passed arguments (serialization).
+ *
+ * @ignore
  */
 ripe.Ripe.prototype._buildQuery = function(params) {
     let key;
@@ -507,8 +507,6 @@ ripe.Ripe.prototype._buildQuery = function(params) {
 };
 
 /**
- * @ignore
- *
  * Unpacks the provided query string into it's components inside
  * a key, value object for easy usage.
  *
@@ -519,6 +517,8 @@ ripe.Ripe.prototype._buildQuery = function(params) {
  * for the creation of the output Object.
  * @returns {Object} The object that contains the key, value information
  * on the query string.
+ * 
+ * @ignore
  */
 ripe.Ripe.prototype._unpackQuery = function(query) {
     query = query[0] === "?" ? query.slice(1) : query;
