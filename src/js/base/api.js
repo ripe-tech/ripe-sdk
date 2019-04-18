@@ -55,10 +55,10 @@ ripe.Ripe.prototype.signinPid = function(token, options, callback) {
  * Retrieves the price for current customization.
  *
  * @param {Object} options An Object containing customization information that
- * can be used to override the current customization, allowsing to set the
- * "brand", "model" and "parts".
+ * can be used to override the current customization, allowing to set the
+ * 'brand', 'model' and 'parts'.
  * @param {Function} callback Function with the result of the request.
- * @requires {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
