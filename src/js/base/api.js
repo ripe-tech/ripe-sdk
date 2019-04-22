@@ -14,6 +14,7 @@ if (typeof require !== "undefined") {
  * @class
  * @classdesc The API class to be instantiated. Implements all the API interfaces.
  * @param {Object} options The options to be used to configure the API client.
+ * @returns {Ripe} The newly created RipeAPI object.
  */
 ripe.RipeAPI = function(options = {}) {
     options.cached = typeof options.cached === "undefined" ? false : options.cached;

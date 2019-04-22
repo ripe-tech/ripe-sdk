@@ -292,11 +292,10 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
  * @param {String} material The material to change to.
  * @param {String} color The color to change to.
  * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults to 'false').
- * @param {Object} options An object with options to configure the operation (for internal use).
  */
 ripe.Ripe.prototype.setPart = function(part, material, color, noEvents, options) {
     if (noEvents) {
-        return this._setPart(part, material, color);
+        this._setPart(part, material, color);
     }
 
     this.trigger("pre_parts", this.parts, options);
@@ -319,7 +318,7 @@ ripe.Ripe.prototype.setParts = function(update, noEvents, options) {
     }
 
     if (noEvents) {
-        return this._setParts(update, options && options.noPartEvents);
+        this._setParts(update, options && options.noPartEvents);
     }
 
     this.trigger("pre_parts", this.parts, options);

@@ -105,7 +105,7 @@ ripe.Ripe.prototype.unauth = function(options, callback) {
  * include client identifier and secret.
  * @param {Function} callback The callback to be called once the loging or the access
  * token retrieval functions are finished.
- * @returns {Object} Either an invalid/unset value or the result of the login operation.
+ * @returns {oauthAccessToken} Either an invalid/unset value or the result of the login operation.
  */
 ripe.Ripe.prototype.oauth = function(options, callback) {
     callback = typeof options === "function" ? options : callback;

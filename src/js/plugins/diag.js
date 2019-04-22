@@ -52,6 +52,9 @@ ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
     this.owner.brand && request.setRequestHeader("X-Ripe-Sdk-Vendor", this.owner.brand);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.plugins.DiagPlugin.prototype._getPluginName = function(plugin) {
     for (let key in ripe.Ripe.plugins) {
         if (plugin.constructor === ripe.Ripe.plugins[key]) {

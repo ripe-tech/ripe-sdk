@@ -15,7 +15,7 @@ if (typeof require !== "undefined") {
  *  - 'country' - the country where the model will be provided, some materials/colors might not be available.
  *  - 'flag' - a specific flag that may change the provided materials/colors available.
  *  - 'filter' - if the configuration should be filtered by the country and/or flag (defaults to 'true')
- * @returns {Object} The model's configuration data.
+ * @returns {XMLHttpRequest} The model's configuration data.
  */
 ripe.Ripe.prototype.getConfig = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -52,7 +52,7 @@ ripe.Ripe.prototype.getConfigP = function(options) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - the brand of the model
  *  - 'model' - the name of the model
- * @returns {Object} The model's default options.
+ * @returns {XMLHttpRequest} The model's default options.
  */
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -91,7 +91,7 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - the brand of the model
  *  - 'model' - the name of the model
- * @returns {Object} The model's optional parts.
+ * @returns {XMLHttpRequest} The model's optional parts.
  */
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
     callback = typeof options === "function" ? options : callback;

@@ -15,6 +15,8 @@ if (typeof require !== "undefined") {
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
  * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @returns {XMLHttpRequest} Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
  */
 ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -44,6 +46,8 @@ ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
  * @param {Object} options Lorem ipsum dolor sit amet, consectetur adipiscing elit,
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
  * @param {Function} callback Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+ * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+ * @returns {XMLHttpRequest} Lorem ipsum dolor sit amet, consectetur adipiscing elit,
  * sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
  */
 ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
