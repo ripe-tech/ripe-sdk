@@ -129,7 +129,7 @@ ripe.Ripe.prototype.getCombinationsP = function(options) {
  *  - 'brand' - the brand of the model
  *  - 'model' - the name of the model
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getFactory = function(options, callback) {
     callback = typeof options === "function" ? options : callback;

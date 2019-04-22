@@ -11,7 +11,7 @@ if (typeof require !== "undefined") {
  *
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getSizes = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -35,7 +35,7 @@ ripe.Ripe.prototype.getSizes = function(options, callback) {
  * @param {String} gender The gender of the scale and value to be converted.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -64,7 +64,7 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
  * @param {Array} genders A list of genders corresponding to the values.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -105,7 +105,7 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
  * @param {String} gender The gender of the scale and value to be converted.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -133,7 +133,7 @@ ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callb
  * @param {Array} genders A list of genders corresponding to the values.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, callback) {
     callback = typeof options === "function" ? options : callback;

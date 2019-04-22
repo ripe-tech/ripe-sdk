@@ -384,7 +384,7 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
  *
  * @param {Image} element The Image to be used by the Ripe instance.
  * @param {Object} options An Object with options to configure the Image instance.
- * @return {Image} The Image instance created.
+ * @returns {Image} The Image instance created.
  */
 ripe.Ripe.prototype.bindImage = function(element, options) {
     var image = new ripe.Image(this, element, options);
@@ -396,7 +396,7 @@ ripe.Ripe.prototype.bindImage = function(element, options) {
  *
  * @param {Configurator} element The Configurator to be used by the Ripe instance.
  * @param {Object} options An Object with options to configure the Configurator instance.
- * @return {Configurator} The Configurator instance created.
+ * @returns {Configurator} The Configurator instance created.
  */
 ripe.Ripe.prototype.bindConfigurator = function(element, options) {
     var config = new ripe.Configurator(this, element, options);
@@ -408,7 +408,7 @@ ripe.Ripe.prototype.bindConfigurator = function(element, options) {
  *
  * @param {Interactable} element The Interactable to be used by the Ripe instance.
  * @param {Object} options An Object with options to configure the Interactable instance.
- * @return {Interactable} The Interactable instance created.
+ * @returns {Interactable} The Interactable instance created.
  */
 ripe.Ripe.prototype.bindInteractable = function(element) {
     this.children.push(element);

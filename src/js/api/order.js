@@ -19,7 +19,7 @@ if (typeof require !== "undefined") {
  * - 'skip' - the number of the first record to retrieve from the results.
  * - 'limit' - the number of results to retrieve.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getOrders = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -46,7 +46,7 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
  * while (eg: 'id:descending')] would do it in descending order.
  * - 'skip' - the number of the first record to retrieve from the results.
  * - 'limit' - the number of results to retrieve.
- * @return {Promise} The orders result list.
+ * @returns {Promise} The orders result list.
  */
 ripe.Ripe.prototype.getOrdersP = function(options) {
     return new Promise((resolve, reject) => {
@@ -62,7 +62,7 @@ ripe.Ripe.prototype.getOrdersP = function(options) {
  * @param {Number} number The number of the order to find by.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -82,7 +82,7 @@ ripe.Ripe.prototype.getOrder = function(number, options, callback) {
  *
  * @param {Number} number The number of the order to find by.
  * @param {Object} options An object of options to configure the request.
- * @return {Promise} The orders result list.
+ * @returns {Promise} The orders result list.
  */
 ripe.Ripe.prototype.getOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
@@ -130,7 +130,7 @@ ripe.Ripe.prototype.searchOrdersP = function(filterString, options) {
  * @param {Number} number The number of the order to update.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.createOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "create", options, callback);
@@ -142,7 +142,7 @@ ripe.Ripe.prototype.createOrder = function(number, options, callback) {
  * @param {Number} number The number of the order to update.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.produceOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "produce", options, callback);
@@ -154,7 +154,7 @@ ripe.Ripe.prototype.produceOrder = function(number, options, callback) {
  * @param {Number} number The number of the order to update.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.readyOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "ready", options, callback);
@@ -178,7 +178,7 @@ ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, op
  * @param {Number} number The number of the order to update.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.receiveOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "receive", options, callback);
@@ -190,7 +190,7 @@ ripe.Ripe.prototype.receiveOrder = function(number, options, callback) {
  * @param {Number} number The number of the order to update.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.returnOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "return", options, callback);
@@ -202,7 +202,7 @@ ripe.Ripe.prototype.returnOrder = function(number, options, callback) {
  * @param {Number} number The number of the order to update.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.cancelOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "cancel", options, callback);

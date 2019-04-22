@@ -16,7 +16,7 @@ if (typeof require !== "undefined") {
  * - 'compatibility' - If compatibility mode should be enabled.
  * - 'prefix' - A prefix to prepend to the locale keys (defaults to 'builds').
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
