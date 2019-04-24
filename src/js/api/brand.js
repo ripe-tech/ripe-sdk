@@ -140,6 +140,7 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
 };
 
 /**
+ * @see {link https://docs.platforme.com/#product-endpoints-config}
  * @ignore
  */
 ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
@@ -166,6 +167,7 @@ ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
 };
 
 /**
+ * @see {link https://docs.platforme.com/#product-endpoints-defaults}
  * @ignore
  */
 ripe.Ripe.prototype._getDefaultsOptions = function(options = {}) {
