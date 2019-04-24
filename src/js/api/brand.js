@@ -34,7 +34,7 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
  *  - 'model' - the name of the model
  *  - 'country' - the country where the model will be provided, some materials/colors might not be available.
  *  - 'flag' - a specific flag that may change the provided materials/colors available.
- *  - 'filter** - if the configuration should be filtered by the country and/or flag (defaults to 'true')
+ *  - 'filter' - if the configuration should be filtered by the country and/or flag (defaults to 'true')
  * @returns {Promise} The model's configuration data.
  */
 ripe.Ripe.prototype.getConfigP = function(options) {
