@@ -5,6 +5,15 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * @class
+ * @augments Plugin
+ * @classdesc Plugin responsible for applying restrictions rules.
+ *
+ * @param {Object} rules A Map with restrictions rules to be applied.
+ * If defined, overrides the rules defined on the model's config.
+ * @param {Object} options An object with options to configure the plugin.
+ */
 ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options = {}) {
     ripe.Ripe.plugins.Plugin.call(this);
     this.token = options.token || ":";
@@ -18,6 +27,14 @@ ripe.Ripe.plugins.RestrictionsPlugin = function(restrictions, options = {}) {
 ripe.Ripe.plugins.RestrictionsPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.constructor = ripe.Ripe.plugins.RestrictionsPlugin;
 
+/**
+ * The Restrictions Plugin binds the 'post_config' and 'part' events,
+ * in order to:
+ * - retrieve the model's configuration
+ * - change the necessary parts making them comply with the restrictions rules
+ *
+ * @param {Ripe} The Ripe instance in use.
+ */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
@@ -36,6 +53,13 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.register = function(owner) {
     this._partBind = this.owner.bind("part", this._applyRestrictions.bind(this));
 };
 
+/**
+ * The unregister to be called (by the owner)
+ * the plugins unbinds events and executes
+ * any necessary cleanup operation.
+ *
+ * @param {Ripe} The Ripe instance in use.
+ */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
     this.partsOptions = null;
     this.options = null;
@@ -45,6 +69,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.unregister = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._config = function() {
     this.restrictions =
         this.auto && this.owner.loadedConfig
@@ -62,6 +89,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._config = function() {
     this.optionals = optionals;
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(name, value) {
     // creates an array with the customization, by copying the
     // current parts environment into a separate array
@@ -127,6 +157,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
     this.trigger("restrictions", changes, partSet);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
     availableParts,
     restrictions,
@@ -163,6 +196,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
     return this._solveRestrictions(availableParts, restrictions, customization, solution);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._getRestrictionKey = function(
     part,
     material,
@@ -177,6 +213,8 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._getRestrictionKey = function(
 };
 
 /**
+ * @ignore
+ *
  * Maps the restrictions array into a dictionary where restrictions
  * are associated by key with eachother for easier use.
  * For example, '[[{ material: "nappa"}, { material: "suede"}]]'
@@ -242,6 +280,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(
     return restrictionsMap;
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(
     newPart,
     restrictions,
@@ -296,6 +337,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isRestricted = function(
     return false;
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._isComplete = function(parts) {
     // iterates through the parts array and creates
     // an array with the names of the parts for
@@ -322,6 +366,9 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._isComplete = function(parts) {
     return true;
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._alternativeFor = function(
     newPart,
     availableParts,
