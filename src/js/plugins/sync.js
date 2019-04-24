@@ -5,6 +5,15 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * @class
+ * @augments Plugin
+ * @classdesc Plugin responsible for applying synchronization rules.
+ *
+ * @param {Object} rules A Map with synchronization rules to be applied.
+ * If defined, overrides the rules defined on the model's config.
+ * @param {Object} options An object with options to configure the plugin.
+ */
 ripe.Ripe.plugins.SyncPlugin = function(rules, options = {}) {
     ripe.Ripe.plugins.Plugin.call(this);
 
@@ -16,6 +25,14 @@ ripe.Ripe.plugins.SyncPlugin = function(rules, options = {}) {
 ripe.Ripe.plugins.SyncPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugin;
 
+/**
+ * The Sync Plugin binds the 'post_config' and 'part' events,
+ * in order to:
+ * - retrieve the model's configuration
+ * - change the necessary parts making them comply with the syncing rules
+ *
+ * @param {Ripe} The Ripe instance in use.
+ */
 ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
@@ -40,6 +57,13 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     this._partBind = this.owner.bind("part", this._applySync.bind(this));
 };
 
+/**
+ * The unregister to be called (by the owner)
+ * the plugins unbinds events and executes
+ * any necessary cleanup operation.
+ *
+ * @param {Ripe} The Ripe instance in use.
+ */
 ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
     this.owner && this.owner.unbind("part", this._partBind);
     this.owner && this.owner.unbind("post_config", this._postConfigBind);
@@ -48,6 +72,8 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
 };
 
 /**
+ * @ignore
+ *
  * Traverses the provided rules and transforms string rules
  * into object rules to keep the internal representation
  * of the rules consistent.
@@ -80,6 +106,8 @@ ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
 };
 
 /**
+ * @ignore
+ *
  * Checks if any of the sync rules contain the provided part
  * meaning that the other parts of the rule have to
  * be changed accordingly.
@@ -133,6 +161,8 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
 };
 
 /**
+ * @ignore
+ *
  * Checks if the sync rule contains the provided part
  * meaning that the other parts of the rule have to
  * be changed accordingly.
