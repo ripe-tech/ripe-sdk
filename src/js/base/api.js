@@ -21,6 +21,16 @@ ripe.RipeAPI = function(options = {}) {
     return new ripe.Ripe(null, null, options);
 };
 
+/**
+ * Retrieves the complete set of session elements to be used, such as:
+ * the 'sid ', 'session_id', 'username ', 'name', 'email' and 'tokens'.
+ *
+ * @param {String} username The username to authenticate.
+ * @param {String} password The username's password.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -37,6 +47,15 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Retrieves the complete set of session elements to be used, such as:
+ * the 'sid ', 'session_id', 'username ', 'name', 'email'.
+ *
+ * @param {String} token The authentication token.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.signinPid = function(token, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
