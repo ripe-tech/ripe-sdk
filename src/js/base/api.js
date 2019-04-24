@@ -262,6 +262,7 @@ ripe.Ripe.prototype._getQuery = function(options = {}) {
 
 /**
  * @ignore
+ * @see {link http://docs.platforme.com/#config-endpoints-price}
  */
 ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
     options = this._getQueryOptions(options);
@@ -285,6 +286,7 @@ ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
 
 /**
  * @ignore
+ * @see {link http://docs.platforme.com/#render-endpoints-compose}
  */
 ripe.Ripe.prototype._getImageOptions = function(options = {}) {
     options.country = options.country || null;
@@ -340,6 +342,7 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
 
 /**
  * @ignore
+ * @see {link http://docs.platforme.com/#render-endpoints-mask}
  */
 ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     options.parts = options.parts || {};

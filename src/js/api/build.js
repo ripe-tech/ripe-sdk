@@ -48,6 +48,7 @@ ripe.Ripe.prototype.getLocaleModelP = function(options) {
 
 /**
  * @ignore
+ * @see {link http://docs.platforme.com/#build-endpoints-locale}
  */
 ripe.Ripe.prototype._getLocaleModelOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;

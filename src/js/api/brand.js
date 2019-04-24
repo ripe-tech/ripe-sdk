@@ -219,6 +219,7 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options = {}) {
 
 /**
  * @ignore
+ * @see {link http://docs.platforme.com/#product-endpoints-factory}
  */
 ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
