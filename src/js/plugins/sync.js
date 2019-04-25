@@ -32,7 +32,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
     this._postConfigBind = this.manual
         ? null
         : this.owner.bind("post_config", config => {
-              this.rules = this._normalizeRules(config.sync);
+              this.rules = config ? this._normalizeRules(config.sync) : {};
           });
 
     // binds to the part event to change the necessary parts
