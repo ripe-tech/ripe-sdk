@@ -6,10 +6,16 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype.isAuth = function() {
     return Boolean(this.sid);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype.isOAuth = function() {
     if (!window.localStorage) {
         return false;
@@ -22,6 +28,9 @@ ripe.Ripe.prototype.isOAuth = function() {
     return true;
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype.isOAuthCode = function() {
     const query = window.location.search || "";
     const unpacked = this._unpackQuery(query);
@@ -29,6 +38,9 @@ ripe.Ripe.prototype.isOAuthCode = function() {
     return Boolean(code);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype.isOAuthError = function() {
     const query = window.location.search || "";
     const unpacked = this._unpackQuery(query);
@@ -37,6 +49,11 @@ ripe.Ripe.prototype.isOAuthError = function() {
     return Boolean(error) && Boolean(errorDescription);
 };
 
+/**
+ * Checks if a successfully OAuth proccess has been fulfilled.
+ *
+ * @returns {Boolean} Boolean representing if an OAuth proccess has been fulfilled.
+ */
 ripe.Ripe.prototype.isOAuthPending = function() {
     if (this.isAuth()) {
         return false;
@@ -44,6 +61,16 @@ ripe.Ripe.prototype.isOAuthPending = function() {
     return this.isOAuth() || this.isOAuthCode() || this.isOAuthError();
 };
 
+/**
+ * Responsible for the begining of the (username, password)
+ * based authentication proccess.
+ *
+ * @param {String} username The username to be authenticated.
+ * @param {String} password The username's password.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.auth = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -60,6 +87,14 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
     );
 };
 
+/**
+ * Responsible for the begining of the token based authentication proccess.
+ *
+ * @param {String} token The authentication token.
+ * @param {Object} options An object of options to configure the authentication.
+ * @param {Function} callback Function with the result of the authentication.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.authPid = function(token, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -75,6 +110,13 @@ ripe.Ripe.prototype.authPid = function(token, options, callback) {
     );
 };
 
+/**
+ * Responsible for the begining of the token based authentication proccess.
+ *
+ * @param {String} token The authentication token.
+ * @param {Object} options An object of options to configure the authentication.
+ * @returns {Promise} The authentication data.
+ */
 ripe.Ripe.prototype.authPidP = function(token, options) {
     return new Promise((resolve, reject) => {
         this.authPid(token, options, (result, isValid, request) => {
@@ -83,6 +125,12 @@ ripe.Ripe.prototype.authPidP = function(token, options) {
     });
 };
 
+/**
+ * Responsible for the begining of the unauth process, triggering the 'unauth' event.
+ *
+ * @param {Object} options The set of options used for unauth process.
+ * @param {Function} callback The callback to be called once session is unauth'ed.
+ */
 ripe.Ripe.prototype.unauth = function(options, callback) {
     this.sid = null;
 
@@ -105,7 +153,7 @@ ripe.Ripe.prototype.unauth = function(options, callback) {
  * include client identifier and secret.
  * @param {Function} callback The callback to be called once the loging or the access
  * token retrieval functions are finished.
- * @returns {Object} Either an invalid/unset value or the result of the login operation.
+ * @returns {oauthAccessToken} Either an invalid/unset value or the result of the login operation.
  */
 ripe.Ripe.prototype.oauth = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -200,6 +248,9 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
     return this.oauthRedirect(options, callback);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype.oauthRedirect = function(options, callback) {
     const location = window.location;
     const currentUrl =

@@ -11,7 +11,7 @@ if (typeof require !== "undefined") {
  * @param {Object} options An object of options to configure the request, such as:
  * - 'url' - The base url.
  * @param {Function} callback Function with the result of the request.
- * @return {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -27,7 +27,7 @@ ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
  *
  * @param {Object} options An object of options to configure the request, such as:
  * - 'url' - The base url.
- * @return {Promise} The model's configuration data.
+ * @returns {Promise} The model's configuration data.
  */
 ripe.Ripe.prototype.configResolveP = function(options) {
     return new Promise((resolve, reject) => {

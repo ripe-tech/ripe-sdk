@@ -292,11 +292,10 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
  * @param {String} material The material to change to.
  * @param {String} color The color to change to.
  * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults to 'false').
- * @param {Object} options An object with options to configure the operation (for internal use).
  */
 ripe.Ripe.prototype.setPart = function(part, material, color, noEvents, options) {
     if (noEvents) {
-        return this._setPart(part, material, color);
+        this._setPart(part, material, color);
     }
 
     this.trigger("pre_parts", this.parts, options);
@@ -319,7 +318,7 @@ ripe.Ripe.prototype.setParts = function(update, noEvents, options) {
     }
 
     if (noEvents) {
-        return this._setParts(update, options && options.noPartEvents);
+        this._setParts(update, options && options.noPartEvents);
     }
 
     this.trigger("pre_parts", this.parts, options);
@@ -384,7 +383,7 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
  *
  * @param {Image} element The Image to be used by the Ripe instance.
  * @param {Object} options An Object with options to configure the Image instance.
- * @return {Image} The Image instance created.
+ * @returns {Image} The Image instance created.
  */
 ripe.Ripe.prototype.bindImage = function(element, options) {
     var image = new ripe.Image(this, element, options);
@@ -396,7 +395,7 @@ ripe.Ripe.prototype.bindImage = function(element, options) {
  *
  * @param {Configurator} element The Configurator to be used by the Ripe instance.
  * @param {Object} options An Object with options to configure the Configurator instance.
- * @return {Configurator} The Configurator instance created.
+ * @returns {Configurator} The Configurator instance created.
  */
 ripe.Ripe.prototype.bindConfigurator = function(element, options) {
     var config = new ripe.Configurator(this, element, options);
@@ -408,7 +407,7 @@ ripe.Ripe.prototype.bindConfigurator = function(element, options) {
  *
  * @param {Interactable} element The Interactable to be used by the Ripe instance.
  * @param {Object} options An Object with options to configure the Interactable instance.
- * @return {Interactable} The Interactable instance created.
+ * @returns {Interactable} The Interactable instance created.
  */
 ripe.Ripe.prototype.bindInteractable = function(element) {
     this.children.push(element);

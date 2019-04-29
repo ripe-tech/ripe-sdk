@@ -5,6 +5,14 @@ if (typeof require !== "undefined") {
     var ripe = base.ripe;
 }
 
+/**
+ * @class
+ * @augments Plugin
+ * @classdesc Plugin responsible for adding an 'X-Ripe-Sdk-Version' Header
+ * for all RIPE SDK requests for diagnostics purposes rules.
+ *
+ * @param {Object} options An object with options to configure the plugin.
+ */
 ripe.Ripe.plugins.DiagPlugin = function(options = {}) {
     ripe.Ripe.plugins.Plugin.call(this);
     this.options = options;
@@ -14,12 +22,24 @@ ripe.Ripe.plugins.DiagPlugin = function(options = {}) {
 ripe.Ripe.plugins.DiagPlugin.prototype = ripe.build(ripe.Ripe.plugins.Plugin.prototype);
 ripe.Ripe.plugins.DiagPlugin.prototype.constructor = ripe.Ripe.plugins.DiagPlugin;
 
+/**
+ * The Diag Plugin binds the 'build_request' event in order to add
+ * the 'X-Ripe-Sdk-Version' header.
+ * @param {Ripe} The Ripe instance in use.
+ */
 ripe.Ripe.plugins.DiagPlugin.prototype.register = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
     this.owner.bind("build_request", this.preRequestCallback);
 };
 
+/**
+ * The unregister to be called (by the owner)
+ * the plugins unbinds events and executes
+ * any necessary cleanup operation.
+ *
+ * @param {Ripe} The Ripe instance in use.
+ */
 ripe.Ripe.plugins.DiagPlugin.prototype.unregister = function(owner) {
     this.options = null;
     this.owner.unbind("build_request", this.preRequestCallback);
@@ -27,6 +47,9 @@ ripe.Ripe.plugins.DiagPlugin.prototype.unregister = function(owner) {
     ripe.Ripe.plugins.Plugin.prototype.unregister.call(this, owner);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
     request.setRequestHeader("X-Ripe-Sdk-Version", "__VERSION__");
 
@@ -52,6 +75,9 @@ ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
     this.owner.brand && request.setRequestHeader("X-Ripe-Sdk-Vendor", this.owner.brand);
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.plugins.DiagPlugin.prototype._getPluginName = function(plugin) {
     for (let key in ripe.Ripe.plugins) {
         if (plugin.constructor === ripe.Ripe.plugins[key]) {
