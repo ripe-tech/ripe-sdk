@@ -40,7 +40,7 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
 ripe.Ripe.prototype.getConfigP = function(options) {
     return new Promise((resolve, reject) => {
         this.getConfig(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new Error());
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
 };
@@ -115,7 +115,7 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
 ripe.Ripe.prototype.getCombinationsP = function(options) {
     return new Promise((resolve, reject) => {
         this.getCombinations(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new Error());
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
 };

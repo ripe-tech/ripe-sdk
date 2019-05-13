@@ -41,7 +41,7 @@ ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
 ripe.Ripe.prototype.getLocaleModelP = function(options) {
     return new Promise((resolve, reject) => {
         this.getLocaleModel(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new Error());
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
 };
