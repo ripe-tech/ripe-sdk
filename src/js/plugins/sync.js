@@ -72,8 +72,6 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
 };
 
 /**
- * @ignore
- *
  * Traverses the provided rules and transforms string rules
  * into object rules to keep the internal representation
  * of the rules consistent.
@@ -165,8 +163,6 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
 };
 
 /**
- * @ignore
- *
  * Checks if the sync rule contains the provided part
  * meaning that the other parts of the rule have to
  * be changed accordingly.
