@@ -106,8 +106,6 @@ ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
 };
 
 /**
- * @ignore
- *
  * Checks if any of the sync rules contain the provided part
  * meaning that the other parts of the rule have to
  * be changed accordingly.
