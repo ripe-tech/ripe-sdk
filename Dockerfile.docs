@@ -16,6 +16,7 @@ ENV BASE_PATH /docs/gen
 
 ADD package.json /
 ADD gulpfile.js /
+ADD jsdoc.json /
 ADD README.md /
 ADD src /src
 

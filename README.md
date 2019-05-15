@@ -242,7 +242,6 @@ To reduce the number of requests when you need to convert several size options y
 - `sizeToNativeB(scales, values, genders)`
 - `nativeToSizeB(scales, values, genders)`
 
-
 ## 9. Authentication
 
 When using API methods that require special permissions you can use the following methods to authenticate your application: `auth(username, password, callback)`, for login with username and password, or OAuth authentication with `oauth`:
@@ -307,3 +306,7 @@ RIPE SDK is currently licensed under the [Apache License, Version 2.0](http://ww
 [![Build Status](https://travis-ci.org/ripe-tech/ripe-sdk.svg?branch=master)](https://travis-ci.org/ripe-tech/ripe-sdk)
 [![npm Status](https://img.shields.io/npm/v/ripe-sdk.svg)](https://www.npmjs.com/package/ripe-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/)
+
+## Documentation
+
+For API reference documentation follow [ripe-sdk-docs.platforme.com](https://ripe-sdk-docs.platforme.com).
