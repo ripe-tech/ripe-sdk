@@ -224,6 +224,8 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._getRestrictionKey = function(
  * object of incompatible materials/colors.
  * @returns {Object} A map that associates the restricted keys with the
  * array of associated restrictions.
+ *
+ * @ignore
  */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._buildRestrictionsMap = function(restrictions) {
     const restrictionsMap = {};
