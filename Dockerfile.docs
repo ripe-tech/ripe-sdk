@@ -18,6 +18,7 @@ ADD package.json /
 ADD gulpfile.js /
 ADD jsdoc.json /
 ADD README.md /
+ADD res /docs/gen/res
 ADD src /src
 
 RUN apk update && apk add nodejs npm
