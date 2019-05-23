@@ -140,6 +140,26 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
 };
 
 /**
+ * Server side callback method to be called for situations where a customization
+ * change was made on a part.
+ * This method allows the change of the current context of execution based on
+ * a server side implementation of the build's business logic.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.onPart = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._onPartOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
  * @see {link https://docs.platforme.com/#product-endpoints-config}
  * @ignore
  */
@@ -228,5 +248,25 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
     return Object.assign(options, {
         url: url,
         method: "GET"
+    });
+};
+
+/**
+ * @ignore
+ * @see {link http://docs.platforme.com/#product-endpoints-on_part}
+ */
+ripe.Ripe.prototype._onPartOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const url = this.url + "brands/" + brand + "/models/" + model + "/on_part";
+    return Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataJ: {
+            ctx: {
+                brand: this.brand,
+                model: this.model
+            }
+        }
     });
 };

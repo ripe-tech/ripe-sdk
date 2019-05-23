@@ -151,6 +151,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     const params = options.params || {};
     const headers = options.headers || {};
     let data = options.data || null;
+    let dataJ = options.dataJ || null;
     let contentType = options.contentType || null;
 
     const query = this._buildQuery(params);
@@ -160,6 +161,10 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
 
     if (isEmpty || data) {
         url += separator + query;
+    } else if (dataJ !== null) {
+        data = JSON.stringify(dataJ);
+        url += separator + query;
+        contentType = "application/json";
     } else {
         data = query;
         contentType = "application/x-www-form-urlencoded";
