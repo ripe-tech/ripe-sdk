@@ -106,17 +106,20 @@ ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
 };
 
 /**
- * Checks if any of the sync rules contain the provided part
- * meaning that the other parts of the rule have to
- * be changed accordingly.
+ * Checks if any of the sync rules should apply to the
+ * provided part, meaning that the other parts of the rule
+ * have to be changed accordingly.
  *
  * @param {String} name The name of the part that may be
  * affected by a rule.
- * @param {Object} value The material and color of the part.
+ * @param {Object} value The material and color of the part
+ * as a object map.
  *
  * @ignore
  */
 ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
+    // iterates over the complete set of rules to determine
+    // if any of them should apply to the provided part
     for (const key in this.rules) {
         // if a part was selected and it is part of
         // the rule then its value is used otherwise
