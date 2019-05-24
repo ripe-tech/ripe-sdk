@@ -263,7 +263,7 @@ describe("Sync", function() {
             assert.strictEqual(instance.parts.hardware.color, "silver");
             assert.strictEqual(instance.parts.logo.color, "silver");
 
-            instance.setPart("hardware", "metal", "bronze");
+            await instance.setPart("hardware", "metal", "bronze");
 
             assert.strictEqual(instance.parts.hardware.color, "bronze");
             assert.strictEqual(instance.parts.logo.color, "bronze");
@@ -273,7 +273,7 @@ describe("Sync", function() {
             assert.strictEqual(instance.parts.fringe_hardware.color, "silver");
             assert.strictEqual(instance.parts.logo.color, "silver");
 
-            instance.setPart("fringe_hardware", "metal", "bronze");
+            await instance.setPart("fringe_hardware", "metal", "bronze");
 
             assert.strictEqual(instance.parts.fringe_hardware.color, "bronze");
             assert.strictEqual(instance.parts.logo.color, "bronze");

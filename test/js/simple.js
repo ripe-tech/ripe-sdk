@@ -99,7 +99,7 @@ describe("Ripe", function() {
             assert.strictEqual(instance.parts.front.material, "nappa");
             assert.strictEqual(instance.parts.front.color, "white");
 
-            instance.setPart("front", "suede", "black");
+            await instance.setPart("front", "suede", "black");
             const changedParts = Object.assign({}, instance.parts);
 
             assert.strictEqual(instance.parts.front.material, "suede");
