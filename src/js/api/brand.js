@@ -110,7 +110,7 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - the brand of the model
  *  - 'model' - the name of the model
-* @returns {Promise} The model's total set of combinations.
+ * @returns {Promise} The model's total set of combinations.
  */
 ripe.Ripe.prototype.getCombinationsP = function(options) {
     return new Promise((resolve, reject) => {
