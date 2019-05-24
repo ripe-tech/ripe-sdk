@@ -297,6 +297,7 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
 ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const parts = options.parts === undefined ? this.parts : options.parts;
     const name = options.name === undefined ? null : options.name;
     const value = options.value === undefined ? null : options.value;
     const url = this.url + "brands/" + brand + "/models/" + model + "/on_part";
@@ -307,8 +308,9 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
             name: name,
             value: value,
             ctx: {
-                brand: this.brand,
-                model: this.model
+                brand: brand,
+                model: model,
+                parts: parts
             }
         }
     });
