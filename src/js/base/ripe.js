@@ -77,6 +77,17 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // operations may be executed over the object life-time
     this.config(brand, model, options);
 
+    // registers for the part (set) operation so that the execution may
+    // be able to notify the server side logic
+    this.bind("part", async function(name, value) {
+        console.info("request");
+        await this.onPart({
+            name: name,
+            value: value
+        });
+        console.info("coiso");
+    });
+
     // listens for the post parts event and saves the current configuration
     // for the undo operations (history control)
     this.bind("post_parts", function(parts, options) {
@@ -293,16 +304,16 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
  * @param {String} color The color to change to.
  * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults to 'false').
  */
-ripe.Ripe.prototype.setPart = function(part, material, color, noEvents, options) {
+ripe.Ripe.prototype.setPart = async function(part, material, color, noEvents, options) {
     if (noEvents) {
-        this._setPart(part, material, color);
+        await this._setPart(part, material, color);
     }
 
-    this.trigger("pre_parts", this.parts, options);
-    this._setPart(part, material, color);
+    await this.trigger("pre_parts", this.parts, options);
+    await this._setPart(part, material, color);
     this.update();
-    this.trigger("parts", this.parts, options);
-    this.trigger("post_parts", this.parts, options);
+    await this.trigger("parts", this.parts, options);
+    await this.trigger("post_parts", this.parts, options);
 };
 
 /**
@@ -312,20 +323,20 @@ ripe.Ripe.prototype.setPart = function(part, material, color, noEvents, options)
  * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults to 'false').
  * @param {Object} options An object with options to configure the operation (for internal use).
  */
-ripe.Ripe.prototype.setParts = function(update, noEvents, options) {
+ripe.Ripe.prototype.setParts = async function(update, noEvents, options) {
     if (typeof update === "object" && !Array.isArray(update)) {
         update = this._partsList(update);
     }
 
     if (noEvents) {
-        this._setParts(update, options && options.noPartEvents);
+        await this._setParts(update, options && options.noPartEvents);
     }
 
-    this.trigger("pre_parts", this.parts, options);
-    this._setParts(update, options && options.noPartEvents);
+    await this.trigger("pre_parts", this.parts, options);
+    await this._setParts(update, options && options.noPartEvents);
     this.update();
-    this.trigger("parts", this.parts, options);
-    this.trigger("post_parts", this.parts, options);
+    await this.trigger("parts", this.parts, options);
+    await this.trigger("post_parts", this.parts, options);
 };
 
 /**
@@ -565,7 +576,7 @@ ripe.Ripe.prototype._getState = function() {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._setPart = function(part, material, color, noEvents) {
+ripe.Ripe.prototype._setPart = async function(part, material, color, noEvents) {
     // ensures that there's one valid configuration loaded
     // in the current instance, required for part setting
     if (!this.loadedConfig) {
@@ -596,23 +607,23 @@ ripe.Ripe.prototype._setPart = function(part, material, color, noEvents) {
         return;
     }
 
-    this.trigger("pre_part", part, value);
+    await this.trigger("pre_part", part, value);
     if (remove) {
         delete this.parts[part];
     } else {
         this.parts[part] = value;
     }
-    this.trigger("part", part, value);
-    this.trigger("post_part", part, value);
+    await this.trigger("part", part, value);
+    await this.trigger("post_part", part, value);
 };
 
 /**
  * @ignore
  */
-ripe.Ripe.prototype._setParts = function(update, noEvents) {
+ripe.Ripe.prototype._setParts = async function(update, noEvents) {
     for (var index = 0; index < update.length; index++) {
         var part = update[index];
-        this._setPart(part[0], part[1], part[2], noEvents);
+        await this._setPart(part[0], part[1], part[2], noEvents);
     }
 };
 

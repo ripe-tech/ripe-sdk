@@ -91,7 +91,7 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - the brand of the model
  *  - 'model' - the name of the model
- * @returns {XMLHttpRequest} The model's optional parts.
+ * @returns {XMLHttpRequest} The model's total set of combinations.
  */
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -110,7 +110,7 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - the brand of the model
  *  - 'model' - the name of the model
- * @returns {Promise} The model's optional parts.
+* @returns {Promise} The model's total set of combinations.
  */
 ripe.Ripe.prototype.getCombinationsP = function(options) {
     return new Promise((resolve, reject) => {
@@ -129,12 +129,51 @@ ripe.Ripe.prototype.getCombinationsP = function(options) {
  *  - 'brand' - the brand of the model
  *  - 'model' - the name of the model
  * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The factory information for the provided model.
  */
 ripe.Ripe.prototype.getFactory = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getFactoryOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the factory information where a model is made,
+ * specifically its name and the estimated production time in days.
+ * If no model is provided then returns the defaults of the owner's current model.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The factory information for the provided model.
+ */
+ripe.Ripe.prototype.getFactoryP = function(options, callback) {
+    return new Promise((resolve, reject) => {
+        this.getFactory(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Server side callback method to be called for situations where a customization
+ * change was made on a part.
+ * This method allows the change of the current context of execution based on
+ * a server side implementation of the build's business logic.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.onPart = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._onPartOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -149,14 +188,14 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
  *  - 'brand' - the brand of the model
  *  - 'model' - the name of the model
  * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {Promise} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.onPart = function(options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    options = this._onPartOptions(options);
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
+ripe.Ripe.prototype.onPartP = function(options, callback) {
+    return new Promise((resolve, reject) => {
+        this.onPart(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
 
 /**
@@ -258,11 +297,15 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
 ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const name = options.name === undefined ? null : options.name;
+    const value = options.value === undefined ? null : options.value;
     const url = this.url + "brands/" + brand + "/models/" + model + "/on_part";
     return Object.assign(options, {
         url: url,
         method: "POST",
         dataJ: {
+            name: name,
+            value: value,
             ctx: {
                 brand: this.brand,
                 model: this.model

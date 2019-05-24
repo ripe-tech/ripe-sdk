@@ -59,10 +59,12 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
  * Triggers the event by calling all its bound callbacks with args as parameters.
  *
  * @param {String} event The name of the event to be triggered.
+ * @param {Boolean} wait If the callback execution should wait for every single
+ * execution before running the next one.
  * @returns {Promise} Returns a Promise of all results that will be completed
  * when all of the callbacks have finished processing the triggered event.
  */
-ripe.Observable.prototype.runCallbacks = function(event) {
+ripe.Observable.prototype.runCallbacks = async function(event, wait = true, ...args) {
     if (!this.callbacks) {
         return Promise.all([null]);
     }
@@ -70,10 +72,22 @@ ripe.Observable.prototype.runCallbacks = function(event) {
     const results = [];
     for (let index = 0; index < callbacks.length; index++) {
         const callback = callbacks[index];
-        let result = callback.apply(this, Array.prototype.slice.call(arguments, 1));
-        result !== undefined && result !== null && results.push(result);
+        let result = callback.apply(this, args);
+        if (result === undefined || result === null) continue;
+        if (wait) await result;
+        else results.push(result);
     }
     return Promise.all(results);
+};
+
+ripe.Observable.prototype.runCallbacksWait = async function(event, ...args) {
+    const result = await this.runCallbacks(event, true, ...args);
+    return result;
+};
+
+ripe.Observable.prototype.runCallbackNoWait = async function(event, ...args) {
+    const result = await this.runCallbacks(event, false, ...args);
+    return result;
 };
 
 /**
@@ -95,6 +109,11 @@ ripe.Observable.prototype.bind = ripe.Observable.prototype.addCallback;
 ripe.Observable.prototype.unbind = ripe.Observable.prototype.removeCallback;
 
 /**
- * Alias to runCallbacks.
+ * Alias to runCallbackNoWait.
  */
-ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbacks;
+ripe.Observable.prototype.trigger = ripe.Observable.prototype.runCallbackNoWait;
+
+/**
+ * Alias to runCallbacksWait.
+ */
+ripe.Observable.prototype.triggerWait = ripe.Observable.prototype.runCallbacksWait;
