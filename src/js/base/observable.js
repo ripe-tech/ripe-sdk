@@ -66,7 +66,8 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
  */
 ripe.Observable.prototype.runCallbacks = async function(event, wait = true, ...args) {
     if (!this.callbacks) {
-        await Promise.all([null]);
+        const result = await Promise.all([null]);
+        return result;
     }
     const callbacks = this.callbacks[event] || [];
     const results = [];
@@ -77,7 +78,8 @@ ripe.Observable.prototype.runCallbacks = async function(event, wait = true, ...a
         if (wait) await result;
         else results.push(result);
     }
-    await Promise.all(results);
+    const result = await Promise.all(results);
+    return result;
 };
 
 ripe.Observable.prototype.runCallbacksWait = async function(event, ...args) {
