@@ -80,12 +80,10 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // registers for the part (set) operation so that the execution may
     // be able to notify the server side logic
     this.bind("part", async function(name, value) {
-        console.info("request");
-        await this.onPart({
+        await this.onPartP({
             name: name,
             value: value
         });
-        console.info("coiso");
     });
 
     // listens for the post parts event and saves the current configuration
