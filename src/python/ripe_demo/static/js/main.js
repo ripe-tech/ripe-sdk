@@ -27,7 +27,7 @@ window.onload = function() {
         country: country
     });
 
-    var randomize = function() {
+    var randomize = async function() {
         var parts = [];
         for (var key in partsMap) {
             var triplets = partsMap[key];
@@ -35,7 +35,7 @@ window.onload = function() {
             var triplet = triplets[index];
             parts.push(triplet);
         }
-        ripe.setParts(parts);
+        await ripe.setParts(parts);
     };
 
     var unique = function() {
@@ -85,13 +85,13 @@ window.onload = function() {
     var initBase = function() {
         // registers for the key down event on the global document element
         // to listen to some of the key strokes (global operations)
-        document.addEventListener("keydown", function(event) {
+        document.addEventListener("keydown", async function(event) {
             if (event.ctrlKey && event.keyCode === 90) {
-                ripe.undo();
+                await ripe.undo();
             }
 
             if (event.ctrlKey && event.keyCode === 89) {
-                ripe.redo();
+                await ripe.redo();
             }
         });
     };

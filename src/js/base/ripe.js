@@ -220,7 +220,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
 
     // updates the parts of the current instance so that the internals of it
     // reflect the newly loaded configuration
-    this.setParts(parts, false, { noPartEvents: true });
+    await this.setParts(parts, false, { noPartEvents: true });
 
     // notifies that the config has changed and waits for listeners before
     // concluding the config operation
@@ -499,14 +499,14 @@ ripe.Ripe.prototype.update = function(state) {
  * Reverses the last change to the parts. It is possible
  * to undo all the changes done from the initial state.
  */
-ripe.Ripe.prototype.undo = function() {
+ripe.Ripe.prototype.undo = async function() {
     if (!this.canUndo()) {
         return;
     }
 
     this.historyPointer -= 1;
     var parts = this.history[this.historyPointer];
-    parts && this.setParts(parts, false, { action: "undo" });
+    if (parts) await this.setParts(parts, false, { action: "undo" });
 };
 
 /**
@@ -515,14 +515,14 @@ ripe.Ripe.prototype.undo = function() {
  * is in the middle of the stack the complete stack forward
  * is removed (history re-written).
  */
-ripe.Ripe.prototype.redo = function() {
+ripe.Ripe.prototype.redo = async function() {
     if (!this.canRedo()) {
         return;
     }
 
     this.historyPointer += 1;
     var parts = this.history[this.historyPointer];
-    parts && this.setParts(parts, false, { action: "redo" });
+    if (parts) await this.setParts(parts, false, { action: "redo" });
 };
 
 /**

@@ -90,7 +90,7 @@ describe("Ripe", function() {
             assert.strictEqual(instance.canUndo(), false);
             assert.strictEqual(instance.canRedo(), false);
 
-            instance.undo();
+            await instance.undo();
             assert.strictEqual(instance.canUndo(), false);
             assert.strictEqual(instance.canRedo(), false);
 
@@ -107,7 +107,7 @@ describe("Ripe", function() {
             assert.strictEqual(instance.canUndo(), true);
             assert.strictEqual(instance.canRedo(), false);
 
-            instance.undo();
+            await instance.undo();
 
             assert.deepStrictEqual(instance.parts, initialParts);
             assert.strictEqual(instance.parts.front.material, "nappa");
@@ -115,7 +115,7 @@ describe("Ripe", function() {
             assert.strictEqual(instance.canUndo(), false);
             assert.strictEqual(instance.canRedo(), true);
 
-            instance.redo();
+            await instance.redo();
 
             assert.deepStrictEqual(instance.parts, changedParts);
             assert.strictEqual(instance.parts.front.material, "suede");
@@ -123,7 +123,7 @@ describe("Ripe", function() {
             assert.strictEqual(instance.canUndo(), true);
             assert.strictEqual(instance.canRedo(), false);
 
-            instance.undo();
+            await instance.undo();
 
             assert.deepStrictEqual(instance.parts, initialParts);
             assert.strictEqual(instance.canUndo(), false);
