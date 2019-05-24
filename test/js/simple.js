@@ -78,6 +78,7 @@ describe("Ripe", function() {
 
         it("should set parts and undo", async () => {
             const instance = new ripe.Ripe("swear", "vyner", {
+                remoteCalls: false,
                 noCombinations: true
             });
             instance.load();

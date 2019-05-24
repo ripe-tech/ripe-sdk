@@ -80,6 +80,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // registers for the part (set) operation so that the execution may
     // be able to notify the server side logic
     this.bind("part", async function(name, value) {
+        if (!this.remoteOnPart) return;
         const result = await this.onPartP({
             name: name,
             value: value
@@ -280,6 +281,9 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.flag = this.options.flag || null;
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
+    this.remoteCalls = this.options.remoteCalls === undefined ? true : this.options.remoteCalls;
+    this.remoteOnPart =
+        this.options.remoteOnPart === undefined ? this.remoteCalls : this.options.remoteOnPart;
     this.noDefaults = this.options.noDefaults === undefined ? false : this.options.noDefaults;
     this.useDefaults =
         this.options.useDefaults === undefined ? !this.noDefaults : this.options.useDefaults;

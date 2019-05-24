@@ -255,7 +255,10 @@ describe("Sync", function() {
 
         it("should update sync rules when config changes", async () => {
             const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin();
-            const instance = new ripe.Ripe("swear", "vyner", { plugins: [syncPlugin] });
+            const instance = new ripe.Ripe("swear", "vyner", {
+                plugins: [syncPlugin],
+                remoteCalls: false
+            });
             await new Promise((resolve, reject) => {
                 instance.bind("post_config", resolve);
             });
