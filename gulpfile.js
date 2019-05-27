@@ -170,7 +170,7 @@ gulp.task("test", () => {
 });
 
 gulp.task("docs", cb => {
-    var config = require("./jsdoc.json");
+    const config = require("./jsdoc.json");
     gulp.src(["README.md", paths.docs], {
         read: false
     }).pipe(jsdoc(config, cb));
