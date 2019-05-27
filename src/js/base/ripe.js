@@ -78,13 +78,20 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     this.config(brand, model, options);
 
     // registers for the part (set) operation so that the execution may
-    // be able to notify the server side logic
+    // be able to notify the server side logic anc change the current state
+    // if that's required by the server side
     this.bind("part", async function(name, value) {
+        let result = null;
         if (!this.remoteOnPart) return;
-        const result = await this.onPartP({
-            name: name,
-            value: value
-        });
+        try {
+            result = await this.onPartP({
+                name: name,
+                value: value
+            });
+        } catch (err) {
+            if (err instanceof ripe.RemoteError) return;
+            else throw err;
+        }
         if (result === undefined || result === null) return;
         if (result.parts === undefined || result.parts === null) return;
         for (const [name, value] of Object.entries(result.parts)) {
