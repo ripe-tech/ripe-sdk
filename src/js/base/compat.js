@@ -23,9 +23,9 @@ ripe.assign = function(target) {
         throw new TypeError("Cannot assign undefined or null object");
     }
 
-    var to = Object(target);
-    for (var index = 1; index < arguments.length; index++) {
-        var nextSource = arguments[index];
+    const to = Object(target);
+    for (let index = 1; index < arguments.length; index++) {
+        const nextSource = arguments[index];
         if (nextSource == null) {
             continue;
         }
