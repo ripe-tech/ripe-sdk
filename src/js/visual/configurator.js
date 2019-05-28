@@ -213,7 +213,7 @@ ripe.Configurator.prototype.deinit = function() {
         this.element.removeChild(this.element.firstChild);
     }
 
-    for (var bind in this._ownerBinds) {
+    for (const bind in this._ownerBinds) {
         this.owner.unbind(bind, this._ownerBinds[bind]);
     }
 
