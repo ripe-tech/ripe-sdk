@@ -20,7 +20,9 @@ window.onload = function() {
     var partsMap = {};
 
     // eslint-disable-next-line no-undef
-    var ripe = new Ripe(brand, model, {
+    var ripe = new Ripe({
+        brand: brand,
+        model: model,
         variant: variant,
         url: url,
         currency: currency,

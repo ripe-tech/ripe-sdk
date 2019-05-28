@@ -8,11 +8,14 @@ As a starting point, you need to provide the `brand` and `model` of your customi
 You may also pass an [`options`](#options) map to override parameters like the base `url` of the server where the product is configured, as well as `currency` and `country`, which are 'EUR' and 'US' respectively by default.
 
 ```javascript
-var ripe = new Ripe(brand, model, {
+var ripe = new Ripe({
+    brand: brand,
+    model: model,
     variant: variant,
     url: url,
     currency: currency,
-    country: country
+    country: country,
+    dku: dku
 });
 ```
 

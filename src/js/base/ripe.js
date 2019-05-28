@@ -36,7 +36,19 @@ ripe.RipeBase = function(brand, model, options) {
  * Sets the various values for the Ripe instance taking into account
  * the provided configuration and defaulting values policy.
  */
-ripe.Ripe.prototype.init = function(brand, model, options) {
+ripe.Ripe.prototype.init = async function(brand, model, options) {
+    // runs the defaulting operation so that it's possible to
+    // provide only the first parameters as the options
+    if (
+        typeof brand === "object" &&
+        typeof model === "undefined" &&
+        typeof options === "undefined"
+    ) {
+        options = brand;
+        brand = options.brand || null;
+        model = options.model || null;
+    }
+
     // sets the various values in the instance taking into
     // account the default values
     this.initials = "";
@@ -118,7 +130,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
  * The deinitializer to be called when it should stop responding
  * to updates so that any necessary cleanup operations can be executed.
  */
-ripe.Ripe.prototype.deinit = function() {
+ripe.Ripe.prototype.deinit = async function() {
     var index = null;
 
     for (index = this.children.length - 1; index >= 0; index--) {
@@ -186,6 +198,16 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
         options
     );
     this.setOptions(options);
+
+    // in case there's a DKU defined for the current config then
+    // an extra resolution step must occur, to be able to obtain
+    // the configuration of the current customization
+    if (this.dku) {
+        const config = await this.configDkuP(this.dku);
+        this.brand = config.brand;
+        this.model = config.model;
+        this.parts = config.parts;
+    }
 
     // determines if a valid model is currently defined for the ripe
     // instance, as this is going to change some logic behaviour
@@ -279,6 +301,7 @@ ripe.Ripe.prototype.remote = function() {
 ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.options = options;
     this.variant = this.options.variant || null;
+    this.dku = this.options.dku || null;
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.webUrl = this.options.webUrl || "https://sandbox.platforme.com/";
     this.parts = this.options.parts || {};

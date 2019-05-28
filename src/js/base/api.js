@@ -18,7 +18,7 @@ if (typeof require !== "undefined") {
  */
 ripe.RipeAPI = function(options = {}) {
     options.cached = typeof options.cached === "undefined" ? false : options.cached;
-    return new ripe.Ripe(null, null, options);
+    return new ripe.Ripe(options);
 };
 
 /**
