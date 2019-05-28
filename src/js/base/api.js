@@ -279,6 +279,27 @@ ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
 /**
  * @ignore
  */
+ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
+    const params = options.params || {};
+    options.params = params;
+
+    const initials = options.initials === undefined ? this.initials : options.initials;
+    const engraving = options.engraving === undefined ? this.engraving : options.engraving;
+
+    if (initials !== undefined && initials !== null) {
+        params.initials = initials;
+    }
+
+    if (engraving !== undefined && engraving !== null) {
+        params.engraving = engraving;
+    }
+
+    return options;
+};
+
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getQuery = function(options = {}) {
     options = this._getQueryOptions(options);
     return this._buildQuery(options.params);
