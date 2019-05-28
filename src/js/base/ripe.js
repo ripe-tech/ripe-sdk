@@ -206,7 +206,9 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
         const config = await this.configDkuP(this.dku);
         this.brand = config.brand;
         this.model = config.model;
-        this.parts = config.parts;
+        this.parts = config.parts === undefined ? this.parts : config.parts;
+        this.initials = config.initials === undefined ? this.initials : config.initials;
+        this.engraving = config.engraving === undefined ? this.engraving : config.engraving;
     }
 
     // determines if a valid model is currently defined for the ripe
