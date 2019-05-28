@@ -84,11 +84,6 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
         this.addPlugin(diagPlugin);
     }
 
-    // runs the connfiguration operation on the current instance, using
-    // the requested parameters and options, multiple configuration
-    // operations may be executed over the object life-time
-    await this.config(brand, model, options);
-
     // registers for the part (set) operation so that the execution may
     // be able to notify the server side logic anc change the current state
     // if that's required by the server side
@@ -106,8 +101,13 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
         }
         if (result === undefined || result === null) return;
         if (result.parts === undefined || result.parts === null) return;
+        result.parts = result.parts === undefined ? {} : result.parts;
+        result.messages = result.messages === undefined ? [] : result.messages;
         for (const [name, value] of Object.entries(result.parts)) {
             this.parts[name] = value;
+        }
+        for (const [name, value] of Object.entries(result.messages)) {
+            this.trigger("message", name, value);
         }
     });
 
@@ -124,6 +124,11 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
         // the history stack allowing undo and redo
         this._pushHistory();
     });
+
+    // runs the connfiguration operation on the current instance, using
+    // the requested parameters and options, multiple configuration
+    // operations may be executed over the object life-time
+    await this.config(brand, model, options);
 };
 
 /**
