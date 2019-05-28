@@ -36,7 +36,7 @@ ripe.RipeBase = function(brand, model, options) {
  * Sets the various values for the Ripe instance taking into account
  * the provided configuration and defaulting values policy.
  */
-ripe.Ripe.prototype.init = function(brand, model, options) {
+ripe.Ripe.prototype.init = async function(brand, model, options) {
     // runs the defaulting operation so that it's possible to
     // provide only the first parameters as the options
     if (
@@ -87,7 +87,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
     // runs the connfiguration operation on the current instance, using
     // the requested parameters and options, multiple configuration
     // operations may be executed over the object life-time
-    this.config(brand, model, options);
+    await this.config(brand, model, options);
 
     // registers for the part (set) operation so that the execution may
     // be able to notify the server side logic anc change the current state
@@ -130,7 +130,7 @@ ripe.Ripe.prototype.init = function(brand, model, options) {
  * The deinitializer to be called when it should stop responding
  * to updates so that any necessary cleanup operations can be executed.
  */
-ripe.Ripe.prototype.deinit = function() {
+ripe.Ripe.prototype.deinit = async function() {
     var index = null;
 
     for (index = this.children.length - 1; index >= 0; index--) {
