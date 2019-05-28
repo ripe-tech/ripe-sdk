@@ -106,7 +106,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
         for (const [name, value] of Object.entries(result.parts)) {
             this.parts[name] = value;
         }
-        for (const [name, value] of Object.entries(result.messages)) {
+        for (const [name, value] of result.messages) {
             this.trigger("message", name, value);
         }
     });

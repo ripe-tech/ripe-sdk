@@ -142,6 +142,10 @@ window.onload = function() {
             alert(error);
         });
 
+        ripe.bind("message", function(name, value) {
+            alert(name + " - " + value);
+        });
+
         ripe.bind("price", function(value) {
             var price = document.getElementById("price");
             if (!value || !value.total) {
