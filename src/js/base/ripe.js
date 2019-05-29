@@ -53,6 +53,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
     // account the default values
     this.initials = "";
     this.engraving = null;
+    this.initialsExtra = {};
     this.ctx = {};
     this.children = this.children || [];
     this.plugins = this.plugins || [];
@@ -408,19 +409,66 @@ ripe.Ripe.prototype.setParts = async function(update, noEvents, options) {
 };
 
 /**
- * Changes the personalization of the model.
+ * Changes the initials of the model, this is considered a simple
+ * legacy oriented strategy as the `setInitialsExtra` method should
+ * be used for more complex scenarious with multiple groups.
  *
- * @param {String} initials The initials to be set.
- * @param {String} engraving The engraving to be set.
- * @param {Boolean} noUpdate If the update operation shouldn't be triggered (defaults to 'false').
+ * @param {String} initials The initials value to be set.
+ * @param {String} engraving The type of engraving to be set.
+ * @param {Boolean} noUpdate If the update operation shouldn't be
+ * triggered (defaults to 'false').
  */
 ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
-    this.initials = initials;
-    this.engraving = engraving;
+    if (typeof initials === "object") {
+        noEvents = engraving;
+        return this.setInitialsExtra(initials, noEvents);
+    }
+
+    this.initials = initials || "";
+    this.engraving = engraving || null;
+    this.initialsExtra = {
+        main: {
+            initials: initials || "",
+            engraving: engraving || null
+        }
+    };
 
     if (noEvents) {
         return;
     }
+
+    this.update();
+};
+
+/**
+ * Changes the initials of the model using an object as the input which
+ * allows setting the initials for multiple groups at the same time.
+ *
+ * @param {Object} initialsExtra Object that contains the values of the
+ * initials and engraving for all the initial groups.
+ * @param {Boolean} noUpdate If the update operation shouldn't be
+ * triggered (defaults to 'false').
+ */
+ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, noEvents) {
+    const groups = Object.keys(initialsExtra);
+    const isEmpty = groups.length === 0;
+    const mainGroup = groups.includes("main") ? "main" : groups[0];
+    const mainInitials = initialsExtra[mainGroup];
+
+    if (isEmpty) {
+        this.initials = "";
+        this.engraving = null;
+        this.initialsExtra = {};
+    } else {
+        this.initials = mainInitials.initials || "";
+        this.engraving = mainInitials.engraving || null;
+        this.initialsExtra = initialsExtra;
+    }
+
+    if (noEvents) {
+        return;
+    }
+
     this.update();
 };
 
@@ -677,7 +725,8 @@ ripe.Ripe.prototype._getState = function() {
     return {
         parts: this.parts,
         initials: this.initials,
-        engraving: this.engraving
+        engraving: this.engraving,
+        initialsExtra: this.initialsExtra
     };
 };
 

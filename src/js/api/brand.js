@@ -297,6 +297,7 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
 ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
     const name = options.name === undefined ? null : options.name;
@@ -305,6 +306,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const ctx = Object.assign({}, this.ctx || {}, {
         brand: brand,
         model: model,
+        initials: initials,
         parts: parts,
         choices: choices
     });
