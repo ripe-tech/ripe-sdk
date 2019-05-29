@@ -401,6 +401,27 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
 };
 
 /**
+ * Retrieves the value of the current base context defined in
+ * the instance.
+ *
+ * @returns {Object} The base context currently set.
+ */
+ripe.Ripe.prototype.geCtx = function(ctx) {
+    return this.ctx;
+};
+
+/**
+ * Changes the current base context object (ctx) that is
+ * going to be sent for (3D) build logic on crucial workflow
+ * state changes.
+ *
+ * @param {Object} ctx The new base context to be used.
+ */
+ripe.Ripe.prototype.setCtx = function(ctx) {
+    this.ctx = ctx;
+};
+
+/**
  * Returns the model's configuration loaded from the Platforme's system.
  *
  * @returns {Object} The model's configuration.

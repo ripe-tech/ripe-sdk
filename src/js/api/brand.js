@@ -301,17 +301,18 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const name = options.name === undefined ? null : options.name;
     const value = options.value === undefined ? null : options.value;
     const url = this.url + "brands/" + brand + "/models/" + model + "/on_part";
+    const ctx = Object.assign({}, this.ctx || {}, {
+        brand: brand,
+        model: model,
+        parts: parts
+    });
     return Object.assign(options, {
         url: url,
         method: "POST",
         dataJ: {
             name: name,
             value: value,
-            ctx: {
-                brand: brand,
-                model: model,
-                parts: parts
-            }
+            ctx: ctx
         }
     });
 };
