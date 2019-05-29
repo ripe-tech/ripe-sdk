@@ -116,8 +116,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
             this.setInitialsExtra(result.initials);
         }
         if (result.choices && JSON.stringify(result.choices) !== JSON.stringify(this.choices)) {
-            this.choices = result.choices;
-            this.trigger("choices", this.choices);
+            this.setChoices(result.choices);
         }
         for (const [name, value] of result.messages) {
             this.trigger("message", name, value);
@@ -277,12 +276,9 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     await this.trigger("post_config", this.loadedConfig);
 
     // creates a "new" choices from the provided configuration for the
-    // model that has just been "loaded"
-    this.choices = this._toChoices(this.loadedConfig);
-
-    // triggers the choices event indicating that it's possible that
-    // the state of available parts has changed
-    this.trigger("choices", this.choices);
+    // model that has just been "loaded" and sets it as the new set of
+    // choices for the configuration context
+    this.setChoices(this._toChoices(this.loadedConfig));
 
     // triggers the remote operations, that should be executed
     // only after the complete set of post confirm promises are met
@@ -519,6 +515,18 @@ ripe.Ripe.prototype.getLoadedConfig = function() {
  */
 ripe.Ripe.prototype.getChoices = function() {
     return this.choices;
+};
+
+/**
+ * Updates the current internal state for parts material and colors, properly
+ * notifying any "listener" about these changes.
+ *
+ * @param choices The object that contains the state for every single
+ * part, material, and color.
+ */
+ripe.Ripe.prototype.setChoices = function(choices) {
+    this.choices = choices;
+    this.trigger("choices", this.choices);
 };
 
 /**
