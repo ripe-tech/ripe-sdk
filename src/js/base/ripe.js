@@ -59,6 +59,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
     this.history = [];
     this.historyPointer = -1;
     this.loadedConfig = null;
+    this.choices = null;
     this.ready = false;
 
     // extends the default options with the ones provided by the
@@ -109,6 +110,10 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
         }
         for (const [name, value] of result.messages) {
             this.trigger("message", name, value);
+        }
+        if (result.choices) {
+            this.choices = result.choices;
+            this.trigger("choices", this.choices);
         }
     });
 
@@ -264,9 +269,20 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     // concluding the config operation
     await this.trigger("post_config", this.loadedConfig);
 
-    // triggers the remove and local update operations, that should be executed
+    // creates a "new" choices from the provided configuration for the
+    // model that has just been "loaded"
+    this.choices = this._toChoices(this.loadedConfig);
+
+    // triggers the choices event indicating that it's possible that
+    // the state of available parts has changed
+    this.trigger("choices", this.choices);
+
+    // triggers the remote operations, that should be executed
     // only after the complete set of post confirm promises are met
     this.remote();
+
+    // runs the initial update operation, so that all the visuals and children
+    // objects are properly updated according to the new configuration
     this.update();
 };
 
@@ -342,9 +358,16 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
 };
 
 /**
- * Changes the customization of a part.
+ * Changes the material and color of the provided part.
  *
- * @param {String} part The part to be changed.
+ * This operations is an expensive one and should be used carefully
+ * to avoid unwanted resource usage.
+ *
+ * If manny operations are meant to be used at the same time the `setParts`
+ * parts method should be used instead, as it is better suited for bulk
+ * based operations.
+ *
+ * @param {String} part The name of the part to be changed.
  * @param {String} material The material to change to.
  * @param {String} color The color to change to.
  * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults to 'false').
@@ -424,11 +447,24 @@ ripe.Ripe.prototype.setCtx = function(ctx) {
 
 /**
  * Returns the model's configuration loaded from the Platforme's system.
+ * The config version loaded by this method is the one "cached" in the
+ * instance, if there's any.
  *
  * @returns {Object} The model's configuration.
  */
 ripe.Ripe.prototype.getLoadedConfig = function() {
     return this.loadedConfig;
+};
+
+/**
+ * Returns the current state (eg: availability) for the parts materials
+ * and colors associated with the current customization session.
+ *
+ * @returns {Object} The object that contains the state for every single
+ * part, material, and color.
+ */
+ripe.Ripe.prototype.getChoices = function() {
+    return this.choices;
 };
 
 /**
@@ -541,9 +577,15 @@ ripe.Ripe.prototype.deselectPart = function(part, options) {
 };
 
 /**
- * Triggers the update of the children so that they represent the current state of the model.
+ * Triggers the update of the children so that they represent the
+ * current state of the model.
  *
- * @param {Object} state An Object with the current customization and personalization.
+ * This is considered the many state change operation and should be
+ * called whenever a relevant internal state value is changed so that
+ * the visuals are updated in accordance.
+ *
+ * @param {Object} state An Object with the current customization and
+ * personalization.
  */
 ripe.Ripe.prototype.update = function(state) {
     state = state || this._getState();
@@ -722,6 +764,40 @@ ripe.Ripe.prototype._pushHistory = function() {
     this.history = this.history.slice(0, this.historyPointer + 1);
     this.history.push(_parts);
     this.historyPointer = this.history.length - 1;
+};
+
+/**
+ * Builds the choices structure that is going to control
+ * the state for parts materials and colors under the current
+ * customization session.
+ *
+ * @param {Object} loadedConfig The configuration structure that
+ * has just been loaded.
+ * @returns {Object} The state object that can be used to control
+ * the state of parts, materials and colors;
+ */
+ripe.Ripe.prototype._toChoices = function(loadedConfig) {
+    const choices = {};
+    for (const part of loadedConfig.parts) {
+        const materialsState = {};
+        choices[part.name] = {
+            available: true,
+            materials: materialsState
+        };
+        for (const material of part.materials) {
+            const colorsState = {};
+            materialsState[material.name] = {
+                available: true,
+                materials: colorsState
+            };
+            for (const color of material.colors) {
+                colorsState[color.name] = {
+                    available: true
+                };
+            }
+        }
+    }
+    return choices;
 };
 
 // eslint-disable-next-line no-unused-vars
