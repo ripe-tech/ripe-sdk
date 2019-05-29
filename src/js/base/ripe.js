@@ -53,6 +53,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
     // account the default values
     this.initials = "";
     this.engraving = null;
+    this.ctx = {};
     this.children = this.children || [];
     this.plugins = this.plugins || [];
     this.history = [];
@@ -406,7 +407,7 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
  *
  * @returns {Object} The base context currently set.
  */
-ripe.Ripe.prototype.geCtx = function(ctx) {
+ripe.Ripe.prototype.getCtx = function(ctx) {
     return this.ctx;
 };
 
