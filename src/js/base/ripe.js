@@ -109,12 +109,18 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
         for (const [name, value] of Object.entries(result.parts)) {
             this.parts[name] = value;
         }
-        for (const [name, value] of result.messages) {
-            this.trigger("message", name, value);
+        if (
+            result.initials &&
+            JSON.stringify(result.initials) !== JSON.stringify(this.initialsExtra)
+        ) {
+            this.setInitialsExtra(result.initials);
         }
         if (result.choices && JSON.stringify(result.choices) !== JSON.stringify(this.choices)) {
             this.choices = result.choices;
             this.trigger("choices", this.choices);
+        }
+        for (const [name, value] of result.messages) {
+            this.trigger("message", name, value);
         }
     });
 
