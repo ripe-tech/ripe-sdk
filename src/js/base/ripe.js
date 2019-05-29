@@ -111,7 +111,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
         for (const [name, value] of result.messages) {
             this.trigger("message", name, value);
         }
-        if (result.choices) {
+        if (result.choices && JSON.stringify(result.choices) !== JSON.stringify(this.choices)) {
             this.choices = result.choices;
             this.trigger("choices", this.choices);
         }
@@ -788,10 +788,10 @@ ripe.Ripe.prototype._toChoices = function(loadedConfig) {
             const colorsState = {};
             materialsState[material.name] = {
                 available: true,
-                materials: colorsState
+                colors: colorsState
             };
             for (const color of material.colors) {
-                colorsState[color.name] = {
+                colorsState[color] = {
                     available: true
                 };
             }
