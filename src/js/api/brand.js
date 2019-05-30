@@ -160,13 +160,53 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
 
 /**
  * Server side callback method to be called for situations where a customization
- * change was made on a part.
+ * for a model has been started.
  * This method allows the change of the current context of execution based on
  * a server side implementation of the build's business logic.
  *
  * @param {Object} options An object with options, such as:
  *  - 'brand' - the brand of the model
  *  - 'model' - the name of the model
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.onConfig = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._onConfigOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Server side callback method to be called for situations where a customization
+ * for a model has been started.
+ * This method allows the change of the current context of execution based on
+ * a server side implementation of the build's business logic.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.onConfigP = function(options, callback) {
+    return new Promise((resolve, reject) => {
+        this.onConfig(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Server side callback method to be called for situations where a customization
+ * change was made on a part.
+ * This method allows the change of the current context of execution based on
+ * a server side implementation of the build's business logic.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'name' - the name of the part to be changed
+ *  - 'value' - the value (material and color) of the part to be changed
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -185,8 +225,8 @@ ripe.Ripe.prototype.onPart = function(options, callback) {
  * a server side implementation of the build's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
+ *  - 'name' - the name of the part to be changed
+ *  - 'value' - the value (material and color) of the part to be changed
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */
@@ -287,6 +327,37 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
     return Object.assign(options, {
         url: url,
         method: "GET"
+    });
+};
+
+/**
+ * @ignore
+ * @see {link http://docs.platforme.com/#product-endpoints-on_config}
+ */
+ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const initials = options.initials === undefined ? this.initialsExtra : options.initials;
+    const parts = options.parts === undefined ? this.parts : options.parts;
+    const choices = options.choices === undefined ? this.choices : options.choices;
+    const brandI = options.brand === undefined ? null : options.brand;
+    const modelI = options.model === undefined ? null : options.model;
+    const url = this.url + "brands/" + brand + "/models/" + model + "/on_config";
+    const ctx = Object.assign({}, this.ctx || {}, {
+        brand: brand,
+        model: model,
+        initials: initials,
+        parts: parts,
+        choices: choices
+    });
+    return Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataJ: {
+            brand: brandI,
+            model: modelI,
+            ctx: ctx
+        }
     });
 };
 

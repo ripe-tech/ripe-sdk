@@ -87,8 +87,26 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
         this.addPlugin(diagPlugin);
     }
 
+    // registers for the config (finished) event so that the execution may
+    // be able to notify the server side logic and change the current state
+    // if that's required by the server side
+    this.bind("config", async function() {
+        let result = null;
+        if (!this.remoteOnConfig) return;
+        try {
+            result = await this.onConfigP({
+                brand: this.brand,
+                model: this.model
+            });
+        } catch (err) {
+            if (err instanceof ripe.RemoteError) return;
+            else throw err;
+        }
+        this.handleCtx(result);
+    });
+
     // registers for the part (set) operation so that the execution may
-    // be able to notify the server side logic anc change the current state
+    // be able to notify the server side logic and change the current state
     // if that's required by the server side
     this.bind("part", async function(name, value) {
         let result = null;
@@ -102,25 +120,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
             if (err instanceof ripe.RemoteError) return;
             else throw err;
         }
-        if (result === undefined || result === null) return;
-        if (result.parts === undefined || result.parts === null) return;
-        result.parts = result.parts === undefined ? {} : result.parts;
-        result.messages = result.messages === undefined ? [] : result.messages;
-        for (const [name, value] of Object.entries(result.parts)) {
-            this.parts[name] = value;
-        }
-        if (
-            result.initials &&
-            JSON.stringify(result.initials) !== JSON.stringify(this.initialsExtra)
-        ) {
-            this.setInitialsExtra(result.initials);
-        }
-        if (result.choices && JSON.stringify(result.choices) !== JSON.stringify(this.choices)) {
-            this.setChoices(result.choices);
-        }
-        for (const [name, value] of result.messages) {
-            this.trigger("message", name, value);
-        }
+        this.handleCtx(result);
     });
 
     // listens for the post parts event and saves the current configuration
@@ -339,6 +339,8 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
     this.remoteCalls = this.options.remoteCalls === undefined ? true : this.options.remoteCalls;
+    this.remoteOnConfig =
+        this.options.remoteOnConfig === undefined ? this.remoteCalls : this.options.remoteOnConfig;
     this.remoteOnPart =
         this.options.remoteOnPart === undefined ? this.remoteCalls : this.options.remoteOnPart;
     this.noDefaults = this.options.noDefaults === undefined ? false : this.options.noDefaults;
@@ -435,9 +437,7 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
         }
     };
 
-    if (noEvents) {
-        return;
-    }
+    if (noEvents) return;
 
     this.update();
 };
@@ -467,9 +467,7 @@ ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, noEvents) {
         this.initialsExtra = initialsExtra;
     }
 
-    if (noEvents) {
-        return;
-    }
+    if (noEvents) return;
 
     this.update();
 };
@@ -523,9 +521,20 @@ ripe.Ripe.prototype.getChoices = function() {
  *
  * @param choices The object that contains the state for every single
  * part, material, and color.
+ * @param {Boolean} noEvents If the choices events shouldn't be triggered
+ * (defaults to 'false').
  */
-ripe.Ripe.prototype.setChoices = function(choices) {
+ripe.Ripe.prototype.setChoices = function(choices, noEvents) {
+    // updates the internal object with the choices that are now
+    // going to be set
     this.choices = choices;
+
+    // in case no event triggering is required no the control flow
+    // must return immediately
+    if (noEvents) return;
+
+    // triggers the choices event that should change the available
+    // set of choices in the visual/UI assets
     this.trigger("choices", this.choices);
 };
 
@@ -827,6 +836,32 @@ ripe.Ripe.prototype._pushHistory = function() {
     this.history = this.history.slice(0, this.historyPointer + 1);
     this.history.push(_parts);
     this.historyPointer = this.history.length - 1;
+};
+
+/**
+ * Handles the changes in the provided resulting context (ctx)
+ * changing the internal state and triggering relevant events.
+ *
+ * @param {Object} result The resulting ctx object that is going to
+ * be used in the changing of the internal state.
+ */
+ripe.Ripe.prototype._handleCtx = function(result) {
+    if (result === undefined || result === null) return;
+    if (result.parts === undefined || result.parts === null) return;
+    result.parts = result.parts === undefined ? {} : result.parts;
+    result.messages = result.messages === undefined ? [] : result.messages;
+    for (const [name, value] of Object.entries(result.parts)) {
+        this.parts[name] = value;
+    }
+    if (result.initials && JSON.stringify(result.initials) !== JSON.stringify(this.initialsExtra)) {
+        this.setInitialsExtra(result.initials, true);
+    }
+    if (result.choices && JSON.stringify(result.choices) !== JSON.stringify(this.choices)) {
+        this.setChoices(result.choices);
+    }
+    for (const [name, value] of result.messages) {
+        this.trigger("message", name, value);
+    }
 };
 
 /**
