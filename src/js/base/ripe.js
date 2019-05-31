@@ -102,7 +102,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
             if (err instanceof ripe.RemoteError) return;
             else throw err;
         }
-        this.handleCtx(result);
+        this._handleCtx(result);
     });
 
     // registers for the part (set) operation so that the execution may
@@ -120,7 +120,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
             if (err instanceof ripe.RemoteError) return;
             else throw err;
         }
-        this.handleCtx(result);
+        this._handleCtx(result);
     });
 
     // listens for the post parts event and saves the current configuration
