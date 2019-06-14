@@ -229,7 +229,8 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
         this.parts = config.parts === undefined ? this.parts : config.parts;
         this.initials = config.initials === undefined ? this.initials : config.initials;
         this.engraving = config.engraving === undefined ? this.engraving : config.engraving;
-        this.initialsExtra = config.initialsExtra === undefined ? this.initialsExtra : config.initialsExtra;
+        this.initialsExtra =
+            config.initialsExtra === undefined ? this.initialsExtra : config.initialsExtra;
     }
 
     // determines if a valid model is currently defined for the ripe
