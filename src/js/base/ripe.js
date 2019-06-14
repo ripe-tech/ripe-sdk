@@ -182,6 +182,9 @@ ripe.Ripe.prototype.unload = function() {};
  * @param {String} model The name of the model.
  * @param {Object} options An object with the options to configure the Ripe instance, such as:
  *  - 'parts' - The initial parts of the model.
+ *  - 'initials' - The initial value for the initials of the model.
+ *  - 'engraving' - The initial engraving value of the model.
+ *  - 'initialsExtra' - The initial value for the initials extra.
  *  - 'country' - The country where the model will be sold.
  *  - 'currency' - The currency that should be used to calculate the price.
  *  - 'locale' - The locale to be used by default when localizing values.
@@ -192,7 +195,7 @@ ripe.Ripe.prototype.unload = function() {};
 ripe.Ripe.prototype.config = async function(brand, model, options) {
     // triggers the 'pre_config' event so that
     // the listeners can cleanup if needed
-    await this.trigger("pre_config");
+    await this.trigger("pre_config", brand, model, options);
 
     // sets the most structural values of this entity
     // that represent the configuration to be used
@@ -226,6 +229,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
         this.parts = config.parts === undefined ? this.parts : config.parts;
         this.initials = config.initials === undefined ? this.initials : config.initials;
         this.engraving = config.engraving === undefined ? this.engraving : config.engraving;
+        this.initialsExtra = config.initialsExtra === undefined ? this.initialsExtra : config.initialsExtra;
     }
 
     // determines if a valid model is currently defined for the ripe
@@ -250,7 +254,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     // triggers the config event notifying any listener that the (base)
     // configuration for this main RIPE instance has changed and waits
     // for the listeners to conclude their operations
-    await this.trigger("config", this.loadedConfig);
+    await this.trigger("config", this.loadedConfig, options);
 
     // determines the proper initial parts for the model taking into account
     // if the defaults should be loaded
@@ -263,7 +267,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     // in case there's no model defined in the current instance then there's
     // nothing more possible to be done, reeturns the control flow
     if (hasModel === false) {
-        await this.trigger("post_config", this.loadedConfig);
+        await this.trigger("post_config", this.loadedConfig, options);
         return;
     }
 
@@ -271,9 +275,21 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     // reflect the newly loaded configuration
     await this.setParts(parts, false, { noPartEvents: true });
 
+    // in case both the initials and the engraving value are set in the options
+    // runs the updating of the internal state to update the initials
+    if (options.initials && options.engraving) {
+        this.setInitials(options.initials, options.engraving, true);
+    }
+
+    // in case the initials extra are defined then runs the setting of the initials
+    // extra on the current instance (without update events)
+    if (options.initialsExtra) {
+        this.setInitialsExtra(options.initialsExtra, true);
+    }
+
     // notifies that the config has changed and waits for listeners before
     // concluding the config operation
-    await this.trigger("post_config", this.loadedConfig);
+    await this.trigger("post_config", this.loadedConfig, options);
 
     // creates a "new" choices from the provided configuration for the
     // model that has just been "loaded" and sets it as the new set of
