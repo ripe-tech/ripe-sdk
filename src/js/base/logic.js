@@ -25,8 +25,7 @@ ripe.Ripe.prototype.parseEngraving = function(engraving) {
     let propertyTypes = [];
     const propertyNamesM = {};
 
-    for (const index in configProperties) {
-        const property = configProperties[index];
+    for (const property of configProperties) {
         const type = property["type"];
         const name = property["name"];
         propertyNamesM[name] = type;
