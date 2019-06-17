@@ -74,7 +74,7 @@ ripe.Ripe.prototype.parseEngraving = function(engraving) {
  * expected standard, producing a sequence of dictionaries containing
  * the resulting property values.
  *
- * @param engraving The engraving to be normalized.
+ * @param {String} engraving The engraving to be normalized.
  * @returns {string} The normalized engraving value.
  */
 ripe.Ripe.prototype.normalizeEngraving = function(engraving) {
