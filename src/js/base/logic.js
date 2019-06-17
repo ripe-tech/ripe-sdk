@@ -78,6 +78,5 @@ ripe.Ripe.prototype.parseEngraving = function(engraving) {
  */
 ripe.Ripe.prototype.normalizeEngraving = function(engraving) {
     const { values } = this.parseEngraving(engraving);
-
-    return values.map(value => `${ value["name"] }:${ value["type"] }`).join(".");
+    return values.map(v => `${v["name"]}:${v["type"]}`).join(".");
 };
