@@ -77,9 +77,11 @@ ripe.Ripe.prototype.parseEngraving = function(engraving, properties = null) {
  * the resulting property values.
  *
  * @param {String} engraving The engraving to be normalized.
+ * @param {Array} properties If provided overrides the default loaded
+ * config initials strategy for the retrieval of properties definition.
  * @returns {string} The normalized engraving value.
  */
-ripe.Ripe.prototype.normalizeEngraving = function(engraving) {
-    const { values } = this.parseEngraving(engraving);
+ripe.Ripe.prototype.normalizeEngraving = function(engraving, properties = null) {
+    const { values } = this.parseEngraving(engraving, properties);
     return values.map(v => `${v["name"]}:${v["type"]}`).join(".");
 };
