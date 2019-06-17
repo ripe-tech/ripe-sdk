@@ -18,7 +18,8 @@ if (typeof require !== "undefined") {
  * list of (type, name) that respects the order of the properties.
  */
 ripe.Ripe.prototype.parseEngraving = function(engraving) {
-    // This is based on RIPE Core's AdapterController#parse_engraving_g
+    // gathers teh complete set of properties for the initials
+    // definitions, to be used in the unpack
     const configProperties = this.loadedConfig.initials.properties;
 
     let propertyTypes = [];
