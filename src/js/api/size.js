@@ -59,7 +59,7 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
  * values in the specified scales.
  * The available scales, genders and sizes can be obtained with the method getSizes.
  *
- * @param {Array} scale A list of scales to convert to.
+ * @param {Array} scales A list of scales to convert to.
  * @param {Array} values A list of values to convert.
  * @param {Array} genders A list of genders corresponding to the values.
  * @param {Object} options An object of options to configure the request.
@@ -158,6 +158,104 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
             scales: scalesP,
             values: valuesP,
             genders: gendersP
+        }
+    });
+    options = this._build(options);
+
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Converts a size value in the specified scale to the corresponding localized size.
+ * The available scales, genders and sizes can be obtained with the method getSizes.
+ *
+ * @param {String} scale The scale which one wants to convert from.
+ * @param {Number} value The value which one wants to convert.
+ * @param {String} gender The gender of the scale and value to be converted.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.sizeToLocale = function(scale, value, gender, options, callback) {
+    return this.sizeToLocaleB(scale, value, gender, options, callback);
+};
+
+/**
+ * Converts multiple size values to the corresponding localized size.
+ * The available scales, genders and sizes can be obtained with the method getSizes.
+ *
+ * @param {Array} scales A list of scales to convert from.
+ * @param {Array} values A list of values to convert.
+ * @param {Array} genders A list of genders corresponding to the values.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.sizeToLocaleB = function(scales, values, genders, options, callback) {
+    scales = typeof scales === "string" ? [scales] : scales;
+    values = typeof values === "string" ? [values] : values;
+    genders = typeof genders === "string" ? [genders] : genders;
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+
+    const url = this.url + "sizes/size_to_locale_b";
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scales: scales,
+            values: values,
+            genders: genders
+        }
+    });
+    options = this._build(options);
+
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Converts a native size value in the specified scale to the corresponding localized size.
+ * The available scales, genders and sizes can be obtained with the method getSizes.
+ *
+ * @param {String} scale The scale which one wants to convert from.
+ * @param {Number} value The value which one wants to convert.
+ * @param {String} gender The gender of the scale and value to be converted.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.nativeToLocale = function(scale, value, gender, options, callback) {
+    return this.nativeToLocaleB(scale, value, gender, options, callback);
+};
+
+/**
+ * Converts multiple native size values to the corresponding localized size.
+ * The available scales, genders and sizes can be obtained with the method getSizes.
+ *
+ * @param {Array} scales A list of scales to convert from.
+ * @param {Array} values A list of values to convert.
+ * @param {Array} genders A list of genders corresponding to the values.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.nativeToLocaleB = function(scales, values, genders, options, callback) {
+    scales = typeof scales === "string" ? [scales] : scales;
+    values = typeof values === "string" ? [values] : values;
+    genders = typeof genders === "string" ? [genders] : genders;
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+
+    const url = this.url + "sizes/native_to_locale_b";
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scales: scales,
+            values: values,
+            genders: genders
         }
     });
     options = this._build(options);
