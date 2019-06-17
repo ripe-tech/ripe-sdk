@@ -9,7 +9,7 @@ if (typeof require !== "undefined") {
  * Parses the provided normalized engraving string according to the
  * standard `<name>:<type>` format, using the loaded configurations.
  *
- * @param engraving The engraving string to be parsed.
+ * @param {String} engraving The engraving string to be parsed.
  * @returns {Object} Returns an object with values and valuesM.
  * valuesM is a map with (key = type, value = name) entries for each
  * property defined in the engraving, where "type" is the type of
