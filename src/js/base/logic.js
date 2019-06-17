@@ -32,8 +32,9 @@ ripe.Ripe.prototype.parseEngraving = function(engraving) {
         propertyTypes.push(type);
     }
 
-    propertyTypes = Array.from(new Set(propertyTypes))
-        .sort((a, b) => propertyTypes.indexOf(a) - propertyTypes.indexOf(b));
+    propertyTypes = Array.from(new Set(propertyTypes)).sort(
+        (a, b) => propertyTypes.indexOf(a) - propertyTypes.indexOf(b)
+    );
 
     let values = [];
     const valuesM = {};
@@ -46,18 +47,18 @@ ripe.Ripe.prototype.parseEngraving = function(engraving) {
         let type = propertyTypes.length > Number(index) ? propertyTypes[Number(index)] : null;
         type = propertyNamesM[type] || type;
         type = slice.length === 2 ? slice[1] : type;
-        values.push({name: name, type: type});
+        values.push({ name: name, type: type });
         valuesM[type] = name;
     }
 
     values = values.sort((a, b) => {
-        const typeAIndex = propertyTypes.includes(a["type"]) ?
-            propertyTypes.indexOf(a["type"]) :
-            propertyTypes.length;
+        const typeAIndex = propertyTypes.includes(a["type"])
+            ? propertyTypes.indexOf(a["type"])
+            : propertyTypes.length;
 
-        const typeBIndex = propertyTypes.includes(b["type"]) ?
-            propertyTypes.indexOf(b["type"]) :
-            propertyTypes.length;
+        const typeBIndex = propertyTypes.includes(b["type"])
+            ? propertyTypes.indexOf(b["type"])
+            : propertyTypes.length;
 
         return typeAIndex - typeBIndex;
     });
