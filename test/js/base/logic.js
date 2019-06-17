@@ -37,8 +37,8 @@ describe("Logic", function() {
 
             result = instance.parseEngraving("opensans.gold", properties);
             assert.deepStrictEqual(result, {
-                values: [{ name: "opensans", type: "material" }, { name: "gold", type: "font" }],
-                valuesM: { material: "opensans", font: "gold" }
+                values: [{ name: "gold", type: "material" }, { name: "opensans", type: "font" }],
+                valuesM: { material: "gold", font: "opensans" }
             });
         });
     });
@@ -71,7 +71,7 @@ describe("Logic", function() {
             assert.strictEqual(result, "gold:material.opensans:font");
 
             result = instance.normalizeEngraving("opensans.gold", properties);
-            assert.strictEqual(result, "opensans:material.gold:font");
+            assert.strictEqual(result, "gold:material.opensans:font");
         });
     });
 });

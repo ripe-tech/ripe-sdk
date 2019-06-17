@@ -42,24 +42,24 @@ ripe.Ripe.prototype.parseEngraving = function(engraving, properties = null) {
     const valuesM = {};
     const parts = engraving.length ? engraving.split(".") : [];
 
-    for (const index in parts) {
+    for (let index = 0; index < parts.length; index++) {
         const part = parts[index];
         const slice = part.split(":", 2);
         const name = slice[0];
-        let type = propertyTypes.length > Number(index) ? propertyTypes[Number(index)] : null;
-        type = propertyNamesM[type] || type;
+        let type = propertyTypes.length > index ? propertyTypes[index] : null;
+        type = propertyNamesM[name] || type;
         type = slice.length === 2 ? slice[1] : type;
         values.push({ name: name, type: type });
         valuesM[type] = name;
     }
 
     values = values.sort((a, b) => {
-        const typeAIndex = propertyTypes.includes(a["type"])
-            ? propertyTypes.indexOf(a["type"])
+        const typeAIndex = propertyTypes.includes(a.type)
+            ? propertyTypes.indexOf(a.type)
             : propertyTypes.length;
 
-        const typeBIndex = propertyTypes.includes(b["type"])
-            ? propertyTypes.indexOf(b["type"])
+        const typeBIndex = propertyTypes.includes(b.type)
+            ? propertyTypes.indexOf(b.type)
             : propertyTypes.length;
 
         return typeAIndex - typeBIndex;
