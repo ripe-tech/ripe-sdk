@@ -10,6 +10,8 @@ if (typeof require !== "undefined") {
  * standard `<name>:<type>` format, using the loaded configurations.
  *
  * @param {String} engraving The engraving string to be parsed.
+ * @param {Array} properties If provided overrides the default loaded
+ * config initials strategy for the retrieval of properties definition.
  * @returns {Object} Returns an object with values and valuesM.
  * valuesM is a map with (key = type, value = name) entries for each
  * property defined in the engraving, where "type" is the type of
@@ -17,15 +19,15 @@ if (typeof require !== "undefined") {
  * (e.g. gold) as defined in the engraving parameter. values is a
  * list of (type, name) that respects the order of the properties.
  */
-ripe.Ripe.prototype.parseEngraving = function(engraving) {
+ripe.Ripe.prototype.parseEngraving = function(engraving, properties = null) {
     // gathers teh complete set of properties for the initials
     // definitions, to be used in the unpack
-    const configProperties = this.loadedConfig.initials.properties;
+    properties = properties || this.loadedConfig.initials.properties;
 
     let propertyTypes = [];
     const propertyNamesM = {};
 
-    for (const property of configProperties) {
+    for (const property of properties) {
         const type = property["type"];
         const name = property["name"];
         propertyNamesM[name] = type;
