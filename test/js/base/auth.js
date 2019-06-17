@@ -1,6 +1,6 @@
 const assert = require("assert");
-const config = require("./config");
-const ripe = require("../../src/js");
+const config = require("../config");
+const ripe = require("../../../src/js");
 
 describe("Auth", function() {
     this.timeout(config.TEST_TIMEOUT);
