@@ -177,7 +177,23 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.sizeToLocale = function(scale, value, gender, options, callback) {
-    return this.sizeToLocaleB([scale], [value], [gender], options, callback);
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+
+    const url = this.url + "sizes/size_to_locale";
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scale: scale,
+            value: value,
+            gender: gender
+        }
+    });
+    options = this._build(options);
+
+    return this._cacheURL(options.url, options, callback);
 };
 
 /**
@@ -226,7 +242,23 @@ ripe.Ripe.prototype.sizeToLocaleB = function(scales, values, genders, options, c
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.nativeToLocale = function(scale, value, gender, options, callback) {
-    return this.nativeToLocaleB([scale], [value], [gender], options, callback);
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+
+    const url = this.url + "sizes/native_to_locale";
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scale: scale,
+            value: value,
+            gender: gender
+        }
+    });
+    options = this._build(options);
+
+    return this._cacheURL(options.url, options, callback);
 };
 
 /**
