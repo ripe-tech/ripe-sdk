@@ -25,6 +25,14 @@ ripe.Ripe.prototype.getSizes = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+ripe.Ripe.prototype.getSizesP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getSizes(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * Converts a size value from the native scale to the corresponding value
  * in the specified scale.
@@ -52,6 +60,14 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.sizeToNativeP = function(scale, value, gender, options) {
+    return new Promise((resolve, reject) => {
+        this.sizeToNative(scale, value, gender, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
 
 /**
@@ -91,6 +107,14 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
     return this._cacheURL(options.url, options, callback);
 };
 
+ripe.Ripe.prototype.sizeToNativeBP = function(scales, values, genders, options) {
+    return new Promise((resolve, reject) => {
+        this.sizeToNativeB(scales, values, genders, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * Converts a size value in the specified scale to the corresponding native size.
  * The available scales, genders and sizes can be obtained with the method getSizes.
@@ -117,6 +141,14 @@ ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callb
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.nativeToSizeP = function(scale, value, gender, options) {
+    return new Promise((resolve, reject) => {
+        this.nativeToSize(scale, value, gender, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
 
 /**
@@ -155,6 +187,14 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
     return this._cacheURL(options.url, options, callback);
 };
 
+ripe.Ripe.prototype.nativeToSizeBP = function(scales, values, genders, options) {
+    return new Promise((resolve, reject) => {
+        this.nativeToSizeB(scales, values, genders, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * Converts a size value in the specified scale to the corresponding localized size.
  * The available scales, genders and sizes can be obtained with the method getSizes.
@@ -181,6 +221,14 @@ ripe.Ripe.prototype.sizeToLocale = function(scale, value, gender, options, callb
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.sizeToLocaleP = function(scale, value, gender, options) {
+    return new Promise((resolve, reject) => {
+        this.sizeToLocale(scale, value, gender, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
 
 /**
@@ -214,6 +262,14 @@ ripe.Ripe.prototype.sizeToLocaleB = function(scales, values, genders, options, c
     return this._cacheURL(options.url, options, callback);
 };
 
+ripe.Ripe.prototype.sizeToLocaleBP = function(scales, values, genders, options) {
+    return new Promise((resolve, reject) => {
+        this.sizeToLocaleB(scales, values, genders, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * Converts a native size value in the specified scale to the corresponding localized size.
  * The available scales, genders and sizes can be obtained with the method getSizes.
@@ -240,6 +296,14 @@ ripe.Ripe.prototype.nativeToLocale = function(scale, value, gender, options, cal
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.nativeToLocaleP = function(scale, value, gender, options) {
+    return new Promise((resolve, reject) => {
+        this.nativeToLocale(scale, value, gender, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
 
 /**
@@ -271,4 +335,12 @@ ripe.Ripe.prototype.nativeToLocaleB = function(scales, values, genders, options,
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.nativeToLocaleBP = function(scales, values, genders, options) {
+    return new Promise((resolve, reject) => {
+        this.nativeToLocaleB(scales, values, genders, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
