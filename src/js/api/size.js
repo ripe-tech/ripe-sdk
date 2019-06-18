@@ -177,7 +177,7 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.sizeToLocale = function(scale, value, gender, options, callback) {
-    return this.sizeToLocaleB(scale, value, gender, options, callback);
+    return this.sizeToLocaleB([scale], [value], [gender], options, callback);
 };
 
 /**
@@ -226,7 +226,7 @@ ripe.Ripe.prototype.sizeToLocaleB = function(scales, values, genders, options, c
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.nativeToLocale = function(scale, value, gender, options, callback) {
-    return this.nativeToLocaleB(scale, value, gender, options, callback);
+    return this.nativeToLocaleB([scale], [value], [gender], options, callback);
 };
 
 /**
