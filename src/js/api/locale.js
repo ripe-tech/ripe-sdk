@@ -8,8 +8,8 @@ if (typeof require !== "undefined") {
 /**
  * Localizes a value to the provided locale.
  *
- * @param value The value to be localized.
- * @param locale The locale to localize the value to.
+ * @param {String} value The value to be localized.
+ * @param {String} locale The locale to localize the value to.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -21,8 +21,8 @@ ripe.Ripe.prototype.locale = function(value, locale, options, callback) {
 /**
  * Localizes a list of values to the provided locale.
  *
- * @param values The values to be localized.
- * @param locale The locale to localize the value to.
+ * @param {String} values The values to be localized.
+ * @param {String} locale The locale to localize the value to.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.

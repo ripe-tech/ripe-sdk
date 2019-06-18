@@ -1,8 +1,8 @@
 const assert = require("assert");
-const config = require("./config");
-const ripe = require("../../src/js");
-const base = require("../../src/js/base");
-const plugins = require("../../src/js/plugins");
+const config = require("../config");
+const ripe = require("../../../src/js");
+const base = require("../../../src/js/base");
+const plugins = require("../../../src/js/plugins");
 
 const MockRipe = function() {
     const mockRipe = new base.ripe.Observable();
