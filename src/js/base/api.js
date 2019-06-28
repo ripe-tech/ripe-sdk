@@ -528,6 +528,7 @@ ripe.Ripe.prototype._buildQuery = function(params) {
             const tuple = params[index];
             key = tuple[0];
             value = tuple.length > 1 ? tuple[1] : "";
+            if (value === null || value === undefined) continue;
             key = encodeURIComponent(key);
             value = encodeURIComponent(value);
             buffer.push(key + "=" + value);
@@ -542,10 +543,12 @@ ripe.Ripe.prototype._buildQuery = function(params) {
             if (Array.isArray(value)) {
                 for (let _index = 0; _index < value.length; _index++) {
                     let _value = value[_index];
+                    if (_value === null || _value === undefined) continue;
                     _value = encodeURIComponent(_value);
                     buffer.push(key + "=" + _value);
                 }
             } else {
+                if (value === null || value === undefined) continue;
                 value = encodeURIComponent(value);
                 buffer.push(key + "=" + value);
             }
