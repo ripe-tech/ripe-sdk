@@ -136,6 +136,14 @@ ripe.Ripe.prototype.createOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "create", options, callback);
 };
 
+ripe.Ripe.prototype.createOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.createOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * Sets the order status to 'produce'.
  *
@@ -146,6 +154,14 @@ ripe.Ripe.prototype.createOrder = function(number, options, callback) {
  */
 ripe.Ripe.prototype.produceOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "produce", options, callback);
+};
+
+ripe.Ripe.prototype.produceOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.produceOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
 
 /**
@@ -160,6 +176,14 @@ ripe.Ripe.prototype.readyOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "ready", options, callback);
 };
 
+ripe.Ripe.prototype.readyOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.readyOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -170,6 +194,14 @@ ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, op
         }
     });
     return this.setOrderStatus(number, "send", options, callback);
+};
+
+ripe.Ripe.prototype.sendOrderP = function(number, trackingNumber, trackingUrl, options) {
+    return new Promise((resolve, reject) => {
+        this.sendOrder(number, trackingNumber, trackingUrl, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
 
 /**
@@ -184,6 +216,14 @@ ripe.Ripe.prototype.receiveOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "receive", options, callback);
 };
 
+ripe.Ripe.prototype.receiveOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.receiveOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * Sets the order status to 'return'.
  *
@@ -196,6 +236,14 @@ ripe.Ripe.prototype.returnOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "return", options, callback);
 };
 
+ripe.Ripe.prototype.returnOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.returnOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * Sets the order status to 'cancel'.
  *
@@ -206,6 +254,14 @@ ripe.Ripe.prototype.returnOrder = function(number, options, callback) {
  */
 ripe.Ripe.prototype.cancelOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "cancel", options, callback);
+};
+
+ripe.Ripe.prototype.cancelOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.cancelOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
 
 /**
