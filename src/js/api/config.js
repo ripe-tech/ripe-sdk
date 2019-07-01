@@ -71,9 +71,9 @@ ripe.Ripe.prototype.configDku = function(dku, options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The model's configuration data.
  */
-ripe.Ripe.prototype.configDkuP = function(options) {
+ripe.Ripe.prototype.configDkuP = function(dku, options) {
     return new Promise((resolve, reject) => {
-        this.configDku(options, (result, isValid, request) => {
+        this.configDku(dku, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
