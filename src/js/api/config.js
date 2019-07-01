@@ -105,9 +105,9 @@ ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
  * - 'url' - The base url.
  * @returns {Promise} The model's configuration data.
  */
-ripe.Ripe.prototype.configResolveP = function(options) {
+ripe.Ripe.prototype.configResolveP = function(productId, options) {
     return new Promise((resolve, reject) => {
-        this.configResolve(options, (result, isValid, request) => {
+        this.configResolve(productId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
