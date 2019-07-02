@@ -8,7 +8,8 @@ describe("RipeAPI", function() {
     describe("#_queryToSpec", function() {
         it("should be able to convert a query to spec", async () => {
             const remote = ripe.RipeAPI();
-            const spec = remote._querytoSpec(
+
+            const spec = remote._queryToSpec(
                 "brand=dummy&model=dummy&p=piping:leather_dmy:black&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&p=shadow:default:default&p=overlay:default:default"
             );
 
