@@ -593,3 +593,65 @@ ripe.Ripe.prototype._unpackQuery = function(query) {
 
     return options;
 };
+
+ripe.Ripe.prototype._queryToSpec = function(query) {
+    const options = this._unpackQuery(query);
+    const brand = options.brand || null;
+    const model = options.model || null;
+    const initials = options.initials || null;
+    const engraving = options.engraving || null;
+    let initialsExtra = options.initials_extra || [];
+    const tuples = options.p || [];
+    initialsExtra = this._parseExtraS(initialsExtra);
+    const parts = this._tuplesToParts(tuples);
+    const partsM = this._partsToPartsM(parts);
+    const spec = {
+        brand: brand,
+        model: model,
+        parts: partsM,
+        initials: initials,
+        engraving: engraving,
+        initials_extra: initialsExtra
+    };
+    return spec;
+};
+
+ripe.Ripe.prototype._parseExtraS = function(extraS) {
+    const extra = {};
+    for (const extraI of extraS) {
+        const [name, initials, engraving] = extraI.split(":", 2);
+        extra[name] = {
+            initials: initials,
+            engraving: engraving
+        };
+    }
+    return extra;
+};
+
+ripe.Ripe.prototype._tuplesToParts = function(tuples) {
+    const parts = [];
+    for (const tuple of tuples) {
+        const [name, material, color] = tuple.split(":", 2);
+        const part = {
+            name: name,
+            material: material,
+            color: color
+        };
+        parts.push(part);
+    }
+    return parts;
+};
+
+ripe.Ripe.prototype._partsToPartsM = function(parts) {
+    const partsM = {};
+    for (const part of parts) {
+        const name = part.name;
+        const material = part.material;
+        const color = part.color;
+        partsM[name] = {
+            material: material,
+            color: color
+        };
+    }
+    return partsM;
+};

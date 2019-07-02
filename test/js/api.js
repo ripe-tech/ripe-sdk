@@ -5,6 +5,15 @@ const ripe = require("../../src/js");
 describe("RipeAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
+    describe("#_queryToSpec", function() {
+        it("should be able to convert a query to spec", async () => {
+            const remote = ripe.RipeAPI();
+            const spec = remote._querytoSpec("brand=dummy&model=dummy&p=piping:leather_dmy:black&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&p=shadow:default:default&p=overlay:default:default");
+
+            assert.deepStrictEqual(spec, { brand: "dummy", model: "dummy" });
+        });
+    });
+
     describe("#getSizes", function() {
         it("should be able to retrieve sizes", async () => {
             let result = null;
