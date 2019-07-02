@@ -51,9 +51,7 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
 
-            result = await new Promise((resolve, reject) => {
-                remote.getSizes(resolve);
-            });
+            result = await remote.getSizesP();
 
             assert.deepStrictEqual(result.fr, ["female"]);
             assert.deepStrictEqual(result.uk, ["male", "female"]);
@@ -66,9 +64,7 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
 
-            result = await new Promise((resolve, reject) => {
-                remote.sizeToNative("fr", 42, "female", resolve);
-            });
+            result = await remote.sizeToNativeP("fr", 42, "female");
 
             assert.strictEqual(result.scale, "fr");
             assert.strictEqual(result.value, 31);
@@ -82,9 +78,7 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
 
-            result = await new Promise((resolve, reject) => {
-                remote.sizeToNativeB(["fr"], [42], ["female"], resolve);
-            });
+            result = await remote.sizeToNativeBP(["fr"], [42], ["female"]);
 
             assert.strictEqual(result.length, 1);
             assert.strictEqual(result[0].scale, "fr");
@@ -99,9 +93,7 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
 
-            result = await new Promise((resolve, reject) => {
-                remote.nativeToSize("fr", 31, "female", resolve);
-            });
+            result = await remote.nativeToSizeP("fr", 31, "female");
 
             assert.strictEqual(result.value, 42);
         });
@@ -113,9 +105,7 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
 
-            result = await new Promise((resolve, reject) => {
-                remote.nativeToSizeB(["fr"], [31], ["female"], resolve);
-            });
+            result = await remote.nativeToSizeBP(["fr"], [31], ["female"]);
 
             assert.strictEqual(result.length, 1);
             assert.strictEqual(result[0].value, 42);
@@ -123,38 +113,46 @@ describe("RipeAPI", function() {
     });
 
     describe("#getOrders", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+        });
+
         it("should be able to retrieve orders", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI();
 
-            result = await remote.authAdminP("root", "root");
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
-            assert.strictEqual(result.username, "root");
+            assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            result = await new Promise((resolve, reject) => {
-                remote.getOrders(resolve);
-            });
+            result = await remote.getOrders();
 
             assert.notStrictEqual(result.length, 0);
         });
     });
 
     describe("#getOrder", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+        });
+
         it("should be able to retrieve an order information", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI();
 
-            result = await remote.authAdminP("root", "root");
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
-            assert.strictEqual(result.username, "root");
+            assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            result = await new Promise((resolve, reject) => {
-                remote.getOrder(4488, resolve);
-            });
+            result = await remote.getOrderP(4488);
 
             assert.strictEqual(result.number, 4488);
             assert.strictEqual(result.number_s, "#004488");
