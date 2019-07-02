@@ -128,9 +128,7 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
 
-            result = await new Promise((resolve, reject) => {
-                remote.auth("root", "root", resolve);
-            });
+            result = await remote.authAdminP("root", "root");
 
             assert.strictEqual(result.username, "root");
             assert.notStrictEqual(typeof result.sid, undefined);
@@ -149,9 +147,7 @@ describe("RipeAPI", function() {
 
             const remote = ripe.RipeAPI();
 
-            result = await new Promise((resolve, reject) => {
-                remote.auth("root", "root", resolve);
-            });
+            result = await remote.authAdminP("root", "root");
 
             assert.strictEqual(result.username, "root");
             assert.notStrictEqual(typeof result.sid, undefined);

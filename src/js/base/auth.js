@@ -88,6 +88,72 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
 };
 
 /**
+ * Responsible for the begining of the (username, password)
+ * based authentication proccess.
+ *
+ * @param {String} username The username to be authenticated.
+ * @param {String} password The username's password.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The authentication data.
+ */
+ripe.Ripe.prototype.authP = function(username, password, options) {
+    return new Promise((resolve, reject) => {
+        this.auth(username, password, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Responsible for the begining of the (username, password)
+ * based authentication proccess.
+ *
+ * This method uses the admin back-end instead of the RIPE
+ * Core simple authentication system.
+ *
+ * @param {String} username The username to be authenticated.
+ * @param {String} password The username's password.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.authAdmin = function(username, password, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+
+    this.signinAdmin(
+        username,
+        password,
+        options,
+        function(result, isValid, request) {
+            this.sid = result.sid;
+            this.trigger("auth");
+            callback && callback(result, isValid, request);
+        }.bind(this)
+    );
+};
+
+/**
+ * Responsible for the begining of the (username, password)
+ * based authentication proccess.
+ *
+ * This method uses the admin back-end instead of the RIPE
+ * Core simple authentication system.
+ *
+ * @param {String} username The username to be authenticated.
+ * @param {String} password The username's password.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The authentication data.
+ */
+ripe.Ripe.prototype.authAdminP = function(username, password, options) {
+    return new Promise((resolve, reject) => {
+        this.authAdmin(username, password, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Responsible for the begining of the token based authentication proccess.
  *
  * @param {String} token The authentication token.
