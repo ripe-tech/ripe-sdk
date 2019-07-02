@@ -8,9 +8,39 @@ describe("RipeAPI", function() {
     describe("#_queryToSpec", function() {
         it("should be able to convert a query to spec", async () => {
             const remote = ripe.RipeAPI();
-            const spec = remote._querytoSpec("brand=dummy&model=dummy&p=piping:leather_dmy:black&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&p=shadow:default:default&p=overlay:default:default");
+            const spec = remote._querytoSpec(
+                "brand=dummy&model=dummy&p=piping:leather_dmy:black&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&p=shadow:default:default&p=overlay:default:default"
+            );
 
-            assert.deepStrictEqual(spec, { brand: "dummy", model: "dummy" });
+            assert.deepStrictEqual(spec, {
+                brand: "dummy",
+                model: "dummy",
+                parts: {
+                    piping: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    side: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    top0_bottom: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    },
+                    overlay: {
+                        material: "default",
+                        color: "default"
+                    }
+                },
+                initials: null,
+                engraving: null,
+                initials_extra: {}
+            });
         });
     });
 

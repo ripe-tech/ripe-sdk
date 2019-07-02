@@ -587,7 +587,13 @@ ripe.Ripe.prototype._unpackQuery = function(query) {
             const tuple = part.split("=");
             const key = decodeURIComponent(tuple[0].replace(/\+/g, "%20")).trim();
             const value = decodeURIComponent(tuple[1].replace(/\+/g, "%20")).trim();
-            options[key] = value;
+            if (options[key] === undefined) {
+                options[key] = value;
+            } else if (Array.isArray(options[key])) {
+                options[key].push(value);
+            } else {
+                options[key] = [options[key], value];
+            }
         }
     }
 
@@ -619,7 +625,7 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
 ripe.Ripe.prototype._parseExtraS = function(extraS) {
     const extra = {};
     for (const extraI of extraS) {
-        const [name, initials, engraving] = extraI.split(":", 2);
+        const [name, initials, engraving] = extraI.split(":", 3);
         extra[name] = {
             initials: initials,
             engraving: engraving
@@ -631,7 +637,7 @@ ripe.Ripe.prototype._parseExtraS = function(extraS) {
 ripe.Ripe.prototype._tuplesToParts = function(tuples) {
     const parts = [];
     for (const tuple of tuples) {
-        const [name, material, color] = tuple.split(":", 2);
+        const [name, material, color] = tuple.split(":", 3);
         const part = {
             name: name,
             material: material,
