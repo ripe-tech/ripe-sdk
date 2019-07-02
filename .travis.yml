@@ -7,7 +7,7 @@ node_js:
   - "10"
   - "11"
 install:
-  - npm install
+- npm install
 script: npm run lint && npm test
 before_deploy: npm run mark && npm run build
 deploy:
@@ -19,3 +19,6 @@ deploy:
   on:
     tags: true
     node_js: "8"
+env:
+  matrix:
+    secure: DcyK0cJ6/uIdseHkp9nPPig8nG1QqRACQgau2xY/hrpgVZ8FuzE1M5RPJSxzYd9+qjItCAJpx3lw3d24YPSn7XChYmcBlwF69QyP8k/bsdrQuMgwfYOvZmfOZZTvtXPUvIro4bGBih447rF+9KY3FsSXBCEqkR0POaQcuMAOeV+H1EKSZFBGTYGMrmPW6TwQJtICJM1ch+1C9OTAH2GWhH9CulZjM+Kcao05eqiDnNOdLvaeS1vCR3BE6J38fA2Yn9/Ta96auZ4E5rX8JtoK8AqXKoiMksrFocp7ke7GWPYpo0ewzfYudzQ0QzZZaD3fXxOrEsEDRzAkrhaGsZClrNT5fd6Sec8UZBTYB2D86Zq1IRt9uTblEga9tRlNhePf9+CcN5JtAWZfr6QySNx0B2Gkcn0fNEM5H7f17vMlL8OnYTWTp7TN06ARyw+WhgyAl2ODFPLyK8Fxui95PQEdeKbs0PThU4jntqd1WwvvIa+NsK+SGG+XCURhvdcGrF09HieM6YMD1oVtHP+ulxjrFCth7DM7LdqWQaLX73pT6/RxqtmmFOuD0oeEK6wx/tvmHlLana2YR3G0ymDGIfrRjUsDvRUn7jQ+rIoTlA57ZhQ0u0zUTwiDUN1osn5GG+tTtQTouBkqKCu6if8JxNDA1VOPBsAP95HEkvIqhM1rEN4=
