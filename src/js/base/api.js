@@ -643,12 +643,12 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
     const spec = {
         brand: brand,
         model: model,
-        variant: variant,
         parts: partsM,
         initials: initials,
         engraving: engraving,
         initials_extra: initialsExtra
     };
+    if (variant) spec.variant = variant;
     return spec;
 };
 
