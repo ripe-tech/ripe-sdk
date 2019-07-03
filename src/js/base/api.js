@@ -632,6 +632,7 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
     const options = this._unpackQuery(query);
     const brand = options.brand || null;
     const model = options.model || null;
+    const variant = options.variant || null;
     const initials = options.initials || null;
     const engraving = options.engraving || null;
     let initialsExtra = options.initials_extra || [];
@@ -642,6 +643,7 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
     const spec = {
         brand: brand,
         model: model,
+        variant: variant,
         parts: partsM,
         initials: initials,
         engraving: engraving,
