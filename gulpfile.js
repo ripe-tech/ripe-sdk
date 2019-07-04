@@ -25,6 +25,7 @@ const paths = {
     dist: "dist/**/*",
     polyfill: "node_modules/@babel/polyfill/dist/polyfill.js",
     basefiles: [
+        "src/js/locales/base.js",
         "src/js/base/base.js",
         "src/js/base/compat.js",
         "src/js/base/errors.js",
