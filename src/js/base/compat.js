@@ -29,7 +29,7 @@ ripe.assign = function(target) {
         if (nextSource == null) {
             continue;
         }
-        for (var nextKey in nextSource) {
+        for (const nextKey in nextSource) {
             if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
                 to[nextKey] = nextSource[nextKey];
             }

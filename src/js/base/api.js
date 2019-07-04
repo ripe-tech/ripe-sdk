@@ -652,16 +652,27 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
     return spec;
 };
 
-ripe.Ripe.prototype._parseExtraS = function(extraS) {
-    const extra = {};
-    for (const extraI of extraS) {
-        const [name, initials, engraving] = extraI.split(":", 3);
-        extra[name] = {
-            initials: initials,
-            engraving: engraving
-        };
+ripe.Ripe.prototype._specToQuery = function(spec) {
+    const queryL = [];
+    const brand = spec.brand || null;
+    const model = spec.model || null;
+    const variant = spec.variant || null;
+    const parts = spec.parts || null;
+    const initials = spec.initials || null;
+    const engraving = spec.engraving || null;
+    const initialsExtra = spec.initials_extra || null;
+    if (brand) queryL.push(`brand=${brand}`);
+    if (model) queryL.push(`model=${model}`);
+    if (variant) queryL.push(`variant=${variant}`);
+    if (parts) queryL.push(this._partsMToQuery(parts));
+    if (initials) queryL.push(`initials=${initials}`);
+    if (engraving) queryL.push(`engraving=${engraving}`);
+    if (initialsExtra) {
+        for (const extraS of this._generateExtraS(initialsExtra)) {
+            queryL.push(`initials_extra=${extraS}`);
+        }
     }
-    return extra;
+    return queryL.join("&");
 };
 
 ripe.Ripe.prototype._tuplesToParts = function(tuples) {
@@ -690,4 +701,41 @@ ripe.Ripe.prototype._partsToPartsM = function(parts) {
         };
     }
     return partsM;
+};
+
+ripe.Ripe.prototype._partsMToQuery = function(partsM, sort = true) {
+    const queryL = [];
+    const names = Object.keys(partsM);
+    if (sort) names.sort();
+    for (const name of names) {
+        const part = partsM[name];
+        const triplet = `${name}:${part.material}:${part.color}`;
+        queryL.push(`p=${triplet}`);
+    }
+    return queryL.join("&");
+};
+
+ripe.Ripe.prototype._parseExtraS = function(extraS) {
+    const extra = {};
+    for (const extraI of extraS) {
+        const [name, initials, engraving] = extraI.split(":", 3);
+        extra[name] = {
+            initials: initials,
+            engraving: engraving
+        };
+    }
+    return extra;
+};
+
+ripe.Ripe.prototype._generateExtraS = function(extra, sort = true) {
+    const extraS = [];
+    const names = Object.keys(extra);
+    if (sort) names.sort();
+    for (const name of names) {
+        const values = extra[name];
+        const [initials, engraving] = [values.initials, values.engraving];
+        const extraI = `${name}:${initials}:${engraving}`;
+        extraS.push(extraI);
+    }
+    return extraS;
 };
