@@ -83,7 +83,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
     // registers the diag plugin to automatically add
     // diagnostic headers to every remote request
     if (this.useDiag) {
-        var diagPlugin = new ripe.Ripe.plugins.DiagPlugin();
+        const diagPlugin = new ripe.Ripe.plugins.DiagPlugin();
         this.addPlugin(diagPlugin);
     }
 
@@ -137,6 +137,10 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
         this._pushHistory();
     });
 
+    // runs the initialization of the locale bundles, provided by the
+    // remote handle, this is required for proper initialization
+    await this._initBundles();
+
     // runs the connfiguration operation on the current instance, using
     // the requested parameters and options, multiple configuration
     // operations may be executed over the object life-time
@@ -148,15 +152,15 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
  * to updates so that any necessary cleanup operations can be executed.
  */
 ripe.Ripe.prototype.deinit = async function() {
-    var index = null;
+    let index = null;
 
     for (index = this.children.length - 1; index >= 0; index--) {
-        var child = this.children[index];
+        const child = this.children[index];
         this.unbindInteractable(child);
     }
 
     for (index = this.plugins.length - 1; index >= 0; index--) {
-        var plugin = this.plugins[index];
+        const plugin = this.plugins[index];
         this.removePlugin(plugin);
     }
 
@@ -165,15 +169,20 @@ ripe.Ripe.prototype.deinit = async function() {
 
 /**
  * Explicit entry point to the initial update.
+ *
+ * This method should be called before any significant RIPE operation
+ * can be performed on the instance.
  */
-ripe.Ripe.prototype.load = function() {
+ripe.Ripe.prototype.load = async function() {
     this.update();
 };
 
 /**
- * @ignore
+ * Explicit entry point for the unloading of the RIPE instance.
+ *
+ * Should be called for a clean exit of the instance.
  */
-ripe.Ripe.prototype.unload = function() {};
+ripe.Ripe.prototype.unload = async function() {};
 
 /**
  * Sets the model to be customised.
@@ -235,7 +244,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
 
     // determines if a valid model is currently defined for the ripe
     // instance, as this is going to change some logic behaviour
-    var hasModel = Boolean(this.brand && this.model);
+    const hasModel = Boolean(this.brand && this.model);
 
     // retrieves the configuration for the currently loaded model so
     // that others may use it freely (cache mechanism)
@@ -243,13 +252,13 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
 
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
-    var hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    var loadDefaults = !hasParts && this.useDefaults && hasModel;
+    const hasParts = this.parts && Object.keys(this.parts).length !== 0;
+    const loadDefaults = !hasParts && this.useDefaults && hasModel;
 
     // in case the current instance already contains configured parts
     // the instance is marked as ready (for complex resolution like price)
     // for cases where this is the first configuration (not an update)
-    var update = this.options.update || false;
+    const update = this.options.update || false;
     this.ready = update ? this.ready : hasParts;
 
     // triggers the config event notifying any listener that the (base)
@@ -320,7 +329,7 @@ ripe.Ripe.prototype.remote = function() {
     // tries to determine if the combinations available should be
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
-    var loadCombinations = this.useCombinations;
+    const loadCombinations = this.useCombinations;
     loadCombinations &&
         this.getCombinations(
             function(result) {
@@ -567,14 +576,14 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
     }
 
     const config = this.loadedConfig ? this.loadedConfig : await this.getConfigP();
-    var frames = {};
-    var faces = config["faces"];
-    for (var index = 0; index < faces.length; index++) {
-        var face = faces[index];
+    const frames = {};
+    const faces = config["faces"];
+    for (let index = 0; index < faces.length; index++) {
+        const face = faces[index];
         frames[face] = 1;
     }
 
-    var sideFrames = config["frames"];
+    const sideFrames = config["frames"];
     frames["side"] = sideFrames;
     callback && callback(frames);
 };
@@ -587,7 +596,7 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
  * @returns {Image} The Image instance created.
  */
 ripe.Ripe.prototype.bindImage = function(element, options) {
-    var image = new ripe.Image(this, element, options);
+    const image = new ripe.Image(this, element, options);
     return this.bindInteractable(image);
 };
 
@@ -599,7 +608,7 @@ ripe.Ripe.prototype.bindImage = function(element, options) {
  * @returns {Configurator} The Configurator instance created.
  */
 ripe.Ripe.prototype.bindConfigurator = function(element, options) {
-    var config = new ripe.Configurator(this, element, options);
+    const config = new ripe.Configurator(this, element, options);
     return this.bindInteractable(config);
 };
 
@@ -678,8 +687,8 @@ ripe.Ripe.prototype.deselectPart = function(part, options) {
 ripe.Ripe.prototype.update = function(state) {
     state = state || this._getState();
 
-    for (var index = 0; index < this.children.length; index++) {
-        var child = this.children[index];
+    for (let index = 0; index < this.children.length; index++) {
+        const child = this.children[index];
         child.update(state);
     }
 
@@ -698,7 +707,7 @@ ripe.Ripe.prototype.undo = async function() {
     }
 
     this.historyPointer -= 1;
-    var parts = this.history[this.historyPointer];
+    const parts = this.history[this.historyPointer];
     if (parts) await this.setParts(parts, false, { action: "undo" });
 };
 
@@ -714,7 +723,7 @@ ripe.Ripe.prototype.redo = async function() {
     }
 
     this.historyPointer += 1;
-    var parts = this.history[this.historyPointer];
+    const parts = this.history[this.historyPointer];
     if (parts) await this.setParts(parts, false, { action: "redo" });
 };
 
@@ -739,6 +748,23 @@ ripe.Ripe.prototype.canRedo = function() {
 };
 
 /**
+ * Returns a promise that is fulfilled once the RIPE instance
+ * is ready to be used.
+ *
+ * This can be used to actively wait for the initialization of
+ * the RIPE instance under an async environment.
+ *
+ * @returns {Promise} The promise to be fulfilled on the instance
+ * is ready to be used.
+ */
+ripe.Ripe.prototype.isReady = async function() {
+    await new Promise((resolve, reject) => {
+        if (this.ready) resolve();
+        else this.bind("ready", resolve);
+    });
+};
+
+/**
  * Registers a plugin to this Ripe instance.
  *
  * @param {Plugin} plugin The plugin to be registered.
@@ -756,6 +782,18 @@ ripe.Ripe.prototype.addPlugin = function(plugin) {
 ripe.Ripe.prototype.removePlugin = function(plugin) {
     plugin.unregister(this);
     this.plugins.splice(this.plugins.indexOf(plugin), 1);
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._initBundles = async function(defaultLocale = "en_us") {
+    const locale = this.locale || defaultLocale;
+    const globalBundleP = await this.localeBundleP(locale, "scales");
+    const sizesBundleP = await this.localeBundleP(locale, "sizes");
+    const [globalBundle, sizesBundle] = await Promise.all([globalBundleP, sizesBundleP]);
+    this.addBundle(globalBundle, locale);
+    this.addBundle(sizesBundle, locale);
 };
 
 /**
@@ -818,8 +856,8 @@ ripe.Ripe.prototype._setPart = async function(part, material, color, noEvents) {
  * @ignore
  */
 ripe.Ripe.prototype._setParts = async function(update, noEvents) {
-    for (var index = 0; index < update.length; index++) {
-        var part = update[index];
+    for (let index = 0; index < update.length; index++) {
+        const part = update[index];
         await this._setPart(part[0], part[1], part[2], noEvents);
     }
 };
@@ -829,9 +867,9 @@ ripe.Ripe.prototype._setParts = async function(update, noEvents) {
  */
 ripe.Ripe.prototype._partsList = function(parts) {
     parts = parts || this.parts;
-    var partsList = [];
-    for (var part in parts) {
-        var value = parts[part];
+    const partsList = [];
+    for (const part in parts) {
+        const value = parts[part];
         partsList.push([part, value.material, value.color]);
     }
     return partsList;
@@ -849,7 +887,7 @@ ripe.Ripe.prototype._pushHistory = function() {
         return;
     }
 
-    var _parts = ripe.clone(this.parts);
+    const _parts = ripe.clone(this.parts);
     this.history = this.history.slice(0, this.historyPointer + 1);
     this.history.push(_parts);
     this.historyPointer = this.history.length - 1;

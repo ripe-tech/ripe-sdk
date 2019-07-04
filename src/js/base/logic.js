@@ -8,6 +8,24 @@ if (typeof require !== "undefined") {
     var LOCALES_BASE = locales.LOCALES_BASE;
 }
 
+ripe.Ripe.prototype.addBundle = function(bundle, locale = null) {
+    locale = locale === null ? this.locale : locale;
+    const _bundle = LOCALES_BASE[locale] || {};
+    LOCALES_BASE[locale] = _bundle;
+    for (const [key, value] of Object.entries(bundle)) {
+        _bundle[key] = value;
+    }
+};
+
+ripe.Ripe.prototype.removeBundle = function(bundle, locale = null) {
+    locale = locale === null ? this.locale : locale;
+    if (LOCALES_BASE[locale] === undefined) return;
+    const _bundle = LOCALES_BASE[locale];
+    for (const [key, value] of Object.entries(bundle)) {
+        _bundle[key] = value;
+    }
+};
+
 /**
  * Runs a local based localization, meaning that the data source
  * for the locale strings should be already loaded in memory.
@@ -29,10 +47,14 @@ ripe.Ripe.prototype.localeLocal = function(
 ) {
     fallback = fallback === null ? value : fallback;
     locale = locale === null ? this.locale : locale;
-    if (locale && LOCALES_BASE[locale][value] !== undefined) {
+    if (locale && LOCALES_BASE[locale] !== undefined && LOCALES_BASE[locale][value] !== undefined) {
         return LOCALES_BASE[locale][value];
     }
-    if (fallbackLocale && LOCALES_BASE[fallbackLocale][value] !== undefined) {
+    if (
+        fallbackLocale &&
+        LOCALES_BASE[fallbackLocale] !== undefined &&
+        LOCALES_BASE[fallbackLocale][value] !== undefined
+    ) {
         return LOCALES_BASE[fallbackLocale][value];
     }
     return fallback;
