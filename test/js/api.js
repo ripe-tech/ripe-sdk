@@ -54,7 +54,7 @@ describe("RipeAPI", function() {
             result = await remote.getSizesP();
 
             assert.deepStrictEqual(result.fr, ["female"]);
-            assert.deepStrictEqual(result.uk, ["male", "female"]);
+            assert.deepStrictEqual(result.uk, ["female", "male"]);
         });
     });
 
