@@ -10,6 +10,7 @@ const LOCALES = {
     "scales.std:clothing": "",
     "scales.uk:male": "IT",
     "scales.it:clothing": "IT",
+    "sizes.one_size": "",
     "sizes.std:clothing:kids.17": "2 Yrs",
     "sizes.std:clothing:kids.18": "3 Yrs",
     "sizes.std:clothing:kids.19": "4 Yrs",
