@@ -30,6 +30,7 @@
         "src/js/ripe-min.js",
         "src/js/api/**/*.js",
         "src/js/base/**/*.js",
+        "src/js/locales/**/*.js",
         "src/js/plugins/**/*.js",
         "src/js/visual/**/*.js",
         "test/**/*.js"
