@@ -54,7 +54,7 @@ ripe.Ripe.prototype._getLocaleModelOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const locale =
-        options.locale !== undefined && options.locale !== null ? options.locale : this.locale;
+        options.locale === undefined || options.locale === null ? this.locale : options.locale;
     const url = this.url + "builds/" + brand + "/locale/" + locale;
     const params = {};
     if (model !== undefined && model !== null) {

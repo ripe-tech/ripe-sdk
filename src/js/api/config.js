@@ -10,7 +10,7 @@ if (typeof require !== "undefined") {
  * of options or in alternative the current RIPE instance state.
  *
  * @param {Object} options An object of options to configure the request, such as:
- * - 'url' - The base url.
+ * - 'url' - The base URL.
  * @param {Function} callback Function with the result of the request.
  * s {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -30,7 +30,7 @@ ripe.Ripe.prototype.configInfo = function(options, callback) {
  * of options or in alternative the current RIPE instance state.
  *
  * @param {Object} options An object of options to configure the request, such as:
- * - 'url' - The base url.
+ * - 'url' - The base URL.
  * @param {Function} callback Function with the result of the request.
  * s {Promise} The model's configuration data.
  */
@@ -48,7 +48,7 @@ ripe.Ripe.prototype.configInfoP = function(options) {
  *
  * @param {String} dku The DKU identifier to be used in the resolution.
  * @param {Object} options An object of options to configure the request, such as:
- * - 'url' - The base url.
+ * - 'url' - The base URL.
  * @param {Function} callback Function with the result of the request.
  * s {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -67,7 +67,7 @@ ripe.Ripe.prototype.configDku = function(dku, options, callback) {
  *
  * @param {String} dku The DKU identifier to be used in the resolution.
  * @param {Object} options An object of options to configure the request, such as:
- * - 'url' - The base url.
+ * - 'url' - The base URL.
  * @param {Function} callback Function with the result of the request.
  * s {Promise} The model's configuration data.
  */
@@ -84,7 +84,7 @@ ripe.Ripe.prototype.configDkuP = function(dku, options) {
  *
  * @param {String} productId The identifier of the product to be resolved.
  * @param {Object} options An object of options to configure the request, such as:
- * - 'url' - The base url.
+ * - 'url' - The base URL.
  * @param {Function} callback Function with the result of the request.
  * s {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -102,7 +102,7 @@ ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
  *
  * @param {String} productId The identifier of the product to be resolved.
  * @param {Object} options An object of options to configure the request, such as:
- * - 'url' - The base url.
+ * - 'url' - The base URL.
  * s {Promise} The model's configuration data.
  */
 ripe.Ripe.prototype.configResolveP = function(productId, options) {
