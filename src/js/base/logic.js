@@ -64,6 +64,9 @@ ripe.Ripe.prototype.localeLocal = function(
  * Parses the provided normalized engraving string according to the
  * standard `<name>:<type>` format, using the loaded configurations.
  *
+ * The provided string may not be normalized but for that situation
+ * typical guessing heuristics are going to be applied.
+ *
  * @param {String} engraving The engraving string to be parsed.
  * @param {Array} properties If provided overrides the default loaded
  * config initials strategy for the retrieval of properties definition.
