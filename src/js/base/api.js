@@ -633,6 +633,7 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
     const brand = options.brand || null;
     const model = options.model || null;
     const variant = options.variant || null;
+    const description = options.description || null;
     const initials = options.initials || null;
     const engraving = options.engraving || null;
     let initialsExtra = options.initials_extra || [];
@@ -649,6 +650,7 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
         initials_extra: initialsExtra
     };
     if (variant) spec.variant = variant;
+    if (description) spec.description = description;
     return spec;
 };
 
@@ -657,6 +659,7 @@ ripe.Ripe.prototype._specToQuery = function(spec) {
     const brand = spec.brand || null;
     const model = spec.model || null;
     const variant = spec.variant || null;
+    const description = spec.description || null;
     const parts = spec.parts || null;
     const initials = spec.initials || null;
     const engraving = spec.engraving || null;
@@ -664,6 +667,7 @@ ripe.Ripe.prototype._specToQuery = function(spec) {
     if (brand) queryL.push(`brand=${brand}`);
     if (model) queryL.push(`model=${model}`);
     if (variant) queryL.push(`variant=${variant}`);
+    if (description) queryL.push(`description=${description}`);
     if (parts) queryL.push(this._partsMToQuery(parts));
     if (initials) queryL.push(`initials=${initials}`);
     if (engraving) queryL.push(`engraving=${engraving}`);
