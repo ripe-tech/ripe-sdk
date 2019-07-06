@@ -23,6 +23,16 @@ var ripe = new Ripe({
 
 After initializing the Ripe object you should subscribe to the available events so you can easily respond and update your UI.
 
+### Ready
+
+Triggered when all of the async operations related with the instance setup are complete.
+
+```javascript
+ripe.bind("ready", function() {
+    doSomeStuff();
+});
+```
+
 ### Update
 
 Triggered whenever there is a customization change (eg: the color of a part is changed).
