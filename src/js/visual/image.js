@@ -81,6 +81,13 @@ ripe.Image.prototype.update = function(state) {
         ? this.initialsBuilder(this.initials, this.engraving, this.element)
         : {};
 
+    // verifies if the model currently loaded in the RIPE instance can
+    // render the frame to be display and if that's not the case "ignores"
+    // the current request for update
+    if (frame && !this.owner.hasFrame(frame)) {
+        return;
+    }
+
     const url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
         size: size,

@@ -143,3 +143,31 @@ ripe.Ripe.prototype.normalizeEngraving = function(engraving, properties = null) 
     const { values } = this.parseEngraving(engraving, properties);
     return values.map(v => `${v["name"]}:${v["type"]}`).join(".");
 };
+
+/**
+ * Determines if the model currently loaded (in case there's one)
+ * has the provided frame available in spec.
+ *
+ * Notice that this call does not assure that a render is possible
+ * it only determines that according to model's spec it should be
+ * possible to render such a frame.
+ *
+ * @param {String} frame The name of the frame to determine "rederability"
+ * according to the {face}-{index} format.
+ * @returns {Boolean} If it's possible to render such frame for the
+ * currently loaded model.
+ */
+ripe.Ripe.prototype.hasFrame = function(frame) {
+    if (!this.loadedConfig) return true;
+    if (!frame) return true;
+
+    const frameP = frame.split("-", 2);
+    let [face, index] = frameP.length > 1 ? frameP : [frameP, "0"];
+    index = parseInt(index);
+
+    if (!this.loadedConfig.faces_m) return false;
+    if (!this.loadedConfig.faces_m[face]) return false;
+    if (this.loadedConfig.faces_m[face].frames - 1 < index) return false;
+
+    return true;
+};
