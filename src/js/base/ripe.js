@@ -565,7 +565,9 @@ ripe.Ripe.prototype.setChoices = function(choices, noEvents) {
 };
 
 /**
- * Returns the model's available frames.
+ * Returns the model's available frames, in an object structure
+ * that maps a certain face with the number of available frames
+ * for such face.
  *
  * @returns {Promise} The model's available frames.
  */
