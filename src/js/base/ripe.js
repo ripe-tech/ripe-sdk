@@ -205,10 +205,6 @@ ripe.Ripe.prototype.unload = async function() {};
  *  - 'usePrice' - If the price should be automatically retrieved whenever there is a customization change.
  */
 ripe.Ripe.prototype.config = async function(brand, model, options) {
-    // triggers the 'pre_config' event so that
-    // the listeners can cleanup if needed
-    await this.trigger("pre_config", brand, model, options);
-
     // sets the most structural values of this entity
     // that represent the configuration to be used
     this.brand = brand;
@@ -222,13 +218,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     // sets the new options using the current options
     // as default values and sets the update flag to
     // true if it is not set
-    options = ripe.assign(
-        {
-            update: true
-        },
-        this.options,
-        options
-    );
+    options = ripe.assign({}, this.options, options);
     this.setOptions(options);
 
     // in case there's a DKU defined for the current config then
@@ -249,45 +239,50 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     // instance, as this is going to change some logic behaviour
     const hasModel = Boolean(this.brand && this.model);
 
+    // in case no model is currently loaded it's time to return the
+    // control flow as all of the structures are currently loaded
+    if (hasModel === false) {
+        this.loadedConfig = null;
+        if (this.ready === false) {
+            this.ready = true;
+            this.trigger("ready");
+        }
+        return;
+    }
+
+    // triggers the 'pre_config' event so that the listeners
+    // can cleanup if needed, from the previous configuration
+    await this.trigger("pre_config", brand, model, options);
+
     // retrieves the configuration for the currently loaded model so
     // that others may use it freely (cache mechanism)
-    this.loadedConfig = hasModel ? await this.getConfigP() : null;
-
-    // determines if the defaults for the selected model should
-    // be loaded so that the parts structure is initially populated
-    const hasParts = this.parts && Object.keys(this.parts).length !== 0;
-    const loadDefaults = !hasParts && this.useDefaults && hasModel;
-
-    // in case the current instance already contains configured parts
-    // the instance is marked as ready (for complex resolution like price)
-    // for cases where this is the first configuration (not an update)
-    const update = this.options.update || false;
-    this.ready = update ? this.ready : hasParts;
+    this.loadedConfig = await this.getConfigP();
 
     // creates a "new" choices from the provided configuration for the
     // model that has just been "loaded" and sets it as the new set of
     // choices for the configuration context
-    if (hasModel === true) this.setChoices(this._toChoices(this.loadedConfig));
+    this.setChoices(this._toChoices(this.loadedConfig));
 
     // triggers the config event notifying any listener that the (base)
     // configuration for this main RIPE instance has changed and waits
     // for the listeners to conclude their operations
     await this.trigger("config", this.loadedConfig, options);
 
-    // determines the proper initial parts for the model taking into account
-    // if the defaults should be loaded
-    const parts = loadDefaults ? this.loadedConfig.defaults : this.parts;
+    // determines if the ready flag is already set for the current instance
+    // and if that's not the case updates it and triggers the ready event
     if (this.ready === false) {
         this.ready = true;
         this.trigger("ready");
     }
 
-    // in case there's no model defined in the current instance then there's
-    // nothing more possible to be done, returns the control flow
-    if (hasModel === false) {
-        await this.trigger("post_config", this.loadedConfig, options);
-        return;
-    }
+    // determines if the defaults for the selected model should
+    // be loaded so that the parts structure is initially populated
+    const hasParts = this.parts && Object.keys(this.parts).length !== 0;
+    const loadDefaults = !hasParts && this.useDefaults && hasModel;
+
+    // determines the proper initial parts for the model taking into account
+    // if the defaults should be loaded
+    const parts = loadDefaults ? this.loadedConfig.defaults : this.parts;
 
     // updates the parts of the current instance so that the internals of it
     // reflect the newly loaded configuration
