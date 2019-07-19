@@ -93,6 +93,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
     this.bind("config", async function() {
         let result = null;
         if (!this.remoteOnConfig) return;
+        if (!this.loadedConfig) return;
         try {
             result = await this.onConfigP({
                 brand: this.brand,
@@ -111,6 +112,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
     this.bind("part", async function(name, value) {
         let result = null;
         if (!this.remoteOnPart) return;
+        if (!this.loadedConfig) return;
         try {
             result = await this.onPartP({
                 name: name,
@@ -185,7 +187,8 @@ ripe.Ripe.prototype.load = async function() {
 ripe.Ripe.prototype.unload = async function() {};
 
 /**
- * Sets the model to be customised.
+ * Sets the model to be customised by providing both the brand
+ * and the model for the update.
  *
  * @param {String} brand The brand of the model.
  * @param {String} model The name of the model.
@@ -261,6 +264,11 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     const update = this.options.update || false;
     this.ready = update ? this.ready : hasParts;
 
+    // creates a "new" choices from the provided configuration for the
+    // model that has just been "loaded" and sets it as the new set of
+    // choices for the configuration context
+    if (hasModel === true) this.setChoices(this._toChoices(this.loadedConfig));
+
     // triggers the config event notifying any listener that the (base)
     // configuration for this main RIPE instance has changed and waits
     // for the listeners to conclude their operations
@@ -275,7 +283,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     }
 
     // in case there's no model defined in the current instance then there's
-    // nothing more possible to be done, reeturns the control flow
+    // nothing more possible to be done, returns the control flow
     if (hasModel === false) {
         await this.trigger("post_config", this.loadedConfig, options);
         return;
@@ -300,11 +308,6 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
     // notifies that the config has changed and waits for listeners before
     // concluding the config operation
     await this.trigger("post_config", this.loadedConfig, options);
-
-    // creates a "new" choices from the provided configuration for the
-    // model that has just been "loaded" and sets it as the new set of
-    // choices for the configuration context
-    this.setChoices(this._toChoices(this.loadedConfig));
 
     // triggers the remote operations, that should be executed
     // only after the complete set of post confirm promises are met
@@ -934,6 +937,8 @@ ripe.Ripe.prototype._handleCtx = function(result) {
 ripe.Ripe.prototype._toChoices = function(loadedConfig) {
     const choices = {};
     for (const part of loadedConfig.parts) {
+        if (loadedConfig.defaults[part.name].hidden) continue;
+        if (loadedConfig.hidden.includes(part.name)) continue;
         const materialsState = {};
         choices[part.name] = {
             available: true,
