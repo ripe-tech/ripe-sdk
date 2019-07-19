@@ -93,7 +93,6 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
     this.bind("config", async function() {
         let result = null;
         if (!this.remoteOnConfig) return;
-        if (!this.loadedConfig) return;
         try {
             result = await this.onConfigP({
                 brand: this.brand,
@@ -112,7 +111,6 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
     this.bind("part", async function(name, value) {
         let result = null;
         if (!this.remoteOnPart) return;
-        if (!this.loadedConfig) return;
         try {
             result = await this.onPartP({
                 name: name,
