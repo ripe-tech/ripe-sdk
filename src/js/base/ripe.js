@@ -316,7 +316,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype.remote = function() {
+ripe.Ripe.prototype.remote = async function() {
     // makes sure that both the brand and the model values are defined
     // for the current instance as they are needed for the remove operation
     // that are going to be performed
@@ -328,13 +328,10 @@ ripe.Ripe.prototype.remote = function() {
     // loaded for the current model and if that's the case start the
     // loading process for them, setting then the result in the instance
     const loadCombinations = this.useCombinations;
-    loadCombinations &&
-        this.getCombinations(
-            function(result) {
-                this.combinations = result;
-                this.trigger("combinations", this.combinations);
-            }.bind(this)
-        );
+    if (loadCombinations) {
+        this.combinations = await this.getCombinationsP();
+        this.trigger("combinations", this.combinations);
+    }
 };
 
 /**
