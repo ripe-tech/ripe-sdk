@@ -25,7 +25,7 @@ ripe.touchHandler = function(element, options = {}) {
         let type = "";
 
         // switches over the type of touch event associating
-        // the proper equivalent mouse enve to each of them
+        // the proper equivalent mouse event to each of them
         switch (event.type) {
             case "touchstart":
                 type = "mousedown";
@@ -53,7 +53,7 @@ ripe.touchHandler = function(element, options = {}) {
 
         // creates the new mouse event that will emulate the
         // touch event that has just been raised, it should
-        // be completly equivalent to the original touch
+        // be completely equivalent to the original touch
         const mouseEvent = document.createEvent("MouseEvent");
         mouseEvent.initMouseEvent(
             type,

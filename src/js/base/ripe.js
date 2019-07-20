@@ -79,7 +79,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
         this.addPlugin(plugin);
     }
 
-    // if diagnotisc headers have not been disabled then
+    // if diagnostic headers have not been disabled then
     // registers the diag plugin to automatically add
     // diagnostic headers to every remote request
     if (this.useDiag) {
@@ -126,7 +126,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
     // listens for the post parts event and saves the current configuration
     // for the undo operations (history control)
     this.bind("post_parts", function(parts, options) {
-        // in case the current opertion was an undo and redo one there's
+        // in case the current operation was an undo and redo one there's
         // nothing to be done (no history stack change)
         if (options && ["undo", "redo"].indexOf(options.action) !== -1) {
             return;
@@ -141,7 +141,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
     // remote handle, this is required for proper initialization
     await this._initBundles();
 
-    // runs the connfiguration operation on the current instance, using
+    // runs the configuration operation on the current instance, using
     // the requested parameters and options, multiple configuration
     // operations may be executed over the object life-time
     await this.config(brand, model, options);
@@ -387,7 +387,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
  * This operations is an expensive one and should be used carefully
  * to avoid unwanted resource usage.
  *
- * If manny operations are meant to be used at the same time the `setParts`
+ * If many operations are meant to be used at the same time the `setParts`
  * parts method should be used instead, as it is better suited for bulk
  * based operations.
  *
@@ -434,7 +434,7 @@ ripe.Ripe.prototype.setParts = async function(update, noEvents, options) {
 /**
  * Changes the initials of the model, this is considered a simple
  * legacy oriented strategy as the `setInitialsExtra` method should
- * be used for more complex scenarious with multiple groups.
+ * be used for more complex scenarios with multiple groups.
  *
  * @param {String} initials The initials value to be set.
  * @param {String} engraving The type of engraving to be set.

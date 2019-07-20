@@ -120,7 +120,7 @@ ripe.Ripe.prototype.getPrice = function(options, callback) {
  * @ignore
  */
 ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
-    // runs the defaulting operatin on the provided options
+    // runs the defaulting operation on the provided options
     // optional parameter (ensures valid object there)
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -507,7 +507,7 @@ ripe.Ripe.prototype._getSwatchURL = function(options) {
  * of default values are going to be added to the provided options
  * so that it becomes as compatible as possible.
  *
- * If authentioncation is required the current session identifier is
+ * If authentication is required the current session identifier is
  * also added to the request.
  *
  * @param {Object} options The HTTP request options object that is
@@ -536,10 +536,10 @@ ripe.Ripe.prototype._build = function(options) {
  * Builds a GET query string from the provided Array or Object parameter.
  *
  * If the provided parameter is an Array order of the GET parameters is
- * preserved, otherwise alphabethical order is going to be used.
+ * preserved, otherwise alphabetical order is going to be used.
  *
  * @param {Object} params The object or array that contains the sequence
- * of parameeters for the generated GET query.
+ * of parameters for the generated GET query.
  * @returns {String} The GET query string that should contain the complete
  * set of passed arguments (serialization).
  *

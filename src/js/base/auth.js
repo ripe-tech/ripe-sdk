@@ -50,9 +50,9 @@ ripe.Ripe.prototype.isOAuthError = function() {
 };
 
 /**
- * Checks if a successfully OAuth proccess has been fulfilled.
+ * Checks if a successfully OAuth process has been fulfilled.
  *
- * @returns {Boolean} Boolean representing if an OAuth proccess has been fulfilled.
+ * @returns {Boolean} Boolean representing if an OAuth process has been fulfilled.
  */
 ripe.Ripe.prototype.isOAuthPending = function() {
     if (this.isAuth()) {
@@ -62,8 +62,8 @@ ripe.Ripe.prototype.isOAuthPending = function() {
 };
 
 /**
- * Responsible for the begining of the (username, password)
- * based authentication proccess.
+ * Responsible for the beginning of the (username, password)
+ * based authentication process.
  *
  * @param {String} username The username to be authenticated.
  * @param {String} password The username's password.
@@ -88,8 +88,8 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
 };
 
 /**
- * Responsible for the begining of the (username, password)
- * based authentication proccess.
+ * Responsible for the beginning of the (username, password)
+ * based authentication process.
  *
  * @param {String} username The username to be authenticated.
  * @param {String} password The username's password.
@@ -105,8 +105,8 @@ ripe.Ripe.prototype.authP = function(username, password, options) {
 };
 
 /**
- * Responsible for the begining of the (username, password)
- * based authentication proccess.
+ * Responsible for the beginning of the (username, password)
+ * based authentication process.
  *
  * This method uses the admin back-end instead of the RIPE
  * Core simple authentication system.
@@ -134,8 +134,8 @@ ripe.Ripe.prototype.authAdmin = function(username, password, options, callback) 
 };
 
 /**
- * Responsible for the begining of the (username, password)
- * based authentication proccess.
+ * Responsible for the beginning of the (username, password)
+ * based authentication process.
  *
  * This method uses the admin back-end instead of the RIPE
  * Core simple authentication system.
@@ -154,7 +154,7 @@ ripe.Ripe.prototype.authAdminP = function(username, password, options) {
 };
 
 /**
- * Responsible for the begining of the token based authentication proccess.
+ * Responsible for the beginning of the token based authentication process.
  *
  * @param {String} token The authentication token.
  * @param {Object} options An object of options to configure the authentication.
@@ -177,7 +177,7 @@ ripe.Ripe.prototype.authPid = function(token, options, callback) {
 };
 
 /**
- * Responsible for the begining of the token based authentication proccess.
+ * Responsible for the beginning of the token based authentication process.
  *
  * @param {String} token The authentication token.
  * @param {Object} options An object of options to configure the authentication.
@@ -192,7 +192,7 @@ ripe.Ripe.prototype.authPidP = function(token, options) {
 };
 
 /**
- * Responsible for the begining of the unauth process, triggering the 'unauth' event.
+ * Responsible for the beginning of the unauth process, triggering the 'unauth' event.
  *
  * @param {Object} options The set of options used for unauth process.
  * @param {Function} callback The callback to be called once session is unauth'ed.
@@ -211,13 +211,13 @@ ripe.Ripe.prototype.unauth = function(options, callback) {
 };
 
 /**
- * Responsible for the begining of the OAuth based authentication process
+ * Responsible for the beginning of the OAuth based authentication process
  * may either start the redirection process (in case no valid token is found)
  * or try to revalidate the session with the currently existing tokens or session ID.
  *
  * @param {Object} options The set of options used for the OAuth process, should
  * include client identifier and secret.
- * @param {Function} callback The callback to be called once the loging or the access
+ * @param {Function} callback The callback to be called once the logging or the access
  * token retrieval functions are finished.
  * @returns {oauthAccessToken} Either an invalid/unset value or the result of the login operation.
  */
