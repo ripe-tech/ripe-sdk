@@ -8,7 +8,7 @@ if (typeof require !== "undefined") {
 /**
  * Retrieves the complete set of OAuth elements to be used, such as:
  * the access_token, token_type, expires_in, refresh_token, scope and
- * tokens. Notice that boththe scope and the tokens are retrieved providing
+ * tokens. Notice that both the scope and the tokens are retrieved providing
  * the ability to modify experience taking that into account.
  *
  * @param {String} code The OAuth code.
