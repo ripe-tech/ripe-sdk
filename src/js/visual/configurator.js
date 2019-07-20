@@ -139,7 +139,7 @@ ripe.Configurator.prototype.resize = function(size) {
  * @param {Object} state An object containing the new state of the owner.
  * @param {Object} options Set of optional parameters to adjust the Configurator update, such as:
  * - 'animate' - If it's to animate the update (defaults to 'false').
- * - 'duration' - The duration in milliseconds that the transtition should take.
+ * - 'duration' - The duration in milliseconds that the transition should take.
  * - 'callback' - The callback to be called at the end of the update.
  * - 'preload' - If it's to execute the pre-loading process.
  */
@@ -244,9 +244,9 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const view = this.element.dataset.view;
     const position = parseInt(this.element.dataset.position);
 
-    // tries to retrieve the ammount of frames for the target view and
-    // validates that the arget view exists and that the target position
-    // (frame) does not overflow the ammount of frames in for the view
+    // tries to retrieve the amount of frames for the target view and
+    // validates that the target view exists and that the target position
+    // (frame) does not overflow the amount of frames in for the view
     const viewFrames = this.frames[nextView];
     if (!viewFrames || nextPosition >= viewFrames) {
         throw new RangeError("Frame " + frame + " is not supported.");
@@ -581,7 +581,7 @@ ripe.Configurator.prototype._updateConfig = function() {
 
     // retrieves the new product frame object and sets it
     // under the current state, adapting then the internal
-    // structures to accomodate the possible changes in the
+    // structures to accommodate the possible changes in the
     // frame structure
     this.owner.getFrames(
         function(frames) {
