@@ -214,7 +214,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._getRestrictionKey = function(
 
 /**
  * Maps the restrictions array into a dictionary where restrictions
- * are associated by key with eachother for easier use.
+ * are associated by key with each other for easier use.
  * For example, '[[{ material: "nappa"}, { material: "suede"}]]'
  * turns into '{ "nappa": ["suede"], "suede": ["nappa"] }'.
  *

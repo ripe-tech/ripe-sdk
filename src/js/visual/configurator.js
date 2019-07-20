@@ -8,7 +8,7 @@ if (typeof require !== "undefined") {
 
 /**
  * @class
- * @classdesc Class that defines an interactive Configurator instace to be
+ * @classdesc Class that defines an interactive Configurator instance to be
  * used in connection with the main Ripe owner to provide an
  * interactive configuration experience inside a DOM.
  *
@@ -80,8 +80,8 @@ ripe.Configurator.prototype.init = function() {
     // to a view for better user experience
     this._lastFrame = {};
 
-    // creates the necessary DOM elemnts and runs
-    // the intial layout update operation if the
+    // creates the necessary DOM elements and runs
+    // the initial layout update operation if the
     // owner has a model set
     this._initLayout();
     this.owner.brand && this.owner.model && this._updateConfig();
@@ -448,7 +448,7 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
  * constructing all te child elements required for the proper
  * configurator functionality to work.
  *
- * From a DOM prespective this is a synchronous operation,
+ * From a DOM perspective this is a synchronous operation,
  * meaning that after its execution the configurator is ready
  * to be manipulated.
  *
