@@ -129,3 +129,32 @@ ripe.equal = function(first, second) {
     const secondS = JSON.stringify(second);
     return firstS === secondS;
 };
+
+/**
+ * @ignore
+ */
+ripe.splitUnescape = function(value, delimiter = " ", max = -1, escape = "\\", unescape = true) {
+    const result = [];
+    let current = [];
+    const iterator = value[Symbol.iterator]();
+    let count = 0;
+    for (const char of iterator) {
+        if (char === escape) {
+            if (!unescape) current.push(escape);
+            const follow = iterator.next();
+            if (!follow.done) {
+                current.push(follow.value);
+            } else if (unescape) {
+                current.push(escape);
+            }
+        } else if (char === delimiter && count !== max) {
+            result.push(current.join(""));
+            current = [];
+            count += 1;
+        } else {
+            current.push(char);
+        }
+    }
+    result.push(current.join(""));
+    return result;
+};
