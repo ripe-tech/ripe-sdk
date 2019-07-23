@@ -135,8 +135,8 @@ ripe.equal = function(first, second) {
  */
 ripe.escape = function(value, char, escape = "\\") {
     return value
-        .replace(new RegExp(escape, "g"), escape + escape)
-        .replace(new RegExp(char, "g"), escape + char);
+        .replace(new RegExp("\\" + escape, "g"), () => escape + escape)
+        .replace(new RegExp("\\" + char, "g"), () => escape + char);
 };
 
 /**
