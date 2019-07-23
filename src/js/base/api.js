@@ -682,7 +682,7 @@ ripe.Ripe.prototype._specToQuery = function(spec) {
 ripe.Ripe.prototype._tuplesToParts = function(tuples) {
     const parts = [];
     for (const tuple of tuples) {
-        const [name, material, color] = tuple.split(":", 3);
+        const [name, material, color] = ripe.splitUnescape(tuple, ":", 2);
         const part = {
             name: name,
             material: material,
@@ -722,7 +722,7 @@ ripe.Ripe.prototype._partsMToQuery = function(partsM, sort = true) {
 ripe.Ripe.prototype._parseExtraS = function(extraS) {
     const extra = {};
     for (const extraI of extraS) {
-        const [name, initials, engraving] = extraI.split(":", 3);
+        const [name, initials, engraving] = ripe.splitUnescape(extraI, ":", 2);
         extra[name] = {
             initials: initials,
             engraving: engraving
