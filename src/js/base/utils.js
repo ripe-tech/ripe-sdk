@@ -133,6 +133,36 @@ ripe.equal = function(first, second) {
 /**
  * @ignore
  */
+ripe.escape = function(value, char, escape = "\\") {
+    return value
+        .replace(new RegExp(escape, "g"), escape + escape)
+        .replace(new RegExp(char, "g"), escape + char);
+};
+
+/**
+ * @ignore
+ */
+ripe.unescape = function(value, escape = "\\") {
+    const result = [];
+    const iterator = value[Symbol.iterator]();
+    for (const char of iterator) {
+        if (char === escape) {
+            const follow = iterator.next();
+            if (!follow.done) {
+                result.push(follow.value);
+            } else {
+                result.push(escape);
+            }
+        } else {
+            result.push(char);
+        }
+    }
+    return result.join("");
+};
+
+/**
+ * @ignore
+ */
 ripe.splitUnescape = function(value, delimiter = " ", max = -1, escape = "\\", unescape = true) {
     const result = [];
     let current = [];

@@ -14,6 +14,33 @@ describe("Utils", function() {
         });
     });
 
+    describe("#escape", async function() {
+        it("should be able to escape strings", () => {
+            let result;
+
+            result = ripe.ripe.escape("foo,bar", ",", "$");
+            assert.strictEqual(result, "foo$,bar");
+
+            result = ripe.ripe.escape("foo$,bar", ",", "$");
+            assert.strictEqual(result, "foo$$$,bar");
+        });
+    });
+
+    describe("#unescape", async function() {
+        it("should be able to unescape strings", () => {
+            let result;
+
+            result = ripe.ripe.unescape("foo$,bar", "$");
+            assert.strictEqual(result, "foo,bar");
+
+            result = ripe.ripe.unescape("foo$$,bar", "$");
+            assert.strictEqual(result, "foo$,bar");
+
+            result = ripe.ripe.unescape("$$foo$,bar$$$$", "$");
+            assert.strictEqual(result, "$foo,bar$$");
+        });
+    });
+
     describe("#splitUnescape", async function() {
         it("should be able to split and unescape strings", () => {
             let result;
