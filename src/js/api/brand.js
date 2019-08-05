@@ -280,8 +280,6 @@ ripe.Ripe.prototype.supportedCharactersP = function(options, callback) {
     });
 };
 
-//
-
 /**
  * Server side callback method to calculate the minimum allowd initials
  * for a certain customization/personalization context.
@@ -321,8 +319,6 @@ ripe.Ripe.prototype.minimumInitialsP = function(options, callback) {
         });
     });
 };
-
-//
 
 /**
  * @see {link https://docs.platforme.com/#product-endpoints-config}
