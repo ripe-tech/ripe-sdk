@@ -280,6 +280,50 @@ ripe.Ripe.prototype.supportedCharactersP = function(options, callback) {
     });
 };
 
+//
+
+/**
+ * Server side callback method to calculate the minimum allowd initials
+ * for a certain customization/personalization context.
+ * This method allows the change of the current context of execution based on
+ * a server side implementation of the build's business logic.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'group' - the name of the initials group
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution,
+ * meaning the sequence of valid characters.
+ */
+ripe.Ripe.prototype.minimumInitials = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._minimumInitialsOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Server side callback method to calculate the minimum allowd initials
+ * for a certain customization/personalization context.
+ * This method allows the change of the current context of execution based on
+ * a server side implementation of the build's business logic.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'group' - the name of the initials group
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting promise for the request,
+ * in case of success the sequence of valid characters.
+ */
+ripe.Ripe.prototype.minimumInitialsP = function(options, callback) {
+    return new Promise((resolve, reject) => {
+        this.minimumInitials(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+//
+
 /**
  * @see {link https://docs.platforme.com/#product-endpoints-config}
  * @ignore
@@ -460,6 +504,35 @@ ripe.Ripe.prototype._supportedCharactersOptions = function(options = {}) {
         dataJ: {
             group: group,
             index: index,
+            ctx: ctx
+        }
+    });
+};
+
+/**
+ * @ignore
+ * @see {link http://docs.platforme.com/#product-endpoints-minimum_characters}
+ */
+ripe.Ripe.prototype._minimumInitialsOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const initials = options.initials === undefined ? this.initialsExtra : options.initials;
+    const parts = options.parts === undefined ? this.parts : options.parts;
+    const choices = options.choices === undefined ? this.choices : options.choices;
+    const group = options.group === undefined ? null : options.group;
+    const url = this.url + "brands/" + brand + "/models/" + model + "/logic/minimum_initials";
+    const ctx = Object.assign({}, this.ctx || {}, {
+        brand: brand,
+        model: model,
+        initials: initials,
+        parts: parts,
+        choices: choices
+    });
+    return Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataJ: {
+            group: group,
             ctx: ctx
         }
     });
