@@ -458,7 +458,6 @@ ripe.Ripe.prototype._supportedCharactersOptions = function(options = {}) {
         url: url,
         method: "POST",
         dataJ: {
-            name: name,
             group: group,
             index: index,
             ctx: ctx
