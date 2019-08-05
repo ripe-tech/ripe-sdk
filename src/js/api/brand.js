@@ -270,7 +270,7 @@ ripe.Ripe.prototype.supportedCharacters = function(options, callback) {
  *  - 'index' - index within the group
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting promise for the request,
- * in case of success the sequence of valid characters.
+ * in case of success the maximum allowed initials.
  */
 ripe.Ripe.prototype.supportedCharactersP = function(options, callback) {
     return new Promise((resolve, reject) => {
@@ -281,7 +281,7 @@ ripe.Ripe.prototype.supportedCharactersP = function(options, callback) {
 };
 
 /**
- * Server side callback method to calculate the minimum allowd initials
+ * Server side callback method to calculate the minimum allowed initials
  * for a certain customization/personalization context.
  * This method allows the change of the current context of execution based on
  * a server side implementation of the build's business logic.
@@ -290,7 +290,7 @@ ripe.Ripe.prototype.supportedCharactersP = function(options, callback) {
  *  - 'group' - the name of the initials group
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution,
- * meaning the sequence of valid characters.
+ * meaning the minimum allowed initials.
  */
 ripe.Ripe.prototype.minimumInitials = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
