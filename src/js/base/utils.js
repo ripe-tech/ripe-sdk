@@ -163,6 +163,22 @@ ripe.unescape = function(value, escape = "\\") {
 /**
  * @ignore
  */
+ripe.countUnescape = function(value, sub, escape = "\\") {
+    const iterator = value[Symbol.iterator]();
+    let count = 0;
+    for (const char of iterator) {
+        if (char === escape) {
+            iterator.next();
+        } else if (char === sub) {
+            count += 1;
+        }
+    }
+    return count;
+};
+
+/**
+ * @ignore
+ */
 ripe.splitUnescape = function(value, delimiter = " ", max = -1, escape = "\\", unescape = true) {
     const result = [];
     let current = [];

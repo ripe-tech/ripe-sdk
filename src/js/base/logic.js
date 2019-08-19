@@ -152,7 +152,7 @@ ripe.Ripe.prototype.normalizeEngraving = function(engraving, properties = null) 
  * it only determines that according to model's spec it should be
  * possible to render such a frame.
  *
- * @param {String} frame The name of the frame to determine "rederability"
+ * @param {String} frame The name of the frame to determine "renderability"
  * according to the {face}-{index} format.
  * @returns {Boolean} If it's possible to render such frame for the
  * currently loaded model.

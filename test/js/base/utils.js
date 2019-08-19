@@ -41,6 +41,33 @@ describe("Utils", function() {
         });
     });
 
+    describe("#countUnescape", async function() {
+        it("should be able to count escaped strings", () => {
+            let result;
+
+            result = ripe.ripe.countUnescape("foo:bar", ":");
+            assert.strictEqual(result, 1);
+
+            result = ripe.ripe.countUnescape("foo:bar:hello:world", ":");
+            assert.strictEqual(result, 3);
+
+            result = ripe.ripe.countUnescape("foo,bar,hello,world", ":");
+            assert.strictEqual(result, 0);
+
+            result = ripe.ripe.countUnescape("foo:bar\\:hello:world", ":");
+            assert.strictEqual(result, 2);
+
+            result = ripe.ripe.countUnescape("foo:bar\\:hello\\:world", ":");
+            assert.strictEqual(result, 1);
+
+            result = ripe.ripe.countUnescape("foo:bar\\:hello\\\\:world", ":");
+            assert.strictEqual(result, 2);
+
+            result = ripe.ripe.countUnescape("foo\\:bar\\:hello\\:world", ":");
+            assert.strictEqual(result, 0);
+        });
+    });
+
     describe("#splitUnescape", async function() {
         it("should be able to split and unescape strings", () => {
             let result;
