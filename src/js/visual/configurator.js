@@ -303,7 +303,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
         stepPosition = stepPosition < 0 ? viewFrames - 1 : stepPosition;
         stepPosition = stepPosition % viewFrames;
 
-        // updates tghe position according to the calculated one on
+        // updates the position according to the calculated one on
         // the dataset, the next update operation should trigger
         // the appropriate update on the visual resources
         this.element.dataset.position = stepPosition;
