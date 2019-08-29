@@ -70,7 +70,7 @@ ripe.Configurator.prototype.init = function() {
     );
 
     // registers for the deselected part event on the owner
-    // so that we can remove the highligt of the associated part
+    // so that we can remove the highlight of the associated part
     this._ownerBinds["deselected_part"] = this.owner.bind(
         "deselected_part",
         function(part) {
@@ -97,7 +97,7 @@ ripe.Configurator.prototype.init = function() {
 };
 
 /**
- * Resizes the Configurator's DOM element to 'size' pixels.
+ * Resizes the configurator's DOM element to 'size' pixels.
  *
  * @param {Number} size The number of pixels to resize to.
  */
@@ -182,6 +182,10 @@ ripe.Configurator.prototype.update = function(state, options = {}) {
         return false;
     }
     this.unique = unique;
+
+    // removes the highlight support from the matched object as a new
+    // frame is going to be "calculated" and rendered (not same mask)
+    this.lowlight();
 
     // runs the load operation for the current frame, taking into
     // account the multiple requirements for such execution
@@ -383,9 +387,10 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
 };
 
 /**
- * Highlights a model's part.
+ * Highlights a models's part, showing a dark mask on top of the such referred
+ * part identifying its borders.
  *
- * @param {String} part The part to highlight.
+ * @param {String} part The part of the model that should be highlighted.
  * @param {Object} options Set of optional parameters to adjust the highlighting, such as:
  * - 'backgroundColor' - The color to use during the highlighting.
  */
@@ -449,7 +454,8 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
 };
 
 /**
- * Removes the a highlighting of a models's part.
+ * Removes the a highlighting of a models's part, meaning that no masks
+ * are going to be presented on screen.
  *
  * @param {String} part The part to lowlight.
  * @param {Object} options Set of optional parameters to adjust the lowlighting.
@@ -718,7 +724,7 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options = {}, 
         throw new RangeError("Frame " + frame + " is not supported.");
     }
 
-    // constructs the URL for the mask and updates it
+    // constructs the URL for the "master" mask and updates it
     this._loadMask(maskImage, view, position, options);
 
     // builds the URL that will be set on the image, notice that both
