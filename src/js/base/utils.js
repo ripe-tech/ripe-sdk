@@ -72,7 +72,7 @@ ripe.getFrameKey = function(view, position, token) {
  */
 ripe.parseFrameKey = function(frame, token) {
     token = token || "-";
-    return frame.split(token);
+    return frame.split(token, 2);
 };
 
 /**

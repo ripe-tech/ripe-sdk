@@ -233,13 +233,15 @@ ripe.Configurator.prototype.deinit = function() {
  *
  * @param {Object} frame The new frame to display.
  * @param {Object} options Set of optional parameters to adjust the change frame, such as:
- * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or or 'null' (without any style).
+ * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or 'null' (without any style).
  * - 'duration' - The duration of the animation in milliseconds (defaults to '500')
  * - 'preventDrag' - If drag actions during an animated change of frames should be ignored (defaults to 'true').
- * - 'safe' - If safe is requested then the operation is only performed in case the configurator is not in the
+ * - 'safe' - If requested then the operation is only performed in case the configurator is not in the
  * an equivalent state (default to 'true').
  */
 ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
+    // parses the requested frame value according to the pre-defined
+    // standard (eg: side-3) and then unpacks it as view and position
     const _frame = ripe.parseFrameKey(frame);
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
@@ -264,7 +266,6 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     // in case the safe mode is enabled and there's an animation running
     // then this request is going to be ignored
     if (safe && this.element.classList.contains("animating")) {
-        this.element.classList.remove("no-drag", "animating");
         return;
     }
 
@@ -365,11 +366,15 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
                     return;
                 }
 
+                // creates a new options instance that is going to be used in the
+                // possible next tick of the operation
+                options = Object.assign({}, options, { safe: false });
+
                 // schedules the new change frame operation according to
                 // the requested step duration (if animation required)
                 // this is going to be the next step in the animation
                 setTimeout(
-                    () => this.changeFrame(frame, Object.assign({}, options, { safe: false })),
+                    () => this.changeFrame(frame, options),
                     animate ? 0 : stepDuration
                 );
             }
