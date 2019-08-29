@@ -336,8 +336,8 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
         this.element.dataset.position = stepPosition;
     }
 
-    // sets the initial values for the start of the animation, allow
-    // control of the current animation
+    // sets the initial values for the start of the animation, allows
+    // control of the current animation (and exclusive lock)
     this.element.classList.add("animating");
 
     // if the prevent drag is set and there's an animation then
