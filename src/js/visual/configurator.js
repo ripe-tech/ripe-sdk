@@ -454,7 +454,7 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
 };
 
 /**
- * Removes the a highlighting of a models's part, meaning that no masks
+ * Removes the a highlighting of a model's part, meaning that no masks
  * are going to be presented on screen.
  *
  * @param {String} part The part to lowlight.
@@ -549,7 +549,7 @@ ripe.Configurator.prototype._initLayout = function() {
     // temporarily store the images of the product's frames
     const framesBuffer = ripe.createElement("div", "frames-buffer");
 
-    // creates a masksBuffer element that will be used to store the constious
+    // creates a masksBuffer element that will be used to store the continuous
     // mask images to be used during highlight and select operation
     const masksBuffer = ripe.createElement("div", "masks-buffer");
 
