@@ -1,4 +1,7 @@
-if (typeof require !== "undefined") {
+if (
+    typeof require !== "undefined" &&
+    (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") // eslint-disable-line camelcase
+) {
     // eslint-disable-next-line no-redeclare
     var base = require("../base");
     require("./visual");
@@ -283,10 +286,13 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
         // calculates the number of steps as the shortest path
         // between the current and the next position, this should
         // choose the proper way for the "rotation"
-        const stepCount = view !== nextView ? 1 : Math.min(
-            Math.abs(position - nextPosition),
-            viewFrames - Math.abs(position - nextPosition)
-        );
+        const stepCount =
+            view !== nextView
+                ? 1
+                : Math.min(
+                      Math.abs(position - nextPosition),
+                      viewFrames - Math.abs(position - nextPosition)
+                  );
 
         stepDuration = duration / Math.abs(stepCount);
         options.duration = duration - stepDuration;
