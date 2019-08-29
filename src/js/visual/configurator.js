@@ -436,16 +436,18 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     if (src === url) {
         return;
     }
-    const frontMaskLoad = function() {
+    if (this.frontMaskLoad) frontMask.removeEventListener("load", this.frontMaskLoad);
+    if (this.frontMaskError) frontMask.removeEventListener("error", this.frontMaskError);
+    this.frontMaskLoad = function() {
         this.classList.add("loaded");
         this.classList.add("highlight");
         self.trigger("highlighted_part", part);
     };
-    frontMask.removeEventListener("load", frontMaskLoad);
-    frontMask.addEventListener("load", frontMaskLoad);
-    frontMask.addEventListener("error", function() {
-        this.setAttribute("src", "");
-    });
+    this.frontMaskError = function() {
+        self.setAttribute("src", "");
+    };
+    frontMask.addEventListener("load", this.frontMaskLoad);
+    frontMask.addEventListener("error", this.frontMaskError);
     frontMask.setAttribute("src", url);
 
     const animationId = frontMask.dataset.animation_id;
@@ -813,9 +815,9 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
                   }, 150);
               }
             : null;
-        maskImage.addEventListener("error", function() {
-            this.removeAttribute("src");
-        });
+        maskImage.onerror = function() {
+            self.removeAttribute("src");
+        };
         maskImage.crossOrigin = "Anonymous";
         maskImage.dataset.src = url;
         maskImage.setAttribute("src", url);
