@@ -440,7 +440,6 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     if (this.frontMaskError) frontMask.removeEventListener("error", this.frontMaskError);
     this.frontMaskLoad = function() {
         this.classList.add("loaded");
-        this.classList.add("highlight");
         self.trigger("highlighted_part", part);
     };
     this.frontMaskError = function() {
