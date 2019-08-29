@@ -384,7 +384,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
 };
 
 /**
- * Highlights a models's part, showing a dark mask on top of the such referred
+ * Highlights a model's part, showing a dark mask on top of the such referred
  * part identifying its borders.
  *
  * @param {String} part The part of the model that should be highlighted.
