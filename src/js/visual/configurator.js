@@ -377,10 +377,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
                 // schedules the new change frame operation according to
                 // the requested step duration (if animation required)
                 // this is going to be the next step in the animation
-                setTimeout(
-                    () => this.changeFrame(frame, options),
-                    animate ? 0 : stepDuration
-                );
+                setTimeout(() => this.changeFrame(frame, options), animate ? 0 : stepDuration);
             }
         }
     );
@@ -438,6 +435,7 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     }
     if (this.frontMaskLoad) frontMask.removeEventListener("load", this.frontMaskLoad);
     if (this.frontMaskError) frontMask.removeEventListener("error", this.frontMaskError);
+    frontMask.classList.remove("loaded");
     this.frontMaskLoad = function() {
         this.classList.add("loaded");
         self.trigger("highlighted_part", part);
