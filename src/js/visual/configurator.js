@@ -355,7 +355,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
         {},
         {
             animate: animate,
-            duration: stepDuration,
+            duration: animate ? stepDuration : 0,
             callback: () => {
                 // in case the change frame operation has been completed
                 // target view and position has been reached, then it's
