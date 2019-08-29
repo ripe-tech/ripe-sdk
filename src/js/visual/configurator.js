@@ -234,7 +234,10 @@ ripe.Configurator.prototype.deinit = function() {
  * @param {Object} frame The new frame to display.
  * @param {Object} options Set of optional parameters to adjust the change frame, such as:
  * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or or 'null' (without any style).
+ * - 'duration' - The duration of the animation in milliseconds (defaults to '500')
  * - 'preventDrag' - If drag actions during an animated change of frames should be ignored (defaults to 'true').
+ * - 'safe' - If safe is requested then the operation is only performed in case the configurator is not in the
+ * an equivalent state (default to 'true').
  */
 ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const _frame = ripe.parseFrameKey(frame);
@@ -244,7 +247,9 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const duration = options.duration || this.duration;
     const type = options.type;
     let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
+    const safe = options.safe === undefined ? true : options.safe;
 
+    // normalizes both the (current) view and position values
     const view = this.element.dataset.view;
     const position = parseInt(this.element.dataset.position);
 
@@ -254,6 +259,20 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const viewFrames = this.frames[nextView];
     if (!viewFrames || nextPosition >= viewFrames) {
         throw new RangeError("Frame " + frame + " is not supported.");
+    }
+
+    // in case the safe mode is enabled and there's an animation running
+    // then this request is going to be ignored
+    if (safe && this.element.classList.contains("animating")) {
+        this.element.classList.remove("no-drag", "animating");
+        return;
+    }
+
+    // in case the current view and position are already set then returns
+    // the control flow immediately (animation safeguard)
+    if (safe && this.element.dataset.view === nextView && position === nextPosition) {
+        this.element.classList.remove("no-drag", "animating");
+        return;
     }
 
     // removes any part highlight in case it is set
@@ -278,7 +297,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     // if an animation duration was provided then changes
     // to the next step instead of the target frame
     let stepDuration = 0;
-    let stepPosition = position;
+    let stepPosition = nextPosition;
     if (duration) {
         // determines the kind of animation that is going to
         // be used for the current change frame operation
@@ -304,7 +323,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
         // according to the current view definition and then calculates the
         // next position taking into account that definition
         const goPositive = (position + stepCount) % viewFrames === nextPosition;
-        stepPosition = goPositive ? position + 1 : position - 1;
+        stepPosition = stepCount !== 0 ? (goPositive ? position + 1 : position - 1) : position;
 
         // wrap around as needed (avoiding index overflow)
         stepPosition = stepPosition < 0 ? viewFrames - 1 : stepPosition;
@@ -316,47 +335,52 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
         this.element.dataset.position = stepPosition;
     }
 
-    // determines if the current change frame operation
-    // is an animated one or if it's a discrete one
-    const animated = Boolean(duration);
+    // sets the initial values for the start of the animation, allow
+    // control of the current animation
+    this.element.classList.add("animating");
 
-    // if the frame change is animated and preventDrag is true
-    // then ignores drag movements until the animation is finished
+    // if the prevent drag is set and there's an animation then
+    // ignores drag movements until the animation is finished
     preventDrag = preventDrag && (animate || duration);
-    preventDrag && this.element.classList.add("no-drag", "animating");
+    preventDrag && this.element.classList.add("no-drag");
 
+    // computes the frame key (normalized) and then triggers an event
+    // notifying any listener about the new frame that was set
     const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
     this.trigger("changed_frame", newFrame);
+
+    // runs the update operation that should sync the visuals of the
+    // configurator according to the current internal state (in data)
     this.update(
         {},
         {
             animate: animate,
             duration: stepDuration,
-            callback: function() {
-                // if there is no step transition or the transition
-                // has finished, then allows drag movements again,
-                // otherwise waits the provided interval and
-                // proceeds to the next step
-                if (!animated || stepPosition === nextPosition) {
-                    preventDrag && this.element.classList.remove("no-drag", "animating");
-                } else {
-                    const timeout = animate ? 0 : stepDuration;
-                    setTimeout(
-                        function() {
-                            this.changeFrame(frame, options);
-                        }.bind(this),
-                        timeout
-                    );
+            callback: () => {
+                // in case the change frame operation has been completed
+                // target view and position has been reached, then it's
+                // time collect the garbage and return control flow
+                if (view === nextView && stepPosition === nextPosition) {
+                    this.element.classList.remove("no-drag", "animating");
+                    return;
                 }
-            }.bind(this)
+
+                // schedules the new change frame operation according to
+                // the requested step duration (if animation required)
+                // this is going to be the next step in the animation
+                setTimeout(
+                    () => this.changeFrame(frame, Object.assign({}, options, { safe: false })),
+                    animate ? 0 : stepDuration
+                );
+            }
         }
     );
 };
 
 /**
- * Highlights a models's part.
+ * Highlights a model's part.
  *
- * @param {String} part The part to highligth.
+ * @param {String} part The part to highlight.
  * @param {Object} options Set of optional parameters to adjust the highlighting, such as:
  * - 'backgroundColor' - The color to use during the highlighting.
  */
@@ -845,7 +869,7 @@ ripe.Configurator.prototype._drawFrame = function(image, animate, duration, call
  * @ignore
  */
 ripe.Configurator.prototype._preload = function(useChain) {
-    const position = this.element.dataset.position || 0;
+    const position = parseInt(this.element.dataset.position) || 0;
     let index = this.index || 0;
     index++;
     this.index = index;
