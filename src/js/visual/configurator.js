@@ -229,6 +229,7 @@ ripe.Configurator.prototype.deinit = function() {
 
 /**
  * Displays a new frame, with an animation from the starting frame
+ * proper animation should be performed.
  *
  * @param {Object} frame The new frame to display.
  * @param {Object} options Set of optional parameters to adjust the change frame, such as:
@@ -294,15 +295,15 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
                       viewFrames - Math.abs(position - nextPosition)
                   );
 
+        // determines the duration (in seconds) for each step taking
+        // into account the complete duration and the number of steps
         stepDuration = duration / Math.abs(stepCount);
         options.duration = duration - stepDuration;
 
-        // checks if it should rotate in the positive
-        // or negative direction
+        // checks if it should rotate in the positive or negative direction
+        // according to the current view definition and then calculates the
+        // next position taking into account that definition
         const goPositive = (position + stepCount) % viewFrames === nextPosition;
-
-        // determines the next step and sets it
-        // as the position
         stepPosition = goPositive ? position + 1 : position - 1;
 
         // wrap around as needed (avoiding index overflow)
