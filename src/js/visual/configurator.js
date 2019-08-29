@@ -238,7 +238,9 @@ ripe.Configurator.prototype.deinit = function() {
  * @param {Object} frame The new frame to display.
  * @param {Object} options Set of optional parameters to adjust the change frame, such as:
  * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or 'null' (without any style).
- * - 'duration' - The duration of the animation in milliseconds (defaults to '500')
+ * - 'duration' - The duration of the animation in milliseconds (defaults to '500').
+ * - 'stepDuration' - If defined the total duration of the animation is calculated using the amount of steps
+ * times the number of steps, instead of using the 'duration' field (defaults to 'null').
  * - 'preventDrag' - If drag actions during an animated change of frames should be ignored (defaults to 'true').
  * - 'safe' - If requested then the operation is only performed in case the configurator is not in the
  * an equivalent state (default to 'true').
@@ -250,8 +252,8 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
 
-    const duration = options.duration || this.duration;
-    const type = options.type;
+    let duration = options.duration || this.duration;
+    const type = options.type === undefined ? null : options.type;
     let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
     const safe = options.safe === undefined ? true : options.safe;
 
@@ -319,6 +321,13 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
                       viewFrames - Math.abs(position - nextPosition)
                   );
 
+        // in case the options contain the step duration field then
+        // it's used to calculate the duration of the animation (step
+        // drive animation timing)
+        if (options.stepDuration && options.first !== false) {
+            duration = options.stepDuration * stepCount;
+        }
+
         // determines the duration (in seconds) for each step taking
         // into account the complete duration and the number of steps
         stepDuration = duration / Math.abs(stepCount);
@@ -372,7 +381,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
 
                 // creates a new options instance that is going to be used in the
                 // possible next tick of the operation
-                options = Object.assign({}, options, { safe: false });
+                options = Object.assign({}, options, { safe: false, first: false });
 
                 // schedules the new change frame operation according to
                 // the requested step duration (if animation required)
