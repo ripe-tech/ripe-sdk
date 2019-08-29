@@ -51,11 +51,10 @@ ripe.build = function() {
     return ripe.assign.apply(this, _arguments);
 };
 
-// eslint-disable-next-line no-use-before-define
 if (
     typeof require !== "undefined" &&
-    typeof window === "undefined" &&
-    typeof XMLHttpRequest === "undefined"
+    (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") && // eslint-disable-line camelcase
+    typeof XMLHttpRequest === "undefined" // eslint-disable-line no-use-before-define
 ) {
     var XMLHttpRequest = null;
     // eslint-disable-next-line camelcase
