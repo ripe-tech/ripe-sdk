@@ -280,16 +280,29 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
         // be used for the current change frame operation
         animate = type || animate;
 
-        // calculates the number of steps of
-        // the animation and the step duration
-        const stepCount = view !== nextView ? 1 : nextPosition - position;
+        // calculates the number of steps as
+        // the shortest path between the current
+        // and the next position
+        const stepCount = view !== nextView ? 1 : Math.min(
+            Math.abs(position - nextPosition),
+            viewFrames - Math.abs(position - nextPosition)
+        );
+
         stepDuration = duration / Math.abs(stepCount);
         options.duration = duration - stepDuration;
 
+        // checks if it should rotate in the positive
+        // or negative direction
+        const goPositive = (position + stepCount) % viewFrames === nextPosition;
+
         // determines the next step and sets it
         // as the position
-        stepPosition = stepCount !== 0 ? position + stepCount / stepCount : position;
+        stepPosition = goPositive ? position + 1 : position - 1;
+
+        // wrap around as needed
+        stepPosition = stepPosition < 0 ? viewFrames - 1 : stepPosition;
         stepPosition = stepPosition % viewFrames;
+
         this.element.dataset.position = stepPosition;
     }
 
