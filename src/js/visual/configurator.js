@@ -978,7 +978,7 @@ ripe.Configurator.prototype._preload = function(useChain) {
     work.reverse();
 
     const mark = element => {
-        const _index = self.index;
+        const _index = this.index;
         if (index !== _index) {
             return;
         }
@@ -986,7 +986,7 @@ ripe.Configurator.prototype._preload = function(useChain) {
         // removes the preloading class from the image element
         // and retrieves all the images still preloading,
         element.classList.remove("preloading");
-        const framesBuffer = self.element.querySelector(".frames-buffer");
+        const framesBuffer = this.element.querySelector(".frames-buffer");
         const pending = framesBuffer.querySelectorAll("img.preloading") || [];
 
         // if there are images preloading then adds the
@@ -997,17 +997,17 @@ ripe.Configurator.prototype._preload = function(useChain) {
         // is considered finished so drag movements are
         // allowed again and the loaded event is triggered
         if (pending.length > 0) {
-            self.element.classList.add("preloading");
-            self.element.classList.add("no-drag");
+            this.element.classList.add("preloading");
+            this.element.classList.add("no-drag");
         } else if (work.length === 0) {
-            self.element.classList.remove("preloading");
-            self.element.classList.remove("no-drag");
-            self.trigger("loaded");
+            this.element.classList.remove("preloading");
+            this.element.classList.remove("no-drag");
+            this.trigger("loaded");
         }
     };
 
-    const render = async function() {
-        const _index = self.index;
+    const render = async () => {
+        const _index = this.index;
         if (index !== _index) {
             return;
         }
@@ -1022,7 +1022,7 @@ ripe.Configurator.prototype._preload = function(useChain) {
         // and its corresponding image element
         // and adds the preloading class to it
         const frame = work.pop();
-        const framesBuffer = self.element.querySelector(".frames-buffer");
+        const framesBuffer = this.element.querySelector(".frames-buffer");
         const reference = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
         reference.classList.add("preloading");
 
@@ -1031,7 +1031,7 @@ ripe.Configurator.prototype._preload = function(useChain) {
         const _frame = ripe.parseFrameKey(frame);
         const view = _frame[0];
         const position = _frame[1];
-        const promise = self._loadFrame(view, position, {
+        const promise = this._loadFrame(view, position, {
             draw: false
         });
         promise.then(() => mark(reference));
