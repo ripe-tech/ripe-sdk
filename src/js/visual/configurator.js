@@ -241,21 +241,32 @@ ripe.Configurator.prototype.deinit = function() {
  * - 'duration' - The duration of the animation in milliseconds (defaults to '500').
  * - 'stepDuration' - If defined the total duration of the animation is calculated using the amount of steps
  * times the number of steps, instead of using the 'duration' field (defaults to 'null').
+ * - 'revolutionDuration' - If defined the step duration is calculated by dividing the revolution duration
+ * by the number of frames in the view (defaults to 'null')
  * - 'preventDrag' - If drag actions during an animated change of frames should be ignored (defaults to 'true').
  * - 'safe' - If requested then the operation is only performed in case the configurator is not in the
  * an equivalent state (default to 'true').
  */
-ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
+ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // parses the requested frame value according to the pre-defined
     // standard (eg: side-3) and then unpacks it as view and position
     const _frame = ripe.parseFrameKey(frame);
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
 
+    // retrieves the animation duration from the options falling back
+    // to the pre-defined duration in case it's not defined
     let duration = options.duration || this.duration;
+
+    // unpacks the other options to the frame change defaulting their values
+    // in case undefined values are found
+    let stepDurationRef = options.stepDuration === undefined ? null : options.stepDuration;
+    const revolutionDuration =
+        options.revolutionDuration === undefined ? null : options.revolutionDuration;
     const type = options.type === undefined ? null : options.type;
     let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
     const safe = options.safe === undefined ? true : options.safe;
+    const first = options.first === undefined ? true : options.first;
 
     // normalizes both the (current) view and position values
     const view = this.element.dataset.view;
@@ -321,11 +332,21 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
                       viewFrames - Math.abs(position - nextPosition)
                   );
 
-        // in case the options contain the step duration field then
-        // it's used to calculate the duration of the animation (step
-        // drive animation timing)
-        if (options.stepDuration && options.first !== false) {
-            duration = options.stepDuration * stepCount;
+        // in case the (total) revolution time for the view is defined a
+        // step timing based animation is calculated based on the total
+        // number of frames for the view
+        if (revolutionDuration && first) {
+            const config = this.owner.loadedConfig
+                ? this.owner.loadedConfig
+                : await this.owner.getConfigP();
+            stepDurationRef = parseInt(revolutionDuration / config.faces_m[nextView].frames);
+        }
+
+        // in case the options contain the step duration (reference) field
+        // then it's used to calculate the total duration of the animation
+        // (step driven animation timing)
+        if (stepDurationRef && first) {
+            duration = stepDurationRef * stepCount;
         }
 
         // determines the duration (in seconds) for each step taking
