@@ -53,7 +53,8 @@ ripe.Configurator.prototype.init = function() {
     this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
     this.useMasks = this.options.useMasks === undefined ? !this.noMasks : this.options.useMasks;
     this.view = this.options.view || "side";
-    this.configAnimate = this.options.configAnimate || "cross";
+    this.configAnimate = this.options.configAnimate === undefined ? "cross" : this.options.configAnimate;
+    this.viewAnimate = this.options.viewAnimate === undefined ? "cross" : this.options.viewAnimate;
     this.position = this.options.position || 0;
     this.ready = false;
     this._observer = null;
@@ -154,7 +155,6 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
 
-    let animate = options.animate || false;
     const force = options.force || false;
     const duration = options.duration;
     const preload = options.preload;
@@ -165,7 +165,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     const signature =
         this.owner._getQuery() + "&width=" + String(width) + "&height=" + String(height);
     const changed = signature !== previous;
-    animate = animate || (changed && "simple");
+    const animate = options.animate === undefined ? (changed ? "simple" : false) : options.animate;
     this.signature = signature;
 
     // if the parts and the position haven't changed
@@ -304,7 +304,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     let animate = false;
     if (view !== nextView && viewFrames !== undefined) {
         this.element.dataset.view = nextView;
-        animate = type || "cross";
+        animate = type || this.viewAnimate;
         duration = duration || this.duration;
     }
 
