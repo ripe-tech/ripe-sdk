@@ -26,7 +26,7 @@ ripe.animateProperty = function(element, property, initial, final, duration, cal
     let last = new Date();
 
     const frame = function() {
-        // the animation might be cancelled
+        // check if the animation should be cancelled
         if (abort && abort()) {
             callback && callback();
             return;
