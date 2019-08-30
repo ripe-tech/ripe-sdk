@@ -46,6 +46,7 @@ ripe.Configurator.prototype.init = function() {
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.interval = this.options.interval || 0;
+    this.duration = this.options.duration || 500;
     this.maskOpacity = this.options.maskOpacity || 0.4;
     this.maskDuration = this.options.maskDuration || 150;
     this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
@@ -1010,7 +1011,7 @@ ripe.Configurator.prototype._preload = function(useChain) {
         };
 
         // determines if a chain based loading should be used for the
-        // pre-loading process of the constious image resources to be loaded
+        // pre-loading process of the continuous image resources to be loaded
         const _frame = ripe.parseFrameKey(frame);
         const view = _frame[0];
         const position = _frame[1];
