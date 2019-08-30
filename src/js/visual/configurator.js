@@ -47,6 +47,7 @@ ripe.Configurator.prototype.init = function() {
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.interval = this.options.interval || 0;
     this.duration = this.options.duration || 500;
+    this.preloadDelay = this.options.preloadDelay || 150;
     this.maskOpacity = this.options.maskOpacity || 0.4;
     this.maskDuration = this.options.maskDuration || 150;
     this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
@@ -869,7 +870,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
         maskImage.onerror = () => {
             this.removeAttribute("src");
         };
-        maskImage.crossOrigin = "Anonymous";
+        maskImage.crossOrigin = "anonymous";
         maskImage.dataset.src = url;
         maskImage.setAttribute("src", url);
     }
@@ -953,7 +954,11 @@ ripe.Configurator.prototype._drawFrame = async function(image, animate, duration
 /**
  * @ignore
  */
-ripe.Configurator.prototype._preload = function(useChain) {
+ripe.Configurator.prototype._preload = async function(useChain) {
+    // retrieves the current position of the configurator from its
+    // data defaulting to the zero one (reference) in case no position
+    // is currently defined in the configurator
+    const view = this.element.dataset.view || "side";
     const position = parseInt(this.element.dataset.position) || 0;
 
     let index = this.index || 0;
@@ -962,92 +967,98 @@ ripe.Configurator.prototype._preload = function(useChain) {
     this.index = index;
     this.element.classList.add("preload");
 
-    // adds all the frames to the work pile
+    // adds all the frames available for all the views to the
+    // list of work to be performed on pre-loading
     const work = [];
-    for (const view in this.frames) {
-        const viewFrames = this.frames[view];
+    for (const _view in this.frames) {
+        const viewFrames = this.frames[_view];
         for (let _index = 0; _index < viewFrames; _index++) {
-            if (_index === position) {
+            if (_index === position && view === _view) {
                 continue;
             }
-            const frame = ripe.getFrameKey(view, _index);
+            const frame = ripe.getFrameKey(_view, _index);
             work.push(frame);
         }
     }
     work.reverse();
 
-    const mark = element => {
-        const _index = this.index;
-        if (index !== _index) {
-            return;
-        }
+    // waits for the pre loading promise so that at the end of this
+    // execution all the work required for loading is processed
+    await new Promise((resolve, reject) => {
+        const mark = element => {
+            const _index = this.index;
+            if (index !== _index) {
+                return;
+            }
 
-        // removes the preloading class from the image element
-        // and retrieves all the images still preloading,
-        element.classList.remove("preloading");
-        const framesBuffer = this.element.querySelector(".frames-buffer");
-        const pending = framesBuffer.querySelectorAll("img.preloading") || [];
+            // removes the preloading class from the image element
+            // and retrieves all the images still preloading,
+            element.classList.remove("preloading");
+            const framesBuffer = this.element.querySelector(".frames-buffer");
+            const pending = framesBuffer.querySelectorAll("img.preloading") || [];
 
-        // if there are images preloading then adds the
-        // preloading class to the target element and
-        // prevents drag movements to avoid flickering
-        // else and if there are no images preloading and no
-        // frames yet to be preloaded then the preload
-        // is considered finished so drag movements are
-        // allowed again and the loaded event is triggered
-        if (pending.length > 0) {
-            this.element.classList.add("preloading");
+            // if there are images preloading then adds the
+            // preloading class to the target element and
+            // prevents drag movements to avoid flickering
+            // else and if there are no images preloading and no
+            // frames yet to be preloaded then the preload
+            // is considered finished so drag movements are
+            // allowed again and the loaded event is triggered
+            if (pending.length > 0) {
+                this.element.classList.add("preloading");
+                this.element.classList.add("no-drag");
+            } else if (work.length === 0) {
+                this.element.classList.remove("preloading");
+                this.element.classList.remove("no-drag");
+                this.trigger("loaded");
+                resolve();
+            }
+        };
+
+        const render = async () => {
+            const _index = this.index;
+            if (index !== _index) {
+                return;
+            }
+
+            // in case there's no more work pending returns immediately
+            // (nothing is remaining to be done)
+            if (work.length === 0) {
+                return;
+            }
+
+            // retrieves the next frame to be loaded
+            // and its corresponding image element
+            // and adds the preloading class to it
+            const frame = work.pop();
+            const framesBuffer = this.element.querySelector(".frames-buffer");
+            const reference = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
+            reference.classList.add("preloading");
+
+            // determines if a chain based loading should be used for the
+            // pre-loading process of the continuous image resources to be loaded
+            const _frame = ripe.parseFrameKey(frame);
+            const view = _frame[0];
+            const position = _frame[1];
+            const promise = this._loadFrame(view, position, {
+                draw: false
+            });
+            promise.then(() => mark(reference));
+            if (useChain) await promise;
+            await render();
+        };
+
+        // if there are frames to be loaded then adds the
+        // preloading class, prevents drag movements and
+        // starts the render process after a timeout
+        work.length > 0 && this.element.classList.add("preloading");
+        if (work.length > 0) {
             this.element.classList.add("no-drag");
-        } else if (work.length === 0) {
-            this.element.classList.remove("preloading");
-            this.element.classList.remove("no-drag");
-            this.trigger("loaded");
+            setTimeout(() => {
+                render();
+            }, this.preloadDelay);
         }
-    };
-
-    const render = async () => {
-        const _index = this.index;
-        if (index !== _index) {
-            return;
-        }
-
-        // in case there's no more work pending returns immediately
-        // (nothing is remaining to be done)
-        if (work.length === 0) {
-            return;
-        }
-
-        // retrieves the next frame to be loaded
-        // and its corresponding image element
-        // and adds the preloading class to it
-        const frame = work.pop();
-        const framesBuffer = this.element.querySelector(".frames-buffer");
-        const reference = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
-        reference.classList.add("preloading");
-
-        // determines if a chain based loading should be used for the
-        // pre-loading process of the continuous image resources to be loaded
-        const _frame = ripe.parseFrameKey(frame);
-        const view = _frame[0];
-        const position = _frame[1];
-        const promise = this._loadFrame(view, position, {
-            draw: false
-        });
-        promise.then(() => mark(reference));
-        if (useChain) await promise;
-        render();
-    };
-
-    // if there are frames to be loaded then adds the
-    // preloading class, prevents drag movements and
-    // starts the render process after a timeout
-    work.length > 0 && this.element.classList.add("preloading");
-    if (work.length > 0) {
-        this.element.classList.add("no-drag");
-        setTimeout(function() {
-            render();
-        }, 250);
-    }
+    });
 };
 
 /**
