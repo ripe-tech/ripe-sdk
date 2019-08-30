@@ -239,7 +239,7 @@ ripe.Configurator.prototype.deinit = function() {
  * @param {Object} frame The new frame to display.
  * @param {Object} options Set of optional parameters to adjust the change frame, such as:
  * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or 'null' (without any style).
- * - 'duration' - The duration of the animation in milliseconds (defaults to '500').
+ * - 'duration' - The duration of the animation in milliseconds (defaults to 'null').
  * - 'stepDuration' - If defined the total duration of the animation is calculated using the amount of steps
  * times the number of steps, instead of using the 'duration' field (defaults to 'null').
  * - 'revolutionDuration' - If defined the step duration is calculated by dividing the revolution duration
@@ -255,15 +255,12 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
 
-    // retrieves the animation duration from the options falling back
-    // to the pre-defined duration in case it's not defined
-    let duration = options.duration || this.duration;
-
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
-    let stepDurationRef = options.stepDuration === undefined ? null : options.stepDuration;
+    let duration = options.duration === undefined ? null : options.duration;
+    let stepDurationRef = options.stepDuration === this.stepDuration ? null : options.stepDuration;
     const revolutionDuration =
-        options.revolutionDuration === undefined ? null : options.revolutionDuration;
+        options.revolutionDuration === undefined ? this.revolutionDuration : options.revolutionDuration;
     const type = options.type === undefined ? null : options.type;
     let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
     const safe = options.safe === undefined ? true : options.safe;
@@ -311,6 +308,7 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     if (view !== nextView && viewFrames !== undefined) {
         this.element.dataset.view = nextView;
         animate = type || "cross";
+        duration = duration || this.duration;
     }
 
     // runs the defaulting values for the current step duration

@@ -272,19 +272,16 @@ window.onload = function() {
             frame0.addEventListener("click", function() {
                 if (result.frames > 9) {
                     configurator.changeFrame("side-9", {
-                        duration: 250,
                         revolutionDuration: 500
                     });
                 } else {
                     configurator.changeFrame("side-0", {
-                        duration: 250,
                         revolutionDuration: 500
                     });
                 }
             });
             frame6.addEventListener("click", function() {
                 configurator.changeFrame("side-6", {
-                    duration: 250,
                     revolutionDuration: 500
                 });
             });
@@ -311,6 +308,7 @@ window.onload = function() {
             });
 
             var configurator = ripe.bindConfigurator(element, {
+                duration: 250,
                 noMasks: false,
                 view: bestFace(result)
             });
@@ -318,7 +316,6 @@ window.onload = function() {
             configurator.bind("loaded", function() {
                 if (result.faces.indexOf("side") !== -1) {
                     configurator.changeFrame("side-12", {
-                        duration: 250,
                         revolutionDuration: 500
                     });
                 }
