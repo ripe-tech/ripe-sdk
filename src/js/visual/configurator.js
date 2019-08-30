@@ -309,17 +309,23 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     let animate = false;
     if (view !== nextView && viewFrames !== undefined) {
         this.element.dataset.view = nextView;
-        animate = "cross";
+        animate = type || "cross";
     }
 
-    // if an animation duration was provided then changes
-    // to the next step instead of the target frame
-    let stepDuration = 0;
+    // runs the defaulting values for the current step duration
+    // and the next position that is going to be rendered
+    let stepDuration = null;
     let stepPosition = nextPosition;
-    if (duration) {
-        // determines the kind of animation that is going to
-        // be used for the current change frame operation
-        animate = type || animate;
+
+    // in case any kind of duration was provided a timed animation
+    // should be performed and as such a proper calculus should be
+    // performed to determine the current step duration an the position
+    // associated with the current step operation
+    if (view === nextView && (duration || stepDuration || revolutionDuration)) {
+        // ensures that no animation on a pre-frame render exists
+        // the animation itself is going to be "managed" by the
+        // the change frame tick logic
+        animate = null;
 
         // calculates the number of steps as the shortest path
         // between the current and the next position, this should
@@ -336,10 +342,18 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
         // step timing based animation is calculated based on the total
         // number of frames for the view
         if (revolutionDuration && first) {
-            const config = this.owner.loadedConfig
-                ? this.owner.loadedConfig
-                : await this.owner.getConfigP();
-            stepDurationRef = parseInt(revolutionDuration / config.faces_m[nextView].frames);
+            // makes sure that we're able to find out the number of frames
+            // for the next view from the current loaded model, only then
+            // can the step duration be calculated, by dividing the total
+            // duration of the revolution by the number of frames of the view
+            if (viewFrames) {
+                stepDurationRef = parseInt(revolutionDuration / viewFrames);
+            }
+            // otherwise runs a fallback operation where the total duration
+            // of the animation is the revolution time (sub optimal fallback)
+            else {
+                duration = duration || revolutionDuration;
+            }
         }
 
         // in case the options contain the step duration (reference) field
@@ -390,7 +404,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
         {},
         {
             animate: animate,
-            duration: animate ? stepDuration : 0,
+            duration: animate ? duration : 0,
             callback: () => {
                 // in case the change frame operation has been completed
                 // target view and position has been reached, then it's
@@ -753,7 +767,8 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options = {}, 
         throw new RangeError("Frame " + frame + " is not supported.");
     }
 
-    // constructs the URL for the "master" mask and updates it
+    // triggers the async loading of the "master" mask for the current
+    // frame, this should imply some level of cache usage
     this._loadMask(maskImage, view, position, options);
 
     // builds the URL that will be set on the image, notice that both
@@ -788,8 +803,8 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options = {}, 
         return;
     }
 
-    // adds load callback to the image to
-    // draw the frame when it is available
+    // adds load callback to the image to draw the frame
+    // when it is available from the "remote" source
     image.onload = function() {
         image.dataset.loaded = true;
         image.dataset.src = url;
