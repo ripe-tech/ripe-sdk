@@ -490,8 +490,9 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     frontMask.addEventListener("error", this.frontMaskError);
     frontMask.setAttribute("src", url);
 
-    const animationId = frontMask.dataset.animation_id;
-    cancelAnimationFrame(animationId);
+    const animationId = parseInt(frontMask.dataset.animation_id);
+    animationId && cancelAnimationFrame(animationId);
+
     ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration);
 };
 
@@ -904,17 +905,24 @@ ripe.Configurator.prototype._drawFrame = function(image, animate, duration, call
         return;
     }
 
-    const currentId = current.dataset.animation_id;
-    const targetId = target.dataset.animation_id;
-    currentId && cancelAnimationFrame(parseInt(currentId));
-    targetId && cancelAnimationFrame(parseInt(targetId));
+    // retrieves the animation identifiers for both the current
+    // canvas and the target one and cancels any previous animation
+    // that might exist in such canvas (as a new one is coming)
+    const currentId = parseInt(current.dataset.animation_id);
+    const targetId = parseInt(target.dataset.animation_id);
+    currentId && cancelAnimationFrame(currentId);
+    targetId && cancelAnimationFrame(targetId);
 
-    duration = duration || (animate === "immediate" ? 0 : 500);
+    // "calculates" the duration for the animate operation taking into
+    // account the passed parameter and the "kind" of animation, falling
+    // back to the instance default if required
+    duration = duration || (animate === "immediate" ? 0 : this.duration);
+
     if (animate === "cross") {
         ripe.animateProperty(current, "opacity", 1, 0, duration);
     }
 
-    ripe.animateProperty(target, "opacity", 0, 1, duration, function() {
+    ripe.animateProperty(target, "opacity", 0, 1, duration, () => {
         current.style.opacity = 0;
         current.style.zIndex = 1;
         target.style.zIndex = 1;
