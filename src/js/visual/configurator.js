@@ -854,21 +854,20 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
         height: height,
         color: backgroundColor
     });
-    const self = this;
     if (draw && maskImage.dataset.src === url) {
-        setTimeout(function() {
-            self._drawMask(maskImage);
+        setTimeout(() => {
+            this._drawMask(maskImage);
         }, 150);
     } else {
         maskImage.onload = draw
-            ? function() {
-                  setTimeout(function() {
-                      self._drawMask(maskImage);
+            ? () => {
+                  setTimeout(() => {
+                      this._drawMask(maskImage);
                   }, 150);
               }
             : null;
-        maskImage.onerror = function() {
-            self.removeAttribute("src");
+        maskImage.onerror = () => {
+            this.removeAttribute("src");
         };
         maskImage.crossOrigin = "Anonymous";
         maskImage.dataset.src = url;
