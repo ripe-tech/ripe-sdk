@@ -304,7 +304,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     let animate = false;
     if (view !== nextView && viewFrames !== undefined) {
         this.element.dataset.view = nextView;
-        animate = type || this.viewAnimate;
+        animate = type === null ? this.viewAnimate : type;
         duration = duration || this.duration;
     }
 
