@@ -53,6 +53,7 @@ ripe.Configurator.prototype.init = function() {
     this.view = this.options.view || "side";
     this.position = this.options.position || 0;
     this.ready = false;
+    this.drawCount = 0;
     this._observer = null;
     this._ownerBinds = {};
 
@@ -880,6 +881,9 @@ ripe.Configurator.prototype._drawMask = function(maskImage) {
  * @ignore
  */
 ripe.Configurator.prototype._drawFrame = function(image, animate, duration, callback) {
+    this.drawCount++;
+
+    const drawId = this.drawCount;
     const area = this.element.querySelector(".area");
     const back = this.element.querySelector(".back");
 
@@ -909,15 +913,33 @@ ripe.Configurator.prototype._drawFrame = function(image, animate, duration, call
 
     duration = duration || (animate === "immediate" ? 0 : 500);
     if (animate === "cross") {
-        ripe.animateProperty(current, "opacity", 1, 0, duration);
+        ripe.animateProperty(
+            current,
+            "opacity",
+            1,
+            0,
+            duration,
+            () => { },
+            // whenever a newer draw call is request, abort the animation
+            () => drawId !== this.drawCount
+        );
     }
 
-    ripe.animateProperty(target, "opacity", 0, 1, duration, function() {
-        current.style.opacity = 0;
-        current.style.zIndex = 1;
-        target.style.zIndex = 1;
-        callback && callback();
-    });
+    ripe.animateProperty(
+        target,
+        "opacity",
+        0,
+        1,
+        duration,
+        () => {
+            current.style.opacity = 0;
+            current.style.zIndex = 1;
+            target.style.zIndex = 1;
+            callback && callback();
+        },
+        // whenever a newer draw call is request, abort the animation
+        () => drawId !== this.drawCount
+    );
 };
 
 /**

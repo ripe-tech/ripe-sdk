@@ -20,12 +20,18 @@ ripe.createElement = function(tagName, className) {
 /**
  * @ignore
  */
-ripe.animateProperty = function(element, property, initial, final, duration, callback) {
+ripe.animateProperty = function(element, property, initial, final, duration, callback, abort) {
     // sets the initial value for the property
     element.style[property] = initial;
     let last = new Date();
 
     const frame = function() {
+        // the animation might be cancelled
+        if (abort && abort()) {
+            callback && callback();
+            return;
+        }
+
         // checks how much time has passed since the last animation frame
         const current = new Date();
         const timeDelta = current - last;
