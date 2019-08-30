@@ -677,7 +677,7 @@ ripe.Configurator.prototype._populateBuffer = function(buffer) {
 /**
  * @ignore
  */
-ripe.Configurator.prototype._updateConfig = async function(animate = null) {
+ripe.Configurator.prototype._updateConfig = async function(animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
