@@ -9,6 +9,15 @@ if (
 }
 
 /**
+ * Object that contains global (static) information to be used by
+ * the visuals infrastructure (eg global identifier counter).
+ */
+ripe.visualGlobals = {
+    id: 0,
+    instances: []
+};
+
+/**
  * @class
  * @augments Interactable
  * @classdesc The superclass for visual representations of a Ripe instance.
@@ -33,6 +42,9 @@ ripe.Visual.constructor = ripe.Visual;
  */
 ripe.Visual.prototype.init = function() {
     ripe.Interactable.prototype.init.call(this);
+    ripe.visualGlobals.id++;
+    this.id = ripe.visualGlobals.id;
+    ripe.visualGlobals.instances.push(this);
 };
 
 /**
@@ -44,6 +56,8 @@ ripe.Visual.prototype.deinit = function() {
     this._removeElementHandlers();
     this.element = null;
     this.elementEvents = null;
+
+    ripe.visualGlobals.instances.splice(ripe.visualGlobals.instances.indexOf(this), 1);
 
     ripe.Interactable.prototype.deinit.call(this);
 };

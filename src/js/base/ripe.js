@@ -10,6 +10,14 @@ if (
 }
 
 /**
+ * Object that contains global (static) information to be used by
+ * the RIPE infrastructure (eg global identifier counter).
+ */
+ripe.ripeGlobals = {
+    id: 0
+};
+
+/**
  * @class
  * @augments Observable
  * @classdesc Represents a customizable model.
@@ -40,6 +48,11 @@ ripe.RipeBase = function(brand, model, options) {
  * the provided configuration and defaulting values policy.
  */
 ripe.Ripe.prototype.init = async function(brand, model, options) {
+    // generates a new global identifier and adds the current
+    // instance to the list og globally managed ones
+    ripe.ripeGlobals.id++;
+    this.id = ripe.ripeGlobals.id;
+
     // runs the defaulting operation so that it's possible to
     // provide only the first parameters as the options
     if (
