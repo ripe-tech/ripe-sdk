@@ -1084,7 +1084,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
     this._addElementHandler("mousedown", function(event) {
         const _element = this;
         _element.dataset.view = _element.dataset.view || "side";
-        self.base = _element.dataset.position || 0;
+        self.base = parseInt(_element.dataset.position) || 0;
         self.down = true;
         self.referenceX = event.pageX;
         self.referenceY = event.pageY;
@@ -1284,7 +1284,8 @@ ripe.Configurator.prototype._parseDrag = function() {
     // retrieves the current view and its frames
     // and determines which one is the next frame
     const viewFrames = this.frames[nextView];
-    let nextPosition = parseInt(base - (sensitivity * percentX * viewFrames) / 24) % viewFrames;
+    const offset = Math.round((sensitivity * percentX * viewFrames) / 24);
+    let nextPosition = (base - offset) % viewFrames;
     nextPosition = nextPosition >= 0 ? nextPosition : viewFrames + nextPosition;
 
     // if the view changes then uses the last
