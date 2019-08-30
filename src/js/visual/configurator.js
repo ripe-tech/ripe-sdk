@@ -596,6 +596,9 @@ ripe.Configurator.prototype._initLayout = function() {
     // mask images to be used during highlight and select operation
     const masksBuffer = ripe.createElement("div", "masks-buffer");
 
+    // adds both buffer elements (frames and masks) to the base elements
+    // they are going to be used as placeholders for the "img" elements
+    // that are going to be loaded with the images
     this.element.appendChild(framesBuffer);
     this.element.appendChild(masksBuffer);
 
