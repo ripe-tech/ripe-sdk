@@ -53,6 +53,7 @@ ripe.Configurator.prototype.init = function() {
     this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
     this.useMasks = this.options.useMasks === undefined ? !this.noMasks : this.options.useMasks;
     this.view = this.options.view || "side";
+    this.configAnimate = this.options.configAnimate || "cross";
     this.position = this.options.position || 0;
     this.ready = false;
     this._observer = null;
@@ -676,7 +677,7 @@ ripe.Configurator.prototype._populateBuffer = function(buffer) {
 /**
  * @ignore
  */
-ripe.Configurator.prototype._updateConfig = async function(animate = "cross") {
+ripe.Configurator.prototype._updateConfig = async function(animate = null) {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
@@ -733,7 +734,7 @@ ripe.Configurator.prototype._updateConfig = async function(animate = "cross") {
             {},
             {
                 preload: true,
-                animate: animate,
+                animate: animate || this.configAnimate,
                 force: true
             }
         );
