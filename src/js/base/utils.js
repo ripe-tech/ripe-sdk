@@ -9,6 +9,16 @@ if (
 }
 
 /**
+ * Object used to store the information on the global visual
+ * animation that are currently running as part of the RIPE
+ * environment.
+ *
+ * Proper garbage collection should be ensure to avoid leak
+ * of memory regarding animations.
+ */
+ripe.animations = {};
+
+/**
  * @ignore
  */
 ripe.createElement = function(tagName, className) {
@@ -20,43 +30,77 @@ ripe.createElement = function(tagName, className) {
 /**
  * @ignore
  */
-ripe.animateProperty = function(element, property, initial, final, duration, callback) {
-    // sets the initial value for the property
+ripe.animateProperty = async function(element, property, initial, final, duration) {
+    // sets the initial value for the property according to the
+    // provided values, notice that the date of the last touch
+    // time for the animation is created
     element.style[property] = initial;
     let last = new Date();
 
-    const frame = function() {
-        // checks how much time has passed since the last animation frame
-        const current = new Date();
-        const timeDelta = current - last;
-        const animationDelta = (timeDelta * (final - initial)) / duration;
+    await new Promise((resolve, reject) => {
+        const frame = (timestamp, err) => {
+            // in case there's an error coming from the callback calls
+            // the promise reject function with the error
+            if (err) {
+                reject(err);
+                return;
+            }
 
-        // adjusts the value by the correspondent amount
-        // making sure it doesn't surpass the final value
-        let value = parseFloat(element.style[property]);
-        value += animationDelta;
-        value = final > initial ? Math.min(value, final) : Math.max(value, final);
-        element.style[property] = value;
-        last = current;
+            // in case there's an animation id currently defined in the
+            // element it should be removed from the global dict (making
+            // sure that there's proper garbage collection)
+            if (element.dataset.animation_id) {
+                delete ripe.animations[element.dataset.animation_id];
+            }
 
-        // checks if the animation has finished and if it is then
-        // fires the callback if it's set. Otherwise, requests a
-        // new animation frame to proceed with the animation
-        const incrementAnimation = final > initial && value < final;
-        const decrementAnimation = final < initial && value > final;
-        if (incrementAnimation || decrementAnimation) {
-            // sets the id of the animation frame on the element
-            // so that it can be canceled if necessary
-            const id = requestAnimationFrame(frame);
-            element.dataset.animation_id = id;
-        } else {
-            callback && callback();
-        }
-    };
+            // checks how much time has passed since the last animation frame
+            const current = new Date();
+            const timeDelta = current - last;
+            const animationDelta = (timeDelta * (final - initial)) / duration;
 
-    // starts the animation process by running the initial
-    // call to the frame animation function
-    frame();
+            // adjusts the value by the correspondent amount
+            // making sure it doesn't surpass the final value
+            let value = parseFloat(element.style[property]);
+            value += animationDelta;
+            value = final > initial ? Math.min(value, final) : Math.max(value, final);
+            element.style[property] = value;
+            last = current;
+
+            // checks if the animation has finished and if it is then
+            // fires the callback if it's set. Otherwise, requests a
+            // new animation frame to proceed with the animation
+            const incrementAnimation = final > initial && value < final;
+            const decrementAnimation = final < initial && value > final;
+            if (incrementAnimation || decrementAnimation) {
+                // sets the id of the animation frame on the element
+                // so that it can be canceled if necessary
+                const id = requestAnimationFrame(frame);
+                element.dataset.animation_id = id;
+                ripe.animations[element.dataset.animation_id] = {
+                    callback: frame,
+                    last: last
+                };
+            } else {
+                delete element.dataset.animation_id;
+                resolve();
+            }
+        };
+
+        // starts the animation process by running the initial
+        // call to the frame animation function
+        frame();
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.cancelAnimation = function(element) {
+    if (!element.dataset.animation_id) return;
+    const animationId = parseInt(element.dataset.animation_id);
+    const info = ripe.animations[animationId];
+    cancelAnimationFrame(animationId);
+    info.callback && info.callback(null, new Error("Animation canceled"));
 };
 
 /**

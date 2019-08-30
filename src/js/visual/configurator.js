@@ -497,9 +497,7 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     frontMask.addEventListener("error", this.frontMaskError);
     frontMask.setAttribute("src", url);
 
-    const animationId = parseInt(frontMask.dataset.animation_id);
-    animationId && cancelAnimationFrame(animationId);
-
+    ripe.cancelAnimation(frontMask);
     ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration);
 };
 
@@ -920,35 +918,33 @@ ripe.Configurator.prototype._drawFrame = async function(image, animate, duration
     // retrieves the animation identifiers for both the current
     // canvas and the target one and cancels any previous animation
     // that might exist in such canvas (as a new one is coming)
-    const currentId = parseInt(current.dataset.animation_id);
-    const targetId = parseInt(target.dataset.animation_id);
-    currentId && cancelAnimationFrame(currentId);
-    targetId && cancelAnimationFrame(targetId);
+    ripe.cancelAnimation(current);
+    ripe.cancelAnimation(target);
 
     // "calculates" the duration for the animate operation taking into
     // account the passed parameter and the "kind" of animation, falling
     // back to the instance default if required
     duration = duration || (animate === "immediate" ? 0 : this.duration);
 
-    const currentPromise = new Promise((resolve, reject) => {
-        if (animate === "cross") {
-            ripe.animateProperty(current, "opacity", 1, 0, duration, () => {
-                resolve();
-            });
-        } else {
-            resolve();
-        }
-    });
+    // creates an array of promises that are going to be waiting for so that
+    // the animation on the draw is considered finished
+    const promises = [];
+    if (animate === "cross") {
+        promises.push(ripe.animateProperty(current, "opacity", 1, 0, duration));
+    }
+    promises.push(ripe.animateProperty(target, "opacity", 0, 1, duration));
 
-    const targetPromise = new Promise((resolve, reject) => {
-        ripe.animateProperty(target, "opacity", 0, 1, duration, () => {
-            resolve();
-        });
-    });
+    console.info("Animation started");
 
     // waits for both animations to finish so that the final update on
     // the current settings can be performed (changing it's style)
-    await Promise.all([currentPromise, targetPromise]);
+    try {
+        await Promise.all(promises);
+    } catch (err) {
+        console.info("Animation error!!");
+    }
+
+    console.info("Animation ended");
 
     // updates the style to its final state for both the current and the
     // target canvas elements
