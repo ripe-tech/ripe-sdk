@@ -63,20 +63,14 @@ ripe.Configurator.prototype.init = function() {
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
-    this._ownerBinds["selected_part"] = this.owner.bind(
-        "selected_part",
-        function(part) {
-            this.highlight(part);
-        }.bind(this)
+    this._ownerBinds["selected_part"] = this.owner.bind("selected_part", part =>
+        this.highlight(part)
     );
 
     // registers for the deselected part event on the owner
     // so that we can remove the highlight of the associated part
-    this._ownerBinds["deselected_part"] = this.owner.bind(
-        "deselected_part",
-        function(part) {
-            this.lowlight();
-        }.bind(this)
+    this._ownerBinds["deselected_part"] = this.owner.bind("deselected_part", part =>
+        this.lowlight()
     );
 
     // creates a structure the store the last presented
@@ -147,7 +141,7 @@ ripe.Configurator.prototype.resize = function(size) {
  * - 'callback' - The callback to be called at the end of the update.
  * - 'preload' - If it's to execute the pre-loading process.
  */
-ripe.Configurator.prototype.update = function(state, options = {}) {
+ripe.Configurator.prototype.update = async function(state, options = {}) {
     if (this.ready === false) {
         return;
     }
@@ -161,7 +155,6 @@ ripe.Configurator.prototype.update = function(state, options = {}) {
     let animate = options.animate || false;
     const force = options.force || false;
     const duration = options.duration;
-    const callback = options.callback;
     const preload = options.preload;
 
     // checks if the parts drawed on the target have
@@ -179,7 +172,6 @@ ripe.Configurator.prototype.update = function(state, options = {}) {
     previous = this.unique;
     const unique = signature + "&view=" + String(view) + "&position=" + String(position);
     if (previous === unique && !force) {
-        callback && callback();
         return false;
     }
     this.unique = unique;
@@ -187,19 +179,6 @@ ripe.Configurator.prototype.update = function(state, options = {}) {
     // removes the highlight support from the matched object as a new
     // frame is going to be "calculated" and rendered (not same mask)
     this.lowlight();
-
-    // runs the load operation for the current frame, taking into
-    // account the multiple requirements for such execution
-    this._loadFrame(
-        view,
-        position,
-        {
-            draw: true,
-            animate: animate,
-            duration: duration
-        },
-        callback
-    );
 
     // runs the pre-loading process so that the remaining frames are
     // loaded for a smother experience when dragging the element,
@@ -209,6 +188,14 @@ ripe.Configurator.prototype.update = function(state, options = {}) {
     const preloaded = this.element.classList.contains("preload");
     const mustPreload = preload !== undefined ? preload : changed || !preloaded;
     mustPreload && this._preload(this.options.useChain);
+
+    // runs the load operation for the current frame, taking into
+    // account the multiple requirements for such execution
+    await this._loadFrame(view, position, {
+        draw: true,
+        animate: animate,
+        duration: duration
+    });
 };
 
 /**
@@ -248,7 +235,7 @@ ripe.Configurator.prototype.deinit = function() {
  * - 'safe' - If requested then the operation is only performed in case the configurator is not in the
  * an equivalent state (default to 'true').
  */
-ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
+ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // parses the requested frame value according to the pre-defined
     // standard (eg: side-3) and then unpacks it as view and position
     const _frame = ripe.parseFrameKey(frame);
@@ -260,7 +247,9 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     let duration = options.duration === undefined ? null : options.duration;
     let stepDurationRef = options.stepDuration === this.stepDuration ? null : options.stepDuration;
     const revolutionDuration =
-        options.revolutionDuration === undefined ? this.revolutionDuration : options.revolutionDuration;
+        options.revolutionDuration === undefined
+            ? this.revolutionDuration
+            : options.revolutionDuration;
     const type = options.type === undefined ? null : options.type;
     let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
     const safe = options.safe === undefined ? true : options.safe;
@@ -399,31 +388,42 @@ ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
 
     // runs the update operation that should sync the visuals of the
     // configurator according to the current internal state (in data)
-    this.update(
+    await this.update(
         {},
         {
             animate: animate,
-            duration: animate ? duration : 0,
-            callback: () => {
-                // in case the change frame operation has been completed
-                // target view and position has been reached, then it's
-                // time collect the garbage and return control flow
-                if (view === nextView && stepPosition === nextPosition) {
-                    this.element.classList.remove("no-drag", "animating");
-                    return;
-                }
-
-                // creates a new options instance that is going to be used in the
-                // possible next tick of the operation
-                options = Object.assign({}, options, { safe: false, first: false });
-
-                // schedules the new change frame operation according to
-                // the requested step duration (if animation required)
-                // this is going to be the next step in the animation
-                setTimeout(() => this.changeFrame(frame, options), animate ? 0 : stepDuration);
-            }
+            duration: animate ? duration : 0
         }
     );
+
+    // in case the change frame operation has been completed
+    // target view and position has been reached, then it's
+    // time collect the garbage and return control flow
+    if (view === nextView && stepPosition === nextPosition) {
+        this.element.classList.remove("no-drag", "animating");
+        return;
+    }
+
+    // creates a new options instance that is going to be used in the
+    // possible next tick of the operation
+    options = Object.assign({}, options, { safe: false, first: false });
+
+    await new Promise((resolve, reject) => {
+        // schedules the new change frame operation according to
+        // the requested step duration (if animation required)
+        // this is going to be the next step in the animation
+        setTimeout(
+            async () => {
+                try {
+                    await this.changeFrame(frame, options);
+                    resolve();
+                } catch (err) {
+                    reject(err);
+                }
+            },
+            animate ? 0 : stepDuration
+        );
+    });
 };
 
 /**
@@ -671,7 +671,7 @@ ripe.Configurator.prototype._populateBuffer = function(buffer) {
 /**
  * @ignore
  */
-ripe.Configurator.prototype._updateConfig = function() {
+ripe.Configurator.prototype._updateConfig = async function() {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
@@ -687,60 +687,58 @@ ripe.Configurator.prototype._updateConfig = function() {
     // under the current state, adapting then the internal
     // structures to accommodate the possible changes in the
     // frame structure
-    this.owner.getFrames(
-        function(frames) {
-            // updates the internal reference to the frames
-            // model (to be used from now on)
-            this.frames = frames;
+    this.owner.getFrames(frames => {
+        // updates the internal reference to the frames
+        // model (to be used from now on)
+        this.frames = frames;
 
-            // populates the buffers taking into account
-            // the frames of the model
-            this._populateBuffers();
+        // populates the buffers taking into account
+        // the frames of the model
+        this._populateBuffers();
 
-            // tries to keep the current view and position
-            // if the new model supports it otherwise
-            // changes to a supported frame
-            let view = this.element.dataset.position;
-            let position = this.element.dataset.position;
-            let maxPosition = this.frames[view];
-            if (!maxPosition) {
-                view = Object.keys(this.frames)[0];
-                position = 0;
-            } else if (position >= maxPosition) {
-                position = 0;
+        // tries to keep the current view and position
+        // if the new model supports it otherwise
+        // changes to a supported frame
+        let view = this.element.dataset.position;
+        let position = this.element.dataset.position;
+        let maxPosition = this.frames[view];
+        if (!maxPosition) {
+            view = Object.keys(this.frames)[0];
+            position = 0;
+        } else if (position >= maxPosition) {
+            position = 0;
+        }
+
+        // checks the last viewed frames of each view
+        // and deletes the ones not supported
+        const lastFrameViews = Object.keys(this._lastFrame);
+        for (view in lastFrameViews) {
+            position = this._lastFrame[view];
+            maxPosition = this.frames[view];
+            if (!maxPosition || position >= maxPosition) {
+                delete this._lastFrame[view];
             }
+        }
 
-            // checks the last viewed frames of each view
-            // and deletes the ones not supported
-            const lastFrameViews = Object.keys(this._lastFrame);
-            for (view in lastFrameViews) {
-                position = this._lastFrame[view];
-                maxPosition = this.frames[view];
-                if (!maxPosition || position >= maxPosition) {
-                    delete this._lastFrame[view];
-                }
+        // shows the new product with a crossfade effect
+        // and starts responding to updates again
+        this.ready = true;
+        this.trigger("ready");
+        this.update(
+            {},
+            {
+                preload: true,
+                animate: "cross",
+                force: true
             }
-
-            // shows the new product with a crossfade effect
-            // and starts responding to updates again
-            this.ready = true;
-            this.trigger("ready");
-            this.update(
-                {},
-                {
-                    preload: true,
-                    animate: "cross",
-                    force: true
-                }
-            );
-        }.bind(this)
-    );
+        );
+    });
 };
 
 /**
  * @ignore
  */
-ripe.Configurator.prototype._loadFrame = function(view, position, options = {}, callback) {
+ripe.Configurator.prototype._loadFrame = async function(view, position, options = {}) {
     // runs the defaulting operation on all of the parameters
     // sent to the load frame operation (defaulting)
     view = view || this.element.dataset.view || "side";
@@ -785,38 +783,43 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options = {}, 
         full: false
     });
 
-    // creates a callback to be called when the frame
-    // is drawn to trigger the callback passed to this
-    // function if it's set
-    const drawCallback = function() {
-        callback && callback();
-    };
-
     // verifies if the loading of the current image
     // is considered redundant (already loaded or
     // loading) and avoids for performance reasons
     const isRedundant = image.dataset.src === url;
     if (isRedundant) {
         if (!draw) {
-            callback && callback();
             return;
         }
         const isReady = image.dataset.loaded === "true";
-        isReady && this._drawFrame(image, animate, duration, drawCallback);
+        if (isReady) {
+            await this._drawFrame(image, animate, duration);
+        }
         return;
     }
 
     // adds load callback to the image to draw the frame
     // when it is available from the "remote" source
-    image.onload = function() {
-        image.dataset.loaded = true;
-        image.dataset.src = url;
-        if (!draw) {
-            callback && callback();
-            return;
-        }
-        this._drawFrame(image, animate, duration, drawCallback);
-    }.bind(this);
+    const imagePromise = new Promise((resolve, reject) => {
+        image.onload = async () => {
+            image.dataset.loaded = true;
+            image.dataset.src = url;
+            if (!draw) {
+                resolve();
+                return;
+            }
+            try {
+                await this._drawFrame(image, animate, duration);
+            } catch (err) {
+                reject(err);
+            }
+            resolve();
+        };
+
+        image.onerror = () => {
+            reject(new Error("Problem loading image"));
+        };
+    });
 
     // sets the src of the image to trigger the request
     // and sets loaded to false to indicate that the
@@ -824,6 +827,10 @@ ripe.Configurator.prototype._loadFrame = function(view, position, options = {}, 
     image.src = url;
     image.dataset.src = url;
     image.dataset.loaded = false;
+
+    // waits until the image promise is resolved so that
+    // we're sure everything is currently loaded
+    await imagePromise;
 };
 
 /**
@@ -882,7 +889,7 @@ ripe.Configurator.prototype._drawMask = function(maskImage) {
 /**
  * @ignore
  */
-ripe.Configurator.prototype._drawFrame = function(image, animate, duration, callback) {
+ripe.Configurator.prototype._drawFrame = async function(image, animate, duration) {
     const area = this.element.querySelector(".area");
     const back = this.element.querySelector(".back");
 
@@ -901,7 +908,6 @@ ripe.Configurator.prototype._drawFrame = function(image, animate, duration, call
         current.style.opacity = 0;
         target.style.zIndex = 1;
         target.style.opacity = 1;
-        callback && callback();
         return;
     }
 
@@ -918,16 +924,31 @@ ripe.Configurator.prototype._drawFrame = function(image, animate, duration, call
     // back to the instance default if required
     duration = duration || (animate === "immediate" ? 0 : this.duration);
 
-    if (animate === "cross") {
-        ripe.animateProperty(current, "opacity", 1, 0, duration);
-    }
-
-    ripe.animateProperty(target, "opacity", 0, 1, duration, () => {
-        current.style.opacity = 0;
-        current.style.zIndex = 1;
-        target.style.zIndex = 1;
-        callback && callback();
+    const currentPromise = new Promise((resolve, reject) => {
+        if (animate === "cross") {
+            ripe.animateProperty(current, "opacity", 1, 0, duration, () => {
+                resolve();
+            });
+        } else {
+            resolve();
+        }
     });
+
+    const targetPromise = new Promise((resolve, reject) => {
+        ripe.animateProperty(target, "opacity", 0, 1, duration, () => {
+            resolve();
+        });
+    });
+
+    // waits for both animations to finish so that the final update on
+    // the current settings can be performed (changing it's style)
+    await Promise.all([currentPromise, targetPromise]);
+
+    // updates the style to its final state for both the current and the
+    // target canvas elements
+    current.style.opacity = 0;
+    current.style.zIndex = 1;
+    target.style.zIndex = 1;
 };
 
 /**
@@ -935,8 +956,10 @@ ripe.Configurator.prototype._drawFrame = function(image, animate, duration, call
  */
 ripe.Configurator.prototype._preload = function(useChain) {
     const position = parseInt(this.element.dataset.position) || 0;
+
     let index = this.index || 0;
     index++;
+
     this.index = index;
     this.element.classList.add("preload");
 
@@ -954,8 +977,7 @@ ripe.Configurator.prototype._preload = function(useChain) {
     }
     work.reverse();
 
-    const self = this;
-    const mark = function(element) {
+    const mark = element => {
         const _index = self.index;
         if (index !== _index) {
             return;
@@ -984,11 +1006,14 @@ ripe.Configurator.prototype._preload = function(useChain) {
         }
     };
 
-    const render = function() {
+    const render = async function() {
         const _index = self.index;
         if (index !== _index) {
             return;
         }
+
+        // in case there's no more work pending returns immediately
+        // (nothing is remaining to be done)
         if (work.length === 0) {
             return;
         }
@@ -1001,35 +1026,17 @@ ripe.Configurator.prototype._preload = function(useChain) {
         const reference = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
         reference.classList.add("preloading");
 
-        // if a chain base loaded is used then
-        // marks the current frame as pre-loaded
-        // and proceeds to the next frame
-        const callbackChain = function() {
-            mark(reference);
-            render();
-        };
-
-        // if all the images are pre-loaded at the
-        // time then just marks the current one as
-        // pre-loaded
-        const callbackMark = function() {
-            mark(reference);
-        };
-
         // determines if a chain based loading should be used for the
         // pre-loading process of the continuous image resources to be loaded
         const _frame = ripe.parseFrameKey(frame);
         const view = _frame[0];
         const position = _frame[1];
-        self._loadFrame(
-            view,
-            position,
-            {
-                draw: false
-            },
-            useChain ? callbackChain : callbackMark
-        );
-        !useChain && render();
+        const promise = self._loadFrame(view, position, {
+            draw: false
+        });
+        promise.then(() => mark(reference));
+        if (useChain) await promise;
+        render();
     };
 
     // if there are frames to be loaded then adds the
