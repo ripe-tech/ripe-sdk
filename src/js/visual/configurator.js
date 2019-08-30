@@ -247,7 +247,7 @@ ripe.Configurator.prototype.deinit = function() {
  * - 'safe' - If requested then the operation is only performed in case the configurator is not in the
  * an equivalent state (default to 'true').
  */
-ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
+ripe.Configurator.prototype.changeFrame = function(frame, options = {}) {
     // parses the requested frame value according to the pre-defined
     // standard (eg: side-3) and then unpacks it as view and position
     const _frame = ripe.parseFrameKey(frame);
