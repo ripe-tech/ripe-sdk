@@ -19,7 +19,7 @@
                 <script type="text/javascript" src="{{ touch('//sdk.platforme.com/js/ripe.js') }}"></script>
             {% endif %}
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js', compress = 'js') }}"></script>
-            <title>{{ title }}{% block title %}{% endblock %}</title>
+            <title>{{ title }}{% block title %}RIPE SDK Demo{% endblock %}</title>
         {% endblock %}
     </head>
     <body class="{% block body_class %}ux wait-load{% endblock %}" data-url="{{ url|default('', True) }}"
