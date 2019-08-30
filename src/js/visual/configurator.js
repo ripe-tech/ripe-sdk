@@ -268,6 +268,12 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
         throw new RangeError("Frame " + frame + " is not supported.");
     }
 
+    // in case the safe mode is enabled and the current configuration is
+    // still under the preloading situation the change frame is ignored
+    if (safe && this.element.classList.contains("preloading")) {
+        return;
+    }
+
     // in case the safe mode is enabled and there's an animation running
     // then this request is going to be ignored
     if (safe && this.element.classList.contains("animating")) {
