@@ -901,12 +901,25 @@ ripe.Configurator.prototype._drawFrame = async function(image, animate, duration
     const current = visible ? area : back;
     const target = visible ? back : area;
     const context = target.getContext("2d");
+
+    // retrieves the animation identifiers for both the current
+    // canvas and the target one and cancels any previous animation
+    // that might exist in such canvas (as a new one is coming)
+    ripe.cancelAnimation(current);
+    ripe.cancelAnimation(target);
+
+    // clears the canvas context rectangle and then draws the image from
+    // the buffer to the target canvas (back buffer operation)
     context.clearRect(0, 0, target.clientWidth, target.clientHeight);
     context.drawImage(image, 0, 0, target.clientWidth, target.clientHeight);
 
+    // switches the visibility (meta information )of the target and the
+    // current canvas elements (this is just logic information)
     target.dataset.visible = true;
     current.dataset.visible = false;
 
+    // in case no animation is requested the z index and opacity switch
+    // is immediate, this is consider a fast double buffer switch
     if (!animate) {
         current.style.zIndex = 1;
         current.style.opacity = 0;
@@ -914,12 +927,6 @@ ripe.Configurator.prototype._drawFrame = async function(image, animate, duration
         target.style.opacity = 1;
         return;
     }
-
-    // retrieves the animation identifiers for both the current
-    // canvas and the target one and cancels any previous animation
-    // that might exist in such canvas (as a new one is coming)
-    ripe.cancelAnimation(current);
-    ripe.cancelAnimation(target);
 
     // "calculates" the duration for the animate operation taking into
     // account the passed parameter and the "kind" of animation, falling
@@ -934,17 +941,9 @@ ripe.Configurator.prototype._drawFrame = async function(image, animate, duration
     }
     promises.push(ripe.animateProperty(target, "opacity", 0, 1, duration));
 
-    console.info("Animation started");
-
     // waits for both animations to finish so that the final update on
     // the current settings can be performed (changing it's style)
-    try {
-        await Promise.all(promises);
-    } catch (err) {
-        console.info("Animation error!!");
-    }
-
-    console.info("Animation ended");
+    await Promise.all(promises);
 
     // updates the style to its final state for both the current and the
     // target canvas elements
@@ -1056,8 +1055,12 @@ ripe.Configurator.prototype._preload = async function(useChain) {
         work.length > 0 && this.element.classList.add("preloading");
         if (work.length > 0) {
             this.element.classList.add("no-drag");
-            setTimeout(() => {
-                render();
+            setTimeout(async () => {
+                try {
+                    await render();
+                } catch (err) {
+                    reject(err);
+                }
             }, this.preloadDelay);
         }
     });
