@@ -160,19 +160,17 @@ ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
  * @ignore
  */
 ripe.Image.prototype._registerHandlers = function() {
-    this.loadListener = function() {
+    this.loadListener = () => {
         this.trigger("loaded");
-    }.bind(this);
+    };
     this.element.addEventListener("load", this.loadListener);
 
     // eslint-disable-next-line no-undef
     const Observer = MutationObserver || WebKitMutationObserver;
     this._observer = Observer
-        ? new Observer(
-              function(mutations) {
-                  this.update();
-              }.bind(this)
-          )
+        ? new Observer(mutations => {
+              this.update();
+          })
         : null;
     this._observer &&
         this._observer.observe(this.element, {
