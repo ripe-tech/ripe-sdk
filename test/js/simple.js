@@ -130,5 +130,49 @@ describe("Ripe", function() {
             assert.strictEqual(instance.canUndo(), false);
             assert.strictEqual(instance.canRedo(), true);
         });
+
+        it("should set parts with no redundancy", async () => {
+            const instance = new ripe.Ripe("swear", "vyner", {
+                remoteCalls: false,
+                noCombinations: true
+            });
+            instance.load();
+
+            await new Promise((resolve, reject) => {
+                instance.bind("parts", resolve);
+            });
+
+            assert.strictEqual(instance.partCounter, 8);
+
+            await instance.setPart("front", "suede", "black");
+
+            assert.strictEqual(instance.parts.front.material, "suede");
+            assert.strictEqual(instance.parts.front.color, "black");
+            assert.strictEqual(instance.partCounter, 9);
+
+            await instance.setPart("front", "suede", "black");
+
+            assert.strictEqual(instance.parts.front.material, "suede");
+            assert.strictEqual(instance.parts.front.color, "black");
+            assert.strictEqual(instance.partCounter, 9);
+
+            await instance.setPart("front", "suede", "white");
+
+            assert.strictEqual(instance.parts.front.material, "suede");
+            assert.strictEqual(instance.parts.front.color, "white");
+            assert.strictEqual(instance.partCounter, 10);
+
+            await instance.setPart("front", "suede", "white");
+
+            assert.strictEqual(instance.parts.front.material, "suede");
+            assert.strictEqual(instance.parts.front.color, "white");
+            assert.strictEqual(instance.partCounter, 10);
+
+            await instance.setPart("front", "suede", "black");
+
+            assert.strictEqual(instance.parts.front.material, "suede");
+            assert.strictEqual(instance.parts.front.color, "black");
+            assert.strictEqual(instance.partCounter, 11);
+        });
     });
 });

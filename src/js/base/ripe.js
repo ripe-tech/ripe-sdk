@@ -74,6 +74,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options = {}) {
     this.loadedConfig = null;
     this.choices = null;
     this.ready = false;
+    this.partCounter = 0;
 
     // extends the default options with the ones provided by the
     // developer upon this initializer call
@@ -825,7 +826,7 @@ ripe.Ripe.prototype._getState = function() {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._setPart = async function(part, material, color, events = true) {
+ripe.Ripe.prototype._setPart = async function(part, material, color, events = true, force = false) {
     // ensures that there's one valid configuration loaded
     // in the current instance, required for part setting
     if (!this.loadedConfig) {
@@ -852,10 +853,20 @@ ripe.Ripe.prototype._setPart = async function(part, material, color, events = tr
         ? value.material === undefined && value.color === undefined
         : value.material === material && value.color === color;
 
+    // in case the current value for the part is already the same
+    // as the requested new one and the force flag is not set returns
+    // immediately with the false flag indicating that no operation
+    // has been performed
+    if (!force && isSame) {
+        return false;
+    }
+
+    // increments the part "change" counter, so that it's possible
+    // o track unique part change operations
+    this.partCounter++;
+
     value.material = remove ? null : material;
     value.color = remove ? null : color;
-
-    events = events && !isSame;
 
     // "builds" the inline closure function that handles the
     // changing of the parts structure according to the new
@@ -873,13 +884,15 @@ ripe.Ripe.prototype._setPart = async function(part, material, color, events = tr
     // returns the control flow immediately
     if (!events) {
         updatePart();
-        return;
+        return true;
     }
 
     await this.trigger("pre_part", part, value);
     updatePart();
     await this.trigger("part", part, value);
     await this.trigger("post_part", part, value);
+
+    return true;
 };
 
 /**
