@@ -26,7 +26,7 @@ ripe.ripeGlobals = {
  * @param {String} model The name of the model.
  * @param {Object} options An object with the options to configure the Ripe instance.
  */
-ripe.Ripe = function(brand, model, options) {
+ripe.Ripe = function(brand, model, options = {}) {
     ripe.Observable.call(this);
     ripe.Ripe.prototype.init.call(this, brand, model, options);
 };
@@ -36,7 +36,7 @@ ripe.Ripe.prototype = ripe.build(ripe.Observable.prototype);
 /**
  * @ignore
  */
-ripe.RipeBase = function(brand, model, options) {
+ripe.RipeBase = function(brand, model, options = {}) {
     return new ripe.Ripe(brand, model, options);
 };
 
@@ -47,7 +47,7 @@ ripe.RipeBase = function(brand, model, options) {
  * Sets the various values for the Ripe instance taking into account
  * the provided configuration and defaulting values policy.
  */
-ripe.Ripe.prototype.init = async function(brand, model, options) {
+ripe.Ripe.prototype.init = async function(brand, model, options = {}) {
     // generates a new global identifier and adds the current
     // instance to the list og globally managed ones
     ripe.ripeGlobals.id++;
@@ -55,11 +55,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options) {
 
     // runs the defaulting operation so that it's possible to
     // provide only the first parameters as the options
-    if (
-        typeof brand === "object" &&
-        typeof model === "undefined" &&
-        typeof options === "undefined"
-    ) {
+    if (typeof brand === "object") {
         options = brand;
         brand = options.brand || null;
         model = options.model || null;
@@ -218,7 +214,7 @@ ripe.Ripe.prototype.unload = async function() {};
  *  - 'useDefaults' - If the default parts of the model should be used when no initials parts are set.
  *  - 'usePrice' - If the price should be automatically retrieved whenever there is a customization change.
  */
-ripe.Ripe.prototype.config = async function(brand, model, options) {
+ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // sets the most structural values of this entity
     // that represent the configuration to be used
     this.brand = brand;
@@ -300,18 +296,18 @@ ripe.Ripe.prototype.config = async function(brand, model, options) {
 
     // updates the parts of the current instance so that the internals of it
     // reflect the newly loaded configuration
-    await this.setParts(parts, false, { noPartEvents: true });
+    await this.setParts(parts, true, { partEvents: false });
 
     // in case both the initials and the engraving value are set in the options
     // runs the updating of the internal state to update the initials
     if (options.initials && options.engraving) {
-        this.setInitials(options.initials, options.engraving, true);
+        this.setInitials(options.initials, options.engraving, false);
     }
 
     // in case the initials extra are defined then runs the setting of the initials
     // extra on the current instance (without update events)
     if (options.initialsExtra) {
-        this.setInitialsExtra(options.initialsExtra, true);
+        this.setInitialsExtra(options.initialsExtra, false);
     }
 
     // notifies that the config has changed and waits for listeners before
@@ -410,16 +406,20 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
  * @param {String} part The name of the part to be changed.
  * @param {String} material The material to change to.
  * @param {String} color The color to change to.
- * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults to 'false').
+ * @param {Boolean} events If the parts events should be triggered (defaults to 'true').
  */
-ripe.Ripe.prototype.setPart = async function(part, material, color, noEvents, options) {
-    if (noEvents) {
+ripe.Ripe.prototype.setPart = async function(part, material, color, events = true, options = null) {
+    if (!events) {
         await this._setPart(part, material, color);
     }
 
     await this.trigger("pre_parts", this.parts, options);
     await this._setPart(part, material, color);
+
+    // propagates the state change in the internal structures to the
+    // children elements of this RIPE instance
     this.update();
+
     await this.trigger("parts", this.parts, options);
     await this.trigger("post_parts", this.parts, options);
 };
@@ -428,20 +428,23 @@ ripe.Ripe.prototype.setPart = async function(part, material, color, noEvents, op
  * Allows changing the customization of a set of parts in bulk.
  *
  * @param {Object} parts An Object or array with part, material, color triplets to be set.
- * @param {Boolean} noEvents If the parts events shouldn't be triggered (defaults to 'false').
+ * @param {Boolean} events If the parts events should be triggered (defaults to 'true').
  * @param {Object} options An object with options to configure the operation (for internal use).
  */
-ripe.Ripe.prototype.setParts = async function(update, noEvents, options) {
+ripe.Ripe.prototype.setParts = async function(update, events = true, options = {}) {
+    const partEvents = options.partEvents === undefined ? true : options.partEvents;
+
     if (typeof update === "object" && !Array.isArray(update)) {
         update = this._partsList(update);
     }
 
-    if (noEvents) {
-        await this._setParts(update, options && options.noPartEvents);
+    if (!events) {
+        await this._setParts(update, partEvents);
+        return;
     }
 
     await this.trigger("pre_parts", this.parts, options);
-    await this._setParts(update, options && options.noPartEvents);
+    await this._setParts(update, partEvents);
     this.update();
     await this.trigger("parts", this.parts, options);
     await this.trigger("post_parts", this.parts, options);
@@ -454,13 +457,13 @@ ripe.Ripe.prototype.setParts = async function(update, noEvents, options) {
  *
  * @param {String} initials The initials value to be set.
  * @param {String} engraving The type of engraving to be set.
- * @param {Boolean} noUpdate If the update operation shouldn't be
- * triggered (defaults to 'false').
+ * @param {Boolean} events If the events associated with the initials
+ * change should be triggered.
  */
-ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
+ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true) {
     if (typeof initials === "object") {
-        noEvents = engraving;
-        return this.setInitialsExtra(initials, noEvents);
+        events = engraving === undefined ? true : engraving;
+        return this.setInitialsExtra(initials, events);
     }
 
     this.initials = initials || "";
@@ -472,7 +475,7 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
         }
     };
 
-    if (noEvents) return;
+    if (!events) return;
 
     this.update();
 };
@@ -483,10 +486,10 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, noEvents) {
  *
  * @param {Object} initialsExtra Object that contains the values of the
  * initials and engraving for all the initial groups.
- * @param {Boolean} noUpdate If the update operation shouldn't be
- * triggered (defaults to 'false').
+ * @param {Boolean} events If the events associated with the changing of
+ * the initials (extra) should be triggered.
  */
-ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, noEvents) {
+ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, events = true) {
     const groups = Object.keys(initialsExtra);
     const isEmpty = groups.length === 0;
     const mainGroup = groups.includes("main") ? "main" : groups[0];
@@ -502,7 +505,7 @@ ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, noEvents) {
         this.initialsExtra = initialsExtra;
     }
 
-    if (noEvents) return;
+    if (!events) return;
 
     this.update();
 };
@@ -554,19 +557,19 @@ ripe.Ripe.prototype.getChoices = function() {
  * Updates the current internal state for parts material and colors, properly
  * notifying any "listener" about these changes.
  *
- * @param choices The object that contains the state for every single
+ * @param {Object} choices The object that contains the state for every single
  * part, material, and color.
- * @param {Boolean} noEvents If the choices events shouldn't be triggered
- * (defaults to 'false').
+ * @param {Boolean} events If the choices events should be triggered (defaults
+ * to 'true').
  */
-ripe.Ripe.prototype.setChoices = function(choices, noEvents) {
+ripe.Ripe.prototype.setChoices = function(choices, events = true) {
     // updates the internal object with the choices that are now
     // going to be set
     this.choices = choices;
 
     // in case no event triggering is required no the control flow
     // must return immediately
-    if (noEvents) return;
+    if (!events) return;
 
     // triggers the choices event that should change the available
     // set of choices in the visual/UI assets
@@ -606,7 +609,7 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
  * @param {Object} options An Object with options to configure the Image instance.
  * @returns {Image} The Image instance created.
  */
-ripe.Ripe.prototype.bindImage = function(element, options) {
+ripe.Ripe.prototype.bindImage = function(element, options = {}) {
     const image = new ripe.Image(this, element, options);
     return this.bindInteractable(image);
 };
@@ -618,7 +621,7 @@ ripe.Ripe.prototype.bindImage = function(element, options) {
  * @param {Object} options An Object with options to configure the Configurator instance.
  * @returns {Configurator} The Configurator instance created.
  */
-ripe.Ripe.prototype.bindConfigurator = function(element, options) {
+ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
     const config = new ripe.Configurator(this, element, options);
     return this.bindInteractable(config);
 };
@@ -669,7 +672,7 @@ ripe.Ripe.prototype.unbindConfigurator = ripe.Ripe.prototype.unbindInteractable;
  * @param {String} part The name of the part to be selected.
  * @param {Object} options An Object with options to configure the operation.
  */
-ripe.Ripe.prototype.selectPart = function(part, options) {
+ripe.Ripe.prototype.selectPart = function(part, options = {}) {
     this.trigger("selected_part", part);
 };
 
@@ -680,7 +683,7 @@ ripe.Ripe.prototype.selectPart = function(part, options) {
  * @param {String} part The name of the part to be deselected.
  * @param {Object} options An Object with options to configure the operation.
  */
-ripe.Ripe.prototype.deselectPart = function(part, options) {
+ripe.Ripe.prototype.deselectPart = function(part, options = {}) {
     this.trigger("deselected_part", part);
 };
 
@@ -719,7 +722,7 @@ ripe.Ripe.prototype.undo = async function() {
 
     this.historyPointer -= 1;
     const parts = this.history[this.historyPointer];
-    if (parts) await this.setParts(parts, false, { action: "undo" });
+    if (parts) await this.setParts(parts, true, { action: "undo" });
 };
 
 /**
@@ -735,7 +738,7 @@ ripe.Ripe.prototype.redo = async function() {
 
     this.historyPointer += 1;
     const parts = this.history[this.historyPointer];
-    if (parts) await this.setParts(parts, false, { action: "redo" });
+    if (parts) await this.setParts(parts, true, { action: "redo" });
 };
 
 /**
@@ -822,7 +825,7 @@ ripe.Ripe.prototype._getState = function() {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._setPart = async function(part, material, color, noEvents) {
+ripe.Ripe.prototype._setPart = async function(part, material, color, events = true) {
     // ensures that there's one valid configuration loaded
     // in the current instance, required for part setting
     if (!this.loadedConfig) {
@@ -840,25 +843,41 @@ ripe.Ripe.prototype._setPart = async function(part, material, color, noEvents) {
         throw Error(`Part '${part}' can't be removed`);
     }
 
+    // retrieves the current value structure for the part
+    // that is going to be changed and determines if its value
+    // is already the same as the new one to be set, this is
+    // going to influence the triggering of events
     const value = this.parts[part] || {};
+    const isSame = remove
+        ? value.material === undefined && value.color === undefined
+        : value.material === material && value.color === color;
+
     value.material = remove ? null : material;
     value.color = remove ? null : color;
 
-    if (noEvents) {
+    events = events && !isSame;
+
+    // "builds" the inline closure function that handles the
+    // changing of the parts structure according to the new
+    // requested state (material and color)
+    const updatePart = () => {
         if (remove) {
             delete this.parts[part];
         } else {
             this.parts[part] = value;
         }
+    };
+
+    // in case no events should be raised for the part change
+    // operation then just updates the parts structure and then
+    // returns the control flow immediately
+    if (!events) {
+        updatePart();
         return;
     }
 
     await this.trigger("pre_part", part, value);
-    if (remove) {
-        delete this.parts[part];
-    } else {
-        this.parts[part] = value;
-    }
+    updatePart();
     await this.trigger("part", part, value);
     await this.trigger("post_part", part, value);
 };
@@ -866,10 +885,10 @@ ripe.Ripe.prototype._setPart = async function(part, material, color, noEvents) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._setParts = async function(update, noEvents) {
+ripe.Ripe.prototype._setParts = async function(update, events = true) {
     for (let index = 0; index < update.length; index++) {
         const part = update[index];
-        await this._setPart(part[0], part[1], part[2], noEvents);
+        await this._setPart(part[0], part[1], part[2], events);
     }
 };
 
@@ -920,7 +939,7 @@ ripe.Ripe.prototype._handleCtx = function(result) {
         this.parts[name] = value;
     }
     if (result.initials && JSON.stringify(result.initials) !== JSON.stringify(this.initialsExtra)) {
-        this.setInitialsExtra(result.initials, true);
+        this.setInitialsExtra(result.initials, false);
     }
     if (result.choices && JSON.stringify(result.choices) !== JSON.stringify(this.choices)) {
         this.setChoices(result.choices);

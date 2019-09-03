@@ -53,7 +53,8 @@ ripe.Configurator.prototype.init = function() {
     this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
     this.useMasks = this.options.useMasks === undefined ? !this.noMasks : this.options.useMasks;
     this.view = this.options.view || "side";
-    this.configAnimate = this.options.configAnimate === undefined ? "cross" : this.options.configAnimate;
+    this.configAnimate =
+        this.options.configAnimate === undefined ? "cross" : this.options.configAnimate;
     this.viewAnimate = this.options.viewAnimate === undefined ? "cross" : this.options.viewAnimate;
     this.position = this.options.position || 0;
     this.ready = false;
