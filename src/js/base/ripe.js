@@ -865,6 +865,9 @@ ripe.Ripe.prototype._setPart = async function(part, material, color, events = tr
     // o track unique part change operations
     this.partCounter++;
 
+    // updates the value object with the newly requested values, notice
+    // than in case this is a removal a null value is set for both the
+    // material and color keys
     value.material = remove ? null : material;
     value.color = remove ? null : color;
 
@@ -892,6 +895,8 @@ ripe.Ripe.prototype._setPart = async function(part, material, color, events = tr
     await this.trigger("part", part, value);
     await this.trigger("post_part", part, value);
 
+    // returns a valid value indicating that a concrete operation
+    // of part changing has been performed
     return true;
 };
 
