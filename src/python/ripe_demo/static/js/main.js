@@ -37,7 +37,7 @@ window.onload = function() {
             var triplet = triplets[index];
             parts.push(triplet);
         }
-        await ripe.setParts(parts);
+        await ripe.setParts(parts, { partEvents: false });
     };
 
     var unique = function() {
@@ -303,7 +303,7 @@ window.onload = function() {
 
             setTimeout(function() {
                 if (result.frames > 9) {
-                    image && image.setFrame("9");
+                    image && image.setFrame("side-9");
                 }
             });
 
