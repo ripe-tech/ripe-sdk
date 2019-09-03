@@ -312,8 +312,11 @@ window.onload = function() {
                 noMasks: false,
                 view: bestFace(result)
             });
+            configurator.isFirst = true;
 
             configurator.bind("loaded", function() {
+                if (configurator.isFirst) configurator.isFirst = false;
+                else return;
                 if (result.faces.indexOf("side") !== -1) {
                     configurator.changeFrame("side-12", {
                         revolutionDuration: 500

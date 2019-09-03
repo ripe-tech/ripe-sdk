@@ -723,7 +723,7 @@ ripe.Ripe.prototype.undo = async function() {
 
     this.historyPointer -= 1;
     const parts = this.history[this.historyPointer];
-    if (parts) await this.setParts(parts, true, { action: "undo" });
+    if (parts) await this.setParts(parts, true, { action: "undo", partEvents: false });
 };
 
 /**
@@ -739,7 +739,7 @@ ripe.Ripe.prototype.redo = async function() {
 
     this.historyPointer += 1;
     const parts = this.history[this.historyPointer];
-    if (parts) await this.setParts(parts, true, { action: "redo" });
+    if (parts) await this.setParts(parts, true, { action: "redo", partEvents: false });
 };
 
 /**
