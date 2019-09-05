@@ -56,7 +56,7 @@ ripe.Ripe.prototype.init = async function(brand, model, options = {}) {
     // runs the defaulting operation so that it's possible to
     // provide only the first parameters as the options
     if (typeof brand === "object") {
-        options = brand;
+        options = brand || {};
         brand = options.brand || null;
         model = options.model || null;
     }
