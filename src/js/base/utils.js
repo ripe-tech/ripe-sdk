@@ -137,7 +137,7 @@ ripe.frameNameHack = function(frame) {
  * @ignore
  */
 ripe.fixEvent = function(event) {
-    if (event.hasOwnProperty("offsetX") && event.offsetX !== undefined) {
+    if (event.offsetX !== undefined) {
         return event;
     }
 

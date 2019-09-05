@@ -82,7 +82,7 @@ ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
  * @ignore
  */
 ripe.Ripe.plugins.DiagPlugin.prototype._getPluginName = function(plugin) {
-    for (let key in ripe.Ripe.plugins) {
+    for (const key in ripe.Ripe.plugins) {
         if (plugin.constructor === ripe.Ripe.plugins[key]) {
             return key;
         }

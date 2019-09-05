@@ -89,8 +89,8 @@ ripe.Ripe.prototype.parseEngraving = function(engraving, properties = null) {
     const propertyNamesM = {};
 
     for (const property of properties) {
-        const type = property["type"];
-        const name = property["name"];
+        const type = property.type;
+        const name = property.name;
         propertyNamesM[name] = type;
         propertyTypes.push(type);
     }
@@ -144,7 +144,7 @@ ripe.Ripe.prototype.parseEngraving = function(engraving, properties = null) {
  */
 ripe.Ripe.prototype.normalizeEngraving = function(engraving, properties = null) {
     const { values } = this.parseEngraving(engraving, properties);
-    return values.map(v => `${v["name"]}:${v["type"]}`).join(".");
+    return values.map(v => `${v.name}:${v.type}`).join(".");
 };
 
 /**

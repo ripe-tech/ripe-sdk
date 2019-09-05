@@ -56,7 +56,7 @@
         "@babel/polyfill": "^7.4.4",
         "@babel/preset-env": "^7.5.5",
         "eslint": "^6.3.0",
-        "eslint-config-hive": "^0.1.21",
+        "eslint-config-hive": "^0.1.22",
         "fancy-log": "^1.3.3",
         "gulp": "^4.0.2",
         "gulp-babel": "^8.0.0",

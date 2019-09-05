@@ -7,9 +7,7 @@ describe("Utils", function() {
 
     describe("#equal", async function() {
         it("should be able to compare two objects", () => {
-            let result;
-
-            result = ripe.ripe.equal({ hello: "world" }, { hello: "world" });
+            const result = ripe.ripe.equal({ hello: "world" }, { hello: "world" });
             assert.strictEqual(result, true);
         });
     });

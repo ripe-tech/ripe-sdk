@@ -76,7 +76,7 @@ ripe.Observable.prototype.runCallbacks = async function(event, wait = true, ...a
     const results = [];
     for (let index = 0; index < callbacks.length; index++) {
         const callback = callbacks[index];
-        let result = callback.apply(this, args);
+        const result = callback.apply(this, args);
         if (result === undefined || result === null) continue;
         if (wait) await result;
         else results.push(result);

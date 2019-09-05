@@ -178,7 +178,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     const params = options.params || {};
     const headers = options.headers || {};
     let data = options.data || null;
-    let dataJ = options.dataJ || null;
+    const dataJ = options.dataJ || null;
     let contentType = options.contentType || null;
 
     const query = this._buildQuery(params);

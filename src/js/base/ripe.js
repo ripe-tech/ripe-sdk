@@ -592,14 +592,14 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
 
     const config = this.loadedConfig ? this.loadedConfig : await this.getConfigP();
     const frames = {};
-    const faces = config["faces"];
+    const faces = config.faces;
     for (let index = 0; index < faces.length; index++) {
         const face = faces[index];
         frames[face] = 1;
     }
 
-    const sideFrames = config["frames"];
-    frames["side"] = sideFrames;
+    const sideFrames = config.frames;
+    frames.side = sideFrames;
     callback && callback(frames);
 };
 
