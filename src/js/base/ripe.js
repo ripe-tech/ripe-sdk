@@ -47,7 +47,7 @@ ripe.RipeBase = function(brand, model, options = {}) {
  * Sets the various values for the Ripe instance taking into account
  * the provided configuration and defaulting values policy.
  */
-ripe.Ripe.prototype.init = async function(brand, model, options = {}) {
+ripe.Ripe.prototype.init = async function(brand = null, model = null, options = {}) {
     // generates a new global identifier and adds the current
     // instance to the list og globally managed ones
     ripe.ripeGlobals.id++;
@@ -55,8 +55,8 @@ ripe.Ripe.prototype.init = async function(brand, model, options = {}) {
 
     // runs the defaulting operation so that it's possible to
     // provide only the first parameters as the options
-    if (typeof brand === "object") {
-        options = brand || {};
+    if (typeof brand === "object" && brand !== null) {
+        options = brand;
         brand = options.brand || null;
         model = options.model || null;
     }
