@@ -131,6 +131,65 @@ describe("Ripe", function() {
             assert.strictEqual(instance.canRedo(), true);
         });
 
+        it("should set optional parts and undo", async () => {
+            const instance = new ripe.Ripe("swear", "bond", {
+                remoteCalls: false,
+                noCombinations: true
+            });
+            instance.load();
+
+            const initialParts = await new Promise((resolve, reject) => {
+                instance.bind("parts", resolve);
+            });
+
+            assert.deepStrictEqual(instance.parts, initialParts);
+            assert.strictEqual(instance.canUndo(), false);
+            assert.strictEqual(instance.canRedo(), false);
+
+            await instance.undo();
+            assert.strictEqual(instance.canUndo(), false);
+            assert.strictEqual(instance.canRedo(), false);
+
+            assert.deepStrictEqual(instance.parts, initialParts);
+
+            assert.strictEqual(instance.parts.front.material, "nappa");
+            assert.strictEqual(instance.parts.front.color, "white");
+            assert.strictEqual(instance.parts.strap_tips, undefined);
+
+            await instance.setPart("front", "nappa", "black");
+
+            assert.strictEqual(instance.parts.front.material, "nappa");
+            assert.strictEqual(instance.parts.front.color, "black");
+            assert.strictEqual(instance.parts.strap_tips, undefined);
+            assert.strictEqual(instance.canUndo(), true);
+            assert.strictEqual(instance.canRedo(), false);
+
+            await instance.undo();
+
+            assert.strictEqual(instance.parts.front.material, "nappa");
+            assert.strictEqual(instance.parts.front.color, "white");
+            assert.strictEqual(instance.parts.strap_tips, undefined);
+            assert.strictEqual(instance.canUndo(), false);
+            assert.strictEqual(instance.canRedo(), true);
+
+            await instance.setPart("strap_tips", "metal", "gold");
+
+            assert.strictEqual(instance.parts.front.material, "nappa");
+            assert.strictEqual(instance.parts.front.color, "white");
+            assert.strictEqual(instance.parts.strap_tips.material, "metal");
+            assert.strictEqual(instance.parts.strap_tips.color, "gold");
+            assert.strictEqual(instance.canUndo(), true);
+            assert.strictEqual(instance.canRedo(), false);
+
+            await instance.undo();
+
+            assert.strictEqual(instance.parts.front.material, "nappa");
+            assert.strictEqual(instance.parts.front.color, "white");
+            assert.strictEqual(instance.parts.strap_tips, undefined);
+            assert.strictEqual(instance.canUndo(), false);
+            assert.strictEqual(instance.canRedo(), true);
+        });
+
         it("should set parts with no redundancy", async () => {
             const instance = new ripe.Ripe("swear", "vyner", {
                 remoteCalls: false,

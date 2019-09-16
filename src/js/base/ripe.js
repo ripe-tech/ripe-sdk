@@ -800,6 +800,33 @@ ripe.Ripe.prototype.removePlugin = function(plugin) {
 };
 
 /**
+ * Normalizes the parts dictionary by taking into account optional parts
+ * that should be set even for empty situations.
+ *
+ * @param {Object} parts The parts object that should be cloned and then
+ * ensured to have the optional parts set.
+ * @returns {Object} A copy of the provided parts with the optional parts
+ * set even if not defined.
+ */
+ripe.Ripe.prototype.normalizeParts = function(parts) {
+    if (!parts) return parts;
+
+    const defaults = this.loadedConfig.defaults;
+    const _parts = ripe.clone(parts);
+
+    for (const part in defaults) {
+        if (!defaults[part].optional) continue;
+        if (_parts[part] !== undefined) continue;
+        _parts[part] = {
+            material: undefined,
+            color: undefined
+        };
+    }
+
+    return _parts;
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype._initBundles = async function(defaultLocale = "en_us") {
@@ -935,7 +962,7 @@ ripe.Ripe.prototype._pushHistory = function() {
         return;
     }
 
-    const _parts = ripe.clone(this.parts);
+    const _parts = this.normalizeParts(this.parts);
     this.history = this.history.slice(0, this.historyPointer + 1);
     this.history.push(_parts);
     this.historyPointer = this.history.length - 1;
