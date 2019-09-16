@@ -723,7 +723,20 @@ ripe.Ripe.prototype.undo = async function() {
 
     this.historyPointer -= 1;
     const parts = this.history[this.historyPointer];
-    if (parts) await this.setParts(parts, true, { action: "undo", partEvents: false });
+    if (parts) {
+        // ensures that optional parts are not left unset
+        // making certain that one gets the same customization
+        const defaults = this.loadedConfig.defaults;
+        for (const part in defaults) {
+            if (defaults[part].optional !== true) continue;
+            if (parts[part] !== undefined) continue;
+            parts[part] = {
+                material: "",
+                color: ""
+            };
+        }
+        await this.setParts(parts, true, { action: "undo", partEvents: false });
+    }
 };
 
 /**
@@ -739,7 +752,20 @@ ripe.Ripe.prototype.redo = async function() {
 
     this.historyPointer += 1;
     const parts = this.history[this.historyPointer];
-    if (parts) await this.setParts(parts, true, { action: "redo", partEvents: false });
+    if (parts) {
+        // ensures that optional parts are not left unset
+        // making certain that one gets the same customization
+        const defaults = this.loadedConfig.defaults;
+        for (const part in defaults) {
+            if (defaults[part].optional !== true) continue;
+            if (parts[part] !== undefined) continue;
+            parts[part] = {
+                material: "",
+                color: ""
+            };
+        }
+        await this.setParts(parts, true, { action: "redo", partEvents: false });
+    }
 };
 
 /**
