@@ -67,15 +67,11 @@ ripe.Configurator.prototype.init = function() {
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
-    this._ownerBinds.selected_part = this.owner.bind("selected_part", part =>
-        this.highlight(part)
-    );
+    this._ownerBinds.selected_part = this.owner.bind("selected_part", part => this.highlight(part));
 
     // registers for the deselected part event on the owner
     // so that we can remove the highlight of the associated part
-    this._ownerBinds.deselected_part = this.owner.bind("deselected_part", part =>
-        this.lowlight()
-    );
+    this._ownerBinds.deselected_part = this.owner.bind("deselected_part", part => this.lowlight());
 
     // creates a structure the store the last presented
     // position of each view, to be used when returning

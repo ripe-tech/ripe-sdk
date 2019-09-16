@@ -34,6 +34,7 @@ const paths = {
         "src/js/base/mobile.js",
         "src/js/base/ripe.js",
         "src/js/base/logic.js",
+        "src/js/base/config.js",
         "src/js/base/utils.js",
         "src/js/base/api.js",
         "src/js/base/auth.js",
@@ -161,6 +162,15 @@ gulp.task("lint", () => {
         .src([paths.bscripts, paths.test])
         .pipe(eslint())
         .pipe(eslint.format())
+        .pipe(eslint.failAfterError());
+});
+
+gulp.task("lint-fix", () => {
+    return gulp
+        .src([paths.bscripts, paths.test])
+        .pipe(eslint({ fix: true }))
+        .pipe(eslint.format())
+        .pipe(gulp.dest(file => file.base))
         .pipe(eslint.failAfterError());
 });
 
