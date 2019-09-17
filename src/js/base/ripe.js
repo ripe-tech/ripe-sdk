@@ -476,6 +476,14 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true) {
         }
     };
 
+    if (this.initials && !this.engraving) {
+        throw new Error("Initials set without engraving");
+    }
+
+    if (!this.initials && this.engraving) {
+        throw new Error("Engraving set without initials");
+    }
+
     if (!events) return;
 
     this.update();
@@ -504,6 +512,16 @@ ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, events = true) {
         this.initials = mainInitials.initials || "";
         this.engraving = mainInitials.engraving || null;
         this.initialsExtra = initialsExtra;
+    }
+
+    for (const [key, value] of Object.entries(this.initialsExtra)) {
+        if (value.initials && !value.engraving) {
+            throw new Error(`Initials set without engraving for group ${key}`);
+        }
+
+        if (!value.initials && value.engraving) {
+            throw new Error(`Engraving set without initials for group ${key}`);
+        }
     }
 
     if (!events) return;
