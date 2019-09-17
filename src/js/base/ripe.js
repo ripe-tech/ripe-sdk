@@ -462,7 +462,7 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
  * change should be triggered.
  */
 ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true) {
-    if (typeof initials === "object") {
+    if (typeof initials === "object" && initials !== null) {
         events = engraving === undefined ? true : engraving;
         return this.setInitialsExtra(initials, events);
     }
