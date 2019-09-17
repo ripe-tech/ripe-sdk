@@ -118,7 +118,7 @@ image.bind("loaded", function(frame) {
 });
 
 ripe.load();
-```
+``` 
 
 Whenever you want to set a new image frame, you only have to call `setFrame` function.
 ```javascript
