@@ -13,20 +13,6 @@
             "env": {
                 "PYTHONPATH": "${workspaceRoot}/src/python/ripe_demo:{env.PYTHONPATH}"
             }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Mocha Current File",
-            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-            "args": [
-                "--timeout",
-                "999999",
-                "--colors",
-                "${file}"
-            ],
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
         }
     ]
 }
