@@ -151,14 +151,14 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
         this._pushHistory();
     });
 
-    // runs the initialization of the locale bundles, provided by the
-    // remote handle, this is required for proper initialization
-    if (this.useBundles) this._initBundles();
-
     // runs the configuration operation on the current instance, using
     // the requested parameters and options, multiple configuration
     // operations may be executed over the object life-time
     await this.config(brand, model, options);
+
+    // runs the initialization of the locale bundles, provided by the
+    // remote handle, this is required for proper initialization
+    if (this.useBundles) this._initBundles().catch(this._errorHandler);
 };
 
 /**
@@ -1011,6 +1011,17 @@ ripe.Ripe.prototype._pushHistory = function() {
     this.history = this.history.slice(0, this.historyPointer + 1);
     this.history.push(_parts);
     this.historyPointer = this.history.length - 1;
+};
+
+/**
+ * The default fallback error handler to be used for
+ * every single detached async context.
+ *
+ * @param {Error} error The error that is going to be
+ * handled.
+ */
+ripe.Ripe.prototype._errorHandler = function(error) {
+    console.error(error);
 };
 
 /**
