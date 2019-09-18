@@ -74,6 +74,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.loadedConfig = null;
     this.choices = null;
     this.ready = false;
+    this.bundles = false;
     this.partCounter = 0;
 
     // extends the default options with the ones provided by the
@@ -152,7 +153,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
 
     // runs the initialization of the locale bundles, provided by the
     // remote handle, this is required for proper initialization
-    await this._initBundles();
+    this._initBundles();
 
     // runs the configuration operation on the current instance, using
     // the requested parameters and options, multiple configuration
@@ -783,13 +784,30 @@ ripe.Ripe.prototype.canRedo = function() {
  * This can be used to actively wait for the initialization of
  * the RIPE instance under an async environment.
  *
- * @returns {Promise} The promise to be fulfilled on the instance
+ * @returns {Promise} The promise to be fulfilled once the instance
  * is ready to be used.
  */
 ripe.Ripe.prototype.isReady = async function() {
     await new Promise((resolve, reject) => {
         if (this.ready) resolve();
         else this.bind("ready", resolve);
+    });
+};
+
+/**
+ * Returns a promise that is resolved once the remote locale bundles
+ * are retrieved from their remote locations.
+ *
+ * This is relevant for situations where proper location is required
+ * for a certain scenario (eg: sizes).
+ *
+ * @returns {Promise} The promise to be fulfilled on the base locale
+ * bundles are loaded.
+ */
+ripe.Ripe.prototype.hasBundles = async function() {
+    await new Promise((resolve, reject) => {
+        if (this.bundles) resolve();
+        else this.bind("bundles", resolve);
     });
 };
 
@@ -850,6 +868,8 @@ ripe.Ripe.prototype._initBundles = async function(defaultLocale = "en_us") {
     const [globalBundle, sizesBundle] = await Promise.all([globalBundleP, sizesBundleP]);
     this.addBundle(globalBundle, locale);
     this.addBundle(sizesBundle, locale);
+    this.bundles = true;
+    this.trigger("bundles");
 };
 
 /**
