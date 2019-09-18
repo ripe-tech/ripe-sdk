@@ -27,6 +27,20 @@ describe("Ripe", function() {
             assert.strictEqual(instance.initialsExtra.main.initials, "");
             assert.strictEqual(instance.initialsExtra.main.engraving, null);
 
+            instance.setInitials("CR7");
+
+            assert.strictEqual(instance.initials, "CR7");
+            assert.strictEqual(instance.engraving, null);
+            assert.strictEqual(instance.initialsExtra.main.initials, "CR7");
+            assert.strictEqual(instance.initialsExtra.main.engraving, null);
+
+            instance.setInitials("", null);
+
+            assert.strictEqual(instance.initials, "");
+            assert.strictEqual(instance.engraving, null);
+            assert.strictEqual(instance.initialsExtra.main.initials, "");
+            assert.strictEqual(instance.initialsExtra.main.engraving, null);
+
             instance.setInitialsExtra({
                 main: {
                     initials: "CR8",
@@ -69,22 +83,25 @@ describe("Ripe", function() {
             assert.strictEqual(instance.initialsExtra.main, undefined);
             assert.strictEqual(instance.initialsExtra.side.initials, "CR9");
             assert.strictEqual(instance.initialsExtra.side.engraving, "silver");
+
+            instance.setInitialsExtra({
+                side: {
+                    initials: "CR9"
+                }
+            });
+
+            assert.strictEqual(instance.initials, "CR9");
+            assert.strictEqual(instance.engraving, null);
+            assert.strictEqual(instance.initialsExtra.main, undefined);
+            assert.strictEqual(instance.initialsExtra.side.initials, "CR9");
+            assert.strictEqual(instance.initialsExtra.side.engraving, null);
         });
 
         it("should be able to validate invalid states", async () => {
             const instance = await new ripe.Ripe();
 
-            assert.throws(() => instance.setInitials("CR7", null), Error);
             assert.throws(() => instance.setInitials("", "gold"), Error);
 
-            assert.throws(() => {
-                instance.setInitialsExtra({
-                    main: {
-                        initials: "CR7",
-                        engraving: null
-                    }
-                });
-            }, Error);
             assert.throws(() => {
                 instance.setInitialsExtra({
                     main: {
