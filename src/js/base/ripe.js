@@ -849,8 +849,8 @@ ripe.Ripe.prototype.normalizeParts = function(parts) {
  */
 ripe.Ripe.prototype._initBundles = async function(defaultLocale = "en_us") {
     const locale = this.locale || defaultLocale;
-    const globalBundleP = await this.localeBundleP(locale, "scales");
-    const sizesBundleP = await this.localeBundleP(locale, "sizes");
+    const globalBundleP = this.localeBundleP(locale, "scales");
+    const sizesBundleP = this.localeBundleP(locale, "sizes");
     const [globalBundle, sizesBundle] = await Promise.all([globalBundleP, sizesBundleP]);
     this.addBundle(globalBundle, locale);
     this.addBundle(sizesBundle, locale);
