@@ -153,7 +153,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
 
     // runs the initialization of the locale bundles, provided by the
     // remote handle, this is required for proper initialization
-    this._initBundles();
+    if (this.useBundles) this._initBundles();
 
     // runs the configuration operation on the current instance, using
     // the requested parameters and options, multiple configuration
@@ -213,8 +213,12 @@ ripe.Ripe.prototype.unload = async function() {};
  *  - 'currency' - The currency that should be used to calculate the price.
  *  - 'locale' - The locale to be used by default when localizing values.
  *  - 'flag' - A specific attribute of the model.
+ *  - 'remoteCalls' - If the remote calls (eg: 'on_config') should be called in the middle of configuration.
+ *  - 'useBundles' - If the bundles should be loaded during initial loading.
  *  - 'useDefaults' - If the default parts of the model should be used when no initials parts are set.
+ *  - 'useCombinations' - If the combinations should be loaded as part of the initial RIPE loading.
  *  - 'usePrice' - If the price should be automatically retrieved whenever there is a customization change.
+ *  - 'useDiag' - If the diagnostics module should be used.
  */
 ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // sets the most structural values of this entity
@@ -355,8 +359,12 @@ ripe.Ripe.prototype.remote = async function() {
  *  - 'currency' - The currency that should be used to calculate the price.
  *  - 'locale' - The locale to be used by default when localizing values.
  *  - 'flag' - A specific attribute of the model.
+ *  - 'remoteCalls' - If the remote calls (eg: 'on_config') should be called in the middle of configuration.
+ *  - 'useBundles' - If the bundles should be loaded during initial loading.
  *  - 'useDefaults' - If the default parts of the model should be used when no initials parts are set.
+ *  - 'useCombinations' - If the combinations should be loaded as part of the initial RIPE loading.
  *  - 'usePrice' - If the price should be automatically retrieved whenever there is a customization change.
+ *  - 'useDiag' - If the diagnostics module should be used.
  */
 ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.options = options;
@@ -376,6 +384,9 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
         this.options.remoteOnConfig === undefined ? this.remoteCalls : this.options.remoteOnConfig;
     this.remoteOnPart =
         this.options.remoteOnPart === undefined ? this.remoteCalls : this.options.remoteOnPart;
+    this.noBundles = this.options.noBundles === undefined ? false : this.options.noBundles;
+    this.useBundles =
+        this.options.useBundles === undefined ? !this.noBundles : this.options.useBundles;
     this.noDefaults = this.options.noDefaults === undefined ? false : this.options.noDefaults;
     this.useDefaults =
         this.options.useDefaults === undefined ? !this.noDefaults : this.options.useDefaults;
