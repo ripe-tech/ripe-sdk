@@ -494,6 +494,12 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true) {
 
     if (!events) return;
 
+    // triggers the initials event notifying any listening
+    // object about the changes
+    this.trigger("initials", initials, engraving);
+
+    // runs the update operation so that all the listening
+    // components can properly update their visuals
     this.update();
 };
 
@@ -534,6 +540,12 @@ ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, events = true) {
 
     if (!events) return;
 
+    // triggers the initials extra event notifying any
+    // listening object about the changes
+    this.trigger("initials_extra", initialsExtra);
+
+    // runs the update operation so that all the listening
+    // components can properly update their visuals
     this.update();
 };
 
