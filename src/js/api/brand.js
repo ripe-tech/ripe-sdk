@@ -11,7 +11,7 @@ if (
 /**
  * Returns the configuration information of a specific brand and model.
  * If no model is provided then returns the information of the owner's current model.
-
+ *
  * @param {Object} options A map with options, such as:
  *  - 'brand' - the brand of the model
  *  - 'model' - the name of the model
