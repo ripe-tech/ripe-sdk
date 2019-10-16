@@ -137,6 +137,46 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
         this._handleCtx(result);
     });
 
+    // registers for the initials (set) operation so that the execution may
+    // be able to notify the server side logic and change the current state
+    // if that's required by the server side
+    this.bind("initials", async function(initials, engraving) {
+        let result = null;
+        if (!this.remoteOnPart) return;
+        try {
+            result = await this.onInitialsP({
+                group: "main",
+                value: initials,
+                engraving: engraving
+            });
+        } catch (err) {
+            if (err instanceof ripe.RemoteError) return;
+            else throw err;
+        }
+        this._handleCtx(result);
+    });
+
+    // registers for the initials_extra (set) operation so that the execution may
+    // be able to notify the server side logic and change the current state
+    // if that's required by the server side
+    this.bind("initials_extra", async function(initialsExtra) {
+        let result = null;
+        if (!this.remoteOnPart) return;
+        for (const [key, value] of Object.entries(initialsExtra)) {
+            try {
+                result = await this.onInitialsP({
+                    group: key,
+                    value: value.initials,
+                    engraving: value.engraving
+                });
+            } catch (err) {
+                if (err instanceof ripe.RemoteError) return;
+                else throw err;
+            }
+            this._handleCtx(result);
+        }
+    });
+
     // listens for the post parts event and saves the current configuration
     // for the undo operations (history control)
     this.bind("post_parts", function(parts, options) {

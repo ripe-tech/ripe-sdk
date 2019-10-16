@@ -242,6 +242,48 @@ ripe.Ripe.prototype.onPartP = function(options, callback) {
 };
 
 /**
+ * Server side callback method to be called for situations where a customization
+ * change was made on a part.
+ * This method allows the change of the current context of execution based on
+ * a server side implementation of the 3DB's business logic.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'group' - the name of the group that is going to be changed
+ *  - 'value' - the initials value to be changed
+ *  - 'engraving' - the engraving value to be changed
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.onInitials = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._onInitialsOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Server side callback method to be called for situations where the initials
+ * or engraving values were changed.
+ * This method allows the change of the current context of execution based on
+ * a server side implementation of the 3DB's business logic.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'group' - the name of the group that is going to be changed
+ *  - 'value' - the initials value to be changed
+ *  - 'engraving' - the engraving value to be changed
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.onInitialsP = function(options, callback) {
+    return new Promise((resolve, reject) => {
+        this.onInitials(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * @see {link https://docs.platforme.com/#product-endpoints-config}
  * @ignore
  */
@@ -390,6 +432,39 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
         dataJ: {
             name: name,
             value: value,
+            ctx: ctx
+        }
+    });
+};
+
+/**
+ * @ignore
+ * @see {link http://docs.platforme.com/#product-endpoints-on_initials}
+ */
+ripe.Ripe.prototype._onInitialsOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const group = options.group === undefined ? this.group : options.group;
+    const value = options.value === undefined ? this.value : options.value;
+    const engraving = options.engraving === undefined ? this.engraving : options.engraving;
+    const initials = options.initials === undefined ? this.initialsExtra : options.initials;
+    const parts = options.parts === undefined ? this.parts : options.parts;
+    const choices = options.choices === undefined ? this.choices : options.choices;
+    const url = this.url + "brands/" + brand + "/models/" + model + "/on_initials";
+    const ctx = Object.assign({}, this.ctx || {}, {
+        brand: brand,
+        model: model,
+        initials: initials,
+        parts: parts,
+        choices: choices
+    });
+    return Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataJ: {
+            group: group,
+            initials: value,
+            engraving: engraving,
             ctx: ctx
         }
     });
