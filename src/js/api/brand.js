@@ -242,8 +242,8 @@ ripe.Ripe.prototype.onPartP = function(options, callback) {
 };
 
 /**
- * Server side callback method to be called for situations where a customization
- * change was made on a part.
+ * Server side callback method to be called for situations where the initials
+ * or engraving values were changed.
  * This method allows the change of the current context of execution based on
  * a server side implementation of the 3DB's business logic.
  *
