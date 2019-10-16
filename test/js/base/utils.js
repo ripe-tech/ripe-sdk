@@ -10,6 +10,71 @@ describe("Utils", function() {
             const result = ripe.ripe.equal({ hello: "world" }, { hello: "world" });
             assert.strictEqual(result, true);
         });
+
+        it("should be able to compare two unordered objects", () => {
+            const result = ripe.ripe.equal(
+                { world: "hello", hello: "world" },
+                { hello: "world", world: "hello" }
+            );
+            assert.strictEqual(result, true);
+        });
+
+        it("should be able to compare two multilevel objects", () => {
+            const result = ripe.ripe.equal(
+                { deep: { world: "hello", hello: "world" }, world: "hello", hello: "world" },
+                { hello: "world", world: "hello", deep: { world: "hello", hello: "world" } }
+            );
+            assert.strictEqual(result, true);
+        });
+
+        it("should be able to verify difference in two multilevel objects", () => {
+            const result = ripe.ripe.equal(
+                { deep: { world: "hello", hello: "world2" }, world: "hello", hello: "world" },
+                { hello: "world", world: "hello", deep: { world: "hello", hello: "world" } }
+            );
+            assert.strictEqual(result, false);
+        });
+
+        it("should be able to compare arrays", () => {
+            let result;
+
+            result = ripe.ripe.equal([1, 2, 3], [1, 2, 3]);
+            assert.strictEqual(result, true);
+
+            result = ripe.ripe.equal(null, [1, 2, 3], [1, 2]);
+            assert.strictEqual(result, false);
+
+            result = ripe.ripe.equal(
+                { deep: { world: "hello", hello: [1, 2, 3] }, world: "hello", hello: "world" },
+                { hello: "world", world: "hello", deep: { world: "hello", hello: [1, 2, 3] } }
+            );
+            assert.strictEqual(result, true);
+
+            result = ripe.ripe.equal(
+                { deep: { world: "hello", hello: [1, 2, 3] }, world: "hello", hello: "world" },
+                { hello: "world", world: "hello", deep: { world: "hello", hello: [1, 2] } }
+            );
+            assert.strictEqual(result, false);
+        });
+
+        it("should be able to verify difference in two data types", () => {
+            let result;
+
+            result = ripe.ripe.equal(null, undefined);
+            assert.strictEqual(result, false);
+
+            result = ripe.ripe.equal(null, {});
+            assert.strictEqual(result, false);
+
+            result = ripe.ripe.equal(undefined, {});
+            assert.strictEqual(result, false);
+
+            result = ripe.ripe.equal(2, {});
+            assert.strictEqual(result, false);
+
+            result = ripe.ripe.equal(2, [2]);
+            assert.strictEqual(result, false);
+        });
     });
 
     describe("#escape", async function() {

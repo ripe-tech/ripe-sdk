@@ -342,18 +342,25 @@ window.onload = function() {
             showInitials: true
         });
 
+        ripe.bind("initials_extra", function(initialsExtra) {
+            document.getElementById("initials-text").value =
+                initialsExtra.main && initialsExtra.main.initials
+                    ? initialsExtra.main.initials
+                    : "";
+        });
+
         document.getElementById("initials-text").addEventListener("keyup", function() {
             var initialsDrop = document.getElementById("initials-drop");
             var initialsDropContainer = initialsDrop.parentElement;
             var initialsInput = initialsDropContainer.getElementsByTagName("input")[0];
-            ripe.setInitials(this.value || "$empty", initialsInput.value);
+            ripe.setInitials(this.value, initialsInput.value);
         });
 
         document.getElementById("initials-drop").onvalue_change = function() {
             var initialsText = document.getElementById("initials-text");
             var initialsDropContainer = this.parentElement;
             var initialsInput = initialsDropContainer.getElementsByTagName("input")[0];
-            ripe.setInitials(initialsText.value || "$empty", initialsInput.value);
+            ripe.setInitials(initialsText.value, initialsInput.value);
         };
 
         // loads the configuration to try to discover the profiles
@@ -385,11 +392,6 @@ window.onload = function() {
             }
         });
     };
-
-    // sets the initial value of the initials to an empty value
-    // this special value is the way to represent an empty initials
-    // value under the RIPE composition engine
-    ripe.setInitials("$empty");
 
     // starts the loading process for the RIPE main instance and binds
     // it to the ready event (all internal structures loaded according

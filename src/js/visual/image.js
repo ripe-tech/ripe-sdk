@@ -55,7 +55,7 @@ ripe.Image.prototype.init = function() {
         this.options.initialsBuilder ||
         function(initials, engraving, element) {
             return {
-                initials: initials,
+                initials: initials || "$empty",
                 profile: [engraving]
             };
         };

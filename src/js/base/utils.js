@@ -172,9 +172,40 @@ ripe.equal = function(first, second) {
     if (first === second) {
         return true;
     }
-    const firstS = JSON.stringify(first);
-    const secondS = JSON.stringify(second);
-    return firstS === secondS;
+
+    if (ripe.typeof(first) !== ripe.typeof(second)) {
+        return false;
+    }
+
+    if (ripe.isPrimitive(first) && ripe.isPrimitive(second)) {
+        return first === second;
+    }
+
+    if (Object.keys(first).length !== Object.keys(second).length) {
+        return false;
+    }
+
+    for (const key in first) {
+        if (!(key in second)) return false;
+        if (!ripe.equal(first[key], second[key])) return false;
+    }
+
+    return true;
+};
+
+/**
+ * @ignore
+ */
+ripe.isPrimitive = function(object) {
+    return object !== Object(object);
+};
+
+/**
+ * @ignore
+ */
+ripe.typeof = function(object) {
+    if (object === null) return "null";
+    return typeof object;
 };
 
 /**

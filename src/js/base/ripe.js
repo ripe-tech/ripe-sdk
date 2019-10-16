@@ -107,6 +107,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.bind("config", async function() {
         let result = null;
         if (!this.remoteOnConfig) return;
+        const ctxRequest = (this.ctxRequest = (this.ctxRequest || 0) + 1);
         try {
             result = await this.onConfigP({
                 brand: this.brand,
@@ -116,6 +117,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
             if (err instanceof ripe.RemoteError) return;
             else throw err;
         }
+        if (ctxRequest !== this.ctxRequest) return;
         this._handleCtx(result);
     });
 
@@ -125,6 +127,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.bind("part", async function(name, value) {
         let result = null;
         if (!this.remoteOnPart) return;
+        const ctxRequest = (this.ctxRequest = (this.ctxRequest || 0) + 1);
         try {
             result = await this.onPartP({
                 name: name,
@@ -134,15 +137,18 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
             if (err instanceof ripe.RemoteError) return;
             else throw err;
         }
+        if (ctxRequest !== this.ctxRequest) return;
         this._handleCtx(result);
     });
 
     // registers for the initials (set) operation so that the execution may
     // be able to notify the server side logic and change the current state
     // if that's required by the server side
-    this.bind("initials", async function(initials, engraving) {
+    this.bind("initials", async function(initials, engraving, params) {
         let result = null;
         if (!this.remoteOnInitials) return;
+        if (params.noRemote) return;
+        const ctxRequest = (this.ctxRequest = (this.ctxRequest || 0) + 1);
         try {
             result = await this.onInitialsP({
                 group: "main",
@@ -153,15 +159,18 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
             if (err instanceof ripe.RemoteError) return;
             else throw err;
         }
+        if (ctxRequest !== this.ctxRequest) return;
         this._handleCtx(result);
     });
 
     // registers for the initials_extra (set) operation so that the execution may
     // be able to notify the server side logic and change the current state
     // if that's required by the server side
-    this.bind("initials_extra", async function(initialsExtra) {
+    this.bind("initials_extra", async function(initialsExtra, params) {
         let result = null;
         if (!this.remoteOnInitials) return;
+        if (params.noRemote) return;
+        const ctxRequest = (this.ctxRequest = (this.ctxRequest || 0) + 1);
         for (const [key, value] of Object.entries(initialsExtra)) {
             try {
                 result = await this.onInitialsP({
@@ -173,6 +182,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
                 if (err instanceof ripe.RemoteError) return;
                 else throw err;
             }
+            if (ctxRequest !== this.ctxRequest) return;
             this._handleCtx(result);
         }
     });
@@ -425,7 +435,9 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.remoteOnPart =
         this.options.remoteOnPart === undefined ? this.remoteCalls : this.options.remoteOnPart;
     this.remoteOnInitials =
-        this.options.remoteOnInitials === undefined ? this.remoteCalls : this.options.remoteOnInitials;
+        this.options.remoteOnInitials === undefined
+            ? this.remoteCalls
+            : this.options.remoteOnInitials;
     this.noBundles = this.options.noBundles === undefined ? false : this.options.noBundles;
     this.useBundles =
         this.options.useBundles === undefined ? !this.noBundles : this.options.useBundles;
@@ -515,7 +527,7 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
  * @param {Boolean} events If the events associated with the initials
  * change should be triggered.
  */
-ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true) {
+ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true, params = {}) {
     if (typeof initials === "object") {
         events = engraving === undefined ? true : engraving;
         return this.setInitialsExtra(initials, events);
@@ -538,7 +550,7 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true) {
 
     // triggers the initials event notifying any listening
     // object about the changes
-    this.trigger("initials", initials, engraving);
+    this.trigger("initials", initials, engraving, params);
 
     // runs the update operation so that all the listening
     // components can properly update their visuals
@@ -554,7 +566,7 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true) {
  * @param {Boolean} events If the events associated with the changing of
  * the initials (extra) should be triggered.
  */
-ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, events = true) {
+ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, events = true, params = {}) {
     const groups = Object.keys(initialsExtra);
     const isEmpty = groups.length === 0;
     const mainGroup = groups.includes("main") ? "main" : groups[0];
@@ -584,7 +596,7 @@ ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, events = true) {
 
     // triggers the initials extra event notifying any
     // listening object about the changes
-    this.trigger("initials_extra", initialsExtra);
+    this.trigger("initials_extra", initialsExtra, params);
 
     // runs the update operation so that all the listening
     // components can properly update their visuals
@@ -1093,10 +1105,10 @@ ripe.Ripe.prototype._handleCtx = function(result) {
     for (const [name, value] of Object.entries(result.parts)) {
         this.parts[name] = value;
     }
-    if (result.initials && JSON.stringify(result.initials) !== JSON.stringify(this.initialsExtra)) {
-        this.setInitialsExtra(result.initials, false);
+    if (result.initials && !ripe.equal(result.initials, this.initialsExtra)) {
+        this.setInitialsExtra(result.initials, true, { noRemote: true });
     }
-    if (result.choices && JSON.stringify(result.choices) !== JSON.stringify(this.choices)) {
+    if (result.choices && !ripe.equal(result.choices, this.choices)) {
         this.setChoices(result.choices);
     }
     for (const [name, value] of result.messages) {
