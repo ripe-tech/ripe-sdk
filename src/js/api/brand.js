@@ -444,12 +444,12 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
 ripe.Ripe.prototype._onInitialsOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
-    const group = options.group === undefined ? this.group : options.group;
-    const value = options.value === undefined ? this.value : options.value;
-    const engraving = options.engraving === undefined ? this.engraving : options.engraving;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
+    const group = options.group === undefined ? null : options.group;
+    const value = options.value === undefined ? null : options.value;
+    const engraving = options.engraving === undefined ? null : options.engraving;
     const url = this.url + "brands/" + brand + "/models/" + model + "/on_initials";
     const ctx = Object.assign({}, this.ctx || {}, {
         brand: brand,
