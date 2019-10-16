@@ -205,6 +205,7 @@ ripe.isPrimitive = function(object) {
  */
 ripe.typeof = function(object) {
     if (object === null) return "null";
+    if (Array.isArray(object)) return "array";
     return typeof object;
 };
 

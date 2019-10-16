@@ -74,6 +74,9 @@ describe("Utils", function() {
 
             result = ripe.ripe.equal(2, [2]);
             assert.strictEqual(result, false);
+
+            result = ripe.ripe.equal(2, 3);
+            assert.strictEqual(result, false);
         });
     });
 
