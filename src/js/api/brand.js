@@ -165,7 +165,7 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
  * Server side callback method to be called for situations where a customization
  * for a model has been started.
  * This method allows the change of the current context of execution based on
- * a server side implementation of the build's business logic.
+ * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
  *  - 'brand' - the brand of the model
@@ -185,7 +185,7 @@ ripe.Ripe.prototype.onConfig = function(options, callback) {
  * Server side callback method to be called for situations where a customization
  * for a model has been started.
  * This method allows the change of the current context of execution based on
- * a server side implementation of the build's business logic.
+ * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
  *  - 'brand' - the brand of the model
@@ -205,7 +205,7 @@ ripe.Ripe.prototype.onConfigP = function(options, callback) {
  * Server side callback method to be called for situations where a customization
  * change was made on a part.
  * This method allows the change of the current context of execution based on
- * a server side implementation of the build's business logic.
+ * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
  *  - 'name' - the name of the part to be changed
@@ -225,7 +225,7 @@ ripe.Ripe.prototype.onPart = function(options, callback) {
  * Server side callback method to be called for situations where a customization
  * change was made on a part.
  * This method allows the change of the current context of execution based on
- * a server side implementation of the build's business logic.
+ * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
  *  - 'name' - the name of the part to be changed

@@ -561,7 +561,7 @@ ripe.Ripe.prototype.getCtx = function(ctx) {
 
 /**
  * Changes the current base context object (ctx) that is
- * going to be sent for (3D) build logic on crucial workflow
+ * going to be sent for 3DB logic on crucial workflow
  * state changes.
  *
  * @param {Object} ctx The new base context to be used.
