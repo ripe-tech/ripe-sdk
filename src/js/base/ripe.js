@@ -142,7 +142,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     // if that's required by the server side
     this.bind("initials", async function(initials, engraving) {
         let result = null;
-        if (!this.remoteOnPart) return;
+        if (!this.remoteOnInitials) return;
         try {
             result = await this.onInitialsP({
                 group: "main",
@@ -161,7 +161,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     // if that's required by the server side
     this.bind("initials_extra", async function(initialsExtra) {
         let result = null;
-        if (!this.remoteOnPart) return;
+        if (!this.remoteOnInitials) return;
         for (const [key, value] of Object.entries(initialsExtra)) {
             try {
                 result = await this.onInitialsP({
@@ -424,6 +424,8 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
         this.options.remoteOnConfig === undefined ? this.remoteCalls : this.options.remoteOnConfig;
     this.remoteOnPart =
         this.options.remoteOnPart === undefined ? this.remoteCalls : this.options.remoteOnPart;
+    this.remoteOnInitials =
+        this.options.remoteOnInitials === undefined ? this.remoteCalls : this.options.remoteOnInitials;
     this.noBundles = this.options.noBundles === undefined ? false : this.options.noBundles;
     this.useBundles =
         this.options.useBundles === undefined ? !this.noBundles : this.options.useBundles;
