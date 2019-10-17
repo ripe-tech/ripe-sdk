@@ -191,27 +191,34 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyChanges = function(newParts
         const newMaterial = newPart.material || null;
         const newColor = newPart.color || null;
 
-        // if a change was made due to the restrictions
-        // then adds it to the changes array
-        if (oldMaterial !== newMaterial || oldColor !== newColor) {
-            changes.push({
-                from: {
-                    part: newPart.name,
-                    material: oldMaterial,
-                    color: oldColor
-                },
-                to: {
-                    part: newPart.name,
-                    material: newMaterial,
-                    color: newColor
-                }
-            });
+        // verifies if a valid change has been made for the current
+        // part in iteration if not continues the loop
+        if (oldMaterial === newMaterial && oldColor === newColor) {
+            continue;
         }
 
-        // updates the values of the old part to the
-        // newly "generated" values
-        oldPart.material = newMaterial;
-        oldPart.color = newColor;
+        // adds a new change description object to the sequence of
+        // changes coming from the restrictions
+        changes.push({
+            from: {
+                part: newPart.name,
+                material: oldMaterial,
+                color: oldColor
+            },
+            to: {
+                part: newPart.name,
+                material: newMaterial,
+                color: newColor
+            }
+        });
+
+        const remove = Boolean(newMaterial && newColor) === false;
+        if (remove) {
+            delete oldParts[newPart.name];
+        } else {
+            oldPart.material = newMaterial;
+            oldPart.color = newColor;
+        }
     }
 
     // returns the complete set of changes that were

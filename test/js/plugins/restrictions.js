@@ -220,6 +220,7 @@ describe("Restrictions", function() {
     describe("#_applyChanges", function() {
         it("should apply simple changes", () => {
             let result;
+            let target;
 
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin();
 
@@ -270,7 +271,7 @@ describe("Restrictions", function() {
             );
             assert.deepStrictEqual(result, []);
 
-            const target = { side: { name: "side" } };
+            target = { side: { name: "side" } };
             result = restrictionsPlugin._applyChanges(
                 [
                     {
@@ -282,7 +283,34 @@ describe("Restrictions", function() {
                 target
             );
             assert.deepStrictEqual(result, []);
-            assert.deepStrictEqual(target, { side: { name: "side", material: null, color: null } });
+            assert.deepStrictEqual(target, { side: { name: "side" } });
+
+            target = { side: { name: "side", material: "suede", color: "white" } };
+            result = restrictionsPlugin._applyChanges(
+                [
+                    {
+                        name: "side",
+                        material: null,
+                        color: null
+                    }
+                ],
+                target
+            );
+            assert.deepStrictEqual(result, [
+                {
+                    from: {
+                        part: "side",
+                        material: "suede",
+                        color: "white"
+                    },
+                    to: {
+                        part: "side",
+                        material: null,
+                        color: null
+                    }
+                }
+            ]);
+            assert.deepStrictEqual(target, {});
         });
     });
 });
