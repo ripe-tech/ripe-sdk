@@ -216,4 +216,73 @@ describe("Restrictions", function() {
             assert.deepStrictEqual(restrictionsPlugin.partsOptions, instance.loadedConfig.parts);
         });
     });
+
+    describe("#_applyChanges", function() {
+        it("should apply simple changes", () => {
+            let result;
+
+            const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin();
+
+            result = restrictionsPlugin._applyChanges(
+                [
+                    {
+                        name: "side",
+                        material: "suede",
+                        color: "black"
+                    }
+                ],
+                {
+                    side: {
+                        name: "side",
+                        material: "suede",
+                        color: "white"
+                    }
+                }
+            );
+            assert.deepStrictEqual(result, [
+                {
+                    from: {
+                        part: "side",
+                        material: "suede",
+                        color: "white"
+                    },
+                    to: {
+                        part: "side",
+                        material: "suede",
+                        color: "black"
+                    }
+                }
+            ]);
+
+            result = restrictionsPlugin._applyChanges(
+                [
+                    {
+                        name: "side",
+                        material: null,
+                        color: null
+                    }
+                ],
+                {
+                    side: {
+                        name: "side"
+                    }
+                }
+            );
+            assert.deepStrictEqual(result, []);
+
+            const target = { side: { name: "side" } };
+            result = restrictionsPlugin._applyChanges(
+                [
+                    {
+                        name: "side",
+                        material: null,
+                        color: null
+                    }
+                ],
+                target
+            );
+            assert.deepStrictEqual(result, []);
+            assert.deepStrictEqual(target, { side: { name: "side", material: null, color: null } });
+        });
+    });
 });

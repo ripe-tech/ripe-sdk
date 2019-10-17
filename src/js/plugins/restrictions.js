@@ -127,39 +127,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
     // obtains the new parts and mutates the original
     // parts map to apply the necessary changes
     const newParts = this._solveRestrictions(partsOptions, this.restrictionsMap, customization);
-
-    const changes = [];
-
-    for (let index = 0; index < newParts.length; index++) {
-        const newPart = newParts[index];
-        const oldPart = this.owner.parts[newPart.name] || {};
-
-        const oldMaterial = oldPart.material || null;
-        const oldColor = oldPart.color || null;
-
-        const newMaterial = newPart.material || null;
-        const newColor = newPart.color || null;
-
-        // if a change was made due to the restrictions
-        // then adds it to the changes array
-        if (oldMaterial !== newMaterial || oldColor !== newColor) {
-            changes.push({
-                from: {
-                    part: newPart.name,
-                    material: oldMaterial,
-                    color: oldColor
-                },
-                to: {
-                    part: newPart.name,
-                    material: newMaterial,
-                    color: newColor
-                }
-            });
-        }
-
-        oldPart.material = newPart.material;
-        oldPart.color = newPart.color;
-    }
+    const changes = this._applyChanges(newParts);
 
     // triggers the restrictions event with the set of changes in the
     // domain and the possible part set that triggered those changes
@@ -203,6 +171,52 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
     }
     customization.push(newPartOption);
     return this._solveRestrictions(availableParts, restrictions, customization, solution);
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyChanges = function(newParts, oldParts = null) {
+    if (oldParts === null) oldParts = this.owner.parts;
+
+    const changes = [];
+
+    for (let index = 0; index < newParts.length; index++) {
+        const newPart = newParts[index];
+        const oldPart = oldParts[newPart.name] || {};
+
+        const oldMaterial = oldPart.material || null;
+        const oldColor = oldPart.color || null;
+
+        const newMaterial = newPart.material || null;
+        const newColor = newPart.color || null;
+
+        // if a change was made due to the restrictions
+        // then adds it to the changes array
+        if (oldMaterial !== newMaterial || oldColor !== newColor) {
+            changes.push({
+                from: {
+                    part: newPart.name,
+                    material: oldMaterial,
+                    color: oldColor
+                },
+                to: {
+                    part: newPart.name,
+                    material: newMaterial,
+                    color: newColor
+                }
+            });
+        }
+
+        // updates the values of the old part to the
+        // newly "generated" values
+        oldPart.material = newMaterial;
+        oldPart.color = newColor;
+    }
+
+    // returns the complete set of changes that were
+    // computed by comparing the old and the new parts
+    return changes;
 };
 
 /**
