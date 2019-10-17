@@ -134,19 +134,25 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(nam
         const newPart = newParts[index];
         const oldPart = this.owner.parts[newPart.name] || {};
 
+        const oldMaterial = oldPart.material || null;
+        const oldColor = oldPart.color || null;
+
+        const newMaterial = newPart.material || null;
+        const newColor = newPart.color || null;
+
         // if a change was made due to the restrictions
         // then adds it to the changes array
-        if (oldPart.material !== newPart.material || oldPart.color !== newPart.color) {
+        if (oldMaterial !== newMaterial || oldColor !== newColor) {
             changes.push({
                 from: {
                     part: newPart.name,
-                    material: oldPart.material,
-                    color: oldPart.color
+                    material: oldMaterial,
+                    color: oldColor
                 },
                 to: {
                     part: newPart.name,
-                    material: newPart.material,
-                    color: newPart.color
+                    material: newMaterial,
+                    color: newColor
                 }
             });
         }
