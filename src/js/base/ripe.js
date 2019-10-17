@@ -986,10 +986,10 @@ ripe.Ripe.prototype._setPart = async function(part, material, color, events = tr
     // that is going to be changed and determines if its value
     // is already the same as the new one to be set, this is
     // going to influence the triggering of events
-    const value = this.parts[part] || {};
+    const current = this.parts[part] || {};
     const isSame = remove
-        ? value.material === undefined && value.color === undefined
-        : value.material === material && value.color === color;
+        ? current.material === undefined && current.color === undefined
+        : current.material === material && current.color === color;
 
     // in case the current value for the part is already the same
     // as the requested new one and the force flag is not set returns
@@ -1006,8 +1006,10 @@ ripe.Ripe.prototype._setPart = async function(part, material, color, events = tr
     // updates the value object with the newly requested values, notice
     // than in case this is a removal a null value is set for both the
     // material and color keys
-    value.material = remove ? null : material;
-    value.color = remove ? null : color;
+    const value = {
+        material: remove ? null : material,
+        color: remove ? null : color
+    };
 
     // "builds" the inline closure function that handles the
     // changing of the parts structure according to the new
