@@ -178,10 +178,6 @@ describe("Restrictions", function() {
                     upper: {
                         material: "nappa",
                         color: "black"
-                    },
-                    logo: {
-                        material: null,
-                        color: null
                     }
                 },
                 mockRipe.parts
