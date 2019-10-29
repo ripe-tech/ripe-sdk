@@ -454,7 +454,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
     this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
-
+    this.useGuess = this.options.useGuess === undefined ? false : this.options.useGuess;
     // runs the background color normalization process that removes
     // the typical cardinal character from the definition
     this.backgroundColor = this.backgroundColor.replace("#", "");

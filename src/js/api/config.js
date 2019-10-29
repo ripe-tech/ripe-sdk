@@ -20,10 +20,7 @@ if (
 ripe.Ripe.prototype.configInfo = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "config/info";
-    options = Object.assign({ url: url }, options);
-    options = this._getQueryOptions(options);
-    options = this._getInitialsOptions(options);
+    options = this._configInfoOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -58,8 +55,8 @@ ripe.Ripe.prototype.configInfoP = function(options) {
 ripe.Ripe.prototype.configDku = function(dku, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "config/info";
-    options = Object.assign({ url: url, params: { dku: dku } }, options);
+    options = Object.assign({ dku: dku }, options);
+    options = this._configInfoOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -114,4 +111,20 @@ ripe.Ripe.prototype.configResolveP = function(productId, options) {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._configInfoOptions = function(options = {}) {
+    const dku = options.dku === undefined ? null : options.dku;
+    const useGuess = options.useGuess === undefined ? this.useGuess : options.useGuess;
+    const url = this.url + "config/info";
+    options.params = {};
+    if (dku) options.params.dku = dku;
+    if (useGuess) options.params.guess = "0";
+    options = Object.assign({ url: url }, options);
+    options = this._getQueryOptions(options);
+    options = this._getInitialsOptions(options);
+    return options;
 };
