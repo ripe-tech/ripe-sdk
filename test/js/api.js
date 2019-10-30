@@ -320,6 +320,42 @@ describe("RipeAPI", function() {
         });
     });
 
+    describe("#_getConfigInfoOptions", function() {
+        it("should include guess as 0 in params", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI({
+                guess: false
+            });
+            result = remote._getConfigInfoOptions();
+
+            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.params.guess, "0");
+        });
+
+        it("should include guess as 1 in params when explicitly defined", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._getConfigInfoOptions({
+                guess: true
+            });
+
+            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.params.guess, "1");
+        });
+
+        it("should not include guess in params", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._getConfigInfoOptions();
+
+            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.params.guess, undefined);
+        });
+    });
+
     describe("#_buildQuery", function() {
         it("should correctly generate a query string from array", async () => {
             let result = null;
