@@ -409,6 +409,9 @@ ripe.Ripe.prototype.remote = async function() {
  *  - 'currency' - The currency that should be used to calculate the price.
  *  - 'locale' - The locale to be used by default when localizing values.
  *  - 'flag' - A specific attribute of the model.
+ *  - 'format' - The format of the image that is going to be retrieved in case of image visual and interactive.
+ *  - 'backgroundColor' - The background color in RGB format to be used for images.
+ *  - 'guess' - If the optimistic guess mode should be used for config resolution (internal).
  *  - 'remoteCalls' - If the remote calls (eg: 'on_config') should be called in the middle of configuration.
  *  - 'useBundles' - If the bundles should be loaded during initial loading.
  *  - 'useDefaults' - If the default parts of the model should be used when no initials parts are set.
@@ -429,6 +432,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.flag = this.options.flag || null;
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
+    this.guess = this.options.guess === undefined ? undefined : this.options.guess;
     this.remoteCalls = this.options.remoteCalls === undefined ? true : this.options.remoteCalls;
     this.remoteOnConfig =
         this.options.remoteOnConfig === undefined ? this.remoteCalls : this.options.remoteOnConfig;
