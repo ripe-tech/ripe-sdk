@@ -43,7 +43,7 @@ ripe.Ripe.prototype.configInfoP = function(options) {
 };
 
 /**
- * Resolves the provided DKU value into a more structured set of mode, brand,
+ * Resolves the provided DKU value into a more structured set of model, brand,
  * parts, etc. so that it can be used under RIPE.
  *
  * @param {String} dku The DKU identifier to be used in the resolution.
