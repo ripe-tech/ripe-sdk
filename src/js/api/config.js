@@ -20,7 +20,7 @@ if (
 ripe.Ripe.prototype.configInfo = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    options = this._configInfoOptions(options);
+    options = this._getConfigInfoOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -56,7 +56,7 @@ ripe.Ripe.prototype.configDku = function(dku, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = Object.assign({ dku: dku }, options);
-    options = this._configInfoOptions(options);
+    options = this._getConfigInfoOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -116,15 +116,28 @@ ripe.Ripe.prototype.configResolveP = function(productId, options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._configInfoOptions = function(options = {}) {
+ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
     const dku = options.dku === undefined ? null : options.dku;
-    const useGuess = options.useGuess === undefined ? this.useGuess : options.useGuess;
-    const url = this.url + "config/info";
-    options.params = {};
-    if (dku) options.params.dku = dku;
-    if (useGuess) options.params.guess = "0";
-    options = Object.assign({ url: url }, options);
+    const guess = options.guess === undefined ? this.guess : options.guess;
+
     options = this._getQueryOptions(options);
     options = this._getInitialsOptions(options);
-    return options;
+
+    const params = options.params || {};
+    options.params = params;
+
+    if (dku !== undefined && dku !== null) {
+        params.dku = dku;
+    }
+    if (guess !== undefined && guess !== null) {
+        params.guess = guess ? "1" : "0";
+    }
+
+    const url = this.url + "config/info";
+
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
 };
