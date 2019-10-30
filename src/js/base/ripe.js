@@ -411,7 +411,7 @@ ripe.Ripe.prototype.remote = async function() {
  *  - 'flag' - A specific attribute of the model.
  *  - 'format' - The format of the iamge that is going to be retrieved in case of image visual and interactive.
  *  - 'backgroundColor' - The background color in RGB format to be used for images.
- *  - 'guess' - If the optimistic guess mode
+ *  - 'guess' - If the optimistic guess mode should be used for config resolution (internal).
  *  - 'remoteCalls' - If the remote calls (eg: 'on_config') should be called in the middle of configuration.
  *  - 'useBundles' - If the bundles should be loaded during initial loading.
  *  - 'useDefaults' - If the default parts of the model should be used when no initials parts are set.
