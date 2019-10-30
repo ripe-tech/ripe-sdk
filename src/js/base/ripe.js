@@ -409,6 +409,9 @@ ripe.Ripe.prototype.remote = async function() {
  *  - 'currency' - The currency that should be used to calculate the price.
  *  - 'locale' - The locale to be used by default when localizing values.
  *  - 'flag' - A specific attribute of the model.
+ *  - 'format' - The format of the iamge that is going to be retrieved in case of image visual and interactive.
+ *  - 'backgroundColor' - The background color in RGB format to be used for images.
+ *  - 'guess' - If the optimistic guess mode
  *  - 'remoteCalls' - If the remote calls (eg: 'on_config') should be called in the middle of configuration.
  *  - 'useBundles' - If the bundles should be loaded during initial loading.
  *  - 'useDefaults' - If the default parts of the model should be used when no initials parts are set.
@@ -429,6 +432,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.flag = this.options.flag || null;
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
+    this.guess = this.options.guess === undefined ? null : this.options.guess;
     this.remoteCalls = this.options.remoteCalls === undefined ? true : this.options.remoteCalls;
     this.remoteOnConfig =
         this.options.remoteOnConfig === undefined ? this.remoteCalls : this.options.remoteOnConfig;
@@ -454,7 +458,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
     this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
-    this.useGuess = this.options.useGuess === undefined ? false : this.options.useGuess;
+
     // runs the background color normalization process that removes
     // the typical cardinal character from the definition
     this.backgroundColor = this.backgroundColor.replace("#", "");
