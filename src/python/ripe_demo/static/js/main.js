@@ -407,6 +407,6 @@ window.onload = function() {
     });
 
     // sets the ripe instance as a global available symbol so that it can
-    // be easly used latter for debugging inside console
+    // be easily used latter for debugging inside console
     window.ripeInstance = ripe;
 };
