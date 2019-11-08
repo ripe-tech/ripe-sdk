@@ -89,24 +89,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
 
     // in case the guess URL mode is active then a remote call should be
     // performed in order to take decisions on the proper production URL
-    if (this.guessUrl) {
-        const result = await this.geoResolveP();
-        const country = result.country ? result.country.iso_code : null;
-        switch (country) {
-            case "CN":
-                this.url = "https://app.cn.platforme.com:8444/api/";
-                this.webUrl = "https://app.cn.platforme.com:8444/";
-                this.options.url = this.url;
-                this.options.webUrl = this.webUrl;
-                break;
-            default:
-                this.url = "https://app.platforme.com/api/";
-                this.webUrl = "https://app.platforme.com/";
-                this.options.url = this.url;
-                this.options.webUrl = this.webUrl;
-                break;
-        }
-    }
+    if (this.guessUrl) await this._guessUrl();
 
     // iterates over all the plugins present in the options (meant
     // to be registered) and adds them to the current instance
@@ -960,6 +943,28 @@ ripe.Ripe.prototype.normalizeParts = function(parts) {
     }
 
     return _parts;
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._guessUrl = async function() {
+    const result = await this.geoResolveP();
+    const country = result.country ? result.country.iso_code : null;
+    switch (country) {
+        case "CN":
+            this.url = "https://app.cn.platforme.com:8444/api/";
+            this.webUrl = "https://app.cn.platforme.com:8444/";
+            this.options.url = this.url;
+            this.options.webUrl = this.webUrl;
+            break;
+        default:
+            this.url = "https://app.platforme.com/api/";
+            this.webUrl = "https://app.platforme.com/";
+            this.options.url = this.url;
+            this.options.webUrl = this.webUrl;
+            break;
+    }
 };
 
 /**
