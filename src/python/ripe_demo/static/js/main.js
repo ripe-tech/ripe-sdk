@@ -15,6 +15,8 @@ window.onload = function() {
     var country = _body.dataset.country || "US";
     var clientId = _body.dataset.client_id || null;
     var clientSecret = _body.dataset.client_secret || null;
+    var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
+    var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
 
     var parts = [];
     var partsMap = {};
@@ -26,7 +28,9 @@ window.onload = function() {
         variant: variant,
         url: url,
         currency: currency,
-        country: country
+        country: country,
+        guess: guess,
+        guessUrl: guessUrl
     });
 
     var randomize = async function() {

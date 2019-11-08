@@ -26,5 +26,7 @@ class BaseController(appier.Controller):
             currency = self.field("currency"),
             client_id = self.field("client_id", client_id),
             client_secret = self.field("client_secret", client_secret),
+            guess = self.field("guess", False, cast = bool),
+            guess_url = self.field("guess_url", False, cast = bool),
             mode = self.field("mode", "full")
         )

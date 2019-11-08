@@ -87,6 +87,27 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     );
     this.setOptions(options);
 
+    // in case the guess URL mode is active then a remote call should be
+    // performed in order to take decisions on the proper production URL
+    if (this.guessUrl) {
+        const result = await this.geoResolveP();
+        const country = result.country ? result.country.iso_code : null;
+        switch (country) {
+            case "CN":
+                this.url = "https://app.cn.platforme.com:8444/api/";
+                this.webUrl = "https://app.cn.platforme.com:8444/";
+                this.options.url = this.url;
+                this.options.webUrl = this.webUrl;
+                break;
+            default:
+                this.url = "https://app.platforme.com/api/";
+                this.webUrl = "https://app.platforme.com/";
+                this.options.url = this.url;
+                this.options.webUrl = this.webUrl;
+                break;
+        }
+    }
+
     // iterates over all the plugins present in the options (meant
     // to be registered) and adds them to the current instance
     for (const plugin of options.plugins || []) {
@@ -412,6 +433,7 @@ ripe.Ripe.prototype.remote = async function() {
  *  - 'format' - The format of the image that is going to be retrieved in case of image visual and interactive.
  *  - 'backgroundColor' - The background color in RGB format to be used for images.
  *  - 'guess' - If the optimistic guess mode should be used for config resolution (internal).
+ *  - 'guessUrl' - If base production URL should be guessed using GeoIP information.
  *  - 'remoteCalls' - If the remote calls (eg: 'on_config') should be called in the middle of configuration.
  *  - 'useBundles' - If the bundles should be loaded during initial loading.
  *  - 'useDefaults' - If the default parts of the model should be used when no initials parts are set.
@@ -433,6 +455,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.format = this.options.format || "jpeg";
     this.backgroundColor = this.options.backgroundColor || "";
     this.guess = this.options.guess === undefined ? undefined : this.options.guess;
+    this.guessUrl = this.options.guessUrl === undefined ? undefined : this.options.guessUrl;
     this.remoteCalls = this.options.remoteCalls === undefined ? true : this.options.remoteCalls;
     this.remoteOnConfig =
         this.options.remoteOnConfig === undefined ? this.remoteCalls : this.options.remoteOnConfig;

@@ -26,7 +26,8 @@
              data-brand="{{ brand|default('', True) }}" data-model="{{ model|default('', True) }}"
              data-variant="{{ variant|default('', True) }}" data-country="{{ country|default('', True) }}"
              data-currency="{{ currency|default('', True) }}" data-mode="{{ mode|default('full', True) }}"
-             data-client_id="{{ client_id|default('', True) }}" data-client_secret="{{ client_secret|default('', True) }}">
+             data-client_id="{{ client_id|default('', True) }}" data-client_secret="{{ client_secret|default('', True) }}"
+             data-guess="{{ '1' if guess else '0' }}" data-guess_url="{{ '1' if guess_url else '0' }}">
         <div id="header" class="header">
             {% block header %}
                 <div class="header-container">

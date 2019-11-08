@@ -25,6 +25,67 @@ ripe.RipeAPI = function(options = {}) {
 };
 
 /**
+ * Runs a simple "ping" operation to validate the connection with the
+ * Core server-side.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.ping = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = this.url + "ping";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.pingP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.ping(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Runs the GeoIP resolution process so that it's possible to uncover
+ * more geographical information about the current user.
+ *
+ * @param {String} address The optional address to be used in case the address
+ * of the IP request is not desired.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.geoResolve = function(address, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = this.url + "geo_resolve";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            address: address
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.geoResolveP = function(address, options) {
+    return new Promise((resolve, reject) => {
+        this.geoResolve(address, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Retrieves the complete set of session elements to be used, such as:
  * the 'sid ', 'session_id', 'username ', 'name', 'email' and 'tokens'.
  *
@@ -48,6 +109,14 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.signinP = function(username, password, options) {
+    return new Promise((resolve, reject) => {
+        this.signin(username, password, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
 
 /**
@@ -78,6 +147,14 @@ ripe.Ripe.prototype.signinAdmin = function(username, password, options, callback
     return this._cacheURL(options.url, options, callback);
 };
 
+ripe.Ripe.prototype.signinAdminP = function(username, password, options) {
+    return new Promise((resolve, reject) => {
+        this.signinAdmin(username, password, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * Retrieves the complete set of session elements to be used, such as:
  * the 'sid ', 'session_id', 'username ', 'name', 'email'.
@@ -102,6 +179,14 @@ ripe.Ripe.prototype.signinPid = function(token, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+ripe.Ripe.prototype.signinPidP = function(token, options) {
+    return new Promise((resolve, reject) => {
+        this.signinAdmin(token, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * Retrieves the price for current customization.
  *
@@ -117,6 +202,14 @@ ripe.Ripe.prototype.getPrice = function(options, callback) {
     options = this._getPriceOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.getPriceP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getPrice(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
 };
 
 /**
