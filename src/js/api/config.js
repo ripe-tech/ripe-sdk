@@ -55,7 +55,7 @@ ripe.Ripe.prototype.configInfoP = function(options) {
 ripe.Ripe.prototype.configDku = function(dku, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    options = Object.assign({ dku: dku }, options);
+    options = Object.assign({ dku: dku, queryOptions: false, initialsOptions: false }, options);
     options = this._getConfigInfoOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
@@ -119,9 +119,11 @@ ripe.Ripe.prototype.configResolveP = function(productId, options) {
 ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
     const dku = options.dku === undefined ? null : options.dku;
     const guess = options.guess === undefined ? this.guess : options.guess;
+    const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
+    const initialsOptions = options.initialsOptions === undefined ? true : options.initialsOptions;
 
-    options = this._getQueryOptions(options);
-    options = this._getInitialsOptions(options);
+    if (queryOptions) options = this._getQueryOptions(options);
+    if (initialsOptions) options = this._getInitialsOptions(options);
 
     const params = options.params || {};
     options.params = params;
