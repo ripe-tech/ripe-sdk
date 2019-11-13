@@ -233,5 +233,21 @@ describe("Ripe", function() {
             assert.strictEqual(instance.parts.front.color, "black");
             assert.strictEqual(instance.partCounter, 11);
         });
+
+        it("should initiate with dku", async () => {
+            const instance = new ripe.Ripe({
+                dku: "swear.vyner.-1.3:10.0:2.0:1.0:3.7:2.0:5.4:0:2.5:0:0.sw:metal_gold"
+            });
+            instance.load();
+
+            await new Promise((resolve, reject) => {
+                instance.bind("ready", resolve);
+            });
+
+            assert.strictEqual(instance.brand, "swear");
+            assert.strictEqual(instance.model, "vyner");
+            assert.strictEqual(instance.initials, "sw");
+            assert.strictEqual(instance.engraving, "metal_gold");
+        });
     });
 });
