@@ -829,6 +829,20 @@ ripe.Ripe.prototype.undo = async function() {
 };
 
 /**
+ * Executes the same operation as `undo` but goes all the way
+ * to the bottom of the stack that controls the history.
+ */
+ripe.Ripe.prototype.undoAll = async function() {
+    if (!this.canUndo()) {
+        return;
+    }
+
+    this.historyPointer = 0;
+    const parts = this.history[this.historyPointer];
+    if (parts) await this.setParts(parts, true, { action: "undo", partEvents: false });
+};
+
+/**
  * Reapplies the last change to the parts that was undone.
  * Notice that if there's a change when the history pointer
  * is in the middle of the stack the complete stack forward
@@ -840,6 +854,20 @@ ripe.Ripe.prototype.redo = async function() {
     }
 
     this.historyPointer += 1;
+    const parts = this.history[this.historyPointer];
+    if (parts) await this.setParts(parts, true, { action: "redo", partEvents: false });
+};
+
+/**
+ * Executes the same operation as `redo` but goes all the way
+ * to the top of the stack that controls the history.
+ */
+ripe.Ripe.prototype.redoAll = async function() {
+    if (!this.canRedo()) {
+        return;
+    }
+
+    this.historyPointer = this.history.length - 1;
     const parts = this.history[this.historyPointer];
     if (parts) await this.setParts(parts, true, { action: "redo", partEvents: false });
 };
