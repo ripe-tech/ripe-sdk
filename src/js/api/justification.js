@@ -10,13 +10,15 @@ if (
 
 /**
  * Gets the Justifications list
+ * Can be filtered by context
  */
-ripe.Ripe.prototype.getJustifications = function(options, callback) {
+ripe.Ripe.prototype.getJustifications = function(context = null, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     //  TODO use delete testing url
-    //  const url = this.url + "justifications";
-    const url = "http://localhost:8000/api/justifications";
+    //  let url = this.url + "justifications";
+    let url = "http://localhost:8000/api/justifications";
+    if (context) url += "/" + context;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -28,15 +30,13 @@ ripe.Ripe.prototype.getJustifications = function(options, callback) {
 
 /**
  * Gets the Justifications list
- *
+ * Can be filtered by context
  * returns promise
  */
-ripe.Ripe.prototype.getJustificationsP = function(options) {
+ripe.Ripe.prototype.getJustificationsP = function(context = null, options) {
     return new Promise((resolve, reject) => {
-        this.getJustifications(options, (result, isValid, request) => {
+        this.getJustifications(context, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
 };
-
-/** TODO getjustification by context */
