@@ -90,6 +90,14 @@ ripe.bind("parts", function(parts) {
 });
 ```
 
+You can also be notified when a part is selected.
+
+```javascript
+ripe.bind("selected_part", function(part) {
+    console.log("part selected: ", part);
+});
+```
+
 ### Frames
 
 Triggered whenever there is a frame change.
@@ -204,7 +212,7 @@ This element supports the following events:
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `ready`         | Triggered upon first loading of the model's internal frame structure (once per model load)                                        |
 | `loaded`        | Triggered when the configurator finishes loading all of the internal frames, and is ready for interaction (once per part setting) |
-| `changed_frame` | Raises whenever there's a rotation in the cofigurator viewport (viewable frame has changed)                                       |
+| `changed_frame` | Raises whenever there's a rotation in the configurator viewport (viewable frame has changed)                                       |
 
 ```javascript
 var element = document.getElementById("config");
