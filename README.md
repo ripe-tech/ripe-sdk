@@ -94,7 +94,7 @@ You can also be notified when a part is selected.
 
 ```javascript
 ripe.bind("selected_part", function(part) {
-    console.log("part selected: ", part);
+    console.log("Part selected: ", part);
 });
 ```
 
