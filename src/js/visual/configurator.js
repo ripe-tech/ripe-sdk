@@ -80,9 +80,11 @@ ripe.Configurator.prototype.init = function() {
 
     // creates the necessary DOM elements and runs
     // the initial layout update operation if the
-    // owner has a model set
+    // owner has a model and brand set (is ready)
     this._initLayout();
-    this.owner.brand && this.owner.model && this._updateConfig();
+    if (this.owner.brand && this.owner.model) {
+        this._updateConfig();
+    }
 
     // registers for the config change request event to
     // be able to properly update the internal structures
@@ -690,52 +692,56 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
     // under the current state, adapting then the internal
     // structures to accommodate the possible changes in the
     // frame structure
-    this.owner.getFrames(frames => {
-        // updates the internal reference to the frames
-        // model (to be used from now on)
-        this.frames = frames;
+    this.frames = await this.owner.getFrames();
 
-        // populates the buffers taking into account
-        // the frames of the model
-        this._populateBuffers();
+    // populates the buffers taking into account
+    // the frames of the model
+    this._populateBuffers();
 
-        // tries to keep the current view and position
-        // if the new model supports it otherwise
-        // changes to a supported frame
-        let view = this.element.dataset.position;
-        let position = this.element.dataset.position;
-        let maxPosition = this.frames[view];
-        if (!maxPosition) {
-            view = Object.keys(this.frames)[0];
-            position = 0;
-        } else if (position >= maxPosition) {
-            position = 0;
+    // tries to keep the current view and position
+    // if the new model supports it otherwise
+    // changes to a supported frame
+    let view = this.element.dataset.position;
+    let position = this.element.dataset.position;
+    let maxPosition = this.frames[view];
+    if (!maxPosition) {
+        view = Object.keys(this.frames)[0];
+        position = 0;
+    } else if (position >= maxPosition) {
+        position = 0;
+    }
+
+    // checks the last viewed frames of each view
+    // and deletes the ones not supported
+    const lastFrameViews = Object.keys(this._lastFrame);
+    for (view in lastFrameViews) {
+        position = this._lastFrame[view];
+        maxPosition = this.frames[view];
+        if (!maxPosition || position >= maxPosition) {
+            delete this._lastFrame[view];
         }
+    }
 
-        // checks the last viewed frames of each view
-        // and deletes the ones not supported
-        const lastFrameViews = Object.keys(this._lastFrame);
-        for (view in lastFrameViews) {
-            position = this._lastFrame[view];
-            maxPosition = this.frames[view];
-            if (!maxPosition || position >= maxPosition) {
-                delete this._lastFrame[view];
-            }
+    // marks the current configurator as ready and triggers
+    // the associated ready event to any event listener
+    this.ready = true;
+    this.trigger("ready");
+
+    // adds the config visual class indicating that
+    // a configuration already exists for the current
+    // interactive configurator (meta-data)
+    this.element.classList.add("ready");
+
+    // shows the new product with a crossfade effect
+    // and starts responding to updates again
+    this.update(
+        {},
+        {
+            preload: true,
+            animate: animate || this.configAnimate,
+            force: true
         }
-
-        // shows the new product with a crossfade effect
-        // and starts responding to updates again
-        this.ready = true;
-        this.trigger("ready");
-        this.update(
-            {},
-            {
-                preload: true,
-                animate: animate || this.configAnimate,
-                force: true
-            }
-        );
-    });
+    );
 };
 
 /**
@@ -1112,7 +1118,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
     this._addElementHandler("mousemove", function(event) {
-        if (this.classList.contains("no-drag")) {
+        if (!this.classList.contains("ready") || this.classList.contains("no-drag")) {
             return;
         }
         const down = self.down;

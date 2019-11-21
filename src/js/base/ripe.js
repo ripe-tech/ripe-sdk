@@ -684,25 +684,42 @@ ripe.Ripe.prototype.setChoices = function(choices, events = true) {
  * that maps a certain face with the number of available frames
  * for such face.
  *
+ * This function makes use of the loaded config in case there's
+ * one, otherwise triggers the loading of the config.
+ *
  * @returns {Promise} The model's available frames.
  */
 ripe.Ripe.prototype.getFrames = async function(callback) {
     if (this.options.frames) {
-        callback(this.options.frames);
-        return;
+        callback && callback(this.options.frames);
+        return this.options.frames;
     }
 
     const config = this.loadedConfig ? this.loadedConfig : await this.getConfigP();
+
     const frames = {};
-    const faces = config.faces;
-    for (let index = 0; index < faces.length; index++) {
-        const face = faces[index];
+
+    for (let index = 0; index < config.faces.length; index++) {
+        const face = config.faces[index];
         frames[face] = 1;
     }
 
-    const sideFrames = config.frames;
-    frames.side = sideFrames;
+    // ensures that the "legacy" side face has the a value
+    // populated with the "legacy" frames field in case there's
+    // none populated by the standard processing loop (above)
+    frames.side = config.frames;
+
+    // iterates over the complete set of faces to populate the frames
+    // structure with the most up-to-date strategy using the faces map
+    // that contains all the information about each face
+    for (const [face, faceM] of Object.entries(config.faces_m)) {
+        frames[face] = faceM.frames;
+    }
+
+    // calls the callback with the resolved frame (unsafe) and returns
+    // the frames map to the caller method
     callback && callback(frames);
+    return frames;
 };
 
 /**
