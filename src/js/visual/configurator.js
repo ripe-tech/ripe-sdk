@@ -165,7 +165,13 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     // changed and animates the transition if they did
     let previous = this.signature || "";
     const signature =
-        this.owner._getQuery() + "&width=" + String(width) + "&height=" + String(height) + "&format=" + String(format);
+        this.owner._getQuery() +
+        "&width=" +
+        String(width) +
+        "&height=" +
+        String(height) +
+        "&format=" +
+        String(format);
     const changed = signature !== previous;
     const animate = options.animate === undefined ? (changed ? "simple" : false) : options.animate;
     this.signature = signature;

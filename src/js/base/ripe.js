@@ -61,6 +61,11 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
         model = options.model || null;
     }
 
+    // determines if the init operation should be avoided (eg: for static usage)
+    // if so the control flow is returned immediately (init prevented)
+    const init = options.init === undefined ? true : options.init;
+    if (!init) return;
+
     // sets the various values in the instance taking into
     // account the default values
     this.initials = "";
