@@ -435,7 +435,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.currency = this.options.currency || null;
     this.locale = this.options.locale || null;
     this.flag = this.options.flag || null;
-    this.format = this.options.format || "jpeg";
+    this.format = this.options.format || null;
     this.backgroundColor = this.options.backgroundColor || "";
     this.guess = this.options.guess === undefined ? undefined : this.options.guess;
     this.guessUrl = this.options.guessUrl === undefined ? undefined : this.options.guessUrl;
@@ -742,6 +742,7 @@ ripe.Ripe.prototype.bindImage = function(element, options = {}) {
  * @returns {Configurator} The Configurator instance created.
  */
 ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
+    options = Object.assign({}, { format: this.format }, options);
     const config = new ripe.Configurator(this, element, options);
     return this.bindInteractable(config);
 };

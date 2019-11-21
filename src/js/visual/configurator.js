@@ -41,6 +41,7 @@ ripe.Configurator.prototype.init = function() {
 
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
+    this.format = this.options.format || null;
     this.size = this.options.size || null;
     this.maxSize = this.options.maxSize || 1000;
     this.sensitivity = this.options.sensitivity || 40;
@@ -150,6 +151,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
 
     const view = this.element.dataset.view;
     const position = this.element.dataset.position;
+    const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
@@ -162,7 +164,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     // changed and animates the transition if they did
     let previous = this.signature || "";
     const signature =
-        this.owner._getQuery() + "&width=" + String(width) + "&height=" + String(height);
+        this.owner._getQuery() + "&width=" + String(width) + "&height=" + String(height) + "&format=" + String(format);
     const changed = signature !== previous;
     const animate = options.animate === undefined ? (changed ? "simple" : false) : options.animate;
     this.signature = signature;
@@ -755,6 +757,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
 
     const frame = ripe.getFrameKey(view, position);
 
+    const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
@@ -786,6 +789,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // added to the image composition (not required)
     const url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
+        format: format,
         size: size,
         width: width,
         height: height,
