@@ -46,6 +46,7 @@ ripe.Configurator.prototype.init = function() {
     this.maxSize = this.options.maxSize || 1000;
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
+    this.clickThreshold = this.options.clickThreshold || 0.015;
     this.interval = this.options.interval || 0;
     this.duration = this.options.duration || 500;
     this.preloadDelay = this.options.preloadDelay || 150;
@@ -1104,8 +1105,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
     this._addElementHandler("mouseup", function(event) {
         const _element = this;
         self.down = false;
-        self.percent = 0;
         self.previous = self.percent;
+        self.percent = 0;
         _element.classList.remove("drag");
     });
 
@@ -1114,8 +1115,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
     this._addElementHandler("mouseleave", function(event) {
         const _element = this;
         self.down = false;
-        self.percent = 0;
         self.previous = self.percent;
+        self.percent = 0;
         _element.classList.remove("drag");
     });
 
@@ -1132,6 +1133,14 @@ ripe.Configurator.prototype._registerHandlers = function() {
     });
 
     area.addEventListener("click", function(event) {
+        // verifies if the previous drag operation (if any) has exceed
+        // the minimum threshold to be considered drag (click avoided)
+        if (Math.abs(self.previous) > self.clickThreshold) {
+            event.stopImmediatePropagation();
+            event.stopPropagation();
+            return;
+        }
+
         const preloading = self.element.classList.contains("preloading");
         const animating = self.element.classList.contains("animating");
         if (preloading || animating) {
@@ -1177,7 +1186,19 @@ ripe.Configurator.prototype._registerHandlers = function() {
         event.preventDefault();
     });
 
+    area.addEventListener("dragend", function(event) {
+        event.preventDefault();
+    });
+
     back.addEventListener("click", function(event) {
+        // verifies if the previous drag operation (if any) has exceed
+        // the minimum threshold to be considered drag (click avoided)
+        if (Math.abs(self.previous) > self.clickThreshold) {
+            event.stopImmediatePropagation();
+            event.stopPropagation();
+            return;
+        }
+
         const preloading = self.element.classList.contains("preloading");
         const animating = self.element.classList.contains("animating");
         if (preloading || animating) {
@@ -1220,6 +1241,10 @@ ripe.Configurator.prototype._registerHandlers = function() {
     });
 
     back.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
+
+    back.addEventListener("dragend", function(event) {
         event.preventDefault();
     });
 
