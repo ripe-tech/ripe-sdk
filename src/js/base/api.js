@@ -279,7 +279,10 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     const hasQuery = url.indexOf("?") !== -1;
     const separator = hasQuery ? "&" : "?";
 
-    if (isEmpty || data) {
+    if (!isEmpty && data) {
+        data = this._buildQuery(Object.assign(data, params));
+        contentType = "application/x-www-form-urlencoded";
+    } else if (isEmpty || data) {
         url += separator + query;
     } else if (dataJ !== null) {
         data = JSON.stringify(dataJ);
