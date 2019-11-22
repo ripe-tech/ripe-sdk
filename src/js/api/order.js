@@ -268,6 +268,67 @@ ripe.Ripe.prototype.cancelOrderP = function(number, options) {
 };
 
 /**
+ * Imports a production order to RIPE Core.
+ *
+ * @param {Number} ffOrderId The e-commerce order identifier.
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ *  - 'variant' - the variant of the model
+ *  - 'parts' - The parts of the customized model
+ *  - 'initials' - The value for the initials of the personalized model
+ *  - 'engraving' - The value for the engraving value of the personalized model
+ *  - 'initialsExtra' - The value for the initials extra of the personalized model
+ *  - 'gender' - The gender of the customized model
+ *  - 'gender' - The native size of the customized model
+ *  - 'pending' - If the production order is to be imported at the pending, so it has to be confirmed.
+ *  - 'notify' - Mark order to trigger notification after creation.
+ *  - 'productId' - The product's unique identification.
+ *  - 'currency' - The 'ISO 4217' currency code in which the order has been sold.
+ *  - 'country' - The 'ISO 3166-2' country code where the order has been placed.
+ *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.importOrder = function(ffOrderId, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._importOrder(ffOrderId, options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Imports a production order to RIPE Core.
+ *
+ * @param {Number} ffOrderId The e-commerce order identifier.
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model
+ *  - 'model' - the name of the model
+ *  - 'variant' - the variant of the model
+ *  - 'parts' - The parts of the customized model
+ *  - 'initials' - The value for the initials of the personalized model
+ *  - 'engraving' - The value for the engraving value of the personalized model
+ *  - 'initialsExtra' - The value for the initials extra of the personalized model
+ *  - 'gender' - The gender of the customized model
+ *  - 'gender' - The native size of the customized model
+ *  - 'pending' - If the production order is to be imported at the pending, so it has to be confirmed.
+ *  - 'notify' - Mark order to trigger notification after creation.
+ *  - 'productId' - The product's unique identification.
+ *  - 'currency' - The 'ISO 4217' currency code in which the order has been sold.
+ *  - 'country' - The 'ISO 3166-2' country code where the order has been placed.
+ *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
+ * @returns {Promise} The production order's data.
+ */
+ripe.Ripe.prototype.importOrderP = function(ffOrderId, options, callback) {
+    return new Promise((resolve, reject) => {
+        this.importOrder(ffOrderId, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback) {
@@ -320,4 +381,75 @@ ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
         params: { key: key }
     });
     return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
+ * @ignore
+ * @see {link https://docs.platforme.com/#order-endpoints-import}
+ */
+ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const parts = options.parts === undefined ? this.parts : options.parts;
+    const initials = options.initials === undefined ? this.initials : options.initials;
+    const engraving = options.engraving === undefined ? this.engraving : options.engraving;
+    const initialsExtra =
+        options.initials_extra === undefined && options.initialsExtra === undefined
+            ? this.initialsExtra
+            : options.initialsExtra || options.initials_extra;
+    const gender = options.gender === undefined ? null : options.gender;
+    const size = options.size === undefined ? null : options.size;
+    const pending = options.pending === undefined ? null : options.pending;
+    const notify = options.notify === undefined ? null : options.notify;
+    const productId =
+        options.product_id === undefined && options.productId === undefined
+            ? null
+            : options.product_id || options.productId;
+    const currency = options.currency === undefined ? null : options.currency;
+    const country = options.country === undefined ? null : options.country;
+    const meta = options.meta === undefined ? null : options.meta;
+
+    const url = this.url + "orders/import";
+
+    // creates the contents
+    // with the mandatory data
+    const contents = {
+        brand: brand,
+        model: model,
+        parts: parts,
+        size: size
+    };
+
+    // sets the contents' remaining optional data
+    if (variant) contents.variant = variant;
+    if (productId) contents.product_id = productId;
+    if (gender) contents.gender = gender;
+    if (Object.keys(initialsExtra).length > 0) {
+        contents.initials_extra = initialsExtra;
+    } else if (initials && engraving) {
+        contents.initials = initials;
+        contents.engraving = engraving;
+    }
+
+    // creates the import order payload
+    // with the mandatory data
+    const data = {
+        ff_order_id: ffOrderId,
+        contents: JSON.stringify(contents)
+    };
+
+    // sets the payload's remaining optional data
+    if (country) data.country = country;
+    if (currency) data.currency = currency;
+    if (meta) data.meta = meta;
+    if (notify) data.notify = notify;
+    if (pending) data.pending = pending;
+
+    return Object.assign(options, {
+        url: url,
+        method: "POST",
+        data: data,
+        auth: true
+    });
 };
