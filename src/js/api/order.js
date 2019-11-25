@@ -432,24 +432,24 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
         contents.engraving = engraving;
     }
 
-    // creates the import order payload
+    // creates the import order params
     // with the mandatory data
-    const data = {
+    const params = {
         ff_order_id: ffOrderId,
         contents: JSON.stringify(contents)
     };
 
     // sets the payload's remaining optional data
-    if (country) data.country = country;
-    if (currency) data.currency = currency;
-    if (meta) data.meta = meta;
-    if (notify) data.notify = notify;
-    if (pending) data.pending = pending;
+    if (country) params.country = country;
+    if (currency) params.currency = currency;
+    if (meta) params.meta = meta;
+    if (notify) params.notify = notify;
+    if (pending) params.pending = pending;
 
     return Object.assign(options, {
         url: url,
         method: "POST",
-        data: data,
+        params: params,
         auth: true
     });
 };
