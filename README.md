@@ -280,7 +280,7 @@ if (ripe.isOAuthPending()) {
 ## Appendix
 
 ### Options
-
+ 
 | Name               | Type               | Description                                                                                                                                                                        d       |
 | ------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `backgroundColor`  | *string*           | RGB format color value of the background ( no need to pass the "#" signal ). No background by default. Example: "cccccc".                                                                  |
