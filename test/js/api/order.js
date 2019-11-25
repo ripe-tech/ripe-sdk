@@ -115,7 +115,7 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            const ffOrderId = uuid4();
+            const ffOrderId = uuid4;
             result = await remote.importOrderP(ffOrderId, {
                 brand: "dummy",
                 model: "dummy",
