@@ -80,6 +80,7 @@
         "npm-check-updates": "^3.2.1",
         "prettier": "^1.18.2",
         "prettier-config-hive": "^0.1.1",
-        "sort-package-json": "^1.23.1"
+        "sort-package-json": "^1.23.1",
+        "uuid": "^3.3.3"
     }
 }

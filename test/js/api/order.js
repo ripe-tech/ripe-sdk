@@ -1,4 +1,5 @@
 const assert = require("assert");
+const uuidv4 = require("uuid/v4");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
@@ -107,13 +108,7 @@ describe("OrderAPI", function() {
             let result = null;
 
             const remote = ripe.RipeAPI();
-            const uuid4 = () => {
-                return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, x => {
-                    const random = (Math.random() * 16) | 0;
-                    const values = x === "x" ? random : (random & 0x3) | 0x8;
-                    return values.toString(16);
-                });
-            };
+            const uuid4 = uuidv4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
