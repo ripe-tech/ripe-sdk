@@ -98,7 +98,7 @@ describe("Ripe", function() {
         });
 
         it("should be able to validate invalid states", async () => {
-            const instance = await new ripe.Ripe();
+            const instance = await new ripe.Ripe({ init: false });
 
             assert.throws(() => instance.setInitials("", "gold"), Error);
 
