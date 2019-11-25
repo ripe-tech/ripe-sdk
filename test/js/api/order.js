@@ -1,5 +1,4 @@
 const assert = require("assert");
-const uuidv4 = require("uuid/v4");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
