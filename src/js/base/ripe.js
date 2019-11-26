@@ -555,7 +555,7 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
  * @param {Boolean} events If the events associated with the initials
  * change should be triggered.
  */
-ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true, params = {}) {
+ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = true, params = {}) {
     if (typeof initials === "object") {
         events = engraving === undefined ? true : engraving;
         return this.setInitialsExtra(initials, events);
@@ -578,7 +578,7 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true, p
 
     // triggers the initials event notifying any listening
     // object about the changes
-    this.trigger("initials", initials, engraving, params);
+    await this.trigger("initials", initials, engraving, params);
 
     // runs the update operation so that all the listening
     // components can properly update their visuals
@@ -594,7 +594,7 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true, p
  * @param {Boolean} events If the events associated with the changing of
  * the initials (extra) should be triggered.
  */
-ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, events = true, params = {}) {
+ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = true, params = {}) {
     const groups = Object.keys(initialsExtra);
     const isEmpty = groups.length === 0;
     const mainGroup = groups.includes("main") ? "main" : groups[0];
@@ -624,7 +624,7 @@ ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, events = true, pa
 
     // triggers the initials extra event notifying any
     // listening object about the changes
-    this.trigger("initials_extra", initialsExtra, params);
+    await this.trigger("initials_extra", initialsExtra, params);
 
     // runs the update operation so that all the listening
     // components can properly update their visuals
@@ -1196,6 +1196,7 @@ ripe.Ripe.prototype._errorHandler = function(error) {
     this.ready = false;
     this.error = error;
     this.trigger("error", error);
+    console.error(error.message || error);
 };
 
 /**
