@@ -81,6 +81,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.ready = false;
     this.bundles = false;
     this.partCounter = 0;
+    this.error = null;
 
     // extends the default options with the ones provided by the
     // developer upon this initializer call
@@ -210,10 +211,19 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
         this._pushHistory();
     });
 
-    // runs the configuration operation on the current instance, using
-    // the requested parameters and options, multiple configuration
-    // operations may be executed over the object life-time
-    await this.config(brand, model, options);
+    try {
+        // runs the configuration operation on the current instance, using
+        // the requested parameters and options, multiple configuration
+        // operations may be executed over the object life-time
+        await this.config(brand, model, options);
+    } catch (error) {
+        // sets the error in the current instance and then triggers the
+        // error event on the current instance (notification)
+        this.ready = false;
+        this.error = error;
+        this.trigger("error", error);
+        return;
+    }
 
     // runs the initialization of the locale bundles, provided by the
     // remote handle, this is required for proper initialization
@@ -927,8 +937,14 @@ ripe.Ripe.prototype.canRedo = function() {
  */
 ripe.Ripe.prototype.isReady = async function() {
     await new Promise((resolve, reject) => {
-        if (this.ready) resolve();
-        else this.bind("ready", resolve);
+        if (this.ready) {
+            resolve();
+        } else if (this.error) {
+            reject(this.error);
+        } else {
+            this.bind("ready", resolve);
+            this.bind("error", reject);
+        }
     });
 };
 
