@@ -120,8 +120,10 @@ ripe.Ripe.prototype.authAdmin = function(username, password, options, callback) 
     options = typeof options === "function" || options === undefined ? {} : options;
 
     this.signinAdmin(username, password, options, (result, isValid, request) => {
-        this.sid = result.sid;
-        this.trigger("auth");
+        if (isValid) {
+            this.sid = result.sid;
+            this.trigger("auth");
+        }
         callback && callback(result, isValid, request);
     });
 };
@@ -159,8 +161,10 @@ ripe.Ripe.prototype.authPid = function(token, options, callback) {
     options = typeof options === "function" || options === undefined ? {} : options;
 
     this.signinPid(token, options, (result, isValid, request) => {
-        this.sid = result.sid;
-        this.trigger("auth");
+        if (isValid) {
+            this.sid = result.sid;
+            this.trigger("auth");
+        }
         callback && callback(result, isValid, request);
     });
 };
