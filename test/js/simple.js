@@ -224,7 +224,7 @@ describe("Ripe", function() {
             assert.strictEqual(instance.partCounter, 11);
         });
 
-        it("should initiate with dku", async () => {
+        it("should initiate with DKU", async () => {
             const instance = new ripe.Ripe({
                 dku: "swear.vyner.-1.3:10.0:2.0:1.0:3.7:2.0:5.4:0:2.5:0:0.sw:metal_gold"
             }).load();
