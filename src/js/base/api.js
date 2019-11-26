@@ -316,7 +316,9 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
             try {
                 result = await response.json();
             } catch (error) {
-                console.error(error);
+                response.error = response.error || error;
+                callback.call(context, result, isValid, response);
+                return;
             }
             if (callback) callback.call(context, result, isValid, response);
         })
