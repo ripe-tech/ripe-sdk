@@ -185,6 +185,53 @@ ripe.Ripe.prototype.authPidP = function(token, options) {
 };
 
 /**
+ * Responsible for the beginning of the key based authentication process.
+ *
+ * This method uses the admin back-end instead of the RIPE
+ * Core simple authentication system.
+ *
+ * @param {String} key The key to authenticate with.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.authKey = function(key, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+
+    const headers = {
+        "X-Secret-Key": key
+    };
+    options.headers = headers;
+    this.me(options, (result, isValid, request) => {
+        if (isValid) {
+            this.key = key;
+            this.trigger("auth");
+        }
+        callback && callback(result, isValid, request);
+    });
+};
+
+/**
+ * Responsible for the beginning of the key based authentication process.
+ *
+ * This method uses the admin back-end instead of the RIPE
+ * Core simple authentication system.
+ *
+ * @param {String} key The key to authenticate with.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The authenticated account data.
+ */
+ripe.Ripe.prototype.authKeyP = function(key, options) {
+    return new Promise((resolve, reject) => {
+        this.authKey(key, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Responsible for the beginning of the unauth process, triggering the 'unauth' event.
  *
  * @param {Object} options The set of options used for unauth process.

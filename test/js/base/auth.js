@@ -23,4 +23,23 @@ describe("Auth", function() {
             assert.notStrictEqual(typeof result.sid, undefined);
         });
     });
+
+    describe("#auth key", function() {
+        beforeEach(function() {
+            if (!config.TEST_KEY) {
+                this.skip();
+            }
+        });
+
+        it("should be able to authenticate with key", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authKeyP(config.TEST_KEY);
+
+            assert.strictEqual(result.username, "root");
+            assert.notStrictEqual(typeof result.key, undefined);
+        });
+    });
 });
