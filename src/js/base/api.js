@@ -307,6 +307,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
             result = this.responseText;
         }
         if (this.callback) this.callback.call(context, result, isValid, this);
+        if (this.timeoutHandler) clearTimeout(this.timeoutHandler);
     });
 
     request.addEventListener("error", function(error) {
@@ -324,7 +325,8 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
 
     request.open(method, url, true);
 
-    setTimeout(() => {
+    request.timeoutHandler = setTimeout(() => {
+        if (request.readyState === 4) return;
         request.error = new Error(`Timeout on request ${timeout}ms exceeded`);
         request.abort();
     }, timeout);
