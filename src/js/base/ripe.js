@@ -217,7 +217,12 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
         // operations may be executed over the object life-time
         await this.config(brand, model, options);
     } catch (error) {
+        // calls the error handler for the current handler to update the
+        // internal items of the RIPE instance
         this._errorHandler(error);
+
+        // returns the control flow immediately as the exception has been
+        // properly handled for the current context
         return;
     }
 
