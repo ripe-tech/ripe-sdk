@@ -274,6 +274,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     const dataJ = options.dataJ || null;
     let contentType = options.contentType || null;
     const timeout = options.timeout || 10000;
+    const timeoutConnect = options.timeoutConnect || parseInt(timeout / 2);
     const validCodes = options.validCodes || [200];
 
     const query = this._buildQuery(params);
@@ -293,6 +294,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     }
 
     const request = new XMLHttpRequest();
+    request.timeout = timeoutConnect;
     request.callback = callback;
     request.validCodes = validCodes;
 
