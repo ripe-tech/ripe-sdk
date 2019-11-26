@@ -273,7 +273,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     let data = options.data || null;
     const dataJ = options.dataJ || null;
     let contentType = options.contentType || null;
-    const timeout = options.timeout || 3000;
+    const timeout = options.timeout || 10000;
     const validCodes = options.validCodes || [200];
 
     const query = this._buildQuery(params);
