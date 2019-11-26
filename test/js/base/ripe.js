@@ -97,14 +97,6 @@ describe("Ripe", function() {
             assert.strictEqual(instance.initialsExtra.side.initials, "CR9");
             assert.strictEqual(instance.initialsExtra.side.engraving, null);
         });
-    });
-
-    describe("#setInitials (rejects)", async function() {
-        beforeEach(function() {
-            if (!assert.rejects) {
-                this.skip();
-            }
-        });
 
         it("should be able to validate invalid states", async () => {
             const instance = await new ripe.Ripe({ init: false });
