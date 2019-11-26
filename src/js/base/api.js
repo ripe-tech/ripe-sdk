@@ -297,8 +297,14 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         const isValid = this.status === 200;
         try {
             result = JSON.parse(this.responseText);
-        } catch (error) {}
+        } catch (error) {
+            result = this.responseText;
+        }
         callback && callback.call(context, result, isValid, this);
+    });
+
+    request.addEventListener("error", function() {
+        callback && callback.call(context, null, false, this);
     });
 
     request.addEventListener("loadstart", function() {
