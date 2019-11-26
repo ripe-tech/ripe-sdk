@@ -316,7 +316,8 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         context.trigger("post_request", request, options);
     });
 
-    request.open(method, url);
+    request.open(method, url, true);
+
     for (const key in headers) {
         const value = headers[key];
         request.setRequestHeader(key, value);

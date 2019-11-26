@@ -18,6 +18,7 @@ ripe.RemoteError = function(request, message) {
     this.code = request.status;
     this.status = request.status;
     this.response = request.response;
-    this.message = message || `Problem in remote operation (${this.code ? this.code : "unknown"})`;
+    this.responseText = request.responseText;
+    this.message = message || `Problem in remote operation (${this.code ? this.code : (this.responseText ? this.responseText : "unknown")})`;
     return this;
 };
