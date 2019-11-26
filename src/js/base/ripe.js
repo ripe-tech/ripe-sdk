@@ -1202,7 +1202,7 @@ ripe.Ripe.prototype._pushHistory = function() {
 ripe.Ripe.prototype._errorHandler = function(error) {
     // sets the error in the current instance and then triggers the
     // error event on the current instance (notification)
-    this.ready = false;
+    this.ready = this.ready || false;
     this.error = error;
     this.trigger("error", error);
     console.error(error.message || error);
