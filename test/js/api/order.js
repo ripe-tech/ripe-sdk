@@ -22,7 +22,7 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            result = await remote.getOrders();
+            result = await remote.getOrdersP();
 
             assert.notStrictEqual(result.length, 0);
         });
