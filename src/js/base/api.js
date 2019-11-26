@@ -273,6 +273,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     let data = options.data || null;
     const dataJ = options.dataJ || null;
     let contentType = options.contentType || null;
+    const timeout = options.timeout || 3000;
     const validCodes = options.validCodes || [200];
 
     const query = this._buildQuery(params);
@@ -292,20 +293,23 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     }
 
     const request = new XMLHttpRequest();
+    request.callback = callback;
+    request.validCodes = validCodes;
 
     request.addEventListener("load", function() {
         let result = null;
-        const isValid = validCodes.includes(this.status);
+        const isValid = this.validCodes.includes(this.status);
         try {
             result = JSON.parse(this.responseText);
         } catch (error) {
             result = this.responseText;
         }
-        callback && callback.call(context, result, isValid, this);
+        if (this.callback) this.callback.call(context, result, isValid, this);
     });
 
-    request.addEventListener("error", function() {
-        callback && callback.call(context, null, false, this);
+    request.addEventListener("error", function(error) {
+        request.error = request.error || error;
+        if (this.callback) this.callback.call(context, null, false, this);
     });
 
     request.addEventListener("loadstart", function() {
@@ -317,6 +321,11 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     });
 
     request.open(method, url, true);
+
+    setTimeout(() => {
+        request.error = new Error(`Timeout on request ${timeout}ms exceeded`);
+        request.abort();
+    }, timeout);
 
     for (const key in headers) {
         const value = headers[key];
