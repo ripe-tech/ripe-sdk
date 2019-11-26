@@ -7,7 +7,7 @@ describe("Ripe", function() {
 
     describe("#main", function() {
         it("should instance correctly", async () => {
-            const instance = await new ripe.Ripe("swear", "vyner");
+            const instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
 
             assert.strictEqual(instance.initials, "");
             assert.strictEqual(instance.engraving, null);
@@ -21,7 +21,7 @@ describe("Ripe", function() {
         it("should instance and retrieve values", async () => {
             let result = null;
 
-            const instance = new ripe.Ripe("swear", "vyner").load();
+            const instance = new ripe.Ripe("swear", "vyner", { noBundles: true }).load();
             await instance.isReady();
 
             result = await new Promise((resolve, reject) => {
@@ -46,7 +46,7 @@ describe("Ripe", function() {
         it("should instance and retrieve config", async () => {
             let result = null;
 
-            const instance = new ripe.Ripe("swear", "vyner").load();
+            const instance = new ripe.Ripe("swear", "vyner", { noBundles: true }).load();
             await instance.isReady();
 
             result = await new Promise((resolve, reject) => {
@@ -59,7 +59,8 @@ describe("Ripe", function() {
         it("should instance with custom options", async () => {
             const instance = new ripe.Ripe("swear", "vyner", {
                 noDefaults: true,
-                noCombinations: true
+                noCombinations: true,
+                noBundles: true
             }).load();
             await instance.isReady();
 
@@ -69,7 +70,8 @@ describe("Ripe", function() {
         it("should set parts and undo", async () => {
             const instance = new ripe.Ripe("swear", "vyner", {
                 remoteCalls: false,
-                noCombinations: true
+                noCombinations: true,
+                noBundles: true
             }).load();
             await instance.isReady();
 
@@ -124,7 +126,8 @@ describe("Ripe", function() {
         it("should set optional parts and undo", async () => {
             const instance = new ripe.Ripe("swear", "bond", {
                 remoteCalls: false,
-                noCombinations: true
+                noCombinations: true,
+                noBundles: true
             }).load();
             await instance.isReady();
 
@@ -183,7 +186,8 @@ describe("Ripe", function() {
         it("should set parts with no redundancy", async () => {
             const instance = new ripe.Ripe("swear", "vyner", {
                 remoteCalls: false,
-                noCombinations: true
+                noCombinations: true,
+                noBundles: true
             }).load();
             await instance.isReady();
 
@@ -226,7 +230,8 @@ describe("Ripe", function() {
 
         it("should initiate with DKU", async () => {
             const instance = new ripe.Ripe({
-                dku: "swear.vyner.-1.3:10.0:2.0:1.0:3.7:2.0:5.4:0:2.5:0:0.sw:metal_gold"
+                dku: "swear.vyner.-1.3:10.0:2.0:1.0:3.7:2.0:5.4:0:2.5:0:0.sw:metal_gold",
+                noBundles: true
             }).load();
             await instance.isReady();
 

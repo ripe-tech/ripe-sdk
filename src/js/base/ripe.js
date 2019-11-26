@@ -223,7 +223,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
 
     // runs the initialization of the locale bundles, provided by the
     // remote handle, this is required for proper initialization
-    if (this.useBundles) this._initBundles().catch(this._errorHandler);
+    if (this.useBundles) this._initBundles().catch(err => this._errorHandler(err));
 };
 
 /**
