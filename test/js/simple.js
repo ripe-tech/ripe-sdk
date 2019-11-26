@@ -21,15 +21,13 @@ describe("Ripe", function() {
         it("should instance and retrieve values", async () => {
             let result = null;
 
-            const instance = new ripe.Ripe("swear", "vyner");
-            instance.load();
-
-            await new Promise((resolve, reject) => {
-                instance.bind("config", resolve);
-            });
+            const instance = new ripe.Ripe("swear", "vyner").load();
+            await instance.isReady();
 
             result = await new Promise((resolve, reject) => {
-                instance.bind("price", resolve);
+                instance.bind("price", function(value) {
+                    resolve(value);
+                });
             });
 
             assert.strictEqual(result.total.price_final > 0.0, true);
@@ -48,12 +46,8 @@ describe("Ripe", function() {
         it("should instance and retrieve config", async () => {
             let result = null;
 
-            const instance = new ripe.Ripe("swear", "vyner");
-            instance.load();
-
-            await new Promise((resolve, reject) => {
-                instance.bind("config", resolve);
-            });
+            const instance = new ripe.Ripe("swear", "vyner").load();
+            await instance.isReady();
 
             result = await new Promise((resolve, reject) => {
                 instance.getConfig(resolve);
@@ -66,12 +60,8 @@ describe("Ripe", function() {
             const instance = new ripe.Ripe("swear", "vyner", {
                 noDefaults: true,
                 noCombinations: true
-            });
-            instance.load();
-
-            await new Promise((resolve, reject) => {
-                instance.bind("config", resolve);
-            });
+            }).load();
+            await instance.isReady();
 
             assert.strictEqual(Object.keys(instance.parts).length, 0);
         });
@@ -80,8 +70,8 @@ describe("Ripe", function() {
             const instance = new ripe.Ripe("swear", "vyner", {
                 remoteCalls: false,
                 noCombinations: true
-            });
-            instance.load();
+            }).load();
+            await instance.isReady();
 
             const initialParts = await new Promise((resolve, reject) => {
                 instance.bind("parts", resolve);
@@ -135,8 +125,8 @@ describe("Ripe", function() {
             const instance = new ripe.Ripe("swear", "bond", {
                 remoteCalls: false,
                 noCombinations: true
-            });
-            instance.load();
+            }).load();
+            await instance.isReady();
 
             const initialParts = await new Promise((resolve, reject) => {
                 instance.bind("parts", resolve);
@@ -194,8 +184,8 @@ describe("Ripe", function() {
             const instance = new ripe.Ripe("swear", "vyner", {
                 remoteCalls: false,
                 noCombinations: true
-            });
-            instance.load();
+            }).load();
+            await instance.isReady();
 
             await new Promise((resolve, reject) => {
                 instance.bind("parts", resolve);
@@ -237,12 +227,8 @@ describe("Ripe", function() {
         it("should initiate with dku", async () => {
             const instance = new ripe.Ripe({
                 dku: "swear.vyner.-1.3:10.0:2.0:1.0:3.7:2.0:5.4:0:2.5:0:0.sw:metal_gold"
-            });
-            instance.load();
-
-            await new Promise((resolve, reject) => {
-                instance.bind("ready", resolve);
-            });
+            }).load();
+            await instance.isReady();
 
             assert.strictEqual(instance.brand, "swear");
             assert.strictEqual(instance.model, "vyner");

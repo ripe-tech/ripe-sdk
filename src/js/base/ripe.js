@@ -255,17 +255,24 @@ ripe.Ripe.prototype.deinit = async function() {
  *
  * This method should be called before any significant RIPE operation
  * can be performed on the instance.
+ *
+ * @returns {Object} The current RIPE instance (for pipelining).
  */
-ripe.Ripe.prototype.load = async function() {
+ripe.Ripe.prototype.load = function() {
     this.update();
+    return this;
 };
 
 /**
  * Explicit entry point for the unloading of the RIPE instance.
  *
  * Should be called for a clean exit of the instance.
+ *
+ * @returns {Object} The current RIPE instance (for pipelining).
  */
-ripe.Ripe.prototype.unload = async function() {};
+ripe.Ripe.prototype.unload = function() {
+    return this;
+};
 
 /**
  * Sets the model to be customised by providing both the brand

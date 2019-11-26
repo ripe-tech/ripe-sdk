@@ -8,6 +8,7 @@ describe("Ripe", function() {
     describe("#setInitials", async function() {
         it("should be able to set initials", async () => {
             const instance = await new ripe.Ripe();
+            await instance.isReady();
 
             assert.strictEqual(instance.initials, "");
             assert.strictEqual(instance.engraving, null);
