@@ -217,11 +217,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
         // operations may be executed over the object life-time
         await this.config(brand, model, options);
     } catch (error) {
-        // sets the error in the current instance and then triggers the
-        // error event on the current instance (notification)
-        this.ready = false;
-        this.error = error;
-        this.trigger("error", error);
+        this._errorHandler(error);
         return;
     }
 
@@ -1195,7 +1191,11 @@ ripe.Ripe.prototype._pushHistory = function() {
  * handled.
  */
 ripe.Ripe.prototype._errorHandler = function(error) {
-    console.error(error);
+    // sets the error in the current instance and then triggers the
+    // error event on the current instance (notification)
+    this.ready = false;
+    this.error = error;
+    this.trigger("error", error);
 };
 
 /**
