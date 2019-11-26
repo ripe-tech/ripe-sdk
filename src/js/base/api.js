@@ -307,12 +307,19 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
             result = this.responseText;
         }
         if (this.callback) this.callback.call(context, result, isValid, this);
-        if (this.timeoutHandler) clearTimeout(this.timeoutHandler);
+        if (this.timeoutHandler) {
+            clearTimeout(this.timeoutHandler);
+            this.timeoutHandler = null;
+        }
     });
 
     request.addEventListener("error", function(error) {
         request.error = request.error || error;
         if (this.callback) this.callback.call(context, null, false, this);
+        if (this.timeoutHandler) {
+            clearTimeout(this.timeoutHandler);
+            this.timeoutHandler = null;
+        }
     });
 
     request.addEventListener("loadstart", function() {
