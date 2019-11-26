@@ -46,7 +46,7 @@
         "mark": "gulp mark",
         "prettier": "prettier \"./*.{js,json}\" \"./{src,test}/**/*.{js,json}\" --write",
         "pretty": "npm run prettier && npm run lint-fix",
-        "test": "gulp test --trace-warnings",
+        "test": "gulp test",
         "upgrade": "npx sort-package-json && ncu -u",
         "watch": "gulp watch"
     },
