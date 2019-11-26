@@ -46,9 +46,9 @@
         "mark": "gulp mark",
         "prettier": "prettier \"./*.{js,json}\" \"./{src,test}/**/*.{js,json}\" --write",
         "pretty": "npm run prettier && npm run lint-fix",
-        "test": "gulp --trace-warnings test",
+        "test": "gulp test",
         "upgrade": "npx sort-package-json && ncu -u",
-        "watch": "gulp --trace-warnings watch"
+        "watch": "gulp watch"
     },
     "dependencies": {
         "xmlhttprequest": "^1.8.0",
