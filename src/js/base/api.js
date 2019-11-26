@@ -273,6 +273,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     let data = options.data || null;
     const dataJ = options.dataJ || null;
     let contentType = options.contentType || null;
+    const validCodes = options.validCodes || [200];
 
     const query = this._buildQuery(params);
     const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
@@ -294,7 +295,7 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
 
     request.addEventListener("load", function() {
         let result = null;
-        const isValid = this.status === 200;
+        const isValid = validCodes.includes(this.status);
         try {
             result = JSON.parse(this.responseText);
         } catch (error) {
