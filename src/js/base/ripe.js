@@ -558,7 +558,8 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
 ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = true, params = {}) {
     if (typeof initials === "object") {
         events = engraving === undefined ? true : engraving;
-        return this.setInitialsExtra(initials, events);
+        const result = await this.setInitialsExtra(initials, events);
+        return result;
     }
 
     this.initials = initials || "";
@@ -574,7 +575,9 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
         throw new Error("Engraving set without initials");
     }
 
-    if (!events) return;
+    // in case the events should not be triggered then returns
+    // the control flow immediately, nothing remaining to be done
+    if (!events) return this;
 
     // triggers the initials event notifying any listening
     // object about the changes
@@ -583,6 +586,9 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
     // runs the update operation so that all the listening
     // components can properly update their visuals
     this.update();
+
+    // returns the current instance (good for pipelining)
+    return this;
 };
 
 /**
@@ -620,7 +626,7 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
         }
     }
 
-    if (!events) return;
+    if (!events) return this;
 
     // triggers the initials extra event notifying any
     // listening object about the changes
@@ -629,6 +635,9 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
     // runs the update operation so that all the listening
     // components can properly update their visuals
     this.update();
+
+    // returns the current instance (good for pipelining)
+    return this;
 };
 
 /**
