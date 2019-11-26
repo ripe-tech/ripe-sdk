@@ -252,7 +252,7 @@ ripe.getConfig(function(config) {
     restrictionsPlugin.bind("restrictions", function(changes, part) {});
 });
 ```
- 
+
 ## 8. Sizes
 
 If you need to create an order using the `ripe-core` API then you have to set the size of the product according to the `ripe-core` native scale. The following methods allow you to convert from and to that scale. `scale` is a string that represents the size scale, `value` is the numeric value in that scale and `gender` is a string that can be set to `female`, `male` or `kids`.
