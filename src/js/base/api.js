@@ -10,6 +10,8 @@ if (
     // eslint-disable-next-line no-redeclare
     var ripe = base.ripe;
     // eslint-disable-next-line no-redeclare
+    var fetch = compat.fetch;
+    // eslint-disable-next-line no-redeclare
     var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
@@ -263,6 +265,71 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
  * @ignore
  */
 ripe.Ripe.prototype._requestURL = function(url, options, callback) {
+    if (typeof fetch !== "undefined") return this._requestURLFetch(url, options, callback);
+    else return this._requestURLLegacy(url, options, callback);
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+
+    const context = this;
+    const method = options.method || "GET";
+    const params = options.params || {};
+    const headers = options.headers || {};
+    let data = options.data || null;
+    const dataJ = options.dataJ || null;
+    let contentType = options.contentType || null;
+    const validCodes = options.validCodes || [200];
+
+    const query = this._buildQuery(params);
+    const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
+    const hasQuery = url.indexOf("?") !== -1;
+    const separator = hasQuery ? "&" : "?";
+
+    if (isEmpty || data) {
+        url += separator + query;
+    } else if (dataJ !== null) {
+        data = JSON.stringify(dataJ);
+        url += separator + query;
+        contentType = "application/json";
+    } else {
+        data = query;
+        contentType = "application/x-www-form-urlencoded";
+    }
+
+    headers["Content-Type"] = headers["Content-Type"] || contentType;
+
+    const response = fetch(url, {
+        method: method,
+        headers: headers || {},
+        body: data
+    });
+
+    response
+        .then(async response => {
+            let result = null;
+            const isValid = validCodes.includes(response.status);
+            try {
+                result = await response.json();
+            } catch (error) {
+                console.error(error);
+            }
+            if (callback) callback.call(context, result, isValid, response);
+        })
+        .catch(error => {
+            response.error = response.error || error;
+            if (callback) callback.call(context, null, false, response);
+        });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
 

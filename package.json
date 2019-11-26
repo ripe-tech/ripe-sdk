@@ -51,7 +51,8 @@
         "watch": "gulp watch"
     },
     "dependencies": {
-        "xmlhttprequest": "^1.8.0"
+        "xmlhttprequest": "^1.8.0",
+        "node-fetch": "^2.6.0"
     },
     "devDependencies": {
         "@babel/core": "^7.7.4",
