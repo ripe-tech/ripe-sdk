@@ -1,3 +1,4 @@
+const account = require("./account");
 const brand = require("./brand");
 const build = require("./build");
 const config = require("./config");
@@ -6,6 +7,7 @@ const oauth = require("./oauth");
 const order = require("./order");
 const size = require("./size");
 
+Object.assign(module.exports, account);
 Object.assign(module.exports, brand);
 Object.assign(module.exports, build);
 Object.assign(module.exports, config);

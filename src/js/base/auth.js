@@ -203,7 +203,7 @@ ripe.Ripe.prototype.authKey = function(key, options, callback) {
         "X-Secret-Key": key
     };
     options.headers = headers;
-    this.me(options, (result, isValid, request) => {
+    this.accountMe(options, (result, isValid, request) => {
         if (isValid) {
             this.key = key;
             this.trigger("auth");
