@@ -714,6 +714,11 @@ ripe.Ripe.prototype._build = function(options) {
     if (auth && this.sid !== undefined && this.sid !== null) {
         params.sid = this.sid;
     }
+    if (auth && this.key !== undefined && this.key !== null) {
+        const headers = params.headers || {};
+        headers["X-Secret-Key"] = this.key;
+        params.headers = headers;
+    }
     options.url = url;
     options.method = method;
     options.params = params;
