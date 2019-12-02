@@ -97,6 +97,8 @@ ripe.Configurator.prototype.init = function() {
 
 /**
  * Resizes the configurator's DOM element to 'size' pixels.
+ * This action is performed by setting both the attributes from
+ * the HTML elements and the style.
  *
  * @param {Number} size The number of pixels to resize to.
  */
@@ -116,15 +118,22 @@ ripe.Configurator.prototype.resize = function(size) {
     const mask = this.element.querySelector(".mask");
     area.width = size;
     area.height = size;
+    frontMask.style.width = size + "px";
+    frontMask.style.height = size + "px";
     frontMask.width = size;
     frontMask.height = size;
     frontMask.style.width = size + "px";
+    frontMask.style.height = size + "px";
     frontMask.style.marginLeft = "-" + String(size) + "px";
     back.width = size;
     back.height = size;
+    back.style.width = size + "px";
+    back.style.height = size + "px";
     back.style.marginLeft = "-" + String(size) + "px";
     mask.width = size;
     mask.height = size;
+    mask.style.width = size + "px";
+    mask.style.height = size + "px";
     this.currentSize = size;
     this.update(
         {},
