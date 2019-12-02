@@ -568,16 +568,16 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
 };
 
 /**
- * Turns on the masks on selection/highlight.
+ * Turns on (enables) the masks on selection/highlight.
  */
-ripe.Configurator.prototype.useMasks = function() {
+ripe.Configurator.prototype.enableMasks = function() {
     this.useMasks = true;
 };
 
 /**
- * Turns off the masks on selection/highlight.
+ * Turns off (disables) the masks on selection/highlight.
  */
-ripe.Configurator.prototype.noMasks = function() {
+ripe.Configurator.prototype.disableMasks = function() {
     this.useMasks = false;
 };
 
