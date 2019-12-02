@@ -568,6 +568,20 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
 };
 
 /**
+ * Turns on (enables) the masks on selection/highlight.
+ */
+ripe.Configurator.prototype.enableMasks = function() {
+    this.useMasks = true;
+};
+
+/**
+ * Turns off (disables) the masks on selection/highlight.
+ */
+ripe.Configurator.prototype.disableMasks = function() {
+    this.useMasks = false;
+};
+
+/**
  * Initializes the layout for the configurator element by
  * constructing all te child elements required for the proper
  * configurator functionality to work.
