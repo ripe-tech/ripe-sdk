@@ -272,15 +272,15 @@ ripe.Ripe.prototype.cancelOrderP = function(number, options) {
  *
  * @param {Number} ffOrderId The e-commerce order identifier.
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
- *  - 'variant' - the variant of the model
- *  - 'parts' - The parts of the customized model
- *  - 'initials' - The value for the initials of the personalized model
- *  - 'engraving' - The value for the engraving value of the personalized model
- *  - 'initialsExtra' - The value for the initials extra of the personalized model
- *  - 'gender' - The gender of the customized model
- *  - 'gender' - The native size of the customized model
+ *  - 'brand' - the brand of the model.
+ *  - 'model' - the name of the model.
+ *  - 'variant' - the variant of the model.
+ *  - 'parts' - The parts of the customized model.
+ *  - 'initials' - The value for the initials of the personalized model.
+ *  - 'engraving' - The value for the engraving value of the personalized model.
+ *  - 'initialsExtra' - The value for the initials extra of the personalized model.
+ *  - 'gender' - The gender of the customized model.
+ *  - 'size' - The native size of the customized model.
  *  - 'pending' - If the production order is to be imported at the pending, so it has to be confirmed.
  *  - 'notify' - Mark order to trigger notification after creation.
  *  - 'productId' - The product's unique identification.
@@ -303,15 +303,15 @@ ripe.Ripe.prototype.importOrder = function(ffOrderId, options, callback) {
  *
  * @param {Number} ffOrderId The e-commerce order identifier.
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
- *  - 'variant' - the variant of the model
- *  - 'parts' - The parts of the customized model
- *  - 'initials' - The value for the initials of the personalized model
- *  - 'engraving' - The value for the engraving value of the personalized model
- *  - 'initialsExtra' - The value for the initials extra of the personalized model
- *  - 'gender' - The gender of the customized model
- *  - 'gender' - The native size of the customized model
+ *  - 'brand' - the brand of the model.
+ *  - 'model' - the name of the model.
+ *  - 'variant' - the variant of the model.
+ *  - 'parts' - The parts of the customized model.
+ *  - 'initials' - The value for the initials of the personalized model.
+ *  - 'engraving' - The value for the engraving value of the personalized model.
+ *  - 'initialsExtra' - The value for the initials extra of the personalized model.
+ *  - 'gender' - The gender of the customized model.
+ *  - 'size' - The native size of the customized model.
  *  - 'pending' - If the production order is to be imported at the pending, so it has to be confirmed.
  *  - 'notify' - Mark order to trigger notification after creation.
  *  - 'productId' - The product's unique identification.
