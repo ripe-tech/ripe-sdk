@@ -200,7 +200,8 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            result = await remote.precustomizationOrderP(27182818, 31415926, {
+            const ffId = Math.floor(Date.now() / 1000);
+            result = await remote.precustomizationOrderP(ffId, 31415926, {
                 brand: "dummy",
                 model: "dummy",
                 parts: {
@@ -227,7 +228,7 @@ describe("OrderAPI", function() {
 
             const structure = JSON.parse(result.structure);
             assert.strictEqual(result.production, "reference");
-            assert.strictEqual(result.ff_id, 27182818);
+            assert.strictEqual(result.ff_id, ffId);
             assert.strictEqual(result.ff_shoe_id, 31415926);
             assert.strictEqual(result.brand, "dummy");
             assert.strictEqual(result.shoe, "dummy");
