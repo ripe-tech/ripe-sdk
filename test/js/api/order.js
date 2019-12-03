@@ -200,7 +200,7 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            const ffId = Math.floor(Date.now() / 1000);
+            const ffId = Date.now();
             result = await remote.precustomizationOrderP(ffId, 31415926, {
                 brand: "dummy",
                 model: "dummy",
