@@ -333,8 +333,6 @@ ripe.Ripe.prototype.importOrderP = function(ffOrderId, options, callback) {
  *
  * @param {Number} ffId The concrete identifier of the pre-customization,
  * may represent just an entry point for a pre-customized product (used for mapping).
- * @param {Number} productId The product identifier of the base product that is used
- * for pre-customization mapping.
  * @param {Object} options An object with options, such as:
  *  - 'brand' - the brand of the model.
  *  - 'model' - the name of the model.
@@ -342,19 +340,18 @@ ripe.Ripe.prototype.importOrderP = function(ffOrderId, options, callback) {
  *  - 'parts' - The parts of the customized model.
  *  - 'initials' - The value for the initials of the personalized model.
  *  - 'engraving' - The value for the engraving value of the personalized model.
- *  - 'initialsExtra' - The value for the initials extra of the personalized model.
  *  - 'gender' - The gender of the customized model.
  *  - 'size' - The native size of the customized model.
- *  - 'productId' - The product's unique identification.
+ *  - 'product_id' - The product identifier of the base product that is used for pre-customization mapping.
  *  - 'notify' - Mark pre-customization to trigger notification after creation.
  *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.precustomizationOrder = function(ffId, productId, options, callback) {
+ripe.Ripe.prototype.precustomizationOrder = function(ffId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    options = this._precustomizationOrder(ffId, productId, options);
+    options = this._precustomizationOrder(ffId, options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -364,8 +361,6 @@ ripe.Ripe.prototype.precustomizationOrder = function(ffId, productId, options, c
  *
  * @param {Number} ffId The concrete identifier of the pre-customization,
  * may represent just an entry point for a pre-customized product (used for mapping).
- * @param {Number} productId The product identifier of the base product that is used
- * for pre-customization mapping.
  * @param {Object} options An object with options, such as:
  *  - 'brand' - the brand of the model.
  *  - 'model' - the name of the model.
@@ -375,13 +370,14 @@ ripe.Ripe.prototype.precustomizationOrder = function(ffId, productId, options, c
  *  - 'engraving' - The value for the engraving value of the personalized model.
  *  - 'gender' - The gender of the customized model.
  *  - 'size' - The native size of the customized model.
+ *  - 'product_id' - The product identifier of the base product that is used for pre-customization mapping.
  *  - 'notify' - Mark pre-customization to trigger notification after creation.
  *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
  * @returns {Promise} The production order's data.
  */
-ripe.Ripe.prototype.precustomizationOrderP = function(ffId, productId, options, callback) {
+ripe.Ripe.prototype.precustomizationOrderP = function(ffId, options, callback) {
     return new Promise((resolve, reject) => {
-        this.precustomizationOrder(ffId, productId, options, (result, isValid, request) => {
+        this.precustomizationOrder(ffId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
@@ -516,7 +512,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._precustomizationOrder = function(ffId, productId, options = {}) {
+ripe.Ripe.prototype._precustomizationOrder = function(ffId, options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const variant = options.variant === undefined ? this.variant : options.variant;
@@ -529,6 +525,10 @@ ripe.Ripe.prototype._precustomizationOrder = function(ffId, productId, options =
             : options.initialsExtra || options.initials_extra;
     const gender = options.gender === undefined ? null : options.gender;
     const size = options.size === undefined ? null : options.size;
+    const productId =
+        options.product_id === undefined && options.productId === undefined
+            ? null
+            : options.product_id || options.productId;
     const meta = options.meta === undefined ? null : options.meta;
 
     const url = this.url + "orders/pre_customization";

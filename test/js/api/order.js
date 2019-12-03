@@ -201,7 +201,7 @@ describe("OrderAPI", function() {
             assert.notStrictEqual(typeof result.sid, undefined);
 
             const ffId = Date.now();
-            result = await remote.precustomizationOrderP(ffId, 31415926, {
+            result = await remote.precustomizationOrderP(ffId, {
                 brand: "dummy",
                 model: "dummy",
                 parts: {
@@ -222,6 +222,7 @@ describe("OrderAPI", function() {
                         color: "default"
                     }
                 },
+                product_id: 31415926,
                 size: 20,
                 meta: "client:ripe-sdk-test"
             });
