@@ -466,17 +466,12 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const meta = options.meta === undefined ? null : options.meta;
 
     const url = this.url + "orders/import";
-
-    // creates the contents
-    // with the mandatory data
     const contents = {
         brand: brand,
         model: model,
         parts: parts,
         size: size
     };
-
-    // sets the contents' remaining optional data
     if (variant) contents.variant = variant;
     if (productId) contents.product_id = productId;
     if (gender) contents.gender = gender;
@@ -487,14 +482,10 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
         contents.engraving = engraving;
     }
 
-    // creates the import order params
-    // with the mandatory data
     const params = {
         ff_order_id: ffOrderId,
         contents: JSON.stringify(contents)
     };
-
-    // sets the payload's remaining optional data
     if (country) params.country = country;
     if (currency) params.currency = currency;
     if (meta) params.meta = meta;
@@ -532,9 +523,6 @@ ripe.Ripe.prototype._precustomizationOrder = function(ffId, options = {}) {
     const meta = options.meta === undefined ? null : options.meta;
 
     const url = this.url + "orders/pre_customization";
-
-    // creates the contents
-    // with the mandatory data
     const contents = {
         brand: brand,
         model: model,
@@ -542,8 +530,6 @@ ripe.Ripe.prototype._precustomizationOrder = function(ffId, options = {}) {
         size: size,
         product_id: productId
     };
-
-    // sets the contents' remaining optional data
     if (variant) contents.variant = variant;
     if (gender) contents.gender = gender;
     if (Object.keys(initialsExtra).length > 0) {
@@ -553,14 +539,10 @@ ripe.Ripe.prototype._precustomizationOrder = function(ffId, options = {}) {
         contents.engraving = engraving;
     }
 
-    // creates the import order params
-    // with the mandatory data
     const params = {
         ff_id: ffId,
         contents: JSON.stringify(contents)
     };
-
-    // sets the payload's remaining optional data
     if (meta) params.meta = meta;
 
     return Object.assign(options, {
