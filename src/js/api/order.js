@@ -13,14 +13,14 @@ if (
  *
  * @param {Object} options An object of options to configure the query and
  * its results, such as:
- * - 'filters[]' - list of filters that the query will use to, operators such as
+ * - 'filters[]' - List of filters that the query will use to, operators such as
  * ('in', 'not_in', 'like', 'likei', 'llike', 'llikei', 'rlike', 'rlikei', 'contains'),
  * (eg: 'number:eq:42') would filter by the 'number' that equals to '42'.
- * - 'sort' - list of arguments to sort the results by and which direction
+ * - 'sort' - List of arguments to sort the results by and which direction
  * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order.
  * while (eg: 'id:descending')] would do it in descending order.
- * - 'skip' - the number of the first record to retrieve from the results.
- * - 'limit' - the number of results to retrieve.
+ * - 'skip' - The number of the first record to retrieve from the results.
+ * - 'limit' - The number of results to retrieve.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -42,13 +42,13 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
  *
  * @param {Object} options An object of options to configure the request.
  * its results, such as:
- * - 'filters[]' - list of filters that the query will use to, operators such as
+ * - 'filters[]' - List of filters that the query will use to, operators such as
  * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
- * - 'sort' - list of arguments to sort the results by and which direction
+ * - 'sort' - List of arguments to sort the results by and which direction
  * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order.
  * while (eg: 'id:descending')] would do it in descending order.
- * - 'skip' - the number of the first record to retrieve from the results.
- * - 'limit' - the number of results to retrieve.
+ * - 'skip' - The number of the first record to retrieve from the results.
+ * - 'limit' - The number of results to retrieve.
  * @returns {Promise} The orders result list.
  */
 ripe.Ripe.prototype.getOrdersP = function(options) {
@@ -272,9 +272,9 @@ ripe.Ripe.prototype.cancelOrderP = function(number, options) {
  *
  * @param {Number} ffOrderId The e-commerce order identifier.
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model.
- *  - 'model' - the name of the model.
- *  - 'variant' - the variant of the model.
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'variant' - The variant of the model.
  *  - 'parts' - The parts of the customized model.
  *  - 'initials' - The value for the initials of the personalized model.
  *  - 'engraving' - The value for the engraving value of the personalized model.
@@ -303,9 +303,9 @@ ripe.Ripe.prototype.importOrder = function(ffOrderId, options, callback) {
  *
  * @param {Number} ffOrderId The e-commerce order identifier.
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model.
- *  - 'model' - the name of the model.
- *  - 'variant' - the variant of the model.
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'variant' - The variant of the model.
  *  - 'parts' - The parts of the customized model.
  *  - 'initials' - The value for the initials of the personalized model.
  *  - 'engraving' - The value for the engraving value of the personalized model.
