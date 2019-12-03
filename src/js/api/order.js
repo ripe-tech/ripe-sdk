@@ -362,15 +362,15 @@ ripe.Ripe.prototype.precustomizationOrder = function(ffId, options, callback) {
  * @param {Number} ffId The concrete identifier of the pre-customization,
  * may represent just an entry point for a pre-customized product (used for mapping).
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model.
- *  - 'model' - the name of the model.
- *  - 'variant' - the variant of the model.
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'variant' - The variant of the model.
  *  - 'parts' - The parts of the customized model.
  *  - 'initials' - The value for the initials of the personalized model.
  *  - 'engraving' - The value for the engraving value of the personalized model.
  *  - 'gender' - The gender of the customized model.
  *  - 'size' - The native size of the customized model.
- *  - 'product_id' - The product identifier of the base product that is used for pre-customization mapping.
+ *  - 'productId' - The product identifier of the base product that is used for pre-customization mapping.
  *  - 'notify' - Mark pre-customization to trigger notification after creation.
  *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
  * @returns {Promise} The production order's data.
