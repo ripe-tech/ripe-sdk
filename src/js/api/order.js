@@ -329,6 +329,65 @@ ripe.Ripe.prototype.importOrderP = function(ffOrderId, options, callback) {
 };
 
 /**
+ * Setups a pre-customization on RIPE Core.
+ *
+ * @param {Number} ffId The concrete identifier of the pre-customization,
+ * may represent just an entry point for a pre-customized product (used for mapping).
+ * @param {Number} productId The product identifier of the base product that is used
+ * for pre-customization mapping.
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model.
+ *  - 'model' - the name of the model.
+ *  - 'variant' - the variant of the model.
+ *  - 'parts' - The parts of the customized model.
+ *  - 'initials' - The value for the initials of the personalized model.
+ *  - 'engraving' - The value for the engraving value of the personalized model.
+ *  - 'initialsExtra' - The value for the initials extra of the personalized model.
+ *  - 'gender' - The gender of the customized model.
+ *  - 'size' - The native size of the customized model.
+ *  - 'productId' - The product's unique identification.
+ *  - 'notify' - Mark pre-customization to trigger notification after creation.
+ *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.precustomizationOrder = function(ffId, productId, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._precustomizationOrder(ffId, productId, options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Setups a pre-customization on RIPE Core.
+ *
+ * @param {Number} ffId The concrete identifier of the pre-customization,
+ * may represent just an entry point for a pre-customized product (used for mapping).
+ * @param {Number} productId The product identifier of the base product that is used
+ * for pre-customization mapping.
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - the brand of the model.
+ *  - 'model' - the name of the model.
+ *  - 'variant' - the variant of the model.
+ *  - 'parts' - The parts of the customized model.
+ *  - 'initials' - The value for the initials of the personalized model.
+ *  - 'engraving' - The value for the engraving value of the personalized model.
+ *  - 'gender' - The gender of the customized model.
+ *  - 'size' - The native size of the customized model.
+ *  - 'notify' - Mark pre-customization to trigger notification after creation.
+ *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
+ * @returns {Promise} The production order's data.
+ */
+ripe.Ripe.prototype.precustomizationOrderP = function(ffId, productId, options, callback) {
+    return new Promise((resolve, reject) => {
+        this.precustomizationOrder(ffId, productId, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback) {
@@ -445,6 +504,64 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (meta) params.meta = meta;
     if (notify) params.notify = notify;
     if (pending) params.pending = pending;
+
+    return Object.assign(options, {
+        url: url,
+        method: "POST",
+        params: params,
+        auth: true
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._precustomizationOrder = function(ffId, productId, options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const parts = options.parts === undefined ? this.parts : options.parts;
+    const initials = options.initials === undefined ? this.initials : options.initials;
+    const engraving = options.engraving === undefined ? this.engraving : options.engraving;
+    const initialsExtra =
+        options.initials_extra === undefined && options.initialsExtra === undefined
+            ? this.initialsExtra
+            : options.initialsExtra || options.initials_extra;
+    const gender = options.gender === undefined ? null : options.gender;
+    const size = options.size === undefined ? null : options.size;
+    const meta = options.meta === undefined ? null : options.meta;
+
+    const url = this.url + "orders/pre_customization";
+
+    // creates the contents
+    // with the mandatory data
+    const contents = {
+        brand: brand,
+        model: model,
+        parts: parts,
+        size: size,
+        product_id: productId
+    };
+
+    // sets the contents' remaining optional data
+    if (variant) contents.variant = variant;
+    if (gender) contents.gender = gender;
+    if (Object.keys(initialsExtra).length > 0) {
+        contents.initials_extra = initialsExtra;
+    } else if (initials && engraving) {
+        contents.initials = initials;
+        contents.engraving = engraving;
+    }
+
+    // creates the import order params
+    // with the mandatory data
+    const params = {
+        ff_id: ffId,
+        contents: JSON.stringify(contents)
+    };
+
+    // sets the payload's remaining optional data
+    if (meta) params.meta = meta;
 
     return Object.assign(options, {
         url: url,

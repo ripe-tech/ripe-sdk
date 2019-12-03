@@ -183,4 +183,88 @@ describe("OrderAPI", function() {
             });
         });
     });
+
+    describe("#preCustomization", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+        });
+
+        it("should be able to create a pre-customization", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.precustomizationOrderP(27182818, 31415926, {
+                brand: "dummy",
+                model: "dummy",
+                parts: {
+                    piping: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    side: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    top0_bottom: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    }
+                },
+                size: 20,
+                meta: "client:ripe-sdk-test"
+            });
+
+            const structure = JSON.parse(result.structure);
+            assert.strictEqual(result.production, "reference");
+            assert.strictEqual(result.ff_id, 27182818);
+            assert.strictEqual(result.ff_shoe_id, 31415926);
+            assert.strictEqual(result.brand, "dummy");
+            assert.strictEqual(result.shoe, "dummy");
+            assert.strictEqual(
+                JSON.stringify(structure.parts_m),
+                JSON.stringify({
+                    piping: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    side: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    top0_bottom: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    }
+                })
+            );
+            assert.strictEqual(structure.size, 20);
+            assert.strictEqual(result.meta.client, "ripe-sdk-test");
+
+            // deletes the newly imported production order
+            result = await new Promise((resolve, reject) => {
+                const options = remote._build({
+                    url: `${remote.webUrl}admin/models/orders/${result._id}/delete`,
+                    auth: true
+                });
+                remote._requestURL(options.url, options, (result, isValid, request) => {
+                    resolve(request);
+                });
+            });
+        });
+    });
 });
