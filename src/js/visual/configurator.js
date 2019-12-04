@@ -249,7 +249,7 @@ ripe.Configurator.prototype.deinit = function() {
  * - 'stepDuration' - If defined the total duration of the animation is calculated using the amount of steps
  * times the number of steps, instead of using the 'duration' field (defaults to 'null').
  * - 'revolutionDuration' - If defined the step duration is calculated by dividing the revolution duration
- * by the number of frames in the view (defaults to 'null')
+ * by the number of frames in the view (defaults to 'null').
  * - 'preventDrag' - If drag actions during an animated change of frames should be ignored (defaults to 'true').
  * - 'safe' - If requested then the operation is only performed in case the configurator is not in the
  * an equivalent state (default to 'true').

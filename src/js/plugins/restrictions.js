@@ -33,8 +33,8 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype.constructor = ripe.Ripe.plugins.R
 /**
  * The Restrictions Plugin binds the 'post_config' and 'part' events,
  * in order to:
- * - retrieve the model's configuration
- * - change the necessary parts making them comply with the restrictions rules
+ * - retrieve the model's configuration.
+ * - change the necessary parts making them comply with the restrictions rules.
  *
  * @param {Ripe} The Ripe instance in use.
  */
