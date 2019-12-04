@@ -1,6 +1,6 @@
 {
     "name": "ripe-sdk",
-    "version": "1.7.6",
+    "version": "1.7.7",
     "description": "The public SDK for RIPE Core",
     "keywords": [
         "js",
@@ -81,7 +81,7 @@
         "npm-check-updates": "^3.2.2",
         "prettier": "^1.19.1",
         "prettier-config-hive": "^0.1.1",
-        "sort-package-json": "^1.28.0",
+        "sort-package-json": "^1.30.0",
         "uuid": "^3.3.3"
     }
 }
