@@ -17,7 +17,7 @@ if (
  * ('in', 'not_in', 'like', 'likei', 'llike', 'llikei', 'rlike', 'rlikei', 'contains'),
  * (eg: 'number:eq:42') would filter by the 'number' that equals to '42'.
  * - 'sort' - List of arguments to sort the results by and which direction
- * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order.
+ * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
  * while (eg: 'id:descending')] would do it in descending order.
  * - 'skip' - The number of the first record to retrieve from the results.
  * - 'limit' - The number of results to retrieve.
@@ -45,7 +45,7 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
  * - 'filters[]' - List of filters that the query will use to, operators such as
  * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
  * - 'sort' - List of arguments to sort the results by and which direction
- * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order.
+ * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
  * while (eg: 'id:descending')] would do it in descending order.
  * - 'skip' - The number of the first record to retrieve from the results.
  * - 'limit' - The number of results to retrieve.
