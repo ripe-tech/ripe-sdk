@@ -31,8 +31,8 @@ ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugi
 /**
  * The Sync Plugin binds the 'post_config' and 'part' events,
  * in order to:
- * - retrieve the model's configuration
- * - change the necessary parts making them comply with the syncing rules
+ * - retrieve the model's configuration.
+ * - change the necessary parts making them comply with the syncing rules.
  *
  * @param {Ripe} The Ripe instance in use.
  */

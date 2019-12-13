@@ -65,8 +65,23 @@ if (
     }
 }
 
+if (
+    typeof require !== "undefined" &&
+    (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") && // eslint-disable-line camelcase
+    typeof fetch === "undefined" // eslint-disable-line no-use-before-define
+) {
+    var fetch = null;
+    // eslint-disable-next-line camelcase
+    if (typeof __webpack_require__ === "undefined") {
+        fetch = require("node-fetch");
+    } else {
+        fetch = window.fetch;
+    }
+}
+
 if (typeof module !== "undefined") {
     module.exports = {
-        XMLHttpRequest: XMLHttpRequest
+        XMLHttpRequest: XMLHttpRequest,
+        fetch: fetch
     };
 }

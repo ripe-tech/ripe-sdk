@@ -90,6 +90,14 @@ ripe.bind("parts", function(parts) {
 });
 ```
 
+You can also be notified when a part is selected.
+
+```javascript
+ripe.bind("selected_part", function(part) {
+    console.log("Part selected: ", part);
+});
+```
+
 ### Frames
 
 Triggered whenever there is a frame change.
@@ -204,7 +212,7 @@ This element supports the following events:
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `ready`         | Triggered upon first loading of the model's internal frame structure (once per model load)                                        |
 | `loaded`        | Triggered when the configurator finishes loading all of the internal frames, and is ready for interaction (once per part setting) |
-| `changed_frame` | Raises whenever there's a rotation in the cofigurator viewport (viewable frame has changed)                                       |
+| `changed_frame` | Raises whenever there's a rotation in the configurator viewport (viewable frame has changed)                                       |
 
 ```javascript
 var element = document.getElementById("config");
@@ -279,7 +287,7 @@ if (ripe.isOAuthPending()) {
 | `country`          | *string*           | Two letters standard country codes defined in *ISO 3166-1 alpha-2* codes. "US" by default. Example: "PT".                                                                                  |
 | `currency`         | *string*           | Standard currency codes defined in *ISO 4217* codes. "USD" by default. Example: "EUR".                                                                                                     |
 | `frames`           | *array of strings* | All the frames to be used in the customization. Example: ["top", "bottom", "1", "2"].                                                                                                      |
-| `format`           | *string*           | One of the valid image formats: 'jpeg', 'webp', 'sgi' or 'png'. "jpeg" by default.                                                                                                         |
+| `format`           | *string*           | One of the valid image formats: 'jpeg', 'webp', 'sgi' or 'png'. "png" by default.                                                                                                          |
 | `maskDuration`     | *number*           | Specifies how many milliseconds the mask animation takes to complete. 150 by default.                                                                                                      |
 | `maskOpacity`      | *number*           | Specifies the opacity value of the the masks used to highlight/select parts. 0.4 by default.                                                                                               |
 | `maxSize`          | *number*           | Maximum value for frame image size. 1000px by default.                                                                                                                                     |

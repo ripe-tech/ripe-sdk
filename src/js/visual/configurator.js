@@ -41,10 +41,12 @@ ripe.Configurator.prototype.init = function() {
 
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
+    this.format = this.options.format || null;
     this.size = this.options.size || null;
     this.maxSize = this.options.maxSize || 1000;
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
+    this.clickThreshold = this.options.clickThreshold || 0.015;
     this.interval = this.options.interval || 0;
     this.duration = this.options.duration || 500;
     this.preloadDelay = this.options.preloadDelay || 150;
@@ -80,9 +82,11 @@ ripe.Configurator.prototype.init = function() {
 
     // creates the necessary DOM elements and runs
     // the initial layout update operation if the
-    // owner has a model set
+    // owner has a model and brand set (is ready)
     this._initLayout();
-    this.owner.brand && this.owner.model && this._updateConfig();
+    if (this.owner.brand && this.owner.model) {
+        this._updateConfig();
+    }
 
     // registers for the config change request event to
     // be able to properly update the internal structures
@@ -93,6 +97,8 @@ ripe.Configurator.prototype.init = function() {
 
 /**
  * Resizes the configurator's DOM element to 'size' pixels.
+ * This action is performed by setting both the attributes from
+ * the HTML elements and the style.
  *
  * @param {Number} size The number of pixels to resize to.
  */
@@ -112,15 +118,22 @@ ripe.Configurator.prototype.resize = function(size) {
     const mask = this.element.querySelector(".mask");
     area.width = size;
     area.height = size;
+    area.style.width = size + "px";
+    area.style.height = size + "px";
     frontMask.width = size;
     frontMask.height = size;
     frontMask.style.width = size + "px";
+    frontMask.style.height = size + "px";
     frontMask.style.marginLeft = "-" + String(size) + "px";
     back.width = size;
     back.height = size;
+    back.style.width = size + "px";
+    back.style.height = size + "px";
     back.style.marginLeft = "-" + String(size) + "px";
     mask.width = size;
     mask.height = size;
+    mask.style.width = size + "px";
+    mask.style.height = size + "px";
     this.currentSize = size;
     this.update(
         {},
@@ -148,6 +161,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
 
     const view = this.element.dataset.view;
     const position = this.element.dataset.position;
+    const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
@@ -160,7 +174,13 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     // changed and animates the transition if they did
     let previous = this.signature || "";
     const signature =
-        this.owner._getQuery() + "&width=" + String(width) + "&height=" + String(height);
+        this.owner._getQuery() +
+        "&width=" +
+        String(width) +
+        "&height=" +
+        String(height) +
+        "&format=" +
+        String(format);
     const changed = signature !== previous;
     const animate = options.animate === undefined ? (changed ? "simple" : false) : options.animate;
     this.signature = signature;
@@ -229,7 +249,7 @@ ripe.Configurator.prototype.deinit = function() {
  * - 'stepDuration' - If defined the total duration of the animation is calculated using the amount of steps
  * times the number of steps, instead of using the 'duration' field (defaults to 'null').
  * - 'revolutionDuration' - If defined the step duration is calculated by dividing the revolution duration
- * by the number of frames in the view (defaults to 'null')
+ * by the number of frames in the view (defaults to 'null').
  * - 'preventDrag' - If drag actions during an animated change of frames should be ignored (defaults to 'true').
  * - 'safe' - If requested then the operation is only performed in case the configurator is not in the
  * an equivalent state (default to 'true').
@@ -548,6 +568,20 @@ ripe.Configurator.prototype.leaveFullscreen = function(options) {
 };
 
 /**
+ * Turns on (enables) the masks on selection/highlight.
+ */
+ripe.Configurator.prototype.enableMasks = function() {
+    this.useMasks = true;
+};
+
+/**
+ * Turns off (disables) the masks on selection/highlight.
+ */
+ripe.Configurator.prototype.disableMasks = function() {
+    this.useMasks = false;
+};
+
+/**
  * Initializes the layout for the configurator element by
  * constructing all te child elements required for the proper
  * configurator functionality to work.
@@ -690,52 +724,56 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
     // under the current state, adapting then the internal
     // structures to accommodate the possible changes in the
     // frame structure
-    this.owner.getFrames(frames => {
-        // updates the internal reference to the frames
-        // model (to be used from now on)
-        this.frames = frames;
+    this.frames = await this.owner.getFrames();
 
-        // populates the buffers taking into account
-        // the frames of the model
-        this._populateBuffers();
+    // populates the buffers taking into account
+    // the frames of the model
+    this._populateBuffers();
 
-        // tries to keep the current view and position
-        // if the new model supports it otherwise
-        // changes to a supported frame
-        let view = this.element.dataset.position;
-        let position = this.element.dataset.position;
-        let maxPosition = this.frames[view];
-        if (!maxPosition) {
-            view = Object.keys(this.frames)[0];
-            position = 0;
-        } else if (position >= maxPosition) {
-            position = 0;
+    // tries to keep the current view and position
+    // if the new model supports it otherwise
+    // changes to a supported frame
+    let view = this.element.dataset.position;
+    let position = this.element.dataset.position;
+    let maxPosition = this.frames[view];
+    if (!maxPosition) {
+        view = Object.keys(this.frames)[0];
+        position = 0;
+    } else if (position >= maxPosition) {
+        position = 0;
+    }
+
+    // checks the last viewed frames of each view
+    // and deletes the ones not supported
+    const lastFrameViews = Object.keys(this._lastFrame);
+    for (view in lastFrameViews) {
+        position = this._lastFrame[view];
+        maxPosition = this.frames[view];
+        if (!maxPosition || position >= maxPosition) {
+            delete this._lastFrame[view];
         }
+    }
 
-        // checks the last viewed frames of each view
-        // and deletes the ones not supported
-        const lastFrameViews = Object.keys(this._lastFrame);
-        for (view in lastFrameViews) {
-            position = this._lastFrame[view];
-            maxPosition = this.frames[view];
-            if (!maxPosition || position >= maxPosition) {
-                delete this._lastFrame[view];
-            }
+    // marks the current configurator as ready and triggers
+    // the associated ready event to any event listener
+    this.ready = true;
+    this.trigger("ready");
+
+    // adds the config visual class indicating that
+    // a configuration already exists for the current
+    // interactive configurator (meta-data)
+    this.element.classList.add("ready");
+
+    // shows the new product with a crossfade effect
+    // and starts responding to updates again
+    this.update(
+        {},
+        {
+            preload: true,
+            animate: animate || this.configAnimate,
+            force: true
         }
-
-        // shows the new product with a crossfade effect
-        // and starts responding to updates again
-        this.ready = true;
-        this.trigger("ready");
-        this.update(
-            {},
-            {
-                preload: true,
-                animate: animate || this.configAnimate,
-                force: true
-            }
-        );
-    });
+    );
 };
 
 /**
@@ -749,6 +787,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
 
     const frame = ripe.getFrameKey(view, position);
 
+    const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
@@ -780,6 +819,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // added to the image composition (not required)
     const url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
+        format: format,
         size: size,
         width: width,
         height: height,
@@ -1094,8 +1134,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
     this._addElementHandler("mouseup", function(event) {
         const _element = this;
         self.down = false;
-        self.percent = 0;
         self.previous = self.percent;
+        self.percent = 0;
         _element.classList.remove("drag");
     });
 
@@ -1104,15 +1144,15 @@ ripe.Configurator.prototype._registerHandlers = function() {
     this._addElementHandler("mouseleave", function(event) {
         const _element = this;
         self.down = false;
-        self.percent = 0;
         self.previous = self.percent;
+        self.percent = 0;
         _element.classList.remove("drag");
     });
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
     this._addElementHandler("mousemove", function(event) {
-        if (this.classList.contains("no-drag")) {
+        if (!this.classList.contains("ready") || this.classList.contains("no-drag")) {
             return;
         }
         const down = self.down;
@@ -1122,6 +1162,14 @@ ripe.Configurator.prototype._registerHandlers = function() {
     });
 
     area.addEventListener("click", function(event) {
+        // verifies if the previous drag operation (if any) has exceed
+        // the minimum threshold to be considered drag (click avoided)
+        if (Math.abs(self.previous) > self.clickThreshold) {
+            event.stopImmediatePropagation();
+            event.stopPropagation();
+            return;
+        }
+
         const preloading = self.element.classList.contains("preloading");
         const animating = self.element.classList.contains("animating");
         if (preloading || animating) {
@@ -1167,7 +1215,19 @@ ripe.Configurator.prototype._registerHandlers = function() {
         event.preventDefault();
     });
 
+    area.addEventListener("dragend", function(event) {
+        event.preventDefault();
+    });
+
     back.addEventListener("click", function(event) {
+        // verifies if the previous drag operation (if any) has exceed
+        // the minimum threshold to be considered drag (click avoided)
+        if (Math.abs(self.previous) > self.clickThreshold) {
+            event.stopImmediatePropagation();
+            event.stopPropagation();
+            return;
+        }
+
         const preloading = self.element.classList.contains("preloading");
         const animating = self.element.classList.contains("animating");
         if (preloading || animating) {
@@ -1210,6 +1270,10 @@ ripe.Configurator.prototype._registerHandlers = function() {
     });
 
     back.addEventListener("dragstart", function(event) {
+        event.preventDefault();
+    });
+
+    back.addEventListener("dragend", function(event) {
         event.preventDefault();
     });
 

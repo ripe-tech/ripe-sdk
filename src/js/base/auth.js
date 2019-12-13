@@ -120,8 +120,10 @@ ripe.Ripe.prototype.authAdmin = function(username, password, options, callback) 
     options = typeof options === "function" || options === undefined ? {} : options;
 
     this.signinAdmin(username, password, options, (result, isValid, request) => {
-        this.sid = result.sid;
-        this.trigger("auth");
+        if (isValid) {
+            this.sid = result.sid;
+            this.trigger("auth");
+        }
         callback && callback(result, isValid, request);
     });
 };
@@ -159,8 +161,10 @@ ripe.Ripe.prototype.authPid = function(token, options, callback) {
     options = typeof options === "function" || options === undefined ? {} : options;
 
     this.signinPid(token, options, (result, isValid, request) => {
-        this.sid = result.sid;
-        this.trigger("auth");
+        if (isValid) {
+            this.sid = result.sid;
+            this.trigger("auth");
+        }
         callback && callback(result, isValid, request);
     });
 };
@@ -175,6 +179,53 @@ ripe.Ripe.prototype.authPid = function(token, options, callback) {
 ripe.Ripe.prototype.authPidP = function(token, options) {
     return new Promise((resolve, reject) => {
         this.authPid(token, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Responsible for the beginning of the key based authentication process.
+ *
+ * This method uses the admin back-end instead of the RIPE
+ * Core simple authentication system.
+ *
+ * @param {String} key The key to authenticate with.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.authKey = function(key, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+
+    const headers = {
+        "X-Secret-Key": key
+    };
+    options.headers = headers;
+    this.accountMe(options, (result, isValid, request) => {
+        if (isValid) {
+            this.key = key;
+            this.trigger("auth");
+        }
+        callback && callback(result, isValid, request);
+    });
+};
+
+/**
+ * Responsible for the beginning of the key based authentication process.
+ *
+ * This method uses the admin back-end instead of the RIPE
+ * Core simple authentication system.
+ *
+ * @param {String} key The key to authenticate with.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The authenticated account data.
+ */
+ripe.Ripe.prototype.authKeyP = function(key, options) {
+    return new Promise((resolve, reject) => {
+        this.authKey(key, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });

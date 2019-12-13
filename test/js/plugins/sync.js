@@ -257,8 +257,11 @@ describe("Sync", function() {
             const syncPlugin = new plugins.ripe.Ripe.plugins.SyncPlugin();
             const instance = new ripe.Ripe("swear", "vyner", {
                 plugins: [syncPlugin],
-                remoteCalls: false
-            });
+                remoteCalls: false,
+                noBundles: true
+            }).load();
+            await instance.isReady();
+
             await new Promise((resolve, reject) => {
                 instance.bind("post_config", resolve);
             });

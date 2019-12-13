@@ -61,6 +61,11 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
         model = options.model || null;
     }
 
+    // determines if the init operation should be avoided (eg: for static usage)
+    // if so the control flow is returned immediately (init prevented)
+    const init = options.init === undefined ? true : options.init;
+    if (!init) return;
+
     // sets the various values in the instance taking into
     // account the default values
     this.initials = "";
@@ -76,6 +81,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.ready = false;
     this.bundles = false;
     this.partCounter = 0;
+    this.error = null;
 
     // extends the default options with the ones provided by the
     // developer upon this initializer call
@@ -205,14 +211,24 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
         this._pushHistory();
     });
 
-    // runs the configuration operation on the current instance, using
-    // the requested parameters and options, multiple configuration
-    // operations may be executed over the object life-time
-    await this.config(brand, model, options);
+    try {
+        // runs the configuration operation on the current instance, using
+        // the requested parameters and options, multiple configuration
+        // operations may be executed over the object life-time
+        await this.config(brand, model, options);
+    } catch (error) {
+        // calls the error handler for the current handler to update the
+        // internal items of the RIPE instance
+        this._errorHandler(error);
+
+        // returns the control flow immediately as the exception has been
+        // properly handled for the current context
+        return;
+    }
 
     // runs the initialization of the locale bundles, provided by the
     // remote handle, this is required for proper initialization
-    if (this.useBundles) this._initBundles().catch(this._errorHandler);
+    if (this.useBundles) this._initBundles().catch(err => this._errorHandler(err));
 };
 
 /**
@@ -240,17 +256,24 @@ ripe.Ripe.prototype.deinit = async function() {
  *
  * This method should be called before any significant RIPE operation
  * can be performed on the instance.
+ *
+ * @returns {Object} The current RIPE instance (for pipelining).
  */
-ripe.Ripe.prototype.load = async function() {
+ripe.Ripe.prototype.load = function() {
     this.update();
+    return this;
 };
 
 /**
  * Explicit entry point for the unloading of the RIPE instance.
  *
  * Should be called for a clean exit of the instance.
+ *
+ * @returns {Object} The current RIPE instance (for pipelining).
  */
-ripe.Ripe.prototype.unload = async function() {};
+ripe.Ripe.prototype.unload = function() {
+    return this;
+};
 
 /**
  * Sets the model to be customised by providing both the brand
@@ -435,7 +458,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.currency = this.options.currency || null;
     this.locale = this.options.locale || null;
     this.flag = this.options.flag || null;
-    this.format = this.options.format || "jpeg";
+    this.format = this.options.format || null;
     this.backgroundColor = this.options.backgroundColor || "";
     this.guess = this.options.guess === undefined ? undefined : this.options.guess;
     this.guessUrl = this.options.guessUrl === undefined ? undefined : this.options.guessUrl;
@@ -537,10 +560,11 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
  * @param {Boolean} events If the events associated with the initials
  * change should be triggered.
  */
-ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true, params = {}) {
+ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = true, params = {}) {
     if (typeof initials === "object") {
         events = engraving === undefined ? true : engraving;
-        return this.setInitialsExtra(initials, events);
+        const result = await this.setInitialsExtra(initials, events);
+        return result;
     }
 
     this.initials = initials || "";
@@ -556,15 +580,20 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true, p
         throw new Error("Engraving set without initials");
     }
 
-    if (!events) return;
+    // in case the events should not be triggered then returns
+    // the control flow immediately, nothing remaining to be done
+    if (!events) return this;
 
     // triggers the initials event notifying any listening
     // object about the changes
-    this.trigger("initials", initials, engraving, params);
+    await this.trigger("initials", initials, engraving, params);
 
     // runs the update operation so that all the listening
     // components can properly update their visuals
     this.update();
+
+    // returns the current instance (good for pipelining)
+    return this;
 };
 
 /**
@@ -576,7 +605,7 @@ ripe.Ripe.prototype.setInitials = function(initials, engraving, events = true, p
  * @param {Boolean} events If the events associated with the changing of
  * the initials (extra) should be triggered.
  */
-ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, events = true, params = {}) {
+ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = true, params = {}) {
     const groups = Object.keys(initialsExtra);
     const isEmpty = groups.length === 0;
     const mainGroup = groups.includes("main") ? "main" : groups[0];
@@ -602,15 +631,18 @@ ripe.Ripe.prototype.setInitialsExtra = function(initialsExtra, events = true, pa
         }
     }
 
-    if (!events) return;
+    if (!events) return this;
 
     // triggers the initials extra event notifying any
     // listening object about the changes
-    this.trigger("initials_extra", initialsExtra, params);
+    await this.trigger("initials_extra", initialsExtra, params);
 
     // runs the update operation so that all the listening
     // components can properly update their visuals
     this.update();
+
+    // returns the current instance (good for pipelining)
+    return this;
 };
 
 /**
@@ -684,25 +716,42 @@ ripe.Ripe.prototype.setChoices = function(choices, events = true) {
  * that maps a certain face with the number of available frames
  * for such face.
  *
+ * This function makes use of the loaded config in case there's
+ * one, otherwise triggers the loading of the config.
+ *
  * @returns {Promise} The model's available frames.
  */
 ripe.Ripe.prototype.getFrames = async function(callback) {
     if (this.options.frames) {
-        callback(this.options.frames);
-        return;
+        callback && callback(this.options.frames);
+        return this.options.frames;
     }
 
     const config = this.loadedConfig ? this.loadedConfig : await this.getConfigP();
+
     const frames = {};
-    const faces = config.faces;
-    for (let index = 0; index < faces.length; index++) {
-        const face = faces[index];
+
+    for (let index = 0; index < config.faces.length; index++) {
+        const face = config.faces[index];
         frames[face] = 1;
     }
 
-    const sideFrames = config.frames;
-    frames.side = sideFrames;
+    // ensures that the "legacy" side face has the a value
+    // populated with the "legacy" frames field in case there's
+    // none populated by the standard processing loop (above)
+    frames.side = config.frames;
+
+    // iterates over the complete set of faces to populate the frames
+    // structure with the most up-to-date strategy using the faces map
+    // that contains all the information about each face
+    for (const [face, faceM] of Object.entries(config.faces_m)) {
+        frames[face] = faceM.frames;
+    }
+
+    // calls the callback with the resolved frame (unsafe) and returns
+    // the frames map to the caller method
     callback && callback(frames);
+    return frames;
 };
 
 /**
@@ -725,6 +774,7 @@ ripe.Ripe.prototype.bindImage = function(element, options = {}) {
  * @returns {Configurator} The Configurator instance created.
  */
 ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
+    options = Object.assign({}, { format: this.format }, options);
     const config = new ripe.Configurator(this, element, options);
     return this.bindInteractable(config);
 };
@@ -904,8 +954,14 @@ ripe.Ripe.prototype.canRedo = function() {
  */
 ripe.Ripe.prototype.isReady = async function() {
     await new Promise((resolve, reject) => {
-        if (this.ready) resolve();
-        else this.bind("ready", resolve);
+        if (this.ready) {
+            resolve();
+        } else if (this.error) {
+            reject(this.error);
+        } else {
+            this.bind("ready", resolve);
+            this.bind("error", reject);
+        }
     });
 };
 
@@ -1149,7 +1205,12 @@ ripe.Ripe.prototype._pushHistory = function() {
  * handled.
  */
 ripe.Ripe.prototype._errorHandler = function(error) {
-    console.error(error);
+    // sets the error in the current instance and then triggers the
+    // error event on the current instance (notification)
+    this.ready = this.ready || false;
+    this.error = error;
+    this.trigger("error", error);
+    console.error(error.message || error);
 };
 
 /**

@@ -10,6 +10,8 @@ if (
     // eslint-disable-next-line no-redeclare
     var ripe = base.ripe;
     // eslint-disable-next-line no-redeclare
+    var fetch = compat.fetch;
+    // eslint-disable-next-line no-redeclare
     var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
@@ -263,6 +265,14 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
  * @ignore
  */
 ripe.Ripe.prototype._requestURL = function(url, options, callback) {
+    if (typeof fetch !== "undefined") return this._requestURLFetch(url, options, callback);
+    else return this._requestURLLegacy(url, options, callback);
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
 
@@ -273,6 +283,68 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     let data = options.data || null;
     const dataJ = options.dataJ || null;
     let contentType = options.contentType || null;
+    const validCodes = options.validCodes || [200];
+
+    const query = this._buildQuery(params);
+    const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
+    const hasQuery = url.indexOf("?") !== -1;
+    const separator = hasQuery ? "&" : "?";
+
+    if (isEmpty || data) {
+        url += separator + query;
+    } else if (dataJ !== null) {
+        data = JSON.stringify(dataJ);
+        url += separator + query;
+        contentType = "application/json";
+    } else {
+        data = query;
+        contentType = "application/x-www-form-urlencoded";
+    }
+
+    headers["Content-Type"] = headers["Content-Type"] || contentType;
+
+    const response = fetch(url, {
+        method: method,
+        headers: headers || {},
+        body: data
+    });
+
+    response
+        .then(async response => {
+            let result = null;
+            const isValid = validCodes.includes(response.status);
+            try {
+                result = await response.json();
+            } catch (error) {
+                response.error = response.error || error;
+                callback.call(context, result, isValid, response);
+                return;
+            }
+            if (callback) callback.call(context, result, isValid, response);
+        })
+        .catch(error => {
+            response.error = response.error || error;
+            if (callback) callback.call(context, null, false, response);
+        });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+
+    const context = this;
+    const method = options.method || "GET";
+    const params = options.params || {};
+    const headers = options.headers || {};
+    let data = options.data || null;
+    const dataJ = options.dataJ || null;
+    let contentType = options.contentType || null;
+    const timeout = options.timeout || 10000;
+    const timeoutConnect = options.timeoutConnect || parseInt(timeout / 2);
+    const validCodes = options.validCodes || [200];
 
     const query = this._buildQuery(params);
     const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
@@ -291,14 +363,32 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     }
 
     const request = new XMLHttpRequest();
+    request.timeout = timeoutConnect;
+    request.callback = callback;
+    request.validCodes = validCodes;
 
     request.addEventListener("load", function() {
         let result = null;
-        const isValid = this.status === 200;
+        const isValid = this.validCodes.includes(this.status);
         try {
             result = JSON.parse(this.responseText);
-        } catch (error) {}
-        callback && callback.call(context, result, isValid, this);
+        } catch (error) {
+            result = this.responseText;
+        }
+        if (this.callback) this.callback.call(context, result, isValid, this);
+        if (this.timeoutHandler) {
+            clearTimeout(this.timeoutHandler);
+            this.timeoutHandler = null;
+        }
+    });
+
+    request.addEventListener("error", function(error) {
+        request.error = request.error || error;
+        if (this.callback) this.callback.call(context, null, false, this);
+        if (this.timeoutHandler) {
+            clearTimeout(this.timeoutHandler);
+            this.timeoutHandler = null;
+        }
     });
 
     request.addEventListener("loadstart", function() {
@@ -309,7 +399,14 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
         context.trigger("post_request", request, options);
     });
 
-    request.open(method, url);
+    request.open(method, url, true);
+
+    request.timeoutHandler = setTimeout(() => {
+        if (request.readyState === 4) return;
+        request.error = new Error(`Timeout on request ${timeout}ms exceeded`);
+        request.abort();
+    }, timeout);
+
     for (const key in headers) {
         const value = headers[key];
         request.setRequestHeader(key, value);
@@ -616,6 +713,11 @@ ripe.Ripe.prototype._build = function(options) {
     const auth = options.auth || false;
     if (auth && this.sid !== undefined && this.sid !== null) {
         params.sid = this.sid;
+    }
+    if (auth && this.key !== undefined && this.key !== null) {
+        const headers = params.headers || {};
+        headers["X-Secret-Key"] = this.key;
+        params.headers = headers;
     }
     options.url = url;
     options.method = method;

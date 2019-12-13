@@ -13,11 +13,11 @@ if (
  * If no model is provided then returns the information of the owner's current model.
  *
  * @param {Object} options A map with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
- *  - 'country' - the country where the model will be provided, some materials/colors might not be available.
- *  - 'flag' - a specific flag that may change the provided materials/colors available.
- *  - 'filter' - if the configuration should be filtered by the country and/or flag (defaults to 'true')
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
+ *  - 'flag' - A specific flag that may change the provided materials/colors available.
+ *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
  * @returns {XMLHttpRequest} The model's configuration data.
  */
 ripe.Ripe.prototype.getConfig = function(options, callback) {
@@ -33,11 +33,11 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
  * If no model is provided then returns the information of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
- *  - 'country' - the country where the model will be provided, some materials/colors might not be available.
- *  - 'flag' - a specific flag that may change the provided materials/colors available.
- *  - 'filter' - if the configuration should be filtered by the country and/or flag (defaults to 'true')
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
+ *  - 'flag' - A specific flag that may change the provided materials/colors available.
+ *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
  * @returns {Promise} The model's configuration data.
  */
 ripe.Ripe.prototype.getConfigP = function(options) {
@@ -53,8 +53,8 @@ ripe.Ripe.prototype.getConfigP = function(options) {
  * then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
  * @returns {XMLHttpRequest} The model's default options.
  */
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
@@ -72,8 +72,8 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
  * If no model is provided then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
  * @returns {Object} The model's optional parts.
  */
 ripe.Ripe.prototype.getOptionals = function(options, callback) {
@@ -92,8 +92,8 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
  * If no model is provided then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
  * @returns {XMLHttpRequest} The model's total set of combinations.
  */
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
@@ -111,8 +111,8 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
  * If no model is provided then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
  * @returns {Promise} The model's total set of combinations.
  */
 ripe.Ripe.prototype.getCombinationsP = function(options) {
@@ -129,8 +129,8 @@ ripe.Ripe.prototype.getCombinationsP = function(options) {
  * If no model is provided then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The factory information for the provided model.
  */
@@ -148,8 +148,8 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
  * If no model is provided then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The factory information for the provided model.
  */
@@ -168,8 +168,8 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -188,8 +188,8 @@ ripe.Ripe.prototype.onConfig = function(options, callback) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - the brand of the model
- *  - 'model' - the name of the model
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */
@@ -208,8 +208,8 @@ ripe.Ripe.prototype.onConfigP = function(options, callback) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'name' - the name of the part to be changed
- *  - 'value' - the value (material and color) of the part to be changed
+ *  - 'name' - The name of the part to be changed
+ *  - 'value' - The value (material and color) of the part to be changed
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -228,8 +228,8 @@ ripe.Ripe.prototype.onPart = function(options, callback) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'name' - the name of the part to be changed
- *  - 'value' - the value (material and color) of the part to be changed
+ *  - 'name' - The name of the part to be changed
+ *  - 'value' - The value (material and color) of the part to be changed
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */
@@ -248,9 +248,9 @@ ripe.Ripe.prototype.onPartP = function(options, callback) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'group' - the name of the group that is going to be changed
- *  - 'value' - the initials value to be changed
- *  - 'engraving' - the engraving value to be changed
+ *  - 'group' - The name of the group that is going to be changed
+ *  - 'value' - The initials value to be changed
+ *  - 'engraving' - The engraving value to be changed
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -269,9 +269,9 @@ ripe.Ripe.prototype.onInitials = function(options, callback) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'group' - the name of the group that is going to be changed
- *  - 'value' - the initials value to be changed
- *  - 'engraving' - the engraving value to be changed
+ *  - 'group' - The name of the group that is going to be changed
+ *  - 'value' - The initials value to be changed
+ *  - 'engraving' - The engraving value to be changed
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */

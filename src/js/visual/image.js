@@ -46,6 +46,7 @@ ripe.Image.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
     this.frame = this.options.frame || 0;
+    this.format = this.options.format || null;
     this.size = this.options.size || 1000;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
@@ -72,6 +73,7 @@ ripe.Image.prototype.init = function() {
  */
 ripe.Image.prototype.update = function(state) {
     const frame = this.element.dataset.frame || this.frame;
+    const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
     const width = this.element.dataset.width || this.width;
     const height = this.element.dataset.height || this.height;
@@ -95,6 +97,7 @@ ripe.Image.prototype.update = function(state) {
     // this should provide us with the new values
     const url = this.owner._getImageURL({
         frame: ripe.frameNameHack(frame),
+        format: format,
         size: size,
         width: width,
         height: height,

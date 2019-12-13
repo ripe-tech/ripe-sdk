@@ -188,8 +188,12 @@ describe("Restrictions", function() {
     describe("#auto", function() {
         it("should load restrictions from ripe instance", async () => {
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin();
-            const instance = new ripe.Ripe("swear", "vyner", { plugins: [restrictionsPlugin] });
-            instance.load();
+            const instance = new ripe.Ripe("swear", "vyner", {
+                plugins: [restrictionsPlugin],
+                noBundles: true
+            }).load();
+            await instance.isReady();
+
             await new Promise((resolve, reject) => {
                 instance.bind("post_config", resolve);
             });

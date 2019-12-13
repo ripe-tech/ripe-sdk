@@ -27,17 +27,23 @@ describe("Logic", function() {
                     type: "font"
                 }
             ];
-            const instance = await new ripe.Ripe();
+            const instance = await new ripe.Ripe({ init: false });
 
             result = instance.parseEngraving("gold.opensans", properties);
             assert.deepStrictEqual(result, {
-                values: [{ name: "gold", type: "material" }, { name: "opensans", type: "font" }],
+                values: [
+                    { name: "gold", type: "material" },
+                    { name: "opensans", type: "font" }
+                ],
                 valuesM: { material: "gold", font: "opensans" }
             });
 
             result = instance.parseEngraving("opensans.gold", properties);
             assert.deepStrictEqual(result, {
-                values: [{ name: "gold", type: "material" }, { name: "opensans", type: "font" }],
+                values: [
+                    { name: "gold", type: "material" },
+                    { name: "opensans", type: "font" }
+                ],
                 valuesM: { material: "gold", font: "opensans" }
             });
         });
@@ -65,7 +71,7 @@ describe("Logic", function() {
                     type: "font"
                 }
             ];
-            const instance = await new ripe.Ripe();
+            const instance = await new ripe.Ripe({ init: false });
 
             result = instance.normalizeEngraving("gold.opensans", properties);
             assert.strictEqual(result, "gold:material.opensans:font");
