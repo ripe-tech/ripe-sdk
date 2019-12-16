@@ -16,9 +16,7 @@ ripe.Ripe.prototype.getJustifications = function(context = null, options, callba
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
 
-    //  TODO use delete testing url
-    //  let url = this.url + "justifications";
-    let url = "http://localhost:8080/api/justifications";
+    let url = this.url + "justifications";
     if (context) url += "/" + context;
     options = Object.assign(options, {
         url: url,
