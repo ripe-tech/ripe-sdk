@@ -58,6 +58,8 @@ ripe.Ripe.prototype.createSkuP = function(identifier, domain, options) {
 ripe.Ripe.prototype._createSku = function(identifier, domain, options = {}) {
     const url = this.url + "skus";
 
+    const spec = Object.assign({}, options);
+
     return Object.assign(options, {
         url: url,
         method: "POST",
@@ -65,7 +67,7 @@ ripe.Ripe.prototype._createSku = function(identifier, domain, options = {}) {
         dataJ: {
             identifier: identifier,
             domain: domain,
-            spec: options
+            spec: spec
         }
     });
 };
