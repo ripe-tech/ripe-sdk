@@ -36,7 +36,7 @@ ripe.Ripe.prototype.createSku = function(identifier, domain, options, callback) 
         dataJ: {
             identifier: identifier,
             domain: domain,
-            spec: Object.assign(options)
+            spec: Object.assign({}, options)
         }
     });
     options = this._build(options);

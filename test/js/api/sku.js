@@ -48,10 +48,36 @@ describe("SkuAPI", function() {
             });
 
             assert.strictEqual(result.identifier, uuid);
+            assert.strictEqual(result.domain, "dummy");
             assert.strictEqual(result.spec.brand, "dummy");
             assert.strictEqual(result.spec.model, "dummy");
             assert.strictEqual(
                 JSON.stringify(result.spec.parts),
+                JSON.stringify({
+                    piping: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    side: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    top0_bottom: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    }
+                })
+            );
+
+            result = await remote.configInfoP({ params: { sku: uuid, domain: "dummy" } });
+            assert.strictEqual(result.brand, "dummy");
+            assert.strictEqual(result.model, "dummy");
+            assert.strictEqual(
+                JSON.stringify(result.parts),
                 JSON.stringify({
                     piping: {
                         material: "leather_dmy",
