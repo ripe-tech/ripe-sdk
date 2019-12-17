@@ -76,9 +76,12 @@ ripe.Ripe.prototype._createSku = function(identifier, domain, options = {}) {
         parts: parts
     };
 
-    if (initials) spec.initials = initials;
-    if (engraving) spec.engraving = engraving;
-    if (initialsExtra) spec.initials_extra = initialsExtra;
+    if (Object.keys(initialsExtra).length > 0) {
+        spec.initials_extra = initialsExtra;
+    } else if (initials && engraving) {
+        spec.initials = initials;
+        spec.engraving = engraving;
+    }
 
     const dataJ = {
         identifier: identifier,
