@@ -56,43 +56,16 @@ ripe.Ripe.prototype.createSkuP = function(identifier, domain, options) {
 };
 
 ripe.Ripe.prototype._createSku = function(identifier, domain, options = {}) {
-    const brand = options.brand === undefined ? this.brand : options.brand;
-    const model = options.model === undefined ? this.model : options.model;
-    const variant = options.variant === undefined ? this.variant : options.variant;
-    const parts = options.parts === undefined ? this.parts : options.parts;
-    const initials = options.initials === undefined ? this.initials : options.initials;
-    const engraving = options.engraving === undefined ? this.engraving : options.engraving;
-    const initialsExtra =
-        options.initials_extra === undefined && options.initialsExtra === undefined
-            ? this.initialsExtra
-            : options.initialsExtra || options.initials_extra;
-
     const url = this.url + "skus";
-
-    const spec = {
-        brand: brand,
-        model: model,
-        variant: variant,
-        parts: parts
-    };
-
-    if (Object.keys(initialsExtra).length > 0) {
-        spec.initials_extra = initialsExtra;
-    } else if (initials && engraving) {
-        spec.initials = initials;
-        spec.engraving = engraving;
-    }
-
-    const dataJ = {
-        identifier: identifier,
-        domain: domain,
-        spec: spec
-    };
 
     return Object.assign(options, {
         url: url,
         method: "POST",
         auth: true,
-        dataJ: dataJ
+        dataJ: {
+            identifier: identifier,
+            domain: domain,
+            spec: options
+        }
     });
 };
