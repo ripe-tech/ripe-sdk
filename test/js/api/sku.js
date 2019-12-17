@@ -48,6 +48,7 @@ describe("SkuAPI", function() {
             });
 
             assert.strictEqual(result.identifier, uuid);
+            assert.strictEqual(result.domain, "dummy");
             assert.strictEqual(result.spec.brand, "dummy");
             assert.strictEqual(result.spec.model, "dummy");
             assert.strictEqual(
