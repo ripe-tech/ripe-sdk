@@ -27,7 +27,18 @@ if (
 ripe.Ripe.prototype.createSku = function(identifier, domain, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    options = this._createSku(identifier, domain, options);
+    const url = this.url + "skus";
+
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true,
+        dataJ: {
+            identifier: identifier,
+            domain: domain,
+            spec: Object.assign(options)
+        }
+    });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -52,22 +63,5 @@ ripe.Ripe.prototype.createSkuP = function(identifier, domain, options) {
         this.createSku(identifier, domain, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
-    });
-};
-
-ripe.Ripe.prototype._createSku = function(identifier, domain, options = {}) {
-    const spec = Object.assign({}, options);
-
-    const url = this.url + "skus";
-
-    return Object.assign(options, {
-        url: url,
-        method: "POST",
-        auth: true,
-        dataJ: {
-            identifier: identifier,
-            domain: domain,
-            spec: spec
-        }
     });
 };
