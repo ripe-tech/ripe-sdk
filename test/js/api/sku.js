@@ -72,7 +72,7 @@ describe("SkuAPI", function() {
                 })
             );
 
-            // deletes the newly created sku
+            // deletes the newly created SKU
             result = await new Promise((resolve, reject) => {
                 const options = remote._build({
                     url: `${remote.webUrl}admin/models/skus/${result._id}/delete`,
