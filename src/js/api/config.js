@@ -93,7 +93,7 @@ ripe.Ripe.prototype.configDkuP = function(dku, options) {
  *  - 'initialsExtra' - The value for the initials extra of the personalized model.
  *  - 'productId' - The product's unique identification.
  * @param {Function} callback Function with the result of the request.
- * s {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.configSku = function(domain, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -117,7 +117,7 @@ ripe.Ripe.prototype.configSku = function(domain, options, callback) {
  *  - 'initialsExtra' - The value for the initials extra of the personalized model.
  *  - 'productId' - The product's unique identification.
  * @param {Function} callback Function with the result of the request.
- * s {Promise} The model's configuration data.
+ * @returns {Promise} The model's configuration data.
  */
 ripe.Ripe.prototype.configSkuP = function(domain, options) {
     return new Promise((resolve, reject) => {
