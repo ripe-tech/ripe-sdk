@@ -45,7 +45,6 @@ const paths = {
         "src/js/api/locale.js",
         "src/js/api/oauth.js",
         "src/js/api/order.js",
-        "src/js/api/justifications.js",
         "src/js/api/size.js",
         "src/js/plugins/base.js",
         "src/js/plugins/diag.js",
