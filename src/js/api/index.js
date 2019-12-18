@@ -6,6 +6,7 @@ const justification = require("./justification");
 const locale = require("./locale");
 const oauth = require("./oauth");
 const order = require("./order");
+const justifications = require("./justifications");
 const size = require("./size");
 
 Object.assign(module.exports, account);
@@ -16,4 +17,5 @@ Object.assign(module.exports, justification);
 Object.assign(module.exports, locale);
 Object.assign(module.exports, oauth);
 Object.assign(module.exports, order);
+Object.assign(module.exports, justifications);
 Object.assign(module.exports, size);
