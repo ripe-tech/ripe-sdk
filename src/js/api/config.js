@@ -80,6 +80,54 @@ ripe.Ripe.prototype.configDkuP = function(dku, options) {
 };
 
 /**
+ * Resolves a customization to a mapped SKU.
+ *
+ * @param {String} domain The SKU domain (falls back to brand value).
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'variant' - The variant of the model.
+ *  - 'parts' - The parts of the customized model.
+ *  - 'initials' - The value for the initials of the personalized model.
+ *  - 'engraving' - The value for the engraving value of the personalized model.
+ *  - 'initialsExtra' - The value for the initials extra of the personalized model.
+ *  - 'productId' - The product's unique identification.
+ * @param {Function} callback Function with the result of the request.
+ * s {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.configSku = function(domain, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getConfigSkuOptions(domain, options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Resolves a customization to a mapped SKU.
+ *
+ * @param {String} domain The SKU domain (falls back to brand value).
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'variant' - The variant of the model.
+ *  - 'parts' - The parts of the customized model.
+ *  - 'initials' - The value for the initials of the personalized model.
+ *  - 'engraving' - The value for the engraving value of the personalized model.
+ *  - 'initialsExtra' - The value for the initials extra of the personalized model.
+ *  - 'productId' - The product's unique identification.
+ * @param {Function} callback Function with the result of the request.
+ * s {Promise} The model's configuration data.
+ */
+ripe.Ripe.prototype.configSkuP = function(domain, options) {
+    return new Promise((resolve, reject) => {
+        this.configSku(domain, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Gets the configuration of a product identified by its unique product ID.
  *
  * @param {String} productId The identifier of the product to be resolved.
@@ -136,6 +184,31 @@ ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
     }
 
     const url = this.url + "config/info";
+
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getConfigSkuOptions = function(domain, options = {}) {
+    const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
+    const initialsOptions = options.initialsOptions === undefined ? true : options.initialsOptions;
+
+    if (queryOptions) options = this._getQueryOptions(options);
+    if (initialsOptions) options = this._getInitialsOptions(options);
+
+    const params = options.params || {};
+
+    if (domain) params.domain = domain;
+
+    options.params = params;
+
+    const url = this.url + "config/sku";
 
     return Object.assign(options, {
         url: url,
