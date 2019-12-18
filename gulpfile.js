@@ -95,7 +95,7 @@ gulp.task("build-css", () => {
 
 gulp.task("build-package-js", () => {
     return gulp
-        .src([paths.polyfill].concat(paths.basefiles))
+        .src([paths.polyfill].concat(paths.basefiles), { allowEmpty: true })
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))
@@ -111,7 +111,7 @@ gulp.task("build-package-js", () => {
 
 gulp.task("build-package-min", () => {
     return gulp
-        .src([paths.polyfill].concat(paths.basefiles))
+        .src([paths.polyfill].concat(paths.basefiles), {allowEmpty:true})
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))
