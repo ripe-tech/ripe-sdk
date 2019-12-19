@@ -77,6 +77,30 @@ describe("ConfigAPI", function() {
                 assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
                 assert.strictEqual(result.params.guess, undefined);
             });
+
+            it("should include sku and domain in params", async () => {
+                const remote = ripe.RipeAPI();
+                const result = remote._getConfigInfoOptions({
+                    sku: "314159265359",
+                    domain: "pi",
+                    queryOptions: false,
+                    initialsOptions: false
+                });
+
+                assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+                assert.strictEqual(result.params.sku, "314159265359");
+                assert.strictEqual(result.params.domain, "pi");
+                assert.strictEqual(Object.keys(result.params).length, 2);
+            });
+
+            it("should not include sku and domain in params", async () => {
+                const remote = ripe.RipeAPI();
+                const result = remote._getConfigInfoOptions();
+
+                assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+                assert.strictEqual(result.params.sku, undefined);
+                assert.strictEqual(result.params.domain, undefined);
+            });
         });
     });
 
