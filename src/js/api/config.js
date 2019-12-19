@@ -95,7 +95,7 @@ ripe.Ripe.prototype.configDkuP = function(dku, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.configSku = function(domain, options, callback) {
+ripe.Ripe.prototype.configResolveSku = function(domain, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getConfigSkuOptions(domain, options);
@@ -119,9 +119,9 @@ ripe.Ripe.prototype.configSku = function(domain, options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The model's configuration data.
  */
-ripe.Ripe.prototype.configSkuP = function(domain, options) {
+ripe.Ripe.prototype.configResolveSkuP = function(domain, options) {
     return new Promise((resolve, reject) => {
-        this.configSku(domain, options, (result, isValid, request) => {
+        this.configResolveSku(domain, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
