@@ -85,6 +85,9 @@ describe("ConfigAPI", function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
             }
+            if (!assert.rejects) {
+                this.skip();
+            }
         });
 
         it("should resolve SKU", async () => {
