@@ -104,8 +104,6 @@ ripe.Ripe.prototype.getJustificationsByContextP = function(context, options) {
  * Creates justification
  */
 ripe.Ripe.prototype.createJustification = function(justification, options, callback) {
-    console.log("Creating justification !");
-
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "justifications";
