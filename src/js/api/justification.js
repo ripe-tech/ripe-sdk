@@ -9,7 +9,8 @@ if (
 }
 
 /**
- * Gets the existing justifications.
+ * Gets the existing justifications, according to the provided filtering
+ * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request, such as:
  * - 'filters[]' - List of filters that the query will use to, operators such as
@@ -37,7 +38,8 @@ ripe.Ripe.prototype.getJustifications = function(options, callback) {
 };
 
 /**
- * Gets the existing justifications.
+ * Gets the existing justifications, according to the provided filtering
+ * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The orders result list.
@@ -51,7 +53,8 @@ ripe.Ripe.prototype.getJustificationsP = function(options) {
 };
 
 /**
- * Gets the existing justifications filtered by context.
+ * Gets the existing justifications filtered by context, according to the
+ * provided filtering strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request, such as:
  * - 'filters[]' - List of filters that the query will use to, operators such as
@@ -78,7 +81,8 @@ ripe.Ripe.prototype.getJustificationsByContext = function(context, options, call
 };
 
 /**
- * Gets the existing justifications filtered by context.
+ * Gets the existing justifications filtered by context, according to the
+ * provided filtering strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request, such as:
  * - 'filters[]' - List of filters that the query will use to, operators such as
