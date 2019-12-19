@@ -43,45 +43,6 @@ ripe.Ripe.prototype.configInfoP = function(options) {
 };
 
 /**
- * Resolves the provided SKU value into a more structured set of model, brand,
- * parts, etc. so that it can be used under RIPE.
- *
- * @param {String} sku The SKU identifier to be used in the resolution.
- * @param {String} domain The domain to be used in the resolution.
- * @param {Object} options An object of options to configure the request, such as:
- * - 'url' - The base URL.
- * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
- */
-ripe.Ripe.prototype.configDku = function(sku, domain, options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    options = Object.assign({ sku: sku, domain: domain, queryOptions: false, initialsOptions: false }, options);
-    options = this._getConfigInfoOptions(options);
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
- * Resolves the provided SKU value into a more structured set of mode, brand,
- * parts, etc. so that it can be used under RIPE.
- *
- * @param {String} sku The SKU identifier to be used in the resolution.
- * @param {String} domain The domain to be used in the resolution.
- * @param {Object} options An object of options to configure the request, such as:
- * - 'url' - The base URL.
- * @param {Function} callback Function with the result of the request.
- * s {Promise} The model's configuration data.
- */
-ripe.Ripe.prototype.configSkuP = function(sku, domain, options) {
-    return new Promise((resolve, reject) => {
-        this.configDku(sku, domain, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
-        });
-    });
-};
-
-/**
  * Resolves the provided DKU value into a more structured set of model, brand,
  * parts, etc. so that it can be used under RIPE.
  *
@@ -113,6 +74,48 @@ ripe.Ripe.prototype.configDku = function(dku, options, callback) {
 ripe.Ripe.prototype.configDkuP = function(dku, options) {
     return new Promise((resolve, reject) => {
         this.configDku(dku, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Resolves the provided SKU value into a more structured set of model, brand,
+ * parts, etc. so that it can be used under RIPE.
+ *
+ * @param {String} sku The SKU identifier to be used in the resolution.
+ * @param {String} domain The domain to be used in the resolution.
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'url' - The base URL.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.configSku = function(sku, domain, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = Object.assign(
+        { sku: sku, domain: domain, queryOptions: false, initialsOptions: false },
+        options
+    );
+    options = this._getConfigInfoOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Resolves the provided SKU value into a more structured set of mode, brand,
+ * parts, etc. so that it can be used under RIPE.
+ *
+ * @param {String} sku The SKU identifier to be used in the resolution.
+ * @param {String} domain The domain to be used in the resolution.
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'url' - The base URL.
+ * @param {Function} callback Function with the result of the request.
+ * s {Promise} The model's configuration data.
+ */
+ripe.Ripe.prototype.configSkuP = function(sku, domain, options) {
+    return new Promise((resolve, reject) => {
+        this.configSku(sku, domain, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
@@ -204,6 +207,8 @@ ripe.Ripe.prototype.configResolveP = function(productId, options) {
  * @ignore
  */
 ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
+    const sku = options.sku === undefined ? null : options.sku;
+    const domain = options.domain === undefined ? null : options.domain;
     const dku = options.dku === undefined ? null : options.dku;
     const guess = options.guess === undefined ? this.guess : options.guess;
     const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
@@ -215,6 +220,12 @@ ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
     const params = options.params || {};
     options.params = params;
 
+    if (sku !== undefined && sku !== null) {
+        params.sku = sku;
+    }
+    if (domain !== undefined && domain !== null) {
+        params.domain = domain;
+    }
     if (dku !== undefined && dku !== null) {
         params.dku = dku;
     }
