@@ -43,6 +43,45 @@ ripe.Ripe.prototype.configInfoP = function(options) {
 };
 
 /**
+ * Resolves the provided SKU value into a more structured set of model, brand,
+ * parts, etc. so that it can be used under RIPE.
+ *
+ * @param {String} sku The SKU identifier to be used in the resolution.
+ * @param {String} domain The domain to be used in the resolution.
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'url' - The base URL.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.configDku = function(sku, domain, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = Object.assign({ sku: sku, domain: domain, queryOptions: false, initialsOptions: false }, options);
+    options = this._getConfigInfoOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Resolves the provided SKU value into a more structured set of mode, brand,
+ * parts, etc. so that it can be used under RIPE.
+ *
+ * @param {String} sku The SKU identifier to be used in the resolution.
+ * @param {String} domain The domain to be used in the resolution.
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'url' - The base URL.
+ * @param {Function} callback Function with the result of the request.
+ * s {Promise} The model's configuration data.
+ */
+ripe.Ripe.prototype.configSkuP = function(sku, domain, options) {
+    return new Promise((resolve, reject) => {
+        this.configDku(sku, domain, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Resolves the provided DKU value into a more structured set of model, brand,
  * parts, etc. so that it can be used under RIPE.
  *
