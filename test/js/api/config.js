@@ -124,6 +124,7 @@ describe("ConfigAPI", function() {
                     }
                 }
             });
+            const createdSku = Object.assign({}, result);
 
             result = await remote.configResolveSkuP(domain, {
                 brand: "dummy",
@@ -172,6 +173,17 @@ describe("ConfigAPI", function() {
                     }
                 })
             );
+
+            // deletes the newly created SKU
+            result = await new Promise((resolve, reject) => {
+                const options = remote._build({
+                    url: `${remote.webUrl}admin/models/skus/${createdSku._id}/delete`,
+                    auth: true
+                });
+                remote._requestURL(options.url, options, (result, isValid, request) => {
+                    resolve(request);
+                });
+            });
         });
 
         it("should not resolve SKU", async () => {
