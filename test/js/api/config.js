@@ -79,10 +79,8 @@ describe("ConfigAPI", function() {
             });
 
             it("should include sku and domain in params", async () => {
-                let result = null;
-
                 const remote = ripe.RipeAPI();
-                result = remote._getConfigInfoOptions({
+                const result = remote._getConfigInfoOptions({
                     sku: "314159265359",
                     domain: "pi",
                     queryOptions: false,
@@ -93,15 +91,11 @@ describe("ConfigAPI", function() {
                 assert.strictEqual(result.params.sku, "314159265359");
                 assert.strictEqual(result.params.domain, "pi");
                 assert.strictEqual(Object.keys(result.params).length, 2);
-
-                console.log(result);
             });
 
             it("should not include sku and domain in params", async () => {
-                let result = null;
-
                 const remote = ripe.RipeAPI();
-                result = remote._getConfigInfoOptions();
+                const result = remote._getConfigInfoOptions();
 
                 assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
                 assert.strictEqual(result.params.sku, undefined);
