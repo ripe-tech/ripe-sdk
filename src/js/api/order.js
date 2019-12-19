@@ -255,20 +255,20 @@ ripe.Ripe.prototype.returnOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.cancelOrder = function(number, justificationId, options, callback) {
+ripe.Ripe.prototype.cancelOrder = function(number, justification, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = Object.assign(options, {
         params: {
-            justification: justificationId
+            justification: justification
         }
     });
     return this.setOrderStatus(number, "cancel", options, callback);
 };
 
-ripe.Ripe.prototype.cancelOrderP = function(number, justificationId, options) {
+ripe.Ripe.prototype.cancelOrderP = function(number, justification, options) {
     return new Promise((resolve, reject) => {
-        this.cancelOrder(number, justificationId, options, (result, isValid, request) => {
+        this.cancelOrder(number, justification, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
