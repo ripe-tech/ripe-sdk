@@ -248,7 +248,7 @@ ripe.Ripe.prototype.returnOrderP = function(number, options) {
 };
 
 /**
- * Sets the order status to 'cancel'. //TODO comment justification stuff
+ * Sets the order status to 'cancel' with its justification.
  *
  * @param {Number} number The number of the order to update.
  * @param {Object} options An object of options to configure the request.
