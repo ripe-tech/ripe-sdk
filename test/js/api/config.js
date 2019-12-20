@@ -1,4 +1,5 @@
 const assert = require("assert");
+const uuidv4 = require("uuid/v4");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
@@ -76,6 +77,178 @@ describe("ConfigAPI", function() {
                 assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
                 assert.strictEqual(result.params.guess, undefined);
             });
+
+            it("should include sku and domain in params", async () => {
+                const remote = ripe.RipeAPI();
+                const result = remote._getConfigInfoOptions({
+                    sku: "314159265359",
+                    domain: "pi",
+                    queryOptions: false,
+                    initialsOptions: false
+                });
+
+                assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+                assert.strictEqual(result.params.sku, "314159265359");
+                assert.strictEqual(result.params.domain, "pi");
+                assert.strictEqual(Object.keys(result.params).length, 2);
+            });
+
+            it("should not include sku and domain in params", async () => {
+                const remote = ripe.RipeAPI();
+                const result = remote._getConfigInfoOptions();
+
+                assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+                assert.strictEqual(result.params.sku, undefined);
+                assert.strictEqual(result.params.domain, undefined);
+            });
+        });
+    });
+
+    describe("#configResolveSku", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+            if (!assert.rejects) {
+                this.skip();
+            }
+        });
+
+        it("should resolve SKU", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            const identifier = uuidv4();
+            const domain = uuidv4();
+            result = await remote.createSkuP(identifier, domain, {
+                brand: "dummy",
+                model: "dummy",
+                parts: {
+                    piping: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    side: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    top0_bottom: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    }
+                }
+            });
+            const createdSku = Object.assign({}, result);
+
+            result = await remote.configResolveSkuP(domain, {
+                brand: "dummy",
+                model: "dummy",
+                parts: {
+                    piping: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    side: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    top0_bottom: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    }
+                }
+            });
+
+            assert.strictEqual(result.sku, identifier);
+            assert.strictEqual(result.brand, "dummy");
+            assert.strictEqual(result.model, "dummy");
+            assert.strictEqual(
+                JSON.stringify(result.parts),
+                JSON.stringify({
+                    piping: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    side: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    top0_bottom: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    }
+                })
+            );
+
+            // deletes the newly created SKU
+            result = await new Promise((resolve, reject) => {
+                const options = remote._build({
+                    url: `${remote.webUrl}admin/models/skus/${createdSku._id}/delete`,
+                    auth: true
+                });
+                remote._requestURL(options.url, options, (result, isValid, request) => {
+                    resolve(request);
+                });
+            });
+        });
+
+        it("should not resolve SKU", async () => {
+            const remote = ripe.RipeAPI();
+
+            await assert.rejects(
+                async () => {
+                    await remote.configResolveSkuP(uuidv4(), {
+                        brand: "swear",
+                        model: "vyner",
+                        parts: {
+                            front: {
+                                material: "nappa",
+                                color: "white"
+                            },
+                            side: {
+                                material: "nappa",
+                                color: "white"
+                            },
+                            eyelets: {
+                                material: "metal",
+                                color: "silver"
+                            },
+                            laces: {
+                                material: "nylon",
+                                color: "white"
+                            },
+                            lining: {
+                                material: "calf_lining",
+                                color: "white"
+                            },
+                            sole: {
+                                material: "rubber",
+                                color: "white"
+                            }
+                        }
+                    });
+                },
+                ripe.RemoteError,
+                "Problem in remote operation (400)"
+            );
         });
     });
 });

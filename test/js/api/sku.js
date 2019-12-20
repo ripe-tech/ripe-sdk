@@ -46,6 +46,7 @@ describe("SkuAPI", function() {
                     }
                 }
             });
+            const createdSku = Object.assign({}, result);
 
             assert.strictEqual(result.identifier, uuid);
             assert.strictEqual(result.domain, "dummy");
@@ -101,7 +102,7 @@ describe("SkuAPI", function() {
             // deletes the newly created SKU
             result = await new Promise((resolve, reject) => {
                 const options = remote._build({
-                    url: `${remote.webUrl}admin/models/skus/${result._id}/delete`,
+                    url: `${remote.webUrl}admin/models/skus/${createdSku._id}/delete`,
                     auth: true
                 });
                 remote._requestURL(options.url, options, (result, isValid, request) => {
