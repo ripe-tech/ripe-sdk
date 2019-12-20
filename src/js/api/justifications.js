@@ -97,35 +97,3 @@ ripe.Ripe.prototype.getJustificationsByContextP = function(context, options) {
         });
     });
 };
-
-/**
- * TODO comments
- *
- * Creates justification
- */
-ripe.Ripe.prototype.createJustification = function(justification, options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "justifications";
-    options = Object.assign(options, {
-        url: url,
-        method: "POST",
-        auth: true,
-        dataJ: justification
-    });
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
- * TODO comments
- *
- * Creates justification promise
- */
-ripe.Ripe.prototype.createJustificationP = function(justification, options) {
-    return new Promise((resolve, reject) => {
-        this.createJustification(justification, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
-        });
-    });
-};
