@@ -498,7 +498,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     // in case the lossful meta-format is defined defines the best possible
     // lossful format taking into account the environment
     if (this.format === "lossful") {
-        this.format = "jpg";
+        this.format = "jpeg";
     }
 
     // runs the background color normalization process that removes
