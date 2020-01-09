@@ -488,6 +488,19 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
     this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
 
+    // in case the requested format is the "dynamic" lossless one
+    // tries to find the best lossless image format taking into account
+    // the current browser environment
+    if (this.format === "lossless") {
+        this.format = this._supportsWebp() ? "webp" : "png";
+    }
+
+    // in case the lossful meta-format is defined defines the best possible
+    // lossful format taking into account the environment
+    if (this.format === "lossful") {
+        this.format = "jpg";
+    }
+
     // runs the background color normalization process that removes
     // the typical cardinal character from the definition
     this.backgroundColor = this.backgroundColor.replace("#", "");
@@ -1273,6 +1286,12 @@ ripe.Ripe.prototype._toChoices = function(loadedConfig) {
         }
     }
     return choices;
+};
+
+ripe.Ripe.prototype._supportsWebp = function() {
+    const element = document.createElement("canvas");
+    if (!(element.getContext && element.getContext("2d"))) return false;
+    return element.toDataURL("image/webp").indexOf("data:image/webp") === 0;
 };
 
 // eslint-disable-next-line no-unused-vars
