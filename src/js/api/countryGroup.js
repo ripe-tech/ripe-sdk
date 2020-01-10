@@ -79,3 +79,34 @@ ripe.Ripe.prototype.createCountryGroupP = function(countryGroup, options) {
         });
     });
 };
+
+ripe.Ripe.prototype.updateCountryGroup = function(id, countryGroup, options, callback) {
+    console.log("called 2");
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}country_groups/${id}`;
+
+    console.log(url);
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "PUT",
+        dataJ: {
+            name: countryGroup.name,
+            currency: countryGroup.currency,
+            countries: countryGroup.countries
+        }
+    });
+
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.updateCountryGroupP = function(id, countryGroup, options) {
+    console.log("called 1");
+    return new Promise((resolve, reject) => {
+        this.updateCountryGroup(id, countryGroup, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
