@@ -52,6 +52,29 @@ ripe.Ripe.prototype.getCountryGroupsP = function(options) {
     });
 };
 
+ripe.Ripe.prototype.getCountryGroup = function(id, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}country_groups/${id}`;
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.getCountryGroupP = function(id, options) {
+    return new Promise((resolve, reject) => {
+        this.getCountryGroup(id, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
