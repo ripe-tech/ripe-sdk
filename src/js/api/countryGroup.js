@@ -110,3 +110,26 @@ ripe.Ripe.prototype.updateCountryGroupP = function(id, countryGroup, options) {
         });
     });
 };
+
+ripe.Ripe.prototype.deleteCountryGroup = function(id, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}country_groups/${id}`;
+
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "DELETE"
+    });
+
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.deleteCountryGroupP = function(id, options) {
+    return new Promise((resolve, reject) => {
+        this.deleteCountryGroup(id, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
