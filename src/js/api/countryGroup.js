@@ -7,12 +7,14 @@ if (
     // eslint-disable-next-line no-redeclare
     var ripe = base.ripe;
 }
-//TODO rest of endpoints???
+// TODO rest of endpoints???
 ripe.Ripe.prototype.getCountryGroups = function(options, callback) {
+    console.log("Called");
     // TODO
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups`;
+    console.log(url);
     options = Object.assign(options, {
         url: url,
         method: "GET",
