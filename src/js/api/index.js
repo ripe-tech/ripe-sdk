@@ -7,7 +7,7 @@ const justification = require("./justification");
 const locale = require("./locale");
 const oauth = require("./oauth");
 const order = require("./order");
-const priceRule = require("./price-pule");
+const priceRule = require("./price-rule");
 const size = require("./size");
 const sku = require("./sku");
 
