@@ -117,7 +117,8 @@ ripe.Ripe.prototype.createPriceRule = function(priceRule, options, callback) {
             enabled: priceRule.enabled,
             ddp_included: priceRule.ddp_included,
             round_price: priceRule.round_price,
-            price_eur: priceRule.price_eur
+            price_eur: priceRule.price_eur,
+            pivot: priceRule.pivot
         }
     });
     options = this._build(options);
@@ -173,7 +174,8 @@ ripe.Ripe.prototype.updatePriceRule = function(priceRule, options, callback) {
             enabled: priceRule.enabled,
             ddp_included: priceRule.ddp_included,
             round_price: priceRule.round_price,
-            price_eur: priceRule.price_eur
+            price_eur: priceRule.price_eur,
+            pivot: priceRule.pivot
         }
     });
     options = this._build(options);
