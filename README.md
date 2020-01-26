@@ -129,6 +129,7 @@ ripe.load();
 ```
 
 Whenever you want to set a new image frame, you only have to call `setFrame` function.
+
 ```javascript
 image.setFrame("side-3");
 ```
@@ -227,9 +228,9 @@ configurator.bind("loaded", function() {
 
 ## 7. Plugins
 
-### Part synchronisation
+### Part synchronization
 
-If your product has synchronisation rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behaviour automatically. To do this you need to initialize the `SyncPlugin` which receives the synchronisation rules and add it to the ripe object using the `addPlugin` function. When a new part is set, the plugin checks the synchronisation rules and automatically makes the necessary changes to the related parts.
+If your product has synchronization rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behaviour automatically. To do this you need to initialize the `SyncPlugin` which receives the synchronisation rules and add it to the ripe object using the `addPlugin` function. When a new part is set, the plugin checks the synchronisation rules and automatically makes the necessary changes to the related parts.
 
 ```javascript
 ripe.getConfig(function(config) {
@@ -312,6 +313,7 @@ if (ripe.isOAuthPending()) {
 ## Browser Support
 
 Desktop:
+
 * ≥ Chrome v23 (V8)
 * ≥ Firefox v21 (SpiderMonkey)
 * ≥ Safari v6 (Nitro)
@@ -319,6 +321,7 @@ Desktop:
 * ≥ IE v11 (Chakra)
 
 Mobile:
+
 * ≥ Android  4.4
 * ≥ iOS's WebKit 9
 
