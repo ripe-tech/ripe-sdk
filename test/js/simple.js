@@ -237,6 +237,9 @@ describe("Ripe", function() {
 
             assert.strictEqual(instance.brand, "swear");
             assert.strictEqual(instance.model, "vyner");
+            assert.strictEqual(instance.initials, "");
+            assert.strictEqual(instance.engraving, null);
+            assert.deepStrictEqual(instance.initialsExtra, {});
         });
 
         it("should initiate with DKU with initials", async () => {
@@ -250,6 +253,7 @@ describe("Ripe", function() {
             assert.strictEqual(instance.model, "vyner");
             assert.strictEqual(instance.initials, "sw");
             assert.strictEqual(instance.engraving, "metal_gold");
+            assert.deepStrictEqual(instance.initialsExtra, {});
         });
 
         it("should initiate with DKU with initials extra", async () => {
@@ -261,6 +265,8 @@ describe("Ripe", function() {
 
             assert.strictEqual(instance.brand, "swear");
             assert.strictEqual(instance.model, "air_rev_trigger");
+            assert.strictEqual(instance.initials, "");
+            assert.strictEqual(instance.engraving, null);
             assert.strictEqual(instance.initialsExtra.left.initials, "pt");
             assert.strictEqual(instance.initialsExtra.left.engraving, "gold");
             assert.strictEqual(instance.initialsExtra.right.initials, "tp");
