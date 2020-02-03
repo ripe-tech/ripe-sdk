@@ -230,6 +230,17 @@ describe("Ripe", function() {
 
         it("should initiate with DKU", async () => {
             const instance = new ripe.Ripe({
+                dku: "swear.vyner.-1.3:10.0:2.0:1.0:3.7:2.0:5.4:0:2.5:0:0",
+                noBundles: true
+            }).load();
+            await instance.isReady();
+
+            assert.strictEqual(instance.brand, "swear");
+            assert.strictEqual(instance.model, "vyner");
+        });
+
+        it("should initiate with DKU with initials", async () => {
+            const instance = new ripe.Ripe({
                 dku: "swear.vyner.-1.3:10.0:2.0:1.0:3.7:2.0:5.4:0:2.5:0:0.sw:metal_gold",
                 noBundles: true
             }).load();
@@ -239,6 +250,21 @@ describe("Ripe", function() {
             assert.strictEqual(instance.model, "vyner");
             assert.strictEqual(instance.initials, "sw");
             assert.strictEqual(instance.engraving, "metal_gold");
+        });
+
+        it("should initiate with DKU with initials extra", async () => {
+            const instance = new ripe.Ripe({
+                dku: "swear.air_rev_trigger.-1.0:1.0:0.0:1.0:1.1:0:0.left:pt:gold.right:tp:silver",
+                noBundles: true
+            }).load();
+            await instance.isReady();
+
+            assert.strictEqual(instance.brand, "swear");
+            assert.strictEqual(instance.model, "air_rev_trigger");
+            assert.strictEqual(instance.initialsExtra.left.initials, "pt");
+            assert.strictEqual(instance.initialsExtra.left.engraving, "gold");
+            assert.strictEqual(instance.initialsExtra.right.initials, "tp");
+            assert.strictEqual(instance.initialsExtra.right.engraving, "silver");
         });
     });
 });
