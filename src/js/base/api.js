@@ -502,6 +502,8 @@ ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
 
     const initials = options.initials === undefined ? this.initials : options.initials;
     const engraving = options.engraving === undefined ? this.engraving : options.engraving;
+    const initialsExtra =
+        options.initialsExtra === undefined ? this.initialsExtra : options.initialsExtra;
 
     if (initials !== undefined && initials !== null) {
         params.initials = initials;
@@ -509,6 +511,10 @@ ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
 
     if (engraving !== undefined && engraving !== null) {
         params.engraving = engraving;
+    }
+
+    if (initialsExtra !== undefined && initialsExtra !== null) {
+        params.initials_extra = this._generateExtraS(initialsExtra);
     }
 
     return options;
