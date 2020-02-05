@@ -55,7 +55,7 @@
         "node-fetch": "^2.6.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.8.4",
+        "@babel/core": "^7.7.5",
         "@babel/polyfill": "^7.8.3",
         "@babel/preset-env": "^7.8.4",
         "eslint": "^6.8.0",
@@ -74,7 +74,7 @@
         "gulp-sourcemaps": "^2.6.5",
         "gulp-terser": "^1.2.0",
         "gulp-zip": "^5.0.1",
-        "jsdom": "^16.1.0",
+        "jsdom": "^15.2.1",
         "minami": "^1.2.3",
         "mocha": "^7.0.1",
         "mocha-cli": "^1.0.1",
