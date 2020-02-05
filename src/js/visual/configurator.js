@@ -910,7 +910,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
               }
             : null;
         maskImage.onerror = () => {
-            this.removeAttribute("src");
+            maskImage.removeAttribute("src");
         };
         maskImage.crossOrigin = "anonymous";
         maskImage.dataset.src = url;
