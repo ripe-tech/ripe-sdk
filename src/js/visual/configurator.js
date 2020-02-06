@@ -327,6 +327,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     let animate = false;
     if (view !== nextView && viewFrames !== undefined) {
         this.element.dataset.view = nextView;
+        this.element.dataset.frames = viewFrames;
         animate = type === null ? this.viewAnimate : type;
         duration = duration || this.duration;
     }
@@ -775,7 +776,7 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
     // tries to keep the current view and position
     // if the new model supports it otherwise
     // changes to a supported frame
-    let view = this.element.dataset.position;
+    let view = this.element.dataset.view;
     let position = this.element.dataset.position;
     let maxPosition = this.frames[view];
     if (!maxPosition) {
@@ -795,6 +796,11 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
             delete this._lastFrame[view];
         }
     }
+
+    // updates the number of frames in the initial view
+    // taking into account the requested frames data
+    const viewFrames = this.frames[view];
+    this.element.dataset.frames = viewFrames;
 
     // marks the current configurator as ready and triggers
     // the associated ready event to any event listener
