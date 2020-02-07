@@ -113,6 +113,7 @@ ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callbac
         method: "POST",
         dataJ: {
             name: countryGroup.name,
+            description: countryGroup.description,
             currency: countryGroup.currency,
             countries: countryGroup.countries
         }
