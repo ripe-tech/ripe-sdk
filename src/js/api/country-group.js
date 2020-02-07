@@ -111,11 +111,7 @@ ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callbac
         url: url,
         auth: true,
         method: "POST",
-        dataJ: {
-            name: countryGroup.name,
-            currency: countryGroup.currency,
-            countries: countryGroup.countries
-        }
+        dataJ: countryGroup
     });
 
     options = this._build(options);
@@ -156,11 +152,7 @@ ripe.Ripe.prototype.updateCountryGroup = function(id, countryGroup, options, cal
         url: url,
         auth: true,
         method: "PUT",
-        dataJ: {
-            name: countryGroup.name,
-            currency: countryGroup.currency,
-            countries: countryGroup.countries
-        }
+        dataJ: countryGroup
     });
 
     options = this._build(options);

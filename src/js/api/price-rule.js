@@ -99,27 +99,7 @@ ripe.Ripe.prototype.createPriceRule = function(priceRule, options, callback) {
         url: url,
         method: "POST",
         auth: true,
-        dataJ: {
-            brand: priceRule.brand,
-            shoe: priceRule.shoe,
-            variant: priceRule.variant,
-            part: priceRule.part,
-            material: priceRule.material,
-            color: priceRule.color,
-            vat_included: priceRule.vat_included,
-            ddp_included: priceRule.ddp_included,
-            fixed_price: priceRule.fixed_price,
-            round_price: priceRule.round_price,
-            pivot: priceRule.pivot,
-            priority: priceRule.priority,
-            price_eur: priceRule.price_eur,
-            price_usd: priceRule.price_usd,
-            price_gbp: priceRule.price_gbp,
-            price_geo: priceRule.price_geo,
-            name: priceRule.name,
-            description: priceRule.description,
-            enabled: priceRule.enabled
-        }
+        dataJ: priceRule
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
@@ -156,27 +136,7 @@ ripe.Ripe.prototype.updatePriceRule = function(priceRule, options, callback) {
         url: url,
         method: "PUT",
         auth: true,
-        dataJ: {
-            brand: priceRule.brand,
-            shoe: priceRule.shoe,
-            variant: priceRule.variant,
-            part: priceRule.part,
-            material: priceRule.material,
-            color: priceRule.color,
-            vat_included: priceRule.vat_included,
-            ddp_included: priceRule.ddp_included,
-            fixed_price: priceRule.fixed_price,
-            round_price: priceRule.round_price,
-            pivot: priceRule.pivot,
-            priority: priceRule.priority,
-            price_eur: priceRule.price_eur,
-            price_usd: priceRule.price_usd,
-            price_gbp: priceRule.price_gbp,
-            price_geo: priceRule.price_geo,
-            name: priceRule.name,
-            description: priceRule.description,
-            enabled: priceRule.enabled
-        }
+        dataJ: priceRule
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
