@@ -582,6 +582,10 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
         return result;
     }
 
+    // sets the base instance fields for both the initials and the
+    // engraving and updates the initials extra on the main group,
+    // providing a compatibility layer between the initials and the
+    // initials extra mode of working
     this.initials = initials || "";
     this.engraving = engraving || null;
     this.initialsExtra = {
