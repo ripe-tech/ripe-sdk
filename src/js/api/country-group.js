@@ -1,6 +1,9 @@
 if (
     typeof require !== "undefined" &&
-    (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") // eslint-disable-line camelcase
+    (typeof window === "undefined" ||
+        // eslint-disable-next-line camelcase
+        typeof __webpack_require__ !== "undefined" ||
+        (navigator !== undefined && navigator.product === "ReactNative"))
 ) {
     // eslint-disable-next-line no-redeclare
     var base = require("../base");
@@ -111,11 +114,7 @@ ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callbac
         url: url,
         auth: true,
         method: "POST",
-        dataJ: {
-            name: countryGroup.name,
-            currency: countryGroup.currency,
-            countries: countryGroup.countries
-        }
+        dataJ: countryGroup
     });
 
     options = this._build(options);
@@ -156,11 +155,7 @@ ripe.Ripe.prototype.updateCountryGroup = function(id, countryGroup, options, cal
         url: url,
         auth: true,
         method: "PUT",
-        dataJ: {
-            name: countryGroup.name,
-            currency: countryGroup.currency,
-            countries: countryGroup.countries
-        }
+        dataJ: countryGroup
     });
 
     options = this._build(options);

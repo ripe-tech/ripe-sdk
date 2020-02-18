@@ -163,14 +163,15 @@ if (ripe.canRedo()) {
 
 If you need to explicitly retrieve the product's customization information you can use the following methods:
 
-- `getConfig`: to get information about the product's model.
-- `getCombinations`: to get all the customization options for products without any restrictions applied.
-- `getDefaults`: to get the product's default customization.
-- `getFrames`: to get all the product's frames.
-- `getPrice`: to get the product's pricing information.
-- `getFactory`: to get the factory information where the model is made, specifically its name and the estimated production time in days.
+* `getConfig`: to get information about the product's model.
+* `getCombinations`: to get all the customization options for products without any restrictions applied.
+* `getDefaults`: to get the product's default customization.
+* `getFrames`: to get all the product's frames.
+* `getPrice`: to get the product's pricing information.
+* `getFactory`: to get the factory information where the model is made, specifically its name and the estimated production time in days.
 
 These functions receive a callback function as a parameter as shown below:
+
 ```javascript
 ripe.getPrice(function(value) {
     var price = document.getElementById("price");
@@ -230,7 +231,7 @@ configurator.bind("loaded", function() {
 
 ### Part synchronization
 
-If your product has synchronization rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behaviour automatically. To do this you need to initialize the `SyncPlugin` which receives the synchronisation rules and add it to the ripe object using the `addPlugin` function. When a new part is set, the plugin checks the synchronisation rules and automatically makes the necessary changes to the related parts.
+If your product has synchronization rules, where a set of parts must always have the same material and color, you can use the `sync` plugin to have this behavior automatically. To do this you need to initialize the `SyncPlugin` which receives the synchronization rules and add it to the ripe object using the `addPlugin` function. When a new part is set, the plugin checks the synchronization rules and automatically makes the necessary changes to the related parts.
 
 ```javascript
 ripe.getConfig(function(config) {
@@ -248,8 +249,8 @@ To be notified when a restriction causes parts to be changed, bind to the `restr
 ```javascript
 ripe.getConfig(function(config) {
     var restrictionRules = config.restrictions;
-    var resctrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(restrictionRules);
-    ripe.addPlugin(resctrictionsPlugin);
+    var restrictionsPlugin = new Ripe.plugins.RestrictionsPlugin(restrictionRules);
+    ripe.addPlugin(restrictionsPlugin);
     restrictionsPlugin.bind("restrictions", function(changes, part) {});
 });
 ```
@@ -259,10 +260,10 @@ ripe.getConfig(function(config) {
 If you need to create an order using the `ripe-core` API then you have to set the size of the product according to the `ripe-core` native scale. The following methods allow you to convert from and to that scale. `scale` is a string that represents the size scale, `value` is the numeric value in that scale and `gender` is a string that can be set to `female`, `male` or `kids`.
 To reduce the number of requests when you need to convert several size options you can use the bulk methods that accept an array of values and return an array with all the results.
 
-- `sizeToNative(scale, value, gender)`
-- `nativeToSize(scale, value, gender)`
-- `sizeToNativeB(scales, values, genders)`
-- `nativeToSizeB(scales, values, genders)`
+* `sizeToNative(scale, value, gender)`
+* `nativeToSize(scale, value, gender)`
+* `sizeToNativeB(scales, values, genders)`
+* `nativeToSizeB(scales, values, genders)`
 
 ## 9. Authentication
 
@@ -307,8 +308,8 @@ if (ripe.isOAuthPending()) {
 | `variant`          | *string*           | Variant of the customizable product.                                                                                                                                                       |
 | `useChain`         | *boolean*          | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default.                                              |
 | `useMasks`         | *boolean*          | Enables masks on selection/highlight. True by default.                                                                                                                                     |
-| `usePrice`         | *boolean*          | Enables the fetch price feature everytime a new part is set. True by default.                                                                                                              |
-| `useSync`          | *boolean*          | Enables the part synchronisation feature. False by default.                                                                                                                                |
+| `usePrice`         | *boolean*          | Enables the fetch price feature every time a new part is set. True by default.                                                                                                              |
+| `useSync`          | *boolean*          | Enables the part synchronization feature. False by default.                                                                                                                                |
 
 ## Browser Support
 

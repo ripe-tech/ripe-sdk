@@ -1,6 +1,9 @@
 if (
     typeof require !== "undefined" &&
-    (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") // eslint-disable-line camelcase
+    (typeof window === "undefined" ||
+        // eslint-disable-next-line camelcase
+        typeof __webpack_require__ !== "undefined" ||
+        (navigator !== undefined && navigator.product === "ReactNative"))
 ) {
     // eslint-disable-next-line no-redeclare
     var base = require("../base");
@@ -242,7 +245,8 @@ ripe.Configurator.prototype.deinit = function() {
  * Displays a new frame, with an animation from the starting frame
  * proper animation should be performed.
  *
- * @param {Object} frame The new frame to display.
+ * @param {Object} frame The new frame to display, can use both the minimal or the extended
+ * format for the description of the frame.
  * @param {Object} options Set of optional parameters to adjust the change frame, such as:
  * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or 'null' (without any style).
  * - 'duration' - The duration of the animation in milliseconds (defaults to 'null').
@@ -273,6 +277,11 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
     const safe = options.safe === undefined ? true : options.safe;
     const first = options.first === undefined ? true : options.first;
+
+    // updates the animation start timestamp with the current timestamp in
+    // case no start time is currently defined
+    options._start = options._start === undefined ? new Date().getTime() : options._start;
+    options._step = options._step === undefined ? 0 : options._step;
 
     // normalizes both the (current) view and position values
     const view = this.element.dataset.view;
@@ -321,6 +330,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     let animate = false;
     if (view !== nextView && viewFrames !== undefined) {
         this.element.dataset.view = nextView;
+        this.element.dataset.frames = viewFrames;
         animate = type === null ? this.viewAnimate : type;
         duration = duration || this.duration;
     }
@@ -330,11 +340,16 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     let stepDuration = null;
     let stepPosition = nextPosition;
 
+    // sets the initial time reduction to be applied for the frame
+    // based animation (rotation), this value should be calculated
+    // taking into account the delay in the overall animation
+    let reducedTime = 0;
+
     // in case any kind of duration was provided a timed animation
     // should be performed and as such a proper calculus should be
     // performed to determine the current step duration an the position
     // associated with the current step operation
-    if (view === nextView && (duration || stepDuration || revolutionDuration)) {
+    if (view === nextView && (duration || stepDurationRef || revolutionDuration)) {
         // ensures that no animation on a pre-frame render exists
         // the animation itself is going to be "managed" by the
         // the change frame tick logic
@@ -350,6 +365,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
                       Math.abs(position - nextPosition),
                       viewFrames - Math.abs(position - nextPosition)
                   );
+        options._stepCount = options._stepCount === undefined ? stepCount : options._stepCount;
 
         // in case the (total) revolution time for the view is defined a
         // step timing based animation is calculated based on the total
@@ -376,19 +392,47 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
             duration = stepDurationRef * stepCount;
         }
 
+        // in case the end (target) timestamp is not yet defined then
+        // updates the value with the target duration
+        options._end = options._end === undefined ? options._start + duration : options._end;
+
         // determines the duration (in seconds) for each step taking
         // into account the complete duration and the number of steps
         stepDuration = duration / Math.abs(stepCount);
         options.duration = duration - stepDuration;
 
+        // in case no step duration has been defined defines one as that's relevant
+        // to be able to calculate expected time at this point in time and then
+        // calculate the amount of time and frames to skip
+        options._stepDuration =
+            options._stepDuration === undefined ? stepDuration : options._stepDuration;
+
+        // calculates the expected timestamp for the current position in
+        // time and then the delay against it (for proper frame dropping)
+        const expected = options._start + options._step * options._stepDuration;
+        const delay = Math.max(new Date().getTime() - expected, 0);
+
+        // calculates the number of frames that have to be skipped to re-catch
+        // the animation back to the expect time-frame
+        const frameSkip = Math.floor(delay / stepDuration);
+        reducedTime = delay % stepDuration;
+        const stepSize = frameSkip + 1;
+
+        // calculates the delta in terms of steps taking into account
+        // if any frame should be skipped in the animation
+        const nextStep = Math.min(options._stepCount, options._step + stepSize);
+        const delta = Math.min(stepSize, nextStep - options._step);
+        options._step = nextStep;
+
         // checks if it should rotate in the positive or negative direction
         // according to the current view definition and then calculates the
         // next position taking into account that definition
         const goPositive = (position + stepCount) % viewFrames === nextPosition;
-        stepPosition = stepCount !== 0 ? (goPositive ? position + 1 : position - 1) : position;
+        stepPosition =
+            stepCount !== 0 ? (goPositive ? position + delta : position - delta) : position;
 
         // wrap around as needed (avoiding index overflow)
-        stepPosition = stepPosition < 0 ? viewFrames - 1 : stepPosition;
+        stepPosition = stepPosition < 0 ? viewFrames + stepPosition : stepPosition;
         stepPosition = stepPosition % viewFrames;
 
         // updates the position according to the calculated one on
@@ -406,6 +450,16 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     preventDrag = preventDrag && (animate || duration);
     preventDrag && this.element.classList.add("no-drag");
 
+    // calculates the amount of time that the current operation is
+    // going to sleep to able to correctly address the animation sequence
+    // (valid only for no animation scenarios, no cross fade) if this
+    // sleep time is valid (greater than zero) tuns the async based
+    // await operation for the amount of time
+    const sleepTime = animate ? 0 : stepDuration - reducedTime;
+    if (sleepTime > 0) {
+        await new Promise(resolve => setTimeout(() => resolve(), sleepTime));
+    }
+
     // computes the frame key (normalized) and then triggers an event
     // notifying any listener about the new frame that was set
     const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
@@ -413,6 +467,8 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
 
     // runs the update operation that should sync the visuals of the
     // configurator according to the current internal state (in data)
+    // this operation waits for the proper drawing of the image (takes
+    // some time and resources to be completed)
     await this.update(
         {},
         {
@@ -433,22 +489,9 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // possible next tick of the operation
     options = Object.assign({}, options, { safe: false, first: false });
 
-    await new Promise((resolve, reject) => {
-        // schedules the new change frame operation according to
-        // the requested step duration (if animation required)
-        // this is going to be the next step in the animation
-        setTimeout(
-            async () => {
-                try {
-                    await this.changeFrame(frame, options);
-                    resolve();
-                } catch (err) {
-                    reject(err);
-                }
-            },
-            animate ? 0 : stepDuration
-        );
-    });
+    // runs the next tick operation to change the frame of the current
+    // configurator to the next one (iteration cycle)
+    await this.changeFrame(frame, options);
 };
 
 /**
@@ -733,7 +776,7 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
     // tries to keep the current view and position
     // if the new model supports it otherwise
     // changes to a supported frame
-    let view = this.element.dataset.position;
+    let view = this.element.dataset.view;
     let position = this.element.dataset.position;
     let maxPosition = this.frames[view];
     if (!maxPosition) {
@@ -753,6 +796,11 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
             delete this._lastFrame[view];
         }
     }
+
+    // updates the number of frames in the initial view
+    // taking into account the requested frames data
+    const viewFrames = this.frames[view];
+    this.element.dataset.frames = viewFrames;
 
     // marks the current configurator as ready and triggers
     // the associated ready event to any event listener
@@ -910,7 +958,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
               }
             : null;
         maskImage.onerror = () => {
-            this.removeAttribute("src");
+            maskImage.removeAttribute("src");
         };
         maskImage.crossOrigin = "anonymous";
         maskImage.dataset.src = url;

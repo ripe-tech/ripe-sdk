@@ -1,6 +1,9 @@
 if (
     typeof require !== "undefined" &&
-    (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") // eslint-disable-line camelcase
+    (typeof window === "undefined" ||
+        // eslint-disable-next-line camelcase
+        typeof __webpack_require__ !== "undefined" ||
+        (navigator !== undefined && navigator.product === "ReactNative"))
 ) {
     // eslint-disable-next-line no-redeclare
     var base = require("./base");
@@ -325,7 +328,9 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
         this.initials = config.initials === undefined ? this.initials : config.initials;
         this.engraving = config.engraving === undefined ? this.engraving : config.engraving;
         this.initialsExtra =
-            config.initialsExtra === undefined ? this.initialsExtra : config.initialsExtra;
+            config.initials_extra === undefined && config.initialsExtra === undefined
+                ? this.initialsExtra
+                : config.initialsExtra || config.initials_extra;
     }
 
     // determines if a valid model is currently defined for the ripe
@@ -580,6 +585,10 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
         return result;
     }
 
+    // sets the base instance fields for both the initials and the
+    // engraving and updates the initials extra on the main group,
+    // providing a compatibility layer between the initials and the
+    // initials extra mode of working
     this.initials = initials || "";
     this.engraving = engraving || null;
     this.initialsExtra = {

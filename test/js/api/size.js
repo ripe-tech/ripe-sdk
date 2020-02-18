@@ -28,10 +28,6 @@ describe("SizeAPI", function() {
                     shadow: {
                         material: "default",
                         color: "default"
-                    },
-                    overlay: {
-                        material: "default",
-                        color: "default"
                     }
                 },
                 initials: "JB",
@@ -46,7 +42,7 @@ describe("SizeAPI", function() {
 
             assert.deepStrictEqual(
                 query,
-                "brand=dummy&model=dummy&p=overlay:default:default&p=piping:leather_dmy:black&p=shadow:default:default&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&initials=JB&engraving=normal&initials_extra=main:JB:normal"
+                "brand=dummy&model=dummy&p=piping:leather_dmy:black&p=shadow:default:default&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&initials=JB&engraving=normal&initials_extra=main:JB:normal"
             );
         });
     });

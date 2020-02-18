@@ -1,6 +1,9 @@
 if (
     typeof require !== "undefined" &&
-    (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") // eslint-disable-line camelcase
+    (typeof window === "undefined" ||
+        // eslint-disable-next-line camelcase
+        typeof __webpack_require__ !== "undefined" ||
+        (navigator !== undefined && navigator.product === "ReactNative"))
 ) {
     // eslint-disable-next-line no-redeclare
     var base = require("./base");
@@ -502,6 +505,8 @@ ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
 
     const initials = options.initials === undefined ? this.initials : options.initials;
     const engraving = options.engraving === undefined ? this.engraving : options.engraving;
+    const initialsExtra =
+        options.initialsExtra === undefined ? this.initialsExtra : options.initialsExtra;
 
     if (initials !== undefined && initials !== null) {
         params.initials = initials;
@@ -509,6 +514,10 @@ ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
 
     if (engraving !== undefined && engraving !== null) {
         params.engraving = engraving;
+    }
+
+    if (initialsExtra !== undefined && initialsExtra !== null) {
+        params.initials_extra = this._generateExtraS(initialsExtra);
     }
 
     return options;
