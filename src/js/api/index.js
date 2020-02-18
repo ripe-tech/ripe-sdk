@@ -1,5 +1,4 @@
 const account = require("./account");
-const admin = require("./admin");
 const brand = require("./brand");
 const build = require("./build");
 const config = require("./config");
@@ -13,7 +12,6 @@ const size = require("./size");
 const sku = require("./sku");
 
 Object.assign(module.exports, account);
-Object.assign(module.exports, admin);
 Object.assign(module.exports, brand);
 Object.assign(module.exports, build);
 Object.assign(module.exports, config);

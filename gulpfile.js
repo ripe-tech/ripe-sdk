@@ -39,7 +39,6 @@ const paths = {
         "src/js/base/api.js",
         "src/js/base/auth.js",
         "src/js/api/account.js",
-        "src/js/api/admin.js",
         "src/js/api/brand.js",
         "src/js/api/build.js",
         "src/js/api/config.js",

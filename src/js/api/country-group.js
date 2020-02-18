@@ -31,13 +31,11 @@ ripe.Ripe.prototype.getCountryGroups = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups`;
-
     options = Object.assign(options, {
         url: url,
         method: "GET",
         auth: true
     });
-
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -70,13 +68,11 @@ ripe.Ripe.prototype.getCountryGroup = function(id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups/${id}`;
-
     options = Object.assign(options, {
         url: url,
         method: "GET",
         auth: true
     });
-
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -109,14 +105,12 @@ ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callbac
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups`;
-
     options = Object.assign(options, {
         url: url,
         auth: true,
         method: "POST",
         dataJ: countryGroup
     });
-
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -150,14 +144,12 @@ ripe.Ripe.prototype.updateCountryGroup = function(id, countryGroup, options, cal
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups/${id}`;
-
     options = Object.assign(options, {
         url: url,
         auth: true,
         method: "PUT",
         dataJ: countryGroup
     });
-
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -191,13 +183,11 @@ ripe.Ripe.prototype.deleteCountryGroup = function(id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups/${id}`;
-
     options = Object.assign(options, {
         url: url,
         auth: true,
         method: "DELETE"
     });
-
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
