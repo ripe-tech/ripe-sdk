@@ -9,38 +9,6 @@ if (
 }
 
 /**
- * Gets a build by brand name and version.
- *
- * @param {String} name The name of the brand of the build.
- * @param {Number} version The number of the version of the build.
- * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The build result.
- */
-ripe.Ripe.prototype.getBuildP = function(name, version, options) {
-    return new Promise((resolve, reject) => {
-        this.getBuild(name, version, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
-        });
-    });
-};
-
-/**
- * @ignore
- */
-ripe.Ripe.prototype.getBuild = function(name, version, options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.webUrl}admin/builds/${name}/artifacts/${version}`;
-    options = {
-        url: url,
-        method: "GET",
-        auth: true
-    };
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
  * Retrieves the bundle of part, materials and colors translations of a specific brand and model
  * If no model is defined the retrieves the bundle of the owner's current model.
  *
