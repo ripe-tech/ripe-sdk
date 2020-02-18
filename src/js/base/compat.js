@@ -54,16 +54,17 @@ ripe.build = function() {
     return ripe.assign.apply(this, _arguments);
 };
 
-const reactNative = typeof navigator !== "undefined" && navigator.product === "ReactNative";
-
 if (
     typeof require !== "undefined" &&
     (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") && // eslint-disable-line camelcase
     typeof XMLHttpRequest === "undefined" // eslint-disable-line no-use-before-define
 ) {
     var XMLHttpRequest = null;
-    // eslint-disable-next-line camelcase
-    if (typeof __webpack_require__ === "undefined" && !reactNative) {
+    if (
+        // eslint-disable-next-line camelcase
+        typeof __webpack_require__ === "undefined" &&
+        (typeof navigator === "undefined" || navigator.product !== "ReactNative")
+    ) {
         // This is an hack to work around metro's (react-native bundler)
         // static analysis, needed until it supports optional imports
         // (https://github.com/react-native-community/discussions-and-proposals/issues/120)
@@ -77,12 +78,18 @@ if (
 
 if (
     typeof require !== "undefined" &&
-    (typeof window === "undefined" || typeof __webpack_require__ !== "undefined" || reactNative) && // eslint-disable-line camelcase
+    (typeof window === "undefined" ||
+        // eslint-disable-next-line camelcase
+        typeof __webpack_require__ !== "undefined" ||
+        (typeof navigator !== "undefined" && navigator.product === "ReactNative")) &&
     typeof fetch === "undefined" // eslint-disable-line no-use-before-define
 ) {
     var fetch = null;
-    // eslint-disable-next-line camelcase
-    if (typeof __webpack_require__ === "undefined" && !reactNative) {
+    if (
+        // eslint-disable-next-line camelcase
+        typeof __webpack_require__ === "undefined" &&
+        (typeof navigator === "undefined" || navigator.product !== "ReactNative")
+    ) {
         fetch = require("node-fetch");
     } else {
         fetch = window.fetch;
