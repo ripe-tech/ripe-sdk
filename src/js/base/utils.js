@@ -1,6 +1,10 @@
 if (
     typeof require !== "undefined" &&
-    (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") // eslint-disable-line camelcase
+    (
+        // eslint-disable-next-line camelcase
+        typeof window === "undefined" || typeof __webpack_require__ !== "undefined" ||
+        (navigator !== undefined && navigator.product === "ReactNative")
+    )
 ) {
     // eslint-disable-next-line no-redeclare
     var base = require("./base");
