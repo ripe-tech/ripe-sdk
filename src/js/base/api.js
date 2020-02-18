@@ -1,10 +1,9 @@
 if (
     typeof require !== "undefined" &&
-    (
+    (typeof window === "undefined" ||
         // eslint-disable-next-line camelcase
-        typeof window === "undefined" || typeof __webpack_require__ !== "undefined" ||
-        (navigator !== undefined && navigator.product === "ReactNative")
-    )
+        typeof __webpack_require__ !== "undefined" ||
+        (navigator !== undefined && navigator.product === "ReactNative"))
 ) {
     // eslint-disable-next-line no-redeclare
     var base = require("./base");
@@ -277,7 +276,6 @@ ripe.Ripe.prototype._requestURL = function(url, options, callback) {
  * @ignore
  */
 ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
-    console.log("FETCH!!!!");
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
 
@@ -422,8 +420,6 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
 
     this.trigger("build_request", request, options);
 
-    console.log("xml!!!!");
-    debugger;
     if (data) {
         request.send(data);
     } else {

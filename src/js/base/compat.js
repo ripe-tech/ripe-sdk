@@ -1,10 +1,9 @@
 if (
     typeof require !== "undefined" &&
-    (
+    (typeof window === "undefined" ||
         // eslint-disable-next-line camelcase
-        typeof window === "undefined" || typeof __webpack_require__ !== "undefined" ||
-        (navigator !== undefined && navigator.product === "ReactNative")
-    )
+        typeof __webpack_require__ !== "undefined" ||
+        (navigator !== undefined && navigator.product === "ReactNative"))
 ) {
     // eslint-disable-next-line no-redeclare
     var base = require("./base");
@@ -65,9 +64,12 @@ if (
     var XMLHttpRequest = null;
     // eslint-disable-next-line camelcase
     if (typeof __webpack_require__ === "undefined" && !reactNative) {
-        const a = "Xmlhttprequest";
-        const b = a.toLowerCase();
-        XMLHttpRequest = require(b).XMLHttpRequest;
+        // This is an hack to work around metro's (react-native bundler)
+        // static analysis, needed until it supports optional imports
+        // (https://github.com/react-native-community/discussions-and-proposals/issues/120)
+        const mixedModuleName = "Xmlhttprequest";
+        const correctModuleName = mixedModuleName.toLowerCase();
+        XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
     } else {
         XMLHttpRequest = window.XMLHttpRequest;
     }
