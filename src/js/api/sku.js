@@ -20,6 +20,7 @@ if (
  *  - 'brand' - The brand of the model.
  *  - 'model' - The name of the model.
  *  - 'variant' - The variant of the model.
+ *  - 'version' - The version of the build.
  *  - 'parts' - The parts of the customized model.
  *  - 'initials' - The value for the initials of the personalized model.
  *  - 'engraving' - The value for the engraving value of the personalized model.
@@ -55,6 +56,7 @@ ripe.Ripe.prototype.createSku = function(identifier, domain, options, callback) 
  *  - 'brand' - The brand of the model.
  *  - 'model' - The name of the model.
  *  - 'variant' - The variant of the model.
+ *  - 'version' - The version of the build.
  *  - 'parts' - The parts of the customized model.
  *  - 'initials' - The value for the initials of the personalized model.
  *  - 'engraving' - The value for the engraving value of the personalized model.

@@ -11,6 +11,7 @@ window.onload = function() {
     var brand = _body.dataset.brand || "swear";
     var model = _body.dataset.model || "vyner";
     var variant = _body.dataset.variant || "";
+    var version = _body.dataset.version || null;
     var currency = _body.dataset.currency || "USD";
     var country = _body.dataset.country || "US";
     var clientId = _body.dataset.client_id || null;
@@ -26,6 +27,7 @@ window.onload = function() {
         brand: brand,
         model: model,
         variant: variant,
+        version: version,
         url: url,
         currency: currency,
         country: country,

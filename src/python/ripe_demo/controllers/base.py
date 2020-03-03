@@ -22,6 +22,7 @@ class BaseController(appier.Controller):
             brand = self.field("brand"),
             model = self.field("model"),
             variant = self.field("variant"),
+            version = self.field("version"),
             country = self.field("country"),
             currency = self.field("currency"),
             client_id = self.field("client_id", client_id),
