@@ -150,12 +150,18 @@ ripe.Configurator.prototype.resize = function(size) {
  * This function is called (by the owner) whenever its state changes
  * so that the Configurator can update itself for the new state.
  *
+ * This method is "protected" by unique signature validation in order
+ * to avoid extra render and frame loading operations. Operations are
+ * available to force the update operation even if the signature is the
+ * same as the one previously set.
+ *
  * @param {Object} state An object containing the new state of the owner.
  * @param {Object} options Set of optional parameters to adjust the Configurator update, such as:
  * - 'animate' - If it's to animate the update (defaults to 'false').
  * - 'duration' - The duration in milliseconds that the transition should take.
  * - 'callback' - The callback to be called at the end of the update.
  * - 'preload' - If it's to execute the pre-loading process.
+ * - 'force' - If the updating operation should be forced (ignores signature).
  */
 ripe.Configurator.prototype.update = async function(state, options = {}) {
     if (this.ready === false) {
@@ -1326,24 +1332,27 @@ ripe.Configurator.prototype._registerHandlers = function() {
     });
 
     // listens for attribute changes to redraw the configurator
-    // if needed, this makes use of the mutation observer
+    // if needed, this makes use of the mutation observer, the
+    // redraw should be done for width and height style and attributes
     // eslint-disable-next-line no-undef
     const Observer = MutationObserver || WebKitMutationObserver;
     this._observer = Observer
         ? new Observer(function(mutations) {
               for (let index = 0; index < mutations.length; index++) {
                   const mutation = mutations[index];
-                  mutation.type === "style" && self.resize();
-                  mutation.type === "attributes" && self.update();
+                  if (mutation.type === "style") self.resize();
+                  if (mutation.type === "attributes") self.update();
               }
           })
         : null;
-    this._observer &&
+    if (this._observer) {
         this._observer.observe(this.element, {
             attributes: true,
             subtree: false,
-            characterData: true
+            characterData: true,
+            attributeFilter: ["style", "data-format", "data-size", "data-width", "data-height"]
         });
+    }
 
     // adds handlers for the touch events so that they get
     // parsed to mouse events for the configurator element,

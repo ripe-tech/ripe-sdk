@@ -882,9 +882,11 @@ ripe.Ripe.prototype.update = function(state) {
         child.update(state);
     }
 
-    this.ready && this.trigger("update");
+    if (this.ready) this.trigger("update");
 
-    this.ready && this.usePrice && this.getPrice(value => this.trigger("price", value));
+    if (this.ready && this.usePrice) {
+        this.getPrice(value => this.trigger("price", value));
+    }
 };
 
 /**
