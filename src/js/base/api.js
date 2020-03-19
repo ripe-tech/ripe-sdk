@@ -432,6 +432,8 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
  * @ignore
  */
 ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
+    this.trigger("pre_query_options", options);
+
     const params = options.params || {};
     options.params = params;
 
@@ -498,6 +500,8 @@ ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
         params.p.push(part + ":" + material + ":" + color);
     }
 
+    this.trigger("post_query_options", options);
+
     return options;
 };
 
@@ -505,6 +509,8 @@ ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
  * @ignore
  */
 ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
+    this.trigger("pre_initials_options", options);
+
     const params = options.params || {};
     options.params = params;
 
@@ -525,6 +531,8 @@ ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
         params.initials_extra = this._generateExtraS(initialsExtra);
     }
 
+    this.trigger("post_initials_options", options);
+
     return options;
 };
 
@@ -541,6 +549,8 @@ ripe.Ripe.prototype._getQuery = function(options = {}) {
  * @see {link http://docs.platforme.com/#config-endpoints-price}
  */
 ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
+    this.trigger("pre_price_options", options);
+
     options = this._getQueryOptions(options);
 
     const params = options.params || {};
@@ -554,10 +564,14 @@ ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
 
     const url = this.url + "config/price";
 
-    return Object.assign(options, {
+    options = Object.assign(options, {
         url: url,
         method: "GET"
     });
+
+    this.trigger("post_price_options", options);
+
+    return options;
 };
 
 /**
@@ -565,6 +579,8 @@ ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
  * @see {link http://docs.platforme.com/#render-endpoints-compose}
  */
 ripe.Ripe.prototype._getImageOptions = function(options = {}) {
+    this.trigger("pre_image_options", options);
+
     options.country = options.country || null;
     options.currency = options.currency || null;
 
@@ -609,11 +625,15 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
 
     const url = this.url + "compose";
 
-    return Object.assign(options, {
+    options = Object.assign(options, {
         url: url,
         method: "GET",
         params: params
     });
+
+    this.trigger("post_image_options", options);
+
+    return options;
 };
 
 /**
@@ -621,6 +641,8 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
  * @see {link http://docs.platforme.com/#render-endpoints-mask}
  */
 ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
+    this.trigger("pre_mask_options", options);
+
     options.parts = options.parts || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
@@ -636,20 +658,27 @@ ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
 
     const url = this.url + "mask";
 
-    return Object.assign(options, {
+    options = Object.assign(options, {
         url: url,
         method: "GET",
         params: params
     });
+
+    this.trigger("post_mask_options", options);
+
+    return options;
 };
 
 /**
  * @ignore
  */
 ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
+    this.trigger("pre_swatch_options", options);
+
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const params = options.params || {};
+
     options.params = params;
 
     if (brand !== undefined && brand !== null) {
@@ -674,11 +703,15 @@ ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
 
     const url = this.url + "swatch";
 
-    return Object.assign(options, {
+    options = Object.assign(options, {
         url: url,
         method: "GET",
         params: params
     });
+
+    this.trigger("post_swatch_options", options);
+
+    return options;
 };
 
 /**
