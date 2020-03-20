@@ -46,8 +46,10 @@ ripe.Interactable.prototype.init = function() {
  * been changed and some kind of visual update should take place.
  *
  * @param {Object} state The new configuration state.
+ * @param {Object} options Set of update options that change the way
+ * the update operation is going to be performed.
  */
-ripe.Interactable.prototype.update = function(state) {};
+ripe.Interactable.prototype.update = async function(state, options = {}) {};
 
 /**
  * The deinitializer to be called (by the owner) when

@@ -873,20 +873,26 @@ ripe.Ripe.prototype.deselectPart = function(part, options = {}) {
  *
  * @param {Object} state An Object with the current customization and
  * personalization.
+ * @param {Object} options Set of update options that change the way
+ * the update operation is going to be performed.
  */
-ripe.Ripe.prototype.update = function(state) {
+ripe.Ripe.prototype.update = async function(state, options = {}) {
     state = state || this._getState();
+
+    const promises = [];
 
     for (let index = 0; index < this.children.length; index++) {
         const child = this.children[index];
-        child.update(state);
+        promises.push(child.update(state, options));
     }
 
     if (this.ready) this.trigger("update");
 
     if (this.ready && this.usePrice) {
-        this.getPrice(value => this.trigger("price", value));
+        this.getPriceP(value => this.trigger("price", value));
     }
+
+    await Promise.all(promises);
 };
 
 /**
@@ -1171,6 +1177,8 @@ ripe.Ripe.prototype._setPart = async function(part, material, color, events = tr
         return true;
     }
 
+    // triggers the update part operation properly encapsulated
+    // around the associated events (allowing proper interception)
     await this.trigger("pre_part", part, value);
     updatePart();
     await this.trigger("part", part, value);

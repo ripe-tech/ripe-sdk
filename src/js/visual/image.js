@@ -73,8 +73,9 @@ ripe.Image.prototype.init = function() {
  * so that the Image can update itself for the new state.
  *
  * @param {Object} state An object containing the new state of the owner.
+ * @param {Object} options Set of optional parameters to adjust the Image.
  */
-ripe.Image.prototype.update = function(state) {
+ripe.Image.prototype.update = async function(state, options = {}) {
     const frame = this.element.dataset.frame || this.frame;
     const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
