@@ -1286,7 +1286,7 @@ ripe.Ripe.prototype._toChoices = function(loadedConfig) {
     const choices = {};
     for (const part of loadedConfig.parts) {
         if (loadedConfig.defaults[part.name].hidden) continue;
-        if (loadedConfig.hidden.includes(part.name)) continue;
+        if (loadedConfig.hidden && loadedConfig.hidden.includes(part.name)) continue;
         const materialsState = {};
         choices[part.name] = {
             available: true,
