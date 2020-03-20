@@ -74,7 +74,7 @@
         "gulp-sourcemaps": "^2.6.5",
         "gulp-terser": "^1.2.0",
         "gulp-zip": "^5.0.1",
-        "jsdom": "^16.2.1",
+        "jsdom": "^15.2.1",
         "minami": "^1.2.3",
         "mocha": "^7.1.1",
         "mocha-cli": "^1.0.1",
