@@ -139,7 +139,7 @@ describe("OrderAPI", function() {
                 },
                 gender: "female",
                 size: 20,
-                meta: "client:ripe-sdk-test"
+                meta: ["client:ripe-sdk-test", "context:test"]
             });
 
             const structure = JSON.parse(result.structure);
@@ -170,6 +170,7 @@ describe("OrderAPI", function() {
             assert.strictEqual(structure.size, 20);
             assert.strictEqual(structure.gender, "female");
             assert.strictEqual(result.meta.client, "ripe-sdk-test");
+            assert.strictEqual(result.meta.context, "test");
 
             // deletes the newly imported production order
             result = await new Promise((resolve, reject) => {
@@ -224,7 +225,7 @@ describe("OrderAPI", function() {
                 },
                 product_id: 31415926,
                 size: 20,
-                meta: "client:ripe-sdk-test"
+                meta: ["client:ripe-sdk-test", "context:test"]
             });
 
             const structure = JSON.parse(result.structure);
@@ -256,6 +257,7 @@ describe("OrderAPI", function() {
             );
             assert.strictEqual(structure.size, 20);
             assert.strictEqual(result.meta.client, "ripe-sdk-test");
+            assert.strictEqual(result.meta.context, "test");
 
             // deletes the newly imported production order
             result = await new Promise((resolve, reject) => {
