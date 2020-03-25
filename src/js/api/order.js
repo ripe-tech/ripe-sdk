@@ -289,7 +289,7 @@ ripe.Ripe.prototype.cancelOrderP = function(number, options) {
  *  - 'productId' - The product's unique identification.
  *  - 'currency' - The 'ISO 4217' currency code in which the order has been sold.
  *  - 'country' - The 'ISO 3166-2' country code where the order has been placed.
- *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
+ *  - 'meta' - Complementary information to be added, as a key:value list (ie: '['key1:value1', 'key2:value2']).
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -320,7 +320,7 @@ ripe.Ripe.prototype.importOrder = function(ffOrderId, options, callback) {
  *  - 'productId' - The product's unique identification.
  *  - 'currency' - The 'ISO 4217' currency code in which the order has been sold.
  *  - 'country' - The 'ISO 3166-2' country code where the order has been placed.
- *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
+ *  - 'meta' - Complementary information to be added, as a key:value list (ie: '['key1:value1', 'key2:value2']).
  * @returns {Promise} The production order's data.
  */
 ripe.Ripe.prototype.importOrderP = function(ffOrderId, options, callback) {
@@ -347,7 +347,7 @@ ripe.Ripe.prototype.importOrderP = function(ffOrderId, options, callback) {
  *  - 'size' - The native size of the customized model.
  *  - 'product_id' - The product identifier of the base product that is used for pre-customization mapping.
  *  - 'notify' - Mark pre-customization to trigger notification after creation.
- *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
+ *  - 'meta' - Complementary information to be added, as a key:value list (ie: '['key1:value1', 'key2:value2']).
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -375,7 +375,7 @@ ripe.Ripe.prototype.precustomizationOrder = function(ffId, options, callback) {
  *  - 'size' - The native size of the customized model.
  *  - 'productId' - The product identifier of the base product that is used for pre-customization mapping.
  *  - 'notify' - Mark pre-customization to trigger notification after creation.
- *  - 'meta' - Complementary information to be added, key:value comma separated format (ie: 'key1:value1,key2:value2').
+ *  - 'meta' - Complementary information to be added, as a key:value list (ie: '['key1:value1', 'key2:value2']).
  * @returns {Promise} The production order's data.
  */
 ripe.Ripe.prototype.precustomizationOrderP = function(ffId, options, callback) {
