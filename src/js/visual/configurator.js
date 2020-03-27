@@ -545,11 +545,16 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
         part: part
     });
 
+    // gathers the front mask element and the associated source URL
+    // and in case it's the same as the one in request returns immediately
+    // as the mask is considered to be already loaded
     const frontMask = this.element.querySelector(".front-mask");
     const src = frontMask.getAttribute("src");
     if (src === url) {
+        self.trigger("highlighted_part", part);
         return;
     }
+
     if (this.frontMaskLoad) frontMask.removeEventListener("load", this.frontMaskLoad);
     if (this.frontMaskError) frontMask.removeEventListener("error", this.frontMaskError);
     frontMask.classList.remove("loaded");
