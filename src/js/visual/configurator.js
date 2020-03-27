@@ -587,6 +587,10 @@ ripe.Configurator.prototype.lowlight = function(options) {
     const frontMask = this.element.querySelector(".front-mask");
     frontMask.classList.remove("highlight");
     this.element.classList.remove("highlight");
+
+    // triggers an event indicating that a lowlight operation has been
+    // performed on the current configurator
+    this.trigger("lowlighted");
 };
 
 /**
