@@ -587,7 +587,7 @@ ripe.Configurator.prototype.lowlight = function(options) {
     const frontMask = this.element.querySelector(".front-mask");
     frontMask.classList.remove("highlight");
     this.element.classList.remove("highlight");
-    this.trigger("lowlight");
+    this.trigger("lowlighted");
 };
 
 /**
