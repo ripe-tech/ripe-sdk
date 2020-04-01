@@ -40,6 +40,7 @@ ripe.Configurator.prototype = ripe.build(ripe.Visual.prototype);
  * owner's default values.
  */
 ripe.Configurator.prototype.init = function() {
+    console.log("Starting loading frames");
     ripe.Visual.prototype.init.call(this);
 
     this.width = this.options.width || 1000;
@@ -849,6 +850,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     position = position || this.element.dataset.position || 0;
 
     const frame = ripe.getFrameKey(view, position);
+    console.log("Loading image", frame);
 
     const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
@@ -937,6 +939,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // waits until the image promise is resolved so that
     // we're sure everything is currently loaded
     await imagePromise;
+    console.log("Loaded image", frame);
 };
 
 /**
@@ -953,6 +956,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
     const frame = ripe.getFrameKey(view, position);
+    console.log("Loading mask of frame:", frame);
     const url = this.owner._getMaskURL({
         frame: ripe.frameNameHack(frame),
         size: size,
@@ -978,6 +982,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
         maskImage.crossOrigin = "anonymous";
         maskImage.dataset.src = url;
         maskImage.setAttribute("src", url);
+        console.log("loaded mask of frame ????:", frame);
     }
 };
 
@@ -1113,6 +1118,7 @@ ripe.Configurator.prototype._preload = async function(useChain) {
                 this.element.classList.remove("preloading");
                 this.element.classList.remove("no-drag");
                 this.trigger("loaded");
+                console.log("Finishing loading all frames");
                 resolve();
             }
         };
