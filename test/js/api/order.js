@@ -1,5 +1,5 @@
 const assert = require("assert");
-const uuidv4 = require("uuid/v4");
+const uuid = require("uuid");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
@@ -108,14 +108,13 @@ describe("OrderAPI", function() {
             let result = null;
 
             const remote = ripe.RipeAPI();
-            const uuid = uuidv4();
+            const ffOrderId = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            const ffOrderId = uuid;
             result = await remote.importOrderP(ffOrderId, {
                 brand: "dummy",
                 model: "dummy",

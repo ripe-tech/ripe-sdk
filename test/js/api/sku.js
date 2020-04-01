@@ -1,5 +1,5 @@
 const assert = require("assert");
-const uuidv4 = require("uuid/v4");
+const uuid = require("uuid");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
@@ -17,14 +17,14 @@ describe("SkuAPI", function() {
             let result = null;
 
             const remote = ripe.RipeAPI();
-            const uuid = uuidv4();
+            const identifier = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            result = await remote.createSkuP(uuid, "dummy", {
+            result = await remote.createSkuP(identifier, "dummy", {
                 brand: "dummy",
                 model: "dummy",
                 parts: {
