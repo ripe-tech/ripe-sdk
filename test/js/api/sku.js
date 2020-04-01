@@ -48,7 +48,7 @@ describe("SkuAPI", function() {
             });
             const createdSku = Object.assign({}, result);
 
-            assert.strictEqual(result.identifier, uuid);
+            assert.strictEqual(result.identifier, identifier);
             assert.strictEqual(result.domain, "dummy");
             assert.strictEqual(result.spec.brand, "dummy");
             assert.strictEqual(result.spec.model, "dummy");
@@ -74,7 +74,7 @@ describe("SkuAPI", function() {
                 })
             );
 
-            result = await remote.configInfoP({ params: { sku: uuid, domain: "dummy" } });
+            result = await remote.configInfoP({ params: { sku: identifier, domain: "dummy" } });
             assert.strictEqual(result.brand, "dummy");
             assert.strictEqual(result.model, "dummy");
             assert.strictEqual(
