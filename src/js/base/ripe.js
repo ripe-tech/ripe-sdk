@@ -811,6 +811,7 @@ ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
  */
 ripe.Ripe.prototype.bindInteractable = function(element) {
     this.children.push(element);
+    this.trigger("new_child", element);
     return element;
 };
 
@@ -878,6 +879,8 @@ ripe.Ripe.prototype.deselectPart = function(part, options = {}) {
  */
 ripe.Ripe.prototype.update = async function(state, options = {}) {
     state = state || this._getState();
+
+    this.trigger("pre_update");
 
     const promises = [];
 
