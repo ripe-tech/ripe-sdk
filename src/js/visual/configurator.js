@@ -40,7 +40,6 @@ ripe.Configurator.prototype = ripe.build(ripe.Visual.prototype);
  * owner's default values.
  */
 ripe.Configurator.prototype.init = function() {
-    console.log("Starting loading frames");
     ripe.Visual.prototype.init.call(this);
 
     this.width = this.options.width || 1000;
@@ -844,13 +843,14 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
  * @ignore
  */
 ripe.Configurator.prototype._loadFrame = async function(view, position, options = {}) {
+    const startTime = Date.now();
+
     // runs the defaulting operation on all of the parameters
     // sent to the load frame operation (defaulting)
     view = view || this.element.dataset.view || "side";
     position = position || this.element.dataset.position || 0;
 
     const frame = ripe.getFrameKey(view, position);
-    console.log("Loading image", frame);
 
     const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
@@ -890,7 +890,6 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
         height: height,
         full: false
     });
-
     // verifies if the loading of the current image
     // is considered redundant (already loaded or
     // loading) and avoids for performance reasons
@@ -939,13 +938,21 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // waits until the image promise is resolved so that
     // we're sure everything is currently loaded
     await imagePromise;
-    console.log("Loaded image", frame);
+
+    const imageTime = Date.now() - startTime;
+    this.trigger("frame_loaded_info", {
+        name: frame,
+        time: imageTime,
+        format: format
+    });
 };
 
 /**
  * @ignore
  */
 ripe.Configurator.prototype._loadMask = function(maskImage, view, position, options) {
+    const startTime = Date.now();
+
     // constructs the URL for the mask and then at the end of the
     // mask loading process runs the final update of the mask canvas
     // operation that will allow new highlight and selection operation
@@ -956,7 +963,6 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
     const frame = ripe.getFrameKey(view, position);
-    console.log("Loading mask of frame:", frame);
     const url = this.owner._getMaskURL({
         frame: ripe.frameNameHack(frame),
         size: size,
@@ -982,7 +988,9 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
         maskImage.crossOrigin = "anonymous";
         maskImage.dataset.src = url;
         maskImage.setAttribute("src", url);
-        console.log("loaded mask of frame ????:", frame);
+
+        const maskTime = Date.now() - startTime;
+        this.trigger("mask_loaded_info", { name: frame, time: maskTime });
     }
 };
 
@@ -1118,7 +1126,6 @@ ripe.Configurator.prototype._preload = async function(useChain) {
                 this.element.classList.remove("preloading");
                 this.element.classList.remove("no-drag");
                 this.trigger("loaded");
-                console.log("Finishing loading all frames");
                 resolve();
             }
         };

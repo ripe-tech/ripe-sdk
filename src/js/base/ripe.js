@@ -891,10 +891,12 @@ ripe.Ripe.prototype.update = async function(state, options = {}) {
     if (this.ready && this.usePrice) {
         const timestamp = Date.now();
         this._priceTimestamp = timestamp;
-        this.getPriceP().then(value => {
-            if (this._priceTimestamp > timestamp) return;
-            this.trigger("price", value);
-        }).catch((err) => this.trigger("price_error", err));
+        this.getPriceP()
+            .then(value => {
+                if (this._priceTimestamp > timestamp) return;
+                this.trigger("price", value);
+            })
+            .catch(err => this.trigger("price_error", err));
     }
 
     await Promise.all(promises);
