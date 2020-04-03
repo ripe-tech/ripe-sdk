@@ -217,7 +217,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     // and the current signature has changed
     const preloaded = this.element.classList.contains("preload");
     const mustPreload = preload !== undefined ? preload : changed || !preloaded;
-    mustPreload && this._preload(this.options.useChain);
+    if (mustPreload) this._preload(this.options.useChain);
 
     // runs the load operation for the current frame, taking into
     // account the multiple requirements for such execution
