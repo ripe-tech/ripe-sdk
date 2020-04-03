@@ -200,6 +200,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     previous = this.unique;
     const unique = signature + "&view=" + String(view) + "&position=" + String(position);
     if (previous === unique && !force) {
+        this.trigger("not_loaded");
         return false;
     }
     this.unique = unique;

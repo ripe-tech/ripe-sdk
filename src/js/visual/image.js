@@ -113,6 +113,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // verifies if the target image URL for the update is already
     // set and if that's the case returns (end of loop)
     if (this.element.src === url) {
+        this.trigger("not_loaded");
         return;
     }
 
