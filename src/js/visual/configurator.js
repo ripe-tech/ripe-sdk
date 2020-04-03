@@ -903,6 +903,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
         if (isReady) {
             await this._drawFrame(image, animate, duration);
         }
+        this.trigger("post_frame", view, position, options);
         return;
     }
 
