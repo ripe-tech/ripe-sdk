@@ -811,6 +811,7 @@ ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
  */
 ripe.Ripe.prototype.bindInteractable = function(element) {
     this.children.push(element);
+    this.trigger("bound", element);
     return element;
 };
 
@@ -823,6 +824,7 @@ ripe.Ripe.prototype.bindInteractable = function(element) {
 ripe.Ripe.prototype.unbindInteractable = function(element) {
     element.deinit();
     this.children.splice(this.children.indexOf(element), 1);
+    this.trigger("unbound", element);
 };
 
 /**
@@ -877,6 +879,8 @@ ripe.Ripe.prototype.deselectPart = function(part, options = {}) {
  * the update operation is going to be performed.
  */
 ripe.Ripe.prototype.update = async function(state, options = {}) {
+    this.trigger("pre_update");
+
     state = state || this._getState();
 
     const promises = [];
@@ -891,13 +895,17 @@ ripe.Ripe.prototype.update = async function(state, options = {}) {
     if (this.ready && this.usePrice) {
         const timestamp = Date.now();
         this._priceTimestamp = timestamp;
-        this.getPriceP().then(value => {
-            if (this._priceTimestamp > timestamp) return;
-            this.trigger("price", value);
-        }).catch((err) => this.trigger("price_error", err));
+        this.getPriceP()
+            .then(value => {
+                if (this._priceTimestamp > timestamp) return;
+                this.trigger("price", value);
+            })
+            .catch(err => this.trigger("price_error", err));
     }
 
     await Promise.all(promises);
+
+    this.trigger("post_update");
 };
 
 /**
