@@ -811,7 +811,7 @@ ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
  */
 ripe.Ripe.prototype.bindInteractable = function(element) {
     this.children.push(element);
-    this.trigger("new_child", element);
+    this.trigger("bound", element);
     return element;
 };
 
@@ -824,6 +824,7 @@ ripe.Ripe.prototype.bindInteractable = function(element) {
 ripe.Ripe.prototype.unbindInteractable = function(element) {
     element.deinit();
     this.children.splice(this.children.indexOf(element), 1);
+    this.trigger("unbound", element);
 };
 
 /**
