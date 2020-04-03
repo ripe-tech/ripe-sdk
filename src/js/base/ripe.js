@@ -586,6 +586,10 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
         return result;
     }
 
+    // triggers the event indicating the the start of the
+    // the (set) initials operation (notifies listeners)
+    this.trigger("pre_initials");
+
     // sets the base instance fields for both the initials and the
     // engraving and updates the initials extra on the main group,
     // providing a compatibility layer between the initials and the
@@ -615,6 +619,10 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
     // components can properly update their visuals
     this.update();
 
+    // triggers the event indicating the the end of the
+    // the (set) initials operation (notifies listeners)
+    this.trigger("post_initials");
+
     // returns the current instance (good for pipelining)
     return this;
 };
@@ -633,6 +641,10 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
     const isEmpty = groups.length === 0;
     const mainGroup = groups.includes("main") ? "main" : groups[0];
     const mainInitials = initialsExtra[mainGroup];
+
+    // triggers the event indicating the the start of the
+    // the (set) initials extra operation (notifies listeners)
+    this.trigger("pre_initials_extra");
 
     if (isEmpty) {
         this.initials = "";
@@ -663,6 +675,10 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
     // runs the update operation so that all the listening
     // components can properly update their visuals
     this.update();
+
+    // triggers the event indicating the the end of the
+    // the (set) initials extra operation (notifies listeners)
+    this.trigger("post_initials_extra");
 
     // returns the current instance (good for pipelining)
     return this;

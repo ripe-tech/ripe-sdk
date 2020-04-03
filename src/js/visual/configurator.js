@@ -165,7 +165,8 @@ ripe.Configurator.prototype.resize = function(size) {
  */
 ripe.Configurator.prototype.update = async function(state, options = {}) {
     if (this.ready === false) {
-        return;
+        this.trigger("not_loaded");
+        return false;
     }
 
     const view = this.element.dataset.view;
@@ -200,6 +201,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     previous = this.unique;
     const unique = signature + "&view=" + String(view) + "&position=" + String(position);
     if (previous === unique && !force) {
+        this.trigger("not_loaded");
         return false;
     }
     this.unique = unique;
@@ -224,6 +226,10 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
         animate: animate,
         duration: duration
     });
+
+    // returns a valid value indicating that the loading operation
+    // as been triggered with success (effective operation)
+    return true;
 };
 
 /**
