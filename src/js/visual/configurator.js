@@ -843,6 +843,8 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
  * @ignore
  */
 ripe.Configurator.prototype._loadFrame = async function(view, position, options = {}) {
+    this.trigger("pre_frame", view, position, options);
+
     // runs the defaulting operation on all of the parameters
     // sent to the load frame operation (defaulting)
     view = view || this.element.dataset.view || "side";
@@ -937,12 +939,15 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // waits until the image promise is resolved so that
     // we're sure everything is currently loaded
     await imagePromise;
+
+    this.trigger("post_frame", view, position, options);
 };
 
 /**
  * @ignore
  */
 ripe.Configurator.prototype._loadMask = function(maskImage, view, position, options) {
+    this.trigger("pre_mask", maskImage, view, position);
     // constructs the URL for the mask and then at the end of the
     // mask loading process runs the final update of the mask canvas
     // operation that will allow new highlight and selection operation
@@ -961,17 +966,22 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
         color: backgroundColor
     });
     if (draw && maskImage.dataset.src === url) {
+        this.trigger("post_mask", maskImage, view, position);
         setTimeout(() => {
             this._drawMask(maskImage);
         }, 150);
     } else {
         maskImage.onload = draw
             ? () => {
+                  this.trigger("post_mask", maskImage, view, position);
                   setTimeout(() => {
                       this._drawMask(maskImage);
                   }, 150);
               }
-            : null;
+            : () => {
+                  this.trigger("post_mask", maskImage, view, position);
+                  return null;
+              };
         maskImage.onerror = () => {
             maskImage.removeAttribute("src");
         };
