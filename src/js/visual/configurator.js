@@ -127,12 +127,12 @@ ripe.Configurator.prototype.resize = function(size) {
     frontMask.height = size;
     frontMask.style.width = size + "px";
     frontMask.style.height = size + "px";
-    frontMask.style.marginLeft = "-" + String(size) + "px";
+    frontMask.style.marginLeft = `-${String(size)}px`;
     back.width = size;
     back.height = size;
     back.style.width = size + "px";
     back.style.height = size + "px";
-    back.style.marginLeft = "-" + String(size) + "px";
+    back.style.marginLeft = `-${String(size)}px`;
     mask.width = size;
     mask.height = size;
     mask.style.width = size + "px";
@@ -169,6 +169,12 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
         return false;
     }
 
+    // allocates space for the possible promise that is going
+    // to be responsible for the preloading of the frames, populating
+    // the cache buffer for the complete set of frames associated with
+    // the currently loaded model configuration
+    let preloadPromise = null;
+
     const view = this.element.dataset.view;
     const position = this.element.dataset.position;
     const format = this.element.dataset.format || this.format;
@@ -183,14 +189,9 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
     let previous = this.signature || "";
-    const signature =
-        this.owner._getQuery() +
-        "&width=" +
-        String(width) +
-        "&height=" +
-        String(height) +
-        "&format=" +
-        String(format);
+    const signature = `${this.owner._getQuery()}&width=${String(width)}&height=${String(
+        height
+    )}&format=${String(format)}`;
     const changed = signature !== previous;
     const animate = options.animate === undefined ? (changed ? "simple" : false) : options.animate;
     this.signature = signature;
@@ -199,7 +200,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     // since the last frame load then ignores the
     // load request and returns immediately
     previous = this.unique;
-    const unique = signature + "&view=" + String(view) + "&position=" + String(position);
+    const unique = `${signature}&view=${String(view)}&position=${String(position)}`;
     if (previous === unique && !force) {
         this.trigger("not_loaded");
         return false;
@@ -217,7 +218,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     // and the current signature has changed
     const preloaded = this.element.classList.contains("preload");
     const mustPreload = preload !== undefined ? preload : changed || !preloaded;
-    if (mustPreload) this._preload(this.options.useChain);
+    if (mustPreload) preloadPromise = this._preload(this.options.useChain);
 
     // runs the load operation for the current frame, taking into
     // account the multiple requirements for such execution
@@ -226,6 +227,10 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
         animate: animate,
         duration: duration
     });
+
+    // in case the preload was requested then waits for the preload
+    // operation of the frames to complete (wait on promise)
+    if (preloadPromise) await preloadPromise;
 
     // returns a valid value indicating that the loading operation
     // as been triggered with success (effective operation)
@@ -867,9 +872,9 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     const framesBuffer = this.element.querySelector(".frames-buffer");
     const masksBuffer = this.element.querySelector(".masks-buffer");
     const area = this.element.querySelector(".area");
-    let image = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
-    const front = area.querySelector("img[data-frame='" + String(frame) + "']");
-    const maskImage = masksBuffer.querySelector("img[data-frame='" + String(frame) + "']");
+    let image = framesBuffer.querySelector(`img[data-frame='${String(frame)}']`);
+    const front = area.querySelector(`img[data-frame='${String(frame)}']`);
+    const maskImage = masksBuffer.querySelector(`img[data-frame='${String(frame)}']`);
     image = image || front;
 
     // in case there's no images for the frames that are meant
@@ -1140,7 +1145,7 @@ ripe.Configurator.prototype._preload = async function(useChain) {
             // and adds the preloading class to it
             const frame = work.pop();
             const framesBuffer = this.element.querySelector(".frames-buffer");
-            const reference = framesBuffer.querySelector("img[data-frame='" + String(frame) + "']");
+            const reference = framesBuffer.querySelector(`img[data-frame='${String(frame)}']`);
             reference.classList.add("preloading");
 
             // determines if a chain based loading should be used for the

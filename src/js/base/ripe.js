@@ -919,9 +919,17 @@ ripe.Ripe.prototype.update = async function(state, options = {}) {
             .catch(err => this.trigger("price_error", err));
     }
 
-    await Promise.all(promises);
+    // waits for all the promises "responsible" for the visual updating
+    // the children of the instance and then verifies if any of them was
+    // effectively updated (not cached), that is considered to be the
+    // result of the update operation as whole (indicates if this was an
+    // effective update operation or if otherwise was a cache match)
+    const results = await Promise.all(promises);
+    const result = results.some(v => v === true || v === undefined);
 
-    this.trigger("post_update");
+    this.trigger("post_update", result);
+
+    return result;
 };
 
 /**
