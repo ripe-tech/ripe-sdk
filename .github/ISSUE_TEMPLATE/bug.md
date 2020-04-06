@@ -11,8 +11,8 @@ A small description of the bug, if possible provide a set of bullet points to be
 
 | - | - |
 | --- | --- |
-| **Expected** | The expected state at the end of the repro steps execution. |
-| **Observed** | The observed state at the end of the repro steps execution. |
+| **Expected** | The expected state at the end of the repro steps. |
+| **Observed** | The observed state at the end of the repro steps. |
 
 ## Repro Steps
 
