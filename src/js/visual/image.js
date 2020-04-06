@@ -94,7 +94,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // render the frame to be display and if that's not the case "ignores"
     // the current request for update
     if (frame && !this.owner.hasFrame(frame)) {
-        return;
+        this.trigger("not_loaded");
+        return false;
     }
 
     // builds the URL of the image using the frame hacking approach
@@ -113,7 +114,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // verifies if the target image URL for the update is already
     // set and if that's the case returns (end of loop)
     if (this.element.src === url) {
-        return;
+        this.trigger("not_loaded");
+        return false;
     }
 
     // updates the image DOM element with the values of the image
@@ -125,6 +127,10 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         this.element.height = height;
     }
     this.element.src = url;
+
+    // returns a valid value indicating that the loading operation
+    // as been triggered with success (effective operation)
+    return true;
 };
 
 /**
