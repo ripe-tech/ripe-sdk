@@ -990,10 +990,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
                       this._drawMask(maskImage);
                   }, 150);
               }
-            : () => {
-                  this.trigger("post_mask", maskImage, view, position);
-                  return null;
-              };
+            : () => this.trigger("post_mask", maskImage, view, position);
         maskImage.onerror = () => {
             maskImage.removeAttribute("src");
         };
