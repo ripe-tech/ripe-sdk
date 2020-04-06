@@ -7,15 +7,12 @@ about: Create a report to help us improve
 
 A small description of the bug, if possible provide a set of bullet points to be more precise.
 
-## Expected vs. Observed behaviour
+## Expected vs. Observed
 
-### Expected
-
-Describe the expected state at the end of the repro steps execution.
-
-### Observed
-
-Describe the observed state at the end of the repro steps execution.
+| - | - |
+| --- | --- |
+| **Expected** | The expected state at the end of the repro steps execution. |
+| **Observed** | The observed state at the end of the repro steps execution. |
 
 ## Repro Steps
 
