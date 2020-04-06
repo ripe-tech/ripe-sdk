@@ -978,19 +978,19 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
         color: backgroundColor
     });
     if (draw && maskImage.dataset.src === url) {
-        this.trigger("post_mask", maskImage, view, position);
+        this.trigger("post_mask", maskImage, view, position, false);
         setTimeout(() => {
             this._drawMask(maskImage);
         }, 150);
     } else {
         maskImage.onload = draw
             ? () => {
-                  this.trigger("post_mask", maskImage, view, position);
+                  this.trigger("post_mask", maskImage, view, position, true);
                   setTimeout(() => {
                       this._drawMask(maskImage);
                   }, 150);
               }
-            : () => this.trigger("post_mask", maskImage, view, position);
+            : () => this.trigger("post_mask", maskImage, view, position, true);
         maskImage.onerror = () => {
             maskImage.removeAttribute("src");
         };
