@@ -352,9 +352,18 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // can cleanup if needed, from the previous configuration
     await this.trigger("pre_config", brand, model, options);
 
-    // retrieves the configuration for the currently loaded model so
-    // that others may use it freely (cache mechanism)
-    this.loadedConfig = await this.getConfigP();
+    try {
+        // retrieves the configuration for the currently loaded model so
+        // that others may use it freely (cache mechanism)
+        this.loadedConfig = await this.getConfigP();
+    } catch (err) {
+        // raises a new error indicating the real cause for the new
+        // error being thrown under the current execution logic
+        throw new ripe.OperationalError(
+            `Not possible to get configuration for '${brand}' and '${model}'`,
+            err
+        );
+    }
 
     // creates a "new" choices from the provided configuration for the
     // model that has just been "loaded" and sets it as the new set of
