@@ -527,7 +527,13 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
  * @param {String} color The color to change to.
  * @param {Boolean} events If the parts events should be triggered (defaults to 'true').
  */
-ripe.Ripe.prototype.setPart = async function(part, material, color, events = true, options = null) {
+ripe.Ripe.prototype.setPart = async function(
+    part,
+    material,
+    color,
+    events = true,
+    options = null
+) {
     if (!events) {
         await this._setPart(part, material, color);
     }
@@ -1148,7 +1154,13 @@ ripe.Ripe.prototype._getState = function() {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._setPart = async function(part, material, color, events = true, force = false) {
+ripe.Ripe.prototype._setPart = async function(
+    part,
+    material,
+    color,
+    events = true,
+    force = false
+) {
     // ensures that there's one valid configuration loaded
     // in the current instance, required for part setting
     if (!this.loadedConfig) {

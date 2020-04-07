@@ -179,7 +179,10 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
 /**
  * @ignore
  */
-ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyChanges = function(newParts, oldParts = null) {
+ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyChanges = function(
+    newParts,
+    oldParts = null
+) {
     if (oldParts === null) oldParts = this.owner.parts;
 
     const changes = [];
