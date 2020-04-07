@@ -250,7 +250,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // in case there's already a valid value in cache,
     // retrieves it and calls the callback with the value
     if (this._cache[fullKey] !== undefined && cached) {
-        callback && callback(this._cache[fullKey], true, null);
+        if (callback) callback(this._cache[fullKey], true, null);
         return null;
     }
 
@@ -260,7 +260,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
         if (isValid && cached) {
             this._cache[fullKey] = result;
         }
-        callback && callback(result, isValid, request);
+        if (callback) callback(result, isValid, request);
     });
 };
 

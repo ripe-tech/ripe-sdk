@@ -84,7 +84,7 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
     this.signin(username, password, options, (result, isValid, request) => {
         this.sid = result.sid;
         this.trigger("auth");
-        callback && callback(result, isValid, request);
+        if (callback) callback(result, isValid, request);
     });
 };
 
@@ -127,7 +127,7 @@ ripe.Ripe.prototype.authAdmin = function(username, password, options, callback) 
             this.sid = result.sid;
             this.trigger("auth");
         }
-        callback && callback(result, isValid, request);
+        if (callback) callback(result, isValid, request);
     });
 };
 
@@ -168,7 +168,7 @@ ripe.Ripe.prototype.authPid = function(token, options, callback) {
             this.sid = result.sid;
             this.trigger("auth");
         }
-        callback && callback(result, isValid, request);
+        if (callback) callback(result, isValid, request);
     });
 };
 
@@ -211,7 +211,7 @@ ripe.Ripe.prototype.authKey = function(key, options, callback) {
             this.key = key;
             this.trigger("auth");
         }
-        callback && callback(result, isValid, request);
+        if (callback) callback(result, isValid, request);
     });
 };
 
@@ -243,7 +243,7 @@ ripe.Ripe.prototype.authKeyP = function(key, options) {
 ripe.Ripe.prototype.unauth = function(options, callback) {
     this.sid = null;
 
-    if (!window.localStorage) {
+    if (window.localStorage) {
         localStorage.removeItem("oauth_token");
         localStorage.removeItem("oauth_scope");
         localStorage.removeItem("oauth_client_id");
@@ -252,7 +252,7 @@ ripe.Ripe.prototype.unauth = function(options, callback) {
     }
 
     this.trigger("unauth");
-    callback && callback();
+    if (callback) callback();
 };
 
 /**
@@ -292,20 +292,28 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
         throw new Error(`OAuth error ${error} '${errorDescription}'`);
     }
 
-    const clientId = options.clientId || localStorage.getItem("oauth_client_id");
-    const clientSecret = options.clientSecret || localStorage.getItem("oauth_client_secret");
-    const redirectUri = options.redirectUri || localStorage.getItem("oauth_redirect_uri");
-    const scope = options.scope || (localStorage.getItem("oauth_scope") || "").split(",") || [];
-    const oauthToken = options.oauthToken || localStorage.getItem("oauth_token");
+    const clientId =
+        options.clientId || (window.localStorage && localStorage.getItem("oauth_client_id"));
+    const clientSecret =
+        options.clientSecret ||
+        (window.localStorage && localStorage.getItem("oauth_client_secret"));
+    const redirectUri =
+        options.redirectUri || (window.localStorage && localStorage.getItem("oauth_redirect_uri"));
+    const scope =
+        options.scope ||
+        ((window.localStorage && localStorage.getItem("oauth_scope")) || "").split(",") ||
+        [];
+    const oauthToken =
+        options.oauthToken || (window.localStorage && localStorage.getItem("oauth_token"));
 
-    scope && localStorage.setItem("oauth_scope", scope.join(","));
+    scope && window.localStorage && localStorage.setItem("oauth_scope", scope.join(","));
 
     if (oauthToken && clientId && clientSecret && redirectUri) {
         return this.oauthLogin(oauthToken, options, (result, isValid, request) => {
             if (isValid && result) {
                 this.sid = result.sid;
                 this.trigger("auth");
-                callback && callback(result, isValid, request);
+                if (callback) callback(result, isValid, request);
             } else {
                 this.oauth(
                     {
@@ -332,8 +340,10 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
             },
             (result, isValid) => {
                 if (isValid && result) {
-                    localStorage.setItem("oauth_token", result.access_token);
-                    result.scope && localStorage.setItem("oauth_scope", result.scope.join(","));
+                    window.localStorage && localStorage.setItem("oauth_token", result.access_token);
+                    result.scope &&
+                        window.localStorage &&
+                        localStorage.setItem("oauth_scope", result.scope.join(","));
                     this.oauth(callback);
                 } else {
                     this.oauth(
@@ -367,9 +377,11 @@ ripe.Ripe.prototype.oauthRedirect = function(options, callback) {
     const clientSecret = options.clientSecret || this.clientSecret;
     const redirectUri = options.redirectUri || currentUrl;
 
-    localStorage.setItem("oauth_client_id", clientId);
-    localStorage.setItem("oauth_client_secret", clientSecret);
-    localStorage.setItem("oauth_redirect_uri", redirectUri);
+    if (window.localStorage) {
+        localStorage.setItem("oauth_client_id", clientId);
+        localStorage.setItem("oauth_client_secret", clientSecret);
+        localStorage.setItem("oauth_redirect_uri", redirectUri);
+    }
 
     let url = this.webUrl + "admin/oauth/authorize";
 

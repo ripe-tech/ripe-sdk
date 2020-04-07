@@ -762,7 +762,7 @@ ripe.Ripe.prototype.setChoices = function(choices, events = true) {
  */
 ripe.Ripe.prototype.getFrames = async function(callback) {
     if (this.options.frames) {
-        callback && callback(this.options.frames);
+        if (callback) callback(this.options.frames);
         return this.options.frames;
     }
 
@@ -789,7 +789,7 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
 
     // calls the callback with the resolved frame (unsafe) and returns
     // the frames map to the caller method
-    callback && callback(frames);
+    if (callback) callback(frames);
     return frames;
 };
 
