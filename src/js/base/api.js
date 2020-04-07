@@ -305,7 +305,9 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
         contentType = "application/x-www-form-urlencoded";
     }
 
-    headers["Content-Type"] = headers["Content-Type"] || contentType;
+    if (contentType) {
+        headers["Content-Type"] = headers["Content-Type"] || contentType;
+    }
 
     const response = fetch(url, {
         method: method,
@@ -414,12 +416,15 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
         request.abort();
     }, timeout);
 
+    // in case there's a content type to be set, then sets it according
+    // to the inferred or requested content type
+    if (contentType) {
+        request.setRequestHeader("Content-Type", contentType);
+    }
+
     for (const key in headers) {
         const value = headers[key];
         request.setRequestHeader(key, value);
-    }
-    if (contentType) {
-        request.setRequestHeader("Content-Type", contentType);
     }
 
     if (!options.noEvents) this.trigger("build_request", request, options);
