@@ -243,11 +243,13 @@ ripe.Ripe.prototype.authKeyP = function(key, options) {
 ripe.Ripe.prototype.unauth = function(options, callback) {
     this.sid = null;
 
-    localStorage.removeItem("oauth_token");
-    localStorage.removeItem("oauth_scope");
-    localStorage.removeItem("oauth_client_id");
-    localStorage.removeItem("oauth_client_secret");
-    localStorage.removeItem("oauth_redirect_uri");
+    if (!window.localStorage) {
+        localStorage.removeItem("oauth_token");
+        localStorage.removeItem("oauth_scope");
+        localStorage.removeItem("oauth_client_id");
+        localStorage.removeItem("oauth_client_secret");
+        localStorage.removeItem("oauth_redirect_uri");
+    }
 
     this.trigger("unauth");
     callback && callback();
