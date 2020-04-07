@@ -287,6 +287,7 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
     const dataJ = options.dataJ || null;
     let contentType = options.contentType || null;
     const validCodes = options.validCodes || [200];
+    const credentials = options.credentials || "omit";
 
     const query = this._buildQuery(params);
     const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
@@ -309,7 +310,8 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
     const response = fetch(url, {
         method: method,
         headers: headers || {},
-        body: data
+        body: data,
+        credentials: credentials
     });
 
     response
@@ -348,6 +350,7 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
     const timeout = options.timeout || 10000;
     const timeoutConnect = options.timeoutConnect || parseInt(timeout / 2);
     const validCodes = options.validCodes || [200];
+    const withCredentials = options.withCredentials || false;
 
     const query = this._buildQuery(params);
     const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
@@ -369,6 +372,7 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
     request.timeout = timeoutConnect;
     request.callback = callback;
     request.validCodes = validCodes;
+    request.withCredentials = withCredentials;
 
     request.addEventListener("load", function() {
         let result = null;

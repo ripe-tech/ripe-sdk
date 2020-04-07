@@ -5,6 +5,7 @@ session.shelve*
 
 .DS_Store
 .nyc_output
+.watchmanconfig
 
 dist.zip
 package-lock.json
