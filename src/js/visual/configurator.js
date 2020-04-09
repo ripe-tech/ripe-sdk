@@ -878,8 +878,8 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     image = image || front;
 
     // in case there's no images for the frames that are meant
-    // to be loaded calls the callback immediately and returns
-    // the control flow (not possible to load them)
+    // to be loaded, then throws an error indicating that it's
+    // not possible to load the requested frame
     if (image === null || maskImage === null) {
         throw new RangeError("Frame " + frame + " is not supported.");
     }
@@ -905,13 +905,9 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // loading) and avoids for performance reasons
     const isRedundant = image.dataset.src === url;
     if (isRedundant) {
-        if (!draw) {
-            return;
-        }
+        if (!draw) return;
         const isReady = image.dataset.loaded === "true";
-        if (isReady) {
-            await this._drawFrame(image, animate, duration);
-        }
+        if (isReady) await this._drawFrame(image, animate, duration);
         return;
     }
 
