@@ -84,6 +84,9 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.ready = false;
     this.bundles = false;
     this.partCounter = 0;
+    this.updateCounter = 0;
+    this.updatePromise = null;
+    this.cancelPromise = null;
     this.error = null;
 
     // extends the default options with the ones provided by the
@@ -659,7 +662,7 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
 
     // triggers the event indicating the the start of the
     // the (set) initials extra operation (notifies listeners)
-    this.trigger("pre_initials_extra");
+    await this.trigger("pre_initials_extra");
 
     if (isEmpty) {
         this.initials = "";
@@ -693,7 +696,7 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
 
     // triggers the event indicating the the end of the
     // the (set) initials extra operation (notifies listeners)
-    this.trigger("post_initials_extra");
+    await this.trigger("post_initials_extra");
 
     // returns the current instance (good for pipelining)
     return this;
@@ -910,9 +913,21 @@ ripe.Ripe.prototype.deselectPart = function(part, options = {}) {
  * the update operation is going to be performed.
  */
 ripe.Ripe.prototype.update = async function(state, options = {}) {
-    this.trigger("pre_update");
+    this.updateCounter += 1;
 
+    // tries to retrieve the state of the configuration for which an update
+    // operation is going to be requested
     state = state || this._getState();
+
+    // runs the cancel operation, so that any pending update is canceled
+    // without any possible visual changes and consuming the least resources
+    // possible by any of the child elements
+    await this.cancel(state, options);
+
+    await this.trigger("pre_update", {
+        id: this.updateCounter,
+        state: state
+    });
 
     const promises = [];
 
@@ -921,8 +936,15 @@ ripe.Ripe.prototype.update = async function(state, options = {}) {
         promises.push(child.update(state, options));
     }
 
-    if (this.ready) this.trigger("update");
+    if (this.ready) {
+        await this.trigger("update", {
+            id: this.updateCounter,
+            state: state
+        });
+    }
 
+    // in case the use price flag is set then we should "automagically"
+    // retrieve the price for the currently changed configuration
     if (this.ready && this.usePrice) {
         const timestamp = Date.now();
         this._priceTimestamp = timestamp;
@@ -939,12 +961,48 @@ ripe.Ripe.prototype.update = async function(state, options = {}) {
     // effectively updated (not cached), that is considered to be the
     // result of the update operation as whole (indicates if this was an
     // effective update operation or if otherwise was a cache match)
-    const results = await Promise.all(promises);
+    let results = [];
+    this.updatePromise = Promise.all(promises);
+    try {
+        results = await this.updatePromise;
+    } finally {
+        this.updatePromise = null;
+    }
     const result = results.some(v => v === true || v === undefined);
 
-    this.trigger("post_update", result);
+    await this.trigger("post_update", {
+        id: this.updateCounter,
+        state: state,
+        result: result
+    });
 
     return result;
+};
+
+ripe.Ripe.prototype.cancel = async function(options = {}) {
+    await this.trigger("pre_cancel");
+
+    const promises = [];
+
+    for (let index = 0; index < this.children.length; index++) {
+        const child = this.children[index];
+        promises.push(child.cancel(options));
+    }
+
+    let results = [];
+    this.cancelPromise = Promise.all(promises);
+    try {
+        results = await this.cancelPromise;
+    } finally {
+        this.cancelPromise = null;
+    }
+    const result = results.some(v => v === true || v === undefined);
+
+    // in case there's an update promise pending waits for it
+    // so that we're sure and safe that we can run a new one
+    if (this.updatePromise) await this.updatePromise;
+
+    await this.trigger("post_cancel", { result: result });
 };
 
 /**

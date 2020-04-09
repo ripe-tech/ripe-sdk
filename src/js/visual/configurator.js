@@ -238,6 +238,16 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
 };
 
 /**
+ * This function is called (by the owner) whenever the current operation
+ * in the child should be canceled this way a Configurator is not updated.
+ *
+ * @param {Object} options Set of optional parameters to adjust the Image.
+ */
+ripe.Configurator.prototype.cancel = async function(options = {}) {
+    return true;
+};
+
+/**
  * The Configurator deinitializer, to be called (by the owner) when
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.

@@ -128,11 +128,16 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     }
     this.element.src = url;
 
+    // saves the space for the result of the loaded callback that
+    // should be a boolean indicating if there's was a visual impact
+    // resulting from the loading operation
+    let result = true;
+
     try {
         // create a promise waiting for the current image for either load
         // or receive an error, for both situation there should be a proper
         // waiting process in motion
-        await new Promise((resolve, reject) => {
+        result = await new Promise((resolve, reject) => {
             this._loadedCallback = resolve;
             this._errorCallback = reject;
         });
@@ -143,8 +148,24 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         this._errorCallback = null;
     }
 
-    // returns a valid value indicating that the loading operation
+    // in case there's no value returned by the loaded callback then
+    // the result is considered valid (proper update)
+    if (result === undefined) result = true;
+
+    // returns a value indicating that if the loading operation
     // as been triggered with success (effective operation)
+    return result;
+};
+
+/**
+ * This function is called (by the owner) whenever the current operation
+ * in the child should be canceled this way an Image is not updated.
+ *
+ * @param {Object} options Set of optional parameters to adjust the Image.
+ */
+ripe.Image.prototype.cancel = async function(options = {}) {
+    if (!this._loadedCallback) return false;
+    this._loadedCallback(true);
     return true;
 };
 
