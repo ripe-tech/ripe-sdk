@@ -55,6 +55,7 @@ ripe.Image.prototype.init = function() {
     this.height = this.options.height || null;
     this.crop = this.options.crop || false;
     this.showInitials = this.options.showInitials || false;
+    this.initialsGroup = this.options.initialsGroup || null;
     this.initialsBuilder =
         this.options.initialsBuilder ||
         function(initials, engraving, element) {
@@ -82,9 +83,16 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const width = this.element.dataset.width || this.width;
     const height = this.element.dataset.height || this.height;
     const crop = this.element.dataset.crop || this.crop;
+    const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
 
-    this.initials = state !== undefined ? state.initials : this.initials;
-    this.engraving = state !== undefined ? state.engraving : this.engraving;
+    // in case the state is defined tries to gather the appropriate
+    // sate options for both initials and engraving taking into
+    // consideration that groups may exist
+    if (state !== undefined) {
+        const base = initialsGroup ? state.initialsExtra[initialsGroup] || {} : state;
+        this.initials = base.initials || "";
+        this.engraving = base.engraving || null;
+    }
 
     const initialsSpec = this.showInitials
         ? this.initialsBuilder(this.initials, this.engraving, this.element)

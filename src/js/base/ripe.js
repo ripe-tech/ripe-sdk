@@ -629,13 +629,17 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
     // the control flow immediately, nothing remaining to be done
     if (!events) return this;
 
+    // creates a "snapshot" of the current initials state so that the
+    // update may be performed over the currently defined set of initials
+    const state = this._getState();
+
     // triggers the initials event notifying any listening
     // object about the changes
     await this.trigger("initials", initials, engraving, params);
 
     // runs the update operation so that all the listening
     // components can properly update their visuals
-    this.update();
+    this.update(state);
 
     // triggers the event indicating the the end of the
     // the (set) initials operation (notifies listeners)
