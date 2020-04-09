@@ -12,8 +12,6 @@ if (
     var ripe = base.ripe;
 }
 
-const NO_OP = true;
-
 /**
  * @class
  * @classdesc Class that defines an interactive Configurator instance to be
@@ -916,7 +914,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
         if (isReady) {
             await this._drawFrame(image, animate, duration);
         }
-        this.trigger("post_frame", view, position, options, NO_OP);
+        this.trigger("post_frame", view, position, options, true);
         return;
     }
 
@@ -954,14 +952,13 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // we're sure everything is currently loaded
     await imagePromise;
 
-    this.trigger("post_frame", view, position, options, !NO_OP);
+    this.trigger("post_frame", view, position, options, false);
 };
 
 /**
  * @ignore
  */
 ripe.Configurator.prototype._loadMask = function(maskImage, view, position, options) {
-    this.trigger("pre_mask", maskImage, view, position, options);
     // constructs the URL for the mask and then at the end of the
     // mask loading process runs the final update of the mask canvas
     // operation that will allow new highlight and selection operation
@@ -980,19 +977,17 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
         color: backgroundColor
     });
     if (draw && maskImage.dataset.src === url) {
-        this.trigger("post_mask", maskImage, view, position, options, NO_OP);
         setTimeout(() => {
             this._drawMask(maskImage);
         }, 150);
     } else {
         maskImage.onload = draw
             ? () => {
-                  this.trigger("post_mask", maskImage, view, position, options, !NO_OP);
                   setTimeout(() => {
                       this._drawMask(maskImage);
                   }, 150);
               }
-            : () => this.trigger("post_mask", maskImage, view, position, options, !NO_OP);
+            : null;
         maskImage.onerror = () => {
             maskImage.removeAttribute("src");
         };
