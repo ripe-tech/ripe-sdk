@@ -128,6 +128,21 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     }
     this.element.src = url;
 
+    try {
+        // create a promise waiting for the current image for either load
+        // or receive an error, for both situation there should be a proper
+        // waiting process in motion
+        await new Promise((resolve, reject) => {
+            this._loadedCallback = resolve;
+            this._errorCallback = reject;
+        });
+    } finally {
+        // unsets both of the callbacks as they are no longer required by
+        // the promise's underlying logic
+        this._loadedCallback = null;
+        this._errorCallback = null;
+    }
+
     // returns a valid value indicating that the loading operation
     // as been triggered with success (effective operation)
     return true;
@@ -175,10 +190,22 @@ ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
  * @ignore
  */
 ripe.Image.prototype._registerHandlers = function() {
-    this.loadListener = () => {
-        this.trigger("loaded");
-    };
+    // creates and add both the load and the error listeners
+    // for the underlying image element to propagate those events
+    // into the current observable context (event normalization)
+    this.loadListener = () => this.trigger("loaded");
+    this.errorListener = () => this.trigger("error");
     this.element.addEventListener("load", this.loadListener);
+    this.element.addEventListener("error", this.errorListener);
+
+    // registers for both the loaded and error handlers to cast
+    // the handlers to the "simpler" callback attributes
+    this.loadedHandler = this.bind("loaded", () => {
+        if (this._loadedCallback) this._loadedCallback();
+    });
+    this.errorHandler = this.bind("error", () => {
+        if (this._errorCallback) this._errorCallback();
+    });
 
     // eslint-disable-next-line no-undef
     const Observer = MutationObserver || WebKitMutationObserver;
@@ -198,6 +225,9 @@ ripe.Image.prototype._registerHandlers = function() {
  * @ignore
  */
 ripe.Image.prototype._unregisterHandlers = function() {
-    this.element.removeEventListener("load", this.loadListener);
-    this._observer && this._observer.disconnect();
+    if (this.loadListener) this.element.removeEventListener("load", this.loadListener);
+    if (this.errorListener) this.element.removeEventListener("error", this.errorListener);
+    if (this.loadedHandler) this.unbind("loaded", this.loadedHandler);
+    if (this.errorHandler) this.unbind("error", this.errorHandler);
+    if (this._observer) this._observer.disconnect();
 };

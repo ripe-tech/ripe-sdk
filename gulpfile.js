@@ -148,10 +148,7 @@ gulp.task("move-css", () => {
 gulp.task(
     "compress",
     gulp.series("build-js", "build-css", () => {
-        return gulp
-            .src(paths.dist)
-            .pipe(zip("dist.zip"))
-            .pipe(gulp.dest("build"));
+        return gulp.src(paths.dist).pipe(zip("dist.zip")).pipe(gulp.dest("build"));
     })
 );
 

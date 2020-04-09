@@ -66,7 +66,7 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
     options = this._getDefaultsOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, function(result, isValid, request) {
-        callback && callback(isValid ? result.parts : result, isValid, request);
+        if (callback) callback(isValid ? result.parts : result, isValid, request);
     });
 };
 
@@ -86,7 +86,7 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
             const part = defaults[name];
             part.optional && optionals.push(name);
         }
-        callback && callback(optionals, isValid, request);
+        if (callback) callback(optionals, isValid, request);
     });
 };
 
@@ -105,7 +105,7 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
     options = this._getCombinationsOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, function(result, isValid, request) {
-        callback && callback(isValid ? result.combinations : result, isValid, request);
+        if (callback) callback(isValid ? result.combinations : result, isValid, request);
     });
 };
 

@@ -352,9 +352,18 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // can cleanup if needed, from the previous configuration
     await this.trigger("pre_config", brand, model, options);
 
-    // retrieves the configuration for the currently loaded model so
-    // that others may use it freely (cache mechanism)
-    this.loadedConfig = await this.getConfigP();
+    try {
+        // retrieves the configuration for the currently loaded model so
+        // that others may use it freely (cache mechanism)
+        this.loadedConfig = await this.getConfigP();
+    } catch (err) {
+        // raises a new error indicating the real cause for the new
+        // error being thrown under the current execution logic
+        throw new ripe.OperationalError(
+            `Not possible to get configuration for '${brand}' and '${model}'`,
+            err
+        );
+    }
 
     // creates a "new" choices from the provided configuration for the
     // model that has just been "loaded" and sets it as the new set of
@@ -527,7 +536,13 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
  * @param {String} color The color to change to.
  * @param {Boolean} events If the parts events should be triggered (defaults to 'true').
  */
-ripe.Ripe.prototype.setPart = async function(part, material, color, events = true, options = null) {
+ripe.Ripe.prototype.setPart = async function(
+    part,
+    material,
+    color,
+    events = true,
+    options = null
+) {
     if (!events) {
         await this._setPart(part, material, color);
     }
@@ -762,7 +777,7 @@ ripe.Ripe.prototype.setChoices = function(choices, events = true) {
  */
 ripe.Ripe.prototype.getFrames = async function(callback) {
     if (this.options.frames) {
-        callback && callback(this.options.frames);
+        if (callback) callback(this.options.frames);
         return this.options.frames;
     }
 
@@ -789,7 +804,7 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
 
     // calls the callback with the resolved frame (unsafe) and returns
     // the frames map to the caller method
-    callback && callback(frames);
+    if (callback) callback(frames);
     return frames;
 };
 
@@ -1148,7 +1163,13 @@ ripe.Ripe.prototype._getState = function() {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._setPart = async function(part, material, color, events = true, force = false) {
+ripe.Ripe.prototype._setPart = async function(
+    part,
+    material,
+    color,
+    events = true,
+    force = false
+) {
     // ensures that there's one valid configuration loaded
     // in the current instance, required for part setting
     if (!this.loadedConfig) {

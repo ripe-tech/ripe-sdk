@@ -250,7 +250,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // in case there's already a valid value in cache,
     // retrieves it and calls the callback with the value
     if (this._cache[fullKey] !== undefined && cached) {
-        callback && callback(this._cache[fullKey], true, null);
+        if (callback) callback(this._cache[fullKey], true, null);
         return null;
     }
 
@@ -260,7 +260,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
         if (isValid && cached) {
             this._cache[fullKey] = result;
         }
-        callback && callback(result, isValid, request);
+        if (callback) callback(result, isValid, request);
     });
 };
 
@@ -287,6 +287,7 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
     const dataJ = options.dataJ || null;
     let contentType = options.contentType || null;
     const validCodes = options.validCodes || [200];
+    const credentials = options.credentials || "omit";
 
     const query = this._buildQuery(params);
     const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
@@ -304,12 +305,15 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
         contentType = "application/x-www-form-urlencoded";
     }
 
-    headers["Content-Type"] = headers["Content-Type"] || contentType;
+    if (contentType) {
+        headers["Content-Type"] = headers["Content-Type"] || contentType;
+    }
 
     const response = fetch(url, {
         method: method,
         headers: headers || {},
-        body: data
+        body: data,
+        credentials: credentials
     });
 
     response
@@ -348,6 +352,7 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
     const timeout = options.timeout || 10000;
     const timeoutConnect = options.timeoutConnect || parseInt(timeout / 2);
     const validCodes = options.validCodes || [200];
+    const withCredentials = options.withCredentials || false;
 
     const query = this._buildQuery(params);
     const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
@@ -369,6 +374,7 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
     request.timeout = timeoutConnect;
     request.callback = callback;
     request.validCodes = validCodes;
+    request.withCredentials = withCredentials;
 
     request.addEventListener("load", function() {
         let result = null;
@@ -410,12 +416,15 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
         request.abort();
     }, timeout);
 
+    // in case there's a content type to be set, then sets it according
+    // to the inferred or requested content type
+    if (contentType) {
+        request.setRequestHeader("Content-Type", contentType);
+    }
+
     for (const key in headers) {
         const value = headers[key];
         request.setRequestHeader(key, value);
-    }
-    if (contentType) {
-        request.setRequestHeader("Content-Type", contentType);
     }
 
     if (!options.noEvents) this.trigger("build_request", request, options);

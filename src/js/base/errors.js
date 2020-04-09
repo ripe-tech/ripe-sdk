@@ -13,6 +13,17 @@ if (
 
 /**
  * @class
+ * @classdesc An error object for an operational problem.
+ */
+ripe.OperationalError = function(message, error) {
+    this.name = "OperationalError";
+    this.error = error;
+    this.message = message || `Operational error (${this.error ? this.error.message : "unknown"})`;
+    return this;
+};
+
+/**
+ * @class
  * @classdesc An error object for remote operations.
  */
 ripe.RemoteError = function(request, message) {
