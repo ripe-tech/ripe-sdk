@@ -85,6 +85,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.bundles = false;
     this.partCounter = 0;
     this.updateCounter = 0;
+    this.initialsCounter = 0;
     this.updatePromise = null;
     this.cancelPromise = null;
     this.error = null;
@@ -604,9 +605,15 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
         return result;
     }
 
+    // generates a new initials counter that controls if the initials
+    // state has changes (set initials), this way it's possible to
+    // prevent out of order execution of update states
+    this.initialsCounter += 1;
+    const id = this.initialsCounter;
+
     // triggers the event indicating the the start of the
     // the (set) initials operation (notifies listeners)
-    await this.trigger("pre_initials");
+    await this.trigger("pre_initials", { id: id });
 
     // sets the base instance fields for both the initials and the
     // engraving and updates the initials extra on the main group,
@@ -635,15 +642,18 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
 
     // triggers the initials event notifying any listening
     // object about the changes
-    await this.trigger("initials", initials, engraving, params);
+    await this.trigger("initials", initials, engraving, params, { id: id });
 
     // runs the update operation so that all the listening
-    // components can properly update their visuals
-    this.update(state);
+    // components can properly update their visuals, notice
+    // that this execution is only performed in case this is
+    // still the most up-to-date initials operation, avoiding
+    // possible out-of-order execution of update operations
+    if (id === this.initialsCounter) this.update(state);
 
     // triggers the event indicating the the end of the
     // the (set) initials operation (notifies listeners)
-    await this.trigger("post_initials");
+    await this.trigger("post_initials", { id: id });
 
     // returns the current instance (good for pipelining)
     return this;
@@ -664,9 +674,15 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
     const mainGroup = groups.includes("main") ? "main" : groups[0];
     const mainInitials = initialsExtra[mainGroup];
 
+    // generates a new initials counter that controls if the initials
+    // state has changes (set initials), this way it's possible to
+    // prevent out of order execution of update states
+    this.initialsCounter += 1;
+    const id = this.initialsCounter;
+
     // triggers the event indicating the the start of the
     // the (set) initials extra operation (notifies listeners)
-    await this.trigger("pre_initials_extra");
+    await this.trigger("pre_initials_extra", { id: id });
 
     if (isEmpty) {
         this.initials = "";
@@ -696,15 +712,18 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
 
     // triggers the initials extra event notifying any
     // listening object about the changes
-    await this.trigger("initials_extra", initialsExtra, params);
+    await this.trigger("initials_extra", initialsExtra, params, { id: id });
 
     // runs the update operation so that all the listening
-    // components can properly update their visuals
-    this.update(state);
+    // components can properly update their visuals, notice
+    // that this execution is only performed in case this is
+    // still the most up-to-date initials operation, avoiding
+    // possible out-of-order execution of update operations
+    if (id === this.initialsCounter) this.update(state);
 
     // triggers the event indicating the the end of the
     // the (set) initials extra operation (notifies listeners)
-    await this.trigger("post_initials_extra");
+    await this.trigger("post_initials_extra", { id: id });
 
     // returns the current instance (good for pipelining)
     return this;
@@ -991,6 +1010,10 @@ ripe.Ripe.prototype.update = async function(state, options = {}) {
     // so that we can safely run the new update promise after all the other
     // previously registered ones are "flushed"
     while (this.updatePromise) await this.updatePromise;
+
+    // in case the current update operation is no longer the latest one then
+    // there's no need to continue with the operation
+    if (id !== this.updateCounter) return;
 
     try {
         this.updatePromise = _update();
