@@ -606,7 +606,7 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
 
     // triggers the event indicating the the start of the
     // the (set) initials operation (notifies listeners)
-    this.trigger("pre_initials");
+    await this.trigger("pre_initials");
 
     // sets the base instance fields for both the initials and the
     // engraving and updates the initials extra on the main group,
@@ -639,7 +639,7 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
 
     // triggers the event indicating the the end of the
     // the (set) initials operation (notifies listeners)
-    this.trigger("post_initials");
+    await this.trigger("post_initials");
 
     // returns the current instance (good for pipelining)
     return this;
@@ -686,13 +686,17 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
 
     if (!events) return this;
 
+    // creates a "snapshot" of the current initials state so that the
+    // update may be performed over the currently defined set of initials
+    const state = this._getState();
+
     // triggers the initials extra event notifying any
     // listening object about the changes
     await this.trigger("initials_extra", initialsExtra, params);
 
     // runs the update operation so that all the listening
     // components can properly update their visuals
-    this.update();
+    this.update(state);
 
     // triggers the event indicating the the end of the
     // the (set) initials extra operation (notifies listeners)
@@ -913,96 +917,128 @@ ripe.Ripe.prototype.deselectPart = function(part, options = {}) {
  * the update operation is going to be performed.
  */
 ripe.Ripe.prototype.update = async function(state, options = {}) {
-    this.updateCounter += 1;
-
     // tries to retrieve the state of the configuration for which an update
     // operation is going to be requested
     state = state || this._getState();
 
+    // increments the update counter, meaning that a new update operation
+    // is going to be performed (and requires a proper unique identifier)
+    this.updateCounter += 1;
+    const id = this.updateCounter;
+
+    const _update = async () => {
+        await this.trigger("pre_update", {
+            id: id,
+            state: state
+        });
+
+        const promises = [];
+
+        for (let index = 0; index < this.children.length; index++) {
+            const child = this.children[index];
+            promises.push(child.update(state, options));
+        }
+
+        if (this.ready) {
+            await this.trigger("update", {
+                id: id,
+                state: state
+            });
+        }
+
+        // in case the use price flag is set then we should "automagically"
+        // retrieve the price for the currently changed configuration
+        if (this.ready && this.usePrice) {
+            const timestamp = Date.now();
+            this._priceTimestamp = timestamp;
+            this.getPriceP()
+                .then(value => {
+                    if (this._priceTimestamp > timestamp) return;
+                    this.trigger("price", value);
+                })
+                .catch(err => this.trigger("price_error", err));
+        }
+
+        // waits for all the promises "responsible" for the visual updating
+        // the children of the instance and then verifies if any of them was
+        // effectively updated (not cached), that is considered to be the
+        // result of the update operation as whole (indicates if this was an
+        // effective update operation or if otherwise was a cache match)
+        const results = await Promise.all(promises);
+        const result = results.some(v => v !== false);
+        const canceled = results.some(v => Boolean(v && v.canceled));
+
+        await this.trigger("post_update", {
+            id: id,
+            state: state,
+            result: result,
+            canceled: canceled
+        });
+
+        return result;
+    };
+
     // runs the cancel operation, so that any pending update is canceled
     // without any possible visual changes and consuming the least resources
     // possible by any of the child elements
-    await this.cancel(state, options);
+    await this.cancel(options);
 
-    await this.trigger("pre_update", {
-        id: this.updateCounter,
-        state: state
-    });
+    // iterates waiting for all the pending promises for update operations
+    // so that we can safely run the new update promise after all the other
+    // previously registered ones are "flushed"
+    while (this.updatePromise) await this.updatePromise;
 
-    const promises = [];
-
-    for (let index = 0; index < this.children.length; index++) {
-        const child = this.children[index];
-        promises.push(child.update(state, options));
-    }
-
-    if (this.ready) {
-        await this.trigger("update", {
-            id: this.updateCounter,
-            state: state
-        });
-    }
-
-    // in case the use price flag is set then we should "automagically"
-    // retrieve the price for the currently changed configuration
-    if (this.ready && this.usePrice) {
-        const timestamp = Date.now();
-        this._priceTimestamp = timestamp;
-        this.getPriceP()
-            .then(value => {
-                if (this._priceTimestamp > timestamp) return;
-                this.trigger("price", value);
-            })
-            .catch(err => this.trigger("price_error", err));
-    }
-
-    // waits for all the promises "responsible" for the visual updating
-    // the children of the instance and then verifies if any of them was
-    // effectively updated (not cached), that is considered to be the
-    // result of the update operation as whole (indicates if this was an
-    // effective update operation or if otherwise was a cache match)
-    let results = [];
-    this.updatePromise = Promise.all(promises);
     try {
-        results = await this.updatePromise;
+        this.updatePromise = _update();
+        const result = await this.updatePromise;
+        return result;
     } finally {
         this.updatePromise = null;
     }
-    const result = results.some(v => v === true || v === undefined);
-
-    await this.trigger("post_update", {
-        id: this.updateCounter,
-        state: state,
-        result: result
-    });
-
-    return result;
 };
 
 ripe.Ripe.prototype.cancel = async function(options = {}) {
-    await this.trigger("pre_cancel");
+    const _cancel = async () => {
+        await this.trigger("pre_cancel", { id: this.updateCounter });
 
-    const promises = [];
+        const promises = [];
 
-    for (let index = 0; index < this.children.length; index++) {
-        const child = this.children[index];
-        promises.push(child.cancel(options));
-    }
+        for (let index = 0; index < this.children.length; index++) {
+            const child = this.children[index];
+            promises.push(child.cancel(options));
+        }
 
-    let results = [];
-    this.cancelPromise = Promise.all(promises);
+        let results = [];
+        this.cancelPromise = Promise.all(promises);
+        try {
+            results = await this.cancelPromise;
+        } finally {
+            this.cancelPromise = null;
+        }
+
+        const result = results.some(v => v !== false);
+        const canceled = results.some(v => Boolean(v && v.canceled));
+
+        // in case there's an update promise pending waits for it
+        // so that we're sure and safe that we can run a new one
+        if (this.updatePromise) await this.updatePromise;
+
+        await this.trigger("post_cancel", {
+            id: this.updateCounter,
+            result: result,
+            canceled: canceled
+        });
+
+        return result;
+    };
+
     try {
-        results = await this.cancelPromise;
+        this.cancelPromise = _cancel();
+        const result = await this.cancelPromise;
+        return result;
     } finally {
         this.cancelPromise = null;
     }
-    const result = results.some(v => v === true || v === undefined);
-
-    // in case there's an update promise pending waits for it
-    // so that we're sure and safe that we can run a new one
-    if (this.updatePromise) await this.updatePromise;
-
-    await this.trigger("post_cancel", { result: result });
 };
 
 /**
@@ -1209,13 +1245,15 @@ ripe.Ripe.prototype._initBundles = async function(defaultLocale = "en_us") {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getState = function() {
-    return {
-        parts: this.parts,
-        initials: this.initials,
-        engraving: this.engraving,
-        initialsExtra: this.initialsExtra
-    };
+ripe.Ripe.prototype._getState = function(safe = true) {
+    return safe
+        ? JSON.parse(JSON.stringify(this._getState(false)))
+        : {
+              parts: this.parts,
+              initials: this.initials,
+              engraving: this.engraving,
+              initialsExtra: this.initialsExtra
+          };
 };
 
 /**

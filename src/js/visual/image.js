@@ -120,12 +120,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
 
     // updates the image DOM element with the values of the image
     // including requested size and URL
-    if (width) {
-        this.element.width = width;
-    }
-    if (height) {
-        this.element.height = height;
-    }
+    if (width) this.element.width = width;
+    if (height) this.element.height = height;
     this.element.src = url;
 
     // saves the space for the result of the loaded callback that
@@ -165,7 +161,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
  */
 ripe.Image.prototype.cancel = async function(options = {}) {
     if (!this._loadedCallback) return false;
-    this._loadedCallback(true);
+    this._loadedCallback({ canceled: true });
     return true;
 };
 
