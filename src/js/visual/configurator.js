@@ -106,7 +106,7 @@ ripe.Configurator.prototype.init = function() {
  *
  * @param {Number} size The number of pixels to resize to.
  */
-ripe.Configurator.prototype.resize = function(size) {
+ripe.Configurator.prototype.resize = async function(size) {
     if (this.element === undefined) {
         return;
     }
@@ -139,7 +139,7 @@ ripe.Configurator.prototype.resize = function(size) {
     mask.style.width = size + "px";
     mask.style.height = size + "px";
     this.currentSize = size;
-    this.update(
+    await this.update(
         {},
         {
             force: true
@@ -628,13 +628,13 @@ ripe.Configurator.prototype.lowlight = function(options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.Configurator.prototype.enterFullscreen = function(options) {
+ripe.Configurator.prototype.enterFullscreen = async function(options) {
     if (this.element === undefined) {
         return;
     }
     this.element.classList.add("fullscreen");
     const maxSize = this.element.dataset.max_size || this.maxSize;
-    this.resize(maxSize);
+    await this.resize(maxSize);
 };
 
 /**
@@ -642,12 +642,12 @@ ripe.Configurator.prototype.enterFullscreen = function(options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.Configurator.prototype.leaveFullscreen = function(options) {
+ripe.Configurator.prototype.leaveFullscreen = async function(options) {
     if (this.element === undefined) {
         return;
     }
     this.element.classList.remove("fullscreen");
-    this.resize();
+    await this.resize();
 };
 
 /**
