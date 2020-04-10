@@ -65,6 +65,8 @@ ripe.Image.prototype.init = function() {
             };
         };
     this._observer = null;
+    this._url = null;
+    this._previousUrl = null;
 
     this._registerHandlers();
 };
@@ -121,16 +123,21 @@ ripe.Image.prototype.update = async function(state, options = {}) {
 
     // verifies if the target image URL for the update is already
     // set and if that's the case returns (end of loop)
-    if (this.element.src === url) {
+    if (url === this._url) {
         this.trigger("not_loaded");
         return false;
     }
+
+    // saves the previous URL value and then updates the new URL
+    // according to the newly requested one
+    this._previousUrl = this._url;
+    this._url = url;
 
     // updates the image DOM element with the values of the image
     // including requested size and URL
     if (width) this.element.width = width;
     if (height) this.element.height = height;
-    this.element.src = url;
+    this.element.src = this._url;
 
     // saves the space for the result of the loaded callback that
     // should be a boolean indicating if there's was a visual impact
@@ -169,7 +176,15 @@ ripe.Image.prototype.update = async function(state, options = {}) {
  */
 ripe.Image.prototype.cancel = async function(options = {}) {
     if (!this._loadedCallback) return false;
+
+    // restores the internal URL state of the image back to
+    // the previous one (and updates the element accordingly)
+    this._url = this._previousUrl;
+    this._previousUrl = null;
+    this.element.src = this._url;
+
     this._loadedCallback({ canceled: true });
+
     return true;
 };
 
