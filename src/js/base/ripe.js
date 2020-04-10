@@ -553,13 +553,12 @@ ripe.Ripe.prototype.setPart = async function(
 
     await this.trigger("pre_parts", this.parts, options);
     await this._setPart(part, material, color);
+    await this.trigger("parts", this.parts, options);
+    await this.trigger("post_parts", this.parts, options);
 
     // propagates the state change in the internal structures to the
     // children elements of this RIPE instance
-    this.update();
-
-    await this.trigger("parts", this.parts, options);
-    await this.trigger("post_parts", this.parts, options);
+    await this.update();
 };
 
 /**
@@ -583,9 +582,12 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
 
     await this.trigger("pre_parts", this.parts, options);
     await this._setParts(update, partEvents);
-    this.update();
     await this.trigger("parts", this.parts, options);
     await this.trigger("post_parts", this.parts, options);
+
+    // propagates the state change in the internal structures to the
+    // children elements of this RIPE instance
+    await this.update();
 };
 
 /**
