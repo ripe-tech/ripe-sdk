@@ -165,6 +165,9 @@ ripe.Configurator.prototype.resize = function(size) {
  * - 'force' - If the updating operation should be forced (ignores signature).
  */
 ripe.Configurator.prototype.update = async function(state, options = {}) {
+    // in case the configurator is currently nor ready for an
+    // update none is performed and the control flow is returned
+    // with the false value (indicating a no-op, nothing was done)
     if (this.ready === false) {
         this.trigger("not_loaded");
         return false;
