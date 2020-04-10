@@ -940,11 +940,18 @@ ripe.Ripe.prototype.deselectPart = function(part, options = {}) {
  * personalization.
  * @param {Object} options Set of update options that change the way
  * the update operation is going to be performed.
+ * @param {Array} children The set of children that are going to be affected
+ * by the updated operation, if not provided all of the currently registered
+ * children in the instance will be used.
  */
-ripe.Ripe.prototype.update = async function(state, options = {}) {
+ripe.Ripe.prototype.update = async function(state, options = {}, children = null) {
     // tries to retrieve the state of the configuration for which an update
     // operation is going to be requested
     state = state || this._getState();
+
+    // defaults the children variable to the current set of registered
+    // children, as expected by specification
+    children = children || this.children;
 
     // increments the update counter, meaning that a new update operation
     // is going to be performed (and requires a proper unique identifier)
@@ -959,8 +966,8 @@ ripe.Ripe.prototype.update = async function(state, options = {}) {
 
         const promises = [];
 
-        for (let index = 0; index < this.children.length; index++) {
-            const child = this.children[index];
+        for (let index = 0; index < children.length; index++) {
+            const child = children[index];
             promises.push(child.update(state, options));
         }
 
@@ -1006,7 +1013,7 @@ ripe.Ripe.prototype.update = async function(state, options = {}) {
     // runs the cancel operation, so that any pending update is canceled
     // without any possible visual changes and consuming the least resources
     // possible by any of the child elements
-    await this.cancel(options);
+    await this.cancel(options, children);
 
     // iterates waiting for all the pending promises for update operations
     // so that we can safely run the new update promise after all the other
@@ -1026,14 +1033,18 @@ ripe.Ripe.prototype.update = async function(state, options = {}) {
     }
 };
 
-ripe.Ripe.prototype.cancel = async function(options = {}) {
+ripe.Ripe.prototype.cancel = async function(options = {}, children = null) {
+    // defaults the children variable to the current set of registered
+    // children, as expected by specification
+    children = children || this.children;
+
     const _cancel = async () => {
         await this.trigger("pre_cancel", { id: this.updateCounter });
 
         const promises = [];
 
-        for (let index = 0; index < this.children.length; index++) {
-            const child = this.children[index];
+        for (let index = 0; index < children.length; index++) {
+            const child = children[index];
             promises.push(child.cancel(options));
         }
 
