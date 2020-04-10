@@ -137,7 +137,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // including requested size and URL
     if (width) this.element.width = width;
     if (height) this.element.height = height;
-    this.element.src = this._url;
+    this.element.src = this._url || "";
 
     // saves the space for the result of the loaded callback that
     // should be a boolean indicating if there's was a visual impact
@@ -181,7 +181,7 @@ ripe.Image.prototype.cancel = async function(options = {}) {
     // the previous one (and updates the element accordingly)
     this._url = this._previousUrl;
     this._previousUrl = null;
-    this.element.src = this._url;
+    this.element.src = this._url || "";
 
     this._loadedCallback({ canceled: true });
 
