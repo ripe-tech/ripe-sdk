@@ -595,7 +595,7 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     frontMask.setAttribute("src", url);
 
     ripe.cancelAnimation(frontMask);
-    ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration);
+    ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration, false);
 };
 
 /**

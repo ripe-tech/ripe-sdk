@@ -39,7 +39,7 @@ ripe.animateProperty = async function(
     initial,
     final,
     duration = 1.0,
-    raise = false
+    raise = true
 ) {
     // sets the initial value for the property according to the
     // provided values, notice that the date of the last touch
@@ -108,7 +108,7 @@ ripe.animateProperty = async function(
     } catch (err) {
         // in case the raise flag is not set returns immediately
         // otherwise rethrows the exception to the upper layers
-        if (raise) return false;
+        if (!raise) return false;
         throw err;
     }
 
@@ -125,7 +125,13 @@ ripe.cancelAnimation = function(element) {
     const animationId = parseInt(element.dataset.animation_id);
     const info = ripe.animations[animationId];
     cancelAnimationFrame(animationId);
-    if (info.callback) info.callback(null, new Error("Animation canceled"));
+
+    // in case there's a callback defined for the current animation
+    // then it muse be called with an action exception indicating that
+    // the exception has been canceled in the middle of the execution
+    if (info.callback) {
+        info.callback(null, new ripe.ActionException("Animation canceled"));
+    }
 };
 
 /**
