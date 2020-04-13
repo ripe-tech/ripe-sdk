@@ -868,6 +868,14 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
  * @ignore
  */
 ripe.Configurator.prototype._loadFrame = async function(view, position, options = {}) {
+    // triggers the initial frame event that indicates that a
+    // new frame is going to be loaded into the img buffers
+    this.trigger("pre_frame", {
+        view: view,
+        position: position,
+        options: options
+    });
+
     // runs the defaulting operation on all of the parameters
     // sent to the load frame operation (defaulting)
     view = view || this.element.dataset.view || "side";
@@ -922,6 +930,18 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
         if (!draw) return;
         const isReady = image.dataset.loaded === "true";
         if (isReady) await this._drawFrame(image, animate, duration);
+
+        // triggers the post frame event indicating the end
+        // of the image preloading under cache match situation
+        this.trigger("post_frame", {
+            view: view,
+            position: position,
+            options: options,
+            result: false
+        });
+
+        // returns immediately there's nothing remaining to
+        // be done as the image is already loaded
         return;
     }
 
@@ -958,6 +978,16 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // waits until the image promise is resolved so that
     // we're sure everything is currently loaded
     await imagePromise;
+
+    // triggers the post frame event indicating that the
+    // frame has been buffered into the img element with
+    // no cache operation activated
+    this.trigger("post_frame", {
+        view: view,
+        position: position,
+        options: options,
+        result: true
+    });
 };
 
 /**
