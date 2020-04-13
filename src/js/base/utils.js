@@ -33,14 +33,21 @@ ripe.createElement = function(tagName, className) {
 /**
  * @ignore
  */
-ripe.animateProperty = async function(element, property, initial, final, duration) {
+ripe.animateProperty = async function(
+    element,
+    property,
+    initial,
+    final,
+    duration = 1.0,
+    raise = false
+) {
     // sets the initial value for the property according to the
     // provided values, notice that the date of the last touch
     // time for the animation is created
     element.style[property] = initial;
     let last = new Date();
 
-    await new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, reject) => {
         const frame = (timestamp, err) => {
             // in case there's an error coming from the callback calls
             // the promise reject function with the error
@@ -93,6 +100,21 @@ ripe.animateProperty = async function(element, property, initial, final, duratio
         // call to the frame animation function
         frame();
     });
+
+    try {
+        // waits for the complete set of steps of the animation
+        // to complete (may raise unexpected errors)
+        await promise;
+    } catch (err) {
+        // in case the raise flag is not set returns immediately
+        // otherwise rethrows the exception to the upper layers
+        if (raise) return false;
+        throw err;
+    }
+
+    // returns with a valid value indicating that the animation
+    // has been executed with success
+    return true;
 };
 
 /**
@@ -103,7 +125,7 @@ ripe.cancelAnimation = function(element) {
     const animationId = parseInt(element.dataset.animation_id);
     const info = ripe.animations[animationId];
     cancelAnimationFrame(animationId);
-    info.callback && info.callback(null, new Error("Animation canceled"));
+    if (info.callback) info.callback(null, new Error("Animation canceled"));
 };
 
 /**
