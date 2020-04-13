@@ -55,6 +55,7 @@ ripe.Image.prototype.init = function() {
     this.height = this.options.height || null;
     this.crop = this.options.crop || false;
     this.showInitials = this.options.showInitials || false;
+    this.initialsGroup = this.options.initialsGroup || null;
     this.initialsBuilder =
         this.options.initialsBuilder ||
         function(initials, engraving, element) {
@@ -64,6 +65,8 @@ ripe.Image.prototype.init = function() {
             };
         };
     this._observer = null;
+    this._url = null;
+    this._previousUrl = null;
 
     this._registerHandlers();
 };
@@ -82,9 +85,16 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const width = this.element.dataset.width || this.width;
     const height = this.element.dataset.height || this.height;
     const crop = this.element.dataset.crop || this.crop;
+    const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
 
-    this.initials = state !== undefined ? state.initials : this.initials;
-    this.engraving = state !== undefined ? state.engraving : this.engraving;
+    // in case the state is defined tries to gather the appropriate
+    // sate options for both initials and engraving taking into
+    // consideration that groups may exist
+    if (state !== undefined) {
+        const base = initialsGroup ? state.initialsExtra[initialsGroup] || {} : state;
+        this.initials = base.initials || "";
+        this.engraving = base.engraving || null;
+    }
 
     const initialsSpec = this.showInitials
         ? this.initialsBuilder(this.initials, this.engraving, this.element)
@@ -113,26 +123,32 @@ ripe.Image.prototype.update = async function(state, options = {}) {
 
     // verifies if the target image URL for the update is already
     // set and if that's the case returns (end of loop)
-    if (this.element.src === url) {
+    if (url === this._url) {
         this.trigger("not_loaded");
         return false;
     }
 
+    // saves the previous URL value and then updates the new URL
+    // according to the newly requested one
+    this._previousUrl = this._url;
+    this._url = url;
+
     // updates the image DOM element with the values of the image
     // including requested size and URL
-    if (width) {
-        this.element.width = width;
-    }
-    if (height) {
-        this.element.height = height;
-    }
-    this.element.src = url;
+    if (width) this.element.width = width;
+    if (height) this.element.height = height;
+    this.element.src = this._url || "";
+
+    // saves the space for the result of the loaded callback that
+    // should be a boolean indicating if there's was a visual impact
+    // resulting from the loading operation
+    let result = true;
 
     try {
         // create a promise waiting for the current image for either load
         // or receive an error, for both situation there should be a proper
         // waiting process in motion
-        await new Promise((resolve, reject) => {
+        result = await new Promise((resolve, reject) => {
             this._loadedCallback = resolve;
             this._errorCallback = reject;
         });
@@ -143,8 +159,32 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         this._errorCallback = null;
     }
 
-    // returns a valid value indicating that the loading operation
+    // in case there's no value returned by the loaded callback then
+    // the result is considered valid (proper update)
+    if (result === undefined) result = true;
+
+    // returns a value indicating that if the loading operation
     // as been triggered with success (effective operation)
+    return result;
+};
+
+/**
+ * This function is called (by the owner) whenever the current operation
+ * in the child should be canceled this way an Image is not updated.
+ *
+ * @param {Object} options Set of optional parameters to adjust the Image.
+ */
+ripe.Image.prototype.cancel = async function(options = {}) {
+    if (!this._loadedCallback) return false;
+
+    // restores the internal URL state of the image back to
+    // the previous one (and updates the element accordingly)
+    this._url = this._previousUrl;
+    this._previousUrl = null;
+    this.element.src = this._url || "";
+
+    this._loadedCallback({ canceled: true });
+
     return true;
 };
 

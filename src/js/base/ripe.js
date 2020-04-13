@@ -84,6 +84,10 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.ready = false;
     this.bundles = false;
     this.partCounter = 0;
+    this.updateCounter = 0;
+    this.initialsCounter = 0;
+    this.updatePromise = null;
+    this.cancelPromise = null;
     this.error = null;
 
     // extends the default options with the ones provided by the
@@ -549,13 +553,12 @@ ripe.Ripe.prototype.setPart = async function(
 
     await this.trigger("pre_parts", this.parts, options);
     await this._setPart(part, material, color);
+    await this.trigger("parts", this.parts, options);
+    await this.trigger("post_parts", this.parts, options);
 
     // propagates the state change in the internal structures to the
     // children elements of this RIPE instance
-    this.update();
-
-    await this.trigger("parts", this.parts, options);
-    await this.trigger("post_parts", this.parts, options);
+    await this.update();
 };
 
 /**
@@ -579,9 +582,12 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
 
     await this.trigger("pre_parts", this.parts, options);
     await this._setParts(update, partEvents);
-    this.update();
     await this.trigger("parts", this.parts, options);
     await this.trigger("post_parts", this.parts, options);
+
+    // propagates the state change in the internal structures to the
+    // children elements of this RIPE instance
+    await this.update();
 };
 
 /**
@@ -601,9 +607,15 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
         return result;
     }
 
+    // generates a new initials counter that controls if the initials
+    // state has changes (set initials), this way it's possible to
+    // prevent out of order execution of update states
+    this.initialsCounter += 1;
+    const id = this.initialsCounter;
+
     // triggers the event indicating the the start of the
     // the (set) initials operation (notifies listeners)
-    this.trigger("pre_initials");
+    await this.trigger("pre_initials", { id: id });
 
     // sets the base instance fields for both the initials and the
     // engraving and updates the initials extra on the main group,
@@ -626,17 +638,24 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
     // the control flow immediately, nothing remaining to be done
     if (!events) return this;
 
+    // creates a "snapshot" of the current initials state so that the
+    // update may be performed over the currently defined set of initials
+    const state = this._getState();
+
     // triggers the initials event notifying any listening
     // object about the changes
-    await this.trigger("initials", initials, engraving, params);
+    await this.trigger("initials", initials, engraving, params, { id: id });
 
     // runs the update operation so that all the listening
-    // components can properly update their visuals
-    this.update();
+    // components can properly update their visuals, notice
+    // that this execution is only performed in case this is
+    // still the most up-to-date initials operation, avoiding
+    // possible out-of-order execution of update operations
+    if (id === this.initialsCounter) this.update(state);
 
     // triggers the event indicating the the end of the
     // the (set) initials operation (notifies listeners)
-    this.trigger("post_initials");
+    await this.trigger("post_initials", { id: id });
 
     // returns the current instance (good for pipelining)
     return this;
@@ -657,9 +676,15 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
     const mainGroup = groups.includes("main") ? "main" : groups[0];
     const mainInitials = initialsExtra[mainGroup];
 
+    // generates a new initials counter that controls if the initials
+    // state has changes (set initials), this way it's possible to
+    // prevent out of order execution of update states
+    this.initialsCounter += 1;
+    const id = this.initialsCounter;
+
     // triggers the event indicating the the start of the
     // the (set) initials extra operation (notifies listeners)
-    this.trigger("pre_initials_extra");
+    await this.trigger("pre_initials_extra", { id: id });
 
     if (isEmpty) {
         this.initials = "";
@@ -683,17 +708,24 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
 
     if (!events) return this;
 
+    // creates a "snapshot" of the current initials state so that the
+    // update may be performed over the currently defined set of initials
+    const state = this._getState();
+
     // triggers the initials extra event notifying any
     // listening object about the changes
-    await this.trigger("initials_extra", initialsExtra, params);
+    await this.trigger("initials_extra", initialsExtra, params, { id: id });
 
     // runs the update operation so that all the listening
-    // components can properly update their visuals
-    this.update();
+    // components can properly update their visuals, notice
+    // that this execution is only performed in case this is
+    // still the most up-to-date initials operation, avoiding
+    // possible out-of-order execution of update operations
+    if (id === this.initialsCounter) this.update(state);
 
     // triggers the event indicating the the end of the
     // the (set) initials extra operation (notifies listeners)
-    this.trigger("post_initials_extra");
+    await this.trigger("post_initials_extra", { id: id });
 
     // returns the current instance (good for pipelining)
     return this;
@@ -908,43 +940,145 @@ ripe.Ripe.prototype.deselectPart = function(part, options = {}) {
  * personalization.
  * @param {Object} options Set of update options that change the way
  * the update operation is going to be performed.
+ * @param {Array} children The set of children that are going to be affected
+ * by the updated operation, if not provided all of the currently registered
+ * children in the instance will be used.
  */
-ripe.Ripe.prototype.update = async function(state, options = {}) {
-    this.trigger("pre_update");
-
+ripe.Ripe.prototype.update = async function(state, options = {}, children = null) {
+    // tries to retrieve the state of the configuration for which an update
+    // operation is going to be requested
     state = state || this._getState();
 
-    const promises = [];
+    // defaults the children variable to the current set of registered
+    // children, as expected by specification
+    children = children || this.children;
 
-    for (let index = 0; index < this.children.length; index++) {
-        const child = this.children[index];
-        promises.push(child.update(state, options));
+    // increments the update counter, meaning that a new update operation
+    // is going to be performed (and requires a proper unique identifier)
+    this.updateCounter += 1;
+    const id = this.updateCounter;
+
+    const _update = async () => {
+        await this.trigger("pre_update", {
+            id: id,
+            state: state
+        });
+
+        const promises = [];
+
+        for (let index = 0; index < children.length; index++) {
+            const child = children[index];
+            promises.push(child.update(state, options));
+        }
+
+        if (this.ready) {
+            await this.trigger("update", {
+                id: id,
+                state: state
+            });
+        }
+
+        // in case the use price flag is set then we should "automagically"
+        // retrieve the price for the currently changed configuration
+        if (this.ready && this.usePrice) {
+            const timestamp = Date.now();
+            this._priceTimestamp = timestamp;
+            this.getPriceP()
+                .then(value => {
+                    if (this._priceTimestamp > timestamp) return;
+                    this.trigger("price", value);
+                })
+                .catch(err => this.trigger("price_error", err));
+        }
+
+        // waits for all the promises "responsible" for the visual updating
+        // the children of the instance and then verifies if any of them was
+        // effectively updated (not cached), that is considered to be the
+        // result of the update operation as whole (indicates if this was an
+        // effective update operation or if otherwise was a cache match)
+        const results = await Promise.all(promises);
+        const result = results.some(v => v !== false);
+        const canceled = results.some(v => Boolean(v && v.canceled));
+
+        await this.trigger("post_update", {
+            id: id,
+            state: state,
+            result: result,
+            canceled: canceled
+        });
+
+        return result;
+    };
+
+    // runs the cancel operation, so that any pending update is canceled
+    // without any possible visual changes and consuming the least resources
+    // possible by any of the child elements
+    await this.cancel(options, children);
+
+    // iterates waiting for all the pending promises for update operations
+    // so that we can safely run the new update promise after all the other
+    // previously registered ones are "flushed"
+    while (this.updatePromise) await this.updatePromise;
+
+    // in case the current update operation is no longer the latest one then
+    // there's no need to continue with the operation
+    if (id !== this.updateCounter) return;
+
+    try {
+        this.updatePromise = _update();
+        const result = await this.updatePromise;
+        return result;
+    } finally {
+        this.updatePromise = null;
     }
+};
 
-    if (this.ready) this.trigger("update");
+ripe.Ripe.prototype.cancel = async function(options = {}, children = null) {
+    // defaults the children variable to the current set of registered
+    // children, as expected by specification
+    children = children || this.children;
 
-    if (this.ready && this.usePrice) {
-        const timestamp = Date.now();
-        this._priceTimestamp = timestamp;
-        this.getPriceP()
-            .then(value => {
-                if (this._priceTimestamp > timestamp) return;
-                this.trigger("price", value);
-            })
-            .catch(err => this.trigger("price_error", err));
+    const _cancel = async () => {
+        await this.trigger("pre_cancel", { id: this.updateCounter });
+
+        const promises = [];
+
+        for (let index = 0; index < children.length; index++) {
+            const child = children[index];
+            promises.push(child.cancel(options));
+        }
+
+        let results = [];
+        this.cancelPromise = Promise.all(promises);
+        try {
+            results = await this.cancelPromise;
+        } finally {
+            this.cancelPromise = null;
+        }
+
+        const result = results.some(v => v !== false);
+        const canceled = results.some(v => Boolean(v && v.canceled));
+
+        // in case there's an update promise pending waits for it
+        // so that we're sure and safe that we can run a new one
+        if (this.updatePromise) await this.updatePromise;
+
+        await this.trigger("post_cancel", {
+            id: this.updateCounter,
+            result: result,
+            canceled: canceled
+        });
+
+        return result;
+    };
+
+    try {
+        this.cancelPromise = _cancel();
+        const result = await this.cancelPromise;
+        return result;
+    } finally {
+        this.cancelPromise = null;
     }
-
-    // waits for all the promises "responsible" for the visual updating
-    // the children of the instance and then verifies if any of them was
-    // effectively updated (not cached), that is considered to be the
-    // result of the update operation as whole (indicates if this was an
-    // effective update operation or if otherwise was a cache match)
-    const results = await Promise.all(promises);
-    const result = results.some(v => v === true || v === undefined);
-
-    this.trigger("post_update", result);
-
-    return result;
 };
 
 /**
@@ -1151,13 +1285,15 @@ ripe.Ripe.prototype._initBundles = async function(defaultLocale = "en_us") {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getState = function() {
-    return {
-        parts: this.parts,
-        initials: this.initials,
-        engraving: this.engraving,
-        initialsExtra: this.initialsExtra
-    };
+ripe.Ripe.prototype._getState = function(safe = true) {
+    return safe
+        ? JSON.parse(JSON.stringify(this._getState(false)))
+        : {
+              parts: this.parts,
+              initials: this.initials,
+              engraving: this.engraving,
+              initialsExtra: this.initialsExtra
+          };
 };
 
 /**

@@ -63,6 +63,7 @@ ripe.Configurator.prototype.init = function() {
     this.viewAnimate = this.options.viewAnimate === undefined ? "cross" : this.options.viewAnimate;
     this.position = this.options.position || 0;
     this.ready = false;
+    this._finalize = null;
     this._observer = null;
     this._ownerBinds = {};
 
@@ -105,7 +106,7 @@ ripe.Configurator.prototype.init = function() {
  *
  * @param {Number} size The number of pixels to resize to.
  */
-ripe.Configurator.prototype.resize = function(size) {
+ripe.Configurator.prototype.resize = async function(size) {
     if (this.element === undefined) {
         return;
     }
@@ -138,7 +139,7 @@ ripe.Configurator.prototype.resize = function(size) {
     mask.style.width = size + "px";
     mask.style.height = size + "px";
     this.currentSize = size;
-    this.update(
+    await this.update(
         {},
         {
             force: true
@@ -164,6 +165,9 @@ ripe.Configurator.prototype.resize = function(size) {
  * - 'force' - If the updating operation should be forced (ignores signature).
  */
 ripe.Configurator.prototype.update = async function(state, options = {}) {
+    // in case the configurator is currently nor ready for an
+    // update none is performed and the control flow is returned
+    // with the false value (indicating a no-op, nothing was done)
     if (this.ready === false) {
         this.trigger("not_loaded");
         return false;
@@ -177,10 +181,6 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
 
     const view = this.element.dataset.view;
     const position = this.element.dataset.position;
-    const format = this.element.dataset.format || this.format;
-    const size = this.element.dataset.size || this.size;
-    const width = size || this.element.dataset.width || this.width;
-    const height = size || this.element.dataset.height || this.height;
 
     const force = options.force || false;
     const duration = options.duration;
@@ -189,9 +189,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
     let previous = this.signature || "";
-    const signature = `${this.owner._getQuery()}&width=${String(width)}&height=${String(
-        height
-    )}&format=${String(format)}`;
+    const signature = this._buildSignature();
     const changed = signature !== previous;
     const animate = options.animate === undefined ? (changed ? "simple" : false) : options.animate;
     this.signature = signature;
@@ -228,12 +226,28 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
         duration: duration
     });
 
+    // initializes the result value with the default valid value
+    // indicating that the operation was a success
+    let result = true;
+
     // in case the preload was requested then waits for the preload
     // operation of the frames to complete (wait on promise)
-    if (preloadPromise) await preloadPromise;
+    if (preloadPromise) result = await preloadPromise;
 
-    // returns a valid value indicating that the loading operation
+    // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
+    return result;
+};
+
+/**
+ * This function is called (by the owner) whenever the current operation
+ * in the child should be canceled this way a Configurator is not updated.
+ *
+ * @param {Object} options Set of optional parameters to adjust the Configurator.
+ */
+ripe.Configurator.prototype.cancel = async function(options = {}) {
+    if (this._buildSignature() === this.signature || "") return false;
+    if (this._finalize) this._finalize({ canceled: true });
     return true;
 };
 
@@ -581,7 +595,7 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     frontMask.setAttribute("src", url);
 
     ripe.cancelAnimation(frontMask);
-    ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration);
+    ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration, false);
 };
 
 /**
@@ -614,13 +628,13 @@ ripe.Configurator.prototype.lowlight = function(options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.Configurator.prototype.enterFullscreen = function(options) {
+ripe.Configurator.prototype.enterFullscreen = async function(options) {
     if (this.element === undefined) {
         return;
     }
     this.element.classList.add("fullscreen");
     const maxSize = this.element.dataset.max_size || this.maxSize;
-    this.resize(maxSize);
+    await this.resize(maxSize);
 };
 
 /**
@@ -628,12 +642,12 @@ ripe.Configurator.prototype.enterFullscreen = function(options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.Configurator.prototype.leaveFullscreen = function(options) {
+ripe.Configurator.prototype.leaveFullscreen = async function(options) {
     if (this.element === undefined) {
         return;
     }
     this.element.classList.remove("fullscreen");
-    this.resize();
+    await this.resize();
 };
 
 /**
@@ -854,7 +868,11 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
  * @ignore
  */
 ripe.Configurator.prototype._loadFrame = async function(view, position, options = {}) {
-    this.trigger("pre_frame", view, position, options);
+    this.trigger("pre_frame", {
+        view: view,
+        position: position,
+        options: options
+    });
 
     // runs the defaulting operation on all of the parameters
     // sent to the load frame operation (defaulting)
@@ -880,8 +898,8 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     image = image || front;
 
     // in case there's no images for the frames that are meant
-    // to be loaded calls the callback immediately and returns
-    // the control flow (not possible to load them)
+    // to be loaded, then throws an error indicating that it's
+    // not possible to load the requested frame
     if (image === null || maskImage === null) {
         throw new RangeError("Frame " + frame + " is not supported.");
     }
@@ -907,14 +925,15 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // loading) and avoids for performance reasons
     const isRedundant = image.dataset.src === url;
     if (isRedundant) {
-        if (!draw) {
-            return;
-        }
+        if (!draw) return;
         const isReady = image.dataset.loaded === "true";
-        if (isReady) {
-            await this._drawFrame(image, animate, duration);
-        }
-        this.trigger("post_frame", view, position, options, false);
+        if (isReady) await this._drawFrame(image, animate, duration);
+        this.trigger("post_frame", {
+            view: view,
+            position: position,
+            options: options,
+            result: false
+        });
         return;
     }
 
@@ -952,7 +971,12 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // we're sure everything is currently loaded
     await imagePromise;
 
-    this.trigger("post_frame", view, position, options, true);
+    this.trigger("post_frame", {
+        view: view,
+        position: position,
+        options: options,
+        result: true
+    });
 };
 
 /**
@@ -1102,7 +1126,24 @@ ripe.Configurator.prototype._preload = async function(useChain) {
 
     // waits for the pre loading promise so that at the end of this
     // execution all the work required for loading is processed
-    await new Promise((resolve, reject) => {
+    const result = await new Promise((resolve, reject) => {
+        this._finalize = (result = true) => {
+            work.length = 0;
+
+            this.element.classList.remove("preloading");
+            this.element.classList.remove("no-drag");
+
+            this.trigger("loaded");
+
+            // unsets the finalize clojure from the current instance
+            // effectively disallowing further usage of it
+            this._finalize = null;
+
+            // finalizes the promise by resolving it with
+            // the parameter that was just received (final result)
+            resolve(result);
+        };
+
         const mark = element => {
             const _index = this.index;
             if (index !== _index) {
@@ -1126,10 +1167,7 @@ ripe.Configurator.prototype._preload = async function(useChain) {
                 this.element.classList.add("preloading");
                 this.element.classList.add("no-drag");
             } else if (work.length === 0) {
-                this.element.classList.remove("preloading");
-                this.element.classList.remove("no-drag");
-                this.trigger("loaded");
-                resolve();
+                if (this._finalize) this._finalize();
             }
         };
 
@@ -1181,6 +1219,10 @@ ripe.Configurator.prototype._preload = async function(useChain) {
             }, this.preloadDelay);
         }
     });
+
+    // returns the final result coming from the preload promise
+    // that should indicate the status on the preloading operation
+    return result;
 };
 
 /**
@@ -1457,4 +1499,17 @@ ripe.Configurator.prototype._getCanvasIndex = function(canvas, x, y) {
     const index = parseInt(r);
 
     return index;
+};
+
+/**
+ * @ignore
+ */
+ripe.Configurator.prototype._buildSignature = function() {
+    const format = this.element.dataset.format || this.format;
+    const size = this.element.dataset.size || this.size;
+    const width = size || this.element.dataset.width || this.width;
+    const height = size || this.element.dataset.height || this.height;
+    return `${this.owner._getQuery()}&width=${String(width)}&height=${String(
+        height
+    )}&format=${String(format)}`;
 };
