@@ -396,8 +396,12 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     const parts = loadDefaults ? this.loadedConfig.defaults : this.parts;
 
     // updates the parts of the current instance so that the internals of it
-    // reflect the newly loaded configuration
-    await this.setParts(parts, true, { partEvents: false });
+    // reflect the newly loaded configuration, notice that we're not going to
+    // wait until the update is finished (opportunistic)
+    await this.setParts(parts, true, {
+        partEvents: false,
+        runUpdate: false
+    });
 
     // in case both the initials and the engraving value are set in the options
     // runs the updating of the internal state to update the initials
@@ -539,14 +543,12 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
  * @param {String} material The material to change to.
  * @param {String} color The color to change to.
  * @param {Boolean} events If the parts events should be triggered (defaults to 'true').
+ * @param {Object} options The options to be used in the set part operations (for internal use)..
  */
-ripe.Ripe.prototype.setPart = async function(
-    part,
-    material,
-    color,
-    events = true,
-    options = null
-) {
+ripe.Ripe.prototype.setPart = async function(part, material, color, events = true, options = {}) {
+    const runUpdate = options.runUpdate === undefined ? true : options.runUpdate;
+    const waitUpdate = options.waitUpdate === undefined ? true : options.waitUpdate;
+
     if (!events) {
         await this._setPart(part, material, color);
     }
@@ -556,9 +558,17 @@ ripe.Ripe.prototype.setPart = async function(
     await this.trigger("parts", this.parts, options);
     await this.trigger("post_parts", this.parts, options);
 
+    // in case the update is not meant to be ran then returns the
+    // control flow immediately (nothing remaining to be done)
+    if (!runUpdate) return;
+
     // propagates the state change in the internal structures to the
     // children elements of this RIPE instance
-    await this.update();
+    const promise = this.update();
+
+    // in case the wait update options is valid (by default) then waits
+    // until the update promise is fulfilled
+    if (waitUpdate) await promise;
 };
 
 /**
@@ -570,6 +580,8 @@ ripe.Ripe.prototype.setPart = async function(
  */
 ripe.Ripe.prototype.setParts = async function(update, events = true, options = {}) {
     const partEvents = options.partEvents === undefined ? true : options.partEvents;
+    const runUpdate = options.runUpdate === undefined ? true : options.runUpdate;
+    const waitUpdate = options.waitUpdate === undefined ? true : options.waitUpdate;
 
     if (typeof update === "object" && !Array.isArray(update)) {
         update = this._partsList(update);
@@ -585,9 +597,17 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
     await this.trigger("parts", this.parts, options);
     await this.trigger("post_parts", this.parts, options);
 
+    // in case the update is not meant to be ran then returns the
+    // control flow immediately (nothing remaining to be done)
+    if (!runUpdate) return;
+
     // propagates the state change in the internal structures to the
     // children elements of this RIPE instance
-    await this.update();
+    const promise = this.update();
+
+    // in case the wait update options is valid (by default) then waits
+    // until the update promise is fulfilled
+    if (waitUpdate) await promise;
 };
 
 /**
