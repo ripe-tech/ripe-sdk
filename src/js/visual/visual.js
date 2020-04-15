@@ -32,6 +32,7 @@ ripe.visualGlobals = {
 ripe.Visual = function(owner, element, options) {
     this.element = element;
     this.elementEvents = {};
+    this.type = this.type || "Visual";
 
     ripe.Interactable.call(this, owner, options);
 };

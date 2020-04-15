@@ -27,6 +27,8 @@ if (
  * configurator instance to be created.
  */
 ripe.Configurator = function(owner, element, options) {
+    this.type = this.type || "Configurator";
+
     ripe.Visual.call(this, owner, element, options);
 };
 
@@ -927,7 +929,12 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // loading) and avoids for performance reasons
     const isRedundant = image.dataset.src === url;
     if (isRedundant) {
+        // in case no draw is required returns the control flow
+        // immediately, nothing to be done
         if (!draw) return;
+
+        // check if the image on the buffer is already loaded
+        // nad if that's the case draws the frame
         const isReady = image.dataset.loaded === "true";
         if (isReady) await this._drawFrame(image, animate, duration);
 

@@ -33,6 +33,8 @@ if (
  * - 'crop' - A Boolean indicating if it is to crop the image composition.
  */
 ripe.Image = function(owner, element, options) {
+    this.type = this.type || "Image";
+
     ripe.Visual.call(this, owner, element, options);
 };
 
