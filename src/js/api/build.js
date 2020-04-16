@@ -12,6 +12,50 @@ if (
 }
 
 /**
+ * Gets the existing builds, according to the provided filtering
+ * strategy as normalized values.
+ *
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'filters[]' - List of filters that the query will use to, operators such as
+ * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
+ * - 'sort' - List of arguments to sort the results by and which direction
+ * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
+ * while (eg: 'id:descending')] would do it in descending order.
+ * - 'skip' - The number of the first record to retrieve from the results.
+ * - 'limit' - The number of results to retrieve.
+ * @param {Function} callback Function with the result of the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getBuilds = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = this.url + "builds";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets the existing builds, according to the provided filtering
+ * strategy as normalized values.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The orders result list.
+ */
+ripe.Ripe.prototype.getBuildsP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getBuilds(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Retrieves the build artifact information by brand name and version.
  *
  * @param {String} name The name of the brand of the build artifact.
