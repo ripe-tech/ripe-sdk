@@ -12,7 +12,7 @@ if (
 }
 
 /**
- * Gets the existing builds
+ * Retrieves the complete list of builds available from the server.
  *
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -27,9 +27,9 @@ ripe.Ripe.prototype.getBuilds = function(callback) {
 };
 
 /**
- * Gets the existing builds
+ * Retrieves the complete list of builds available from the server.
  *
- * @returns {Promise} The orders result list.
+ * @returns {Promise} The builds result list (as a promise).
  */
 ripe.Ripe.prototype.getBuildsP = function() {
     return new Promise((resolve, reject) => {
