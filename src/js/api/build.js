@@ -12,8 +12,7 @@ if (
 }
 
 /**
- * Gets the existing builds, according to the provided filtering
- * strategy as normalized values.
+ * Gets the existing builds
  *
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
