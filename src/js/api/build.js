@@ -12,6 +12,34 @@ if (
 }
 
 /**
+ * Gets the existing builds
+ *
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getBuilds = function(callback) {
+    const url = this.url + "builds";
+    const options = this._build({
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets the existing builds
+ *
+ * @returns {Promise} The orders result list.
+ */
+ripe.Ripe.prototype.getBuildsP = function() {
+    return new Promise((resolve, reject) => {
+        this.getBuilds((result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Retrieves the build artifact information by brand name and version.
  *
  * @param {String} name The name of the brand of the build artifact.
