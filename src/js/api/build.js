@@ -27,16 +27,13 @@ if (
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getBuilds = function(options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
+ripe.Ripe.prototype.getBuilds = function(callback) {
     const url = this.url + "builds";
-    options = Object.assign(options, {
+    const options = this._build({
         url: url,
         method: "GET",
         auth: true
     });
-    options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
 
@@ -47,9 +44,9 @@ ripe.Ripe.prototype.getBuilds = function(options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The orders result list.
  */
-ripe.Ripe.prototype.getBuildsP = function(options) {
+ripe.Ripe.prototype.getBuildsP = function() {
     return new Promise((resolve, reject) => {
-        this.getBuilds(options, (result, isValid, request) => {
+        this.getBuilds((result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
