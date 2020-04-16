@@ -14,16 +14,6 @@ if (
 /**
  * Gets the existing builds
  *
- * @param {Object} options An object of options to configure the request, such as:
- * - 'filters[]' - List of filters that the query will use to, operators such as
- * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
- * - 'sort' - List of arguments to sort the results by and which direction
- * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
- * while (eg: 'id:descending')] would do it in descending order.
- * - 'skip' - The number of the first record to retrieve from the results.
- * - 'limit' - The number of results to retrieve.
- * @param {Function} callback Function with the result of the request.
- * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getBuilds = function(callback) {
@@ -37,10 +27,8 @@ ripe.Ripe.prototype.getBuilds = function(callback) {
 };
 
 /**
- * Gets the existing builds, according to the provided filtering
- * strategy as normalized values.
+ * Gets the existing builds
  *
- * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The orders result list.
  */
 ripe.Ripe.prototype.getBuildsP = function() {
