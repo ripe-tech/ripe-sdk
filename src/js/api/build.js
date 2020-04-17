@@ -47,6 +47,50 @@ ripe.Ripe.prototype.getBuildsP = function() {
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
+ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const branch = options.branch === undefined ? "master" : options.branch;
+    const url = `${this.url}builds/${name}`;
+    const params = {};
+    if (branch !== undefined && branch !== null) {
+        params.branch = branch;
+    }
+
+    options = {
+        url: url,
+        method: "GET",
+        auth: true,
+        params: params
+    };
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Retrieves the build artifact information by brand name and version.
+ *
+ * @param {String} name The name of the brand of the build artifact.
+ * @param {Number} version The number of the version of the build artifact.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The build result (as a promise).
+ */
+ripe.Ripe.prototype.getBuildArtifactsP = function(name, options) {
+    return new Promise((resolve, reject) => {
+        this.getBuildArtifacts(name, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Retrieves the build artifact information by brand name and version.
+ *
+ * @param {String} name The name of the brand of the build artifact.
+ * @param {Number} version The number of the version of the build artifact.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.getBuildArtifact = function(name, version, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
