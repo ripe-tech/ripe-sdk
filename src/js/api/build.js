@@ -52,7 +52,7 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const branch = options.branch === undefined ? "master" : options.branch;
-    const url = `${this.url}builds/${name}`;
+    const url = `${this.url}builds/${name}/artifacts`;
     const params = {};
     if (branch !== undefined && branch !== null) {
         params.branch = branch;
