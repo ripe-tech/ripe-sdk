@@ -57,12 +57,12 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
     if (branch !== undefined && branch !== null) {
         params.branch = branch;
     }
-    options = {
+    options = Object.assign(options, {
         url: url,
         method: "GET",
         auth: true,
         params: params
-    };
+    });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -96,11 +96,11 @@ ripe.Ripe.prototype.getBuildArtifact = function(name, version, options, callback
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}builds/${name}/artifacts/${version}`;
-    options = {
+    options = Object.assign(options, {
         url: url,
         method: "GET",
         auth: true
-    };
+    });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
