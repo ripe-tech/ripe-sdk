@@ -14,26 +14,29 @@ if (
 /**
  * Retrieves the complete list of builds available from the server.
  *
+ * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getBuilds = function(callback) {
+ripe.Ripe.prototype.getBuilds = function(options, callback) {
     const url = this.url + "builds";
-    const options = this._build({
+    options = Object.assign(options, {
         url: url,
         method: "GET",
         auth: true
     });
+    options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
 
 /**
  * Retrieves the complete list of builds available from the server.
  *
+ * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The builds result list (as a promise).
  */
-ripe.Ripe.prototype.getBuildsP = function() {
+ripe.Ripe.prototype.getBuildsP = function(options) {
     return new Promise((resolve, reject) => {
-        this.getBuilds((result, isValid, request) => {
+        this.getBuilds(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
