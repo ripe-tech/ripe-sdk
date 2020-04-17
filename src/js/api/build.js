@@ -40,10 +40,11 @@ ripe.Ripe.prototype.getBuildsP = function() {
 };
 
 /**
- * Retrieves the build artifact information by brand name and version.
+ * Retrieves the build artifacts by brand name and version and for
+ * the requested branch.
  *
- * @param {String} name The name of the brand of the build artifact.
- * @param {Number} version The number of the version of the build artifact.
+ * @param {String} name The name of the brand of the build artifacts.
+ * @param {Number} version The number of the version of the build artifacts.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -56,7 +57,6 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
     if (branch !== undefined && branch !== null) {
         params.branch = branch;
     }
-
     options = {
         url: url,
         method: "GET",
@@ -68,10 +68,11 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
 };
 
 /**
- * Retrieves the build artifact information by brand name and version.
+ * Retrieves the build artifacts by brand name and version and for
+ * the requested branch.
  *
- * @param {String} name The name of the brand of the build artifact.
- * @param {Number} version The number of the version of the build artifact.
+ * @param {String} name The name of the brand of the build artifacts.
+ * @param {Number} version The number of the version of the build artifacts.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build result (as a promise).
  */
