@@ -17,7 +17,7 @@ if (
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.configGlobal = function(productId, options, callback) {
+ripe.Ripe.prototype.configGlobal = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "config";
