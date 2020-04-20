@@ -69,14 +69,6 @@ ripe.Configurator.prototype.init = function() {
     this._observer = null;
     this._ownerBinds = {};
 
-    this._ownerBinds.parts = this.owner.bind("parts", parts => {
-        this.parts = parts;
-    });
-
-    this._ownerBinds.post_config = this.owner.bind("post_config", () => {
-        this.parts = this.owner.parts;
-    });
-
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
     this._ownerBinds.selected_part = this.owner.bind("selected_part", part => this.highlight(part));
@@ -98,10 +90,16 @@ ripe.Configurator.prototype.init = function() {
         this._updateConfig();
     }
 
-    // registers for the config change request event to
+    // registers for the pre config to be able to set the configurator
+    // into a not ready state (update operations blocked)
+    this._ownerBinds.pre_config = this.owner.bind("pre_config", () => {
+        this.ready = false;
+    });
+
+    // registers for the post config change request event to
     // be able to properly update the internal structures
-    this._ownerBinds.config = this.owner.bind("config", config => {
-        config && this._updateConfig();
+    this._ownerBinds.post_config = this.owner.bind("post_config", config => {
+        if (config) this._updateConfig();
     });
 };
 
@@ -175,13 +173,6 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     // update none is performed and the control flow is returned
     // with the false value (indicating a no-op, nothing was done)
     if (this.ready === false) {
-        this.trigger("not_loaded");
-        return false;
-    }
-
-    // in case no parts are defined in the configurator then no loading
-    // operations is going to be performed
-    if (!this.parts) {
         this.trigger("not_loaded");
         return false;
     }
