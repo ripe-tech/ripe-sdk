@@ -12,6 +12,34 @@ if (
 }
 
 /**
+ * Gets the global configuration object from the RIPE server (admin endpoint).
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.configGlobal = function(productId, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = this.url + "config";
+    options = Object.assign({ url: url }, options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets the global configuration object from the RIPE server (admin endpoint).
+ *
+ * @param {Object} options An object of options to configure the request.
+ */
+ripe.Ripe.prototype.configGlobalP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.config(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Resolves the RIPE configuration options (includes DKU) from the provided set
  * of options or in alternative the current RIPE instance state.
  *
@@ -97,7 +125,12 @@ ripe.Ripe.prototype.configSku = function(sku, domain, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = Object.assign(
-        { sku: sku, domain: domain, queryOptions: false, initialsOptions: false },
+        {
+            sku: sku,
+            domain: domain,
+            queryOptions: false,
+            initialsOptions: false
+        },
         options
     );
     options = this._getConfigInfoOptions(options);
