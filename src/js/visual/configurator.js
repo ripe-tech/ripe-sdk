@@ -69,7 +69,7 @@ ripe.Configurator.prototype.init = function() {
     this._observer = null;
     this._ownerBinds = {};
 
-    this._ownerBinds.parts = this.owner.bind("parts", (parts) => {
+    this._ownerBinds.parts = this.owner.bind("parts", parts => {
         this.parts = parts;
     });
 
