@@ -33,7 +33,7 @@ ripe.Ripe.prototype.configGlobal = function(productId, options, callback) {
  */
 ripe.Ripe.prototype.configGlobalP = function(options) {
     return new Promise((resolve, reject) => {
-        this.config(options, (result, isValid, request) => {
+        this.configGlobal(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
