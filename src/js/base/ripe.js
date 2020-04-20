@@ -305,6 +305,11 @@ ripe.Ripe.prototype.unload = function() {
  *  - 'useDiag' - If the diagnostics module should be used.
  */
 ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
+    // cancels any pending operation on the child elements
+    // so that no more operations are performed, any new
+    // operation could ony be considered a wat of resources
+    await this.cancel();
+
     // sets the most structural values of this entity
     // that represent the configuration to be used
     this.brand = brand;

@@ -821,8 +821,8 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
     // if the new model supports it otherwise
     // changes to a supported frame
     let view = this.element.dataset.view;
-    let position = this.element.dataset.position;
-    let maxPosition = this.frames[view];
+    let position = parseInt(this.element.dataset.position);
+    const maxPosition = this.frames[view];
     if (!maxPosition) {
         view = Object.keys(this.frames)[0];
         position = 0;
@@ -833,11 +833,11 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
     // checks the last viewed frames of each view
     // and deletes the ones not supported
     const lastFrameViews = Object.keys(this._lastFrame);
-    for (view in lastFrameViews) {
-        position = this._lastFrame[view];
-        maxPosition = this.frames[view];
-        if (!maxPosition || position >= maxPosition) {
-            delete this._lastFrame[view];
+    for (const _view of lastFrameViews) {
+        const _position = this._lastFrame[_view];
+        const _maxPosition = this.frames[_view];
+        if (!_maxPosition || _position >= _maxPosition) {
+            delete this._lastFrame[_view];
         }
     }
 
@@ -845,6 +845,11 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
     // taking into account the requested frames data
     const viewFrames = this.frames[view];
     this.element.dataset.frames = viewFrames;
+
+    // updates the attributes related with both the view
+    // and the position for the current model
+    this.element.dataset.view = view;
+    this.element.dataset.position = position;
 
     // marks the current configurator as ready and triggers
     // the associated ready event to any event listener
@@ -855,6 +860,11 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
     // a configuration already exists for the current
     // interactive configurator (meta-data)
     this.element.classList.add("ready");
+
+    // computes the frame key for the current frame to
+    // be shown and triggers the changed frame event
+    const frame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
+    this.trigger("changed_frame", frame);
 
     // shows the new product with a crossfade effect
     // and starts responding to updates again
