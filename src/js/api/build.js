@@ -18,6 +18,8 @@ if (
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getBuilds = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "builds";
     options = Object.assign(options, {
         url: url,

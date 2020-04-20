@@ -21,7 +21,11 @@ ripe.Ripe.prototype.configGlobal = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "config";
-    options = Object.assign({ url: url }, options);
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
