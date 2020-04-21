@@ -850,7 +850,10 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
     // ensures that the "legacy" side face has the a value
     // populated with the "legacy" frames field in case there's
     // none populated by the standard processing loop (above)
-    frames.side = config.frames;
+    // this only happens in case the side face is defined
+    if (config.faces.indexOf("side") !== -1) {
+        frames.side = config.frames;
+    }
 
     // iterates over the complete set of faces to populate the frames
     // structure with the most up-to-date strategy using the faces map
