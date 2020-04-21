@@ -869,6 +869,18 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
 };
 
 /**
+ * Retrieves the complete set of child elements of this Ripe instance
+ * that fulfill the provided type criteria.
+ *
+ * @param {String} type The type of child as a string to filter children.
+ * @return {Array} The child elements that fill the provided type.
+ */
+ripe.Ripe.prototype.getChildren = function(type = null) {
+    if (type === null) return this.children;
+    return this.children.filter(child => type === null || child.type === type);
+};
+
+/**
  * Binds an Image to this Ripe instance.
  *
  * @param {Image} element The Image to be used by the Ripe instance.
