@@ -235,8 +235,20 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     let result = true;
 
     // in case the preload was requested then waits for the preload
-    // operation of the frames to complete (wait on promise)
-    if (preloadPromise) result = await preloadPromise;
+    // operation of the frames to complete (wait on promise), keep
+    // in mind that if the preload operation was requested this is
+    // a "hard" flush on the underlying images buffer (most of the times
+    // representing a change in the configuration)
+    if (preloadPromise) {
+        // waits for the preload promise as the result of it is
+        // going to be considered the result of the operation
+        result = await preloadPromise;
+
+        // after the update operation is finished the loaded event
+        // should be triggered indicating the end of the visual
+        // operations for the current configuration on the configurator
+        this.trigger("loaded");
+    }
 
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
@@ -1142,7 +1154,7 @@ ripe.Configurator.prototype._preload = async function(useChain) {
     // adds all the frames available for all the views to the
     // list of work to be performed on pre-loading
     const work = [];
-    for (const _view in this.frames) {
+    for (const _view of Object.keys(this.frames)) {
         const viewFrames = this.frames[_view];
         for (let _index = 0; _index < viewFrames; _index++) {
             if (_index === position && view === _view) {
@@ -1158,12 +1170,14 @@ ripe.Configurator.prototype._preload = async function(useChain) {
     // execution all the work required for loading is processed
     const result = await new Promise((resolve, reject) => {
         this._finalize = (result = true) => {
+            // invalidates the work queue by setting its
+            // length value to zero (clears array)
             work.length = 0;
 
+            // removes the pending classes that indicate that
+            // there's some kind of preloading happening
             this.element.classList.remove("preloading");
             this.element.classList.remove("no-drag");
-
-            this.trigger("loaded");
 
             // unsets the finalize clojure from the current instance
             // effectively disallowing further usage of it
@@ -1234,12 +1248,17 @@ ripe.Configurator.prototype._preload = async function(useChain) {
             await render();
         };
 
-        // if there are frames to be loaded then adds the
-        // preloading class, prevents drag movements and
-        // starts the render process after a timeout
-        work.length > 0 && this.element.classList.add("preloading");
+        // adds the preloading flag and then prevents mouse drag
+        // movements by setting proper classes
+        this.element.classList.add("preloading");
+        this.element.classList.add("no-drag");
+
         if (work.length > 0) {
-            this.element.classList.add("no-drag");
+            // schedule the timeout operation in order to trigger
+            // the pre-loading of the remaining frames, the delay
+            // is meant to provide some time buffer to the current
+            // frame (higher priority) to be processes in the server
+            // effectively allowing selective QoS (Quality of Service)
             setTimeout(async () => {
                 try {
                     await render();
@@ -1247,6 +1266,8 @@ ripe.Configurator.prototype._preload = async function(useChain) {
                     reject(err);
                 }
             }, this.preloadDelay);
+        } else {
+            if (this._finalize) this._finalize();
         }
     });
 
