@@ -640,6 +640,34 @@ ripe.Configurator.prototype.lowlight = function(options) {
 };
 
 /**
+ * Changes the currently displayed frame in the current view to the
+ * previous one according to pre-defined direction.
+ */
+ripe.Configurator.prototype.previousFrame = function() {
+    const view = this.element.dataset.view;
+    const position = parseInt(this.element.dataset.position || 0);
+    const viewFrames = this.frames[view];
+    let nextPosition = (position - 1) % viewFrames;
+    nextPosition = nextPosition >= 0 ? nextPosition : viewFrames + nextPosition;
+    const nextFrame = ripe.getFrameKey(view, nextPosition);
+    this.changeFrame(nextFrame);
+};
+
+/**
+ * Changes the currently displayed frame in the current view to the
+ * next one according to pre-defined direction.
+ */
+ripe.Configurator.prototype.nextFrame = function() {
+    const view = this.element.dataset.view;
+    const position = parseInt(this.element.dataset.position || 0);
+    const viewFrames = this.frames[view];
+    let nextPosition = (position + 1) % viewFrames;
+    nextPosition = nextPosition >= 0 ? nextPosition : viewFrames + nextPosition;
+    const nextFrame = ripe.getFrameKey(view, nextPosition);
+    this.changeFrame(nextFrame);
+};
+
+/**
  * Resizes the Configurator to the defined maximum size.
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
