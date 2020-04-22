@@ -757,28 +757,6 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
 };
 
 /**
- * Updates the format setting for the current ripe instance, propagating
- * the change to any interested child.
- *
- * Optionally an update operation may be performed so that the format
- * changes are reflected in the user interface.
- *
- * @param {String} format The image format to be used in the ripe instance
- * (eg: png, webp, jpeg).
- * @param {Boolean} update If an update operation should be perform asynchronous.
- */
-ripe.Ripe.prototype.setFormat = async function(format, update = true) {
-    if (format === this.format) return;
-    this.options.format = format;
-    this.getChildren("Configurator").forEach(c => {
-        c.format = format;
-    });
-    if (update) this.update();
-    this.trigger("settings");
-    return this;
-};
-
-/**
  * Retrieves the value of the current base context defined in
  * the instance.
  *
@@ -852,7 +830,7 @@ ripe.Ripe.prototype.setChoices = function(choices, events = true) {
  * This function makes use of the loaded config in case there's
  * one, otherwise triggers the loading of the config.
  *
- * @returns {Promise} The model's available frames.
+ * @returns {Object} The model's available frames.
  */
 ripe.Ripe.prototype.getFrames = async function(callback) {
     if (this.options.frames) {
@@ -888,6 +866,31 @@ ripe.Ripe.prototype.getFrames = async function(callback) {
     // the frames map to the caller method
     if (callback) callback(frames);
     return frames;
+};
+
+/**
+ * Updates the format setting for the current ripe instance, propagating
+ * the change to any interested child.
+ *
+ * Optionally an update operation may be performed so that the format
+ * changes are reflected in the user interface.
+ *
+ * @param {String} format The image format to be used in the ripe instance
+ * (eg: png, webp, jpeg).
+ * @param {Boolean} override If the options value should be override meaning
+ * that further config updates will have this new format set.
+ * @param {Boolean} update If an update operation should be perform asynchronous.
+ */
+ripe.Ripe.prototype.setFormat = async function(format, override = true, update = true) {
+    if (format === this.options.format) return;
+    this.format = format;
+    this.getChildren("Configurator").forEach(c => {
+        c.format = format;
+    });
+    if (override) this.options.format = format;
+    if (update) this.update();
+    this.trigger("settings");
+    return this;
 };
 
 /**
