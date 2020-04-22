@@ -757,6 +757,28 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
 };
 
 /**
+ * Updates the format setting for the current ripe instance, propagating
+ * the change to any interested child.
+ *
+ * Optionally an update operation may be performed so that the format
+ * changes are reflected in the user interface.
+ *
+ * @param {String} format The image format to be used in the ripe instance
+ * (eg: png, webp, jpeg).
+ * @param {Boolean} update If an update operation should be perform asynchronous.
+ */
+ripe.Ripe.prototype.setFormat = async function(format, update = true) {
+    if (format === this.format) return;
+    this.options.format = format;
+    this.getChildren("Configurator").forEach(c => {
+        c.format = format;
+    });
+    if (update) this.update();
+    this.trigger("settings");
+    return this;
+};
+
+/**
  * Retrieves the value of the current base context defined in
  * the instance.
  *
