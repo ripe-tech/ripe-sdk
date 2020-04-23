@@ -287,6 +287,124 @@ ripe.Ripe.prototype.onInitialsP = function(options, callback) {
 };
 
 /**
+ * Updates a build by brand name and version.
+ *
+ * @param {String} name The name of the brand of the build.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.onBuildUpdate = function(name, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}builds/${name}/update`;
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Updates a build by brand name and version.
+ *
+ * @param {String} name The name of the brand of the build.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The build update (as a promise).
+ */
+ripe.Ripe.prototype.onBuildUpdateP = function(name, options) {
+    return new Promise((resolve, reject) => {
+        this.onBuildUpdate(name, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Uninstalls a build by brand name and version.
+ *
+ * @param {String} name The name of the brand of the build.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.onBuildUninstall = function(name, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const version = options.version === undefined ? "latest" : options.version;
+    const url = `${this.url}builds/${name}/uninstall`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true,
+        params: params
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Uninstalls a build by brand name and version.
+ *
+ * @param {String} name The name of the brand of the build.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The build update (as a promise).
+ */
+ripe.Ripe.prototype.onBuildUninstallP = function(name, options) {
+    return new Promise((resolve, reject) => {
+        this.onBuildUninstall(name, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Installs a build by brand name and version.
+ *
+ * @param {String} name The name of the brand of the build.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.onBuildInstall = function(name, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const version = options.version === undefined ? "latest" : options.version;
+    const url = `${this.url}builds/${name}/install`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true,
+        params: params
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Installs a build by brand name and version.
+ *
+ * @param {String} name The name of the brand of the build.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The build update (as a promise).
+ */
+ripe.Ripe.prototype.onBuildInstallP = function(name, options) {
+    return new Promise((resolve, reject) => {
+        this.onBuildInstall(name, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * @see {link https://docs.platforme.com/#product-endpoints-config}
  * @ignore
  */
