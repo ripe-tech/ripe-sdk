@@ -45,6 +45,41 @@ ripe.Ripe.prototype.getBuildsP = function(options) {
 };
 
 /**
+ * Retrieves a build by name.
+ *
+ * @param {String} name The name of the brand of the build.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getBuild = function(name, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}builds/${name}`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Retrieves a build by name.
+ *
+ * @param {String} name The name of the brand of the build.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The builds result list (as a promise).
+ */
+ripe.Ripe.prototype.getBuildP = function(name, options) {
+    return new Promise((resolve, reject) => {
+        this.getBuild(name, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Retrieves the build artifacts by brand name and version and for
  * the requested branch.
  *
