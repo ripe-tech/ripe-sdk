@@ -130,8 +130,7 @@ ripe.Ripe.prototype.getBuildArtifactP = function(name, version, options) {
  * Updates a build by brand name and version.
  *
  * @param {String} name The name of the brand of the build.
- * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build
+ * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.updateBuild = function(name, options, callback) {
@@ -151,8 +150,7 @@ ripe.Ripe.prototype.updateBuild = function(name, options, callback) {
  * Updates a build by brand name and version.
  *
  * @param {String} name The name of the brand of the build.
- * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build
+ * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build update (as a promise).
  */
 ripe.Ripe.prototype.updateBuildP = function(name, options) {
