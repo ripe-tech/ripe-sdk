@@ -404,6 +404,39 @@ ripe.Ripe.prototype.onBuildInstallP = function(name, options) {
     });
 };
 
+ripe.Ripe.prototype.onBuildSwitch = function(name, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const version = options.version === undefined ? "latest" : options.version;
+    const url = `${this.url}builds/${name}/switch`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true,
+        params: params
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ *
+ * @param {String} name The name of the brand of the build artifacts.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The build result (as a promise).
+ */
+ripe.Ripe.prototype.onBuildSwitchP = function(name, options) {
+    return new Promise((resolve, reject) => {
+        this.onBuildSwitch(name, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * @see {link https://docs.platforme.com/#product-endpoints-config}
  * @ignore
