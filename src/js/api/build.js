@@ -127,38 +127,17 @@ ripe.Ripe.prototype.getBuildArtifactP = function(name, version, options) {
 };
 
 /**
- * Server side callback method to be called for situations where the initials
- * or engraving values were changed.
- * This method allows the change of the current context of execution based on
- * a server side implementation of the 3DB's business logic.
- *
- * @param {Object} options An object with options, such as:
- *  - 'group' - The name of the group that is going to be changed
- *  - 'value' - The initials value to be changed
- *  - 'engraving' - The engraving value to be changed
- * @param {Function} callback Function with the result of the request.
- * @returns {Promise} Resulting information for the callback execution.
- */
-ripe.Ripe.prototype.onInitialsP = function(options, callback) {
-    return new Promise((resolve, reject) => {
-        this.onInitials(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
-        });
-    });
-};
-
-/**
  * Updates a build by brand name and version.
  *
  * @param {String} name The name of the brand of the build.
- * @param {Object} options An object of options to configure the request.
+ * @param {Object} options An object with options, such as:
+ *  - 'version' - The version of the build
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.updateBuild = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}builds/${name}/update`;
-
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -172,7 +151,8 @@ ripe.Ripe.prototype.updateBuild = function(name, options, callback) {
  * Updates a build by brand name and version.
  *
  * @param {String} name The name of the brand of the build.
- * @param {Object} options An object of options to configure the request.
+ * @param {Object} options An object with options, such as:
+ *  - 'version' - The version of the build
  * @returns {Promise} The build update (as a promise).
  */
 ripe.Ripe.prototype.updateBuildP = function(name, options) {
@@ -187,13 +167,14 @@ ripe.Ripe.prototype.updateBuildP = function(name, options) {
  * Uninstalls a build by brand name and version.
  *
  * @param {String} name The name of the brand of the build.
- * @param {Object} options An object of options to configure the request.
+ * @param {Object} options An object with options, such as:
+ *  - 'version' - The version of the build
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const version = options.version === undefined ? "latest" : options.version;
+    const version = options.version === undefined ? null : options.version;
     const url = `${this.url}builds/${name}/uninstall`;
     const params = {};
     if (version !== undefined && version !== null) {
@@ -213,7 +194,8 @@ ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
  * Uninstalls a build by brand name and version.
  *
  * @param {String} name The name of the brand of the build.
- * @param {Object} options An object of options to configure the request.
+ * @param {Object} options An object with options, such as:
+ *  - 'version' - The version of the build
  * @returns {Promise} The build update (as a promise).
  */
 ripe.Ripe.prototype.uninstallBuildP = function(name, options) {
@@ -225,10 +207,12 @@ ripe.Ripe.prototype.uninstallBuildP = function(name, options) {
 };
 
 /**
- * Installs a build by brand name and version.
+ * Installs a build by brand name and version. If no version is given,
+ * defaults to the latest one.
  *
  * @param {String} name The name of the brand of the build.
- * @param {Object} options An object of options to configure the request.
+ * @param {Object} options An object with options, such as:
+ *  - 'version' - The version of the build
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.installBuild = function(name, options, callback) {
@@ -251,10 +235,12 @@ ripe.Ripe.prototype.installBuild = function(name, options, callback) {
 };
 
 /**
- * Installs a build by brand name and version.
+ * Installs a build by brand name and version. If no version is given,
+ * defaults to the latest one.
  *
  * @param {String} name The name of the brand of the build.
- * @param {Object} options An object of options to configure the request.
+ * @param {Object} options An object with options, such as:
+ *  - 'version' - The version of the build
  * @returns {Promise} The build update (as a promise).
  */
 ripe.Ripe.prototype.installBuildP = function(name, options) {
