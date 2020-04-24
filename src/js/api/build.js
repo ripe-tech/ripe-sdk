@@ -209,6 +209,7 @@ ripe.Ripe.prototype.uninstallBuildP = function(name, options) {
 /**
  * Installs a build by brand name and version. If no version is given,
  * defaults to the latest one.
+ * This method allows the installation and activation of the given build.
  *
  * @param {String} name The name of the brand of the build.
  * @param {Object} options An object with options, such as:
@@ -237,6 +238,7 @@ ripe.Ripe.prototype.installBuild = function(name, options, callback) {
 /**
  * Installs a build by brand name and version. If no version is given,
  * defaults to the latest one.
+ * This method allows the installation and activation of the given build.
  *
  * @param {String} name The name of the brand of the build.
  * @param {Object} options An object with options, such as:
