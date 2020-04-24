@@ -139,7 +139,7 @@ ripe.Ripe.prototype.updateBuild = function(name, options, callback) {
     const url = `${this.url}builds/${name}/update`;
     options = Object.assign(options, {
         url: url,
-        method: "GET",
+        method: "PUT",
         auth: true
     });
     options = this._build(options);
@@ -180,7 +180,7 @@ ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
     }
     options = Object.assign(options, {
         url: url,
-        method: "GET",
+        method: "PUT",
         auth: true,
         params: params
     });
@@ -225,7 +225,7 @@ ripe.Ripe.prototype.installBuild = function(name, options, callback) {
     }
     options = Object.assign(options, {
         url: url,
-        method: "GET",
+        method: "PUT",
         auth: true,
         params: params
     });
@@ -271,7 +271,7 @@ ripe.Ripe.prototype.switchBuild = function(name, options, callback) {
     }
     options = Object.assign(options, {
         url: url,
-        method: "GET",
+        method: "PUT",
         auth: true,
         params: params
     });
