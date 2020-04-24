@@ -266,6 +266,27 @@ ripe.Ripe.prototype.onInitials = function(options, callback) {
 };
 
 /**
+ * Server side callback method to be called for situations where the initials
+ * or engraving values were changed.
+ * This method allows the change of the current context of execution based on
+ * a server side implementation of the 3DB's business logic.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'group' - The name of the group that is going to be changed
+ *  - 'value' - The initials value to be changed
+ *  - 'engraving' - The engraving value to be changed
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.onInitialsP = function(options, callback) {
+    return new Promise((resolve, reject) => {
+        this.onInitials(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * @see {link https://docs.platforme.com/#product-endpoints-config}
  * @ignore
  */
