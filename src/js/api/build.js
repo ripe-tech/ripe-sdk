@@ -253,6 +253,15 @@ ripe.Ripe.prototype.installBuildP = function(name, options) {
     });
 };
 
+/**
+ * Switch to a build by brand name and version.
+ * This method makes a specific build the one being used.
+ *
+ * @param {String} name The name of the brand of the build.
+ * @param {Object} options An object with options, such as:
+ *  - 'version' - The version of the build
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.switchBuild = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -273,10 +282,13 @@ ripe.Ripe.prototype.switchBuild = function(name, options, callback) {
 };
 
 /**
+ * Switch to a build by brand name and version.
+ * This method makes a specific build the one being used.
  *
- * @param {String} name The name of the brand of the build artifacts.
- * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The build result (as a promise).
+ * @param {String} name The name of the brand of the build.
+ * @param {Object} options An object with options, such as:
+ *  - 'version' - The version of the build
+ * @returns {Promise} The build switch (as a promise).
  */
 ripe.Ripe.prototype.switchBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
