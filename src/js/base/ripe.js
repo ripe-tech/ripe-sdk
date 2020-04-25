@@ -323,7 +323,17 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // sets the new options using the current options
     // as default values and sets the update flag to
     // true if it is not set
-    options = ripe.assign({}, this.options, options);
+    options = ripe.assign(
+        {},
+        this.options,
+        {
+            variant: null,
+            version: null,
+            dku: null,
+            parts: {}
+        },
+        options
+    );
     this.setOptions(options);
 
     // in case there's a DKU defined for the current config then
@@ -458,6 +468,9 @@ ripe.Ripe.prototype.remote = async function() {
  * Sets Ripe instance options according to the defaulting policy.
  *
  * @param {Object} options An object with the options to configure the Ripe instance, such as:
+ *  - 'variant' - The variant of the model.
+ *  - 'version' - The version of the model, obtained from the containing build.
+ *  - 'dku' - The DKU (Dynamic Keeping Unit) to be used in the configuration (if any).
  *  - 'parts' - The initial parts of the model.
  *  - 'country' - The country where the model will be sold.
  *  - 'currency' - The currency that should be used to calculate the price.
