@@ -293,10 +293,14 @@ ripe.Ripe.prototype.onInitialsP = function(options, callback) {
 ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
     const country = options.country === undefined ? this.country : options.country;
     const flag = options.flag === undefined ? this.flag : options.flag;
     const url = this.url + "brands/" + brand + "/models/" + model + "/config";
     const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
     if (country !== undefined && country !== null) {
         params.country = country;
     }
@@ -333,12 +337,16 @@ ripe.Ripe.prototype._getDefaultsOptions = function(options = {}) {
 ripe.Ripe.prototype._getCombinationsOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
     const useName =
         options.useName !== undefined && options.useName !== null ? options.useName : false;
     const country = options.country === undefined ? this.country : options.country;
     const flag = options.flag === undefined ? this.flag : options.flag;
     const url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
     const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
     if (useName !== undefined && useName !== null) {
         params.use_name = useName ? "1" : "0";
     }
@@ -385,6 +393,7 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
 ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.model : options.version;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
@@ -394,6 +403,7 @@ ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
     const ctx = Object.assign({}, this.ctx || {}, {
         brand: brand,
         model: model,
+        version: version,
         initials: initials,
         parts: parts,
         choices: choices
