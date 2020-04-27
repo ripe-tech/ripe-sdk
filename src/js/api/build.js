@@ -114,7 +114,7 @@ ripe.Ripe.prototype.installBuild = function(name, options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'version' - The version of the build to install. If
  * no version is given, installs the latest one.
- * @returns {Promise} The build update (as a promise).
+ * @returns {Promise} The build install (as a promise).
  */
 ripe.Ripe.prototype.installBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
@@ -159,7 +159,7 @@ ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'version' - The version of the build to uninstall. If
  * no version is given, uninstalls all of them.
- * @returns {Promise} The build update (as a promise).
+ * @returns {Promise} The build uninstall (as a promise).
  */
 ripe.Ripe.prototype.uninstallBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
@@ -324,6 +324,117 @@ ripe.Ripe.prototype.getBuildArtifact = function(name, version, options, callback
 ripe.Ripe.prototype.getBuildArtifactP = function(name, version, options) {
     return new Promise((resolve, reject) => {
         this.getBuildArtifact(name, version, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Installs a build artifact.
+ *
+ * @param {String} name The build's name.
+ * @param {Number} version The number of the version of the build artifact.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.installArtifact = function(name, version, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}builds/${name}/artifacts/${version}/install`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Installs a build artifact.
+ *
+ * @param {String} name The build's name.
+ * @param {Number} version The number of the version of the build artifact.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The build install (as a promise).
+ */
+ripe.Ripe.prototype.installArtifactP = function(name, version, options) {
+    return new Promise((resolve, reject) => {
+        this.installArtifact(name, version, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Uninstalls a build artifact.
+ *
+ * @param {String} name The build's name.
+ * @param {Number} version The number of the version of the build artifact.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.uninstallArtifact = function(name, version, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}builds/${name}/artifacts/${version}/uninstall`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Uninstalls a build artifact.
+ *
+ * @param {String} name The build's name.
+ * @param {Number} version The number of the version of the build artifact.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The artifact uninstall (as a promise).
+ */
+ripe.Ripe.prototype.uninstallArtifactP = function(name, version, options) {
+    return new Promise((resolve, reject) => {
+        this.uninstallArtifact(name, version, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Switches the active version of a build.
+ *
+ * @param {String} name The build's name.
+ * @param {Number} version The number of the version of the build artifact.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.switchArtifact = function(name, version, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}builds/${name}/artifacts/${version}/switch`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Switches the active version of a build.
+ *
+ * @param {String} name The build's name.
+ * @param {Object} options An object with options, such as:
+ *  - 'version' - The version of the build to activate.
+ * @returns {Promise} The build switch (as a promise).
+ */
+ripe.Ripe.prototype.switchArtifactP = function(name, version, options) {
+    return new Promise((resolve, reject) => {
+        this.switchArtifact(name, version, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
