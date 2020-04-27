@@ -408,7 +408,8 @@ ripe.Ripe.prototype.uninstallArtifactP = function(name, version, options) {
 };
 
 /**
- * Switches the active version of a build.
+ * Switches the active version of a build, changing the active version of
+ * the build to the version defined in the request.
  *
  * @param {String} name The name of the build to be switched.
  * @param {String} version The version of the build artifact.
@@ -429,7 +430,8 @@ ripe.Ripe.prototype.switchArtifact = function(name, version, options, callback) 
 };
 
 /**
- * Switches the active version of a build.
+ * Switches the active version of a build, changing the active version of
+ * the build to the version defined in the request.
  *
  * @param {String} name The name of the build to be switched.
  * @param {String} version The version of the build artifact.
