@@ -45,9 +45,9 @@ ripe.Ripe.prototype.getBuildsP = function(options) {
 };
 
 /**
- * Retrieves a build by name.
+ * Retrieves a build's information from the server side by name.
  *
- * @param {String} name The name of the brand of the build.
+ * @param {String} name The name of the of the build.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -65,11 +65,11 @@ ripe.Ripe.prototype.getBuild = function(name, options, callback) {
 };
 
 /**
- * Retrieves a build by name.
+ * Retrieves a build's information from the server side by name.
  *
- * @param {String} name The name of the brand of the build.
+ * @param {String} name The name of the build.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The builds result list (as a promise).
+ * @returns {Promise} The build's information (as a promise).
  */
 ripe.Ripe.prototype.getBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
@@ -80,12 +80,12 @@ ripe.Ripe.prototype.getBuildP = function(name, options) {
 };
 
 /**
- * Installs a build.
+ * Installs a build on the server from remote repos for the given name.
  *
- * @param {String} name The build's name.
+ * @param {String} name The build's name to be installed.
  * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build to install. If
- * no version is given, installs the latest one.
+ *  - 'version' - The version of the build to install, if no version is given,
+ * installs the latest one.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.installBuild = function(name, options, callback) {
@@ -108,12 +108,12 @@ ripe.Ripe.prototype.installBuild = function(name, options, callback) {
 };
 
 /**
- * Installs a build.
+ * Installs a build on the server from remote repos for the given name.
  *
- * @param {String} name The build's name.
+ * @param {String} name The build's name to be installed.
  * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build to install. If
- * no version is given, installs the latest one.
+ *  - 'version' - The version of the build to install, if no version is given,
+ * installs the latest one.
  * @returns {Promise} The build install (as a promise).
  */
 ripe.Ripe.prototype.installBuildP = function(name, options) {
@@ -125,12 +125,12 @@ ripe.Ripe.prototype.installBuildP = function(name, options) {
 };
 
 /**
- * Uninstalls a build.
+ * Uninstalls a build from the server according to provided values.
  *
- * @param {String} name The build's name.
+ * @param {String} name The name of the build to be uninstalled.
  * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build to uninstall. If
- * no version is given, uninstalls all of them.
+ *  - 'version' - The version of the build to uninstall, if no version is given,
+ * uninstalls all builds for the name.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
@@ -153,12 +153,12 @@ ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
 };
 
 /**
- * Uninstalls a build.
+* Uninstalls a build from the server according to provided values.
  *
- * @param {String} name The build's name.
+ * @param {String} name The name of the build to be uninstalled.
  * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build to uninstall. If
- * no version is given, uninstalls all of them.
+ *  - 'version' - The version of the build to uninstall, if no version is given,
+ * uninstalls all builds for the name.
  * @returns {Promise} The build uninstall (as a promise).
  */
 ripe.Ripe.prototype.uninstallBuildP = function(name, options) {
@@ -170,9 +170,10 @@ ripe.Ripe.prototype.uninstallBuildP = function(name, options) {
 };
 
 /**
- * Updates a build to the latest version.
+ * Updates a build to the latest version, maintaining the installation of
+ * the previous versions.
  *
- * @param {String} name The build's name.
+ * @param {String} name The build's name of the build to update name.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -190,9 +191,10 @@ ripe.Ripe.prototype.updateBuild = function(name, options, callback) {
 };
 
 /**
- * Updates a build to the latest version.
+ * Updates a build to the latest version, maintaining the installation of
+ * the previous versions.
  *
- * @param {String} name The build's name.
+ * @param {String} name The build's name of the build to update name.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build update (as a promise).
  */
@@ -205,9 +207,10 @@ ripe.Ripe.prototype.updateBuildP = function(name, options) {
 };
 
 /**
- * Switches the active version of a build.
+ * Switches the active version of a build, moving internal references to
+ * the newly selected build version.
  *
- * @param {String} name The build's name.
+ * @param {String} name The name of the build to be switched.
  * @param {Object} options An object with options, such as:
  *  - 'version' - The version of the build to activate.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -232,9 +235,10 @@ ripe.Ripe.prototype.switchBuild = function(name, options, callback) {
 };
 
 /**
- * Switches the active version of a build.
+ * Switches the active version of a build, moving internal references to
+ * the newly selected build version.
  *
- * @param {String} name The build's name.
+ * @param {String} name The name of the build to be switched.
  * @param {Object} options An object with options, such as:
  *  - 'version' - The version of the build to activate.
  * @returns {Promise} The build switch (as a promise).
@@ -248,11 +252,11 @@ ripe.Ripe.prototype.switchBuildP = function(name, options) {
 };
 
 /**
- * Retrieves the build artifacts by brand name and version and for
+ * Retrieves the build artifacts by name and version and for
  * the requested branch.
  *
- * @param {String} name The name of the brand of the build artifacts.
- * @param {Number} version The number of the version of the build artifacts.
+ * @param {String} name The name of the build artifacts.
+ * @param {String} version The version of the build artifacts.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -280,7 +284,7 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
  * the requested branch.
  *
  * @param {String} name The name of the brand of the build artifacts.
- * @param {Number} version The number of the version of the build artifacts.
+ * @param {String} version The version of the build artifacts.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build result (as a promise).
  */
@@ -296,7 +300,7 @@ ripe.Ripe.prototype.getBuildArtifactsP = function(name, options) {
  * Retrieves the build artifact information by brand name and version.
  *
  * @param {String} name The name of the brand of the build artifact.
- * @param {Number} version The number of the version of the build artifact.
+ * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -314,10 +318,10 @@ ripe.Ripe.prototype.getBuildArtifact = function(name, version, options, callback
 };
 
 /**
- * Retrieves the build artifact information by brand name and version.
+ * Retrieves the build artifact information by name and version.
  *
- * @param {String} name The name of the brand of the build artifact.
- * @param {Number} version The number of the version of the build artifact.
+ * @param {String} name The name of the build artifact.
+ * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build result (as a promise).
  */
@@ -330,10 +334,10 @@ ripe.Ripe.prototype.getBuildArtifactP = function(name, version, options) {
 };
 
 /**
- * Installs a build artifact.
+ * Installs a build artifact by build name and artifact version.
  *
- * @param {String} name The build's name.
- * @param {Number} version The number of the version of the build artifact.
+ * @param {String} name The name of the build associated with the artifact.
+ * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -354,7 +358,7 @@ ripe.Ripe.prototype.installArtifact = function(name, version, options, callback)
  * Installs a build artifact.
  *
  * @param {String} name The build's name.
- * @param {Number} version The number of the version of the build artifact.
+ * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build install (as a promise).
  */
@@ -370,7 +374,7 @@ ripe.Ripe.prototype.installArtifactP = function(name, version, options) {
  * Uninstalls a build artifact.
  *
  * @param {String} name The build's name.
- * @param {Number} version The number of the version of the build artifact.
+ * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -391,7 +395,7 @@ ripe.Ripe.prototype.uninstallArtifact = function(name, version, options, callbac
  * Uninstalls a build artifact.
  *
  * @param {String} name The build's name.
- * @param {Number} version The number of the version of the build artifact.
+ * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The artifact uninstall (as a promise).
  */
@@ -407,7 +411,7 @@ ripe.Ripe.prototype.uninstallArtifactP = function(name, version, options) {
  * Switches the active version of a build.
  *
  * @param {String} name The build's name.
- * @param {Number} version The number of the version of the build artifact.
+ * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
