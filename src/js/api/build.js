@@ -80,19 +80,18 @@ ripe.Ripe.prototype.getBuildP = function(name, options) {
 };
 
 /**
- * Installs a build by brand name and version. If no version is given,
- * defaults to the latest one.
- * This method allows the installation and activation of the given build.
+ * Installs a build.
  *
- * @param {String} name The name of the brand of the build.
+ * @param {String} name The build's name.
  * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build
+ *  - 'version' - The version of the build to install. If
+ * no version is given, installs the latest one.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.installBuild = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const version = options.version === undefined ? "latest" : options.version;
+    const version = options.version === undefined ? null : options.version;
     const url = `${this.url}builds/${name}/install`;
     const params = {};
     if (version !== undefined && version !== null) {
@@ -109,13 +108,12 @@ ripe.Ripe.prototype.installBuild = function(name, options, callback) {
 };
 
 /**
- * Installs a build by brand name and version. If no version is given,
- * defaults to the latest one.
- * This method allows the installation and activation of the given build.
+ * Installs a build.
  *
- * @param {String} name The name of the brand of the build.
+ * @param {String} name The build's name.
  * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build
+ *  - 'version' - The version of the build to install. If
+ * no version is given, installs the latest one.
  * @returns {Promise} The build update (as a promise).
  */
 ripe.Ripe.prototype.installBuildP = function(name, options) {
@@ -127,11 +125,12 @@ ripe.Ripe.prototype.installBuildP = function(name, options) {
 };
 
 /**
- * Uninstalls a build by brand name and version.
+ * Uninstalls a build.
  *
- * @param {String} name The name of the brand of the build.
+ * @param {String} name The build's name.
  * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build
+ *  - 'version' - The version of the build to uninstall. If
+ * no version is given, uninstalls all of them.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
@@ -154,11 +153,12 @@ ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
 };
 
 /**
- * Uninstalls a build by brand name and version.
+ * Uninstalls a build.
  *
- * @param {String} name The name of the brand of the build.
+ * @param {String} name The build's name.
  * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build
+ *  - 'version' - The version of the build to uninstall. If
+ * no version is given, uninstalls all of them.
  * @returns {Promise} The build update (as a promise).
  */
 ripe.Ripe.prototype.uninstallBuildP = function(name, options) {
@@ -170,9 +170,9 @@ ripe.Ripe.prototype.uninstallBuildP = function(name, options) {
 };
 
 /**
- * Updates a build by brand name and version.
+ * Updates a build to the latest version.
  *
- * @param {String} name The name of the brand of the build.
+ * @param {String} name The build's name.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -190,9 +190,9 @@ ripe.Ripe.prototype.updateBuild = function(name, options, callback) {
 };
 
 /**
- * Updates a build by brand name and version.
+ * Updates a build to the latest version.
  *
- * @param {String} name The name of the brand of the build.
+ * @param {String} name The build's name.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build update (as a promise).
  */
@@ -205,18 +205,17 @@ ripe.Ripe.prototype.updateBuildP = function(name, options) {
 };
 
 /**
- * Switch to a build by brand name and version.
- * This method makes a specific build the one being used.
+ * Switches the active version of a build.
  *
- * @param {String} name The name of the brand of the build.
+ * @param {String} name The build's name.
  * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build
+ *  - 'version' - The version of the build to activate.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.switchBuild = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const version = options.version === undefined ? "latest" : options.version;
+    const version = options.version === undefined ? null : options.version;
     const url = `${this.url}builds/${name}/switch`;
     const params = {};
     if (version !== undefined && version !== null) {
@@ -233,12 +232,11 @@ ripe.Ripe.prototype.switchBuild = function(name, options, callback) {
 };
 
 /**
- * Switch to a build by brand name and version.
- * This method makes a specific build the one being used.
+ * Switches the active version of a build.
  *
- * @param {String} name The name of the brand of the build.
+ * @param {String} name The build's name.
  * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build
+ *  - 'version' - The version of the build to activate.
  * @returns {Promise} The build switch (as a promise).
  */
 ripe.Ripe.prototype.switchBuildP = function(name, options) {
