@@ -34,7 +34,7 @@ ripe.Ripe.prototype.getBuilds = function(options, callback) {
  * Retrieves the complete list of builds available from the server.
  *
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The builds result list (as a promise).
+ * @returns {Promise} The builds list (as a promise).
  */
 ripe.Ripe.prototype.getBuildsP = function(options) {
     return new Promise((resolve, reject) => {
@@ -79,7 +79,7 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
  * @param {String} name The name of the brand of the build artifacts.
  * @param {Number} version The number of the version of the build artifacts.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The build result (as a promise).
+ * @returns {Promise} The build artifacts (as a promise).
  */
 ripe.Ripe.prototype.getBuildArtifactsP = function(name, options) {
     return new Promise((resolve, reject) => {
@@ -116,7 +116,7 @@ ripe.Ripe.prototype.getBuildArtifact = function(name, version, options, callback
  * @param {String} name The name of the brand of the build artifact.
  * @param {Number} version The number of the version of the build artifact.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The build result (as a promise).
+ * @returns {Promise} The build artifact (as a promise).
  */
 ripe.Ripe.prototype.getBuildArtifactP = function(name, version, options) {
     return new Promise((resolve, reject) => {
@@ -157,7 +157,7 @@ ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
  * - 'locale' - The locale of the translations.
  * - 'compatibility' - If compatibility mode should be enabled.
  * - 'prefix' - A prefix to prepend to the locale keys (defaults to 'builds').
- * @returns {Promise} The resolved locale data.
+ * @returns {Promise} The resolved locale data (as a promise).
  */
 ripe.Ripe.prototype.getLocaleModelP = function(options) {
     return new Promise((resolve, reject) => {
