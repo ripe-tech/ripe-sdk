@@ -355,9 +355,9 @@ ripe.Ripe.prototype.installArtifact = function(name, version, options, callback)
 };
 
 /**
- * Installs a build artifact.
+ * Installs a build artifact by build name and artifact version.
  *
- * @param {String} name The build's name.
+ * @param {String} name The name of the build associated with the artifact.
  * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build install (as a promise).
@@ -371,9 +371,9 @@ ripe.Ripe.prototype.installArtifactP = function(name, version, options) {
 };
 
 /**
- * Uninstalls a build artifact.
+ * Uninstalls a build artifact by build name and artifact version.
  *
- * @param {String} name The build's name.
+ * @param {String} name The name of the build associated with the artifact.
  * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -392,9 +392,9 @@ ripe.Ripe.prototype.uninstallArtifact = function(name, version, options, callbac
 };
 
 /**
- * Uninstalls a build artifact.
+ * Uninstalls a build artifact by build name and artifact version.
  *
- * @param {String} name The build's name.
+ * @param {String} name The name of the build associated with the artifact.
  * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The artifact uninstall (as a promise).
@@ -410,7 +410,7 @@ ripe.Ripe.prototype.uninstallArtifactP = function(name, version, options) {
 /**
  * Switches the active version of a build.
  *
- * @param {String} name The build's name.
+ * @param {String} name The name of the build to be switched.
  * @param {String} version The version of the build artifact.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -431,9 +431,9 @@ ripe.Ripe.prototype.switchArtifact = function(name, version, options, callback) 
 /**
  * Switches the active version of a build.
  *
- * @param {String} name The build's name.
- * @param {Object} options An object with options, such as:
- *  - 'version' - The version of the build to activate.
+ * @param {String} name The name of the build to be switched.
+ * @param {String} version The version of the build artifact.
+ * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build switch (as a promise).
  */
 ripe.Ripe.prototype.switchArtifactP = function(name, version, options) {
