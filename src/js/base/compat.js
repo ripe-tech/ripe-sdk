@@ -65,7 +65,7 @@ if (
         typeof __webpack_require__ === "undefined" &&
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
-        // This is an hack to work around metro's (react-native bundler)
+        // this is an hack to work around metro's (react-native bundler)
         // static analysis, needed until it supports optional imports
         // (https://github.com/react-native-community/discussions-and-proposals/issues/120)
         const mixedModuleName = "Xmlhttprequest";
