@@ -494,12 +494,16 @@ ripe.Ripe.prototype.getLocaleModelP = function(options) {
 ripe.Ripe.prototype._getLocaleModelOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
     const locale =
         options.locale === undefined || options.locale === null ? this.locale : options.locale;
     const url = this.url + "builds/" + brand + "/locale/" + locale;
     const params = {};
     if (model !== undefined && model !== null) {
         params.model = model;
+    }
+    if (version !== undefined && version !== null) {
+        params.version = version;
     }
     if (options.compatibility !== undefined && options.compatibility !== null) {
         params.compatibility = options.compatibility ? "1" : "0";

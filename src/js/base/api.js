@@ -686,6 +686,7 @@ ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
 
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
     const params = options.params || {};
 
     options.params = params;
@@ -696,6 +697,10 @@ ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
 
     if (model !== undefined && model !== null) {
         params.model = model;
+    }
+
+    if (version !== undefined && version !== null) {
+        params.version = version;
     }
 
     if (options.material !== undefined && options.material !== null) {
