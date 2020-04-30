@@ -240,6 +240,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // some of the basic rules for that behaviour
     let cached = options.cached;
     cached = typeof cached === "undefined" ? this.options.cached : cached;
+    cached = typeof cached === "undefined" ? true : cached;
     cached = cached && !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
 
     // determines if the cache entry should be invalidated before
