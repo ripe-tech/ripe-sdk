@@ -931,6 +931,30 @@ ripe.Ripe.prototype.setSize = async function(size, override = true, update = tru
 };
 
 /**
+ * Updates the background color setting for the current ripe instance,
+ * propagating the change to any interested child.
+ *
+ * Optionally an update operation may be performed so that the background
+ * background color changes are reflected in the user interface.
+ *
+ * @param {String} backgroundColor The background color in hexadecimal to be set.
+ * @param {Boolean} override If the options value should be override meaning
+ * that further config updates will have this new format set.
+ * @param {Boolean} update If an update operation should be perform asynchronous.
+ */
+ripe.Ripe.prototype.setBackgroundColor = async function(backgroundColor, override = true, update = true) {
+    if (backgroundColor === this.options.backgroundColor) return;
+    this.backgroundColor = backgroundColor;
+    this.getChildren("Configurator").forEach(c => {
+        c.backgroundColor = backgroundColor;
+    });
+    if (override) this.options.backgroundColor = backgroundColor;
+    if (update) this.update();
+    this.trigger("settings");
+    return this;
+};
+
+/**
  * Retrieves the complete set of child elements of this Ripe instance
  * that fulfill the provided type criteria.
  *
