@@ -49,6 +49,8 @@ ripe.Configurator.prototype.init = function() {
     this.format = this.options.format || null;
     this.size = this.options.size || null;
     this.maxSize = this.options.maxSize || 1000;
+    this.pixelRatio =
+        this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.clickThreshold = this.options.clickThreshold || 0.015;
@@ -124,8 +126,8 @@ ripe.Configurator.prototype.resize = async function(size) {
     const frontMask = this.element.querySelector(".front-mask");
     const back = this.element.querySelector(".back");
     const mask = this.element.querySelector(".mask");
-    area.width = size;
-    area.height = size;
+    area.width = size * this.pixelRatio;
+    area.height = size * this.pixelRatio;
     area.style.width = size + "px";
     area.style.height = size + "px";
     frontMask.width = size;
@@ -133,8 +135,8 @@ ripe.Configurator.prototype.resize = async function(size) {
     frontMask.style.width = size + "px";
     frontMask.style.height = size + "px";
     frontMask.style.marginLeft = `-${String(size)}px`;
-    back.width = size;
-    back.height = size;
+    back.width = size * this.pixelRatio;
+    back.height = size * this.pixelRatio;
     back.style.width = size + "px";
     back.style.height = size + "px";
     back.style.marginLeft = `-${String(size)}px`;
@@ -1121,8 +1123,8 @@ ripe.Configurator.prototype._drawFrame = async function(image, animate, duration
 
     // clears the canvas context rectangle and then draws the image from
     // the buffer to the target canvas (back buffer operation)
-    context.clearRect(0, 0, target.clientWidth, target.clientHeight);
-    context.drawImage(image, 0, 0, target.clientWidth, target.clientHeight);
+    context.clearRect(0, 0, target.width, target.height);
+    context.drawImage(image, 0, 0, target.width, target.height);
 
     // switches the visibility (meta information )of the target and the
     // current canvas elements (this is just logic information)

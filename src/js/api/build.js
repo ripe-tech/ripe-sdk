@@ -153,7 +153,7 @@ ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
 };
 
 /**
-* Uninstalls a build from the server according to provided values.
+ * Uninstalls a build from the server according to provided values.
  *
  * @param {String} name The name of the build to be uninstalled.
  * @param {Object} options An object with options, such as:

@@ -907,6 +907,30 @@ ripe.Ripe.prototype.setFormat = async function(format, override = true, update =
 };
 
 /**
+ * Updates the size setting for the current ripe instance, propagating
+ * the change to any interested child.
+ *
+ * Optionally an update operation may be performed so that the size
+ * changes are reflected in the user interface.
+ *
+ * @param {String} size The size (in pixels) of the image to be used.
+ * @param {Boolean} override If the options value should be override meaning
+ * that further config updates will have this new format set.
+ * @param {Boolean} update If an update operation should be perform asynchronous.
+ */
+ripe.Ripe.prototype.setSize = async function(size, override = true, update = true) {
+    if (size === this.options.size) return;
+    this.size = size;
+    this.getChildren("Configurator").forEach(c => {
+        c.size = size;
+    });
+    if (override) this.options.size = size;
+    if (update) this.update();
+    this.trigger("settings");
+    return this;
+};
+
+/**
  * Retrieves the complete set of child elements of this Ripe instance
  * that fulfill the provided type criteria.
  *
