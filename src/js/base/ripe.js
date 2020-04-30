@@ -942,7 +942,12 @@ ripe.Ripe.prototype.setSize = async function(size, override = true, update = tru
  * that further config updates will have this new format set.
  * @param {Boolean} update If an update operation should be perform asynchronous.
  */
-ripe.Ripe.prototype.setBackgroundColor = async function(backgroundColor, override = true, update = true) {
+ripe.Ripe.prototype.setBackgroundColor = async function(
+    backgroundColor,
+    override = true,
+    update = true
+) {
+    if (backgroundColor) backgroundColor = backgroundColor.replace("#", "");
     if (backgroundColor === this.options.backgroundColor) return;
     this.backgroundColor = backgroundColor;
     this.getChildren("Configurator").forEach(c => {
