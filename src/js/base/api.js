@@ -239,13 +239,20 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // determines if the current request should be cached, obeys
     // some of the basic rules for that behaviour
     let cached = options.cached;
-    cached = typeof cached === "undefined" ? this.options.cached : cached;
     cached = typeof cached === "undefined" ? true : cached;
     cached = cached && !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
+
+    // determines if the cache entry should be invalidated before
+    // making the request
+    const invalidateCache = cached && Boolean(options.invalidateCache);
 
     // initializes the cache object in the current instance
     // in case it does not exists already
     this._cache = this._cache === undefined ? {} : this._cache;
+
+    if (invalidateCache) {
+        delete this._cache[fullKey];
+    }
 
     // in case there's already a valid value in cache,
     // retrieves it and calls the callback with the value
