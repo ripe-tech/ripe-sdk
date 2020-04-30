@@ -548,8 +548,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
  * part identifying its borders.
  *
  * @param {String} part The part of the model that should be highlighted.
- * @param {Object} options Set of optional parameters to adjust the highlighting, such as:
- * - 'backgroundColor' - The color to use during the highlighting.
+ * @param {Object} options Set of optional parameters to adjust the highlighting.
  */
 ripe.Configurator.prototype.highlight = function(part, options = {}) {
     // verifiers if masks are meant to be used for the current model
@@ -566,7 +565,6 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     const view = this.element.dataset.view;
     const position = this.element.dataset.position;
     const frame = ripe.getFrameKey(view, position);
-    const backgroundColor = options.backgroundColor || this.backgroundColor;
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
@@ -584,7 +582,6 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
         size: size,
         width: width,
         height: height,
-        color: backgroundColor,
         part: part
     });
 
@@ -943,6 +940,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
+    const backgroundColor = this.element.dataset.background_color || this.backgroundColor;
 
     const draw = options.draw === undefined || options.draw;
     const animate = options.animate;
@@ -975,6 +973,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
         size: size,
         width: width,
         height: height,
+        background: backgroundColor,
         full: false
     });
 
@@ -1060,7 +1059,6 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     // operation that will allow new highlight and selection operation
     // to be performed according to the new frame value
     const draw = options.draw === undefined || options.draw;
-    const backgroundColor = options.backgroundColor || this.backgroundColor;
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
@@ -1069,8 +1067,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
         frame: ripe.frameNameHack(frame),
         size: size,
         width: width,
-        height: height,
-        color: backgroundColor
+        height: height
     });
     if (draw && maskImage.dataset.src === url) {
         setTimeout(() => {
@@ -1590,7 +1587,8 @@ ripe.Configurator.prototype._buildSignature = function() {
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
+    const backgroundColor = this.element.dataset.background_color || this.backgroundColor;
     return `${this.owner._getQuery()}&width=${String(width)}&height=${String(
         height
-    )}&format=${String(format)}`;
+    )}&format=${String(format)}&background=${String(backgroundColor)}`;
 };
