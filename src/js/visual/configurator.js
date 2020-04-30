@@ -606,7 +606,7 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
         self.trigger("highlighted_part", part);
     };
     this.frontMaskError = function() {
-        self.setAttribute("src", "");
+        this.setAttribute("src", "");
     };
     frontMask.addEventListener("load", this.frontMaskLoad);
     frontMask.addEventListener("error", this.frontMaskError);
