@@ -42,11 +42,11 @@ describe("Visual", function() {
 
             image.update();
 
-            assert.strictEqual(imageElement.src.includes("frame=9"), true);
+            assert.strictEqual(imageElement.src.includes("frame=side-9"), true);
 
             image.setFrame("side-10");
 
-            assert.strictEqual(imageElement.src.includes("frame=10"), true);
+            assert.strictEqual(imageElement.src.includes("frame=side-10"), true);
         });
 
         it("should deinit image and stop updating", () => {
