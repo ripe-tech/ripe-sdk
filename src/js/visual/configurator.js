@@ -578,7 +578,7 @@ ripe.Configurator.prototype.highlight = function(part, options = {}) {
     // constructs the full URL of the mask image that is going to be
     // set for the current highlight operation (to be determined)
     const url = this.owner._getMaskURL({
-        frame: ripe.frameNameHack(frame),
+        frame: frame,
         size: size,
         width: width,
         height: height,
@@ -968,7 +968,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // the full URL mode is avoided so that no extra parameters are
     // added to the image composition (not required)
     const url = this.owner._getImageURL({
-        frame: ripe.frameNameHack(frame),
+        frame: frame,
         format: format,
         size: size,
         width: width,
@@ -1064,7 +1064,7 @@ ripe.Configurator.prototype._loadMask = function(maskImage, view, position, opti
     const height = size || this.element.dataset.height || this.height;
     const frame = ripe.getFrameKey(view, position);
     const url = this.owner._getMaskURL({
-        frame: ripe.frameNameHack(frame),
+        frame: frame,
         size: size,
         width: width,
         height: height

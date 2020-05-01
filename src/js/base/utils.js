@@ -154,9 +154,7 @@ ripe.parseFrameKey = function(frame, token) {
  * @ignore
  */
 ripe.frameNameHack = function(frame) {
-    if (!frame) {
-        return "";
-    }
+    if (!frame) return "";
     const _frame = ripe.parseFrameKey(frame);
     const view = _frame[0];
     let position = _frame[1];
