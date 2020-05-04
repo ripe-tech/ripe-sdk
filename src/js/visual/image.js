@@ -246,8 +246,10 @@ ripe.Image.prototype._registerHandlers = function() {
         if (this._errorCallback) this._errorCallback();
     });
 
-    // eslint-disable-next-line no-undef
-    const Observer = MutationObserver || WebKitMutationObserver;
+    const Observer =
+        (typeof MutationObserver !== "undefined" && MutationObserver) ||
+        (typeof WebKitMutationObserver !== "undefined" && WebKitMutationObserver) || // eslint-disable-line no-undef
+        null;
     this._observer = Observer
         ? new Observer(mutations => {
               this.update();

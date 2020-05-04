@@ -1479,8 +1479,10 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // listens for attribute changes to redraw the configurator
     // if needed, this makes use of the mutation observer, the
     // redraw should be done for width and height style and attributes
-    // eslint-disable-next-line no-undef
-    const Observer = MutationObserver || WebKitMutationObserver;
+    const Observer =
+        (typeof MutationObserver !== "undefined" && MutationObserver) ||
+        (typeof WebKitMutationObserver !== "undefined" && WebKitMutationObserver) || // eslint-disable-line no-undef
+        null;
     this._observer = Observer
         ? new Observer(mutations => {
               for (let index = 0; index < mutations.length; index++) {
