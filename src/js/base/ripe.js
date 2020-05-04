@@ -247,7 +247,7 @@ ripe.Ripe.prototype.deinit = async function() {
 
     for (index = this.children.length - 1; index >= 0; index--) {
         const child = this.children[index];
-        this.unbindInteractable(child);
+        await this.unbindInteractable(child);
     }
 
     for (index = this.plugins.length - 1; index >= 0; index--) {
@@ -1015,8 +1015,8 @@ ripe.Ripe.prototype.bindInteractable = function(element) {
  * @param {Interactable} element The Interactable instance to be unbound.
  * @returns {Interactable} Returns the unbounded Interactable.
  */
-ripe.Ripe.prototype.unbindInteractable = function(element) {
-    element.deinit();
+ripe.Ripe.prototype.unbindInteractable = async function(element) {
+    await element.deinit();
     this.children.splice(this.children.indexOf(element), 1);
     this.trigger("unbound", element);
 };
