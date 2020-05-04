@@ -10,9 +10,6 @@ if (
     require("./visual");
     // eslint-disable-next-line no-redeclare
     var ripe = base.ripe;
-    var MutationObserver = typeof MutationObserver === "undefined" ? null : MutationObserver;
-    var WebKitMutationObserver =
-        typeof WebKitMutationObserver === "undefined" ? null : WebKitMutationObserver;
 }
 
 /**

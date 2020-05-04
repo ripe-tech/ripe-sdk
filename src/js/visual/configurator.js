@@ -1482,7 +1482,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
     // eslint-disable-next-line no-undef
     const Observer = MutationObserver || WebKitMutationObserver;
     this._observer = Observer
-        ? new Observer(function(mutations) {
+        ? new Observer(mutations => {
               for (let index = 0; index < mutations.length; index++) {
                   const mutation = mutations[index];
                   if (mutation.type === "style") self.resize();
