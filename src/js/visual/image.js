@@ -195,7 +195,8 @@ ripe.Image.prototype.cancel = async function(options = {}) {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.Image.prototype.deinit = function() {
+ripe.Image.prototype.deinit = async function() {
+    await this.cancel();
     this._unregisterHandlers();
     this._observer = null;
     this.initialsBuilder = null;
@@ -269,7 +270,6 @@ ripe.Image.prototype._registerHandlers = function() {
 ripe.Image.prototype._unregisterHandlers = function() {
     if (this.loadListener) this.element.removeEventListener("load", this.loadListener);
     if (this.errorListener) this.element.removeEventListener("error", this.errorListener);
-    if (this._loadedCallback) this._loadedCallback({ canceled: true });
     if (this.loadedHandler) this.unbind("loaded", this.loadedHandler);
     if (this.errorHandler) this.unbind("error", this.errorHandler);
     if (this._observer) this._observer.disconnect();
