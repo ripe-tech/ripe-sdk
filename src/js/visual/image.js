@@ -79,6 +79,8 @@ ripe.Image.prototype.init = function() {
  * @param {Object} options Set of optional parameters to adjust the Image.
  */
 ripe.Image.prototype.update = async function(state, options = {}) {
+    // gathers the complete set of data values from the element if existent
+    // defaulting to the instance one in case their are not defined
     const frame = this.element.dataset.frame || this.frame;
     const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
@@ -195,7 +197,9 @@ ripe.Image.prototype.cancel = async function(options = {}) {
  */
 ripe.Image.prototype.deinit = async function() {
     await this.cancel();
+
     this._unregisterHandlers();
+
     this._observer = null;
     this.initialsBuilder = null;
 
