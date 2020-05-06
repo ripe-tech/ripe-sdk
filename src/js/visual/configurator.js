@@ -290,6 +290,9 @@ ripe.Configurator.prototype.deinit = async function() {
 
     if (this._observer) this._observer.disconnect();
 
+    this._finalize = null;
+    this._observer = null;
+
     ripe.Visual.prototype.deinit.call(this);
 };
 
