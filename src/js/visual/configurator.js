@@ -274,7 +274,7 @@ ripe.Configurator.prototype.cancel = async function(options = {}) {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.Configurator.prototype.deinit = function() {
+ripe.Configurator.prototype.deinit = async function() {
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
     }

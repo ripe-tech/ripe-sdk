@@ -102,7 +102,7 @@ ripe.Observable.prototype.runCallbackNoWait = async function(event, ...args) {
  * The deinitializer of the class, called whenever this
  * observable ceases its activity.
  */
-ripe.Observable.prototype.deinit = function() {
+ripe.Observable.prototype.deinit = async function() {
     this.callbacks = null;
 };
 

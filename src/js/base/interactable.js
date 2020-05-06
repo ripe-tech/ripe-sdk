@@ -57,7 +57,7 @@ ripe.Interactable.prototype.update = async function(state, options = {}) {};
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.Interactable.prototype.deinit = function() {
+ripe.Interactable.prototype.deinit = async function() {
     this.owner = null;
 
     ripe.Observable.prototype.deinit.call(this);
