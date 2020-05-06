@@ -192,7 +192,8 @@ ripe.Image.prototype.cancel = async function(options = {}) {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.Image.prototype.deinit = function() {
+ripe.Image.prototype.deinit = async function() {
+    await this.cancel();
     this._unregisterHandlers();
     this._observer = null;
     this.initialsBuilder = null;

@@ -56,7 +56,7 @@ ripe.Visual.prototype.init = function() {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.Visual.prototype.deinit = function() {
+ripe.Visual.prototype.deinit = async function() {
     this._removeElementHandlers();
     this.element = null;
     this.elementEvents = null;
