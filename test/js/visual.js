@@ -18,12 +18,12 @@ describe("Visual", function() {
             assert.strictEqual(instance.children[0], interactable);
         });
 
-        it("should deinit instance and unbind interactable", () => {
+        it("should deinit instance and unbind interactable", async () => {
             const instance = new base.ripe.Ripe("myswear", "vyner");
             const interactable = new base.ripe.Interactable(instance);
 
             instance.bindInteractable(interactable);
-            instance.deinit();
+            await instance.deinit();
 
             assert.strictEqual(interactable.owner, null);
             assert.strictEqual(instance.children.length, 0);
@@ -49,13 +49,13 @@ describe("Visual", function() {
             assert.strictEqual(imageElement.src.includes("frame=side-10"), true);
         });
 
-        it("should deinit image and stop updating", () => {
+        it("should deinit image and stop updating", async () => {
             const dom = new jsdom.JSDOM("<img id='image' />");
             const imageElement = dom.window.document.getElementById("image");
             const instance = new base.ripe.Ripe("myswear", "vyner");
             const image = instance.bindImage(imageElement);
 
-            instance.deinit();
+            await instance.deinit();
 
             assert.strictEqual(image.owner, null);
             assert.strictEqual(image.element, null);
