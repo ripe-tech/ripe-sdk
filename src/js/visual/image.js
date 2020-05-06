@@ -53,6 +53,7 @@ ripe.Image.prototype.init = function() {
     this.width = this.options.width || null;
     this.height = this.options.height || null;
     this.crop = this.options.crop || false;
+    this.mutations = this.options.mutations || false;
     this.showInitials = this.options.showInitials || false;
     this.initialsGroup = this.options.initialsGroup || null;
     this.initialsBuilder =
@@ -247,20 +248,27 @@ ripe.Image.prototype._registerHandlers = function() {
         if (this._errorCallback) this._errorCallback();
     });
 
-    const Observer =
-        (typeof MutationObserver !== "undefined" && MutationObserver) ||
-        (typeof WebKitMutationObserver !== "undefined" && WebKitMutationObserver) || // eslint-disable-line no-undef
-        null;
-    this._observer = Observer
-        ? new Observer(mutations => {
-              this.update();
-          })
-        : null;
-    this._observer &&
-        this._observer.observe(this.element, {
-            attributes: true,
-            subtree: false
-        });
+    // verifies if mutation should be "observed" for this visual
+    // and in such case registers for the observation of any DOM
+    // mutation (eg: attributes) for the image element, triggering
+    // a new update operation in case that happens
+    if (this.mutations) {
+        const Observer =
+            (typeof MutationObserver !== "undefined" && MutationObserver) ||
+            (typeof WebKitMutationObserver !== "undefined" && WebKitMutationObserver) || // eslint-disable-line no-undef
+            null;
+        this._observer = Observer
+            ? new Observer(mutations => {
+                  this.update();
+              })
+            : null;
+        if (this._observer) {
+            this._observer.observe(this.element, {
+                attributes: true,
+                subtree: false
+            });
+        }
+    }
 };
 
 /**
