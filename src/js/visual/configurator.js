@@ -275,6 +275,8 @@ ripe.Configurator.prototype.cancel = async function(options = {}) {
  * cleanup operations can be executed.
  */
 ripe.Configurator.prototype.deinit = async function() {
+    await this.cancel();
+
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
     }
