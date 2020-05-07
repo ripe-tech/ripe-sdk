@@ -1105,8 +1105,17 @@ ripe.Ripe.prototype.deselectPart = function(part, options = {}) {
  * @param {Array} children The set of children that are going to be affected
  * by the updated operation, if not provided all of the currently registered
  * children in the instance will be used.
+ * @return The result of the update operation, meaning that if any child
+ * operation has been performed the result is true otherwise in case this is
+ * a no-op from the "visual" point of view the result is false.
  */
 ripe.Ripe.prototype.update = async function(state = null, options = {}, children = null) {
+    // in case the force flag is not set and the ready or the configured
+    // values are not set (instance not ready for updates)
+    if (!options.force && (this.ready === false || this.configured === false)) {
+        return false;
+    }
+
     // tries to retrieve the state of the configuration for which an update
     // operation is going to be requested
     state = state || this._getState();
@@ -1191,7 +1200,7 @@ ripe.Ripe.prototype.update = async function(state = null, options = {}, children
 
     try {
         this.updatePromise = _update();
-        if (options.noAwaitLayout) return null;
+        if (options.noAwaitLayout) return true;
         const result = await this.updatePromise;
         return result;
     } finally {
