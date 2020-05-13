@@ -47,7 +47,7 @@ ripe.Image.prototype = ripe.build(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
-    this.frame = this.options.frame || 0;
+    this.frame = this.options.frame || null;
     this.format = this.options.format || null;
     this.size = this.options.size || 1000;
     this.width = this.options.width || null;
