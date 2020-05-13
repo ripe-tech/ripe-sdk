@@ -47,12 +47,12 @@ ripe.Image.prototype = ripe.build(ripe.Visual.prototype);
 ripe.Image.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
-    this.frame = this.options.frame || 0;
+    this.frame = this.options.frame || null;
     this.format = this.options.format || null;
-    this.size = this.options.size || 1000;
+    this.size = this.options.size || null;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
-    this.crop = this.options.crop || false;
+    this.crop = this.options.crop || null;
     this.mutations = this.options.mutations || false;
     this.showInitials = this.options.showInitials || false;
     this.initialsGroup = this.options.initialsGroup || null;
