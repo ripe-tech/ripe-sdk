@@ -322,8 +322,8 @@ ripe.Ripe.prototype.switchBuildP = function(name, options) {
  * the requested branch.
  *
  * @param {String} name The name of the build artifacts.
- * @param {String} version The version of the build artifacts.
- * @param {Object} options An object of options to configure the request.
+ * @param {Object} options An object with options, such as:
+ *  - 'branch' - The branch of the build.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
@@ -350,7 +350,6 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
  * the requested branch.
  *
  * @param {String} name The name of the brand of the build artifacts.
- * @param {String} version The version of the build artifacts.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build artifacts (as a promise).
  */
@@ -367,8 +366,8 @@ ripe.Ripe.prototype.getBuildArtifactsP = function(name, options) {
  * the requested branch.
  *
  * @param {String} name The name of the build artifacts.
- * @param {String} version The version of the build artifacts.
- * @param {Object} options An object of options to configure the request.
+ * @param {Object} options An object with options, such as:
+ *  - 'branch' - The branch of the build.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getBuildLocalArtifacts = function(name, options, callback) {
@@ -395,13 +394,46 @@ ripe.Ripe.prototype.getBuildLocalArtifacts = function(name, options, callback) {
  * the requested branch.
  *
  * @param {String} name The name of the brand of the build artifacts.
- * @param {String} version The version of the build artifacts.
- * @param {Object} options An object of options to configure the request.
+ * @param {Object} options An object with options, such as:
+ *  - 'branch' - The branch of the build.
  * @returns {Promise} The build artifacts (as a promise).
  */
 ripe.Ripe.prototype.getBuildLocalArtifactsP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.getBuildLocalArtifacts(name, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Retrieves all the artifacts of all the local builds.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getLocalArtifacts = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}builds_local/artifacts`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Retrieves all the artifacts of all the local builds.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The builds' artifacts (as a promise).
+ */
+ripe.Ripe.prototype.getLocalArtifactsP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getLocalArtifacts(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
