@@ -45,6 +45,72 @@ ripe.Ripe.prototype.getBuildsP = function(options) {
 };
 
 /**
+ * Retrieves the complete list of builds installed locally.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getLocalBuilds = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = this.url + "builds/local";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Retrieves the complete list of builds installed locally.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The builds list (as a promise).
+ */
+ripe.Ripe.prototype.getLocalBuildsP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getLocalBuilds(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Retrieves the complete list of remote builds.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getRemoteBuilds = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = this.url + "builds/remote";
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Retrieves the complete list of remote builds.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The builds list (as a promise).
+ */
+ripe.Ripe.prototype.getRemoteBuildsP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getRemoteBuilds(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Retrieves a build's information from the server side by name.
  *
  * @param {String} name The name of the of the build.
