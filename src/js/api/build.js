@@ -350,7 +350,8 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
  * the requested branch.
  *
  * @param {String} name The name of the brand of the build artifacts.
- * @param {Object} options An object of options to configure the request.
+ * @param {Object} options An object with options, such as:
+ *  - 'branch' - The branch of the build.
  * @returns {Promise} The build artifacts (as a promise).
  */
 ripe.Ripe.prototype.getBuildArtifactsP = function(name, options) {
