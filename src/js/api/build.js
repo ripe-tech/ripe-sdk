@@ -53,7 +53,7 @@ ripe.Ripe.prototype.getBuildsP = function(options) {
 ripe.Ripe.prototype.getLocalBuilds = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "builds/local";
+    const url = this.url + "builds_local";
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -86,7 +86,7 @@ ripe.Ripe.prototype.getLocalBuildsP = function(options) {
 ripe.Ripe.prototype.getRemoteBuilds = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "builds/remote";
+    const url = this.url + "builds_remote";
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -357,6 +357,51 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
 ripe.Ripe.prototype.getBuildArtifactsP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.getBuildArtifacts(name, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Retrieves the build artifacts by name and version and for
+ * the requested branch.
+ *
+ * @param {String} name The name of the build artifacts.
+ * @param {String} version The version of the build artifacts.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getBuildLocalArtifacts = function(name, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const branch = options.branch === undefined ? null : options.branch;
+    const url = `${this.url}builds_local/${name}/artifacts`;
+    const params = {};
+    if (branch !== undefined && branch !== null) {
+        params.branch = branch;
+    }
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true,
+        params: params
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Retrieves the build artifacts by brand name and version and for
+ * the requested branch.
+ *
+ * @param {String} name The name of the brand of the build artifacts.
+ * @param {String} version The version of the build artifacts.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The build artifacts (as a promise).
+ */
+ripe.Ripe.prototype.getBuildLocalArtifactsP = function(name, options) {
+    return new Promise((resolve, reject) => {
+        this.getBuildLocalArtifacts(name, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
