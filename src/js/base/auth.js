@@ -83,6 +83,8 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
 
     this.signin(username, password, options, (result, isValid, request) => {
         this.sid = result.sid;
+        this.username = result.username;
+        this.tokens = result.tokens;
         this.trigger("auth");
         if (callback) callback(result, isValid, request);
     });
@@ -125,6 +127,8 @@ ripe.Ripe.prototype.authAdmin = function(username, password, options, callback) 
     this.signinAdmin(username, password, options, (result, isValid, request) => {
         if (isValid) {
             this.sid = result.sid;
+            this.username = result.username;
+            this.tokens = result.tokens;
             this.trigger("auth");
         }
         if (callback) callback(result, isValid, request);
@@ -166,6 +170,8 @@ ripe.Ripe.prototype.authPid = function(token, options, callback) {
     this.signinPid(token, options, (result, isValid, request) => {
         if (isValid) {
             this.sid = result.sid;
+            this.username = result.username;
+            this.tokens = result.tokens;
             this.trigger("auth");
         }
         if (callback) callback(result, isValid, request);
@@ -242,6 +248,8 @@ ripe.Ripe.prototype.authKeyP = function(key, options) {
  */
 ripe.Ripe.prototype.unauth = function(options, callback) {
     this.sid = null;
+    this.username = null;
+    this.tokens = null;
 
     if (window.localStorage) {
         localStorage.removeItem("oauth_token");
@@ -312,6 +320,8 @@ ripe.Ripe.prototype.oauth = function(options, callback) {
         return this.oauthLogin(oauthToken, options, (result, isValid, request) => {
             if (isValid && result) {
                 this.sid = result.sid;
+                this.username = result.username;
+                this.tokens = result.tokens;
                 this.trigger("auth");
                 if (callback) callback(result, isValid, request);
             } else {
