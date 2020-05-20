@@ -412,10 +412,9 @@ ripe.Ripe.prototype.setPlayerId = function (playerId, options, callback) {
     options = Object.assign(options, {
         url: url,
         auth: true,
-        method: "GET"
+        method: "PUT"
     });
     options = this._build(options);
-    console.log("url", url);
     return this._cacheURL(options.url, options, callback);
 };
 
@@ -423,7 +422,6 @@ ripe.Ripe.prototype.setPlayerId = function (playerId, options, callback) {
  * @ignore
  */
 ripe.Ripe.prototype.setPlayerIdP = function (playerId, options) {
-    console.log("setPlayerIdP");
     return new Promise((resolve, reject) => {
         this.setPlayerId(playerId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
@@ -468,7 +466,7 @@ ripe.Ripe.prototype.subscribeOrder = function (number, options, callback) {
     options = Object.assign(options, {
         url: url,
         auth: true,
-        method: "GET"
+        method: "PUT"
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
@@ -495,7 +493,7 @@ ripe.Ripe.prototype.unsubscribeOrder = function (number, options, callback) {
     options = Object.assign(options, {
         url: url,
         auth: true,
-        method: "GET"
+        method: "PUT"
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
