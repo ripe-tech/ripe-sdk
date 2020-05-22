@@ -408,7 +408,7 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
 ripe.Ripe.prototype.setPlayerId = function(playerId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "notify_info" + "?" + this._buildQuery(options.query);
+    const url = this.url + "notify_info" + "?" + this._buildQuery({ player_id: playerId });
     options = Object.assign(options, {
         url: url,
         auth: true,
