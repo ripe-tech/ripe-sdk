@@ -405,7 +405,7 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
 /**
  * @ignore
  */
-ripe.Ripe.prototype.setPlayerId = function (playerId, options, callback) {
+ripe.Ripe.prototype.setPlayerId = function(playerId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "notify_info" + "?" + this._buildQuery(options.query);
@@ -421,7 +421,7 @@ ripe.Ripe.prototype.setPlayerId = function (playerId, options, callback) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype.setPlayerIdP = function (playerId, options) {
+ripe.Ripe.prototype.setPlayerIdP = function(playerId, options) {
     return new Promise((resolve, reject) => {
         this.setPlayerId(playerId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
@@ -432,10 +432,10 @@ ripe.Ripe.prototype.setPlayerIdP = function (playerId, options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype.getOrderSubscriptionStatus = function (number, options, callback) {
+ripe.Ripe.prototype.getOrderSubscriptionStatus = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number) + "/" + "is_sub";
+    const url = this.url + "orders/" + String(number) + "/" + "is_subscribed";
     options = Object.assign(options, {
         url: url,
         auth: true,
@@ -448,7 +448,7 @@ ripe.Ripe.prototype.getOrderSubscriptionStatus = function (number, options, call
 /**
  * @ignore
  */
-ripe.Ripe.prototype.getOrderSubscriptionStatusP = function (number, options) {
+ripe.Ripe.prototype.getOrderSubscriptionStatusP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.getOrderSubscriptionStatus(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
@@ -459,10 +459,10 @@ ripe.Ripe.prototype.getOrderSubscriptionStatusP = function (number, options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype.subscribeOrder = function (number, options, callback) {
+ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number) + "/" + "sub";
+    const url = this.url + "orders/" + String(number) + "/" + "subscribe";
     options = Object.assign(options, {
         url: url,
         auth: true,
@@ -475,7 +475,7 @@ ripe.Ripe.prototype.subscribeOrder = function (number, options, callback) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype.subscribeOrderP = function (number, options) {
+ripe.Ripe.prototype.subscribeOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.subscribeOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
@@ -486,10 +486,10 @@ ripe.Ripe.prototype.subscribeOrderP = function (number, options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype.unsubscribeOrder = function (number, options, callback) {
+ripe.Ripe.prototype.unsubscribeOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number) + "/" + "unsub";
+    const url = this.url + "orders/" + String(number) + "/" + "unsubscribe";
     options = Object.assign(options, {
         url: url,
         auth: true,
@@ -502,7 +502,7 @@ ripe.Ripe.prototype.unsubscribeOrder = function (number, options, callback) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype.unsubscribeOrderP = function (number, options) {
+ripe.Ripe.prototype.unsubscribeOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.unsubscribeOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
