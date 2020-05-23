@@ -14,6 +14,18 @@ if (
     var LOCALES_BASE = locales.LOCALES_BASE;
 }
 
+/**
+ * Adds a new bundle object to the currently set of registered
+ * bundles for the the given locale.
+ *
+ * This registration operation is global and will affect any user
+ * of the RIPE SDK package on the current VM.
+ *
+ * @param {Object} bundle The locale strings bundle that is going to be
+ * globally registered.
+ * @param {String} locale The ISO 639-1 based locale identifier in the
+ * underscore based form to be used in registration
+ */
 ripe.Ripe.prototype.addBundle = function(bundle, locale = null) {
     locale = locale === null ? this.locale : locale;
     const _bundle = LOCALES_BASE[locale] || {};
@@ -23,6 +35,15 @@ ripe.Ripe.prototype.addBundle = function(bundle, locale = null) {
     }
 };
 
+/**
+ * Removes the given set of locale strings from the globally defined
+ * locale registry.
+ *
+ * @param {Object} bundle The locale strings bundle that is going to be
+ * globally removed.
+ * @param {String} locale The ISO 639-1 based locale identifier in the
+ * underscore based form to be used in removal
+ */
 ripe.Ripe.prototype.removeBundle = function(bundle, locale = null) {
     locale = locale === null ? this.locale : locale;
     if (LOCALES_BASE[locale] === undefined) return;
