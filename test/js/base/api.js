@@ -112,4 +112,52 @@ describe("RipeAPI", function() {
             assert.deepStrictEqual(result, { olá: "mundo" });
         });
     });
+
+    describe("#_parseExtraS", function() {
+        it("should properly parse an initials extra string", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._parseExtraS(["left:pt:gold", "right:tp:silver"]);
+
+            assert.deepStrictEqual(result, {
+                left: { initials: "pt", engraving: "gold" },
+                right: { initials: "tp", engraving: "silver" }
+            });
+
+            result = remote._parseExtraS([
+                "left:pt\\:tp:gold\\:yellow",
+                "right:tp\\:pt:silver\\:grey"
+            ]);
+
+            assert.deepStrictEqual(result, {
+                left: { initials: "pt:tp", engraving: "gold:yellow" },
+                right: { initials: "tp:pt", engraving: "silver:grey" }
+            });
+        });
+    });
+
+    describe("#_generateExtraS", function() {
+        it("should properly generate an initials extra string", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._generateExtraS({
+                left: { initials: "pt", engraving: "gold" },
+                right: { initials: "tp", engraving: "silver" }
+            });
+
+            assert.deepStrictEqual(result, ["left:pt:gold", "right:tp:silver"]);
+
+            result = remote._generateExtraS({
+                left: { initials: "pt:tp", engraving: "gold:yellow" },
+                right: { initials: "tp:pt", engraving: "silver:grey" }
+            });
+
+            assert.deepStrictEqual(result, [
+                "left:pt\\:tp:gold\\:yellow",
+                "right:tp\\:pt:silver\\:grey"
+            ]);
+        });
+    });
 });
