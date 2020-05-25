@@ -405,34 +405,7 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
 /**
  * @ignore
  */
-ripe.Ripe.prototype.setPlayerId = function(playerId, options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "notify_info" + "?" + this._buildQuery({ player_id: playerId });
-    options = Object.assign(options, {
-        url: url,
-        auth: true,
-        method: "PUT"
-    });
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
- * @ignore
- */
-ripe.Ripe.prototype.setPlayerIdP = function(playerId, options) {
-    return new Promise((resolve, reject) => {
-        this.setPlayerId(playerId, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
-        });
-    });
-};
-
-/**
- * @ignore
- */
-ripe.Ripe.prototype.getOrderSubscriptionStatus = function(number, options, callback) {
+ripe.Ripe.prototype.isSubscribed = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "orders/" + String(number) + "/" + "is_subscribed";
@@ -448,9 +421,9 @@ ripe.Ripe.prototype.getOrderSubscriptionStatus = function(number, options, callb
 /**
  * @ignore
  */
-ripe.Ripe.prototype.getOrderSubscriptionStatusP = function(number, options) {
+ripe.Ripe.prototype.isSubscribedP = function(number, options) {
     return new Promise((resolve, reject) => {
-        this.getOrderSubscriptionStatus(number, options, (result, isValid, request) => {
+        this.isSubscribed(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
