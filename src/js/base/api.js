@@ -983,7 +983,12 @@ ripe.Ripe.prototype._partsMToQuery = function(partsM, sort = true) {
     if (sort) names.sort();
     for (const name of names) {
         const part = partsM[name];
-        const triplet = `${name}:${part.material}:${part.color}`;
+        const [nameE, initialsE, engravingE] = [
+            ripe.escape(name, ":"),
+            ripe.escape(part.material, ":"),
+            ripe.escape(part.color, ":")
+        ];
+        const triplet = `${nameE}:${initialsE}:${engravingE}`;
         queryL.push(`p=${triplet}`);
     }
     return queryL.join("&");
@@ -1008,7 +1013,12 @@ ripe.Ripe.prototype._generateExtraS = function(extra, sort = true) {
     for (const name of names) {
         const values = extra[name];
         const [initials, engraving] = [values.initials, values.engraving];
-        const extraI = `${name}:${initials}:${engraving}`;
+        const [nameE, initialsE, engravingE] = [
+            ripe.escape(name, ":"),
+            ripe.escape(initials, ":"),
+            ripe.escape(engraving, ":")
+        ];
+        const extraI = `${nameE}:${initialsE}:${engravingE}`;
         extraS.push(extraI);
     }
     return extraS;
