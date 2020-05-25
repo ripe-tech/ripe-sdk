@@ -225,6 +225,11 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     const mustPreload = preload !== undefined ? preload : changed || !preloaded;
     if (mustPreload) preloadPromise = this._preload(this.options.useChain);
 
+    // TODO
+    // Downloads video and generates frames
+    const videoFrames = await this._videoToFrames("TODO src", 100);
+    console.log("videoFrames", videoFrames);
+
     // runs the load operation for the current frame, taking into
     // account the multiple requirements for such execution
     await this._loadFrame(view, position, {
@@ -268,6 +273,75 @@ ripe.Configurator.prototype.cancel = async function(options = {}) {
     if (this._buildSignature() === this.signature || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
     return true;
+};
+
+/**
+ * TODO clean after getting the frames
+ * @ignore
+ */
+ripe.Configurator.prototype._videoToFrames = async function(src, fps, options = {}) {
+    return new Promise((resolve, reject) => {
+        const frames = [];
+
+        const video = document.createElement("video");
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        video.setAttribute("playsinline", "playsinline");
+        video.src = src;
+        video.play();
+
+        let seeked = 0;
+        let currentTime = 0;
+        const timeStep = 1 / fps;
+
+        // Waits for the video to load before starting seeking frames
+        video.addEventListener(
+            "loadeddata",
+            () => {
+                console.log("loaded data");
+                video.play();
+                video.pause();
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                // Starts the seeking loop
+                //    0     1     ...
+                // |-----|-----|--...
+                //    ^
+                video.currentTime = this._trunc(timeStep / 2) - this._trunc(timeStep / 10);
+            },
+            false
+        );
+
+        video.addEventListener(
+            "seeked",
+            () => {
+                seeked += 1;
+                console.log("seeked !", seeked);
+
+                context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                const frameSrc = canvas.toDataURL();
+                frames.push(frameSrc);
+                console.log("Got frame");
+
+                currentTime = this._trunc(video.currentTime + timeStep);
+                if (currentTime < video.duration) {
+                    console.log("seeking...", currentTime);
+
+                    video.currentTime = currentTime;
+                } else resolve(frames);
+            },
+            false
+        );
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Configurator.prototype._trunc = function(n) {
+    return Math.floor(n * 1000000) / 1000000;
 };
 
 /**
@@ -974,6 +1048,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // the full URL mode is avoided so that no extra parameters are
     // added to the image composition (not required)
     const url = this.owner._getImageURL({
+        // TODO if video as transport, return URL from loaded video?
         frame: frame,
         format: format,
         size: size,
@@ -982,6 +1057,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
         background: backgroundColor,
         full: false
     });
+    this._getVideoFrameURL(frame, options);
 
     // verifies if the loading of the current image
     // is considered redundant (already loaded or
@@ -1054,6 +1130,10 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
         options: options,
         result: true
     });
+};
+
+ripe.Configurator.prototype._getVideoFrameURL = function(frame, options) {
+    console.log("[_getVideoFrameURL] frame:", frame, options);
 };
 
 /**
