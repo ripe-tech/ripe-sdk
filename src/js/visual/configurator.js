@@ -247,8 +247,12 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
         });
         console.log(videoComposeURL);
 
-        
+        const startTime = new Date();
         const videoFrames = await this._videoToFrames(videoComposeURL);
+        const endTime = new Date();
+        const totalTime = endTime - startTime;
+        console.log("video to frames end-to-end time:", totalTime);
+
         // console.log("videoFrames", videoFrames);
 
         // TODO dont use hardcoded
@@ -376,10 +380,10 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
                 const frameSrc = canvas.toDataURL();
                 frames.push(frameSrc);
 
-                //TODO remove this frames shower
-                //const img = new Image(100, 100);
-                //img.src = frameSrc;
-                //document.getElementById("frames").appendChild(img);
+                // TODO remove this frames shower
+                // const img = new Image(100, 100);
+                // img.src = frameSrc;
+                // document.getElementById("frames").appendChild(img);
 
                 currentTime = this._trunc(video.currentTime + timeStep);
                 if (currentTime < video.duration) {
