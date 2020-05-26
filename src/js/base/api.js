@@ -750,6 +750,15 @@ ripe.Ripe.prototype._getImageURL = function(options) {
 /**
  * @ignore
  */
+ripe.Ripe.prototype._getVideoComposeURL = function(options) {
+    options = this._getImageOptions(options);
+    return options.url + "/video?" + this._buildQuery(options.params);
+};
+
+
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getMaskURL = function(options) {
     options = this._getMaskOptions(options);
     return options.url + "?" + this._buildQuery(options.params);

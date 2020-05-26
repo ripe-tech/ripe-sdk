@@ -72,6 +72,7 @@ ripe.Configurator.prototype.init = function() {
     this._observer = null;
     this._ownerBinds = {};
 
+    this.videoFrames = [];
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
     this._ownerBinds.selected_part = this.owner.bind("selected_part", part => this.highlight(part));
@@ -225,10 +226,36 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     const mustPreload = preload !== undefined ? preload : changed || !preloaded;
     if (mustPreload) preloadPromise = this._preload(this.options.useChain);
 
+    
+    
     // TODO
     // Downloads video and generates frames
-    const videoFrames = await this._videoToFrames("http://localhost:8080/api/compose/video");
-    console.log("videoFrames", videoFrames);
+    const frame = ripe.getFrameKey(view, position);
+    const format = this.element.dataset.format || this.format;
+    const size = this.element.dataset.size || this.size;
+    const width = size || this.element.dataset.width || this.width;
+    const height = size || this.element.dataset.height || this.height;
+    const backgroundColor = "ffffff"
+
+    const videoComposeURL = this.owner._getVideoComposeURL({
+        frame: frame,
+        format: format,
+        size: size,
+        width: width,
+        height: height,
+        background: backgroundColor,
+        full: false
+    });
+    console.log(videoComposeURL);
+
+    this.videoFrames = await this._videoToFrames(videoComposeURL);
+    console.log("videoFrames", this.videoFrames);
+
+
+
+
+
+
 
     // runs the load operation for the current frame, taking into
     // account the multiple requirements for such execution
@@ -280,7 +307,7 @@ ripe.Configurator.prototype.cancel = async function(options = {}) {
  * @ignore
  */
 ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, options = {}) {
-    return new Promise((resolve, reject) => {
+   /*  return new Promise((resolve, reject) => {
         const frames = [];
 
         const video = document.createElement("video");
@@ -341,7 +368,7 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
             },
             false
         );
-    });
+    }); */
 };
 
 /**
@@ -1063,7 +1090,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
         height: height,
         background: backgroundColor,
         full: false
-    });
+    });    
     this._getVideoFrameURL(frame, options);
 
     // verifies if the loading of the current image
