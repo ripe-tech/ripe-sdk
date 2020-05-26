@@ -14,7 +14,7 @@ if (
 /**
  * Adds a device identifier to the current user deivce list
  *
- * @param {Number} deviceId The device identifier
+ * @param {String} deviceId The device identifier
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.registerDevice = function(deviceId, options, callback) {
@@ -34,7 +34,7 @@ ripe.Ripe.prototype.registerDevice = function(deviceId, options, callback) {
 /**
  * Adds a device identifier to the current user deivce list
  *
- * @param {Number} deviceId The device identifier
+ * @param {String} deviceId The device identifier
  * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.registerDeviceP = function(deviceId, options) {
@@ -48,7 +48,7 @@ ripe.Ripe.prototype.registerDeviceP = function(deviceId, options) {
 /**
  * Removes a device identifier from current user deivce list
  *
- * @param {Number} deviceId The device identifier
+ * @param {String} deviceId The device identifier
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.unregisterDevice = function(deviceId, options, callback) {
@@ -68,7 +68,7 @@ ripe.Ripe.prototype.unregisterDevice = function(deviceId, options, callback) {
 /**
  * Adds a device identifier to the current user deivce list
  *
- * @param {Number} deviceId The device identifier
+ * @param {String} deviceId The device identifier
  * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.unregisterDeviceP = function(deviceId, options) {
