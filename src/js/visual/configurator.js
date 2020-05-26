@@ -72,7 +72,7 @@ ripe.Configurator.prototype.init = function() {
     this._observer = null;
     this._ownerBinds = {};
 
-    this.videoFrames = [];
+    this.videoFrames = {};
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
     this._ownerBinds.selected_part = this.owner.bind("selected_part", part => this.highlight(part));
@@ -227,32 +227,64 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     if (mustPreload) preloadPromise = this._preload(this.options.useChain);
 
     
-    
-    // TODO
-    // Downloads video and generates frames
-    const frame = ripe.getFrameKey(view, position);
-    const format = this.element.dataset.format || this.format;
-    const size = this.element.dataset.size || this.size;
-    const width = size || this.element.dataset.width || this.width;
-    const height = size || this.element.dataset.height || this.height;
-    const backgroundColor = "ffffff"
+    if(Object.keys(this.videoFrames).length ===0) {
+        // TODO
+        // Downloads video and generates frames
+        const frame = ripe.getFrameKey(view, position);
+        const format = this.element.dataset.format || this.format;
+        const size = this.element.dataset.size || this.size;
+        const width = size || this.element.dataset.width || this.width;
+        const height = size || this.element.dataset.height || this.height;
+        const backgroundColor = "ffffff"
 
-    const videoComposeURL = this.owner._getVideoComposeURL({
-        frame: frame,
-        format: format,
-        size: size,
-        width: width,
-        height: height,
-        background: backgroundColor,
-        full: false
-    });
-    console.log(videoComposeURL);
-
-    this.videoFrames = await this._videoToFrames(videoComposeURL);
-    console.log("videoFrames", this.videoFrames);
+        const videoComposeURL = this.owner._getVideoComposeURL({
+            frame: frame,
+            format: format,
+            size: size,
+            width: width,
+            height: height,
+            background: backgroundColor,
+            full: false
+        });
+        console.log(videoComposeURL);
 
 
-
+        const videoFrames = await this._videoToFrames(videoComposeURL);
+    //console.log("videoFrames", videoFrames);
+        
+        //TODO dont use hardcoded
+        const framesNames = [
+            "side-0",
+            "side-1",
+            "side-2",
+            "side-3",
+            "side-4",
+            "side-5",
+            "side-6",
+            "side-7",
+            "side-8",
+            "side-9",
+            "side-10",
+            "side-11",
+            "side-12",
+            "side-13",
+            "side-14",
+            "side-15",
+            "side-16",
+            "side-17",
+            "side-18",
+            "side-19",
+            "side-20",
+            "side-21",
+            "side-22",
+            "side-23",
+            "top-0"
+        ];
+        framesNames.forEach((name, i) => {
+            this.videoFrames = {...this.videoFrames, ...{ [`${name}`]:videoFrames[i]}}
+        })
+        //console.log("transformed videoFrames", this.videoFrames);
+    }
 
 
 
@@ -262,7 +294,8 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     await this._loadFrame(view, position, {
         draw: true,
         animate: animate,
-        duration: duration
+        duration: duration,
+        useVideoFrame: true
     });
 
     // initializes the result value with the default valid value
@@ -307,7 +340,7 @@ ripe.Configurator.prototype.cancel = async function(options = {}) {
  * @ignore
  */
 ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, options = {}) {
-   /*  return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const frames = [];
 
         const video = document.createElement("video");
@@ -319,7 +352,6 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         video.setAttribute("playsinline", "playsinline");
         video.src = src;
 
-        let seeked = 0;
         let currentTime = 0;
         const timeStep = 1 / fps;
 
@@ -327,10 +359,8 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         video.addEventListener(
             "loadeddata",
             () => {
-                console.log("loaded data");
                 video.play();
                 video.pause();
-                console.log("start seeking");
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
 
@@ -346,9 +376,6 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         video.addEventListener(
             "seeked",
             () => {
-                seeked += 1;
-                console.log("seeked !", seeked);
-
                 context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
                 const frameSrc = canvas.toDataURL();
                 frames.push(frameSrc);
@@ -357,18 +384,14 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
                 img.src = frameSrc;
                 document.getElementById("frames").appendChild(img);
 
-                console.log("Got frame");
-
                 currentTime = this._trunc(video.currentTime + timeStep);
                 if (currentTime < video.duration) {
-                    console.log("seeking...", currentTime);
-
                     video.currentTime = currentTime;
                 } else resolve(frames);
             },
             false
         );
-    }); */
+    });
 };
 
 /**
@@ -1081,17 +1104,23 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // builds the URL that will be set on the image, notice that both
     // the full URL mode is avoided so that no extra parameters are
     // added to the image composition (not required)
-    const url = this.owner._getImageURL({
-        // TODO if video as transport, return URL from loaded video?
-        frame: frame,
-        format: format,
-        size: size,
-        width: width,
-        height: height,
-        background: backgroundColor,
-        full: false
-    });    
-    this._getVideoFrameURL(frame, options);
+    let url = null;
+    if(options.useVideoFrame)
+    {
+        url = this._getVideoFrameURL(frame, options);
+    }
+    else {
+        url = "http://localhost:8080/api/swatch?brand=sergio_rossi&color=palladium&material=metal_sr&model=sr1_pump075";
+        /* url = this.owner._getImageURL({
+            frame: frame,
+            format: format,
+            size: size,
+            width: width,
+            height: height,
+            background: backgroundColor,
+            full: false
+        }); */
+    }
 
     // verifies if the loading of the current image
     // is considered redundant (already loaded or
@@ -1147,6 +1176,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // sets the src of the image to trigger the request
     // and sets loaded to false to indicate that the
     // image is not yet loading
+    //console.log("\n\n-------------", url); //TODO check this
     image.src = url;
     image.dataset.src = url;
     image.dataset.loaded = false;
@@ -1167,8 +1197,8 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
 };
 
 ripe.Configurator.prototype._getVideoFrameURL = function(frame, options) {
-    // TODO
-    // console.log("[_getVideoFrameURL] frame:", frame, options);
+    //console.log("[_getVideoFrameURL] frame:", frame, options);
+    return this.videoFrames[frame];
 };
 
 /**
