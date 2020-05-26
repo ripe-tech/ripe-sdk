@@ -227,7 +227,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
 
     // TODO
     // Downloads video and generates frames
-    const videoFrames = await this._videoToFrames("TODO src", 100);
+    const videoFrames = await this._videoToFrames("http://localhost:8080/api/compose/video");
     console.log("videoFrames", videoFrames);
 
     // runs the load operation for the current frame, taking into
@@ -279,17 +279,18 @@ ripe.Configurator.prototype.cancel = async function(options = {}) {
  * TODO clean after getting the frames
  * @ignore
  */
-ripe.Configurator.prototype._videoToFrames = async function(src, fps, options = {}) {
+ripe.Configurator.prototype._videoToFrames = async function(src, fps=25, options = {}) {
     return new Promise((resolve, reject) => {
         const frames = [];
 
         const video = document.createElement("video");
+        video.crossOrigin = "Anonymous";
+        // const video = document.getElementById('video-test');
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
         video.setAttribute("playsinline", "playsinline");
         video.src = src;
-        video.play();
 
         let seeked = 0;
         let currentTime = 0;
@@ -302,14 +303,15 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps, options = 
                 console.log("loaded data");
                 video.play();
                 video.pause();
+                console.log("start seeking")
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-
+              
                 // Starts the seeking loop
                 //    0     1     ...
                 // |-----|-----|--...
                 //    ^
-                video.currentTime = this._trunc(timeStep / 2) - this._trunc(timeStep / 10);
+                video.currentTime = this._trunc((1 / fps)/2) - this._trunc((1 / fps)/10);
             },
             false
         );
@@ -321,8 +323,13 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps, options = 
                 console.log("seeked !", seeked);
 
                 context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                const frameSrc = canvas.toDataURL();
+                frameSrc = canvas.toDataURL();
                 frames.push(frameSrc);
+                
+                const img = new Image(100, 100);
+                img.src = frameSrc;
+                document.getElementById("frames").appendChild(img);
+                
                 console.log("Got frame");
 
                 currentTime = this._trunc(video.currentTime + timeStep);
@@ -1133,7 +1140,8 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
 };
 
 ripe.Configurator.prototype._getVideoFrameURL = function(frame, options) {
-    console.log("[_getVideoFrameURL] frame:", frame, options);
+    // TODO
+    // console.log("[_getVideoFrameURL] frame:", frame, options);
 };
 
 /**
