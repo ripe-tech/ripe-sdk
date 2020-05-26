@@ -226,8 +226,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
     const mustPreload = preload !== undefined ? preload : changed || !preloaded;
     if (mustPreload) preloadPromise = this._preload(this.options.useChain);
 
-    
-    if(Object.keys(this.videoFrames).length ===0) {
+    if (Object.keys(this.videoFrames).length === 0) {
         // TODO
         // Downloads video and generates frames
         const frame = ripe.getFrameKey(view, position);
@@ -235,7 +234,7 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
         const size = this.element.dataset.size || this.size;
         const width = size || this.element.dataset.width || this.width;
         const height = size || this.element.dataset.height || this.height;
-        const backgroundColor = "ffffff"
+        const backgroundColor = "ffffff";
 
         const videoComposeURL = this.owner._getVideoComposeURL({
             frame: frame,
@@ -248,11 +247,10 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
         });
         console.log(videoComposeURL);
 
-
         const videoFrames = await this._videoToFrames(videoComposeURL);
-    //console.log("videoFrames", videoFrames);
-        
-        //TODO dont use hardcoded
+        // console.log("videoFrames", videoFrames);
+
+        // TODO dont use hardcoded
         const framesNames = [
             "side-0",
             "side-1",
@@ -281,13 +279,10 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
             "top-0"
         ];
         framesNames.forEach((name, i) => {
-            this.videoFrames = {...this.videoFrames, ...{ [`${name}`]:videoFrames[i]}}
-        })
-        //console.log("transformed videoFrames", this.videoFrames);
+            this.videoFrames = { ...this.videoFrames, ...{ [`${name}`]: videoFrames[i] } };
+        });
+        // console.log("transformed videoFrames", this.videoFrames);
     }
-
-
-
 
     // runs the load operation for the current frame, taking into
     // account the multiple requirements for such execution
@@ -1105,13 +1100,10 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // the full URL mode is avoided so that no extra parameters are
     // added to the image composition (not required)
     let url = null;
-    if(options.useVideoFrame)
-    {
+    if (options.useVideoFrame) {
         url = this._getVideoFrameURL(frame, options);
-    }
-    else {
-        url = "http://localhost:8080/api/swatch?brand=sergio_rossi&color=palladium&material=metal_sr&model=sr1_pump075";
-        /* url = this.owner._getImageURL({
+    } else {
+        url = this.owner._getImageURL({
             frame: frame,
             format: format,
             size: size,
@@ -1119,7 +1111,9 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
             height: height,
             background: backgroundColor,
             full: false
-        }); */
+        });
+        url =
+            "http://localhost:8080/api/swatch?brand=sergio_rossi&color=palladium&material=metal_sr&model=sr1_pump075"; // TODO remove this temporary loading fix
     }
 
     // verifies if the loading of the current image
@@ -1176,7 +1170,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // sets the src of the image to trigger the request
     // and sets loaded to false to indicate that the
     // image is not yet loading
-    //console.log("\n\n-------------", url); //TODO check this
+    // console.log("\n\n-------------", url); //TODO check this
     image.src = url;
     image.dataset.src = url;
     image.dataset.loaded = false;
@@ -1197,7 +1191,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
 };
 
 ripe.Configurator.prototype._getVideoFrameURL = function(frame, options) {
-    //console.log("[_getVideoFrameURL] frame:", frame, options);
+    // console.log("[_getVideoFrameURL] frame:", frame, options);
     return this.videoFrames[frame];
 };
 

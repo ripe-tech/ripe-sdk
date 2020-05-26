@@ -755,7 +755,6 @@ ripe.Ripe.prototype._getVideoComposeURL = function(options) {
     return options.url + "/video?" + this._buildQuery(options.params);
 };
 
-
 /**
  * @ignore
  */
