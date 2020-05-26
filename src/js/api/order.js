@@ -403,7 +403,10 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
 };
 
 /**
- * @ignore
+ * Gets the order subscription status for the session user
+ *
+ * @param {Number} number The number of the order to get the subscription status
+ * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.isSubscribed = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -419,7 +422,10 @@ ripe.Ripe.prototype.isSubscribed = function(number, options, callback) {
 };
 
 /**
- * @ignore
+ * Gets the order subscription status for the session user
+ *
+ * @param {Number} number The number of the order to get the subscription status
+ * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.isSubscribedP = function(number, options) {
     return new Promise((resolve, reject) => {
@@ -430,7 +436,10 @@ ripe.Ripe.prototype.isSubscribedP = function(number, options) {
 };
 
 /**
- * @ignore
+ * Adds to the subscriber list of an order the user in session's e-mail
+ *
+ * @param {Number} number The number of the order to get the subscribe
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -446,7 +455,10 @@ ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
 };
 
 /**
- * @ignore
+ * Adds to the subscriber list of an order the user in session's e-mail
+ *
+ * @param {Number} number The number of the order to subscribe
+ * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.subscribeOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
@@ -457,7 +469,10 @@ ripe.Ripe.prototype.subscribeOrderP = function(number, options) {
 };
 
 /**
- * @ignore
+ * Removes from the subscriber list of an order the user in session's e-mail
+ *
+ * @param {Number} number The number of the order to unsubscribe
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.unsubscribeOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -473,7 +488,10 @@ ripe.Ripe.prototype.unsubscribeOrder = function(number, options, callback) {
 };
 
 /**
- * @ignore
+ * Removes from the subscriber list of an order the user in session's e-mail
+ *
+ * @param {Number} number The number of the order to unsubscribe
+ * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.unsubscribeOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
