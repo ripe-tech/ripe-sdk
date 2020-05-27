@@ -348,7 +348,7 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
-        video.setAttribute("playsinline", "playsinline"); // Avoids the video opening in fullscreen in safari - iOS 
+        video.setAttribute("playsinline", "playsinline"); // Avoids the video opening in fullscreen in safari - iOS
         video.src = src;
 
         let currentTime = 0;
@@ -376,10 +376,10 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         video.addEventListener(
             "seeked",
             () => {
-                //Draws the video frame to the canvas and gets its data
+                // Draws the video frame to the canvas and gets its data
                 context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
                 const frameSrc = canvas.toDataURL();
-                
+
                 frames.push(frameSrc);
 
                 // TODO remove this frames displayer
