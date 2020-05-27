@@ -408,7 +408,7 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
  * @param {Number} number The number of the order to get the subscription status
  * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getSubscription = function(number, options, callback) {
+ripe.Ripe.prototype.getOrderSubscription = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "orders/" + String(number) + "/" + "subscription";
@@ -427,9 +427,9 @@ ripe.Ripe.prototype.getSubscription = function(number, options, callback) {
  * @param {Number} number The number of the order to get the subscription status
  * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getSubscriptionP = function(number, options) {
+ripe.Ripe.prototype.getOrderSubscriptionP = function(number, options) {
     return new Promise((resolve, reject) => {
-        this.getSubscription(number, options, (result, isValid, request) => {
+        this.getOrderSubscription(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
