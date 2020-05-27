@@ -45,6 +45,39 @@ ripe.Ripe.prototype.getBuildsP = function(options) {
 };
 
 /**
+ * Retrieves all the artifacts of all the local builds.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getLocalArtifacts = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}builds/local_artifacts`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Retrieves all the artifacts of all the local builds.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The builds' artifacts (as a promise).
+ */
+ripe.Ripe.prototype.getLocalArtifactsP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getLocalArtifacts(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * Retrieves a build's information from the server side by name.
  *
  * @param {String} name The name of the of the build.
@@ -336,39 +369,6 @@ ripe.Ripe.prototype.getBuildLocalArtifacts = function(name, options, callback) {
 ripe.Ripe.prototype.getBuildLocalArtifactsP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.getBuildLocalArtifacts(name, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
-        });
-    });
-};
-
-/**
- * Retrieves all the artifacts of all the local builds.
- *
- * @param {Object} options An object of options to configure the request.
- * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
- */
-ripe.Ripe.prototype.getLocalArtifacts = function(options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}builds/local_artifacts`;
-    options = Object.assign(options, {
-        url: url,
-        method: "GET",
-        auth: true
-    });
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
- * Retrieves all the artifacts of all the local builds.
- *
- * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The builds' artifacts (as a promise).
- */
-ripe.Ripe.prototype.getLocalArtifactsP = function(options) {
-    return new Promise((resolve, reject) => {
-        this.getLocalArtifacts(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
