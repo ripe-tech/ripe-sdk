@@ -341,6 +341,23 @@ ripe.Configurator.prototype.cancel = async function(options = {}) {
  */
 ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, options = {}) {
     return new Promise((resolve, reject) => {
+        let setup_startTime;
+            let setup_endTime = null;
+        let src_startTime;
+            let src_endTime = null;
+        let init_startTime;
+            let init_endTime = null;
+        const drawTimes = [];
+        let draw_startTime;
+            let draw_endTime = null;
+        const toDataURLTimes = [];
+        let toDataURL_startTime;
+            let toDataURL_endTime = null;
+        const seekTimes = [];
+        let seek_startTime;
+            let seek_endTime = null;
+
+        setup_startTime = new Date();
         const frames = [];
 
         const video = document.createElement("video");
@@ -349,6 +366,9 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         const context = canvas.getContext("2d");
 
         video.setAttribute("playsinline", "playsinline"); // Avoids the video opening in fullscreen in safari - iOS
+        setup_endTime = new Date();
+
+        src_startTime = new Date();
         video.src = src;
 
         let currentTime = 0;
@@ -358,6 +378,9 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         video.addEventListener(
             "loadeddata",
             () => {
+                src_endTime = new Date();
+
+                init_startTime = new Date();
                 video.play();
                 video.pause();
                 canvas.width = video.videoWidth;
@@ -368,7 +391,9 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
                 //    0     1     ...
                 // |-----|-----|--...
                 //    ^
+                seek_startTime = new Date();
                 video.currentTime = this._trunc(1 / fps / 2) - this._trunc(1 / fps / 10);
+                init_endTime = new Date();
             },
             false
         );
@@ -376,11 +401,31 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         video.addEventListener(
             "seeked",
             () => {
+                seek_endTime = new Date();
+                seekTimes.push(seek_endTime - seek_startTime);
+
+                draw_startTime = new Date();
                 // Draws the video frame to the canvas and gets its data
                 context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                const frameSrc = canvas.toDataURL();
+                draw_endTime = new Date();
+                drawTimes.push(draw_endTime - draw_startTime);
 
-                frames.push(frameSrc);
+                toDataURL_startTime = new Date();
+                //const frameSrc = canvas.toDataURL(); //original method
+                //const frameSrc = canvas.toDataURL("image/jpeg"); //alternative 1
+
+                //alternative 2 (doesnt work in Safari or iOS)
+                canvas.toBlob(blob =>
+                {
+                    const frameSrc = URL.createObjectURL(blob);
+                    frames.push(frameSrc);
+                }, 'image/png')
+
+
+                toDataURL_endTime = new Date();
+                toDataURLTimes.push(toDataURL_endTime - toDataURL_startTime);
+
+                //frames.push(frameSrc); //original
 
                 // TODO remove this frames displayer
                 // const img = new Image(100, 100);
@@ -389,8 +434,31 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
 
                 currentTime = this._trunc(video.currentTime + timeStep);
                 if (currentTime < video.duration) {
+                    seek_startTime = new Date();
                     video.currentTime = currentTime;
-                } else resolve(frames);
+                } else {
+                    console.log("\n------------------\nTimes:");
+                    console.log("setup time:", setup_endTime - setup_startTime);
+                    console.log("src -> loaded time:", src_endTime - src_startTime);
+                    console.log("init time:", init_endTime - init_startTime);
+                    console.log("draw time:", drawTimes);
+                    console.log(
+                        "draw total time:",
+                        drawTimes.reduce((a, b) => a + b, 0)
+                    );
+                    console.log("toDataURL time:", toDataURLTimes);
+                    console.log(
+                        "toDataURL total time:",
+                        toDataURLTimes.reduce((a, b) => a + b, 0)
+                    );
+                    console.log("seek times:", seekTimes);
+                    console.log(
+                        "Total in seek times:",
+                        seekTimes.reduce((a, b) => a + b, 0)
+                    );
+
+                    resolve(frames);
+                }
             },
             false
         );
