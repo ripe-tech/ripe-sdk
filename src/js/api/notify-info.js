@@ -12,9 +12,9 @@ if (
 }
 
 /**
- * Creates a device for the current user
+ * Creates a device for the current user.
  *
- * @param {String} deviceId The device identifier
+ * @param {String} deviceId The device identifier.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.createDeviceId = function(deviceId, options, callback) {
@@ -32,9 +32,9 @@ ripe.Ripe.prototype.createDeviceId = function(deviceId, options, callback) {
 };
 
 /**
- * Creates a device for the current user
+ * Creates a device for the current user.
  *
- * @param {String} deviceId The device identifier
+ * @param {String} deviceId The device identifier.
  * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.createDeviceIdP = function(deviceId, options) {
@@ -46,9 +46,9 @@ ripe.Ripe.prototype.createDeviceIdP = function(deviceId, options) {
 };
 
 /**
- * Removes a device from the current user
+ * Removes a device from the current user.
  *
- * @param {String} deviceId The device identifier
+ * @param {String} deviceId The device identifier.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.removeDeviceId = function(deviceId, options, callback) {
@@ -66,9 +66,9 @@ ripe.Ripe.prototype.removeDeviceId = function(deviceId, options, callback) {
 };
 
 /**
- * Removes a device from the current user
+ * Removes a device from the current user.
  *
- * @param {String} deviceId The device identifier
+ * @param {String} deviceId The device identifier.
  * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.removeDeviceIdP = function(deviceId, options) {
