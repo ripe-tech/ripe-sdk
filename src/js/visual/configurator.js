@@ -344,12 +344,11 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         const frames = [];
 
         const video = document.createElement("video");
-        video.crossOrigin = "Anonymous";
-        // const video = document.getElementById('video-test');
+        video.crossOrigin = "Anonymous"; // Need this for the canvas not being marked as tainted
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
-        video.setAttribute("playsinline", "playsinline");
+        video.setAttribute("playsinline", "playsinline"); // Avoids the video opening in fullscreen in safari - iOS 
         video.src = src;
 
         let currentTime = 0;
@@ -365,6 +364,7 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
                 canvas.height = video.videoHeight;
 
                 // Starts the seeking loop
+                // Will seek in the middle of the timestep of each frame
                 //    0     1     ...
                 // |-----|-----|--...
                 //    ^
@@ -376,11 +376,13 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         video.addEventListener(
             "seeked",
             () => {
+                //Draws the video frame to the canvas and gets its data
                 context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
                 const frameSrc = canvas.toDataURL();
+                
                 frames.push(frameSrc);
 
-                // TODO remove this frames shower
+                // TODO remove this frames displayer
                 // const img = new Image(100, 100);
                 // img.src = frameSrc;
                 // document.getElementById("frames").appendChild(img);
