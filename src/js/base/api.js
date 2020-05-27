@@ -1000,7 +1000,7 @@ ripe.Ripe.prototype._parseExtraS = function(extraS) {
         const [name, initials, engraving] = ripe.splitUnescape(extraI, ":", 2);
         extra[name] = {
             initials: initials,
-            engraving: engraving
+            engraving: engraving || null
         };
     }
     return extra;
@@ -1016,7 +1016,7 @@ ripe.Ripe.prototype._generateExtraS = function(extra, sort = true) {
         const [nameE, initialsE, engravingE] = [
             ripe.escape(name, ":"),
             ripe.escape(initials, ":"),
-            ripe.escape(engraving, ":")
+            ripe.escape(engraving || "", ":")
         ];
         const extraI = `${nameE}:${initialsE}:${engravingE}`;
         extraS.push(extraI);

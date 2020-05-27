@@ -134,6 +134,13 @@ describe("RipeAPI", function() {
                 left: { initials: "pt:tp", engraving: "gold:yellow" },
                 right: { initials: "tp:pt", engraving: "silver:grey" }
             });
+
+            result = remote._parseExtraS(["left:pt\\:tp:", "right:tp\\:pt:"]);
+
+            assert.deepStrictEqual(result, {
+                left: { initials: "pt:tp", engraving: null },
+                right: { initials: "tp:pt", engraving: null }
+            });
         });
     });
 
@@ -158,6 +165,13 @@ describe("RipeAPI", function() {
                 "left:pt\\:tp:gold\\:yellow",
                 "right:tp\\:pt:silver\\:grey"
             ]);
+
+            result = remote._generateExtraS({
+                left: { initials: "pt:tp", engraving: null },
+                right: { initials: "tp:pt", engraving: null }
+            });
+
+            assert.deepStrictEqual(result, ["left:pt\\:tp:", "right:tp\\:pt:"]);
         });
     });
 });
