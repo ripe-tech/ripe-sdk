@@ -408,10 +408,10 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
  * @param {Number} number The number of the order to get the subscription status
  * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.isSubscribed = function(number, options, callback) {
+ripe.Ripe.prototype.getSubscription = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number) + "/" + "is_subscribed";
+    const url = this.url + "orders/" + String(number) + "/" + "subscription";
     options = Object.assign(options, {
         url: url,
         auth: true,
@@ -427,9 +427,9 @@ ripe.Ripe.prototype.isSubscribed = function(number, options, callback) {
  * @param {Number} number The number of the order to get the subscription status
  * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.isSubscribedP = function(number, options) {
+ripe.Ripe.prototype.getSubscriptionP = function(number, options) {
     return new Promise((resolve, reject) => {
-        this.isSubscribed(number, options, (result, isValid, request) => {
+        this.getSubscription(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
@@ -444,7 +444,7 @@ ripe.Ripe.prototype.isSubscribedP = function(number, options) {
 ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number) + "/" + "subscribe";
+    const url = this.url + "orders/" + String(number) + "/" + "subscription";
     options = Object.assign(options, {
         url: url,
         auth: true,
@@ -477,11 +477,11 @@ ripe.Ripe.prototype.subscribeOrderP = function(number, options) {
 ripe.Ripe.prototype.unsubscribeOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number) + "/" + "unsubscribe";
+    const url = this.url + "orders/" + String(number) + "/" + "subscription";
     options = Object.assign(options, {
         url: url,
         auth: true,
-        method: "PUT"
+        method: "DELETE"
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);

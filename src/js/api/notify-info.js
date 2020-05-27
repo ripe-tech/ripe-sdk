@@ -20,12 +20,12 @@ if (
 ripe.Ripe.prototype.registerDevice = function(deviceId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "notify_info";
+    const url = this.url + "notify_infos/device_ids";
     options = Object.assign(options, {
         url: url,
         auth: true,
-        method: "PUT",
-        dataJ: { device_id: deviceId }
+        method: "POST",
+        dataJ: { id: deviceId }
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
@@ -54,7 +54,7 @@ ripe.Ripe.prototype.registerDeviceP = function(deviceId, options) {
 ripe.Ripe.prototype.unregisterDevice = function(deviceId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "notify_info";
+    const url = this.url + "notify_infos/device_ids/" + deviceId;
     options = Object.assign(options, {
         url: url,
         auth: true,
