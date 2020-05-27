@@ -12,12 +12,12 @@ if (
 }
 
 /**
- * Adds a device identifier to the current user deivce list
+ * Creates a device for the current user
  *
  * @param {String} deviceId The device identifier
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.registerDevice = function(deviceId, options, callback) {
+ripe.Ripe.prototype.createDeviceId = function(deviceId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "notify_infos/device_ids";
@@ -32,26 +32,26 @@ ripe.Ripe.prototype.registerDevice = function(deviceId, options, callback) {
 };
 
 /**
- * Adds a device identifier to the current user deivce list
+ * Creates a device for the current user
  *
  * @param {String} deviceId The device identifier
  * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.registerDeviceP = function(deviceId, options) {
+ripe.Ripe.prototype.createDeviceIdP = function(deviceId, options) {
     return new Promise((resolve, reject) => {
-        this.registerDevice(deviceId, options, (result, isValid, request) => {
+        this.createDeviceId(deviceId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
 };
 
 /**
- * Removes a device identifier from current user deivce list
+ * Removes a device from the current user
  *
  * @param {String} deviceId The device identifier
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.unregisterDevice = function(deviceId, options, callback) {
+ripe.Ripe.prototype.removeDeviceId = function(deviceId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = this.url + "notify_infos/device_ids/" + deviceId;
@@ -66,14 +66,14 @@ ripe.Ripe.prototype.unregisterDevice = function(deviceId, options, callback) {
 };
 
 /**
- * Adds a device identifier to the current user deivce list
+ * Removes a device from the current user
  *
  * @param {String} deviceId The device identifier
  * @returns {Promise} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.unregisterDeviceP = function(deviceId, options) {
+ripe.Ripe.prototype.removeDeviceIdP = function(deviceId, options) {
     return new Promise((resolve, reject) => {
-        this.registerDevice(deviceId, options, (result, isValid, request) => {
+        this.createDeviceId(deviceId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
