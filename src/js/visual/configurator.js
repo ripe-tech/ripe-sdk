@@ -248,7 +248,11 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
         console.log(videoComposeURL);
 
         const startTime = new Date();
-        const videoFrames = await this._videoToFrames(videoComposeURL);
+        let videoFrames = await this._videoToFrames(videoComposeURL);
+        console.log("videoFrames", videoFrames)
+        
+        //TODO remove this fix...
+        if(videoFrames.length === 0) videoFrames = new Array(25).fill("http://localhost:8080/api/swatch?brand=sergio_rossi&color=palladium&material=metal_sr&model=sr1_pump075")
         const endTime = new Date();
         const totalTime = endTime - startTime;
         console.log("video to frames end-to-end time:", totalTime);
@@ -341,24 +345,7 @@ ripe.Configurator.prototype.cancel = async function(options = {}) {
  */
 ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, options = {}) {
     return new Promise((resolve, reject) => {
-        let setup_startTime;
-            let setup_endTime = null;
-        let src_startTime;
-            let src_endTime = null;
-        let init_startTime;
-            let init_endTime = null;
-        const drawTimes = [];
-        let draw_startTime;
-            let draw_endTime = null;
-        const toDataURLTimes = [];
-        let toDataURL_startTime;
-            let toDataURL_endTime = null;
-        const seekTimes = [];
-        let seek_startTime;
-            let seek_endTime = null;
-
-        setup_startTime = new Date();
-        const frames = [];
+        let frames = [];
 
         const video = document.createElement("video");
         video.crossOrigin = "Anonymous"; // Need this for the canvas not being marked as tainted
@@ -366,102 +353,87 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         const context = canvas.getContext("2d");
 
         video.setAttribute("playsinline", "playsinline"); // Avoids the video opening in fullscreen in safari - iOS
-        setup_endTime = new Date();
-
-        src_startTime = new Date();
+        video.loop = true;
         video.src = src;
+        video.play()
+        //video.playbackRate = 60 / fps; // requestAnimationFrame runs 60 times a second
+        video.playbackRate = 1;
+        
+        let frameTimeMS = 1/fps * 1000;
+        let totalFrames = null;
+        let videoDuration = null;
+        let videoWidth = null;
+        let videoHeight = null;
+        let videoPlayTime = null;
 
-        let currentTime = 0;
-        const timeStep = 1 / fps;
+        let promises = [];
 
+        getFrame = async () => {
+          const videoTime = (new Date() - videoPlayTime);
+          let currentVideoTime = videoTime % (videoDuration*1000);
+          if(videoTime > currentVideoTime) {
+            console.log("random factor")
+            currentVideoTime += (Math.random() * 16)
+          }
+          const frameNr = Math.ceil((currentVideoTime/frameTimeMS));
+          console.log(frameNr);
+
+          if (videoTime >= videoDuration && !promises.some(promise => promise === null)) {
+            console.log("AWAIT !!!");
+              await Promise.all(promises).then((blobs) => {
+                blobs.forEach(blob => {
+                  const frameSrc = URL.createObjectURL(blob);
+                  frames.push(frameSrc);
+                });
+              });
+
+              console.log("resolving now !!!")
+              resolve(frames);
+              return;
+            }
+
+            if(promises[frameNr - 1] === null)
+            {
+              context.drawImage(video, 0, 0, videoWidth, videoHeight);
+              const blobPromise = getCanvasBlob(canvas);
+              promises[frameNr - 1] = blobPromise;
+            }
+            
+            requestAnimationFrame(() => getFrame());
+        };
+
+        
+        video.addEventListener("play", () => {videoPlayTime = new Date();})
+        
         // Waits for the video to load before starting seeking frames
         video.addEventListener(
             "loadeddata",
             () => {
-                src_endTime = new Date();
+                videoDuration = video.duration;
+                videoWidth = video.videoWidth;
+                videoHeight = video.videoHeight;
+                canvas.width = videoWidth;
+                canvas.height = videoHeight;
 
-                init_startTime = new Date();
+                totalFrames = videoDuration * fps;
+                console.log("totalFrames", totalFrames);
+                promises = new Array(totalFrames).fill(null);
+
+                requestAnimationFrame(() => getFrame());
                 video.play();
-                video.pause();
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-
-                // Starts the seeking loop
-                // Will seek in the middle of the timestep of each frame
-                //    0     1     ...
-                // |-----|-----|--...
-                //    ^
-                seek_startTime = new Date();
-                video.currentTime = this._trunc(1 / fps / 2) - this._trunc(1 / fps / 10);
-                init_endTime = new Date();
             },
             false
         );
 
-        video.addEventListener(
-            "seeked",
-            () => {
-                seek_endTime = new Date();
-                seekTimes.push(seek_endTime - seek_startTime);
+        getCanvasBlob = () => {
+          return new Promise(function(resolve, reject) {
+            canvas.toBlob(
+              function (blob) {
+                resolve(blob)
+              }, 'image/png')
+          })
+        }
 
-                draw_startTime = new Date();
-                // Draws the video frame to the canvas and gets its data
-                context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                draw_endTime = new Date();
-                drawTimes.push(draw_endTime - draw_startTime);
-
-                toDataURL_startTime = new Date();
-                //const frameSrc = canvas.toDataURL(); //original method
-                //const frameSrc = canvas.toDataURL("image/jpeg"); //alternative 1
-
-                //alternative 2 (doesnt work in Safari or iOS)
-                canvas.toBlob(blob =>
-                {
-                    const frameSrc = URL.createObjectURL(blob);
-                    frames.push(frameSrc);
-                }, 'image/png')
-
-
-                toDataURL_endTime = new Date();
-                toDataURLTimes.push(toDataURL_endTime - toDataURL_startTime);
-
-                //frames.push(frameSrc); //original
-
-                // TODO remove this frames displayer
-                // const img = new Image(100, 100);
-                // img.src = frameSrc;
-                // document.getElementById("frames").appendChild(img);
-
-                currentTime = this._trunc(video.currentTime + timeStep);
-                if (currentTime < video.duration) {
-                    seek_startTime = new Date();
-                    video.currentTime = currentTime;
-                } else {
-                    console.log("\n------------------\nTimes:");
-                    console.log("setup time:", setup_endTime - setup_startTime);
-                    console.log("src -> loaded time:", src_endTime - src_startTime);
-                    console.log("init time:", init_endTime - init_startTime);
-                    console.log("draw time:", drawTimes);
-                    console.log(
-                        "draw total time:",
-                        drawTimes.reduce((a, b) => a + b, 0)
-                    );
-                    console.log("toDataURL time:", toDataURLTimes);
-                    console.log(
-                        "toDataURL total time:",
-                        toDataURLTimes.reduce((a, b) => a + b, 0)
-                    );
-                    console.log("seek times:", seekTimes);
-                    console.log(
-                        "Total in seek times:",
-                        seekTimes.reduce((a, b) => a + b, 0)
-                    );
-
-                    resolve(frames);
-                }
-            },
-            false
-        );
     });
 };
 
