@@ -359,7 +359,7 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         video.setAttribute("playsinline", "playsinline"); // Avoids the video opening in fullscreen in safari - iOS
         video.muted = true; // Fix for chrome https://stackoverflow.com/questions/49930680/how-to-handle-uncaught-in-promise-domexception-play-failed-because-the-use
         // video.playbackRate = 60 / fps; // requestAnimationFrame runs 60 times a second
-        video.playbackRate = 1;
+        video.playbackRate = 4;
         // video.loop = true; //Loop so we can grab missed frames
         video.src = src;
 
@@ -407,12 +407,13 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
                 promises[frameNr - 1] = blobPromise;
             }
 
-            requestAnimationFrame(() => getFrame());
+            setTimeout(() => getFrame(), 0);
         };
 
         // Starts tracking the video time
         video.addEventListener("play", () => {
             videoPlayTime = new Date();
+            setTimeout(() => getFrame(), 0);
         });
 
         // Waits for the video to load before starting seeking frames
@@ -430,8 +431,7 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
                 console.log("totalFrames", totalFrames);
 
                 promises = new Array(totalFrames).fill(null);
-
-                requestAnimationFrame(() => getFrame());
+   
                 video.play();
             },
             false
