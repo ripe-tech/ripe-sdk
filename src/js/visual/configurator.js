@@ -249,10 +249,14 @@ ripe.Configurator.prototype.update = async function(state, options = {}) {
 
         const startTime = new Date();
         let videoFrames = await this._videoToFrames(videoComposeURL);
-        console.log("videoFrames", videoFrames)
-        
-        //TODO remove this fix...
-        if(videoFrames.length === 0) videoFrames = new Array(25).fill("http://localhost:8080/api/swatch?brand=sergio_rossi&color=palladium&material=metal_sr&model=sr1_pump075")
+        console.log("videoFrames", videoFrames);
+
+        // TODO remove this fix...
+        if (videoFrames.length === 0) {
+            videoFrames = new Array(25).fill(
+                "http://localhost:8080/api/swatch?brand=sergio_rossi&color=palladium&material=metal_sr&model=sr1_pump075"
+            );
+        }
         const endTime = new Date();
         const totalTime = endTime - startTime;
         console.log("video to frames end-to-end time:", totalTime);
@@ -345,7 +349,7 @@ ripe.Configurator.prototype.cancel = async function(options = {}) {
  */
 ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, options = {}) {
     return new Promise((resolve, reject) => {
-        let frames = [];
+        const frames = [];
 
         const video = document.createElement("video");
         video.crossOrigin = "Anonymous"; // Need this for the canvas not being marked as tainted
@@ -353,13 +357,13 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         const context = canvas.getContext("2d");
 
         video.setAttribute("playsinline", "playsinline"); // Avoids the video opening in fullscreen in safari - iOS
-        video.loop = true;
-        video.src = src;
-        video.play()
-        //video.playbackRate = 60 / fps; // requestAnimationFrame runs 60 times a second
+        video.muted = true; // Fix for chrome https://stackoverflow.com/questions/49930680/how-to-handle-uncaught-in-promise-domexception-play-failed-because-the-use
+        // video.playbackRate = 60 / fps; // requestAnimationFrame runs 60 times a second
         video.playbackRate = 1;
-        
-        let frameTimeMS = 1/fps * 1000;
+        // video.loop = true; //Loop so we can grab missed frames
+        video.src = src;
+
+        const frameTimeMS = (1 / fps) * 1000;
         let totalFrames = null;
         let videoDuration = null;
         let videoWidth = null;
@@ -369,42 +373,48 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         let promises = [];
 
         getFrame = async () => {
-          const videoTime = (new Date() - videoPlayTime);
-          let currentVideoTime = videoTime % (videoDuration*1000);
-          if(videoTime > currentVideoTime) {
-            console.log("random factor")
-            currentVideoTime += (Math.random() * 16)
-          }
-          const frameNr = Math.ceil((currentVideoTime/frameTimeMS));
-          console.log(frameNr);
+            const videoTime = new Date() - videoPlayTime;
+            const currentVideoTime = videoTime;
 
-          if (videoTime >= videoDuration && !promises.some(promise => promise === null)) {
-            console.log("AWAIT !!!");
-              await Promise.all(promises).then((blobs) => {
-                blobs.forEach(blob => {
-                  const frameSrc = URL.createObjectURL(blob);
-                  frames.push(frameSrc);
+            // TODO remove this logic for looped video
+            // let currentVideoTime = videoTime % (videoDuration*1000);
+            // if(videoTime > currentVideoTime) { //Provisinal hack (remove this)
+            //  console.log("random factor")
+            //  currentVideoTime += (Math.random() * 16)
+            // }
+
+            const frameNr = Math.ceil(currentVideoTime / frameTimeMS);
+            console.log("Frame nr:", frameNr);
+
+            if (videoTime >= videoDuration && !promises.some(promise => promise === null)) {
+                // Waits for all pending frames promises
+                await Promise.all(promises).then(blobs => {
+                    blobs.forEach(blob => {
+                        const frameSrc = URL.createObjectURL(blob);
+                        frames.push(frameSrc);
+                    });
                 });
-              });
 
-              console.log("resolving now !!!")
-              resolve(frames);
-              return;
+                console.log("Returning frames");
+                resolve(frames);
+                return;
             }
 
-            if(promises[frameNr - 1] === null)
-            {
-              context.drawImage(video, 0, 0, videoWidth, videoHeight);
-              const blobPromise = getCanvasBlob(canvas);
-              promises[frameNr - 1] = blobPromise;
+            // Gets frame if its not grabbed yet
+            if (promises[frameNr - 1] === null) {
+                context.drawImage(video, 0, 0, videoWidth, videoHeight);
+                const blobPromise = getCanvasBlob(canvas);
+                promises[frameNr - 1] = blobPromise;
             }
-            
+
             requestAnimationFrame(() => getFrame());
         };
 
-        
-        video.addEventListener("play", () => {videoPlayTime = new Date();})
-        
+        // Starts tracking the video time
+        video.addEventListener("play", () => {
+            videoPlayTime = new Date();
+        });
+
         // Waits for the video to load before starting seeking frames
         video.addEventListener(
             "loadeddata",
@@ -412,11 +422,13 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
                 videoDuration = video.duration;
                 videoWidth = video.videoWidth;
                 videoHeight = video.videoHeight;
+
                 canvas.width = videoWidth;
                 canvas.height = videoHeight;
 
                 totalFrames = videoDuration * fps;
                 console.log("totalFrames", totalFrames);
+
                 promises = new Array(totalFrames).fill(null);
 
                 requestAnimationFrame(() => getFrame());
@@ -426,14 +438,8 @@ ripe.Configurator.prototype._videoToFrames = async function(src, fps = 25, optio
         );
 
         getCanvasBlob = () => {
-          return new Promise(function(resolve, reject) {
-            canvas.toBlob(
-              function (blob) {
-                resolve(blob)
-              }, 'image/png')
-          })
-        }
-
+            return new Promise((resolve, reject) => canvas.toBlob(blob => resolve(blob)));
+        };
     });
 };
 
