@@ -165,15 +165,15 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
 };
 
 /**
- * Returns the factory information where a model is made,
- * specifically its name and the estimated production time in days.
- * If no model is provided then returns the defaults of the owner's current model.
+ * Returns the result of a given method of the logic script of a model.
+ * If no method is provided then returns an instance of the Logic module.
  *
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
+ *  - 'method' - The method of the logic module of the model
  * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The factory information for the provided model.
+ * @returns {XMLHttpRequest} The result of the logic function of the provided model.
  */
 ripe.Ripe.prototype.getLogic = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -184,15 +184,15 @@ ripe.Ripe.prototype.getLogic = function(options, callback) {
 };
 
 /**
- * Returns the factory information where a model is made,
- * specifically its name and the estimated production time in days.
- * If no model is provided then returns the defaults of the owner's current model.
+ * Returns the result of a given method of the logic script of a model.
+ * If no method is provided then returns an instance of the Logic module.
  *
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
+ *  - 'method' - The method of the logic module of the model
  * @param {Function} callback Function with the result of the request.
- * @returns {Promise} The factory information for the provided model.
+ * @returns {Promise} The result of the logic function of the provided model.
  */
 ripe.Ripe.prototype.getLogicP = function(options, callback) {
     return new Promise((resolve, reject) => {
@@ -430,10 +430,6 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
     });
 };
 
-/**
- * @ignore
- * @see {link http://docs.platforme.com/#product-endpoints-factory}
- */
 ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
