@@ -171,8 +171,8 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'method' - The method of the logic module of the model
- *  - 'version' - The version of the model
- *  - 'data' - The arguments and context needed for the given logic method
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'data' - The arguments to pass to the method
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The result of the logic function of the provided model.
  */
@@ -191,8 +191,8 @@ ripe.Ripe.prototype.getLogic = function(options, callback) {
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'method' - The method of the logic module of the model
- *  - 'version' - The version of the model
- *  - 'data' - The arguments and context needed for the given logic method
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'data' - The arguments to pass to the method
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The result of the logic function of the provided model.
  */
