@@ -171,6 +171,12 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'method' - The method of the logic module of the model
+ *  - 'version' - The version of the model
+ *  - 'name' - The name of the part to be changed
+ *  - 'value' - The value (material and color) of the part to be changed
+ *  - 'group' - The name of the group that is going to be changed
+ *  - 'initials' - The initials value to be changed
+ *  - 'engraving' - The engraving value to be changed
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The result of the logic function of the provided model.
  */
@@ -189,6 +195,12 @@ ripe.Ripe.prototype.getLogic = function(options, callback) {
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'method' - The method of the logic module of the model
+ *  - 'version' - The version of the model
+ *  - 'name' - The name of the part to be changed
+ *  - 'value' - The value (material and color) of the part to be changed
+ *  - 'group' - The name of the group that is going to be changed
+ *  - 'initials' - The initials value to be changed
+ *  - 'engraving' - The engraving value to be changed
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The result of the logic function of the provided model.
  */
@@ -428,20 +440,48 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
     const method = options.method === undefined ? null : options.method;
-    const url = this.url + "brands/" + brand + "/models/" + model + "/logic/" + method;
+    const initials = options.initials === undefined ? this.initialsExtra : options.initials;
+    const parts = options.parts === undefined ? this.parts : options.parts;
+    const choices = options.choices === undefined ? this.choices : options.choices;
+    const name = options.name === undefined ? null : options.name;
+    const value = options.value === undefined ? null : options.value;
+    const group = options.group === undefined ? null : options.group;
+    const engraving = options.engraving === undefined ? null : options.engraving;
+    const url = `${this.url}brands/${brand}/models/${model}/logic/${method}`;
     const params = {};
     if (version !== undefined && version !== null) {
         params.version = version;
     }
+    const ctx = Object.assign({}, this.ctx || {}, {
+        brand: brand,
+        model: model,
+        version: version,
+        initials: initials,
+        parts: parts,
+        choices: choices
+    });
     return Object.assign(options, {
         url: url,
         method: "POST",
-        params: params
+        params: params,
+        dataJ: {
+            brand: brand,
+            model: model,
+            name: name,
+            value: value,
+            group: group,
+            initials: initials,
+            engraving: engraving,
+            ctx: ctx
+        }
     });
 };
 
