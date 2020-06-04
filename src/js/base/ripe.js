@@ -1638,7 +1638,11 @@ ripe.Ripe.prototype._handleCtx = function(result) {
     if (result.choices && !ripe.equal(result.choices, this.choices)) {
         this.setChoices(result.choices);
     }
-    for (const [name, value] of result.messages) {
+
+    for (let i = 0; i < result.messages.length; i += 2) {
+        const name = result.messages[i];
+        const value = result.messages[i + 1];
+
         this.trigger("message", name, value);
     }
 };
