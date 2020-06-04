@@ -166,7 +166,6 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
 
 /**
  * Returns the result of a given method of the logic script of a model.
- * If no method is provided then returns an instance of the Logic module.
  *
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
@@ -185,7 +184,6 @@ ripe.Ripe.prototype.getLogic = function(options, callback) {
 
 /**
  * Returns the result of a given method of the logic script of a model.
- * If no method is provided then returns an instance of the Logic module.
  *
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
@@ -434,22 +432,15 @@ ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
-    const format = options.format === undefined ? "py" : options.format;
     const method = options.method === undefined ? null : options.method;
-    const url = this.url + "brands/" + brand + "/models/" + model + "/logic";
+    const url = this.url + "brands/" + brand + "/models/" + model + "/logic/" + method;
     const params = {};
     if (version !== undefined && version !== null) {
         params.version = version;
     }
-    if (format !== undefined && format !== null) {
-        params.format = format;
-    }
-    if (method !== undefined && method !== null) {
-        params.method = method;
-    }
     return Object.assign(options, {
         url: url,
-        method: "GET",
+        method: "POST",
         params: params
     });
 };
