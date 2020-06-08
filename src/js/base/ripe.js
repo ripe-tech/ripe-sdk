@@ -400,18 +400,6 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // choices for the configuration context
     this.setChoices(this._toChoices(this.loadedConfig));
 
-    // triggers the config event notifying any listener that the (base)
-    // configuration for this main RIPE instance has changed and waits
-    // for the listeners to conclude their operations
-    await this.trigger("config", this.loadedConfig, options);
-
-    // determines if the ready flag is already set for the current instance
-    // and if that's not the case updates it and triggers the ready event
-    if (this.ready === false) {
-        this.ready = true;
-        this.trigger("ready");
-    }
-
     // determines if the defaults for the selected model should
     // be loaded so that the parts structure is initially populated
     const hasParts = this.parts && Object.keys(this.parts).length !== 0;
@@ -441,6 +429,18 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     if (options.initialsExtra) {
         const setInitialsExtraPromise = this.setInitialsExtra(options.initialsExtra, false);
         if (options.safe) await setInitialsExtraPromise;
+    }
+
+    // triggers the config event notifying any listener that the (base)
+    // configuration for this main RIPE instance has changed and waits
+    // for the listeners to conclude their operations
+    await this.trigger("config", this.loadedConfig, options);
+
+    // determines if the ready flag is already set for the current instance
+    // and if that's not the case updates it and triggers the ready event
+    if (this.ready === false) {
+        this.ready = true;
+        this.trigger("ready");
     }
 
     // notifies that the config has changed and waits for listeners before
