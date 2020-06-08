@@ -260,11 +260,12 @@ describe("Sync", function() {
                 remoteCalls: false,
                 noBundles: true
             }).load();
-            await instance.isReady();
 
             await new Promise((resolve, reject) => {
                 instance.bind("post_config", resolve);
             });
+
+            await instance.isReady();
 
             assert.strictEqual(instance.parts.hardware.color, "silver");
             assert.strictEqual(instance.parts.logo.color, "silver");

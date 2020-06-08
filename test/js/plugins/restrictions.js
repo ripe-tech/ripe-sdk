@@ -192,11 +192,12 @@ describe("Restrictions", function() {
                 plugins: [restrictionsPlugin],
                 noBundles: true
             }).load();
-            await instance.isReady();
 
             await new Promise((resolve, reject) => {
                 instance.bind("post_config", resolve);
             });
+
+            await instance.isReady();
 
             assert.deepStrictEqual(
                 restrictionsPlugin.restrictions,

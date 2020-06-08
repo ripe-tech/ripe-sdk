@@ -73,11 +73,12 @@ describe("Ripe", function() {
                 noCombinations: true,
                 noBundles: true
             }).load();
-            await instance.isReady();
 
             const initialParts = await new Promise((resolve, reject) => {
                 instance.bind("parts", resolve);
             });
+
+            await instance.isReady();
 
             assert.deepStrictEqual(instance.parts, initialParts);
             assert.strictEqual(instance.canUndo(), false);
@@ -129,11 +130,12 @@ describe("Ripe", function() {
                 noCombinations: true,
                 noBundles: true
             }).load();
-            await instance.isReady();
 
             const initialParts = await new Promise((resolve, reject) => {
                 instance.bind("parts", resolve);
             });
+
+            await instance.isReady();
 
             assert.deepStrictEqual(instance.parts, initialParts);
             assert.strictEqual(instance.canUndo(), false);
@@ -189,11 +191,12 @@ describe("Ripe", function() {
                 noCombinations: true,
                 noBundles: true
             }).load();
-            await instance.isReady();
 
             await new Promise((resolve, reject) => {
                 instance.bind("parts", resolve);
             });
+
+            await instance.isReady();
 
             assert.strictEqual(instance.partCounter, 8);
 
