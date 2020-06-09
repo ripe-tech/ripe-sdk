@@ -18,6 +18,7 @@ if (
  * @param {Object} options A map with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
  *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
  *  - 'flag' - A specific flag that may change the provided materials/colors available.
  *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
@@ -38,6 +39,7 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
  *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
  *  - 'flag' - A specific flag that may change the provided materials/colors available.
  *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
@@ -58,6 +60,7 @@ ripe.Ripe.prototype.getConfigP = function(options) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
  * @returns {XMLHttpRequest} The model's default options.
  */
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
@@ -77,6 +80,7 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
  * @returns {Object} The model's optional parts.
  */
 ripe.Ripe.prototype.getOptionals = function(options, callback) {
@@ -97,6 +101,7 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
  * @returns {XMLHttpRequest} The model's total set of combinations.
  */
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
@@ -116,6 +121,7 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
  * @returns {Promise} The model's total set of combinations.
  */
 ripe.Ripe.prototype.getCombinationsP = function(options) {
@@ -170,8 +176,8 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
- *  - 'method' - The method of the logic module of the model
  *  - 'version' - The version of the build, defaults to latest
+ *  - 'method' - The method of the logic module of the model
  *  - 'data' - The arguments to pass to the method
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The result of the logic function of the provided model.
@@ -190,8 +196,8 @@ ripe.Ripe.prototype.getLogic = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
- *  - 'method' - The method of the logic module of the model
  *  - 'version' - The version of the build, defaults to latest
+ *  - 'method' - The method of the logic module of the model
  *  - 'data' - The arguments to pass to the method
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The result of the logic function of the provided model.
