@@ -171,7 +171,10 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
 };
 
 /**
- * Returns the result of a given method of the logic script of a model.
+ * Returns the result of the execution of the given method for the
+ * logic script of a model.
+ * Does this by running the provided method on the server side under
+ * a proper "sandboxed" environment.
  *
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
@@ -182,16 +185,19 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The result of the logic function of the provided model.
  */
-ripe.Ripe.prototype.getLogic = function(options, callback) {
+ripe.Ripe.prototype.runLogic = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    options = this._getLogicOptions(options);
+    options = this._runLogicOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
 
 /**
- * Returns the result of a given method of the logic script of a model.
+ * Returns the result of the execution of the given method for the
+ * logic script of a model.
+ * Does this by running the provided method on the server side under
+ * a proper "sandboxed" environment.
  *
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
@@ -202,9 +208,9 @@ ripe.Ripe.prototype.getLogic = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The result of the logic function of the provided model.
  */
-ripe.Ripe.prototype.getLogicP = function(options, callback) {
+ripe.Ripe.prototype.runLogicP = function(options, callback) {
     return new Promise((resolve, reject) => {
-        this.getLogic(options, (result, isValid, request) => {
+        this.runLogic(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
@@ -441,7 +447,7 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
+ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
