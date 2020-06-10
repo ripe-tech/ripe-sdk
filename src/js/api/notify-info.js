@@ -12,10 +12,12 @@ if (
 }
 
 /**
- * Creates a device for the current user.
+ * Creates a notify info (if required) for the current user, and adds
+ * the provided device id to the list of device ids in the notify info.
  *
- * @param {String} deviceId The device identifier.
- * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @param {String} deviceId The device identifier as a plain string
+ * to be used in registration.
+ * @returns {XMLHttpRequest} The current user's notify info instance.
  */
 ripe.Ripe.prototype.createDeviceId = function(deviceId, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -32,10 +34,12 @@ ripe.Ripe.prototype.createDeviceId = function(deviceId, options, callback) {
 };
 
 /**
- * Creates a device for the current user.
+ * Creates a notify info (if required) for the current user, and adds
+ * the provided device id to the list of device ids in the notify info.
  *
- * @param {String} deviceId The device identifier.
- * @returns {Promise} The XMLHttpRequest instance of the API request.
+ * @param {String} deviceId The device identifier as a plain string
+ * to be used in registration.
+ * @returns {Promise} The current user's notify info instance.
  */
 ripe.Ripe.prototype.createDeviceIdP = function(deviceId, options) {
     return new Promise((resolve, reject) => {
@@ -46,10 +50,11 @@ ripe.Ripe.prototype.createDeviceIdP = function(deviceId, options) {
 };
 
 /**
- * Removes a device from the current user.
+ * Removes a device id from the the notify info instance associated
+ * with the user in session.
  *
- * @param {String} deviceId The device identifier.
- * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ * @param {String} deviceId The device identifier to be removed.
+ * @returns {XMLHttpRequest} The current user's notify info instance.
  */
 ripe.Ripe.prototype.removeDeviceId = function(deviceId, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -66,14 +71,15 @@ ripe.Ripe.prototype.removeDeviceId = function(deviceId, options, callback) {
 };
 
 /**
- * Removes a device from the current user.
+ * Removes a device id from the the notify info instance associated
+ * with the user in session.
  *
- * @param {String} deviceId The device identifier.
- * @returns {Promise} The XMLHttpRequest instance of the API request.
+ * @param {String} deviceId The device identifier to be removed.
+ * @returns {Promise} The current user's notify info instance.
  */
 ripe.Ripe.prototype.removeDeviceIdP = function(deviceId, options) {
     return new Promise((resolve, reject) => {
-        this.createDeviceId(deviceId, options, (result, isValid, request) => {
+        this.removeDeviceId(deviceId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
