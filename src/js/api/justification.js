@@ -73,7 +73,7 @@ ripe.Ripe.prototype.getJustificationsP = function(options) {
 ripe.Ripe.prototype.getJustificationsByContext = function(context, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "justifications/" + context;
+    const url = this.url + `justifications/${context}`;
     options = Object.assign(options, {
         url: url,
         method: "GET",

@@ -296,7 +296,7 @@ ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
     const version = options.version === undefined ? this.version : options.version;
     const country = options.country === undefined ? this.country : options.country;
     const flag = options.flag === undefined ? this.flag : options.flag;
-    const url = this.url + "brands/" + brand + "/models/" + model + "/config";
+    const url = this.url + `brands/${brand}/models/${model}/config`;
     const params = {};
     if (version !== undefined && version !== null) {
         params.version = version;
@@ -325,7 +325,7 @@ ripe.Ripe.prototype._getDefaultsOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
-    const url = this.url + "brands/" + brand + "/models/" + model + "/defaults";
+    const url = this.url + `brands/${brand}/models/${model}/defaults`;
     const params = {};
     if (version !== undefined && version !== null) {
         params.version = version;
@@ -348,7 +348,7 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options = {}) {
         options.useName !== undefined && options.useName !== null ? options.useName : false;
     const country = options.country === undefined ? this.country : options.country;
     const flag = options.flag === undefined ? this.flag : options.flag;
-    const url = this.url + "brands/" + brand + "/models/" + model + "/combinations";
+    const url = this.url + `brands/${brand}/models/${model}/combinations`;
     const params = {};
     if (version !== undefined && version !== null) {
         params.version = version;
@@ -385,7 +385,7 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options = {}) {
 ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
-    const url = this.url + "brands/" + brand + "/models/" + model + "/factory";
+    const url = this.url + `brands/${brand}/models/${model}/factory`;
     return Object.assign(options, {
         url: url,
         method: "GET"
@@ -405,7 +405,7 @@ ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
     const choices = options.choices === undefined ? this.choices : options.choices;
     const brandI = options.brand === undefined ? null : options.brand;
     const modelI = options.model === undefined ? null : options.model;
-    const url = this.url + "brands/" + brand + "/models/" + model + "/on_config";
+    const url = this.url + `brands/${brand}/models/${model}/on_config`;
     const ctx = Object.assign({}, this.ctx || {}, {
         brand: brand,
         model: model,
@@ -437,7 +437,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const choices = options.choices === undefined ? this.choices : options.choices;
     const name = options.name === undefined ? null : options.name;
     const value = options.value === undefined ? null : options.value;
-    const url = this.url + "brands/" + brand + "/models/" + model + "/on_part";
+    const url = this.url + `brands/${brand}/models/${model}/on_part`;
     const ctx = Object.assign({}, this.ctx || {}, {
         brand: brand,
         model: model,
@@ -469,7 +469,7 @@ ripe.Ripe.prototype._onInitialsOptions = function(options = {}) {
     const group = options.group === undefined ? null : options.group;
     const value = options.value === undefined ? null : options.value;
     const engraving = options.engraving === undefined ? null : options.engraving;
-    const url = this.url + "brands/" + brand + "/models/" + model + "/on_initials";
+    const url = this.url + `brands/${brand}/models/${model}/on_initials`;
     const ctx = Object.assign({}, this.ctx || {}, {
         brand: brand,
         model: model,

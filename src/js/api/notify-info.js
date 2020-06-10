@@ -59,7 +59,7 @@ ripe.Ripe.prototype.createDeviceIdP = function(deviceId, options) {
 ripe.Ripe.prototype.removeDeviceId = function(deviceId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "notify_infos/device_ids/" + deviceId;
+    const url = this.url + `notify_infos/device_ids/${deviceId}`;
     options = Object.assign(options, {
         url: url,
         auth: true,
