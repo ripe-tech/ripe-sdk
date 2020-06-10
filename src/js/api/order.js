@@ -73,7 +73,7 @@ ripe.Ripe.prototype.getOrdersP = function(options) {
 ripe.Ripe.prototype.getOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number);
+    const url = this.url + `orders/${number}`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -392,7 +392,7 @@ ripe.Ripe.prototype.precustomizationOrderP = function(ffId, options, callback) {
 ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number) + "/" + status;
+    const url = this.url + `orders/${number}/${status}`;
     options = Object.assign(options, {
         url: url,
         auth: true,
@@ -403,11 +403,111 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
 };
 
 /**
+ * Gets the order subscription status for the session user.
+ *
+ * @param {Number} number The number of the order to get the subscription status.
+ * @returns {XMLHttpRequest} The order subscription status.
+ */
+ripe.Ripe.prototype.getOrderSubscription = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = this.url + `orders/${number}/subscription`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        cached: false,
+        method: "GET"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets the order subscription status for the session user.
+ *
+ * @param {Number} number The number of the order to get the subscription status.
+ * @returns {Promise} The order subscription status.
+ */
+ripe.Ripe.prototype.getOrderSubscriptionP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.getOrderSubscription(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Adds to the email of the user in session to subscriber list of an order.
+ *
+ * @param {Number} number The number of the order to subscribe.
+ * @returns {XMLHttpRequest} The order subscription status.
+ */
+ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = this.url + `orders/${number}/subscription`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "PUT"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Adds to the email of the user in session to subscriber list of an order.
+ *
+ * @param {Number} number The number of the order to subscribe.
+ * @returns {Promise} The order subscription status.
+ */
+ripe.Ripe.prototype.subscribeOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.subscribeOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Removes email of the user in session from the subscriber list of an order.
+ *
+ * @param {Number} number The number of the order to unsubscribe.
+ * @returns {XMLHttpRequest} The order subscription status.
+ */
+ripe.Ripe.prototype.unsubscribeOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = this.url + `orders/${number}/subscription`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "DELETE"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Removes email of the user in session from the subscriber list of an order.
+ *
+ * @param {Number} number The number of the order to unsubscribe.
+ * @returns {Promise} The order subscription status.
+ */
+ripe.Ripe.prototype.unsubscribeOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.unsubscribeOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
     options = options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number) + "/report";
+    const url = this.url + `orders/${number}/report`;
     options = Object.assign(options, {
         url: url,
         params: { key: key }
@@ -420,7 +520,7 @@ ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
  */
 ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
     options = options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number) + "/report.pdf";
+    const url = this.url + `orders/${number}/report.pdf`;
     options = Object.assign(options, {
         url: url,
         params: { key: key }
@@ -433,7 +533,7 @@ ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
  */
 ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
     options = options === undefined ? {} : options;
-    const url = this.url + "orders/" + String(number) + "/report.png";
+    const url = this.url + `orders/${number}/report.png`;
     options = Object.assign(options, {
         url: url,
         params: { key: key }
