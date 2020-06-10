@@ -415,6 +415,7 @@ ripe.Ripe.prototype.getOrderSubscription = function(number, options, callback) {
     options = Object.assign(options, {
         url: url,
         auth: true,
+        cached: false,
         method: "GET"
     });
     options = this._build(options);
