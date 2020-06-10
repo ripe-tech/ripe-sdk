@@ -21,7 +21,7 @@ if (
 ripe.Ripe.prototype.accountMe = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "accounts/me";
+    const url = `${this.url}accounts/me`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
