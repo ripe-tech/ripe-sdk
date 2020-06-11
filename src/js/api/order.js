@@ -30,7 +30,7 @@ if (
 ripe.Ripe.prototype.getOrders = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "orders";
+    const url = `${this.url}orders`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -73,7 +73,7 @@ ripe.Ripe.prototype.getOrdersP = function(options) {
 ripe.Ripe.prototype.getOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + `orders/${number}`;
+    const url = `${this.url}orders/${number}`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -104,7 +104,7 @@ ripe.Ripe.prototype.getOrderP = function(number, options) {
 ripe.Ripe.prototype.searchOrders = function(filterString, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "orders/search";
+    const url = `${this.url}orders/search`;
     const params = {};
     if (filterString !== undefined && filterString !== null) {
         params.filter_string = filterString;
@@ -392,7 +392,7 @@ ripe.Ripe.prototype.precustomizationOrderP = function(ffId, options, callback) {
 ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + `orders/${number}/${status}`;
+    const url = `${this.url}orders/${number}/${status}`;
     options = Object.assign(options, {
         url: url,
         auth: true,
@@ -411,7 +411,7 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
 ripe.Ripe.prototype.getOrderSubscription = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + `orders/${number}/subscription`;
+    const url = `${this.url}orders/${number}/subscription`;
     options = Object.assign(options, {
         url: url,
         auth: true,
@@ -445,7 +445,7 @@ ripe.Ripe.prototype.getOrderSubscriptionP = function(number, options) {
 ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + `orders/${number}/subscription`;
+    const url = `${this.url}orders/${number}/subscription`;
     options = Object.assign(options, {
         url: url,
         auth: true,
@@ -478,7 +478,7 @@ ripe.Ripe.prototype.subscribeOrderP = function(number, options) {
 ripe.Ripe.prototype.unsubscribeOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + `orders/${number}/subscription`;
+    const url = `${this.url}orders/${number}/subscription`;
     options = Object.assign(options, {
         url: url,
         auth: true,
@@ -507,7 +507,7 @@ ripe.Ripe.prototype.unsubscribeOrderP = function(number, options) {
  */
 ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
     options = options === undefined ? {} : options;
-    const url = this.url + `orders/${number}/report`;
+    const url = `${this.url}orders/${number}/report`;
     options = Object.assign(options, {
         url: url,
         params: { key: key }
@@ -520,7 +520,7 @@ ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
  */
 ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
     options = options === undefined ? {} : options;
-    const url = this.url + `orders/${number}/report.pdf`;
+    const url = `${this.url}orders/${number}/report.pdf`;
     options = Object.assign(options, {
         url: url,
         params: { key: key }
@@ -533,7 +533,7 @@ ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
  */
 ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
     options = options === undefined ? {} : options;
-    const url = this.url + `orders/${number}/report.png`;
+    const url = `${this.url}orders/${number}/report.png`;
     options = Object.assign(options, {
         url: url,
         params: { key: key }
@@ -568,7 +568,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const country = options.country === undefined ? null : options.country;
     const meta = options.meta === undefined ? null : options.meta;
 
-    const url = this.url + "orders/import";
+    const url = `${this.url}orders/import`;
     const contents = {
         brand: brand,
         model: model,
@@ -625,7 +625,7 @@ ripe.Ripe.prototype._precustomizationOrder = function(ffId, options = {}) {
             : options.product_id || options.productId;
     const meta = options.meta === undefined ? null : options.meta;
 
-    const url = this.url + "orders/pre_customization";
+    const url = `${this.url}orders/pre_customization`;
     const contents = {
         brand: brand,
         model: model,

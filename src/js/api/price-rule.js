@@ -22,7 +22,7 @@ if (
 ripe.Ripe.prototype.getPriceRules = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "price_rules";
+    const url = `${this.url}price_rules`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -59,7 +59,7 @@ ripe.Ripe.prototype.getPriceRulesP = function(options) {
 ripe.Ripe.prototype.getPriceRule = function(id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + `price_rules/${id}`;
+    const url = `${this.url}price_rules/${id}`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -96,8 +96,7 @@ ripe.Ripe.prototype.getPriceRuleP = function(id, options) {
 ripe.Ripe.prototype.createPriceRule = function(priceRule, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "price_rules";
-
+    const url = `${this.url}price_rules`;
     options = Object.assign(options, {
         url: url,
         method: "POST",
@@ -134,7 +133,7 @@ ripe.Ripe.prototype.createPriceRuleP = function(priceRule, options) {
 ripe.Ripe.prototype.updatePriceRule = function(priceRule, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + `price_rules/${priceRule.id}`;
+    const url = `${this.url}price_rules/${priceRule.id}`;
     options = Object.assign(options, {
         url: url,
         method: "PUT",
@@ -172,7 +171,7 @@ ripe.Ripe.prototype.updatePriceRuleP = function(priceRule, options) {
 ripe.Ripe.prototype.deletePriceRule = function(id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + `price_rules/${id}`;
+    const url = `${this.url}price_rules/${id}`;
     options = Object.assign(options, {
         url: url,
         method: "DELETE",

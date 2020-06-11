@@ -31,8 +31,7 @@ if (
 ripe.Ripe.prototype.createSku = function(identifier, domain, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "skus";
-
+    const url = `${this.url}skus`;
     options = Object.assign(options, {
         url: url,
         method: "POST",

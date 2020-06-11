@@ -26,7 +26,7 @@ if (
 ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "admin/oauth/access_token";
+    const url = `${this.url}admin/oauth/access_token`;
     options = Object.assign(options, {
         url: url,
         method: "POST",
@@ -55,7 +55,7 @@ ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
 ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "admin/oauth/login";
+    const url = `${this.url}admin/oauth/login`;
     options = Object.assign(options, {
         url: url,
         method: "POST",

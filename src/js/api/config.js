@@ -20,7 +20,7 @@ if (
 ripe.Ripe.prototype.configGlobal = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "config";
+    const url = `${this.url}config`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -221,7 +221,7 @@ ripe.Ripe.prototype.configResolveSkuP = function(domain, options) {
 ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "config/resolve/" + productId;
+    const url = `${this.url}config/resolve/${productId}`;
     options = Object.assign({ url: url }, options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
@@ -273,7 +273,7 @@ ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
         params.guess = guess ? "1" : "0";
     }
 
-    const url = this.url + "config/info";
+    const url = `${this.url}config/info`;
 
     return Object.assign(options, {
         url: url,
@@ -298,7 +298,7 @@ ripe.Ripe.prototype._getConfigSkuOptions = function(domain, options = {}) {
 
     options.params = params;
 
-    const url = this.url + "config/sku";
+    const url = `${this.url}config/sku`;
 
     return Object.assign(options, {
         url: url,

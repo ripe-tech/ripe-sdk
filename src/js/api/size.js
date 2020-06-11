@@ -22,7 +22,7 @@ if (
 ripe.Ripe.prototype.getSizes = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "sizes";
+    const url = `${this.url}sizes`;
     options = Object.assign(options, {
         url: url,
         method: "GET"
@@ -54,7 +54,7 @@ ripe.Ripe.prototype.getSizesP = function(options) {
 ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "sizes/size_to_native";
+    const url = `${this.url}sizes/size_to_native`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -99,7 +99,7 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
         valuesP.push(values[index]);
         gendersP.push(genders[index]);
     }
-    const url = this.url + "sizes/size_to_native_b";
+    const url = `${this.url}sizes/size_to_native_b`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -135,7 +135,7 @@ ripe.Ripe.prototype.sizeToNativeBP = function(scales, values, genders, options) 
 ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "sizes/native_to_size";
+    const url = `${this.url}sizes/native_to_size`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -179,7 +179,7 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
         valuesP.push(values[index]);
         gendersP.push(genders[index]);
     }
-    const url = this.url + "sizes/native_to_size_b";
+    const url = `${this.url}sizes/native_to_size_b`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -215,7 +215,7 @@ ripe.Ripe.prototype.nativeToSizeBP = function(scales, values, genders, options) 
 ripe.Ripe.prototype.sizeToLocale = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "sizes/size_to_locale";
+    const url = `${this.url}sizes/size_to_locale`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -254,7 +254,7 @@ ripe.Ripe.prototype.sizeToLocaleB = function(scales, values, genders, options, c
     genders = typeof genders === "string" ? [genders] : genders;
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "sizes/size_to_locale_b";
+    const url = `${this.url}sizes/size_to_locale_b`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -290,7 +290,7 @@ ripe.Ripe.prototype.sizeToLocaleBP = function(scales, values, genders, options) 
 ripe.Ripe.prototype.nativeToLocale = function(scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "sizes/native_to_locale";
+    const url = `${this.url}sizes/native_to_locale`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -329,7 +329,7 @@ ripe.Ripe.prototype.nativeToLocaleB = function(scales, values, genders, options,
     genders = typeof genders === "string" ? [genders] : genders;
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "sizes/native_to_locale_b";
+    const url = `${this.url}sizes/native_to_locale_b`;
     options = Object.assign(options, {
         url: url,
         method: "GET",

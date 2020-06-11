@@ -40,7 +40,7 @@ ripe.RipeAPI = function(options = {}) {
 ripe.Ripe.prototype.ping = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "ping";
+    const url = `${this.url}ping`;
     options = Object.assign(options, {
         url: url,
         method: "GET"
@@ -70,7 +70,7 @@ ripe.Ripe.prototype.pingP = function(options) {
 ripe.Ripe.prototype.geoResolve = function(address, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "geo_resolve";
+    const url = `${this.url}geo_resolve`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -103,7 +103,7 @@ ripe.Ripe.prototype.geoResolveP = function(address, options) {
 ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "signin";
+    const url = `${this.url}signin`;
     options = Object.assign(options, {
         url: url,
         method: "POST",
@@ -139,7 +139,7 @@ ripe.Ripe.prototype.signinP = function(username, password, options) {
 ripe.Ripe.prototype.signinAdmin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "signin_admin";
+    const url = `${this.url}signin_admin`;
     options = Object.assign(options, {
         url: url,
         method: "POST",
@@ -172,7 +172,7 @@ ripe.Ripe.prototype.signinAdminP = function(username, password, options) {
 ripe.Ripe.prototype.signinPid = function(token, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "signin_pid";
+    const url = `${this.url}signin_pid`;
     options = Object.assign(options, {
         url: url,
         method: "POST",
@@ -582,7 +582,7 @@ ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
         params.initials = initials;
     }
 
-    const url = this.url + "config/price";
+    const url = `${this.url}config/price`;
 
     options = Object.assign(options, {
         url: url,
@@ -643,7 +643,7 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.initials = initials;
     }
 
-    const url = this.url + "compose";
+    const url = `${this.url}compose`;
 
     options = Object.assign(options, {
         url: url,
@@ -676,7 +676,7 @@ ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
         params.part = options.part;
     }
 
-    const url = this.url + "mask";
+    const url = `${this.url}mask`;
 
     options = Object.assign(options, {
         url: url,
@@ -726,7 +726,7 @@ ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
         params.format = options.format;
     }
 
-    const url = this.url + "swatch";
+    const url = `${this.url}swatch`;
 
     options = Object.assign(options, {
         url: url,

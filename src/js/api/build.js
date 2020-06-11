@@ -20,7 +20,7 @@ if (
 ripe.Ripe.prototype.getBuilds = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = this.url + "builds";
+    const url = `${this.url}builds`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -497,7 +497,7 @@ ripe.Ripe.prototype._getLocaleModelOptions = function(options = {}) {
     const version = options.version === undefined ? this.version : options.version;
     const locale =
         options.locale === undefined || options.locale === null ? this.locale : options.locale;
-    const url = this.url + "builds/" + brand + "/locale/" + locale;
+    const url = `${this.url}builds/${brand}/locale/${locale}`;
     const params = {};
     if (model !== undefined && model !== null) {
         params.model = model;
