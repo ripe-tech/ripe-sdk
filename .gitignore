@@ -10,6 +10,8 @@ session.shelve*
 dist.zip
 package-lock.json
 
+/.vscode/settings.json
+
 /out
 /dist
 /docs
