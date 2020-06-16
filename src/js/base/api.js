@@ -791,6 +791,13 @@ ripe.Ripe.prototype._build = function(options) {
         headers["X-Secret-Key"] = this.key;
         params.headers = headers;
     }
+    if (
+        auth &&
+        (this.sid === undefined || this.sid === null) &&
+        (this.key === undefined || this.key === null)
+    ) {
+        throw new Error("Authorization requested but none is available");
+    }
     options.url = url;
     options.method = method;
     options.params = params;
