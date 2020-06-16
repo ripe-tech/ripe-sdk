@@ -63,10 +63,10 @@ ripe.Configurator.prototype.init = function() {
     this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
     this.useMasks = this.options.useMasks === undefined ? !this.noMasks : this.options.useMasks;
     this.view = this.options.view || "side";
+    this.position = this.options.position || 0;
     this.configAnimate =
         this.options.configAnimate === undefined ? "cross" : this.options.configAnimate;
     this.viewAnimate = this.options.viewAnimate === undefined ? "cross" : this.options.viewAnimate;
-    this.position = this.options.position || 0;
     this.ready = false;
     this._finalize = null;
     this._observer = null;
@@ -377,6 +377,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // so that it returns to the same position
     // when coming back to the same view
     this._lastFrame[view] = position;
+    this.position = nextPosition;
     this.element.dataset.position = nextPosition;
 
     // if there is a new view and the product supports
@@ -384,6 +385,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // and ignores all drag movements while it lasts
     let animate = false;
     if (view !== nextView && viewFrames !== undefined) {
+        this.view = nextView;
         this.element.dataset.view = nextView;
         this.element.dataset.frames = viewFrames;
         animate = type === null ? this.viewAnimate : type;
@@ -493,6 +495,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
         // updates the position according to the calculated one on
         // the dataset, the next update operation should trigger
         // the appropriate update on the visual resources
+        this.position = stepPosition;
         this.element.dataset.position = stepPosition;
     }
 
@@ -885,6 +888,11 @@ ripe.Configurator.prototype._updateConfig = async function(animate) {
             delete this._lastFrame[_view];
         }
     }
+
+    // updates the instance values for the configurator view
+    // and position so that they reflect the current visuals
+    this.view = view;
+    this.position = position;
 
     // updates the number of frames in the initial view
     // taking into account the requested frames data
