@@ -270,4 +270,72 @@ describe("OrderAPI", function() {
             });
         });
     });
+
+    describe("#getOrderSubscription", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+        });
+
+        it("should be able to get an order subscription status", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.getOrderSubscriptionP(4488);
+            assert.notStrictEqual(typeof result.subscribed, undefined);
+        });
+    });
+
+    describe("#subscribeOrder", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+        });
+
+        it("should be able to subscribe to an order", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.subscribeOrderP(4488);
+
+            assert.strictEqual(result.subscribed, true);
+        });
+    });
+
+    describe("#unsubscribeOrder", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+        });
+
+        it("should be able to unsubscribe to an order", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.unsubscribeOrderP(4488);
+
+            assert.strictEqual(result.subscribed, false);
+        });
+    });
 });
