@@ -6,7 +6,6 @@ const ripe = require("../../../src/js");
 describe("NotifyInfoAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-
     describe("#createDeviceId", function() {
         beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
