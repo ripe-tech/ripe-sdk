@@ -781,15 +781,14 @@ ripe.Ripe.prototype._getSwatchURL = function(options) {
 ripe.Ripe.prototype._build = function(options) {
     const url = options.url || "";
     const method = options.method || "GET";
+    const headers = options.headers || {};
     const params = options.params || {};
     const auth = options.auth || false;
     if (auth && this.sid !== undefined && this.sid !== null) {
         params.sid = this.sid;
     }
     if (auth && this.key !== undefined && this.key !== null) {
-        const headers = params.headers || {};
         headers["X-Secret-Key"] = this.key;
-        params.headers = headers;
     }
     if (
         auth &&
@@ -800,6 +799,7 @@ ripe.Ripe.prototype._build = function(options) {
     }
     options.url = url;
     options.method = method;
+    options.headers = headers;
     options.params = params;
     options.auth = auth;
     return options;
