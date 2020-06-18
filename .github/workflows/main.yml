@@ -16,3 +16,7 @@ jobs:
       - run: npm run build
       - run: npm run lint
       - run: npm test
+        env:
+          TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          TEST_KEY: ${{ secrets.TEST_KEY }}
