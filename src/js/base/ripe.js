@@ -1638,6 +1638,7 @@ ripe.Ripe.prototype._handleCtx = function(result) {
     if (result.choices && !ripe.equal(result.choices, this.choices)) {
         this.setChoices(result.choices);
     }
+    this.trigger("messages", result.messages);
     for (const [name, value] of result.messages) {
         this.trigger("message", name, value);
     }
