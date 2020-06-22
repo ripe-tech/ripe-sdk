@@ -42,7 +42,6 @@ describe("NotifyInfoAPI", function() {
             const deviceId3 = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
-
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
@@ -67,7 +66,6 @@ describe("NotifyInfoAPI", function() {
             const deviceId = "duplicate-id";
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
-
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
