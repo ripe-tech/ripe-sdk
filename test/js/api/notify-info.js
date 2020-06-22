@@ -13,12 +13,58 @@ describe("NotifyInfoAPI", function() {
             }
         });
 
-        it("should be able to create a deviceID", async () => {
+        it("should be able to create a device ID", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            const deviceId = uuid.v4();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.createDeviceIdP(deviceId);
+            assert.notStrictEqual(typeof result.created, undefined);
+            assert.notStrictEqual(typeof result.email, undefined);
+            assert.strictEqual(result.device_ids.includes(deviceId), true);
+
+            // deletes newly created deviceId
+            result = await remote.removeDeviceIdP(deviceId);
+        });
+
+        it("should be able to create several device IDs for one user", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI();
 
-            const deviceId = uuid.v4();
+            const deviceId1 = uuid.v4();
+            const deviceId2 = uuid.v4();
+            const deviceId3 = uuid.v4();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.createDeviceIdP(deviceId1);
+            assert.strictEqual(result.device_ids.includes(deviceId1), true);
+
+            result = await remote.createDeviceIdP(deviceId2);
+            assert.strictEqual(result.device_ids.includes(deviceId1), true);
+            assert.strictEqual(result.device_ids.includes(deviceId2), true);
+
+            result = await remote.createDeviceIdP(deviceId3);
+            assert.strictEqual(result.device_ids.includes(deviceId1), true);
+            assert.strictEqual(result.device_ids.includes(deviceId2), true);
+            assert.strictEqual(result.device_ids.includes(deviceId3), true);
+        });
+
+        it("should not be possible to create duplicate device IDs", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            const deviceId = "duplicate-id";
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -26,9 +72,39 @@ describe("NotifyInfoAPI", function() {
             assert.notStrictEqual(typeof result.sid, undefined);
 
             result = await remote.createDeviceIdP(deviceId);
+            result = await remote.createDeviceIdP(deviceId);
 
-            assert.notStrictEqual(typeof result.created, undefined);
-            assert.notStrictEqual(typeof result.email, undefined);
+            const deviceIdCount = result.device_ids.reduce((u, dId) => {
+                return dId === deviceId ? u + 1 : u;
+            }, 0);
+            assert.strictEqual(deviceIdCount, 1);
+
+            // deletes newly created deviceId
+            result = await remote.removeDeviceIdP(deviceId);
+        });
+
+        it("should not be able to create null or empty device IDs", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            const deviceId1 = null;
+            const deviceId2 = "";
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            try {
+                result = await remote.createDeviceIdP(deviceId1);
+            } catch (error) {
+                assert.notStrictEqual(error, undefined);
+            }
+            try {
+                result = await remote.createDeviceIdP(deviceId2);
+            } catch (error) {
+                assert.notStrictEqual(error, undefined);
+            }
         });
     });
 
@@ -39,7 +115,7 @@ describe("NotifyInfoAPI", function() {
             }
         });
 
-        it("should be able to remove a deviceID", async () => {
+        it("should be able to remove a device ID", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI();
@@ -47,14 +123,26 @@ describe("NotifyInfoAPI", function() {
             const deviceId = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
-
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
             result = await remote.createDeviceIdP(deviceId);
             result = await remote.removeDeviceIdP(deviceId);
-
             assert.strictEqual(result.device_ids.includes(deviceId), false);
+        });
+
+        it("should not throw when removing a device ID that doesn't exist", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            const deviceId = uuid.v4();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            assert.doesNotThrow(async () => await remote.removeDeviceIdP(deviceId));
         });
     });
 });
