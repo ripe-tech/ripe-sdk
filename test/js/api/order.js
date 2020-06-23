@@ -370,7 +370,6 @@ describe("OrderAPI", function() {
 
             result = await remote.getOrderSubscriptionP(4488);
             assert.strictEqual(result.subscribed, false);
-
             assert.doesNotThrow(async () => await remote.unsubscribeOrderP(4488));
 
             result = await remote.getOrderSubscriptionP(4488);
