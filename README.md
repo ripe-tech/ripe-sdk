@@ -1,4 +1,4 @@
-# [![RIPE SDK](res/logo.png)](http://www.platforme.com)
+<h1><a href="https://tech.platforme.com"><img src="res/logo.svg" alt="RIPE SDK" height="60" style="height: 60px;"></a></h1>
 
 The public SDK for [RIPE Core](https://github.com/ripe-tech/ripe-core) written in vanilla ECMAScript v6.
 
