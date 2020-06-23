@@ -270,4 +270,110 @@ describe("OrderAPI", function() {
             });
         });
     });
+
+    describe("#subscribeOrder", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+        });
+
+        it("should be able to subscribe an unsubscribed order", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.unsubscribeOrderP(4488);
+            assert.strictEqual(result.subscribed, false);
+
+            result = await remote.getOrderSubscriptionP(4488);
+            assert.strictEqual(result.subscribed, false);
+
+            try {
+                result = await remote.subscribeOrderP(4488);
+                assert.strictEqual(result.subscribed, true);
+
+                result = await remote.getOrderSubscriptionP(4488);
+                assert.strictEqual(result.subscribed, true);
+            } finally {
+                await remote.unsubscribeOrderP(4488);
+            }
+        });
+
+        it("should not throw when subscribing an order that's already subscribed", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.subscribeOrderP(4488);
+            assert.strictEqual(result.subscribed, true);
+
+            try {
+                assert.doesNotThrow(async () => await remote.subscribeOrderP(4488));
+
+                result = await remote.getOrderSubscriptionP(4488);
+                assert.strictEqual(result.subscribed, true);
+            } finally {
+                await remote.unsubscribeOrderP(4488);
+            }
+        });
+    });
+
+    describe("#unsubscribeOrder", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+        });
+
+        it("should be able to unsubscribe a subscribed order", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.subscribeOrderP(4488);
+            assert.strictEqual(result.subscribed, true);
+
+            result = await remote.getOrderSubscriptionP(4488);
+            assert.strictEqual(result.subscribed, true);
+
+            result = await remote.unsubscribeOrderP(4488);
+            assert.strictEqual(result.subscribed, false);
+
+            result = await remote.getOrderSubscriptionP(4488);
+            assert.strictEqual(result.subscribed, false);
+        });
+
+        it("should not throw when unsubscribing an order that's already unsubscribed", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.unsubscribeOrderP(4488);
+            assert.strictEqual(result.subscribed, false);
+
+            result = await remote.getOrderSubscriptionP(4488);
+            assert.strictEqual(result.subscribed, false);
+            assert.doesNotThrow(async () => await remote.unsubscribeOrderP(4488));
+
+            result = await remote.getOrderSubscriptionP(4488);
+            assert.strictEqual(result.subscribed, false);
+        });
+    });
 });
