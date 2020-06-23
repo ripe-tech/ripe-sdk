@@ -28,7 +28,7 @@ describe("NotifyInfoAPI", function() {
             assert.notStrictEqual(typeof result.email, undefined);
             assert.strictEqual(result.device_ids.includes(deviceId), true);
 
-            // deletes newly created deviceId
+            // deletes newly created device
             result = await remote.removeDeviceIdP(deviceId);
         });
 
@@ -77,7 +77,7 @@ describe("NotifyInfoAPI", function() {
             }, 0);
             assert.strictEqual(deviceIdCount, 1);
 
-            // deletes newly created deviceId
+            // deletes newly created device
             result = await remote.removeDeviceIdP(deviceId);
         });
 
