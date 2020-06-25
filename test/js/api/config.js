@@ -42,65 +42,65 @@ describe("ConfigAPI", function() {
             );
             assert.strictEqual(result.params.flag, "retail");
         });
+    });
 
-        describe("#_getConfigInfoOptions", function() {
-            it("should include guess as 0 in params", async () => {
-                let result = null;
+    describe("#_getConfigInfoOptions", function() {
+        it("should include guess as 0 in params", async () => {
+            let result = null;
 
-                const remote = ripe.RipeAPI({
-                    guess: false
-                });
-                result = remote._getConfigInfoOptions();
+            const remote = ripe.RipeAPI({
+                guess: false
+            });
+            result = remote._getConfigInfoOptions();
 
-                assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
-                assert.strictEqual(result.params.guess, "0");
+            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.params.guess, "0");
+        });
+
+        it("should include guess as 1 in params when explicitly defined", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._getConfigInfoOptions({
+                guess: true
             });
 
-            it("should include guess as 1 in params when explicitly defined", async () => {
-                let result = null;
+            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.params.guess, "1");
+        });
 
-                const remote = ripe.RipeAPI();
-                result = remote._getConfigInfoOptions({
-                    guess: true
-                });
+        it("should not include guess in params", async () => {
+            let result = null;
 
-                assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
-                assert.strictEqual(result.params.guess, "1");
+            const remote = ripe.RipeAPI();
+            result = remote._getConfigInfoOptions();
+
+            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.params.guess, undefined);
+        });
+
+        it("should include sku and domain in params", async () => {
+            const remote = ripe.RipeAPI();
+            const result = remote._getConfigInfoOptions({
+                sku: "314159265359",
+                domain: "pi",
+                queryOptions: false,
+                initialsOptions: false
             });
 
-            it("should not include guess in params", async () => {
-                let result = null;
+            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.params.sku, "314159265359");
+            assert.strictEqual(result.params.domain, "pi");
+            assert.strictEqual(Object.keys(result.params).length, 2);
+        });
 
-                const remote = ripe.RipeAPI();
-                result = remote._getConfigInfoOptions();
+        it("should not include sku and domain in params", async () => {
+            const remote = ripe.RipeAPI();
+            const result = remote._getConfigInfoOptions();
 
-                assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
-                assert.strictEqual(result.params.guess, undefined);
-            });
-
-            it("should include sku and domain in params", async () => {
-                const remote = ripe.RipeAPI();
-                const result = remote._getConfigInfoOptions({
-                    sku: "314159265359",
-                    domain: "pi",
-                    queryOptions: false,
-                    initialsOptions: false
-                });
-
-                assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
-                assert.strictEqual(result.params.sku, "314159265359");
-                assert.strictEqual(result.params.domain, "pi");
-                assert.strictEqual(Object.keys(result.params).length, 2);
-            });
-
-            it("should not include sku and domain in params", async () => {
-                const remote = ripe.RipeAPI();
-                const result = remote._getConfigInfoOptions();
-
-                assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
-                assert.strictEqual(result.params.sku, undefined);
-                assert.strictEqual(result.params.domain, undefined);
-            });
+            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.params.sku, undefined);
+            assert.strictEqual(result.params.domain, undefined);
         });
     });
 
