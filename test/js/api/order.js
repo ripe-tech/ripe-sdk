@@ -1,5 +1,6 @@
 const assert = require("assert");
 const uuid = require("uuid");
+const mock = require("./mock");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
@@ -171,16 +172,7 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.meta.client, "ripe-sdk-test");
             assert.strictEqual(result.meta.context, "test");
 
-            // deletes the newly imported production order
-            result = await new Promise((resolve, reject) => {
-                const options = remote._build({
-                    url: `${remote.webUrl}admin/models/orders/${result._id}/delete`,
-                    auth: true
-                });
-                remote._requestURL(options.url, options, (result, isValid, request) => {
-                    resolve(request);
-                });
-            });
+            await remote.deleteOrderP(result.number);
         });
     });
 
@@ -258,23 +250,25 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.meta.client, "ripe-sdk-test");
             assert.strictEqual(result.meta.context, "test");
 
-            result = await new Promise((resolve, reject) => {
-                const options = remote._build({
-                    url: `${remote.webUrl}admin/models/orders/${result._id}/delete`,
-                    auth: true
-                });
-                remote._requestURL(options.url, options, (result, isValid, request) => {
-                    resolve(request);
-                });
-            });
+            await remote.deleteOrderP(result.number);
         });
     });
 
     describe("#subscribeOrder", function() {
-        beforeEach(function() {
+        const ctx = {};
+
+        beforeEach(async function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
             }
+            ctx.order = await mock.buildOrder();
+        });
+
+        afterEach(async function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+            await mock.destroyOrder(ctx.order);
         });
 
         it("should be able to subscribe an unsubscribed order", async () => {
@@ -286,21 +280,17 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            result = await remote.unsubscribeOrderP(4488);
+            result = await remote.unsubscribeOrderP(ctx.order.number);
             assert.strictEqual(result.subscribed, false);
 
-            result = await remote.getOrderSubscriptionP(4488);
+            result = await remote.getOrderSubscriptionP(ctx.order.number);
             assert.strictEqual(result.subscribed, false);
 
-            try {
-                result = await remote.subscribeOrderP(4488);
-                assert.strictEqual(result.subscribed, true);
+            result = await remote.subscribeOrderP(ctx.order.number);
+            assert.strictEqual(result.subscribed, true);
 
-                result = await remote.getOrderSubscriptionP(4488);
-                assert.strictEqual(result.subscribed, true);
-            } finally {
-                await remote.unsubscribeOrderP(4488);
-            }
+            result = await remote.getOrderSubscriptionP(ctx.order.number);
+            assert.strictEqual(result.subscribed, true);
         });
 
         it("should not throw when subscribing an order that's already subscribed", async () => {
@@ -312,25 +302,31 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            result = await remote.subscribeOrderP(4488);
+            result = await remote.subscribeOrderP(ctx.order.number);
             assert.strictEqual(result.subscribed, true);
 
-            try {
-                assert.doesNotThrow(async () => remote.subscribeOrderP(4488));
+            assert.doesNotThrow(async () => remote.subscribeOrderP(ctx.order.number));
 
-                result = await remote.getOrderSubscriptionP(4488);
-                assert.strictEqual(result.subscribed, true);
-            } finally {
-                await remote.unsubscribeOrderP(4488);
-            }
+            result = await remote.getOrderSubscriptionP(ctx.order.number);
+            assert.strictEqual(result.subscribed, true);
         });
     });
 
     describe("#unsubscribeOrder", function() {
-        beforeEach(function() {
+        const ctx = {};
+
+        beforeEach(async function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
             }
+            ctx.order = await mock.buildOrder();
+        });
+
+        afterEach(async function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+            await mock.destroyOrder(ctx.order);
         });
 
         it("should be able to unsubscribe a subscribed order", async () => {
@@ -342,16 +338,16 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            result = await remote.subscribeOrderP(4488);
+            result = await remote.subscribeOrderP(ctx.order.number);
             assert.strictEqual(result.subscribed, true);
 
-            result = await remote.getOrderSubscriptionP(4488);
+            result = await remote.getOrderSubscriptionP(ctx.order.number);
             assert.strictEqual(result.subscribed, true);
 
-            result = await remote.unsubscribeOrderP(4488);
+            result = await remote.unsubscribeOrderP(ctx.order.number);
             assert.strictEqual(result.subscribed, false);
 
-            result = await remote.getOrderSubscriptionP(4488);
+            result = await remote.getOrderSubscriptionP(ctx.order.number);
             assert.strictEqual(result.subscribed, false);
         });
 
@@ -364,14 +360,14 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            result = await remote.unsubscribeOrderP(4488);
+            result = await remote.unsubscribeOrderP(ctx.order.number);
             assert.strictEqual(result.subscribed, false);
 
-            result = await remote.getOrderSubscriptionP(4488);
+            result = await remote.getOrderSubscriptionP(ctx.order.number);
             assert.strictEqual(result.subscribed, false);
-            assert.doesNotThrow(async () => remote.unsubscribeOrderP(4488));
+            assert.doesNotThrow(async () => remote.unsubscribeOrderP(ctx.order.number));
 
-            result = await remote.getOrderSubscriptionP(4488);
+            result = await remote.getOrderSubscriptionP(ctx.order.number);
             assert.strictEqual(result.subscribed, false);
         });
     });
