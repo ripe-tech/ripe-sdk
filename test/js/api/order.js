@@ -258,7 +258,6 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.meta.client, "ripe-sdk-test");
             assert.strictEqual(result.meta.context, "test");
 
-            // deletes the newly imported production order
             result = await new Promise((resolve, reject) => {
                 const options = remote._build({
                     url: `${remote.webUrl}admin/models/orders/${result._id}/delete`,
