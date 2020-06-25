@@ -317,7 +317,7 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.subscribed, true);
 
             try {
-                assert.doesNotThrow(async () => await remote.subscribeOrderP(4488));
+                assert.doesNotThrow(async () => remote.subscribeOrderP(4488));
 
                 result = await remote.getOrderSubscriptionP(4488);
                 assert.strictEqual(result.subscribed, true);
@@ -370,7 +370,7 @@ describe("OrderAPI", function() {
 
             result = await remote.getOrderSubscriptionP(4488);
             assert.strictEqual(result.subscribed, false);
-            assert.doesNotThrow(async () => await remote.unsubscribeOrderP(4488));
+            assert.doesNotThrow(async () => remote.unsubscribeOrderP(4488));
 
             result = await remote.getOrderSubscriptionP(4488);
             assert.strictEqual(result.subscribed, false);
