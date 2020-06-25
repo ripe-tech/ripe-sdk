@@ -88,11 +88,47 @@ ripe.Ripe.prototype.getOrder = function(number, options, callback) {
  *
  * @param {Number} number The number of the order to find by.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The orders result list.
+ * @returns {Promise} The order requested by number.
  */
 ripe.Ripe.prototype.getOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.getOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
+ * Deletes an order by number.
+ *
+ * @param {Number} number The number of the order to delete.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.deleteOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}`;
+    options = Object.assign(options, {
+        url: url,
+        method: "DELETE",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Deletes an order by number.
+ *
+ * @param {Number} number The number of the order to delete.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order deletion.
+ */
+ripe.Ripe.prototype.deleteOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.deleteOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
