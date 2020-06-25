@@ -28,7 +28,6 @@ describe("NotifyInfoAPI", function() {
                 assert.notStrictEqual(typeof result.created, undefined);
                 assert.notStrictEqual(typeof result.email, undefined);
                 assert.strictEqual(result.device_ids.includes(deviceId), true);
-                assert.strictEqual(result.device_ids.length, 1);
             } finally {
                 await remote.removeDeviceIdP(deviceId);
             }
@@ -49,18 +48,15 @@ describe("NotifyInfoAPI", function() {
             try {
                 result = await remote.createDeviceIdP(deviceId1);
                 assert.strictEqual(result.device_ids.includes(deviceId1), true);
-                assert.strictEqual(result.device_ids.length, 1);
 
                 result = await remote.createDeviceIdP(deviceId2);
                 assert.strictEqual(result.device_ids.includes(deviceId1), true);
                 assert.strictEqual(result.device_ids.includes(deviceId2), true);
-                assert.strictEqual(result.device_ids.length, 2);
 
                 result = await remote.createDeviceIdP(deviceId3);
                 assert.strictEqual(result.device_ids.includes(deviceId1), true);
                 assert.strictEqual(result.device_ids.includes(deviceId2), true);
                 assert.strictEqual(result.device_ids.includes(deviceId3), true);
-                assert.strictEqual(result.device_ids.length, 3);
             } finally {
                 await remote.removeDeviceIdP(deviceId1);
                 await remote.removeDeviceIdP(deviceId2);
@@ -81,7 +77,6 @@ describe("NotifyInfoAPI", function() {
             try {
                 result = await remote.createDeviceIdP(deviceId);
                 result = await remote.createDeviceIdP(deviceId);
-                assert.strictEqual(result.device_ids.length, 1);
             } finally {
                 await remote.removeDeviceIdP(deviceId);
             }
@@ -122,7 +117,7 @@ describe("NotifyInfoAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            assert.doesNotThrow(async () => await remote.removeDeviceIdP(deviceId));
+            assert.doesNotThrow(async () => remote.removeDeviceIdP(deviceId));
         });
     });
 });
