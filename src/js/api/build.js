@@ -520,6 +520,38 @@ ripe.Ripe.prototype.getLocaleModelP = function(options) {
     });
 };
 
+ripe.Ripe.prototype.getLocaleModelKeys = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const url = `${this.url}builds/${brand}/locale/keys`;
+    const params = {};
+    if (model !== undefined && model !== null) {
+        params.model = model;
+    }
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params,
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.getLocaleModelKeysP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getLocaleModelKeys(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
 /**
  * @ignore
  * @see {link http://docs.platforme.com/#build-endpoints-locale}
