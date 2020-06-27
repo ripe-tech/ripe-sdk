@@ -6,7 +6,7 @@ const ripe = require("../../../src/js");
 describe("NotifyInfoAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#createDeviceId", function() {
+    describe("#createDeviceId()", function() {
         beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
@@ -83,7 +83,7 @@ describe("NotifyInfoAPI", function() {
         });
     });
 
-    describe("#removeDeviceId", function() {
+    describe("#removeDeviceId()", function() {
         beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();

@@ -5,7 +5,7 @@ const ripe = require("../../../src/js");
 describe("Utils", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#equal", async function() {
+    describe("#equal()", async function() {
         it("should be able to compare two objects", () => {
             const result = ripe.ripe.equal({ hello: "world" }, { hello: "world" });
             assert.strictEqual(result, true);
@@ -80,7 +80,7 @@ describe("Utils", function() {
         });
     });
 
-    describe("#escape", async function() {
+    describe("#escape()", async function() {
         it("should be able to escape strings", () => {
             let result;
 
@@ -92,7 +92,7 @@ describe("Utils", function() {
         });
     });
 
-    describe("#unescape", async function() {
+    describe("#unescape()", async function() {
         it("should be able to unescape strings", () => {
             let result;
 
@@ -107,7 +107,7 @@ describe("Utils", function() {
         });
     });
 
-    describe("#countUnescape", async function() {
+    describe("#countUnescape()", async function() {
         it("should be able to count escaped strings", () => {
             let result;
 
@@ -134,7 +134,7 @@ describe("Utils", function() {
         });
     });
 
-    describe("#splitUnescape", async function() {
+    describe("#splitUnescape()", async function() {
         it("should be able to split and unescape strings", () => {
             let result;
 

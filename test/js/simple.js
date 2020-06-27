@@ -5,7 +5,7 @@ const ripe = require("../../src/js");
 describe("Ripe", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#main", function() {
+    describe("#main()", function() {
         it("should instance correctly", async () => {
             const instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
 

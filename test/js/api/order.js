@@ -7,7 +7,7 @@ const ripe = require("../../../src/js");
 describe("OrderAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#getOrders", function() {
+    describe("#getOrders()", function() {
         beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
@@ -30,7 +30,7 @@ describe("OrderAPI", function() {
         });
     });
 
-    describe("#getOrder", function() {
+    describe("#getOrder()", function() {
         beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
@@ -54,7 +54,7 @@ describe("OrderAPI", function() {
         });
     });
 
-    describe("#_getOrderReportURL", function() {
+    describe("#_getOrderReportURL()", function() {
         it("should be able to generate a simple URL", async () => {
             const remote = ripe.RipeAPI();
             const result = remote._getOrderReportURL(1234, "secret-key");
@@ -65,7 +65,7 @@ describe("OrderAPI", function() {
         });
     });
 
-    describe("#_getOrderReportURL", function() {
+    describe("#_getOrderReportURL()", function() {
         it("should be able to generate a simple URL", async () => {
             const remote = ripe.RipeAPI();
             const result = remote._getOrderReportURL(1234, "secret-key");
@@ -76,7 +76,7 @@ describe("OrderAPI", function() {
         });
     });
 
-    describe("#_getOrderReportPDFURL", function() {
+    describe("#_getOrderReportPDFURL()", function() {
         it("should be able to generate a simple URL", async () => {
             const remote = ripe.RipeAPI();
             const result = remote._getOrderReportPDFURL(1234, "secret-key");
@@ -87,7 +87,7 @@ describe("OrderAPI", function() {
         });
     });
 
-    describe("#_getOrderReportURL", function() {
+    describe("#_getOrderReportURL()", function() {
         it("should be able to generate a simple URL", async () => {
             const remote = ripe.RipeAPI();
             const result = remote._getOrderReportPNGURL(1234, "secret-key");
@@ -98,7 +98,7 @@ describe("OrderAPI", function() {
         });
     });
 
-    describe("#importOrder", function() {
+    describe("#importOrder()", function() {
         beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
@@ -176,7 +176,7 @@ describe("OrderAPI", function() {
         });
     });
 
-    describe("#preCustomization", function() {
+    describe("#preCustomization()", function() {
         beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
@@ -254,7 +254,7 @@ describe("OrderAPI", function() {
         });
     });
 
-    describe("#subscribeOrder", function() {
+    describe("#subscribeOrder()", function() {
         const ctx = {};
 
         beforeEach(async function() {
@@ -312,7 +312,7 @@ describe("OrderAPI", function() {
         });
     });
 
-    describe("#unsubscribeOrder", function() {
+    describe("#unsubscribeOrder()", function() {
         const ctx = {};
 
         beforeEach(async function() {

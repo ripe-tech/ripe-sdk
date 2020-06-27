@@ -5,7 +5,7 @@ const ripe = require("../../../src/js");
 describe("SizeAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#_specToQuery", function() {
+    describe("#_specToQuery()", function() {
         it("should be able to convert a spec to query", async () => {
             const remote = ripe.RipeAPI();
 
@@ -47,7 +47,7 @@ describe("SizeAPI", function() {
         });
     });
 
-    describe("#getSizes", function() {
+    describe("#getSizes()", function() {
         it("should be able to retrieve sizes", async () => {
             let result = null;
 
@@ -60,7 +60,7 @@ describe("SizeAPI", function() {
         });
     });
 
-    describe("#sizeToNative", function() {
+    describe("#sizeToNative()", function() {
         it("should be able to convert sizes", async () => {
             let result = null;
 
@@ -74,7 +74,7 @@ describe("SizeAPI", function() {
         });
     });
 
-    describe("#sizeToNativeB", function() {
+    describe("#sizeToNativeB()", function() {
         it("should be able to convert sizes in bulk", async () => {
             let result = null;
 
@@ -89,7 +89,7 @@ describe("SizeAPI", function() {
         });
     });
 
-    describe("#nativetoSize", function() {
+    describe("#nativetoSize()", function() {
         it("should be able to convert sizes", async () => {
             let result = null;
 
@@ -101,7 +101,7 @@ describe("SizeAPI", function() {
         });
     });
 
-    describe("#nativetoSizeB", function() {
+    describe("#nativetoSizeB()", function() {
         it("should be able to convert sizes in bulk", async () => {
             let result = null;
 

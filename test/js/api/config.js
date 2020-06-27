@@ -6,7 +6,7 @@ const ripe = require("../../../src/js");
 describe("ConfigAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#_getConfigOptions", function() {
+    describe("#_getConfigOptions()", function() {
         it("should include country in params", async () => {
             let result = null;
 
@@ -44,7 +44,7 @@ describe("ConfigAPI", function() {
         });
     });
 
-    describe("#_getConfigInfoOptions", function() {
+    describe("#_getConfigInfoOptions()", function() {
         it("should include guess as 0 in params", async () => {
             let result = null;
 
@@ -104,7 +104,7 @@ describe("ConfigAPI", function() {
         });
     });
 
-    describe("#configResolveSku", function() {
+    describe("#configResolveSku()", function() {
         beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();

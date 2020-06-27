@@ -5,7 +5,7 @@ const ripe = require("../../../src/js");
 describe("Ripe", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#setInitials", async function() {
+    describe("#setInitials()", async function() {
         it("should be able to set initials", async () => {
             const instance = await new ripe.Ripe({ noBundles: true });
             await instance.isReady();
@@ -99,7 +99,7 @@ describe("Ripe", function() {
         });
     });
 
-    describe("#setInitials (rejects)", async function() {
+    describe("#setInitials (rejects)()", async function() {
         beforeEach(function() {
             if (!assert.rejects) {
                 this.skip();

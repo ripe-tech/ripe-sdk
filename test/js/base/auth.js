@@ -5,7 +5,7 @@ const ripe = require("../../../src/js");
 describe("Auth", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#auth", function() {
+    describe("#auth()", function() {
         beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
@@ -24,7 +24,7 @@ describe("Auth", function() {
         });
     });
 
-    describe("#auth key", function() {
+    describe("#auth key()", function() {
         beforeEach(function() {
             if (!config.TEST_KEY) {
                 this.skip();

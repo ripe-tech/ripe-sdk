@@ -28,7 +28,7 @@ const MockRipe = function() {
 describe("Sync", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#main", function() {
+    describe("#main()", function() {
         it("should apply string sync rules", () => {
             const initialParts = {
                 upper: {

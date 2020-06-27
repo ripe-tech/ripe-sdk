@@ -5,7 +5,7 @@ const ripe = require("../../../src/js");
 describe("Logic", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#parseEngraving", async function() {
+    describe("#parseEngraving()", async function() {
         it("should be able to parse a single engraving value", async () => {
             let result;
 
@@ -49,7 +49,7 @@ describe("Logic", function() {
         });
     });
 
-    describe("#normalizeEngraving", async function() {
+    describe("#normalizeEngraving()", async function() {
         it("should be able to normalize an engraving value", async () => {
             let result;
 

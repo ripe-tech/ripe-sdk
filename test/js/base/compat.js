@@ -5,7 +5,7 @@ const ripe = require("../../../src/js");
 describe("Compat", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#assign", function() {
+    describe("#assign()", function() {
         it("should be able to assign simple values", async () => {
             const target = {
                 c: 4,
@@ -81,7 +81,7 @@ describe("Compat", function() {
         });
     });
 
-    describe("#build", function() {
+    describe("#build()", function() {
         it("should be able to build simple values", async () => {
             const origin = {
                 a: 1,
