@@ -6,7 +6,7 @@ const base = require("../../src/js/base");
 describe("Visual", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#main()", function() {
+    describe("#main", function() {
         it("should init interactable and bind it to instance", () => {
             const instance = new base.ripe.Ripe("myswear", "vyner");
             const interactable = new base.ripe.Interactable(instance);

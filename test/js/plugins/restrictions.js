@@ -38,7 +38,7 @@ const MockRipe = function(partOptions, optionals) {
 describe("Restrictions", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#main()", function() {
+    describe("#main", function() {
         it("should apply restrictions", async () => {
             const initialParts = {
                 upper: {
