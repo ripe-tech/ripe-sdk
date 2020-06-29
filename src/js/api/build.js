@@ -526,7 +526,7 @@ ripe.Ripe.prototype.getLocaleModelP = function(options) {
  * @param {Object} options An object of options to configure the request, such as:
  * - 'brand' - The brand of the model. If no brand is defined it retrieves the keys of the owner's current brand.
  * - 'model' - The name of the model. If no model is defined it retrieves the keys of the owner's current model.
- * - 'version' - The build version. If no version is defined it retrieves the keys of the owner's current version.
+ * - 'version' - The version of the build. If no version is defined it retrieves the keys of the owner's current version.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
