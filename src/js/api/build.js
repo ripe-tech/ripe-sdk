@@ -521,6 +521,41 @@ ripe.Ripe.prototype.getLocaleModelP = function(options) {
 };
 
 /**
+ * Retrieves the default locale keys of a specific brand and model.
+ *
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'brand' - The brand of the model. If no brand is defined it retrieves the keys of the owner's current brand.
+ * - 'model' - The name of the model. If no model is defined it retrieves the keys of the owner's current model.
+ * - 'version' - The version of the build. If no version is defined it retrieves the keys of the owner's current version.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getLocaleModelKeys = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getLocaleModelKeysOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Retrieves the default locale keys of a specific brand and model.
+ *
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'brand' - The brand of the model. If no brand is defined it retrieves the keys of the owner's current brand.
+ * - 'model' - The name of the model. If no model is defined it retrieves the keys of the owner's current model.
+ * - 'version' - The version of the build. If no version is defined it retrieves the keys of the owner's current version.
+ * @returns {Promise} The resolved locale data (as a promise).
+ */
+ripe.Ripe.prototype.getLocaleModelKeysP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getLocaleModelKeys(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+        });
+    });
+};
+
+/**
  * @ignore
  * @see {link http://docs.platforme.com/#build-endpoints-locale}
  */
@@ -547,6 +582,29 @@ ripe.Ripe.prototype._getLocaleModelOptions = function(options = {}) {
     return Object.assign(options, {
         url: url,
         method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getLocaleModelKeysOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const url = `${this.url}builds/${brand}/locale/keys`;
+    const params = {};
+    if (model !== undefined && model !== null) {
+        params.model = model;
+    }
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true,
         params: params
     });
 };
