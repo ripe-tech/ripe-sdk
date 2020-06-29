@@ -604,6 +604,7 @@ ripe.Ripe.prototype._getLocaleModelKeysOptions = function(options = {}) {
     return Object.assign(options, {
         url: url,
         method: "GET",
+        auth: true,
         params: params
     });
 };
