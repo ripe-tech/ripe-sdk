@@ -520,6 +520,19 @@ ripe.Ripe.prototype.getLocaleModelP = function(options) {
     });
 };
 
+/**
+ * Retrieves the default locale keys of a specific brand and model
+ * If no brand is defined it retrieves the keys of the owner's current brand.
+ * If no model is defined it retrieves the keys of the owner's current model.
+ * If no version is defined it retrieves the keys of the owner's current version.
+ *
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'brand' - The brand of the model.
+ * - 'model' - The name of the model.
+ * - 'version' - The build version.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.getLocaleModelKeys = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -544,6 +557,18 @@ ripe.Ripe.prototype.getLocaleModelKeys = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Retrieves the default locale keys of a specific brand and model
+ * If no brand is defined it retrieves the keys of the owner's current brand.
+ * If no model is defined it retrieves the keys of the owner's current model.
+ * If no version is defined it retrieves the keys of the owner's current version.
+ *
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'brand' - The brand of the model.
+ * - 'model' - The name of the model.
+ * - 'version' - The version of the build.
+ * @returns {Promise} The resolved locale data (as a promise).
+ */
 ripe.Ripe.prototype.getLocaleModelKeysP = function(options) {
     return new Promise((resolve, reject) => {
         this.getLocaleModelKeys(options, (result, isValid, request) => {
