@@ -1397,7 +1397,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         const part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.owner.selectPart(part);
+        const isVisible = self.hiddenParts.indexOf(part) === -1;
+        if (part && isVisible) self.owner.selectPart(part);
         event.stopPropagation();
     });
 
@@ -1408,6 +1409,10 @@ ripe.Configurator.prototype._registerHandlers = function() {
             return;
         }
         event = ripe.fixEvent(event);
+
+        // tries to retrieve the layer/part index associated with current
+        // mouse coordinates to better act in the mouse move operation, as
+        // this may represent a possible highlight operation
         const index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
 
         // in case the index that was found is the zero one this is a special
@@ -1421,7 +1426,9 @@ ripe.Configurator.prototype._registerHandlers = function() {
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         const part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.highlight(part);
+        const isVisible = self.hiddenParts.indexOf(part) === -1;
+        if (part && isVisible) self.highlight(part);
+        else self.lowlight();
     });
 
     area.addEventListener("dragstart", function(event) {
@@ -1455,7 +1462,8 @@ ripe.Configurator.prototype._registerHandlers = function() {
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         const part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.owner.selectPart(part);
+        const isVisible = self.hiddenParts.indexOf(part) === -1;
+        if (part && isVisible) self.owner.selectPart(part);
         event.stopPropagation();
     });
 
@@ -1466,6 +1474,10 @@ ripe.Configurator.prototype._registerHandlers = function() {
             return;
         }
         event = ripe.fixEvent(event);
+
+        // tries to retrieve the layer/part index associated with current
+        // mouse coordinates to better act in the mouse move operation, as
+        // this may represent a possible highlight operation
         const index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
 
         // in case the index that was found is the zero one this is a special
@@ -1479,7 +1491,9 @@ ripe.Configurator.prototype._registerHandlers = function() {
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         const part = self.partsList[index - 1];
-        self.hiddenParts.indexOf(part) === -1 && self.highlight(part);
+        const isVisible = self.hiddenParts.indexOf(part) === -1;
+        if (part && isVisible) self.highlight(part);
+        else self.lowlight();
     });
 
     back.addEventListener("dragstart", function(event) {
