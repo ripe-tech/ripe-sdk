@@ -135,10 +135,10 @@ ripe.Ripe.prototype.createImageProfileP = function(imageProfile, options) {
 ripe.Ripe.prototype.updateImageProfile = function(imageProfile, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}profiles/${imageProfile.id}/edit`;
+    const url = `${this.url}profiles/${imageProfile.id}`;
     options = Object.assign(options, {
         url: url,
-        method: "POST",
+        method: "PUT",
         auth: true,
         dataJ: imageProfile
     });
@@ -172,10 +172,10 @@ ripe.Ripe.prototype.updateImageProfileP = function(imageProfile, options) {
 ripe.Ripe.prototype.deleteImageProfile = function(imageProfile, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}profiles/${imageProfile.id}/delete`;
+    const url = `${this.url}profiles/${imageProfile.id}`;
     options = Object.assign(options, {
         url: url,
-        method: "GET",
+        method: "DELETE",
         auth: true
     });
     options = this._build(options);
