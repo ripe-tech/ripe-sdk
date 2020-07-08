@@ -52,17 +52,17 @@ ripe.Ripe.prototype.getImageProfilesP = function(options) {
 };
 
 /**
- * Gets an Image Profile by number.
+ * Gets an Image Profile by name.
  *
- * @param {Number} number The number of the image profile to find by.
+ * @param {String} name The name of the image profile to find by.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getImageProfile = function(number, options, callback) {
+ripe.Ripe.prototype.getImageProfile = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}profiles/${number}`;
+    const url = `${this.url}profiles/${name}`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -73,15 +73,15 @@ ripe.Ripe.prototype.getImageProfile = function(number, options, callback) {
 };
 
 /**
- * Gets an Image Profile by number.
+ * Gets an Image Profile by name.
  *
- * @param {Number} number The number of the image profile to find by.
+ * @param {String} name The name of the image profile to find by.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The image profile requested by number.
  */
-ripe.Ripe.prototype.getImageProfileP = function(number, options) {
+ripe.Ripe.prototype.getImageProfileP = function(name, options) {
     return new Promise((resolve, reject) => {
-        this.getImageProfile(number, options, (result, isValid, request) => {
+        this.getImageProfile(name, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
     });
@@ -135,7 +135,7 @@ ripe.Ripe.prototype.createImageProfileP = function(imageProfile, options) {
 ripe.Ripe.prototype.updateImageProfile = function(imageProfile, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}profiles/${imageProfile.id}`;
+    const url = `${this.url}profiles/${imageProfile.name}`;
     options = Object.assign(options, {
         url: url,
         method: "PUT",
@@ -172,7 +172,7 @@ ripe.Ripe.prototype.updateImageProfileP = function(imageProfile, options) {
 ripe.Ripe.prototype.deleteImageProfile = function(imageProfile, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}profiles/${imageProfile.id}`;
+    const url = `${this.url}profiles/${imageProfile.name}`;
     options = Object.assign(options, {
         url: url,
         method: "DELETE",
