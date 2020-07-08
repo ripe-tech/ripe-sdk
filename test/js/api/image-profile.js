@@ -7,12 +7,14 @@ let dummyProfileId;
 
 describe("Image Profiles", function() {
     this.timeout(config.TEST_TIMEOUT);
+
+    beforeEach(function() {
+        if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+            this.skip();
+        }
+    });
+
     describe("#createImageProfile()", function() {
-        beforeEach(function() {
-            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
-                this.skip();
-            }
-        });
         it("should be able to create an image profile", async () => {
             let result = null;
 
@@ -39,12 +41,6 @@ describe("Image Profiles", function() {
     });
 
     describe("#getImageProfiles()", function() {
-        beforeEach(function() {
-            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
-                this.skip();
-            }
-        });
-
         it("should be able to retrieve image profiles", async () => {
             let result = null;
 
@@ -65,12 +61,6 @@ describe("Image Profiles", function() {
     });
 
     describe("#getImageProfile()", function() {
-        beforeEach(function() {
-            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
-                this.skip();
-            }
-        });
-
         it("should be able to retrieve an order information", async () => {
             let result = null;
 
