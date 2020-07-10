@@ -42,7 +42,7 @@ describe("Image Profiles", function() {
 
             const remote = ripe.RipeAPI();
 
-            result = await remote.authAdminP("root", "root");
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
             assert.strictEqual(result.username, "root");
             assert.notStrictEqual(typeof result.sid, undefined);
