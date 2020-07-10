@@ -12,24 +12,12 @@ if (
 }
 
 /**
- * Gets the image profiles list, optionally filtered by a set of options.
+ * Gets the image profiles list
  *
- * @param {Object} options An object of options to configure the query
-//  * @TODO check if this filters do work
-//  * @param {Object} options An object of options to configure the query and
-//  * its results, such as:
-//  * - 'filters[]' - List of filters that the query will use to, operators such as
-//  * ('in', 'not_in', 'like', 'likei', 'llike', 'llikei', 'rlike', 'rlikei', 'contains'),
-//  * (eg: 'number:eq:42') would filter by the 'number' that equals to '42'.
-//  * - 'sort' - List of arguments to sort the results by and which direction
-//  * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
-//  * while (eg: 'id:descending')] would do it in descending order.
-//  * - 'skip' - The number of the first record to retrieve from the results.
-//  * - 'limit' - The number of results to retrieve.
+ * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-
 ripe.Ripe.prototype.getImageProfiles = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -43,6 +31,12 @@ ripe.Ripe.prototype.getImageProfiles = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Gets an Image Profile list.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The image profile list.
+ */
 ripe.Ripe.prototype.getImageProfilesP = function(options) {
     return new Promise((resolve, reject) => {
         this.getImageProfiles(options, (result, isValid, request) => {
@@ -163,7 +157,6 @@ ripe.Ripe.prototype.updateImageProfileP = function(imageProfile, options) {
 
 /**
  * Delete a Image Profile on RIPE Core.
- * @TODO validate this method to delete a image profile
  * @param {Object} imageProfile The Image Profile object
  * @param {Object} options An object with options
  * @param {Function} callback Function with the result of the request.
