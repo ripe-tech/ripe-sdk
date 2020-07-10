@@ -44,7 +44,7 @@ ripe.Ripe.prototype.getImageProfiles = function(options, callback) {
 };
 
 ripe.Ripe.prototype.getImageProfilesP = function(options) {
-    return new Promise((resolve, reject) => { 
+    return new Promise((resolve, reject) => {
         this.getImageProfiles(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request));
         });
