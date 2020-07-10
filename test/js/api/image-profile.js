@@ -18,11 +18,7 @@ describe("Image Profiles", function() {
         it("should be able to create an image profile", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI({
-                url: "http://localhost:8080/api/",
-                webUrl: "http://localhost:8080/",
-                locale: "en_us"
-            });
+            const remote = ripe.RipeAPI();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -44,11 +40,7 @@ describe("Image Profiles", function() {
         it("should be able to retrieve image profiles", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI({
-                url: "http://localhost:8080/api/",
-                webUrl: "http://localhost:8080/",
-                locale: "en_us"
-            });
+            const remote = ripe.RipeAPI();
 
             result = await remote.authAdminP("root", "root");
 
@@ -64,11 +56,7 @@ describe("Image Profiles", function() {
         it("should be able to retrieve an order information", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI({
-                url: "http://localhost:8080/api/",
-                webUrl: "http://localhost:8080/",
-                locale: "en_us"
-            });
+            const remote = ripe.RipeAPI();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -85,11 +73,7 @@ describe("Image Profiles", function() {
         it("should be able to update an image profile", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI({
-                url: "http://localhost:8080/api/",
-                webUrl: "http://localhost:8080/",
-                locale: "en_us"
-            });
+            const remote = ripe.RipeAPI();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -109,11 +93,7 @@ describe("Image Profiles", function() {
         it("should be able to delete an image profile", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI({
-                url: "http://localhost:8080/api/",
-                webUrl: "http://localhost:8080/",
-                locale: "en_us"
-            });
+            const remote = ripe.RipeAPI();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
