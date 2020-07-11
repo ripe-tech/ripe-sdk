@@ -22,12 +22,12 @@ describe("ProfileAPI", function() {
             assert.strictEqual(result.username, "root");
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            result = await remote.getImageProfilesP();
+            result = await remote.getProfilesP();
             assert.notStrictEqual(result.length, 0);
         });
     });
 
-    describe("#getImageProfile()", function() {
+    describe("#getProfile()", function() {
         it("should be able to retrieve an order information", async () => {
             let result = null;
 
