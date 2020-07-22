@@ -219,6 +219,19 @@ ripe.Image.prototype.setFrame = function(frame, options) {
 };
 
 /**
+ * Updates the size of the Image.
+ *
+ * @param {String} frame The Ripe instance frame to display.
+ * @param {Object} options An object with options to configure
+ * the setting of the frame.
+ */
+ripe.Image.prototype.resize = function(size) {
+    this.size = size;
+    this.update();
+};
+
+
+/**
  * Updates the Image's 'initialsBuilder' function.
  *
  * @param {Function} builder The new 'initialsBuilder' function
