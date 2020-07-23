@@ -301,7 +301,7 @@ ripe.Configurator.prototype.deinit = async function() {
  * proper animation should be performed.
  *
  * This function is meant to be executed using a recursive approach
- * and ech run represents a "tick" of the operation.
+ * and ech run represents a "tick" of the animation operation.
  *
  * @param {Object} frame The new frame to display, can use both the minimal or the extended
  * format for the description of the frame.
