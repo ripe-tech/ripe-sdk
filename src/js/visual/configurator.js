@@ -527,13 +527,18 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // configurator according to the current internal state (in data)
     // this operation waits for the proper drawing of the image (takes
     // some time and resources to be completed)
-    await this.update(
-        {},
-        {
-            animate: animate,
-            duration: animate ? duration : 0
-        }
-    );
+    try {
+        await this.update(
+            {},
+            {
+                animate: animate,
+                duration: animate ? duration : 0
+            }
+        );
+    } catch (error) {
+        this.element.classList.remove("no-drag", "animating");
+        throw error;
+    }
 
     // in case the change frame operation has been completed
     // target view and position has been reached, then it's
