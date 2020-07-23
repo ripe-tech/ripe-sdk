@@ -303,18 +303,21 @@ ripe.Configurator.prototype.deinit = async function() {
  * This function is meant to be executed using a recursive approach
  * and ech run represents a "tick" of the animation operation.
  *
- * @param {Object} frame The new frame to display, can use both the minimal or the extended
- * format for the description of the frame.
+ * @param {Object} frame The new frame to display using the extended and canonical
+ * format for the frame description (eg: side-3).
  * @param {Object} options Set of optional parameters to adjust the change frame, such as:
- * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or 'null' (without any style).
+ * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or 'null'
+ * (without any style).
  * - 'duration' - The duration of the animation in milliseconds (defaults to 'null').
- * - 'stepDuration' - If defined the total duration of the animation is calculated using the amount of steps
- * times the number of steps, instead of using the 'duration' field (defaults to 'null').
- * - 'revolutionDuration' - If defined the step duration is calculated by dividing the revolution duration
- * by the number of frames in the view (defaults to 'null').
- * - 'preventDrag' - If drag actions during an animated change of frames should be ignored (defaults to 'true').
- * - 'safe' - If requested then the operation is only performed in case the configurator is not in the
- * an equivalent state (default to 'true').
+ * - 'stepDuration' - If defined the total duration of the animation is
+ * calculated using the amount of steps times the number of steps, instead of
+ * using the 'duration' field (defaults to 'null').
+ * - 'revolutionDuration' - If defined the step duration is calculated by dividing
+ * the revolution duration by the number of frames in the view (defaults to 'null').
+ * - 'preventDrag' - If drag actions during an animated change of frames should be
+ * ignored (defaults to 'true').
+ * - 'safe' - If requested then the operation is only performed in case the configurator
+ * is not in the an equivalent state (default to 'true').
  */
 ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // parses the requested frame value according to the pre-defined
@@ -322,6 +325,12 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     const _frame = ripe.parseFrameKey(frame);
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
+
+    // in case the next position value was not properly parsed (probably undefined)
+    // then it's not possible to change frame (throws exception)
+    if (isNaN(nextPosition)) {
+        throw new RangeError("Frame position is not defined");
+    }
 
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
@@ -350,7 +359,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // (frame) does not overflow the amount of frames in for the view
     const viewFrames = this.frames[nextView];
     if (!viewFrames || nextPosition >= viewFrames) {
-        throw new RangeError("Frame " + frame + " is not supported.");
+        throw new RangeError("Frame " + frame + " is not supported");
     }
 
     // in case the safe mode is enabled and the current configuration is
@@ -983,7 +992,7 @@ ripe.Configurator.prototype._loadFrame = async function(view, position, options 
     // to be loaded, then throws an error indicating that it's
     // not possible to load the requested frame
     if (image === null || maskImage === null) {
-        throw new RangeError("Frame " + frame + " is not supported.");
+        throw new RangeError("Frame " + frame + " is not supported");
     }
 
     // triggers the async loading of the "master" mask for the current
