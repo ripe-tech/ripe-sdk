@@ -369,6 +369,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // in case the current view and position are already set then returns
     // the control flow immediately (animation safeguard)
     if (safe && this.element.dataset.view === nextView && position === nextPosition) {
+        this.element.classList.remove("no-drag", "animating");
         return;
     }
 
