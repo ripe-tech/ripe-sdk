@@ -230,7 +230,6 @@ ripe.Image.prototype.resize = function(size) {
     this.update();
 };
 
-
 /**
  * Updates the Image's 'initialsBuilder' function.
  *
