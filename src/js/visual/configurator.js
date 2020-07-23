@@ -107,51 +107,29 @@ ripe.Configurator.prototype.init = function() {
 };
 
 /**
- * Resizes the configurator's DOM element to 'size' pixels.
- * This action is performed by setting both the attributes from
- * the HTML elements and the style.
- *
- * @param {Number} size The number of pixels to resize to.
+ * The Configurator deinitializer, to be called (by the owner) when
+ * it should stop responding to updates so that any necessary
+ * cleanup operations can be executed.
  */
-ripe.Configurator.prototype.resize = async function(size) {
-    if (this.element === undefined) {
-        return;
+ripe.Configurator.prototype.deinit = async function() {
+    await this.cancel();
+
+    while (this.element.firstChild) {
+        this.element.removeChild(this.element.firstChild);
     }
 
-    size = size || this.element.clientWidth;
-    if (this.currentSize === size) {
-        return;
+    for (const bind in this._ownerBinds) {
+        this.owner.unbind(bind, this._ownerBinds[bind]);
     }
 
-    const area = this.element.querySelector(".area");
-    const frontMask = this.element.querySelector(".front-mask");
-    const back = this.element.querySelector(".back");
-    const mask = this.element.querySelector(".mask");
-    area.width = size * this.pixelRatio;
-    area.height = size * this.pixelRatio;
-    area.style.width = size + "px";
-    area.style.height = size + "px";
-    frontMask.width = size;
-    frontMask.height = size;
-    frontMask.style.width = size + "px";
-    frontMask.style.height = size + "px";
-    frontMask.style.marginLeft = `-${String(size)}px`;
-    back.width = size * this.pixelRatio;
-    back.height = size * this.pixelRatio;
-    back.style.width = size + "px";
-    back.style.height = size + "px";
-    back.style.marginLeft = `-${String(size)}px`;
-    mask.width = size;
-    mask.height = size;
-    mask.style.width = size + "px";
-    mask.style.height = size + "px";
-    this.currentSize = size;
-    await this.update(
-        {},
-        {
-            force: true
-        }
-    );
+    this._removeElementHandlers();
+
+    if (this._observer) this._observer.disconnect();
+
+    this._finalize = null;
+    this._observer = null;
+
+    ripe.Visual.prototype.deinit.call(this);
 };
 
 /**
@@ -271,29 +249,51 @@ ripe.Configurator.prototype.cancel = async function(options = {}) {
 };
 
 /**
- * The Configurator deinitializer, to be called (by the owner) when
- * it should stop responding to updates so that any necessary
- * cleanup operations can be executed.
+ * Resizes the configurator's DOM element to 'size' pixels.
+ * This action is performed by setting both the attributes from
+ * the HTML elements and the style.
+ *
+ * @param {Number} size The number of pixels to resize to.
  */
-ripe.Configurator.prototype.deinit = async function() {
-    await this.cancel();
-
-    while (this.element.firstChild) {
-        this.element.removeChild(this.element.firstChild);
+ripe.Configurator.prototype.resize = async function(size) {
+    if (this.element === undefined) {
+        return;
     }
 
-    for (const bind in this._ownerBinds) {
-        this.owner.unbind(bind, this._ownerBinds[bind]);
+    size = size || this.element.clientWidth;
+    if (this.currentSize === size) {
+        return;
     }
 
-    this._removeElementHandlers();
-
-    if (this._observer) this._observer.disconnect();
-
-    this._finalize = null;
-    this._observer = null;
-
-    ripe.Visual.prototype.deinit.call(this);
+    const area = this.element.querySelector(".area");
+    const frontMask = this.element.querySelector(".front-mask");
+    const back = this.element.querySelector(".back");
+    const mask = this.element.querySelector(".mask");
+    area.width = size * this.pixelRatio;
+    area.height = size * this.pixelRatio;
+    area.style.width = size + "px";
+    area.style.height = size + "px";
+    frontMask.width = size;
+    frontMask.height = size;
+    frontMask.style.width = size + "px";
+    frontMask.style.height = size + "px";
+    frontMask.style.marginLeft = `-${String(size)}px`;
+    back.width = size * this.pixelRatio;
+    back.height = size * this.pixelRatio;
+    back.style.width = size + "px";
+    back.style.height = size + "px";
+    back.style.marginLeft = `-${String(size)}px`;
+    mask.width = size;
+    mask.height = size;
+    mask.style.width = size + "px";
+    mask.style.height = size + "px";
+    this.currentSize = size;
+    await this.update(
+        {},
+        {
+            force: true
+        }
+    );
 };
 
 /**

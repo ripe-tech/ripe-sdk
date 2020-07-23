@@ -72,6 +72,22 @@ ripe.Image.prototype.init = function() {
 };
 
 /**
+ * The Image deinitializer, to be called (by the owner) when
+ * it should stop responding to updates so that any necessary
+ * cleanup operations can be executed.
+ */
+ripe.Image.prototype.deinit = async function() {
+    await this.cancel();
+
+    this._unregisterHandlers();
+
+    this._observer = null;
+    this.initialsBuilder = null;
+
+    ripe.Visual.prototype.deinit.call(this);
+};
+
+/**
  * This function is called (by the owner) whenever its state changes
  * so that the Image can update itself for the new state.
  *
@@ -191,19 +207,14 @@ ripe.Image.prototype.cancel = async function(options = {}) {
 };
 
 /**
- * The Image deinitializer, to be called (by the owner) when
- * it should stop responding to updates so that any necessary
- * cleanup operations can be executed.
+ * Resizes the Image's DOM element to 'size' pixels, both the
+ * width and the height of the image will reflect this value.
+ *
+ * @param {String} size The number of pixels to resize to.
  */
-ripe.Image.prototype.deinit = async function() {
-    await this.cancel();
-
-    this._unregisterHandlers();
-
-    this._observer = null;
-    this.initialsBuilder = null;
-
-    ripe.Visual.prototype.deinit.call(this);
+ripe.Image.prototype.resize = function(size) {
+    this.size = size;
+    this.update();
 };
 
 /**
@@ -215,16 +226,6 @@ ripe.Image.prototype.deinit = async function() {
  */
 ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
-    this.update();
-};
-
-/**
- * Resizes the Image's DOM element to 'size' pixels.
- *
- * @param {String} size The number of pixels to resize to.
- */
-ripe.Image.prototype.resize = function(size) {
-    this.size = size;
     this.update();
 };
 
