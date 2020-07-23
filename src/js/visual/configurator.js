@@ -300,6 +300,9 @@ ripe.Configurator.prototype.resize = async function(size) {
  * Displays a new frame, with an animation from the starting frame
  * proper animation should be performed.
  *
+ * This function is meant to be executed using a recursive approach
+ * and ech run represents a "tick" of the animation operation.
+ *
  * @param {Object} frame The new frame to display, can use both the minimal or the extended
  * format for the description of the frame.
  * @param {Object} options Set of optional parameters to adjust the change frame, such as:
@@ -357,7 +360,8 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     }
 
     // in case the safe mode is enabled and there's an animation running
-    // then this request is going to be ignored
+    // then this request is going to be ignored (not possible to change
+    // frame when another animation is running)
     if (safe && this.element.classList.contains("animating")) {
         return;
     }
@@ -506,7 +510,7 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // if the prevent drag is set and there's an animation then
     // ignores drag movements until the animation is finished
     preventDrag = preventDrag && (animate || duration);
-    preventDrag && this.element.classList.add("no-drag");
+    if (preventDrag) this.element.classList.add("no-drag");
 
     // calculates the amount of time that the current operation is
     // going to sleep to able to correctly address the animation sequence
@@ -523,17 +527,25 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
     this.trigger("changed_frame", newFrame);
 
-    // runs the update operation that should sync the visuals of the
-    // configurator according to the current internal state (in data)
-    // this operation waits for the proper drawing of the image (takes
-    // some time and resources to be completed)
-    await this.update(
-        {},
-        {
-            animate: animate,
-            duration: animate ? duration : 0
-        }
-    );
+    try {
+        // runs the update operation that should sync the visuals of the
+        // configurator according to the current internal state (in data)
+        // this operation waits for the proper drawing of the image (takes
+        // some time and resources to be completed)
+        await this.update(
+            {},
+            {
+                animate: animate,
+                duration: animate ? duration : 0
+            }
+        );
+    } catch (err) {
+        // removes the locking classes as the current operation has been
+        // finished, effectively re-allowing: dragging and animated operations
+        // and then re-throws the exception caused by update
+        this.element.classList.remove("no-drag", "animating");
+        throw err;
+    }
 
     // in case the change frame operation has been completed
     // target view and position has been reached, then it's
@@ -1371,7 +1383,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
         const down = self.down;
         self.mousePosX = event.pageX;
         self.mousePosY = event.pageY;
-        down && self._parseDrag();
+        if (down) self._parseDrag();
     });
 
     area.addEventListener("click", function(event) {
