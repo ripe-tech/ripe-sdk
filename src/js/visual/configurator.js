@@ -542,13 +542,16 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     } catch (err) {
         // removes the locking classes as the current operation has been
         // finished, effectively re-allowing: dragging and animated operations
+        // and then re-throws the exception caused by update
         this.element.classList.remove("no-drag", "animating");
+        throw err;
     }
 
     // in case the change frame operation has been completed
     // target view and position has been reached, then it's
     // time collect the garbage and return control flow
     if (view === nextView && stepPosition === nextPosition) {
+        this.element.classList.remove("no-drag", "animating");
         return;
     }
 
