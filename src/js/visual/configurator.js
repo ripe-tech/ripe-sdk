@@ -357,7 +357,8 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     }
 
     // in case the safe mode is enabled and there's an animation running
-    // then this request is going to be ignored
+    // then this request is going to be ignored (not possible to change
+    // frame when another animation is running)
     if (safe && this.element.classList.contains("animating")) {
         return;
     }
@@ -365,7 +366,6 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // in case the current view and position are already set then returns
     // the control flow immediately (animation safeguard)
     if (safe && this.element.dataset.view === nextView && position === nextPosition) {
-        this.element.classList.remove("no-drag", "animating");
         return;
     }
 
@@ -506,28 +506,28 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
     // if the prevent drag is set and there's an animation then
     // ignores drag movements until the animation is finished
     preventDrag = preventDrag && (animate || duration);
-    preventDrag && this.element.classList.add("no-drag");
+    if (preventDrag) this.element.classList.add("no-drag");
 
-    // calculates the amount of time that the current operation is
-    // going to sleep to able to correctly address the animation sequence
-    // (valid only for no animation scenarios, no cross fade) if this
-    // sleep time is valid (greater than zero) tuns the async based
-    // await operation for the amount of time
-    const sleepTime = animate ? 0 : stepDuration - reducedTime;
-    if (sleepTime > 0) {
-        await new Promise(resolve => setTimeout(() => resolve(), sleepTime));
-    }
-
-    // computes the frame key (normalized) and then triggers an event
-    // notifying any listener about the new frame that was set
-    const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    this.trigger("changed_frame", newFrame);
-
-    // runs the update operation that should sync the visuals of the
-    // configurator according to the current internal state (in data)
-    // this operation waits for the proper drawing of the image (takes
-    // some time and resources to be completed)
     try {
+        // calculates the amount of time that the current operation is
+        // going to sleep to able to correctly address the animation sequence
+        // (valid only for no animation scenarios, no cross fade) if this
+        // sleep time is valid (greater than zero) tuns the async based
+        // await operation for the amount of time
+        const sleepTime = animate ? 0 : stepDuration - reducedTime;
+        if (sleepTime > 0) {
+            await new Promise(resolve => setTimeout(() => resolve(), sleepTime));
+        }
+
+        // computes the frame key (normalized) and then triggers an event
+        // notifying any listener about the new frame that was set
+        const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
+        this.trigger("changed_frame", newFrame);
+
+        // runs the update operation that should sync the visuals of the
+        // configurator according to the current internal state (in data)
+        // this operation waits for the proper drawing of the image (takes
+        // some time and resources to be completed)
         await this.update(
             {},
             {
@@ -535,24 +535,26 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
                 duration: animate ? duration : 0
             }
         );
+
+        // in case the change frame operation has been completed
+        // target view and position has been reached, then it's
+        // time collect the garbage and return control flow
+        if (view === nextView && stepPosition === nextPosition) {
+            return;
+        }
+
+        // creates a new options instance that is going to be used in the
+        // possible next tick of the operation
+        options = Object.assign({}, options, { safe: false, first: false });
+
+        // runs the next tick operation to change the frame of the current
+        // configurator to the next one (iteration cycle)
+        await this.changeFrame(frame, options);
     } finally {
+        // removes the locking classes as the current operation has been
+        // finished, effectively re-allowing: dragging and animated operations
         this.element.classList.remove("no-drag", "animating");
     }
-
-    // in case the change frame operation has been completed
-    // target view and position has been reached, then it's
-    // time collect the garbage and return control flow
-    if (view === nextView && stepPosition === nextPosition) {
-        return;
-    }
-
-    // creates a new options instance that is going to be used in the
-    // possible next tick of the operation
-    options = Object.assign({}, options, { safe: false, first: false });
-
-    // runs the next tick operation to change the frame of the current
-    // configurator to the next one (iteration cycle)
-    await this.changeFrame(frame, options);
 };
 
 /**
@@ -1374,7 +1376,7 @@ ripe.Configurator.prototype._registerHandlers = function() {
         const down = self.down;
         self.mousePosX = event.pageX;
         self.mousePosY = event.pageY;
-        down && self._parseDrag();
+        if (down) self._parseDrag();
     });
 
     area.addEventListener("click", function(event) {
