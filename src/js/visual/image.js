@@ -219,11 +219,9 @@ ripe.Image.prototype.setFrame = function(frame, options) {
 };
 
 /**
- * Updates the size of the Image.
+ * Resizes the Image's DOM element to 'size' pixels.
  *
- * @param {String} frame The Ripe instance frame to display.
- * @param {Object} options An object with options to configure
- * the setting of the frame.
+ * @param {String} size The number of pixels to resize to.
  */
 ripe.Image.prototype.resize = function(size) {
     this.size = size;
