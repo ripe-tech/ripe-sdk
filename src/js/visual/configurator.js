@@ -535,16 +535,14 @@ ripe.Configurator.prototype.changeFrame = async function(frame, options = {}) {
                 duration: animate ? duration : 0
             }
         );
-    } catch (error) {
+    } finally {
         this.element.classList.remove("no-drag", "animating");
-        throw error;
     }
 
     // in case the change frame operation has been completed
     // target view and position has been reached, then it's
     // time collect the garbage and return control flow
     if (view === nextView && stepPosition === nextPosition) {
-        this.element.classList.remove("no-drag", "animating");
         return;
     }
 
