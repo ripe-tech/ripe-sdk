@@ -103,6 +103,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const width = this.element.dataset.width || this.width;
     const height = this.element.dataset.height || this.height;
     const crop = this.element.dataset.crop || this.crop;
+    const showInitials = options.showInitials || this.showInitials;
     const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
 
     // in case the state is defined tries to gather the appropriate
@@ -114,7 +115,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         this.engraving = base.engraving || null;
     }
 
-    const initialsSpec = this.showInitials
+    const initialsSpec = showInitials
         ? this.initialsBuilder(this.initials, this.engraving, this.element)
         : {};
 
