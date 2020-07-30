@@ -45,7 +45,7 @@ ripe.Ripe.prototype.getJustifications = function(options, callback) {
  * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The orders result list.
+ * @returns {Promise} The justifications result list.
  */
 ripe.Ripe.prototype.getJustificationsP = function(options) {
     return new Promise((resolve, reject) => {

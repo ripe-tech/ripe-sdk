@@ -45,7 +45,7 @@ ripe.Ripe.prototype.getCountryGroups = function(options, callback) {
  * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The orders result list.
+ * @returns {Promise} The country group result list.
  */
 ripe.Ripe.prototype.getCountryGroupsP = function(options) {
     return new Promise((resolve, reject) => {
@@ -82,7 +82,7 @@ ripe.Ripe.prototype.getCountryGroup = function(id, options, callback) {
  *
  * @param {Object} id Id of the intended country group.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The orders result list.
+ * @returns {Promise} The country group result list.
  */
 ripe.Ripe.prototype.getCountryGroupP = function(id, options) {
     return new Promise((resolve, reject) => {
@@ -120,7 +120,7 @@ ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callbac
  *
  * @param {Object} countryGroup An object with information needed to create a country group ex: {name: "Europe 1", currency: "EUR", countries: ["Portugal, Spain, France"]}.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The orders result list.
+ * @returns {Promise} The country group result list.
  */
 ripe.Ripe.prototype.createCountryGroupP = function(countryGroup, options) {
     return new Promise((resolve, reject) => {
@@ -160,7 +160,7 @@ ripe.Ripe.prototype.updateCountryGroup = function(id, countryGroup, options, cal
  * @param {Object} id Id of the country group to be updated.
  * @param {Object} countryGroup An object with the updated information of the country group.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The orders result list.
+ * @returns {Promise} The country group result list.
  */
 ripe.Ripe.prototype.updateCountryGroupP = function(id, countryGroup, options) {
     return new Promise((resolve, reject) => {
@@ -197,7 +197,7 @@ ripe.Ripe.prototype.deleteCountryGroup = function(id, options, callback) {
  *
  * @param {Object} id Id of the country group to be deleted.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The orders result list.
+ * @returns {Promise} The country group result list.
  */
 ripe.Ripe.prototype.deleteCountryGroupP = function(id, options) {
     return new Promise((resolve, reject) => {
