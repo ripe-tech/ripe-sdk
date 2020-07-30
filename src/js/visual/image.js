@@ -97,14 +97,13 @@ ripe.Image.prototype.deinit = async function() {
 ripe.Image.prototype.update = async function(state, options = {}) {
     // gathers the complete set of data values from the element if existent
     // defaulting to the instance one in case their are not defined
-    const frame = this.element.dataset.frame || this.frame;
-    const format = this.element.dataset.format || this.format;
-    const size = this.element.dataset.size || this.size;
-    const width = this.element.dataset.width || this.width;
-    const height = this.element.dataset.height || this.height;
-    const crop = this.element.dataset.crop || this.crop;
-    const showInitials = options.showInitials || this.showInitials;
-    const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
+    const frame = options.frame || this.element.dataset.frame || this.frame;
+    const format = options.format || this.element.dataset.format || this.format;
+    const size = options.size || this.element.dataset.size || this.size;
+    const width = options.width || this.element.dataset.width || this.width;
+    const height = options.height || this.element.dataset.height || this.height;
+    const crop = options.crop || this.element.dataset.crop || this.crop;
+    const initialsGroup = options.initialsGroup || this.element.dataset.initialsGroup || this.initialsGroup;
 
     // in case the state is defined tries to gather the appropriate
     // sate options for both initials and engraving taking into
@@ -115,7 +114,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         this.engraving = base.engraving || null;
     }
 
-    const initialsSpec = showInitials
+    const initialsSpec = this.showInitials
         ? this.initialsBuilder(this.initials, this.engraving, this.element)
         : {};
 
@@ -227,6 +226,16 @@ ripe.Image.prototype.resize = function(size) {
  */
 ripe.Image.prototype.setFrame = function(frame, options) {
     this.frame = frame;
+    this.update();
+};
+
+/**
+ * Updates the Image's 'showInitials' flag.
+ *
+ * @param {String} value The new 'showInitials' value to be used.
+ */
+ripe.Image.prototype.setShowInitials = function(value) {
+    this.showInitials = value;
     this.update();
 };
 
