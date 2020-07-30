@@ -37,7 +37,7 @@ ripe.Ripe.prototype.getPriceRules = function(options, callback) {
  * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The orders result list.
+ * @returns {Promise} The price rules list.
  */
 ripe.Ripe.prototype.getPriceRulesP = function(options) {
     return new Promise((resolve, reject) => {
