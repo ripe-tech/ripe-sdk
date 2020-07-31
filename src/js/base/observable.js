@@ -21,9 +21,18 @@ ripe.Observable = function() {
 };
 
 /**
- * @ignore
+ * The initializer of the class, called whenever this
+ * observable starts its activity.
  */
 ripe.Observable.prototype.init = function() {};
+
+/**
+ * The deinitializer of the class, called whenever this
+ * observable ceases its activity.
+ */
+ripe.Observable.prototype.deinit = async function() {
+    this.callbacks = null;
+};
 
 /**
  * Binds to an event by providing a block that will receive the event payload as a
@@ -96,14 +105,6 @@ ripe.Observable.prototype.runCallbacksWait = async function(event, ...args) {
 ripe.Observable.prototype.runCallbackNoWait = async function(event, ...args) {
     const result = await this.runCallbacks(event, false, ...args);
     return result;
-};
-
-/**
- * The deinitializer of the class, called whenever this
- * observable ceases its activity.
- */
-ripe.Observable.prototype.deinit = async function() {
-    this.callbacks = null;
 };
 
 /**

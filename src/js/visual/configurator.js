@@ -133,6 +133,43 @@ ripe.Configurator.prototype.deinit = async function() {
 };
 
 /**
+ * Updates configurator current options with the ones provided.
+ *
+ * @param {Object} options Set of optional parameters to adjust the Configurator, such as:
+ * - 'sensitivity' - Rotation sensitivity to the user mouse drag action.
+ * - 'duration' - The duration in milliseconds that the transition should take.
+ * - 'useMasks' - Usage of masks in the current model, necessary for the part highlighting action.
+ * - 'configAnimate' - The configurator animation style: 'simple' (fade in), 'cross' (crossfade) or 'null'.
+ * @param {Boolean} update If an update operation should be executed after
+ * the options updated operation has been performed.
+ */
+ripe.Configurator.prototype.updateOptions = async function(options, update = true) {
+    ripe.Visual.prototype.updateOptions.call(this, options);
+
+    this.width = options.width || this.width;
+    this.height = options.height || this.height;
+    this.format = options.format || this.format;
+    this.size = options.size || this.size;
+    this.mutations = options.mutations || this.mutations;
+    this.maxSize = options.maxSize || this.maxSize;
+    this.pixelRatio = options.pixelRation || this.pixelRatio;
+    this.sensitivity = options.sensitivity || this.sensitivity;
+    this.verticalThreshold = options.verticalThreshold || this.verticalThreshold;
+    this.clickThreshold = options.clickThreshold || this.clickThreshold;
+    this.interval = options.interval || this.interval;
+    this.duration = options.duration || this.duration;
+    this.preloadDelay = options.preloadDelay || this.preloadDelay;
+    this.maskOpacity = options.maskOpacity || this.maskOpacity;
+    this.maskDuration = options.maskDuration || this.maskDuration;
+    this.noMasks = options.noMasks || this.noMasks;
+    this.useMasks = options.useMasks || this.useMasks;
+    this.configAnimate = options.configAnimate || this.configAnimate;
+    this.viewAnimate = options.viewAnimate || this.viewAnimate;
+
+    if (update) await this.update();
+};
+
+/**
  * This function is called (by the owner) whenever its state changes
  * so that the Configurator can update itself for the new state.
  *
