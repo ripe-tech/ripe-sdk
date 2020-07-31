@@ -88,6 +88,30 @@ ripe.Image.prototype.deinit = async function() {
 };
 
 /**
+ * Updates the Image's current options with the ones provided.
+ *
+ * @param {Object} options Set of optional parameters to adjust the Image, such as:
+ * - 'format' - The format of the image, (eg: png, jpg, svg, etc.).
+ * - 'crop' - A Boolean indicating if it is to crop the image composition.
+ * - 'initialsGroup' - The group in which the image initials belongs to.
+ * @param {Boolean} update If an update operation should be executed after
+ * the options updated operation has been performed.
+ */
+ripe.Image.prototype.updateOptions = async function(options, update = true) {
+    ripe.Visual.prototype.updateOptions.call(this, options);
+
+    this.frame = options.frame || this.frame;
+    this.format = options.format || this.format;
+    this.size = options.size || this.size;
+    this.width = options.width || this.width;
+    this.height = options.height || this.height;
+    this.crop = options.crop || this.crop;
+    this.initialsGroup = options.initialsGroup || this.initialsGroup;
+
+    if (update) await this.update();
+};
+
+/**
  * This function is called (by the owner) whenever its state changes
  * so that the Image can update itself for the new state.
  *
