@@ -97,14 +97,13 @@ ripe.Image.prototype.deinit = async function() {
 ripe.Image.prototype.update = async function(state, options = {}) {
     // gathers the complete set of data values from the element if existent
     // defaulting to the instance one in case their are not defined
-    const frame = options.frame || this.element.dataset.frame || this.frame;
-    const format = options.format || this.element.dataset.format || this.format;
-    const size = options.size || this.element.dataset.size || this.size;
-    const width = options.width || this.element.dataset.width || this.width;
-    const height = options.height || this.element.dataset.height || this.height;
-    const crop = options.crop || this.element.dataset.crop || this.crop;
-    const initialsGroup =
-        options.initialsGroup || this.element.dataset.initialsGroup || this.initialsGroup;
+    const frame = this.element.dataset.frame || this.frame;
+    const format = this.element.dataset.format || this.format;
+    const size = this.element.dataset.size || this.size;
+    const width = this.element.dataset.width || this.width;
+    const height = this.element.dataset.height || this.height;
+    const crop = this.element.dataset.crop || this.crop;
+    const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
 
     // in case the state is defined tries to gather the appropriate
     // sate options for both initials and engraving taking into
@@ -231,12 +230,13 @@ ripe.Image.prototype.setFrame = function(frame, options) {
 };
 
 /**
- * Updates the Image's 'showInitials' flag.
+ * Updates the Image's 'showInitials' flag that indicates
+ * if the initials should be display in the image.
  *
- * @param {String} value The new 'showInitials' value to be used.
+ * @param {String} showInitials If the image should display initials.
  */
-ripe.Image.prototype.setShowInitials = function(value) {
-    this.showInitials = value;
+ripe.Image.prototype.setShowInitials = function(showInitials) {
+    this.showInitials = showInitials;
     this.update();
 };
 
