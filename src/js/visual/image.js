@@ -230,6 +230,17 @@ ripe.Image.prototype.setFrame = function(frame, options) {
 };
 
 /**
+ * Updates the Image's 'showInitials' flag that indicates
+ * if the initials should be display in the image.
+ *
+ * @param {String} showInitials If the image should display initials.
+ */
+ripe.Image.prototype.setShowInitials = function(showInitials) {
+    this.showInitials = showInitials;
+    this.update();
+};
+
+/**
  * Updates the Image's 'initialsBuilder' function.
  *
  * @param {Function} builder The new 'initialsBuilder' function
