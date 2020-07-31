@@ -43,16 +43,6 @@ ripe.Interactable.prototype.init = function() {
 };
 
 /**
- * Callback function to be called when the owner configurator has
- * been changed and some kind of visual update should take place.
- *
- * @param {Object} state The new configuration state.
- * @param {Object} options Set of update options that change the way
- * the update operation is going to be performed.
- */
-ripe.Interactable.prototype.update = async function(state, options = {}) {};
-
-/**
  * The deinitializer to be called (by the owner) when
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
@@ -62,3 +52,27 @@ ripe.Interactable.prototype.deinit = async function() {
 
     ripe.Observable.prototype.deinit.call(this);
 };
+
+/**
+ * Updates the current set of options (object) with the partial
+ * options object provided as argument.
+ *
+ * The merge operation between both objects may override the current
+ * set of configurations.
+ *
+ * @param {Object} options Map with the partial set of values to update
+ * the currently set options
+ */
+ripe.Interactable.prototype.updateOptions = async function(options) {
+    this.options = Object.assign(this.options, options);
+};
+
+/**
+ * Callback function to be called when the owner configurator has
+ * been changed and some kind of visual update should take place.
+ *
+ * @param {Object} state The new configuration state.
+ * @param {Object} options Set of update options that change the way
+ * the update operation is going to be performed.
+ */
+ripe.Interactable.prototype.update = async function(state, options = {}) {};

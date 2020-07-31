@@ -135,13 +135,17 @@ ripe.Configurator.prototype.deinit = async function() {
 /**
  * Updates configurator current options with the ones provided.
  *
- * @param {*} options Set of optional parameters to adjust the Configurator, such as:
+ * @param {Object} options Set of optional parameters to adjust the Configurator, such as:
  * - 'sensitivity' - Rotation sensitivity to the user mouse drag action.
  * - 'duration' - The duration in milliseconds that the transition should take.
  * - 'useMasks' - Usage of masks in the current model, necessary for the part highlighting action.
  * - 'configAnimate' - The configurator animation style: 'simple' (fade in), 'cross' (crossfade) or 'null'.
+ * @param {Boolean} update If an update operation should be executed after
+ * the options updated operation has been performed.
  */
-ripe.Configurator.prototype.updateOptions = async function(options) {
+ripe.Configurator.prototype.updateOptions = async function(options, update = true) {
+    ripe.Visual.prototype.updateOptions.call(this, options);
+
     this.width = options.width || this.width;
     this.height = options.height || this.height;
     this.format = options.format || this.format;
@@ -162,7 +166,7 @@ ripe.Configurator.prototype.updateOptions = async function(options) {
     this.configAnimate = options.configAnimate || this.configAnimate;
     this.viewAnimate = options.viewAnimate || this.viewAnimate;
 
-    await this.update();
+    if (update) await this.update();
 };
 
 /**
