@@ -105,7 +105,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.size = options.size || this.size;
     this.width = options.width || this.width;
     this.height = options.height || this.height;
-    this.crop = options.crop || this.crop;
+    this.crop = options.crop === undefined ? this.crop : options.crop;
     this.initialsGroup = options.initialsGroup || this.initialsGroup;
 
     if (update) await this.update();
