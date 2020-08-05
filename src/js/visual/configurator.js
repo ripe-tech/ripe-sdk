@@ -146,25 +146,32 @@ ripe.Configurator.prototype.deinit = async function() {
 ripe.Configurator.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
-    this.width = options.width || this.width;
-    this.height = options.height || this.height;
-    this.format = options.format || this.format;
-    this.size = options.size || this.size;
-    this.mutations = options.mutations || this.mutations;
-    this.maxSize = options.maxSize || this.maxSize;
-    this.pixelRatio = options.pixelRation || this.pixelRatio;
-    this.sensitivity = options.sensitivity || this.sensitivity;
-    this.verticalThreshold = options.verticalThreshold || this.verticalThreshold;
-    this.clickThreshold = options.clickThreshold || this.clickThreshold;
-    this.interval = options.interval || this.interval;
-    this.duration = options.duration || this.duration;
-    this.preloadDelay = options.preloadDelay || this.preloadDelay;
-    this.maskOpacity = options.maskOpacity || this.maskOpacity;
-    this.maskDuration = options.maskDuration || this.maskDuration;
-    this.noMasks = options.noMasks || this.noMasks;
-    this.useMasks = options.useMasks || this.useMasks;
-    this.configAnimate = options.configAnimate || this.configAnimate;
-    this.viewAnimate = options.viewAnimate || this.viewAnimate;
+    this.width = options.width === undefined ? this.width : options.width;
+    this.height = options.height === undefined ? this.height : options.height;
+    this.format = options.format === undefined ? this.format : options.format;
+    this.size = options.size === undefined ? this.size : options.size;
+    this.mutations = options.mutations === undefined ? this.mutations : options.mutations;
+    this.maxSize = options.maxSize === undefined ? this.maxSize : this.maxSize;
+    this.pixelRatio = options.pixelRation === undefined ? this.pixelRatio : options.pixelRatio;
+    this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
+    this.verticalThreshold =
+        options.verticalThreshold === undefined
+            ? this.verticalThreshold
+            : options.verticalThreshold;
+    this.clickThreshold =
+        options.clickThreshold === undefined ? this.clickThreshold : options.clickThreshold;
+    this.interval = options.interval === undefined ? this.interval : options.interval;
+    this.duration = options.duration === undefined ? this.duration : options.duration;
+    this.preloadDelay =
+        options.preloadDelay === undefined ? this.preloadDelay : options.preloadDelay;
+    this.maskOpacity = options.maskOpacity === undefined ? this.maskOpacity : options.maskOpacity;
+    this.maskDuration =
+        options.maskDuration === undefined ? this.maskDuration : options.maskDuration;
+    this.noMasks = options.noMasks === undefined ? this.noMasks : options.noMasks;
+    this.useMasks = options.useMasks === undefined ? this.useMasks : options.useMasks;
+    this.configAnimate =
+        options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
+    this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
 
     if (update) await this.update();
 };
