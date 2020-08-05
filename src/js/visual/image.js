@@ -100,13 +100,14 @@ ripe.Image.prototype.deinit = async function() {
 ripe.Image.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
-    this.frame = options.frame || this.frame;
-    this.format = options.format || this.format;
-    this.size = options.size || this.size;
-    this.width = options.width || this.width;
-    this.height = options.height || this.height;
+    this.frame = options.frame === undefined ? this.frame : options.frame;
+    this.format = options.format === undefined ? this.format : options.format;
+    this.size = options.size === undefined ? this.size : options.size;
+    this.width = options.width === undefined ? this.width : options.width;
+    this.height = options.height === undefined ? this.height : options.height;
     this.crop = options.crop === undefined ? this.crop : options.crop;
-    this.initialsGroup = options.initialsGroup || this.initialsGroup;
+    this.initialsGroup =
+        options.initialsGroup === undefined ? this.initialsGroup : options.initialsGroup;
 
     if (update) await this.update();
 };
