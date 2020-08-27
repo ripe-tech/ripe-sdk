@@ -19,7 +19,7 @@ describe("ProfileAPI", function() {
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
-            assert.strictEqual(result.username, "ripe-bot");
+            assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
             result = await remote.getProfilesP();
