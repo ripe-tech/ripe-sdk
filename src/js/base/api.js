@@ -331,8 +331,13 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
         .then(async response => {
             let result = null;
             const isValid = validCodes.includes(response.status);
+            const contentType = response.headers.get("content-type").toLowerCase();
             try {
-                result = await response.json();
+                if (contentType.startsWith("application/json")) {
+                    result = await response.json();
+                } else {
+                    result = await response.blob();
+                }
             } catch (error) {
                 response.error = response.error || error;
                 callback.call(context, result, isValid, response);
