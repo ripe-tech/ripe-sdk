@@ -17,7 +17,7 @@ describe("BrandAPI", function() {
                 method: "minimum_initials"
             });
 
-            assert.strictEqual(result, "1");
+            assert.strictEqual(await result.text(), "1");
 
             result = await remote.runLogicP({
                 brand: "dummy",
@@ -25,7 +25,7 @@ describe("BrandAPI", function() {
                 method: "maximum_initials"
             });
 
-            assert.strictEqual(result, "4");
+            assert.strictEqual(await result.text(), "4");
         });
     });
 
