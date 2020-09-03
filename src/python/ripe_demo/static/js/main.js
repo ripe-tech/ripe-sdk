@@ -18,8 +18,7 @@ window.onload = function () {
     var clientSecret = _body.dataset.client_secret || null;
     var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
     var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
-    var renderMode = "PRC";
-
+    
     var parts = [];
     var partsMap = {};
 
@@ -324,7 +323,6 @@ window.onload = function () {
 
             configurator.isFirst = true;
             configurator.CSRInit(THREE);
-            configurator.setRenderMode(renderMode);
 
             configurator.bind("loaded", function () {
                 if (configurator.isFirst) configurator.isFirst = false;
@@ -340,14 +338,7 @@ window.onload = function () {
             
             toggleRenderMode &&
                 toggleRenderMode.addEventListener("click", function () {
-                    
-                    if (renderMode == "PRC") {
-                        configurator.setRenderMode("CSR");
-                        renderMode = "CSR";
-                    } else if (renderMode == "CSR") {
-                        configurator.setRenderMode("PRC");
-                        renderMode = "PRC";
-                    }
+                    configurator.toggleRenderMode();
                 });
 
 

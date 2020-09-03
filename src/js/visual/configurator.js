@@ -44,6 +44,7 @@ ripe.Configurator.prototype = ripe.build(ripe.Visual.prototype);
 ripe.Configurator.prototype.init = function () {
     ripe.Visual.prototype.init.call(this);
 
+    this.renderMode = "PRC";
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
     this.format = this.options.format || null;
@@ -89,6 +90,8 @@ ripe.Configurator.prototype.init = function () {
     // the initial layout update operation if the
     // owner has a model and brand set (is ready)
     this._initLayout();
+    this.setRenderMode(this.renderMode);
+
     if (this.owner.brand && this.owner.model) {
         this._updateConfig();
     }
@@ -142,19 +145,17 @@ ripe.Configurator.prototype.CSRInit = function (THREE) {
     this.renderer.toneMappingExposure = this.params.exposure;
     this.renderer.shadowMap.enabled = true;
 
-    console.log(this.renderer);
-
     const areaCSR = this.element.querySelector(".CSR-area");
-        
+
     areaCSR.appendChild(this.renderer.domElement);
-    
-    this.geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );
+
+    this.geometry = new THREE.BoxGeometry(4, 4, 4);
     this.material = new THREE.MeshNormalMaterial();
-    
-    this.mesh = new THREE.Mesh( this.geometry, this.material );
+
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
 
-    this.animate();
+    this.renderer.render(this.scene, this.camera);
 
     /*
 
@@ -169,30 +170,38 @@ ripe.Configurator.prototype.CSRInit = function (THREE) {
     */
 }
 
+ripe.Configurator.prototype.toggleRenderMode = function () {
+    if (this.renderMode == "PRC") this.renderMode = "CSR";
+    else if (this.renderMode == "CSR") this.renderMode = "PRC";
+
+    this.setRenderMode(this.renderMode);
+}
+
 ripe.Configurator.prototype.setRenderMode = function (mode) {
     const area = this.element.querySelector(".area");
+    const back = this.element.querySelector(".back");
     const areaCSR = this.element.querySelector(".CSR-area");
 
+    console.log(back)
     console.log(area);
     console.log(areaCSR);
 
     if (mode == "PRC") {
         console.log("PRC Ma dude");
-        area.style.display = "none";
-        areaCSR.style.display = "inline-block";
+        area.style.display = "inline-block";
+        back.style.display = "inline-block";
+        areaCSR.style.display = "none";
     } else if (mode == "CSR") {
         console.log("CSR MODE ACTIVATED");
-        area.style.display = "inline-block";
-        areaCSR.style.display = "none";
-        this.animate();
+        area.style.display = "none";
+        back.style.display = "none";
+        areaCSR.style.display = "inline-block";
+
     }
 }
 
-ripe.Configurator.prototype.animate = async function() {
-    this.mesh.rotation.x += 0.01;
-    this.mesh.rotation.y += 0.02;
+ripe.Configurator.prototype.loadMesh = async function () {
 
-    this.renderer.render( this.scene, this.camera );
 }
 
 /**
@@ -672,8 +681,13 @@ ripe.Configurator.prototype.changeFrame = async function (frame, options = {}) {
 
     // computes the frame key (normalized) and then triggers an event
     // notifying any listener about the new frame that was set
-    const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    this.trigger("changed_frame", newFrame);
+    if (this.renderMode == "PRC") {
+        const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
+        this.trigger("changed_frame", newFrame);    
+    } else {
+        this.mesh.rotation.y = nextPosition / 24 * Math.PI;
+        this.renderer.render(this.scene, this.camera);
+    }
 
     try {
         // runs the update operation that should sync the visuals of the
@@ -1435,6 +1449,7 @@ ripe.Configurator.prototype._preload = async function (useChain) {
             // retrieves the next frame to be loaded
             // and its corresponding image element
             // and adds the preloading class to it
+
             const frame = work.pop();
             const framesBuffer = this.element.querySelector(".frames-buffer");
             const reference = framesBuffer.querySelector(`img[data-frame='${String(frame)}']`);
@@ -1450,6 +1465,8 @@ ripe.Configurator.prototype._preload = async function (useChain) {
             });
             promise.then(() => mark(reference));
             if (useChain) await promise;
+
+
             await render();
         };
 
