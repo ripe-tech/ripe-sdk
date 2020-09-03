@@ -11,13 +11,12 @@
             <script type="text/javascript" src="{{ touch('//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js') }}"></script>
             <script type="text/javascript" src="{{ touch('//libs.platforme.com/uxf/js/ux-min.js') }}"></script>
             <script type="text/javascript" src="{{ touch('//libs.platforme.com/layout/js/layout-min.js') }}"></script>
-            {% if own.is_devel() %}
-                <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/ripe.css') }}" />
-                <script type="text/javascript" src="{{ url_for('static', filename = 'js/ripe.js', compress = 'js') }}"></script>
-            {% else %}
-                <link rel="stylesheet" type="text/css" href="{{ touch('//sdk.platforme.com/css/ripe.css') }}" />
-                <script type="text/javascript" src="{{ touch('//sdk.platforme.com/js/ripe.js') }}"></script>
-            {% endif %}
+            
+            <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/ripe.css') }}" />
+            <script type="text/javascript" src="{{ url_for('static', filename = 'js/ripe.js', compress = 'js') }}"></script>
+            <script src="https://threejs.org/build/three.js"></script>
+            
+            
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js', compress = 'js') }}"></script>
             <title>{{ title }}{% block title %}RIPE SDK Demo{% endblock %}</title>
         {% endblock %}

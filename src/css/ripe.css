@@ -19,6 +19,10 @@
     display: inline-block;
 }
 
+.configurator .csr-area {
+    display: inline-block;
+}
+
 .configurator .frames-buffer {
     display: none;
 }

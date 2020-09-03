@@ -4,7 +4,7 @@
  */
 var FACES = ["side", "top", "front"];
 
-window.onload = function() {
+window.onload = function () {
     var element = document.getElementById("configurator");
     var _body = document.querySelector("body");
     var url = _body.dataset.url || "https://sandbox.platforme.com/api/";
@@ -18,6 +18,7 @@ window.onload = function() {
     var clientSecret = _body.dataset.client_secret || null;
     var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
     var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
+    var renderMode = "PRC";
 
     var parts = [];
     var partsMap = {};
@@ -35,7 +36,7 @@ window.onload = function() {
         guessUrl: guessUrl
     });
 
-    var randomize = async function() {
+    var randomize = async function () {
         var parts = [];
         for (var key in partsMap) {
             var triplets = partsMap[key];
@@ -46,7 +47,7 @@ window.onload = function() {
         await ripe.setParts(parts, true, { partEvents: false });
     };
 
-    var unique = function() {
+    var unique = function () {
         var count = 1;
         for (var key in partsMap) {
             var triplets = partsMap[key];
@@ -55,7 +56,7 @@ window.onload = function() {
         return count;
     };
 
-    var beautify = function(value) {
+    var beautify = function (value) {
         var buffer = [];
         var parts = value.split("_");
         for (var index = 0; index < parts.length; index++) {
@@ -65,7 +66,7 @@ window.onload = function() {
         return buffer.join(" ");
     };
 
-    var bestFace = function(config) {
+    var bestFace = function (config) {
         var faces = config.faces || [];
         var bestFace = null;
         for (var index = 0; index < FACES.length; index++) {
@@ -82,7 +83,7 @@ window.onload = function() {
         return faces.length > 0 ? faces[0] : null;
     };
 
-    var init = function(instance) {
+    var init = function (instance) {
         initBase(instance);
         initHeader(instance);
         initOAuth(instance);
@@ -90,10 +91,10 @@ window.onload = function() {
         initInitials(instance);
     };
 
-    var initBase = function() {
+    var initBase = function () {
         // registers for the key down event on the global document element
         // to listen to some of the key strokes (global operations)
-        document.addEventListener("keydown", async function(event) {
+        document.addEventListener("keydown", async function (event) {
             if (event.ctrlKey && event.keyCode === 90) {
                 await ripe.undo();
             }
@@ -104,25 +105,25 @@ window.onload = function() {
         });
     };
 
-    var initHeader = function() {
+    var initHeader = function () {
         var setPart = document.getElementById("set-part");
         var setMessage = document.getElementById("set-message");
         var getPrice = document.getElementById("get-price");
         var getCombinations = document.getElementById("get-combinations");
 
         setPart &&
-            setPart.addEventListener("click", function() {
+            setPart.addEventListener("click", function () {
                 randomize();
             });
 
         setMessage &&
-            setMessage.addEventListener("click", function() {
+            setMessage.addEventListener("click", function () {
                 alert("Not implemented");
             });
 
         getPrice &&
-            getPrice.addEventListener("click", function() {
-                ripe.getPrice(function(value) {
+            getPrice.addEventListener("click", function () {
+                ripe.getPrice(function (value) {
                     if (value) {
                         alert(String(value.total.price_final) + " " + value.total.currency);
                     } else {
@@ -132,27 +133,29 @@ window.onload = function() {
             });
 
         getCombinations &&
-            getCombinations.addEventListener("click", function() {
-                ripe.getCombinations(function(combinations) {
+            getCombinations.addEventListener("click", function () {
+                ripe.getCombinations(function (combinations) {
                     alert(
                         "There are <strong>" +
-                            String(combinations.length.formatMoney(0)) +
-                            "</strong> combinations with <strong>" +
-                            String(unique().formatMoney(0)) +
-                            "</strong> possible compositions"
+                        String(combinations.length.formatMoney(0)) +
+                        "</strong> combinations with <strong>" +
+                        String(unique().formatMoney(0)) +
+                        "</strong> possible compositions"
                     );
                 });
             });
 
-        ripe.bind("error", function(error, description) {
+
+
+        ripe.bind("error", function (error, description) {
             alert(error);
         });
 
-        ripe.bind("message", function(name, value) {
+        ripe.bind("message", function (name, value) {
             alert(name + " - " + value);
         });
 
-        ripe.bind("price", function(value) {
+        ripe.bind("price", function (value) {
             var price = document.getElementById("price");
             if (!value || !value.total) {
                 price.innerHTML = "N/A";
@@ -161,7 +164,7 @@ window.onload = function() {
             price.innerHTML = value.total.price_final + " " + value.total.currency;
         });
 
-        ripe.bind("combinations", function(value) {
+        ripe.bind("combinations", function (value) {
             for (var index = 0; index < value.length; index++) {
                 var triplet = value[index];
                 var part = triplet[0];
@@ -173,13 +176,13 @@ window.onload = function() {
         });
     };
 
-    var initOAuth = function() {
+    var initOAuth = function () {
         let oauthLogin = document.getElementById("oauth-login");
         let oauthLogout = document.getElementById("oauth-logout");
         let oauthOperation = document.getElementById("oauth-operation");
 
         oauthLogin &&
-            oauthLogin.addEventListener("click", function() {
+            oauthLogin.addEventListener("click", function () {
                 ripe.oauth({
                     clientId: clientId,
                     clientSecret: clientSecret,
@@ -189,13 +192,13 @@ window.onload = function() {
             });
 
         oauthLogout &&
-            oauthLogout.addEventListener("click", function() {
+            oauthLogout.addEventListener("click", function () {
                 ripe.unauth();
             });
 
         oauthOperation &&
-            oauthOperation.addEventListener("click", function() {
-                ripe.getOrders(function(result) {
+            oauthOperation.addEventListener("click", function () {
+                ripe.getOrders(function (result) {
                     alert("Retrieved " + String(result.length) + " orders");
                 });
             });
@@ -208,13 +211,13 @@ window.onload = function() {
         oauthLogout = oauthLogout || { style: {} };
         oauthOperation = oauthOperation || { style: {} };
 
-        ripe.bind("auth", function() {
+        ripe.bind("auth", function () {
             oauthLogin.style.display = "none";
             oauthLogout.style.display = "block";
             oauthOperation.style.display = "block";
         });
 
-        ripe.bind("unauth", function() {
+        ripe.bind("unauth", function () {
             oauthLogin.style.display = "block";
             oauthLogout.style.display = "none";
             oauthOperation.style.display = "none";
@@ -225,16 +228,16 @@ window.onload = function() {
         oauthOperation.style.display = "none";
     };
 
-    var initConfigurator = function() {
+    var initConfigurator = function () {
         // loads the config of the product to retrieve the
         // complete configuration of the product and be able
         // to define the visible frames and apply restrictions
         var caller = ripe.loadedConfig
-            ? function(callback) {
-                  callback(ripe.loadedConfig);
-              }
+            ? function (callback) {
+                callback(ripe.loadedConfig);
+            }
             : ripe.getConfig;
-        caller(function(result) {
+        caller(function (result) {
             var frame0 = document.getElementById("frame-0");
             var frame6 = document.getElementById("frame-6");
             var frameTop = document.getElementById("frame-top");
@@ -275,7 +278,7 @@ window.onload = function() {
                 });
             }
 
-            frame0.addEventListener("click", function() {
+            frame0.addEventListener("click", function () {
                 if (result.frames > 9) {
                     configurator.changeFrame("side-9", {
                         revolutionDuration: 500
@@ -286,28 +289,28 @@ window.onload = function() {
                     });
                 }
             });
-            frame6.addEventListener("click", function() {
+            frame6.addEventListener("click", function () {
                 configurator.changeFrame("side-6", {
                     revolutionDuration: 500
                 });
             });
-            frameTop.addEventListener("click", function() {
+            frameTop.addEventListener("click", function () {
                 configurator.changeFrame("top-0", {
                     duration: 250
                 });
             });
-            frameFront.addEventListener("click", function() {
+            frameFront.addEventListener("click", function () {
                 configurator.changeFrame("front-0", {
                     duration: 250
                 });
             });
 
             image &&
-                image.bind("loaded", function() {
+                image.bind("loaded", function () {
                     console.log("frame-0 loaded");
                 });
 
-            setTimeout(function() {
+            setTimeout(function () {
                 if (result.frames > 9) {
                     image && image.setFrame("side-9");
                 }
@@ -318,9 +321,12 @@ window.onload = function() {
                 noMasks: false,
                 view: bestFace(result)
             });
-            configurator.isFirst = true;
 
-            configurator.bind("loaded", function() {
+            configurator.isFirst = true;
+            configurator.CSRInit(THREE);
+            configurator.setRenderMode(renderMode);
+
+            configurator.bind("loaded", function () {
                 if (configurator.isFirst) configurator.isFirst = false;
                 else return;
                 if (result.faces.indexOf("side") !== -1) {
@@ -329,6 +335,21 @@ window.onload = function() {
                     });
                 }
             });
+
+            var toggleRenderMode = document.getElementById("toggle-render-mode");
+            
+            toggleRenderMode &&
+                toggleRenderMode.addEventListener("click", function () {
+                    
+                    if (renderMode == "PRC") {
+                        configurator.setRenderMode("CSR");
+                        renderMode = "CSR";
+                    } else if (renderMode == "CSR") {
+                        configurator.setRenderMode("PRC");
+                        renderMode = "PRC";
+                    }
+                });
+
 
             // eslint-disable-next-line no-undef
             var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
@@ -343,26 +364,26 @@ window.onload = function() {
         });
     };
 
-    var initInitials = function() {
+    var initInitials = function () {
         ripe.bindImage(document.getElementById("initials"), {
             showInitials: true
         });
 
-        ripe.bind("initials_extra", function(initialsExtra) {
+        ripe.bind("initials_extra", function (initialsExtra) {
             document.getElementById("initials-text").value =
                 initialsExtra.main && initialsExtra.main.initials
                     ? initialsExtra.main.initials
                     : "";
         });
 
-        document.getElementById("initials-text").addEventListener("keyup", function() {
+        document.getElementById("initials-text").addEventListener("keyup", function () {
             var initialsDrop = document.getElementById("initials-drop");
             var initialsDropContainer = initialsDrop.parentElement;
             var initialsInput = initialsDropContainer.getElementsByTagName("input")[0];
             ripe.setInitials(this.value, initialsInput.value);
         });
 
-        document.getElementById("initials-drop").onvalue_change = function() {
+        document.getElementById("initials-drop").onvalue_change = function () {
             var initialsText = document.getElementById("initials-text");
             var initialsDropContainer = this.parentElement;
             var initialsInput = initialsDropContainer.getElementsByTagName("input")[0];
@@ -373,11 +394,11 @@ window.onload = function() {
         // that are available for the current model and build the
         // associated drop down with these values
         var caller = ripe.loadedConfig
-            ? function(callback) {
-                  callback(ripe.loadedConfig);
-              }
+            ? function (callback) {
+                callback(ripe.loadedConfig);
+            }
             : ripe.getConfig;
-        caller(function(result) {
+        caller(function (result) {
             var initials = result.initials || {};
             var profiles = initials.$profiles || {};
             var profilesKeys = Object.keys(profiles);
@@ -403,7 +424,7 @@ window.onload = function() {
     // it to the ready event (all internal structures loaded according
     // to values from the server side
     ripe.load();
-    ripe.bind("ready", function() {
+    ripe.bind("ready", function () {
         try {
             init(ripe);
         } catch (exception) {
