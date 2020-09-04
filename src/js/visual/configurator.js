@@ -1663,12 +1663,21 @@ ripe.Configurator.prototype._parseDrag = function() {
 };
 
 /**
- * @ignore
+ * Obtains the offset index (from red color) for the provided coordinates
+ * and taking into account the aspect ration of the canvas.
+ *
+ * @param canvas {Canvas} The canvas to be used as reference for the
+ * calculus of offset red color index.
+ * @param x {Number} The x coordinate within the canvas to obtain index.
+ * @param y {Number} The y coordinate within the canvas to obtain index.
+ * @returns {Number} The offset index using as reference the main mask
+ * of the current configurator.
  */
 ripe.Configurator.prototype._getCanvasIndex = function(canvas, x, y) {
     const canvasRealWidth = canvas.getBoundingClientRect().width;
     const mask = this.element.querySelector(".mask");
     const ratio = mask.width && canvasRealWidth && mask.width / canvasRealWidth;
+
     x = parseInt(x * ratio);
     y = parseInt(y * ratio);
 
@@ -1681,7 +1690,12 @@ ripe.Configurator.prototype._getCanvasIndex = function(canvas, x, y) {
 };
 
 /**
- * @ignore
+ * Builds the signature string for the current internal state
+ * allowing a single unique representation of the current frame.
+ *
+ * This signature should allow dirty control for the configurator.
+ *
+ * @returns {String} The unique signature for the configurator state.
  */
 ripe.Configurator.prototype._buildSignature = function() {
     const format = this.element.dataset.format || this.format;
