@@ -130,8 +130,6 @@ ripe.Configurator.prototype.CSRInit = function (THREE) {
     );
     this.camera.position.set(0, 0.8, this.params.camera);
 
-    this.camera.updateProjectionMatrix();
-
     this.light = new THREE.PointLight(0xffffff, 0.8, 18);
     this.light.position.set(0, 2, 1);
     this.light.castShadow = true;
@@ -140,7 +138,7 @@ ripe.Configurator.prototype.CSRInit = function (THREE) {
 
     // creates the directional light (required for metal) positions
     // it so that it can be latter added to the scene
-    const ambientLight = new THREE.ambientLight(0xffffff, 0.2);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     ambientLight.position.set(0, 2, this.params.camera);
 
     this.scene.add(ambientLight);
@@ -191,21 +189,22 @@ ripe.Configurator.prototype.setRenderMode = function (mode) {
 }
 
 ripe.Configurator.prototype.addMesh = async function (gltf) {
+    const model = gltf.scene;
+    
     var box = new THREE.Box3().setFromObject( model );
     console.log( box.min, box.max, box.getSize() );
 
     const floorGeometry = new THREE.PlaneGeometry(100, 100);
-    const flootMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff, side: THREE.DoubleSide} );
-    const floorMesh = new THREE.Mesh(floorGeometry, flootMaterial);
+    var floorMaterial = new THREE.ShadowMaterial();
+    floorMaterial.opacity = 0.5;
+    const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
     floorMesh.rotation.x = Math.PI/2;
     floorMesh.receiveShadow = true;
-
-    //floorMesh.position.y = box.min.y;
+    floorMesh.position.y = box.min.y;
     //floorMesh.position.x = 0;
     
     this.scene.add(floorMesh);
 
-    const model = gltf.scene;
     model.castShadow = true;
 
     const centerPoint = new THREE.Vector3(0,box.min.y + (box.max.y - box.min.y) / 2,0);
@@ -698,7 +697,8 @@ ripe.Configurator.prototype.changeFrame = async function (frame, options = {}) {
 
     // rotates the mesh, but doesn't render, so that when the user uses
     // CSR the view is correct
-    this.mesh.rotation.y = nextPosition / this.frames[view] * Math.PI * 2;
+    if (this.mesh != undefined)
+        this.mesh.rotation.y = nextPosition / this.frames[view] * Math.PI * 2;
     
     if (this.renderMode == "PRC") {
         this.trigger("changed_frame", newFrame);    
