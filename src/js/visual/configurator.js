@@ -114,7 +114,7 @@ ripe.Configurator.prototype.CSRInit = function (THREE) {
         roughness: 0.0,
         metalness: 0.0,
         exposure: 3.0,
-        camera: 40,
+        camera: 4.5,
         hemisphere: false,
         directional: false,
         background: false,
@@ -124,19 +124,27 @@ ripe.Configurator.prototype.CSRInit = function (THREE) {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(
         35,
-        window.innerWidth / window.innerHeight,
+        620 / 620,
         1,
         20000
     );
-    this.camera.position.set(0, 0, this.params.camera);
+    this.camera.position.set(0, 0.8, this.params.camera);
 
-    this.light = new THREE.HemisphereLight(0xffffff, 0x444444);
-    this.light.position.set(0, 200, 0);
+    this.camera.updateProjectionMatrix();
+
+    this.light = new THREE.PointLight(0xffffff, 0.8, 18);
+    this.light.position.set(0, 2, 1);
+    this.light.castShadow = true;
+    this.light.shadow.camera.near = 0.000001;
+    this.light.shadow.camera.far = 4;
 
     // creates the directional light (required for metal) positions
     // it so that it can be latter added to the scene
-    this.directionalLight = new THREE.DirectionalLight(0xffffff, 12);
-    this.directionalLight.position.set(0, 0, this.params.camera);
+    const ambientLight = new THREE.ambientLight(0xffffff, 0.2);
+    ambientLight.position.set(0, 2, this.params.camera);
+
+    this.scene.add(ambientLight);
+    this.scene.add(this.light);
 
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
@@ -144,34 +152,23 @@ ripe.Configurator.prototype.CSRInit = function (THREE) {
     this.renderer.setSize(620, 620);
     this.renderer.toneMappingExposure = this.params.exposure;
     this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.BasicShadowMap;
+
 
     const areaCSR = this.element.querySelector(".CSR-area");
 
     areaCSR.appendChild(this.renderer.domElement);
 
-    this.geometry = new THREE.BoxGeometry(4, 4, 4);
-    this.material = new THREE.MeshNormalMaterial();
-
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
-    this.scene.add(this.mesh);
-
     this.renderer.render(this.scene, this.camera);
 
-    /*
-
-    // creates the orbit controls that are going to be used
-    // by the mouse and keyboard
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.minPolarAngle = Math.PI / 2;
-    this.controls.maxPolarAngle = Math.PI / 2;
-    this.controls.enableZoom = false;
-    this.controls.enablePan = false;
-
-    */
+    this.gltfLoader = new THREE.GLTFLoader();
 }
 
 ripe.Configurator.prototype.toggleRenderMode = function () {
-    if (this.renderMode == "PRC") this.renderMode = "CSR";
+    if (this.renderMode == "PRC") {
+        this.renderMode = "CSR";
+        this.renderer.render(this.scene, this.camera);
+    }
     else if (this.renderMode == "CSR") this.renderMode = "PRC";
 
     this.setRenderMode(this.renderMode);
@@ -182,26 +179,42 @@ ripe.Configurator.prototype.setRenderMode = function (mode) {
     const back = this.element.querySelector(".back");
     const areaCSR = this.element.querySelector(".CSR-area");
 
-    console.log(back)
-    console.log(area);
-    console.log(areaCSR);
-
     if (mode == "PRC") {
-        console.log("PRC Ma dude");
         area.style.display = "inline-block";
         back.style.display = "inline-block";
         areaCSR.style.display = "none";
     } else if (mode == "CSR") {
-        console.log("CSR MODE ACTIVATED");
         area.style.display = "none";
         back.style.display = "none";
         areaCSR.style.display = "inline-block";
-
     }
 }
 
-ripe.Configurator.prototype.loadMesh = async function () {
+ripe.Configurator.prototype.addMesh = async function (gltf) {
+    var box = new THREE.Box3().setFromObject( model );
+    console.log( box.min, box.max, box.getSize() );
 
+    const floorGeometry = new THREE.PlaneGeometry(100, 100);
+    const flootMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff, side: THREE.DoubleSide} );
+    const floorMesh = new THREE.Mesh(floorGeometry, flootMaterial);
+    floorMesh.rotation.x = Math.PI/2;
+    floorMesh.receiveShadow = true;
+
+    //floorMesh.position.y = box.min.y;
+    //floorMesh.position.x = 0;
+    
+    this.scene.add(floorMesh);
+
+    const model = gltf.scene;
+    model.castShadow = true;
+
+    const centerPoint = new THREE.Vector3(0,box.min.y + (box.max.y - box.min.y) / 2,0);
+    this.camera.lookAt(centerPoint);
+    console.log(centerPoint);
+    
+    this.mesh = model;
+    this.scene.add(model);
+    this.renderer.render(this.scene, this.camera);
 }
 
 /**
@@ -678,14 +691,18 @@ ripe.Configurator.prototype.changeFrame = async function (frame, options = {}) {
     if (sleepTime > 0) {
         await new Promise(resolve => setTimeout(() => resolve(), sleepTime));
     }
-
+    
     // computes the frame key (normalized) and then triggers an event
     // notifying any listener about the new frame that was set
+    const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
+
+    // rotates the mesh, but doesn't render, so that when the user uses
+    // CSR the view is correct
+    this.mesh.rotation.y = nextPosition / this.frames[view] * Math.PI * 2;
+    
     if (this.renderMode == "PRC") {
-        const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
         this.trigger("changed_frame", newFrame);    
     } else {
-        this.mesh.rotation.y = nextPosition / 24 * Math.PI;
         this.renderer.render(this.scene, this.camera);
     }
 

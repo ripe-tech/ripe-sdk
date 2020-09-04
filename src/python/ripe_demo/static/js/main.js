@@ -18,7 +18,7 @@ window.onload = function () {
     var clientSecret = _body.dataset.client_secret || null;
     var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
     var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
-    
+
     var parts = [];
     var partsMap = {};
 
@@ -109,7 +109,7 @@ window.onload = function () {
         var setMessage = document.getElementById("set-message");
         var getPrice = document.getElementById("get-price");
         var getCombinations = document.getElementById("get-combinations");
-
+        
         setPart &&
             setPart.addEventListener("click", function () {
                 randomize();
@@ -143,8 +143,8 @@ window.onload = function () {
                     );
                 });
             });
-
-
+        
+        
 
         ripe.bind("error", function (error, description) {
             alert(error);
@@ -314,7 +314,7 @@ window.onload = function () {
                     image && image.setFrame("side-9");
                 }
             });
-
+            
             var configurator = ripe.bindConfigurator(element, {
                 duration: 250,
                 noMasks: false,
@@ -323,7 +323,12 @@ window.onload = function () {
 
             configurator.isFirst = true;
             configurator.CSRInit(THREE);
-
+            
+            var loader = new THREE.GLTFLoader();
+            loader.load("/static/assets/vyner.glb", function (gltf) {
+                configurator.addMesh(gltf)
+            }); 
+            
             configurator.bind("loaded", function () {
                 if (configurator.isFirst) configurator.isFirst = false;
                 else return;
@@ -335,7 +340,7 @@ window.onload = function () {
             });
 
             var toggleRenderMode = document.getElementById("toggle-render-mode");
-            
+
             toggleRenderMode &&
                 toggleRenderMode.addEventListener("click", function () {
                     configurator.toggleRenderMode();
