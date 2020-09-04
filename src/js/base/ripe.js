@@ -35,6 +35,7 @@ ripe.Ripe = function(brand, model, options = {}) {
 };
 
 ripe.Ripe.prototype = ripe.build(ripe.Observable.prototype);
+ripe.Ripe.prototype.constructor = ripe.Ripe;
 
 /**
  * @ignore

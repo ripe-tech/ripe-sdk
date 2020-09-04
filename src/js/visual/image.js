@@ -36,6 +36,7 @@ ripe.Image = function(owner, element, options) {
 };
 
 ripe.Image.prototype = ripe.build(ripe.Visual.prototype);
+ripe.Image.prototype.constructor = ripe.Image;
 
 /**
  * The Image initializer, which is called (by the owner)

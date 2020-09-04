@@ -33,6 +33,7 @@ ripe.Configurator = function(owner, element, options) {
 };
 
 ripe.Configurator.prototype = ripe.build(ripe.Visual.prototype);
+ripe.Configurator.prototype.constructor = ripe.Configurator;
 
 /**
  * The Configurator initializer, which is called whenever

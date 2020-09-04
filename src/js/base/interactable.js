@@ -33,6 +33,7 @@ ripe.Interactable = function(owner, options = {}) {
 };
 
 ripe.Interactable.prototype = ripe.build(ripe.Observable.prototype);
+ripe.Interactable.prototype.constructor = ripe.Interactable;
 
 /**
  * The initializer of the class, to be called (by the owner)
