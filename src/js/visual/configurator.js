@@ -345,7 +345,7 @@ ripe.Configurator.prototype.resize = async function(size) {
  * proper animation should be performed.
  *
  * This function is meant to be executed using a recursive approach
- * and ech run represents a "tick" of the animation operation.
+ * and each run represents a "tick" of the animation operation.
  *
  * @param {Object} frame The new frame to display using the extended and canonical
  * format for the frame description (eg: side-3).
