@@ -1555,9 +1555,10 @@ ripe.ConfiguratorPrc.prototype._csrInit = function(THREE) {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.BasicShadowMap;
 
-    const csrArea = this.element.querySelector(".csr-area");
-
-    csrArea.appendChild(this.renderer.domElement);
+    // retrieves the target area element and adds the DOM element
+    // of the renderer to it
+    const area = this.element.querySelector(".area");
+    area.appendChild(this.renderer.domElement);
 
     this.renderer.render(this.scene, this.camera);
 

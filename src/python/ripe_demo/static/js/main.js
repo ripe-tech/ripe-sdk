@@ -109,6 +109,7 @@ window.onload = function() {
         var setMessage = document.getElementById("set-message");
         var getPrice = document.getElementById("get-price");
         var getCombinations = document.getElementById("get-combinations");
+        var toggleRender = document.getElementById("toggle-render");
 
         setPart &&
             setPart.addEventListener("click", function() {
