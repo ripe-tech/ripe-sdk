@@ -26,14 +26,14 @@ if (
  * @param {Object} options The options to be used to configure the
  * configurator instance to be created.
  */
-ripe.ConfiguratorCsr = function(owner, element, options) {
-    this.type = this.type || "ConfiguratorCsr";
+ripe.ConfiguratorCSR = function(owner, element, options) {
+    this.type = this.type || "ConfiguratorCSR";
 
     ripe.Visual.call(this, owner, element, options);
 };
 
-ripe.ConfiguratorCsr.prototype = ripe.build(ripe.Visual.prototype);
-ripe.ConfiguratorCsr.prototype.constructor = ripe.ConfiguratorCsr;
+ripe.ConfiguratorCSR.prototype = ripe.build(ripe.Visual.prototype);
+ripe.ConfiguratorCSR.prototype.constructor = ripe.ConfiguratorCSR;
 
 /**
  * The Configurator initializer, which is called whenever
@@ -42,7 +42,7 @@ ripe.ConfiguratorCsr.prototype.constructor = ripe.ConfiguratorCsr;
  * Sets the various values for the Configurator taking into
  * owner's default values.
  */
-ripe.ConfiguratorCsr.prototype.init = function() {
+ripe.ConfiguratorCSR.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
     this.width = this.options.width || 1000;
@@ -112,7 +112,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.ConfiguratorCsr.prototype.deinit = async function() {
+ripe.ConfiguratorCSR.prototype.deinit = async function() {
     await this.cancel();
 
     while (this.element.firstChild) {
@@ -144,7 +144,7 @@ ripe.ConfiguratorCsr.prototype.deinit = async function() {
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
  */
-ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = true) {
+ripe.ConfiguratorPRC.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
     this.width = options.width === undefined ? this.width : options.width;
@@ -194,7 +194,7 @@ ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = 
  * - 'preload' - If it's to execute the pre-loading process.
  * - 'force' - If the updating operation should be forced (ignores signature).
  */
-ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
+ripe.ConfiguratorPRC.prototype.update = async function(state, options = {}) {
     // in case the configurator is currently nor ready for an
     // update none is performed and the control flow is returned
     // with the false value (indicating a no-op, nothing was done)
@@ -287,7 +287,7 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
  *
  * @param {Object} options Set of optional parameters to adjust the Configurator.
  */
-ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
+ripe.ConfiguratorPRC.prototype.cancel = async function(options = {}) {
     if (this._buildSignature() === this.signature || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
     return true;
@@ -300,7 +300,7 @@ ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
  *
  * @param {Number} size The number of pixels to resize to.
  */
-ripe.ConfiguratorPrc.prototype.resize = async function(size) {
+ripe.ConfiguratorPRC.prototype.resize = async function(size) {
     if (this.element === undefined) {
         return;
     }
@@ -347,7 +347,7 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size) {
  * - 'safe' - If requested then the operation is only performed in case the configurator
  * is not in the an equivalent state (default to 'true').
  */
-ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {}) {
+ripe.ConfiguratorPRC.prototype.changeFrame = async function(frame, options = {}) {
     // parses the requested frame value according to the pre-defined
     // standard (eg: side-3) and then unpacks it as view and position
     const _frame = ripe.parseFrameKey(frame);
@@ -431,7 +431,7 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
  * @param {String} part The part of the model that should be highlighted.
  * @param {Object} options Set of optional parameters to adjust the highlighting.
  */
-ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
+ripe.ConfiguratorPRC.prototype.highlight = function(part, options = {}) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -501,7 +501,7 @@ ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
  * @param {String} part The part to lowlight.
  * @param {Object} options Set of optional parameters to adjust the lowlighting.
  */
-ripe.ConfiguratorPrc.prototype.lowlight = function(options) {
+ripe.ConfiguratorPRC.prototype.lowlight = function(options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -523,7 +523,7 @@ ripe.ConfiguratorPrc.prototype.lowlight = function(options) {
  * Changes the currently displayed frame in the current view to the
  * previous one according to pre-defined direction.
  */
-ripe.ConfiguratorPrc.prototype.previousFrame = function() {
+ripe.ConfiguratorPRC.prototype.previousFrame = function() {
     const view = this.element.dataset.view;
     const position = parseInt(this.element.dataset.position || 0);
     const viewFrames = this.frames[view];
@@ -537,7 +537,7 @@ ripe.ConfiguratorPrc.prototype.previousFrame = function() {
  * Changes the currently displayed frame in the current view to the
  * next one according to pre-defined direction.
  */
-ripe.ConfiguratorPrc.prototype.nextFrame = function() {
+ripe.ConfiguratorPRC.prototype.nextFrame = function() {
     const view = this.element.dataset.view;
     const position = parseInt(this.element.dataset.position || 0);
     const viewFrames = this.frames[view];
@@ -552,7 +552,7 @@ ripe.ConfiguratorPrc.prototype.nextFrame = function() {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorPrc.prototype.enterFullscreen = async function(options) {
+ripe.ConfiguratorPRC.prototype.enterFullscreen = async function(options) {
     if (this.element === undefined) {
         return;
     }
@@ -566,7 +566,7 @@ ripe.ConfiguratorPrc.prototype.enterFullscreen = async function(options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorPrc.prototype.leaveFullscreen = async function(options) {
+ripe.ConfiguratorPRC.prototype.leaveFullscreen = async function(options) {
     if (this.element === undefined) {
         return;
     }
@@ -577,14 +577,14 @@ ripe.ConfiguratorPrc.prototype.leaveFullscreen = async function(options) {
 /**
  * Turns on (enables) the masks on selection/highlight.
  */
-ripe.ConfiguratorPrc.prototype.enableMasks = function() {
+ripe.ConfiguratorPRC.prototype.enableMasks = function() {
     this.useMasks = true;
 };
 
 /**
  * Turns off (disables) the masks on selection/highlight.
  */
-ripe.ConfiguratorPrc.prototype.disableMasks = function() {
+ripe.ConfiguratorPRC.prototype.disableMasks = function() {
     this.useMasks = false;
 };
 
@@ -599,7 +599,7 @@ ripe.ConfiguratorPrc.prototype.disableMasks = function() {
  *
  * @private
  */
-ripe.ConfiguratorPrc.prototype._initLayout = function() {
+ripe.ConfiguratorPRC.prototype._initLayout = function() {
     // clears the elements children
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -660,7 +660,7 @@ ripe.ConfiguratorPrc.prototype._initLayout = function() {
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._initPartsList = async function() {
+ripe.ConfiguratorPRC.prototype._initPartsList = async function() {
     // creates a set of sorted parts to be used on the
     // highlight operation (considers only the default ones)
     this.partsList = [];
@@ -676,7 +676,7 @@ ripe.ConfiguratorPrc.prototype._initPartsList = async function() {
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._populateBuffers = function() {
+ripe.ConfiguratorPRC.prototype._populateBuffers = function() {
     const framesBuffer = this.element.getElementsByClassName("frames-buffer");
     const masksBuffer = this.element.getElementsByClassName("masks-buffer");
     let buffer = null;
@@ -695,7 +695,7 @@ ripe.ConfiguratorPrc.prototype._populateBuffers = function() {
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._populateBuffer = function(buffer) {
+ripe.ConfiguratorPRC.prototype._populateBuffer = function(buffer) {
     while (buffer.firstChild) {
         buffer.removeChild(buffer.firstChild);
     }
@@ -715,7 +715,7 @@ ripe.ConfiguratorPrc.prototype._populateBuffer = function(buffer) {
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._updateConfig = async function(animate) {
+ripe.ConfiguratorPRC.prototype._updateConfig = async function(animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
@@ -806,7 +806,7 @@ ripe.ConfiguratorPrc.prototype._updateConfig = async function(animate) {
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, options = {}) {
+ripe.ConfiguratorPRC.prototype._loadFrame = async function(view, position, options = {}) {
     // triggers the initial frame event that indicates that a
     // new frame is going to be loaded into the img buffers
     this.trigger("pre_frame", {
@@ -939,7 +939,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._loadMask = function(maskImage, view, position, options) {
+ripe.ConfiguratorPRC.prototype._loadMask = function(maskImage, view, position, options) {
     // constructs the URL for the mask and then at the end of the
     // mask loading process runs the final update of the mask canvas
     // operation that will allow new highlight and selection operation
@@ -979,7 +979,7 @@ ripe.ConfiguratorPrc.prototype._loadMask = function(maskImage, view, position, o
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._drawMask = function(maskImage) {
+ripe.ConfiguratorPRC.prototype._drawMask = function(maskImage) {
     const mask = this.element.querySelector(".mask");
     const maskContext = mask.getContext("2d");
     maskContext.clearRect(0, 0, mask.width, mask.height);
@@ -989,7 +989,7 @@ ripe.ConfiguratorPrc.prototype._drawMask = function(maskImage) {
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._drawFrame = async function(image, animate, duration) {
+ripe.ConfiguratorPRC.prototype._drawFrame = async function(image, animate, duration) {
     const area = this.element.querySelector(".area");
     const back = this.element.querySelector(".back");
 
@@ -1051,7 +1051,7 @@ ripe.ConfiguratorPrc.prototype._drawFrame = async function(image, animate, durat
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
+ripe.ConfiguratorPRC.prototype._preload = async function(useChain) {
     // retrieves the current position of the configurator from its
     // data defaulting to the zero one (reference) in case no position
     // is currently defined in the configurator
@@ -1192,7 +1192,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._registerHandlers = function() {
+ripe.ConfiguratorPRC.prototype._registerHandlers = function() {
     // captures the current context to be used inside clojures
     const self = this;
 
@@ -1417,7 +1417,7 @@ ripe.ConfiguratorPrc.prototype._registerHandlers = function() {
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._parseDrag = function() {
+ripe.ConfiguratorPRC.prototype._parseDrag = function() {
     // retrieves the last recorded mouse position
     // and the current one and calculates the
     // drag movement made by the user
@@ -1480,7 +1480,7 @@ ripe.ConfiguratorPrc.prototype._parseDrag = function() {
  * @returns {Number} The offset index using as reference the main mask
  * of the current configurator.
  */
-ripe.ConfiguratorPrc.prototype._getCanvasIndex = function(canvas, x, y) {
+ripe.ConfiguratorPRC.prototype._getCanvasIndex = function(canvas, x, y) {
     const canvasRealWidth = canvas.getBoundingClientRect().width;
     const mask = this.element.querySelector(".mask");
     const ratio = mask.width && canvasRealWidth && mask.width / canvasRealWidth;
@@ -1504,7 +1504,7 @@ ripe.ConfiguratorPrc.prototype._getCanvasIndex = function(canvas, x, y) {
  *
  * @returns {String} The unique signature for the configurator state.
  */
-ripe.ConfiguratorPrc.prototype._buildSignature = function() {
+ripe.ConfiguratorPRC.prototype._buildSignature = function() {
     const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
@@ -1515,7 +1515,7 @@ ripe.ConfiguratorPrc.prototype._buildSignature = function() {
     )}&format=${String(format)}&background=${String(backgroundColor)}`;
 };
 
-ripe.ConfiguratorPrc.prototype._csrInit = function(THREE) {
+ripe.ConfiguratorPRC.prototype._csrInit = function(THREE) {
     this.params = {
         roughness: 0.0,
         metalness: 0.0,

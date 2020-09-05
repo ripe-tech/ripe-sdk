@@ -1025,8 +1025,8 @@ ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
     options = Object.assign({}, { format: this.format }, options);
     const render = options.render || "prc";
     const renders = {
-        prc: ripe.ConfiguratorPrc,
-        csr: ripe.ConfiguratorCsr
+        prc: ripe.ConfiguratorPRC,
+        csr: ripe.ConfiguratorCSR
     };
     const Configurator = renders[render] || ripe.Configurator;
     const config = new Configurator(this, element, options);

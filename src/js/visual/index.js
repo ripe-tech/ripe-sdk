@@ -1,11 +1,11 @@
 const configurator = require("./configurator");
-const configuratorCsr = require("./configurator-csr");
-const configuratorPrc = require("./configurator-prc");
+const configuratorCSR = require("./configurator-csr");
+const configuratorPRC = require("./configurator-prc");
 const image = require("./image");
 const visual = require("./visual");
 
 Object.assign(module.exports, configurator);
-Object.assign(module.exports, configuratorCsr);
-Object.assign(module.exports, configuratorPrc);
+Object.assign(module.exports, configuratorCSR);
+Object.assign(module.exports, configuratorPRC);
 Object.assign(module.exports, image);
 Object.assign(module.exports, visual);
