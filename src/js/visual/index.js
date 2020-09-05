@@ -1,5 +1,5 @@
 const configurator = require("./configurator");
-const configuratorPrc = require("./configuratorPrc");
+const configuratorPrc = require("./configurator-prc");
 const image = require("./image");
 const visual = require("./visual");
 
