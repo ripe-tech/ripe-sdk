@@ -38,7 +38,7 @@ ripe.Visual = function(owner, element, options) {
 };
 
 ripe.Visual.prototype = ripe.build(ripe.Interactable.prototype);
-ripe.Visual.constructor = ripe.Visual;
+ripe.Visual.prototype.constructor = ripe.Visual;
 
 /**
  * The initializer which is called (by the owner)

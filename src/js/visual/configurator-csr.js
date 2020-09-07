@@ -45,8 +45,8 @@ ripe.ConfiguratorCSR.prototype.constructor = ripe.ConfiguratorCSR;
 ripe.ConfiguratorCSR.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
     
-    this.THREE = this.options.THREE;
-    this._addMesh(this.options.mesh);
+    //this.THREE = this.options.THREE;
+    //this._addMesh(this.options.mesh);
 
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;

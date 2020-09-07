@@ -35,6 +35,7 @@ ripe.Ripe = function(brand, model, options = {}) {
 };
 
 ripe.Ripe.prototype = ripe.build(ripe.Observable.prototype);
+ripe.Ripe.prototype.constructor = ripe.Ripe;
 
 /**
  * @ignore
@@ -1022,7 +1023,13 @@ ripe.Ripe.prototype.bindImage = function(element, options = {}) {
  */
 ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
     options = Object.assign({}, { format: this.format }, options);
-    const config = new ripe.Configurator(this, element, options);
+    const render = options.render || "prc";
+    const renders = {
+        prc: ripe.ConfiguratorPRC,
+        csr: ripe.ConfiguratorCSR
+    };
+    const Configurator = renders[render] || ripe.Configurator;
+    const config = new Configurator(this, element, options);
     return this.bindInteractable(config);
 };
 

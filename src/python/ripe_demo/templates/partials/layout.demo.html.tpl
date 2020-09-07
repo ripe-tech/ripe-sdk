@@ -7,7 +7,7 @@
            {% endif %}
         <li id="get-price">Get Price</li>
         <li id="get-combinations">Get Combinations</li>
-        <li id="toggle-render-mode">Toggle CSR and PRC</li>
+        <li id="toggle-render">Toggle CSR and PRC</li>
     </ul>
     <ul class="oauth">
         <li id="oauth-operation">Get Orders</li>
