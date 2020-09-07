@@ -1028,6 +1028,7 @@ ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
         prc: ripe.ConfiguratorPRC,
         csr: ripe.ConfiguratorCSR
     };
+    
     const Configurator = renders[render] || ripe.Configurator;
     const config = new Configurator(this, element, options);
     return this.bindInteractable(config);

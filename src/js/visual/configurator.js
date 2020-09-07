@@ -8,7 +8,7 @@ if (
     // eslint-disable-next-line no-redeclare
     var base = require("../base");
     require("./configurator-prc");
-    //require("./configurator-csr");
+    require("./configurator-csr");
     // eslint-disable-next-line no-redeclare
     var ripe = base.ripe;
 }

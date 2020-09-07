@@ -315,15 +315,18 @@ window.onload = function () {
                     image && image.setFrame("side-9");
                 }
             });
-            
+
             var configurator = ripe.bindConfigurator(element, {
                 duration: 250,
                 noMasks: false,
-                view: bestFace(result)
+                view: bestFace(result),
+                render: "csr",
+                mesh: "/static/assets/vyner.glb",
+                library: THREE
             });
 
             /*var loader = new THREE.GLTFLoader();
-            loader.load("/static/assets/vyner.glb", function(gltf) {
+            loader.load("", function(gltf) {
                 configurator.addMesh(gltf)
             });  */
 
@@ -337,13 +340,12 @@ window.onload = function () {
                 }
             });
 
-            var toggleRenderMode = document.getElementById("toggle-render-mode");
+            var toggleRenderMode = document.getElementById("toggle-render");
 
             toggleRenderMode &&
                 toggleRenderMode.addEventListener("click", function () {
                     configurator.toggleRenderMode();
                 });
-
 
             // eslint-disable-next-line no-undef
             var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
