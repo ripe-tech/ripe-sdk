@@ -321,7 +321,7 @@ window.onload = function () {
                 noMasks: false,
                 view: bestFace(result),
                 render: "csr",
-                mesh: "/static/assets/vyner.glb",
+                meshPath: "/static/assets/vyner.glb",
                 library: THREE
             });
 

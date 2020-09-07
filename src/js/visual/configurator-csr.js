@@ -45,6 +45,7 @@ ripe.ConfiguratorCSR.prototype.constructor = ripe.ConfiguratorCSR;
 ripe.ConfiguratorCSR.prototype.init = function () {
     ripe.Visual.prototype.init.call(this);
 
+    this.meshPath = this.options.meshPath || undefined;
     this.library = this.options.library || null;
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
@@ -108,8 +109,8 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     });
 
     this._initializeScene();
-    if (this.options.mesh) {
-        this._addMesh(this.options.mesh);
+    if (this.meshPath) {
+        this._loadMesh();
     }
 };
 
@@ -153,6 +154,11 @@ ripe.ConfiguratorCSR.prototype.deinit = async function () {
 ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
+    if (options.meshPath && this.meshPath != options.meshPath) {
+        this.meshPath = this.options.meshPath;
+        this._loadMesh();
+    }
+    this.library = options.library === undefined ? this.library : options.library;
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
     this.format = options.format === undefined ? this.format : options.format;
@@ -209,18 +215,11 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
         return false;
     }
 
-    // allocates space for the possible promise that is going
-    // to be responsible for the preloading of the frames, populating
-    // the cache buffer for the complete set of frames associated with
-    // the currently loaded model configuration
-    let preloadPromise = null;
-
     const view = this.element.dataset.view;
     const position = this.element.dataset.position;
 
     const force = options.force || false;
     const duration = options.duration;
-    const preload = options.preload;
 
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
@@ -245,46 +244,9 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     // frame is going to be "calculated" and rendered (not same mask)
     this.lowlight();
 
-    // runs the pre-loading process so that the remaining frames are
-    // loaded for a smother experience when dragging the element,
-    // note that this is only performed in case this is not a single
-    // based update (not just the loading of the current position)
-    // and the current signature has changed
-    const preloaded = this.element.classList.contains("preload");
-    const mustPreload = preload !== undefined ? preload : changed || !preloaded;
-    if (mustPreload) preloadPromise = this._preload(this.options.useChain);
-
-    // runs the load operation for the current frame, taking into
-    // account the multiple requirements for such execution
-    await this._loadFrame(view, position, {
-        draw: true,
-        animate: animate,
-        duration: duration
-    });
-
-    // initializes the result value with the default valid value
-    // indicating that the operation was a success
-    let result = true;
-
-    // in case the preload was requested then waits for the preload
-    // operation of the frames to complete (wait on promise), keep
-    // in mind that if the preload operation was requested this is
-    // a "hard" flush on the underlying images buffer (most of the times
-    // representing a change in the configuration)
-    if (preloadPromise) {
-        // waits for the preload promise as the result of it is
-        // going to be considered the result of the operation
-        result = await preloadPromise;
-
-        // after the update operation is finished the loaded event
-        // should be triggered indicating the end of the visual
-        // operations for the current configuration on the configurator
-        this.trigger("loaded");
-    }
-
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
-    return result;
+    return true;
 };
 
 /**
@@ -380,19 +342,6 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     const view = this.element.dataset.view;
     const position = parseInt(this.element.dataset.position);
 
-    // tries to retrieve the amount of frames for the target view and
-    // validates that the target view exists and that the target position
-    // (frame) does not overflow the amount of frames in for the view
-    const viewFrames = this.frames[nextView];
-    if (!viewFrames || nextPosition >= viewFrames) {
-        throw new RangeError("Frame " + frame + " is not supported");
-    }
-
-    // in case the safe mode is enabled and the current configuration is
-    // still under the preloading situation the change frame is ignored
-    if (safe && this.element.classList.contains("preloading")) {
-        return;
-    }
 
     // in case the safe mode is enabled and there's an animation running
     // then this request is going to be ignored (not possible to change
@@ -425,9 +374,10 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     this.trigger("changed_frame", newFrame);
 
     // in case there's a mesh defined in the current instance then applies
-    // a rotation around the Y axis
+    // a rotation around the Y axis 
+    // TODO CHANGE HARDCODED VALUE
     if (this.mesh) {
-        this.mesh.rotation.y = (nextPosition / this.frames[view]) * Math.PI * 2;
+        this.mesh.rotation.y = (nextPosition / 24) * Math.PI * 2;
     }
 };
 
@@ -445,57 +395,7 @@ ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
         return;
     }
 
-    // captures the current context to be used by clojure callbacks
-    const self = this;
-
-    // determines the current position of the configurator so that
-    // the proper mask URL may be created and properly loaded
-    const view = this.element.dataset.view;
-    const position = this.element.dataset.position;
-    const frame = ripe.getFrameKey(view, position);
-    const size = this.element.dataset.size || this.size;
-    const width = size || this.element.dataset.width || this.width;
-    const height = size || this.element.dataset.height || this.height;
-    const maskOpacity = this.element.dataset.mask_opacity || this.maskOpacity;
-    const maskDuration = this.element.dataset.mask_duration || this.maskDuration;
-
-    // adds the highlight class to the current target configurator meaning
-    // that the front mask is currently active and showing info
-    this.element.classList.add("highlight");
-
-    // constructs the full URL of the mask image that is going to be
-    // set for the current highlight operation (to be determined)
-    const url = this.owner._getMaskURL({
-        frame: frame,
-        size: size,
-        width: width,
-        height: height,
-        part: part
-    });
-
-    // gathers the front mask element and the associated source URL
-    // and in case it's the same as the one in request returns immediately
-    // as the mask is considered to be already loaded
-    const frontMask = this.element.querySelector(".front-mask");
-    const src = frontMask.getAttribute("src");
-    if (src === url) {
-        self.trigger("highlighted_part", part);
-        return;
-    }
-
-    if (this.frontMaskLoad) frontMask.removeEventListener("load", this.frontMaskLoad);
-    if (this.frontMaskError) frontMask.removeEventListener("error", this.frontMaskError);
-    frontMask.classList.remove("loaded");
-    this.frontMaskLoad = function () {
-        this.classList.add("loaded");
-        self.trigger("highlighted_part", part);
-    };
-    this.frontMaskError = function () {
-        this.setAttribute("src", "");
-    };
-    frontMask.addEventListener("load", this.frontMaskLoad);
-    frontMask.addEventListener("error", this.frontMaskError);
-    frontMask.setAttribute("src", url);
+    // TODO Change material properties for selected mesh
 
     ripe.cancelAnimation(frontMask);
     ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration, false);
@@ -515,43 +415,11 @@ ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
         return;
     }
 
-    // retrieves the reference to the current front mask and removes
-    // the highlight associated classes from it and the configurator
-    const frontMask = this.element.querySelector(".front-mask");
-    frontMask.classList.remove("highlight");
-    this.element.classList.remove("highlight");
+    // TODO Change material properties
 
     // triggers an event indicating that a lowlight operation has been
     // performed on the current configurator
     this.trigger("lowlighted");
-};
-
-/**
- * Changes the currently displayed frame in the current view to the
- * previous one according to pre-defined direction.
- */
-ripe.ConfiguratorCSR.prototype.previousFrame = function () {
-    const view = this.element.dataset.view;
-    const position = parseInt(this.element.dataset.position || 0);
-    const viewFrames = this.frames[view];
-    let nextPosition = (position - 1) % viewFrames;
-    nextPosition = nextPosition >= 0 ? nextPosition : viewFrames + nextPosition;
-    const nextFrame = ripe.getFrameKey(view, nextPosition);
-    this.changeFrame(nextFrame);
-};
-
-/**
- * Changes the currently displayed frame in the current view to the
- * next one according to pre-defined direction.
- */
-ripe.ConfiguratorCSR.prototype.nextFrame = function () {
-    const view = this.element.dataset.view;
-    const position = parseInt(this.element.dataset.position || 0);
-    const viewFrames = this.frames[view];
-    let nextPosition = (position + 1) % viewFrames;
-    nextPosition = nextPosition >= 0 ? nextPosition : viewFrames + nextPosition;
-    const nextFrame = ripe.getFrameKey(view, nextPosition);
-    this.changeFrame(nextFrame);
 };
 
 /**
@@ -620,38 +488,6 @@ ripe.ConfiguratorCSR.prototype._initLayout = function () {
     const area = ripe.createElement("div", "area");
     this.element.appendChild(area);
 
-
-    // adds the front mask element to the element,
-    // this will be used to highlight parts
-    const frontMask = ripe.createElement("img", "front-mask");
-    this.element.appendChild(frontMask);
-
-    // creates the back canvas and adds it to the element,
-    // placing it on top of the area canvas
-    const back = ripe.createElement("canvas", "back");
-    const backContext = back.getContext("2d");
-    backContext.globalCompositeOperation = "multiply";
-    this.element.appendChild(back);
-
-    // creates the mask element that will de used to display
-    // the mask on top of an highlighted or selected part
-    const mask = ripe.createElement("canvas", "mask");
-    this.element.appendChild(mask);
-
-    // adds the framesBuffer placeholder element that will be used to
-    // temporarily store the images of the product's frames
-    const framesBuffer = ripe.createElement("div", "frames-buffer");
-
-    // creates a masksBuffer element that will be used to store the continuous
-    // mask images to be used during highlight and select operation
-    const masksBuffer = ripe.createElement("div", "masks-buffer");
-
-    // adds both buffer elements (frames and masks) to the base elements
-    // they are going to be used as placeholders for the "img" elements
-    // that are going to be loaded with the images
-    this.element.appendChild(framesBuffer);
-    this.element.appendChild(masksBuffer);
-
     // set the size of area, frontMask, back and mask
     this.resize();
 
@@ -682,45 +518,6 @@ ripe.ConfiguratorCSR.prototype._initPartsList = async function () {
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._populateBuffers = function () {
-    const framesBuffer = this.element.getElementsByClassName("frames-buffer");
-    const masksBuffer = this.element.getElementsByClassName("masks-buffer");
-    let buffer = null;
-
-    for (let index = 0; index < framesBuffer.length; index++) {
-        buffer = framesBuffer[index];
-        this._populateBuffer(buffer);
-    }
-
-    for (let index = 0; index < masksBuffer.length; index++) {
-        buffer = masksBuffer[index];
-        this._populateBuffer(buffer);
-    }
-};
-
-/**
- * @ignore
- */
-ripe.ConfiguratorCSR.prototype._populateBuffer = function (buffer) {
-    while (buffer.firstChild) {
-        buffer.removeChild(buffer.firstChild);
-    }
-
-    // creates two image elements for each frame and
-    // appends them to the frames and masks buffers
-    for (const view in this.frames) {
-        const viewFrames = this.frames[view];
-        for (let index = 0; index < viewFrames; index++) {
-            const frameBuffer = ripe.createElement("img");
-            frameBuffer.dataset.frame = ripe.getFrameKey(view, index);
-            buffer.appendChild(frameBuffer);
-        }
-    }
-};
-
-/**
- * @ignore
- */
 ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
@@ -733,40 +530,6 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // updates the parts list for the new product
     this._initPartsList();
 
-    // retrieves the new product frame object and sets it
-    // under the current state, adapting then the internal
-    // structures to accommodate the possible changes in the
-    // frame structure
-    this.frames = await this.owner.getFrames();
-
-    // populates the buffers taking into account
-    // the frames of the model
-    this._populateBuffers();
-
-    // tries to keep the current view and position
-    // if the new model supports it otherwise
-    // changes to a supported frame
-    let view = this.element.dataset.view;
-    let position = parseInt(this.element.dataset.position);
-    const maxPosition = this.frames[view];
-    if (!maxPosition) {
-        view = Object.keys(this.frames)[0];
-        position = 0;
-    } else if (position >= maxPosition) {
-        position = 0;
-    }
-
-    // checks the last viewed frames of each view
-    // and deletes the ones not supported
-    const lastFrameViews = Object.keys(this._lastFrame);
-    for (const _view of lastFrameViews) {
-        const _position = this._lastFrame[_view];
-        const _maxPosition = this.frames[_view];
-        if (!_maxPosition || _position >= _maxPosition) {
-            delete this._lastFrame[_view];
-        }
-    }
-
     // updates the instance values for the configurator view
     // and position so that they reflect the current visuals
     this.view = view;
@@ -774,7 +537,8 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
 
     // updates the number of frames in the initial view
     // taking into account the requested frames data
-    const viewFrames = this.frames[view];
+    // TODO CHANGE HARDCODED VIEWS
+    const viewFrames = 24;
     this.element.dataset.frames = viewFrames;
 
     // updates the attributes related with both the view
@@ -792,9 +556,6 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // interactive configurator (meta-data)
     this.element.classList.add("ready");
 
-    // computes the frame key for the current frame to
-    // be shown and triggers the changed frame event
-    const frame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
     this.trigger("changed_frame", frame);
 
     // shows the new product with a crossfade effect
@@ -807,189 +568,6 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
             force: true
         }
     );
-};
-
-/**
- * @ignore
- */
-ripe.ConfiguratorCSR.prototype._loadFrame = async function (view, position, options = {}) {
-    // triggers the initial frame event that indicates that a
-    // new frame is going to be loaded into the img buffers
-    this.trigger("pre_frame", {
-        view: view,
-        position: position,
-        options: options
-    });
-
-    // runs the defaulting operation on all of the parameters
-    // sent to the load frame operation (defaulting)
-    view = view || this.element.dataset.view || "side";
-    position = position || this.element.dataset.position || 0;
-
-    const frame = ripe.getFrameKey(view, position);
-
-    const format = this.element.dataset.format || this.format;
-    const size = this.element.dataset.size || this.size;
-    const width = size || this.element.dataset.width || this.width;
-    const height = size || this.element.dataset.height || this.height;
-    const backgroundColor = this.element.dataset.background_color || this.backgroundColor;
-
-    const draw = options.draw === undefined || options.draw;
-    const animate = options.animate;
-    const duration = options.duration;
-    const framesBuffer = this.element.querySelector(".frames-buffer");
-    const masksBuffer = this.element.querySelector(".masks-buffer");
-    const area = this.element.querySelector(".area");
-    let image = framesBuffer.querySelector(`img[data-frame='${String(frame)}']`);
-    const front = area.querySelector(`img[data-frame='${String(frame)}']`);
-    const maskImage = masksBuffer.querySelector(`img[data-frame='${String(frame)}']`);
-    image = image || front;
-
-    // in case there's no images for the frames that are meant
-    // to be loaded, then throws an error indicating that it's
-    // not possible to load the requested frame
-    if (image === null || maskImage === null) {
-        throw new RangeError("Frame " + frame + " is not supported");
-    }
-
-    // triggers the async loading of the "master" mask for the current
-    // frame, this should imply some level of cache usage
-    this._loadMask(maskImage, view, position, options);
-
-    // builds the URL that will be set on the image, notice that both
-    // the full URL mode is avoided so that no extra parameters are
-    // added to the image composition (not required)
-    const url = this.owner._getImageURL({
-        frame: frame,
-        format: format,
-        size: size,
-        width: width,
-        height: height,
-        background: backgroundColor,
-        full: false
-    });
-
-    // verifies if the loading of the current image
-    // is considered redundant (already loaded or
-    // loading) and avoids for performance reasons
-    const isRedundant = image.dataset.src === url;
-    if (isRedundant) {
-        // in case no draw is required returns the control flow
-        // immediately, nothing to be done
-        if (!draw) return;
-
-        // check if the image on the buffer is already loaded
-        // nad if that's the case draws the frame
-        const isReady = image.dataset.loaded === "true";
-        if (isReady) await this._drawFrame(image, animate, duration);
-
-        // triggers the post frame event indicating the end
-        // of the image preloading under cache match situation
-        this.trigger("post_frame", {
-            view: view,
-            position: position,
-            options: options,
-            result: false
-        });
-
-        // returns immediately there's nothing remaining to
-        // be done as the image is already loaded
-        return;
-    }
-
-    // adds load callback to the image to draw the frame
-    // when it is available from the "remote" source
-    const imagePromise = new Promise((resolve, reject) => {
-        image.onload = async () => {
-            image.dataset.loaded = true;
-            image.dataset.src = url;
-            if (!draw) {
-                resolve();
-                return;
-            }
-            try {
-                await this._drawFrame(image, animate, duration);
-            } catch (err) {
-                reject(err);
-            }
-            resolve();
-        };
-
-        image.onerror = () => {
-            reject(new Error("Problem loading image"));
-        };
-    });
-
-    // sets the src of the image to trigger the request
-    // and sets loaded to false to indicate that the
-    // image is not yet loading
-    image.src = url;
-    image.dataset.src = url;
-    image.dataset.loaded = false;
-
-    // waits until the image promise is resolved so that
-    // we're sure everything is currently loaded
-    await imagePromise;
-
-    // triggers the post frame event indicating that the
-    // frame has been buffered into the img element with
-    // no cache operation activated
-    this.trigger("post_frame", {
-        view: view,
-        position: position,
-        options: options,
-        result: true
-    });
-};
-
-/**
- * @ignore
- */
-ripe.ConfiguratorCSR.prototype._loadMask = function (maskImage, view, position, options) {
-    // constructs the URL for the mask and then at the end of the
-    // mask loading process runs the final update of the mask canvas
-    // operation that will allow new highlight and selection operation
-    // to be performed according to the new frame value
-    const draw = options.draw === undefined || options.draw;
-    const size = this.element.dataset.size || this.size;
-    const width = size || this.element.dataset.width || this.width;
-    const height = size || this.element.dataset.height || this.height;
-    const frame = ripe.getFrameKey(view, position);
-    const url = this.owner._getMaskURL({
-        frame: frame,
-        size: size,
-        width: width,
-        height: height
-    });
-    if (draw && maskImage.dataset.src === url) {
-        setTimeout(() => {
-            this._drawMask(maskImage);
-        }, 150);
-    } else {
-        maskImage.onload = draw
-            ? () => {
-                setTimeout(() => {
-                    this._drawMask(maskImage);
-                }, 150);
-            }
-            : null;
-        maskImage.onerror = () => {
-            maskImage.removeAttribute("src");
-        };
-        maskImage.crossOrigin = "anonymous";
-        maskImage.dataset.src = url;
-        maskImage.setAttribute("src", url);
-    }
-};
-
-/**
- * @ignore
- */
-ripe.ConfiguratorCSR.prototype._drawMask = function (maskImage) {
-    const mask = this.element.querySelector(".mask");
-    const maskContext = mask.getContext("2d");
-    maskContext.clearRect(0, 0, mask.width, mask.height);
-    maskContext.drawImage(maskImage, 0, 0, mask.width, mask.height);
 };
 
 /**
@@ -1052,147 +630,6 @@ ripe.ConfiguratorCSR.prototype._drawFrame = async function (image, animate, dura
     current.style.opacity = 0;
     current.style.zIndex = 1;
     target.style.zIndex = 1;
-};
-
-/**
- * @ignore
- */
-ripe.ConfiguratorCSR.prototype._preload = async function (useChain) {
-    // retrieves the current position of the configurator from its
-    // data defaulting to the zero one (reference) in case no position
-    // is currently defined in the configurator
-    const view = this.element.dataset.view || "side";
-    const position = parseInt(this.element.dataset.position) || 0;
-
-    let index = this.index || 0;
-    index++;
-
-    this.index = index;
-    this.element.classList.add("preload");
-
-    // adds all the frames available for all the views to the
-    // list of work to be performed on pre-loading
-    const work = [];
-    for (const _view of Object.keys(this.frames)) {
-        const viewFrames = this.frames[_view];
-        for (let _index = 0; _index < viewFrames; _index++) {
-            if (_index === position && view === _view) {
-                continue;
-            }
-            const frame = ripe.getFrameKey(_view, _index);
-            work.push(frame);
-        }
-    }
-    work.reverse();
-
-    // waits for the pre loading promise so that at the end of this
-    // execution all the work required for loading is processed
-    const result = await new Promise((resolve, reject) => {
-        this._finalize = (result = true) => {
-            // invalidates the work queue by setting its
-            // length value to zero (clears array)
-            work.length = 0;
-
-            // removes the pending classes that indicate that
-            // there's some kind of preloading happening
-            this.element.classList.remove("preloading");
-            this.element.classList.remove("no-drag");
-
-            // unsets the finalize clojure from the current instance
-            // effectively disallowing further usage of it
-            this._finalize = null;
-
-            // finalizes the promise by resolving it with
-            // the parameter that was just received (final result)
-            resolve(result);
-        };
-
-        const mark = element => {
-            const _index = this.index;
-            if (index !== _index) {
-                return;
-            }
-
-            // removes the preloading class from the image element
-            // and retrieves all the images still preloading,
-            element.classList.remove("preloading");
-            const framesBuffer = this.element.querySelector(".frames-buffer");
-            const pending = framesBuffer.querySelectorAll("img.preloading") || [];
-
-            // if there are images preloading then adds the
-            // preloading class to the target element and
-            // prevents drag movements to avoid flickering
-            // else and if there are no images preloading and no
-            // frames yet to be preloaded then the preload
-            // is considered finished so drag movements are
-            // allowed again and the loaded event is triggered
-            if (pending.length > 0) {
-                this.element.classList.add("preloading");
-                this.element.classList.add("no-drag");
-            } else if (work.length === 0) {
-                if (this._finalize) this._finalize();
-            }
-        };
-
-        const render = async () => {
-            const _index = this.index;
-            if (index !== _index) {
-                return;
-            }
-
-            // in case there's no more work pending returns immediately
-            // (nothing is remaining to be done)
-            if (work.length === 0) {
-                return;
-            }
-
-            // retrieves the next frame to be loaded
-            // and its corresponding image element
-            // and adds the preloading class to it
-            const frame = work.pop();
-            const framesBuffer = this.element.querySelector(".frames-buffer");
-            const reference = framesBuffer.querySelector(`img[data-frame='${String(frame)}']`);
-            reference.classList.add("preloading");
-
-            // determines if a chain based loading should be used for the
-            // pre-loading process of the continuous image resources to be loaded
-            const _frame = ripe.parseFrameKey(frame);
-            const view = _frame[0];
-            const position = _frame[1];
-            const promise = this._loadFrame(view, position, {
-                draw: false
-            });
-            promise.then(() => mark(reference));
-            if (useChain) await promise;
-            await render();
-        };
-
-        // adds the preloading flag and then prevents mouse drag
-        // movements by setting proper classes
-        this.element.classList.add("preloading");
-        this.element.classList.add("no-drag");
-
-        if (work.length > 0) {
-            // schedule the timeout operation in order to trigger
-            // the pre-loading of the remaining frames, the delay
-            // is meant to provide some time buffer to the current
-            // frame (higher priority) to be processes in the server
-            // effectively allowing selective QoS (Quality of Service)
-            setTimeout(async () => {
-                try {
-                    await render();
-                } catch (err) {
-                    reject(err);
-                }
-            }, this.preloadDelay);
-        } else {
-            if (this._finalize) this._finalize();
-        }
-    });
-
-    // returns the final result coming from the preload promise
-    // that should indicate the status on the preloading operation
-    return result;
 };
 
 /**
@@ -1317,71 +754,6 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
         event.preventDefault();
     });
 
-    back.addEventListener("click", function (event) {
-        // verifies if the previous drag operation (if any) has exceed
-        // the minimum threshold to be considered drag (click avoided)
-        if (Math.abs(self.previous) > self.clickThreshold) {
-            event.stopImmediatePropagation();
-            event.stopPropagation();
-            return;
-        }
-
-        const preloading = self.element.classList.contains("preloading");
-        const animating = self.element.classList.contains("animating");
-        if (preloading || animating) {
-            return;
-        }
-        event = ripe.fixEvent(event);
-        const index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
-        if (index === 0) {
-            return;
-        }
-
-        // retrieves the reference to the part name by using the index
-        // extracted from the masks image (typical strategy for retrieval)
-        const part = self.partsList[index - 1];
-        const isVisible = self.hiddenParts.indexOf(part) === -1;
-        if (part && isVisible) self.owner.selectPart(part);
-        event.stopPropagation();
-    });
-
-    back.addEventListener("mousemove", function (event) {
-        const preloading = self.element.classList.contains("preloading");
-        const animating = self.element.classList.contains("animating");
-        if (preloading || animating) {
-            return;
-        }
-        event = ripe.fixEvent(event);
-
-        // tries to retrieve the layer/part index associated with current
-        // mouse coordinates to better act in the mouse move operation, as
-        // this may represent a possible highlight operation
-        const index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
-
-        // in case the index that was found is the zero one this is a special
-        // position and the associated operation is the removal of the highlight
-        // also if the target is being dragged the highlight should be removed
-        if (index === 0 || self.down === true) {
-            self.lowlight();
-            return;
-        }
-
-        // retrieves the reference to the part name by using the index
-        // extracted from the masks image (typical strategy for retrieval)
-        const part = self.partsList[index - 1];
-        const isVisible = self.hiddenParts.indexOf(part) === -1;
-        if (part && isVisible) self.highlight(part);
-        else self.lowlight();
-    });
-
-    back.addEventListener("dragstart", function (event) {
-        event.preventDefault();
-    });
-
-    back.addEventListener("dragend", function (event) {
-        event.preventDefault();
-    });
-
     // verifies if mutation should be "observed" for this visual
     // and in such case registers for the observation of any DOM
     // mutation (eg: attributes) for the configurator element, triggering
@@ -1453,9 +825,6 @@ ripe.ConfiguratorCSR.prototype._parseDrag = function () {
     } else if (sensitivity * percentY < verticalThreshold * -1) {
         nextView = view === "bottom" ? "side" : "top";
         this.referenceY = mousePosY;
-    }
-    if (this.frames[nextView] === undefined) {
-        nextView = view;
     }
 
     // retrieves the current view and its frames
@@ -1571,10 +940,10 @@ ripe.ConfiguratorCSR.prototype._initializeScene = function () {
     this.renderer.render(this.scene, this.camera);
 };
 
-ripe.ConfiguratorCSR.prototype._addMesh = async function (meshPath) {
+ripe.ConfiguratorCSR.prototype._loadMesh = async function () {
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
-        gltfLoader.load(meshPath, gltf => {
+        gltfLoader.load(this.meshPath, gltf => {
             resolve(gltf);
         });
     });
