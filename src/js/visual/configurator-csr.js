@@ -325,9 +325,27 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
 
     // in case the next position value was not properly parsed (probably undefined)
     // then it's not possible to change frame (throws exception)
+    const viewFrames = this.frames[nextView];
+    if (!viewFrames || nextPosition >= viewFrames) {
+        throw new RangeError("Frame " + frame + " is not supported");
+    }
+    
     if (isNaN(nextPosition)) {
         throw new RangeError("Frame position is not defined");
     }
+
+    // unpacks the other options to the frame change defaulting their values
+    // in case undefined values are found
+    let duration = options.duration === undefined ? null : options.duration;
+    let stepDurationRef = options.stepDuration === this.stepDuration ? null : options.stepDuration;
+    const revolutionDuration =
+        options.revolutionDuration === undefined
+            ? this.revolutionDuration
+            : options.revolutionDuration;
+    const type = options.type === undefined ? null : options.type;
+    let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
+    const safe = options.safe === undefined ? true : options.safe;
+    const first = options.first === undefined ? true : options.first;
 
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
@@ -370,14 +388,14 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
 
     // computes the frame key (normalized) and then triggers an event
     // notifying any listener about the new frame that was set
-    const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    this.trigger("changed_frame", newFrame);
+    //const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
+    //this.trigger("changed_frame", newFrame);
 
     // in case there's a mesh defined in the current instance then applies
     // a rotation around the Y axis 
-    // TODO CHANGE HARDCODED VALUE
     if (this.mesh) {
-        this.mesh.rotation.y = (nextPosition / 24) * Math.PI * 2;
+        this.mesh.rotation.y = (nextPosition / viewFrames) * Math.PI * 2;
+        this.renderer.render(this.scene, this.camera);
     }
 };
 
@@ -518,7 +536,7 @@ ripe.ConfiguratorCSR.prototype._initPartsList = async function () {
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
+ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
@@ -530,6 +548,25 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // updates the parts list for the new product
     this._initPartsList();
 
+    // retrieves the new product frame object and sets it
+    // under the current state, adapting then the internal
+    // structures to accommodate the possible changes in the
+    // frame structure
+    this.frames = await this.owner.getFrames();
+
+    // tries to keep the current view and position
+    // if the new model supports it otherwise
+    // changes to a supported frame
+    let view = this.element.dataset.view;
+    let position = parseInt(this.element.dataset.position);
+    const maxPosition = this.frames[view];
+    if (!maxPosition) {
+        view = Object.keys(this.frames)[0];
+        position = 0;
+    } else if (position >= maxPosition) {
+        position = 0;
+    }
+
     // updates the instance values for the configurator view
     // and position so that they reflect the current visuals
     this.view = view;
@@ -537,8 +574,7 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
 
     // updates the number of frames in the initial view
     // taking into account the requested frames data
-    // TODO CHANGE HARDCODED VIEWS
-    const viewFrames = 24;
+    const viewFrames = this.frames[view];
     this.element.dataset.frames = viewFrames;
 
     // updates the attributes related with both the view
@@ -555,8 +591,6 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // a configuration already exists for the current
     // interactive configurator (meta-data)
     this.element.classList.add("ready");
-
-    this.trigger("changed_frame", frame);
 
     // shows the new product with a crossfade effect
     // and starts responding to updates again
@@ -575,61 +609,8 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
  */
 ripe.ConfiguratorCSR.prototype._drawFrame = async function (image, animate, duration) {
     const area = this.element.querySelector(".area");
-    const back = this.element.querySelector(".back");
-
-    const visible = area.dataset.visible === "true";
-    const current = visible ? area : back;
-    const target = visible ? back : area;
-    const context = target.getContext("2d");
-
-    // retrieves the animation identifiers for both the current
-    // canvas and the target one and cancels any previous animation
-    // that might exist in such canvas (as a new one is coming)
-    ripe.cancelAnimation(current);
-    ripe.cancelAnimation(target);
-
-    // clears the canvas context rectangle and then draws the image from
-    // the buffer to the target canvas (back buffer operation)
-    context.clearRect(0, 0, target.width, target.height);
-    context.drawImage(image, 0, 0, target.width, target.height);
-
-    // switches the visibility (meta information )of the target and the
-    // current canvas elements (this is just logic information)
-    target.dataset.visible = true;
-    current.dataset.visible = false;
-
-    // in case no animation is requested the z index and opacity switch
-    // is immediate, this is consider a fast double buffer switch
-    if (!animate) {
-        current.style.zIndex = 1;
-        current.style.opacity = 0;
-        target.style.zIndex = 1;
-        target.style.opacity = 1;
-        return;
-    }
-
-    // "calculates" the duration for the animate operation taking into
-    // account the passed parameter and the "kind" of animation, falling
-    // back to the instance default if required
-    duration = duration || (animate === "immediate" ? 0 : this.duration);
-
-    // creates an array of promises that are going to be waiting for so that
-    // the animation on the draw is considered finished
-    const promises = [];
-    if (animate === "cross") {
-        promises.push(ripe.animateProperty(current, "opacity", 1, 0, duration));
-    }
-    promises.push(ripe.animateProperty(target, "opacity", 0, 1, duration));
-
-    // waits for both animations to finish so that the final update on
-    // the current settings can be performed (changing it's style)
-    await Promise.all(promises);
-
-    // updates the style to its final state for both the current and the
-    // target canvas elements
-    current.style.opacity = 0;
-    current.style.zIndex = 1;
-    target.style.zIndex = 1;
+    
+    this.renderer.render(this.scene, this.camera);
 };
 
 /**
@@ -642,8 +623,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
     // retrieves the reference to the multiple elements that
     // are going to be used for event handler operations
     const area = this.element.querySelector(".area");
-    const back = this.element.querySelector(".back");
-
+    
     // binds the mousedown event on the element to prepare
     // it for drag movements
     this._addElementHandler("mousedown", function (event) {
@@ -698,22 +678,17 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             return;
         }
 
-        const preloading = self.element.classList.contains("preloading");
         const animating = self.element.classList.contains("animating");
-        if (preloading || animating) {
+        if (animating) {
             return;
         }
         event = ripe.fixEvent(event);
-        const index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
-        if (index === 0) {
-            return;
-        }
-
+        
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
-        const part = self.partsList[index - 1];
-        const isVisible = self.hiddenParts.indexOf(part) === -1;
-        if (part && isVisible) self.owner.selectPart(part);
+        //const part = self.partsList[index - 1];
+        //const isVisible = self.hiddenParts.indexOf(part) === -1;
+        //if (part && isVisible) self.owner.selectPart(part);
         event.stopPropagation();
     });
 
@@ -725,25 +700,22 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
         }
         event = ripe.fixEvent(event);
 
-        // tries to retrieve the layer/part index associated with current
-        // mouse coordinates to better act in the mouse move operation, as
-        // this may represent a possible highlight operation
-        const index = self._getCanvasIndex(this, event.offsetX, event.offsetY);
-
         // in case the index that was found is the zero one this is a special
         // position and the associated operation is the removal of the highlight
         // also if the target is being dragged the highlight should be removed
-        if (index === 0 || self.down === true) {
+        if (self.down === true) {
             self.lowlight();
             return;
         }
 
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
+        /*
         const part = self.partsList[index - 1];
         const isVisible = self.hiddenParts.indexOf(part) === -1;
         if (part && isVisible) self.highlight(part);
         else self.lowlight();
+        */
     });
 
     area.addEventListener("dragstart", function (event) {
@@ -829,7 +801,7 @@ ripe.ConfiguratorCSR.prototype._parseDrag = function () {
 
     // retrieves the current view and its frames
     // and determines which one is the next frame
-    const viewFrames = this.frames[nextView];
+    const viewFrames = 24;
     const offset = Math.round((sensitivity * percentX * viewFrames) / 24);
     let nextPosition = (base - offset) % viewFrames;
     nextPosition = nextPosition >= 0 ? nextPosition : viewFrames + nextPosition;
@@ -844,32 +816,6 @@ ripe.ConfiguratorCSR.prototype._parseDrag = function () {
     this.changeFrame(nextFrame);
 };
 
-/**
- * Obtains the offset index (from red color) for the provided coordinates
- * and taking into account the aspect ration of the canvas.
- *
- * @param canvas {Canvas} The canvas to be used as reference for the
- * calculus of offset red color index.
- * @param x {Number} The x coordinate within the canvas to obtain index.
- * @param y {Number} The y coordinate within the canvas to obtain index.
- * @returns {Number} The offset index using as reference the main mask
- * of the current configurator.
- */
-ripe.ConfiguratorCSR.prototype._getCanvasIndex = function (canvas, x, y) {
-    const canvasRealWidth = canvas.getBoundingClientRect().width;
-    const mask = this.element.querySelector(".mask");
-    const ratio = mask.width && canvasRealWidth && mask.width / canvasRealWidth;
-
-    x = parseInt(x * ratio);
-    y = parseInt(y * ratio);
-
-    const maskContext = mask.getContext("2d");
-    const pixel = maskContext.getImageData(x, y, 1, 1);
-    const r = pixel.data[0];
-    const index = parseInt(r);
-
-    return index;
-};
 
 /**
  * Builds the signature string for the current internal state
