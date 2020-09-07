@@ -321,15 +321,12 @@ window.onload = function () {
                 view: bestFace(result)
             });
 
-            configurator.isFirst = true;
-            configurator.CSRInit(THREE);
-            
-            var loader = new THREE.GLTFLoader();
-            loader.load("/static/assets/vyner.glb", function (gltf) {
+            /*var loader = new THREE.GLTFLoader();
+            loader.load("/static/assets/vyner.glb", function(gltf) {
                 configurator.addMesh(gltf)
-            }); 
-            
-            configurator.bind("loaded", function () {
+            });  */
+
+            configurator.bind("loaded", function() {
                 if (configurator.isFirst) configurator.isFirst = false;
                 else return;
                 if (result.faces.indexOf("side") !== -1) {
