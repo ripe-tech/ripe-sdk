@@ -67,6 +67,9 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this.useMasks = this.options.useMasks === undefined ? !this.noMasks : this.options.useMasks;
     this.view = this.options.view || "side";
     this.position = this.options.position || 0;
+    this.cameraDistance = this.options.cameraDistance || 0;
+    this.cameraHeight = this.options.cameraHeight || 0;
+    this.exposure = this.options.exposure || 3.0;
     this.configAnimate =
         this.options.configAnimate === undefined ? "cross" : this.options.configAnimate;
     this.viewAnimate = this.options.viewAnimate === undefined ? "cross" : this.options.viewAnimate;
@@ -74,6 +77,8 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._finalize = null;
     this._observer = null;
     this._ownerBinds = {};
+    this.texturesPath = this.options.texturesPath || "";
+    this.materials = this.options.materials || [];
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
@@ -108,10 +113,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
         if (config) this._updateConfig();
     });
 
-    this.cameraDistance = this.options.cameraDistance || 0;
-    this.cameraHeight = this.options.cameraHeight || 0;
-    this.exposure = this.options.exposure || 3.0;
-
+    //this._initializeTextures();
     this._initializeLights();
     this._initializeCamera();
     this._initializeMaterials();
@@ -1086,7 +1088,46 @@ ripe.ConfiguratorCSR.prototype.populateScene = function (scene) {
     scene.add(this.floorMesh);
 }
 
+ripe.ConfiguratorCSR.prototype._initializeTextures = async function () {
+    console.log(this.materials);
+    const textureLoader = new this.library.TextureLoader();
+
+    const materialPath = this.texturesPath + this.materials[0] + "/";
+    var diffuseTexturePath = materialPath + this.materials[0] + "_diffuse.jpg"
+    var roughnessMapPath = materialPath + this.materials[0] + "_roughness.jpg"
+    
+    const diffuseTexture = await new Promise((resolve, reject) => {
+        textureLoader.load(diffuseTexturePath, function (texture) {
+            resolve(texture);
+        });
+    });
+    
+    const roughnessTexture = await new Promise((resolve, reject) => {
+        textureLoader.load(roughnessMapPath, function (texture) {
+            resolve(texture);
+        });
+    });
+    this.appliedMaterial = new this.library.MeshStandardMaterial( {
+
+        //color: 0xff00ff,
+    
+        map: diffuseTexture,        
+        roughnessMap: roughnessTexture
+        /*
+        metalness: metalness,
+    
+        roughnessMap: roughnessMap,
+        metalnessMap: metalnessMap,
+    
+        envMap: envMap, // important -- especially for metals!
+        envMapIntensity: envMapIntensity
+        */
+    
+    });
+};
+
 ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
+    await this._initializeTextures();
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
         gltfLoader.load(this.meshPath, gltf => {
@@ -1095,7 +1136,6 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     });
 
     const model = gltf.scene;
-
     // eslint-disable-next-line no-undef
     const box = new this.library.Box3().setFromObject(model);
 
@@ -1119,6 +1159,11 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     this.camera.lookAt(this.cameraTarget);
     
     this.mesh = model;
+
+    for (let i = 0; i < this.mesh.children.length; i++) {
+        console.log(this.appliedMaterial);
+        this.mesh.children[i].material = this.appliedMaterial;
+    }
 
     // Only now can we populate the scene safely
     this.scene = new this.library.Scene();

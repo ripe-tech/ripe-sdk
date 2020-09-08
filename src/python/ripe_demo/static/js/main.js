@@ -322,6 +322,8 @@ window.onload = function () {
                 view: bestFace(result),
                 render: "csr",
                 meshPath: "/static/assets/vyner.glb",
+                texturesPath: "/static/assets/textures/",
+                materials: ["rocks", "wood"],
                 library: THREE,
                 cameraDistance: 4.5,
                 cameraHeight: 0.8,
