@@ -108,10 +108,15 @@ ripe.ConfiguratorCSR.prototype.init = function () {
         if (config) this._updateConfig();
     });
 
-    this._initializeScene();
-    if (this.meshPath) {
-        this._loadMesh();
-    }
+    this.cameraDistance = this.options.cameraDistance || 0;
+    this.cameraHeight = this.options.cameraHeight || 0;
+    this.exposure = this.options.exposure || 3.0;
+
+    this._initializeLights();
+    this._initializeCamera();
+    this._initializeMaterials();
+    this._initializeRenderer();
+    this._initializeMesh();    
 };
 
 /**
@@ -156,7 +161,7 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update =
 
     if (options.meshPath && this.meshPath != options.meshPath) {
         this.meshPath = this.options.meshPath;
-        this._loadMesh();
+        this._initializeMesh();
     }
     this.library = options.library === undefined ? this.library : options.library;
     this.width = options.width === undefined ? this.width : options.width;
@@ -219,8 +224,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     const position = this.element.dataset.position;
 
     const force = options.force || false;
-    const duration = options.duration;
-
+    
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
     let previous = this.signature || "";
@@ -242,8 +246,9 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
 
     if (this.mesh) {
         this.mesh.rotation.y = (position / 24) * Math.PI * 2;
-        this.renderer.render(this.scene, this.camera);
     }
+
+    this.render();
 
     // removes the highlight support from the matched object as a new
     // frame is going to be "calculated" and rendered (not same mask)
@@ -328,9 +333,6 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
 
-    console.log("Changing Frame!");
-
-
     // in case the next position value was not properly parsed (probably undefined)
     // then it's not possible to change frame (throws exception)
     if (isNaN(nextPosition)) {
@@ -404,11 +406,14 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     // and ignores all drag movements while it lasts
     let animate = false;
     if (view !== nextView && viewFrames !== undefined) {
-        this.view = nextView;
-        this.element.dataset.view = nextView;
-        this.element.dataset.frames = viewFrames;
-        animate = type === null ? this.viewAnimate : type;
-        duration = duration || this.duration;
+        var transitionOptions = {
+            changeView: true,
+            nextView: nextView,
+            duration: duration
+        };
+
+        this.transition(transitionOptions);
+        return;
     }
 
     // runs the defaulting values for the current step duration
@@ -576,6 +581,36 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     // runs the next tick operation to change the frame of the current
     // configurator to the next one (iteration cycle)
     await this.changeFrame(frame, options);
+};
+
+ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
+    if (options.changeView) {
+        this.view = options.nextView;
+        this.element.dataset.view = options.nextView;
+        this.duration = options.duration;
+
+        const newScene = new this.library.Scene();
+        const newCamera = new this.library.PerspectiveCamera(35, 620 / 620, 1, 20000);
+        if (options.nextView == "top") {
+            newCamera.position.set(0, this.cameraDistance, 0);
+            newCamera.lookAt(this.cameraTarget);
+            
+            // TODO USE NEW CAMERA 
+            this.camera.position.set(0, this.cameraDistance, 0);
+            this.camera.lookAt(this.cameraTarget);
+        } else if (options.nextView == "side")  {
+            newCamera.position.set(0, this.cameraHeight, this.cameraDistance);
+            newCamera.lookAt(this.cameraTarget);
+
+            // TODO USE NEW CAMERA 
+            this.camera.position.set(0, this.cameraHeight, this.cameraDistance);
+            this.camera.lookAt(this.cameraTarget);
+        }
+
+        //this.populateScene(newScene);
+        this.render();
+        //this.renderer.render(newScene, newCamera);
+    }
 };
 
 /**
@@ -781,15 +816,6 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
             force: true
         }
     );
-};
-
-/**
- * @ignore
- */
-ripe.ConfiguratorCSR.prototype._drawFrame = async function (image, animate, duration) {
-    const area = this.element.querySelector(".area");
-    
-    this.renderer.render(this.scene, this.camera);
 };
 
 /**
@@ -1015,22 +1041,7 @@ ripe.ConfiguratorCSR.prototype._buildSignature = function () {
     )}&format=${String(format)}&background=${String(backgroundColor)}`;
 };
 
-ripe.ConfiguratorCSR.prototype._initializeScene = function () {
-    this.params = {
-        roughness: 0.0,
-        metalness: 0.0,
-        exposure: 3.0,
-        camera: 4.5,
-        hemisphere: false,
-        directional: false,
-        background: false,
-        raycast: false,
-        debug: false
-    };
-    this.scene = new this.library.Scene();
-    this.camera = new this.library.PerspectiveCamera(35, 620 / 620, 1, 20000);
-    this.camera.position.set(0, 0.8, this.params.camera);
-
+ripe.ConfiguratorCSR.prototype._initializeLights = function () {
     this.light = new this.library.PointLight(0xffffff, 0.8, 18);
     this.light.position.set(0, 2, 1);
     this.light.castShadow = true;
@@ -1039,19 +1050,16 @@ ripe.ConfiguratorCSR.prototype._initializeScene = function () {
 
     // creates the directional light (required for metal) positions
     // it so that it can be latter added to the scene
-    const ambientLight = new this.library.AmbientLight(0xffffff, 0.2);
-    ambientLight.position.set(0, 2, this.params.camera);
+    this.ambientLight = new this.library.AmbientLight(0xffffff, 0.2);
+    this.ambientLight.position.set(0, 2, this.cameraDistance);
+};
 
-    // adds both the ambient light and the point light to the scene
-    // these are considered to be the only sources of illumination
-    this.scene.add(ambientLight);
-    this.scene.add(this.light);
-
+ripe.ConfiguratorCSR.prototype._initializeRenderer = function () {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
     this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setSize(620, 620);
-    this.renderer.toneMappingExposure = this.params.exposure;
+    this.renderer.toneMappingExposure = this.exposure;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = this.library.BasicShadowMap;
 
@@ -1059,13 +1067,26 @@ ripe.ConfiguratorCSR.prototype._initializeScene = function () {
     // of the renderer to it
     const area = this.element.querySelector(".area");
 
-    console.log(area);
     area.appendChild(this.renderer.domElement);
-
-    this.renderer.render(this.scene, this.camera);
 };
 
-ripe.ConfiguratorCSR.prototype._loadMesh = async function () {
+ripe.ConfiguratorCSR.prototype._initializeCamera = function () {
+    const area = this.element.querySelector(".area");
+    const width = area.getBoundingClientRect().width;
+    const height = area.getBoundingClientRect().height;
+    
+    this.camera = new this.library.PerspectiveCamera(35, width / height, 1, 20000);
+    this.camera.position.set(0, this.cameraHeight, this.cameraDistance);
+};
+
+ripe.ConfiguratorCSR.prototype.populateScene = function (scene) {
+    scene.add(this.ambientLight);
+    scene.add(this.light);
+    scene.add(this.mesh);
+    scene.add(this.floorMesh);
+}
+
+ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
         gltfLoader.load(this.meshPath, gltf => {
@@ -1075,7 +1096,6 @@ ripe.ConfiguratorCSR.prototype._loadMesh = async function () {
 
     const model = gltf.scene;
 
-    console.log(this);
     // eslint-disable-next-line no-undef
     const box = new this.library.Box3().setFromObject(model);
 
@@ -1086,22 +1106,94 @@ ripe.ConfiguratorCSR.prototype._loadMesh = async function () {
     floorMaterial.opacity = 0.5;
 
     // eslint-disable-next-line no-undef
-    const floorMesh = new this.library.Mesh(floorGeometry, floorMaterial);
-    floorMesh.rotation.x = Math.PI / 2;
-    floorMesh.receiveShadow = true;
-    floorMesh.position.y = box.min.y;
+    this.floorMesh = new this.library.Mesh(floorGeometry, floorMaterial);
+    this.floorMesh.rotation.x = Math.PI / 2;
+    this.floorMesh.receiveShadow = true;
+    this.floorMesh.position.y = box.min.y;
     // floorMesh.position.x = 0;
-
-    this.scene.add(floorMesh);
 
     model.castShadow = true;
 
     // eslint-disable-next-line no-undef
-    const centerPoint = new this.library.Vector3(0, box.min.y + (box.max.y - box.min.y) / 2, 0);
-    this.camera.lookAt(centerPoint);
-    console.log(centerPoint);
-
+    this.cameraTarget = new this.library.Vector3(0, box.min.y + (box.max.y - box.min.y) / 2, 0);
+    this.camera.lookAt(this.cameraTarget);
+    
     this.mesh = model;
-    this.scene.add(model);
-    this.renderer.render(this.scene, this.camera);
+
+    // Only now can we populate the scene safely
+    this.scene = new this.library.Scene();
+    this.populateScene(this.scene);
+    this.render();
+};
+
+ripe.ConfiguratorCSR.prototype._initializeMaterials = async function () {
+    this.crossFadeMaterial = new THREE.ShaderMaterial( {
+        uniforms: {
+            tDiffuse1: {
+                value: null
+            },
+            tDiffuse2: {
+                value: null
+            },
+            mixRatio: {
+                value: 0.0
+            },
+            threshold: {
+                value: 0.1
+            },
+            useTexture: {
+                value: 1
+            }
+        },
+        vertexShader: [
+            "varying vec2 vUv;",
+
+            "void main() {",
+
+            "vUv = vec2( uv.x, uv.y );",
+            "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+            "}"
+        ].join( "\n" ),
+        fragmentShader: [
+            "uniform float mixRatio;",
+
+            "uniform sampler2D tDiffuse1;",
+            "uniform sampler2D tDiffuse2;",
+            "uniform sampler2D tMixTexture;",
+
+            "uniform int useTexture;",
+            "uniform float threshold;",
+
+            "varying vec2 vUv;",
+
+            "void main() {",
+
+            "	vec4 texel1 = texture2D( tDiffuse1, vUv );",
+            "	vec4 texel2 = texture2D( tDiffuse2, vUv );",
+
+            "	if (useTexture==1) {",
+
+            "		vec4 transitionTexel = texture2D( tMixTexture, vUv );",
+            "		float r = mixRatio * (1.0 + threshold * 2.0) - threshold;",
+            "		float mixf=clamp((transitionTexel.r - r)*(1.0/threshold), 0.0, 1.0);",
+
+            "		gl_FragColor = mix( texel1, texel2, mixf );",
+
+            "	} else {",
+
+            "		gl_FragColor = mix( texel2, texel1, mixRatio );",
+
+            "	}",
+
+            "}"
+        ].join( "\n" )
+
+    } );
+};
+
+ripe.ConfiguratorCSR.prototype.render = function () {
+    if (this.renderer && this.scene && this.camera) {
+        this.renderer.render(this.scene, this.camera);
+    }
 };

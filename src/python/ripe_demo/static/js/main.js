@@ -322,13 +322,11 @@ window.onload = function () {
                 view: bestFace(result),
                 render: "csr",
                 meshPath: "/static/assets/vyner.glb",
-                library: THREE
+                library: THREE,
+                cameraDistance: 4.5,
+                cameraHeight: 0.8,
+                exposure: 3.0,
             });
-
-            /*var loader = new THREE.GLTFLoader();
-            loader.load("", function(gltf) {
-                configurator.addMesh(gltf)
-            });  */
 
             configurator.bind("loaded", function() {
                 if (configurator.isFirst) configurator.isFirst = false;
