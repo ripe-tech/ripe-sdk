@@ -1122,6 +1122,16 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
             });
         });
 
+        diffuseTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+        roughnessTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+        normalTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+        aoTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+
+        diffuseTexture.minFilter = this.library.NearestMipmapNearestFilter;
+        roughnessTexture.minFilter = this.library.NearestMipmapNearestFilter;
+        normalTexture.minFilter = this.library.NearestMipmapNearestFilter;
+        aoTexture.minFilter = this.library.NearestMipmapNearestFilter;
+
         const material = new this.library.MeshStandardMaterial({
             map: diffuseTexture,
             roughnessMap: roughnessTexture,

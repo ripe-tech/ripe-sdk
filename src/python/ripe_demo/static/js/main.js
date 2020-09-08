@@ -346,7 +346,6 @@ window.onload = function () {
             setPart &&
                 setPart.addEventListener("click", function () {
                     randomize();
-                    console.log(configurator)
                     configurator.randomize();
             });
         
