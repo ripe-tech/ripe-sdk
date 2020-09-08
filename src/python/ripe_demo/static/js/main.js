@@ -105,17 +105,11 @@ window.onload = function () {
     };
 
     var initHeader = function () {
-        var setPart = document.getElementById("set-part");
         var setMessage = document.getElementById("set-message");
         var getPrice = document.getElementById("get-price");
         var getCombinations = document.getElementById("get-combinations");
         var toggleRender = document.getElementById("toggle-render");
-
-        setPart &&
-            setPart.addEventListener("click", function () {
-                randomize();
-            });
-
+        
         setMessage &&
             setMessage.addEventListener("click", function () {
                 alert("Not implemented");
@@ -323,7 +317,7 @@ window.onload = function () {
                 render: "csr",
                 meshPath: "/static/assets/vyner.glb",
                 texturesPath: "/static/assets/textures/",
-                materials: ["rocks", "wood"],
+                materialNames: ["rocks", "wood", "leather_red", "leather_white", "concrete", "denim", "rusty_metal"],
                 library: THREE,
                 cameraDistance: 4.5,
                 cameraHeight: 0.8,
@@ -346,7 +340,16 @@ window.onload = function () {
                 toggleRenderMode.addEventListener("click", function () {
                     configurator.toggleRenderMode();
                 });
-
+            
+            var setPart = document.getElementById("set-part");
+        
+            setPart &&
+                setPart.addEventListener("click", function () {
+                    randomize();
+                    console.log(configurator)
+                    configurator.randomize();
+            });
+        
             // eslint-disable-next-line no-undef
             var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
 

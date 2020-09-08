@@ -78,7 +78,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._observer = null;
     this._ownerBinds = {};
     this.texturesPath = this.options.texturesPath || "";
-    this.materials = this.options.materials || [];
+    this.materialNames = this.options.materialNames || [];
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
@@ -113,12 +113,10 @@ ripe.ConfiguratorCSR.prototype.init = function () {
         if (config) this._updateConfig();
     });
 
-    //this._initializeTextures();
     this._initializeLights();
     this._initializeCamera();
-    this._initializeMaterials();
     this._initializeRenderer();
-    this._initializeMesh();    
+    this._initializeMesh();
 };
 
 /**
@@ -226,7 +224,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     const position = this.element.dataset.position;
 
     const force = options.force || false;
-    
+
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
     let previous = this.signature || "";
@@ -445,9 +443,9 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
             view !== nextView
                 ? 1
                 : Math.min(
-                      Math.abs(position - nextPosition),
-                      viewFrames - Math.abs(position - nextPosition)
-                  );
+                    Math.abs(position - nextPosition),
+                    viewFrames - Math.abs(position - nextPosition)
+                );
         options._stepCount = options._stepCount === undefined ? stepCount : options._stepCount;
 
         // in case the (total) revolution time for the view is defined a
@@ -596,11 +594,11 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
         if (options.nextView == "top") {
             newCamera.position.set(0, this.cameraDistance, 0);
             newCamera.lookAt(this.cameraTarget);
-            
+
             // TODO USE NEW CAMERA 
             this.camera.position.set(0, this.cameraDistance, 0);
             this.camera.lookAt(this.cameraTarget);
-        } else if (options.nextView == "side")  {
+        } else if (options.nextView == "side") {
             newCamera.position.set(0, this.cameraHeight, this.cameraDistance);
             newCamera.lookAt(this.cameraTarget);
 
@@ -752,7 +750,7 @@ ripe.ConfiguratorCSR.prototype._initPartsList = async function () {
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
+ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
@@ -830,7 +828,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
     // retrieves the reference to the multiple elements that
     // are going to be used for event handler operations
     const area = this.element.querySelector(".area");
-    
+
     // binds the mousedown event on the element to prepare
     // it for drag movements
     this._addElementHandler("mousedown", function (event) {
@@ -890,7 +888,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             return;
         }
         event = ripe.fixEvent(event);
-        
+
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
         //const part = self.partsList[index - 1];
@@ -1076,7 +1074,7 @@ ripe.ConfiguratorCSR.prototype._initializeCamera = function () {
     const area = this.element.querySelector(".area");
     const width = area.getBoundingClientRect().width;
     const height = area.getBoundingClientRect().height;
-    
+
     this.camera = new this.library.PerspectiveCamera(35, width / height, 1, 20000);
     this.camera.position.set(0, this.cameraHeight, this.cameraDistance);
 };
@@ -1088,91 +1086,53 @@ ripe.ConfiguratorCSR.prototype.populateScene = function (scene) {
     scene.add(this.floorMesh);
 }
 
-ripe.ConfiguratorCSR.prototype._initializeTextures = async function () {
-    console.log(this.materials);
+ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function () {
+    console.log("Initializing Textures");
     const textureLoader = new this.library.TextureLoader();
 
-    const materialPath = this.texturesPath + this.materials[0] + "/";
-    var diffuseTexturePath = materialPath + this.materials[0] + "_diffuse.jpg"
-    var roughnessMapPath = materialPath + this.materials[0] + "_roughness.jpg"
-    
-    const diffuseTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(diffuseTexturePath, function (texture) {
-            resolve(texture);
+    this.materials = {};
+
+    for (let i = 0; i < this.materialNames.length; i++) {
+        var diffuseMapPath = this.getTexturePath(this.materialNames[i], "diffuse");
+        var roughnessMapPath = this.getTexturePath(this.materialNames[i], "roughness");
+        var normalMapPath = this.getTexturePath(this.materialNames[i], "normal");
+        var aoMapPath = this.getTexturePath(this.materialNames[i], "ao");
+
+        const diffuseTexture = await new Promise((resolve, reject) => {
+            textureLoader.load(diffuseMapPath, function (texture) {
+                resolve(texture);
+            });
         });
-    });
-    
-    const roughnessTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(roughnessMapPath, function (texture) {
-            resolve(texture);
+
+        const roughnessTexture = await new Promise((resolve, reject) => {
+            textureLoader.load(roughnessMapPath, function (texture) {
+                resolve(texture);
+            });
         });
-    });
-    this.appliedMaterial = new this.library.MeshStandardMaterial( {
 
-        //color: 0xff00ff,
-    
-        map: diffuseTexture,        
-        roughnessMap: roughnessTexture
-        /*
-        metalness: metalness,
-    
-        roughnessMap: roughnessMap,
-        metalnessMap: metalnessMap,
-    
-        envMap: envMap, // important -- especially for metals!
-        envMapIntensity: envMapIntensity
-        */
-    
-    });
-};
-
-ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
-    await this._initializeTextures();
-    const gltfLoader = new this.library.GLTFLoader();
-    const gltf = await new Promise((resolve, reject) => {
-        gltfLoader.load(this.meshPath, gltf => {
-            resolve(gltf);
+        const normalTexture = await new Promise((resolve, reject) => {
+            textureLoader.load(normalMapPath, function (texture) {
+                resolve(texture);
+            });
         });
-    });
 
-    const model = gltf.scene;
-    // eslint-disable-next-line no-undef
-    const box = new this.library.Box3().setFromObject(model);
+        const aoTexture = await new Promise((resolve, reject) => {
+            textureLoader.load(aoMapPath, function (texture) {
+                resolve(texture);
+            });
+        });
 
-    // eslint-disable-next-line no-undef
-    const floorGeometry = new this.library.PlaneGeometry(100, 100);
-    // eslint-disable-next-line no-undef
-    const floorMaterial = new this.library.ShadowMaterial();
-    floorMaterial.opacity = 0.5;
+        const material = new this.library.MeshStandardMaterial({
+            map: diffuseTexture,
+            roughnessMap: roughnessTexture,
+            normalMap: normalTexture,
+            aoMap: aoTexture
+        });
 
-    // eslint-disable-next-line no-undef
-    this.floorMesh = new this.library.Mesh(floorGeometry, floorMaterial);
-    this.floorMesh.rotation.x = Math.PI / 2;
-    this.floorMesh.receiveShadow = true;
-    this.floorMesh.position.y = box.min.y;
-    // floorMesh.position.x = 0;
-
-    model.castShadow = true;
-
-    // eslint-disable-next-line no-undef
-    this.cameraTarget = new this.library.Vector3(0, box.min.y + (box.max.y - box.min.y) / 2, 0);
-    this.camera.lookAt(this.cameraTarget);
-    
-    this.mesh = model;
-
-    for (let i = 0; i < this.mesh.children.length; i++) {
-        console.log(this.appliedMaterial);
-        this.mesh.children[i].material = this.appliedMaterial;
+        this.materials[this.materialNames[i]] = material;
     }
 
-    // Only now can we populate the scene safely
-    this.scene = new this.library.Scene();
-    this.populateScene(this.scene);
-    this.render();
-};
-
-ripe.ConfiguratorCSR.prototype._initializeMaterials = async function () {
-    this.crossFadeMaterial = new THREE.ShaderMaterial( {
+    this.crossFadeMaterial = new THREE.ShaderMaterial({
         uniforms: {
             tDiffuse1: {
                 value: null
@@ -1199,7 +1159,7 @@ ripe.ConfiguratorCSR.prototype._initializeMaterials = async function () {
             "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
 
             "}"
-        ].join( "\n" ),
+        ].join("\n"),
         fragmentShader: [
             "uniform float mixRatio;",
 
@@ -1232,10 +1192,74 @@ ripe.ConfiguratorCSR.prototype._initializeMaterials = async function () {
             "	}",
 
             "}"
-        ].join( "\n" )
+        ].join("\n")
 
-    } );
+    });
+
+    console.log("Finished loading textures");
 };
+
+ripe.ConfiguratorCSR.prototype.getTexturePath = function (materialName, type) {
+    return this.texturesPath + materialName + "/" + materialName + "_" + type + ".jpg"
+}
+
+ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
+    await this._initializeTexturesAndMaterials();
+    console.log("Initializing Mesh");
+    const gltfLoader = new this.library.GLTFLoader();
+    const gltf = await new Promise((resolve, reject) => {
+        gltfLoader.load(this.meshPath, gltf => {
+            resolve(gltf);
+        });
+    });
+
+    const model = gltf.scene;
+    // eslint-disable-next-line no-undef
+    const box = new this.library.Box3().setFromObject(model);
+
+    // eslint-disable-next-line no-undef
+    const floorGeometry = new this.library.PlaneGeometry(100, 100);
+    // eslint-disable-next-line no-undef
+    const floorMaterial = new this.library.ShadowMaterial();
+    floorMaterial.opacity = 0.5;
+
+    // eslint-disable-next-line no-undef
+    this.floorMesh = new this.library.Mesh(floorGeometry, floorMaterial);
+    this.floorMesh.rotation.x = Math.PI / 2;
+    this.floorMesh.receiveShadow = true;
+    this.floorMesh.position.y = box.min.y;
+    // floorMesh.position.x = 0;
+
+    model.castShadow = true;
+
+    // eslint-disable-next-line no-undef
+    this.cameraTarget = new this.library.Vector3(0, box.min.y + (box.max.y - box.min.y) / 2, 0);
+    this.camera.lookAt(this.cameraTarget);
+
+    this.mesh = model;
+
+    for (let i = 0; i < this.mesh.children.length; i++) {
+        if (this.mesh.children[i].isMesh) {
+            this.mesh.children[i].castShadow = true;
+            this.mesh.children[i].receiveShadow = true;
+        }
+    }
+    console.log("Finished loading models")
+
+    this.randomize();
+
+    // Only now can we populate the scene safely
+    this.scene = new this.library.Scene();
+    this.populateScene(this.scene);
+    this.render();
+};
+
+ripe.ConfiguratorCSR.prototype.randomize = function () {
+    for (let i = 0; i < this.mesh.children.length; i++) {
+        let index = Math.floor(Math.random() * this.materialNames.length);
+        this.mesh.children[i].material = this.materials[this.materialNames[index]];
+    }
+}
 
 ripe.ConfiguratorCSR.prototype.render = function () {
     if (this.renderer && this.scene && this.camera) {
