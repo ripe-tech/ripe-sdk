@@ -275,27 +275,42 @@ window.onload = function () {
 
             frame0.addEventListener("click", function () {
                 if (result.frames > 9) {
-                    configurator.changeFrame("side-9", {
+                    configuratorCSR.changeFrame("side-9", {
+                        revolutionDuration: 500
+                    });
+                    configuratorPRC.changeFrame("side-9", {
                         revolutionDuration: 500
                     });
                 } else {
-                    configurator.changeFrame("side-0", {
+                    configuratorCSR.changeFrame("side-0", {
+                        revolutionDuration: 500
+                    });
+                    configuratorPRC.changeFrame("side-0", {
                         revolutionDuration: 500
                     });
                 }
             });
             frame6.addEventListener("click", function () {
-                configurator.changeFrame("side-6", {
+                configuratorCSR.changeFrame("side-6", {
+                    revolutionDuration: 500
+                });
+                configuratorPRC.changeFrame("side-6", {
                     revolutionDuration: 500
                 });
             });
             frameTop.addEventListener("click", function () {
-                configurator.changeFrame("top-0", {
+                configuratorCSR.changeFrame("top-0", {
+                    duration: 250
+                });
+                configuratorPRC.changeFrame("top-0", {
                     duration: 250
                 });
             });
             frameFront.addEventListener("click", function () {
-                configurator.changeFrame("front-0", {
+                configuratorPRC.changeFrame("front-0", {
+                    duration: 250
+                });
+                configuratorCSR.changeFrame("front-0", {
                     duration: 250
                 });
             });
@@ -327,8 +342,8 @@ window.onload = function () {
                 texturesPath: "/static/assets/textures/",
                 materialNames: ["rocks", "wood", "leather_red", "leather_white", "concrete", "denim", "rusty_metal"],
                 library: THREE,
-                cameraDistance: 4.5,
-                cameraHeight: 0.8,
+                cameraDistance: 4.1,
+                cameraHeight: 0.9,
                 exposure: 3.0,
             });
 
@@ -374,8 +389,9 @@ window.onload = function () {
                 setPart.addEventListener("click", function () {
                     if (currentRenderMode == "prc")
                         randomize();
-                    else if (currentRenderMode == "csr")
+                    else if (currentRenderMode == "csr") {
                         configuratorCSR.randomize();
+                    }          
             });
         
             // eslint-disable-next-line no-undef

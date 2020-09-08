@@ -1245,9 +1245,12 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
 
     model.castShadow = true;
 
+    const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
+    const centerY = box.min.y + (box.max.y - box.min.y) / 2.0;
     // eslint-disable-next-line no-undef
-    this.cameraTarget = new this.library.Vector3(0, box.min.y + (box.max.y - box.min.y) / 2, 0);
+    this.cameraTarget = new this.library.Vector3(centerX, centerY, 0);
     this.camera.lookAt(this.cameraTarget);
+    this.camera.position.x = centerX;
 
     this.mesh = model;
 
@@ -1271,6 +1274,7 @@ ripe.ConfiguratorCSR.prototype.randomize = function () {
     for (let i = 0; i < this.mesh.children.length; i++) {
         let index = Math.floor(Math.random() * this.materialNames.length);
         this.mesh.children[i].material = this.materials[this.materialNames[index]];
+        this.render();
     }
 }
 
