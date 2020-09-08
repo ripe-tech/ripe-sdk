@@ -240,6 +240,11 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     }
     this.unique = unique;
 
+    if (this.mesh) {
+        this.mesh.rotation.y = (position / 24) * Math.PI * 2;
+        this.renderer.render(this.scene, this.camera);
+    }
+
     // removes the highlight support from the matched object as a new
     // frame is going to be "calculated" and rendered (not same mask)
     this.lowlight();
@@ -323,13 +328,11 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
 
+    console.log("Changing Frame!");
+
+
     // in case the next position value was not properly parsed (probably undefined)
     // then it's not possible to change frame (throws exception)
-    const viewFrames = this.frames[nextView];
-    if (!viewFrames || nextPosition >= viewFrames) {
-        throw new RangeError("Frame " + frame + " is not supported");
-    }
-    
     if (isNaN(nextPosition)) {
         throw new RangeError("Frame position is not defined");
     }
@@ -347,10 +350,6 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     const safe = options.safe === undefined ? true : options.safe;
     const first = options.first === undefined ? true : options.first;
 
-    // unpacks the other options to the frame change defaulting their values
-    // in case undefined values are found
-    const safe = options.safe === undefined ? true : options.safe;
-
     // updates the animation start timestamp with the current timestamp in
     // case no start time is currently defined
     options._start = options._start === undefined ? new Date().getTime() : options._start;
@@ -360,6 +359,13 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     const view = this.element.dataset.view;
     const position = parseInt(this.element.dataset.position);
 
+    // tries to retrieve the amount of frames for the target view and
+    // validates that the target view exists and that the target position
+    // (frame) does not overflow the amount of frames in for the view
+    const viewFrames = this.frames[nextView];
+    if (!viewFrames || nextPosition >= viewFrames) {
+        throw new RangeError("Frame " + frame + " is not supported");
+    }
 
     // in case the safe mode is enabled and there's an animation running
     // then this request is going to be ignored (not possible to change
@@ -386,17 +392,190 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     this.position = nextPosition;
     this.element.dataset.position = nextPosition;
 
-    // computes the frame key (normalized) and then triggers an event
-    // notifying any listener about the new frame that was set
-    //const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    //this.trigger("changed_frame", newFrame);
+    // saves the position of the current view
+    // so that it returns to the same position
+    // when coming back to the same view
+    this._lastFrame[view] = position;
+    this.position = nextPosition;
+    this.element.dataset.position = nextPosition;
 
+    // if there is a new view and the product supports
+    // it then animates the transition with a crossfade
+    // and ignores all drag movements while it lasts
+    let animate = false;
+    if (view !== nextView && viewFrames !== undefined) {
+        this.view = nextView;
+        this.element.dataset.view = nextView;
+        this.element.dataset.frames = viewFrames;
+        animate = type === null ? this.viewAnimate : type;
+        duration = duration || this.duration;
+    }
+
+    // runs the defaulting values for the current step duration
+    // and the next position that is going to be rendered
+    let stepDuration = null;
+    let stepPosition = nextPosition;
+
+    // sets the initial time reduction to be applied for the frame
+    // based animation (rotation), this value should be calculated
+    // taking into account the delay in the overall animation
+    let reducedTime = 0;
+
+    // in case any kind of duration was provided a timed animation
+    // should be performed and as such a proper calculus should be
+    // performed to determine the current step duration an the position
+    // associated with the current step operation
+    if (view === nextView && (duration || stepDurationRef || revolutionDuration)) {
+        // ensures that no animation on a pre-frame render exists
+        // the animation itself is going to be "managed" by the
+        // the change frame tick logic
+        animate = null;
+
+        // calculates the number of steps as the shortest path
+        // between the current and the next position, this should
+        // choose the proper way for the "rotation"
+        const stepCount =
+            view !== nextView
+                ? 1
+                : Math.min(
+                      Math.abs(position - nextPosition),
+                      viewFrames - Math.abs(position - nextPosition)
+                  );
+        options._stepCount = options._stepCount === undefined ? stepCount : options._stepCount;
+
+        // in case the (total) revolution time for the view is defined a
+        // step timing based animation is calculated based on the total
+        // number of frames for the view
+        if (revolutionDuration && first) {
+            // makes sure that we're able to find out the number of frames
+            // for the next view from the current loaded model, only then
+            // can the step duration be calculated, by dividing the total
+            // duration of the revolution by the number of frames of the view
+            if (viewFrames) {
+                stepDurationRef = parseInt(revolutionDuration / viewFrames);
+            }
+            // otherwise runs a fallback operation where the total duration
+            // of the animation is the revolution time (sub optimal fallback)
+            else {
+                duration = duration || revolutionDuration;
+            }
+        }
+
+        // in case the options contain the step duration (reference) field
+        // then it's used to calculate the total duration of the animation
+        // (step driven animation timing)
+        if (stepDurationRef && first) {
+            duration = stepDurationRef * stepCount;
+        }
+
+        // in case the end (target) timestamp is not yet defined then
+        // updates the value with the target duration
+        options._end = options._end === undefined ? options._start + duration : options._end;
+
+        // determines the duration (in seconds) for each step taking
+        // into account the complete duration and the number of steps
+        stepDuration = duration / Math.abs(stepCount);
+        options.duration = duration - stepDuration;
+
+        // in case no step duration has been defined defines one as that's relevant
+        // to be able to calculate expected time at this point in time and then
+        // calculate the amount of time and frames to skip
+        options._stepDuration =
+            options._stepDuration === undefined ? stepDuration : options._stepDuration;
+
+        // calculates the expected timestamp for the current position in
+        // time and then the delay against it (for proper frame dropping)
+        const expected = options._start + options._step * options._stepDuration;
+        const delay = Math.max(new Date().getTime() - expected, 0);
+
+        // calculates the number of frames that have to be skipped to re-catch
+        // the animation back to the expect time-frame
+        const frameSkip = Math.floor(delay / stepDuration);
+        reducedTime = delay % stepDuration;
+        const stepSize = frameSkip + 1;
+
+        // calculates the delta in terms of steps taking into account
+        // if any frame should be skipped in the animation
+        const nextStep = Math.min(options._stepCount, options._step + stepSize);
+        const delta = Math.min(stepSize, nextStep - options._step);
+        options._step = nextStep;
+
+        // checks if it should rotate in the positive or negative direction
+        // according to the current view definition and then calculates the
+        // next position taking into account that definition
+        const goPositive = (position + stepCount) % viewFrames === nextPosition;
+        stepPosition =
+            stepCount !== 0 ? (goPositive ? position + delta : position - delta) : position;
+
+        // wrap around as needed (avoiding index overflow)
+        stepPosition = stepPosition < 0 ? viewFrames + stepPosition : stepPosition;
+        stepPosition = stepPosition % viewFrames;
+
+        // updates the position according to the calculated one on
+        // the dataset, the next update operation should trigger
+        // the appropriate update on the visual resources
+        this.position = stepPosition;
+        this.element.dataset.position = stepPosition;
+    }
+
+    // sets the initial values for the start of the animation, allows
+    // control of the current animation (and exclusive lock)
+    this.element.classList.add("animating");
+
+    // if the prevent drag is set and there's an animation then
+    // ignores drag movements until the animation is finished
+    preventDrag = preventDrag && (animate || duration);
+    if (preventDrag) this.element.classList.add("no-drag");
+
+    // calculates the amount of time that the current operation is
+    // going to sleep to able to correctly address the animation sequence
+    // (valid only for no animation scenarios, no cross fade) if this
+    // sleep time is valid (greater than zero) tuns the async based
+    // await operation for the amount of time
+    const sleepTime = animate ? 0 : stepDuration - reducedTime;
+    if (sleepTime > 0) {
+        await new Promise(resolve => setTimeout(() => resolve(), sleepTime));
+    }
     // in case there's a mesh defined in the current instance then applies
     // a rotation around the Y axis 
-    if (this.mesh) {
-        this.mesh.rotation.y = (nextPosition / viewFrames) * Math.PI * 2;
-        this.renderer.render(this.scene, this.camera);
+    const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
+    this.trigger("changed_frame", newFrame);
+
+    try {
+        // runs the update operation that should sync the visuals of the
+        // configurator according to the current internal state (in data)
+        // this operation waits for the proper drawing of the image (takes
+        // some time and resources to be completed)
+        await this.update(
+            {},
+            {
+                animate: animate,
+                duration: animate ? duration : 0
+            }
+        );
+    } catch (err) {
+        // removes the locking classes as the current operation has been
+        // finished, effectively re-allowing: dragging and animated operations
+        // and then re-throws the exception caused by update
+        this.element.classList.remove("no-drag", "animating");
+        throw err;
     }
+
+    // in case the change frame operation has been completed
+    // target view and position has been reached, then it's
+    // time collect the garbage and return control flow
+    if (view === nextView && stepPosition === nextPosition) {
+        this.element.classList.remove("no-drag", "animating");
+        return;
+    }
+
+    // creates a new options instance that is going to be used in the
+    // possible next tick of the operation
+    options = Object.assign({}, options, { safe: false, first: false });
+
+    // runs the next tick operation to change the frame of the current
+    // configurator to the next one (iteration cycle)
+    await this.changeFrame(frame, options);
 };
 
 /**
