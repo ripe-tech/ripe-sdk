@@ -79,6 +79,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._ownerBinds = {};
     this.texturesPath = this.options.texturesPath || "";
     this.materialNames = this.options.materialNames || [];
+    this.raycaster = this.library.Raycaster();
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
@@ -712,10 +713,6 @@ ripe.ConfiguratorCSR.prototype._initLayout = function () {
         this.element.removeChild(this.element.firstChild);
     }
 
-    // sets the element's style so that it supports two canvas
-    // on top of each other so that double buffering can be used
-    this.element.classList.add("configurator");
-
     // creates the area canvas and adds it to the element
     const area = ripe.createElement("div", "area");
     this.element.appendChild(area);
@@ -868,6 +865,12 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
         if (!this.classList.contains("ready") || this.classList.contains("no-drag")) {
             return;
         }
+
+        var mouse = new self.library.Vector2(0,0);
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+        //console.log(mouse)
         const down = self.down;
         self.mousePosX = event.pageX;
         self.mousePosY = event.pageY;

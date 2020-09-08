@@ -5,7 +5,8 @@
 var FACES = ["side", "top", "front"];
 
 window.onload = function () {
-    var element = document.getElementById("configurator");
+    var elementCSR = document.getElementById("configuratorCSR");
+    var elementPRC = document.getElementById("configuratorPRC");
     var _body = document.querySelector("body");
     var url = _body.dataset.url || "https://sandbox.platforme.com/api/";
     var brand = _body.dataset.brand || "swear";
@@ -18,6 +19,7 @@ window.onload = function () {
     var clientSecret = _body.dataset.client_secret || null;
     var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
     var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
+    var currentRenderMode = "prc";
 
     var parts = [];
     var partsMap = {};
@@ -108,7 +110,6 @@ window.onload = function () {
         var setMessage = document.getElementById("set-message");
         var getPrice = document.getElementById("get-price");
         var getCombinations = document.getElementById("get-combinations");
-        var toggleRender = document.getElementById("toggle-render");
         
         setMessage &&
             setMessage.addEventListener("click", function () {
@@ -310,7 +311,14 @@ window.onload = function () {
                 }
             });
 
-            var configurator = ripe.bindConfigurator(element, {
+            var configuratorPRC = ripe.bindConfigurator(elementPRC, {
+                duration: 250,
+                noMasks: false,
+                view: bestFace(result),
+                render: "prc"
+            });
+
+            var configuratorCSR = ripe.bindConfigurator(elementCSR, {
                 duration: 250,
                 noMasks: false,
                 view: bestFace(result),
@@ -324,29 +332,50 @@ window.onload = function () {
                 exposure: 3.0,
             });
 
-            configurator.bind("loaded", function() {
-                if (configurator.isFirst) configurator.isFirst = false;
+            configuratorPRC.bind("loaded", function() {
+                if (configuratorPRC.isFirst) configuratorPRC.isFirst = false;
                 else return;
                 if (result.faces.indexOf("side") !== -1) {
-                    configurator.changeFrame("side-12", {
+                    configuratorPRC.changeFrame("side-12", {
                         revolutionDuration: 500
                     });
                 }
             });
 
+
+            configuratorCSR.bind("loaded", function() {
+                if (configuratorCSR.isFirst) configuratorCSR.isFirst = false;
+                else return;
+                if (result.faces.indexOf("side") !== -1) {
+                    configuratorCSR.changeFrame("side-12", {
+                        revolutionDuration: 500
+                    });
+                }
+            });
+
+           
             var toggleRenderMode = document.getElementById("toggle-render");
 
             toggleRenderMode &&
                 toggleRenderMode.addEventListener("click", function () {
-                    configurator.toggleRenderMode();
+                    //const area = self.querySelector(".area");
+
+                    if (currentRenderMode == "prc") currentRenderMode = "csr";
+                    else if (currentRenderMode == "csr") currentRenderMode = "prc";
+
+                    displayRenderMode();
                 });
+
+            displayRenderMode();
             
             var setPart = document.getElementById("set-part");
         
             setPart &&
                 setPart.addEventListener("click", function () {
-                    randomize();
-                    configurator.randomize();
+                    if (currentRenderMode == "prc")
+                        randomize();
+                    else if (currentRenderMode == "csr")
+                        configuratorCSR.randomize();
             });
         
             // eslint-disable-next-line no-undef
@@ -361,6 +390,17 @@ window.onload = function () {
             ripe.addPlugin(restrictionsPlugin);
         });
     };
+
+    var displayRenderMode = function () {
+        if (currentRenderMode == "prc") {
+            elementCSR.style.display = "none";
+            elementPRC.style.display = "inline-block";
+        }
+        else if (currentRenderMode == "csr") {
+            elementPRC.style.display = "none";
+            elementCSR.style.display = "inline-block";
+        }
+    }
 
     var initInitials = function () {
         ripe.bindImage(document.getElementById("initials"), {
