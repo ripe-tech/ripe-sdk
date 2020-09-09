@@ -320,8 +320,6 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
         return;
     }
 
-    console.log(this.element);
-
     const area = this.element.querySelector(".area");
 
     area.width = size * this.pixelRatio;
@@ -662,8 +660,18 @@ ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
         return;
     }
 
-    // TODO Change material properties for selected mesh
+    if (!this.meshes) {
+        return;
+    }
 
+    for (let i = 0 ; i < this.meshes.length; i++) {
+        if (this.meshes[i].name == part) {
+            this.meshes[i].material.color.r = 0.5;
+            this.meshes[i].material.color.g = 0.5;
+            this.meshes[i].material.color.b = 0.5;
+            this.render();
+        } 
+    }
     //ripe.cancelAnimation(frontMask);
     //ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration, false);
 };
@@ -682,11 +690,23 @@ ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
         return;
     }
 
-    // TODO Change material properties
+    if (!this.meshes) {
+        return;
+    }
+
+    for (let i = 0 ; i < this.meshes.length; i++) {
+        if (this.meshes[i].name == this.intersectedPart) {
+            this.meshes[i].material.color.r = 1;
+            this.meshes[i].material.color.g = 1;
+            this.meshes[i].material.color.b = 1;
+            this.render();
+        } 
+    }
 
     // triggers an event indicating that a lowlight operation has been
     // performed on the current configurator
     //this.trigger("lowlighted");
+    this.render();
 };
 
 /**
@@ -942,7 +962,6 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             return;
         }
         event = ripe.fixEvent(event);
-        //console.log(event)
 
         // in case the index that was found is the zero one this is a special
         // position and the associated operation is the removal of the highlight
@@ -952,8 +971,8 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             return;
         }
         
-        const mouse = self.getNormalizedCoordinatesRaycast(event);
-        self.intersectRaycast(mouse);
+        const mouse = self._getNormalizedCoordinatesRaycast(event);
+        self._intersectRaycast(mouse);
     });
 
     area.addEventListener("dragstart", function (event) {
@@ -1002,17 +1021,17 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
     ripe.touchHandler(this.element);
 };
 
-ripe.ConfiguratorCSR.prototype.intersectRaycast = function (mouse) {
+ripe.ConfiguratorCSR.prototype._intersectRaycast = function (mouse) {
     if (this.raycaster && this.scene) {
         this.raycaster.setFromCamera( mouse, this.camera );
 
         var intersects = this.raycaster.intersectObjects( this.scene.children);
-        //console.log(intersects)   
+        
         if (intersects.length > 0) {
             if (this.intersectedPart != intersects[0].object.name) {
                 if (this.intersectedPart != "") {
                     console.log("Changing part");
-                    this.lowlight(this.intersectedPart);
+                    this.lowlight();
                 }
                 this.intersectedPart = intersects[0].object.name;
                 console.log("Intersecting " + this.intersectedPart);
@@ -1022,17 +1041,16 @@ ripe.ConfiguratorCSR.prototype.intersectRaycast = function (mouse) {
         else {
             if (this.intersectedPart != "") {
                 console.log("No part selected")
+                this.lowlight();
                 this.intersectedPart = "";
-                this.lowlight(this.intersectedPart);
             }
         }
     }
 };
 
-ripe.ConfiguratorCSR.prototype.getNormalizedCoordinatesRaycast = function (mouseEvent) {
+ripe.ConfiguratorCSR.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
-
     const newX = ((mouseEvent.x - this.elementBoundingBox.x) / this.elementBoundingBox.width) * 2 - 1;
     const newY = - ((mouseEvent.y - this.elementBoundingBox.y - this.bodyPadding) / this.elementBoundingBox.height) * 2 + 1;
 
@@ -1115,21 +1133,21 @@ ripe.ConfiguratorCSR.prototype._buildSignature = function () {
 };
 
 ripe.ConfiguratorCSR.prototype._initializeLights = function () {
-    const keyLight = new this.library.PointLight(0xffffff, 1.8, 18);
+    const keyLight = new this.library.PointLight(0xffffff, 2, 18);
     keyLight.position.set(2, 2, 2);
     keyLight.castShadow = true;
     keyLight.shadow.camera.near = 0.000001;
     keyLight.shadow.camera.far = 10;
     keyLight.shadow.radius = 8;
 
-    const fillLight = new this.library.PointLight(0xffffff, .9, 18);
+    const fillLight = new this.library.PointLight(0xffffff, 1, 18);
     fillLight.position.set(-2, 1, 2);
     fillLight.castShadow = true;
     fillLight.shadow.camera.near = 0.000001;
     fillLight.shadow.camera.far = 10;
     fillLight.shadow.radius = 8;
 
-    const rimLight = new this.library.PointLight(0xffffff, 1.7, 18);
+    const rimLight = new this.library.PointLight(0xffffff, 2.5, 18);
     rimLight.position.set(-1, 1.5, -3);
     rimLight.castShadow = true;
     rimLight.shadow.camera.near = 0.000001;
@@ -1368,7 +1386,8 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
 ripe.ConfiguratorCSR.prototype.randomize = function () {
     for (let i = 0; i < this.meshes.length; i++) {
         let index = Math.floor(Math.random() * this.materialNames.length);
-        this.meshes[i].material = this.materials[this.materialNames[index]];
+        this.meshes[i].material.dispose();
+        this.meshes[i].material = this.materials[this.materialNames[index]].clone();
         this.render();
     }
 }
