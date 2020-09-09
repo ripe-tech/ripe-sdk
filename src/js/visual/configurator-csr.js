@@ -136,7 +136,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
  * cleanup operations can be executed.
  */
 ripe.ConfiguratorCSR.prototype.deinit = async function () {
-    await this.cancel();
+    await this.cancel();    
 
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -153,8 +153,27 @@ ripe.ConfiguratorCSR.prototype.deinit = async function () {
     this._finalize = null;
     this._observer = null;
 
+    this._disposeResources();
+
     ripe.Visual.prototype.deinit.call(this);
 };
+
+
+ripe.ConfiguratorCSR.prototype._disposeResources = function () {
+    console.log("Disposing resources");
+    if (this.meshes) {
+        for (let i = 0 ; i < this.meshes.length; i++) {
+            this.scene.remove(this.meshes[i]);
+            this.meshes[i].geometry.dispose();
+            this.meshes[i].material.dispose();
+        }
+    }
+    if (this.materials) {
+        for (let i = 0 ; i < this.materialNames.length ; i++) {
+            this.materials[this.materialNames[i]].dispose();
+        }
+    }
+}
 
 /**
  * Updates configurator current options with the ones provided.
@@ -1209,6 +1228,12 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
             normalMap: normalTexture,
             aoMap: aoTexture
         });
+
+        // Dispose of textures, as they are already stored
+        diffuseTexture.dispose();
+        roughnessTexture.dispose();
+        normalTexture.dispose();
+        aoTexture.dispose();
 
         this.materials[this.materialNames[i]] = material;
     }

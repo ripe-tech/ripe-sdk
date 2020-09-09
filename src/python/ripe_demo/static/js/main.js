@@ -405,6 +405,12 @@ window.onload = function () {
             // be properly used under this runtime
             ripe.addPlugin(syncPlugin);
             ripe.addPlugin(restrictionsPlugin);
+
+            // Added unloading function to avoid memory leaks in ThreeJS
+            window.onunload = function(){
+                ripe.unbindConfigurator(configuratorCSR);
+                ripe.unbindConfigurator(configuratorPRC);
+            }
         });
     };
 
