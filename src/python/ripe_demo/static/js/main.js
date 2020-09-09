@@ -19,7 +19,7 @@ window.onload = function () {
     var clientSecret = _body.dataset.client_secret || null;
     var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
     var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
-    var currentRenderMode = "prc";
+    var currentRenderMode = "csr";
 
     var parts = [];
     var partsMap = {};
@@ -344,7 +344,8 @@ window.onload = function () {
                 library: THREE,
                 cameraDistance: 4.1,
                 cameraHeight: 0.9,
-                exposure: 3.0,
+                exposure: 0.7,
+                bodyPadding: document.body.getBoundingClientRect().y,
             });
 
             configuratorPRC.bind("loaded", function() {
@@ -380,7 +381,7 @@ window.onload = function () {
 
                     displayRenderMode();
                 });
-
+            
             displayRenderMode();
             
             var setPart = document.getElementById("set-part");

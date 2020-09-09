@@ -45,8 +45,6 @@ ripe.ConfiguratorCSR.prototype.constructor = ripe.ConfiguratorCSR;
 ripe.ConfiguratorCSR.prototype.init = function () {
     ripe.Visual.prototype.init.call(this);
 
-    this.meshPath = this.options.meshPath || undefined;
-    this.library = this.options.library || null;
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
     this.format = this.options.format || null;
@@ -77,10 +75,22 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._finalize = null;
     this._observer = null;
     this._ownerBinds = {};
+    
+    // Meshes 
+    this.meshPath = this.options.meshPath || undefined;
+
+    // ThreeJS
+    this.library = this.options.library || null;
+    
+    // Materials
     this.texturesPath = this.options.texturesPath || "";
     this.materialNames = this.options.materialNames || [];
-    this.raycaster = this.library.Raycaster();
 
+    // Raycast 
+    this.raycaster = new this.library.Raycaster();
+    this.bodyPadding = this.options.bodyPadding || 0;
+    this.intersectedPart = "";
+    
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
     this._ownerBinds.selected_part = this.owner.bind("selected_part", part => this.highlight(part));
@@ -101,7 +111,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     if (this.owner.brand && this.owner.model) {
         this._updateConfig();
     }
-
+    
     // registers for the pre config to be able to set the configurator
     // into a not ready state (update operations blocked)
     this._ownerBinds.pre_config = this.owner.bind("pre_config", () => {
@@ -245,8 +255,10 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     }
     this.unique = unique;
 
-    if (this.mesh) {
-        this.mesh.rotation.y = (position / 24) * Math.PI * 2;
+    if (this.meshes) {
+        for (let i = 0; i < this.meshes.length; i++) {
+            this.meshes[i].rotation.y = (position / 24) * Math.PI * 2;
+        }
     }
 
     this.render();
@@ -289,13 +301,16 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
         return;
     }
 
-    const areaCSR = this.element.querySelector(".area");
+    console.log(this.element);
 
-    areaCSR.width = size * this.pixelRatio;
-    areaCSR.height = size * this.pixelRatio;
-    areaCSR.style.width = size + "px";
-    areaCSR.style.height = size + "px"
+    const area = this.element.querySelector(".area");
+
+    area.width = size * this.pixelRatio;
+    area.height = size * this.pixelRatio;
+    area.style.width = size + "px";
+    area.style.height = size + "px";
     this.currentSize = size;
+    
     await this.update(
         {},
         {
@@ -630,8 +645,8 @@ ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
 
     // TODO Change material properties for selected mesh
 
-    ripe.cancelAnimation(frontMask);
-    ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration, false);
+    //ripe.cancelAnimation(frontMask);
+    //ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration, false);
 };
 
 /**
@@ -652,7 +667,7 @@ ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
 
     // triggers an event indicating that a lowlight operation has been
     // performed on the current configurator
-    this.trigger("lowlighted");
+    //this.trigger("lowlighted");
 };
 
 /**
@@ -726,6 +741,8 @@ ripe.ConfiguratorCSR.prototype._initLayout = function () {
 
     // register for all the necessary DOM events
     this._registerHandlers();
+
+
 };
 
 /**
@@ -797,7 +814,11 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // the associated ready event to any event listener
     this.ready = true;
     this.trigger("ready");
-
+    
+    // Only after the configurator is ready can the bounding box be
+    // correctly identified
+    this.elementBoundingBox = this.element.getBoundingClientRect();
+    
     // adds the config visual class indicating that
     // a configuration already exists for the current
     // interactive configurator (meta-data)
@@ -866,11 +887,6 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             return;
         }
 
-        var mouse = new self.library.Vector2(0,0);
-        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
-        //console.log(mouse)
         const down = self.down;
         self.mousePosX = event.pageX;
         self.mousePosY = event.pageY;
@@ -907,6 +923,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             return;
         }
         event = ripe.fixEvent(event);
+        //console.log(event)
 
         // in case the index that was found is the zero one this is a special
         // position and the associated operation is the removal of the highlight
@@ -915,15 +932,9 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             self.lowlight();
             return;
         }
-
-        // retrieves the reference to the part name by using the index
-        // extracted from the masks image (typical strategy for retrieval)
-        /*
-        const part = self.partsList[index - 1];
-        const isVisible = self.hiddenParts.indexOf(part) === -1;
-        if (part && isVisible) self.highlight(part);
-        else self.lowlight();
-        */
+        
+        const mouse = self.getNormalizedCoordinatesRaycast(event);
+        self.intersectRaycast(mouse);
     });
 
     area.addEventListener("dragstart", function (event) {
@@ -970,6 +981,46 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
     // taking into account that there may be a touch handler
     // already defined
     ripe.touchHandler(this.element);
+};
+
+ripe.ConfiguratorCSR.prototype.intersectRaycast = function (mouse) {
+    if (this.raycaster && this.scene) {
+        this.raycaster.setFromCamera( mouse, this.camera );
+
+        var intersects = this.raycaster.intersectObjects( this.scene.children);
+        //console.log(intersects)   
+        if (intersects.length > 0) {
+            if (this.intersectedPart != intersects[0].object.name) {
+                if (this.intersectedPart != "") {
+                    console.log("Changing part");
+                    this.lowlight(this.intersectedPart);
+                }
+                this.intersectedPart = intersects[0].object.name;
+                console.log("Intersecting " + this.intersectedPart);
+                this.highlight(this.intersectedPart);
+            } 
+        }
+        else {
+            if (this.intersectedPart != "") {
+                console.log("No part selected")
+                this.intersectedPart = "";
+                this.lowlight(this.intersectedPart);
+            }
+        }
+    }
+};
+
+ripe.ConfiguratorCSR.prototype.getNormalizedCoordinatesRaycast = function (mouseEvent) {
+    // Origin of the coordinate system is the center of the element
+    // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
+
+    const newX = ((mouseEvent.x - this.elementBoundingBox.x) / this.elementBoundingBox.width) * 2 - 1;
+    const newY = - ((mouseEvent.y - this.elementBoundingBox.y - this.bodyPadding) / this.elementBoundingBox.height) * 2 + 1;
+
+    return {
+        x: newX,
+        y: newY
+    }
 };
 
 /**
@@ -1045,16 +1096,30 @@ ripe.ConfiguratorCSR.prototype._buildSignature = function () {
 };
 
 ripe.ConfiguratorCSR.prototype._initializeLights = function () {
-    this.light = new this.library.PointLight(0xffffff, 0.8, 18);
-    this.light.position.set(0, 2, 1);
-    this.light.castShadow = true;
-    this.light.shadow.camera.near = 0.000001;
-    this.light.shadow.camera.far = 4;
+    const keyLight = new this.library.PointLight(0xffffff, 1.8, 18);
+    keyLight.position.set(2, 2, 2);
+    keyLight.castShadow = true;
+    keyLight.shadow.camera.near = 0.000001;
+    keyLight.shadow.camera.far = 10;
+    keyLight.shadow.radius = 8;
 
-    // creates the directional light (required for metal) positions
-    // it so that it can be latter added to the scene
-    this.ambientLight = new this.library.AmbientLight(0xffffff, 0.2);
-    this.ambientLight.position.set(0, 2, this.cameraDistance);
+    const fillLight = new this.library.PointLight(0xffffff, .9, 18);
+    fillLight.position.set(-2, 1, 2);
+    fillLight.castShadow = true;
+    fillLight.shadow.camera.near = 0.000001;
+    fillLight.shadow.camera.far = 10;
+    fillLight.shadow.radius = 8;
+
+    const rimLight = new this.library.PointLight(0xffffff, 1.7, 18);
+    rimLight.position.set(-1, 1.5, -3);
+    rimLight.castShadow = true;
+    rimLight.shadow.camera.near = 0.000001;
+    rimLight.shadow.camera.far = 10;
+    rimLight.shadow.radius = 8;
+
+    const ambientLight = new this.library.AmbientLight(0xffffff, 0.1);
+
+    this.lights = [keyLight, fillLight, rimLight, ambientLight]    
 };
 
 ripe.ConfiguratorCSR.prototype._initializeRenderer = function () {
@@ -1063,6 +1128,7 @@ ripe.ConfiguratorCSR.prototype._initializeRenderer = function () {
     this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setSize(620, 620);
     this.renderer.toneMappingExposure = this.exposure;
+    this.renderer.toneMapping = this.library.CineonToneMapping;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = this.library.BasicShadowMap;
 
@@ -1074,18 +1140,20 @@ ripe.ConfiguratorCSR.prototype._initializeRenderer = function () {
 };
 
 ripe.ConfiguratorCSR.prototype._initializeCamera = function () {
-    const area = this.element.querySelector(".area");
-    const width = area.getBoundingClientRect().width;
-    const height = area.getBoundingClientRect().height;
+    const width = this.element.getBoundingClientRect().width;
+    const height = this.element.getBoundingClientRect().height;
 
     this.camera = new this.library.PerspectiveCamera(35, width / height, 1, 20000);
     this.camera.position.set(0, this.cameraHeight, this.cameraDistance);
 };
 
 ripe.ConfiguratorCSR.prototype.populateScene = function (scene) {
-    scene.add(this.ambientLight);
-    scene.add(this.light);
-    scene.add(this.mesh);
+    for (let i = 0; i < this.lights.length; i++) {
+        scene.add(this.lights[i]);
+    }
+    for (let i = 0; i < this.meshes.length; i++) {
+        scene.add(this.meshes[i]);
+    }
     scene.add(this.floorMesh);
 }
 
@@ -1252,14 +1320,16 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     this.camera.lookAt(this.cameraTarget);
     this.camera.position.x = centerX;
 
-    this.mesh = model;
+    this.meshes = []
 
-    for (let i = 0; i < this.mesh.children.length; i++) {
-        if (this.mesh.children[i].isMesh) {
-            this.mesh.children[i].castShadow = true;
-            this.mesh.children[i].receiveShadow = true;
-        }
+    for (let i = 0; i < model.children.length; i++) {
+        if (model.children[i].isMesh) {
+            model.children[i].castShadow = true;
+            model.children[i].receiveShadow = true;
+            this.meshes.push(model.children[i])
+        }   
     }
+
     console.log("Finished loading models")
 
     this.randomize();
@@ -1271,9 +1341,9 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
 };
 
 ripe.ConfiguratorCSR.prototype.randomize = function () {
-    for (let i = 0; i < this.mesh.children.length; i++) {
+    for (let i = 0; i < this.meshes.length; i++) {
         let index = Math.floor(Math.random() * this.materialNames.length);
-        this.mesh.children[i].material = this.materials[this.materialNames[index]];
+        this.meshes[i].material = this.materials[this.materialNames[index]];
         this.render();
     }
 }
