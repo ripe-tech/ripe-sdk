@@ -19,10 +19,11 @@ window.onload = function () {
     var clientSecret = _body.dataset.client_secret || null;
     var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
     var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
+    
     var currentRenderMode = "csr";
-    // TODO Remove this here
     var configuratorCSR = null;
-
+    var configuratorPRC = null;
+    
     var parts = [];
     var partsMap = {};
     var CSRPartsMap = {};
@@ -60,10 +61,8 @@ window.onload = function () {
         if (currentRenderMode == "prc")
             await ripe.setParts(parts, true, { partEvents: false });
         else {
-            //await ripe.setParts(CSRParts, true, { partEvents: false, mode: "csr" });
-            configuratorCSR.setMaterials(CSRParts);
+            await ripe.setParts(CSRParts, true, { partEvents: false, mode: "csr" });
         }
-            
     };
 
     var unique = function () {
@@ -344,7 +343,7 @@ window.onload = function () {
                 }
             });
 
-            var configuratorPRC = ripe.bindConfigurator(elementPRC, {
+            configuratorPRC = ripe.bindConfigurator(elementPRC, {
                 duration: 250,
                 noMasks: false,
                 view: bestFace(result),
@@ -372,8 +371,6 @@ window.onload = function () {
                     }
                 }
             }
-
-            console.log(CSRPartsMap)
 
             configuratorCSR = ripe.bindConfigurator(elementCSR, {
                 duration: 250,
@@ -420,7 +417,7 @@ window.onload = function () {
 
                     if (currentRenderMode == "prc") currentRenderMode = "csr";
                     else if (currentRenderMode == "csr") currentRenderMode = "prc";
-
+                    
                     displayRenderMode();
                 });
 
@@ -454,10 +451,14 @@ window.onload = function () {
 
     var displayRenderMode = function () {
         if (currentRenderMode == "prc") {
+            configuratorCSR.disable();
+            configuratorPRC.enable();
             elementCSR.style.display = "none";
             elementPRC.style.display = "inline-block";
         }
         else if (currentRenderMode == "csr") {
+            configuratorPRC.disable();
+            configuratorCSR.enable();
             elementPRC.style.display = "none";
             elementCSR.style.display = "inline-block";
         }

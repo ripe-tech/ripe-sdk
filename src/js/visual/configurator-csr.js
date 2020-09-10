@@ -75,6 +75,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._finalize = null;
     this._observer = null;
     this._ownerBinds = {};
+    this._enabled = true;
 
     // Meshes 
     this.meshPath = this.options.meshPath || undefined;
@@ -168,14 +169,14 @@ ripe.ConfiguratorCSR.prototype._disposeResources = function () {
     console.log("Disposing resources");
     if (this.meshes) {
         for (var mesh in this.meshes) {
-            this.scene.remove(mesh);
+            this.scene.remove(this.meshes[mesh]);
             this.meshes[mesh].geometry.dispose();
             this.meshes[mesh].material.dispose();
         }
     }
-    if (this.materials) {
-        for (let i = 0; i < this.materialNames.length; i++) {
-            this.materials[this.materialNames[i]].dispose();
+    if (this.loadedMaterials) {
+        for (var material in this.loadedMaterials) {
+            this.loadedMaterials[material].dispose();
         }
     }
 }
@@ -250,9 +251,14 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     // in case the configurator is currently nor ready for an
     // update none is performed and the control flow is returned
     // with the false value (indicating a no-op, nothing was done)
+
     if (this.ready === false) {
         this.trigger("not_loaded");
         return false;
+    }
+
+    if (!this._enabled) {
+        return;
     }
 
     const view = this.element.dataset.view;
@@ -285,16 +291,32 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
         }
     }
 
-    this.render();
+    const animating = this.element.classList.contains("animating");
+    if (!animating) {
+        await this._assignMaterials();
+    }
+    
 
     // removes the highlight support from the matched object as a new
     // frame is going to be "calculated" and rendered (not same mask)
     this.lowlight();
 
+    this.render();
+
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
     return true;
 };
+
+ripe.ConfiguratorCSR.prototype.disable = function () {
+    console.log("Disabling CSR")
+    this._enabled = false;
+}
+
+ripe.ConfiguratorCSR.prototype.enable = function () {
+    console.log("Enabling CSR")
+    this._enabled = true;
+}
 
 /**
  * This function is called (by the owner) whenever the current operation
@@ -365,6 +387,10 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
  * is not in the an equivalent state (default to 'true').
  */
 ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}) {
+    // Disabled Configurator, changing frame will lead to errors
+    if (!this._enabled)
+        return;
+
     // parses the requested frame value according to the pre-defined
     // standard (eg: side-3) and then unpacks it as view and position
     const _frame = ripe.parseFrameKey(frame);
@@ -1258,14 +1284,14 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
     
 };
 
-ripe.ConfiguratorCSR.prototype.loadMaterial = async function (material, color) {
+ripe.ConfiguratorCSR.prototype._loadMaterial = async function (material, color) {
     // Loadedmaterials store threejs materials in the format 
     if (this.loadedMaterials[material + "_" + color]) {
-        console.log("Material " + material + " " + color + " already loaded, skipping.");
+        console.log("Material already loaded, skipping.");
         return;
     }
 
-    console.log("Loading Textures");
+    console.log("Loading " + material + " " + color);
     const textureLoader = new this.library.TextureLoader();
 
     var diffuseMapPath = this.getTexturePath(material, color, "diffuse");
@@ -1330,7 +1356,6 @@ ripe.ConfiguratorCSR.prototype.getTexturePath = function (materialName, color, t
 }
 
 ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
-    await this._initializeTexturesAndMaterials();
     console.log("Initializing Mesh");
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
@@ -1379,6 +1404,8 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
 
     console.log("Finished loading models")
 
+    // Load default material
+    await this._initializeTexturesAndMaterials();
     this.applyDefaults();
     // Only now can we populate the scene safely
     this.scene = new this.library.Scene();
@@ -1390,30 +1417,31 @@ ripe.ConfiguratorCSR.prototype.applyDefaults = function () {
     for (var mesh in this.meshes) {
         this.meshes[mesh].material.dispose();
         this.meshes[mesh].material = this.loadedMaterials["default"].clone();
-        this.render();
     } 
 }
 
-ripe.ConfiguratorCSR.prototype.setMaterials = async function (triplets) {
-    for (let i = 0 ; i < triplets.length ; i++) {
-        var part = triplets[i][0]
-        var partMaterial = triplets[i][1]
-        var partColor = triplets[i][2]
-        await this.loadMaterial(partMaterial, partColor);
-        
-        this.applyMaterial(part, this.loadedMaterials[partMaterial + "_" + partColor])
-    }    
+ripe.ConfiguratorCSR.prototype._assignMaterials = async function () {
+    console.log(this.owner.parts);
+    for (var part in this.owner.parts) {
+        if (part == "shadow")
+            continue;
 
-    this.render();
+        var material = this.owner.parts[part]["material"]
+        var color = this.owner.parts[part]["color"]
+        await this._loadMaterial(material, color);
+        
+        
+        this._applyMaterial(part, this.loadedMaterials[material + "_" + color])
+    } 
 }
 
-ripe.ConfiguratorCSR.prototype.applyMaterial = function (part, material) {
+ripe.ConfiguratorCSR.prototype._applyMaterial = function (part, material) {
     for (var mesh in this.meshes) {
         if (mesh == part) {
             this.meshes[mesh].material.dispose();
-            this.meshes[mesh].material = material;        
+            this.meshes[mesh].material = material.clone();        
         }
-    } 
+    }
 }
 
 ripe.ConfiguratorCSR.prototype.render = function () {
