@@ -45,7 +45,16 @@ window.onload = function () {
             var triplet = triplets[index];
             parts.push(triplet);
         }
-        await ripe.setParts(parts, true, { partEvents: false });
+
+        if (currentRenderMode == "prc") {
+            console.log(parts)
+            console.log(partsMap)
+            await ripe.setParts(parts, true, { partEvents: false });
+        }
+        else if (currentRenderMode == "csr") {
+            configuratorCSR.randomize();
+        }          
+        
     };
 
     var unique = function () {
@@ -388,11 +397,7 @@ window.onload = function () {
         
             setPart &&
                 setPart.addEventListener("click", function () {
-                    if (currentRenderMode == "prc")
-                        randomize();
-                    else if (currentRenderMode == "csr") {
-                        configuratorCSR.randomize();
-                    }          
+                    randomize();
             });
         
             // eslint-disable-next-line no-undef
