@@ -57,7 +57,7 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
 ripe.Ripe.prototype.getOrdersP = function(options) {
     return new Promise((resolve, reject) => {
         this.getOrders(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -93,7 +93,7 @@ ripe.Ripe.prototype.getOrder = function(number, options, callback) {
 ripe.Ripe.prototype.getOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.getOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -129,7 +129,7 @@ ripe.Ripe.prototype.deleteOrder = function(number, options, callback) {
 ripe.Ripe.prototype.deleteOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.deleteOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -161,7 +161,7 @@ ripe.Ripe.prototype.searchOrders = function(filterString, options, callback) {
 ripe.Ripe.prototype.searchOrdersP = function(filterString, options) {
     return new Promise((resolve, reject) => {
         this.searchOrders(filterString, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -181,7 +181,7 @@ ripe.Ripe.prototype.createOrder = function(number, options, callback) {
 ripe.Ripe.prototype.createOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.createOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -201,7 +201,7 @@ ripe.Ripe.prototype.produceOrder = function(number, options, callback) {
 ripe.Ripe.prototype.produceOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.produceOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -221,7 +221,7 @@ ripe.Ripe.prototype.readyOrder = function(number, options, callback) {
 ripe.Ripe.prototype.readyOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.readyOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -241,7 +241,7 @@ ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, op
 ripe.Ripe.prototype.sendOrderP = function(number, trackingNumber, trackingUrl, options) {
     return new Promise((resolve, reject) => {
         this.sendOrder(number, trackingNumber, trackingUrl, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -261,7 +261,7 @@ ripe.Ripe.prototype.receiveOrder = function(number, options, callback) {
 ripe.Ripe.prototype.receiveOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.receiveOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -281,7 +281,7 @@ ripe.Ripe.prototype.returnOrder = function(number, options, callback) {
 ripe.Ripe.prototype.returnOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.returnOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -301,7 +301,7 @@ ripe.Ripe.prototype.cancelOrder = function(number, options, callback) {
 ripe.Ripe.prototype.cancelOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.cancelOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -362,7 +362,7 @@ ripe.Ripe.prototype.importOrder = function(ffOrderId, options, callback) {
 ripe.Ripe.prototype.importOrderP = function(ffOrderId, options, callback) {
     return new Promise((resolve, reject) => {
         this.importOrder(ffOrderId, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -417,7 +417,7 @@ ripe.Ripe.prototype.precustomizationOrder = function(ffId, options, callback) {
 ripe.Ripe.prototype.precustomizationOrderP = function(ffId, options, callback) {
     return new Promise((resolve, reject) => {
         this.precustomizationOrder(ffId, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -467,7 +467,7 @@ ripe.Ripe.prototype.getOrderSubscription = function(number, options, callback) {
 ripe.Ripe.prototype.getOrderSubscriptionP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.getOrderSubscription(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -500,7 +500,7 @@ ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
 ripe.Ripe.prototype.subscribeOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.subscribeOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -533,7 +533,7 @@ ripe.Ripe.prototype.unsubscribeOrder = function(number, options, callback) {
 ripe.Ripe.prototype.unsubscribeOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.unsubscribeOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

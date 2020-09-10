@@ -42,7 +42,7 @@ ripe.Ripe.prototype.getPriceRules = function(options, callback) {
 ripe.Ripe.prototype.getPriceRulesP = function(options) {
     return new Promise((resolve, reject) => {
         this.getPriceRules(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -80,7 +80,7 @@ ripe.Ripe.prototype.getPriceRule = function(id, options, callback) {
 ripe.Ripe.prototype.getPriceRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
         this.getPriceRule(id, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -117,7 +117,7 @@ ripe.Ripe.prototype.createPriceRule = function(priceRule, options, callback) {
 ripe.Ripe.prototype.createPriceRuleP = function(priceRule, options) {
     return new Promise((resolve, reject) => {
         this.createPriceRule(priceRule, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -154,7 +154,7 @@ ripe.Ripe.prototype.updatePriceRule = function(priceRule, options, callback) {
 ripe.Ripe.prototype.updatePriceRuleP = function(priceRule, options) {
     return new Promise((resolve, reject) => {
         this.updatePriceRule(priceRule, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -192,7 +192,7 @@ ripe.Ripe.prototype.deletePriceRule = function(id, options, callback) {
 ripe.Ripe.prototype.deletePriceRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
         this.deletePriceRule(id, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

@@ -40,7 +40,7 @@ ripe.Ripe.prototype.getProfiles = function(options, callback) {
 ripe.Ripe.prototype.getProfilesP = function(options) {
     return new Promise((resolve, reject) => {
         this.getProfiles(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -76,7 +76,7 @@ ripe.Ripe.prototype.getProfile = function(name, options, callback) {
 ripe.Ripe.prototype.getProfileP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.getProfile(name, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

@@ -44,7 +44,7 @@ ripe.Ripe.prototype.createDeviceId = function(deviceId, options, callback) {
 ripe.Ripe.prototype.createDeviceIdP = function(deviceId, options) {
     return new Promise((resolve, reject) => {
         this.createDeviceId(deviceId, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -80,7 +80,7 @@ ripe.Ripe.prototype.removeDeviceId = function(deviceId, options, callback) {
 ripe.Ripe.prototype.removeDeviceIdP = function(deviceId, options) {
     return new Promise((resolve, reject) => {
         this.removeDeviceId(deviceId, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

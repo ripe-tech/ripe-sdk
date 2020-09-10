@@ -50,7 +50,7 @@ ripe.Ripe.prototype.getJustifications = function(options, callback) {
 ripe.Ripe.prototype.getJustificationsP = function(options) {
     return new Promise((resolve, reject) => {
         this.getJustifications(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -100,7 +100,7 @@ ripe.Ripe.prototype.getJustificationsByContext = function(context, options, call
 ripe.Ripe.prototype.getJustificationsByContextP = function(context, options) {
     return new Promise((resolve, reject) => {
         this.getJustificationsByContext(context, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

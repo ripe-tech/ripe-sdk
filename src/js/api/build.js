@@ -39,7 +39,7 @@ ripe.Ripe.prototype.getBuilds = function(options, callback) {
 ripe.Ripe.prototype.getBuildsP = function(options) {
     return new Promise((resolve, reject) => {
         this.getBuilds(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -72,7 +72,7 @@ ripe.Ripe.prototype.getLocalBuilds = function(options, callback) {
 ripe.Ripe.prototype.getLocalBuildsP = function(options) {
     return new Promise((resolve, reject) => {
         this.getLocalBuilds(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -107,7 +107,7 @@ ripe.Ripe.prototype.getBuild = function(name, options, callback) {
 ripe.Ripe.prototype.getBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.getBuild(name, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -152,7 +152,7 @@ ripe.Ripe.prototype.installBuild = function(name, options, callback) {
 ripe.Ripe.prototype.installBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.installBuild(name, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -197,7 +197,7 @@ ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
 ripe.Ripe.prototype.uninstallBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.uninstallBuild(name, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -234,7 +234,7 @@ ripe.Ripe.prototype.updateBuild = function(name, options, callback) {
 ripe.Ripe.prototype.updateBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.updateBuild(name, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -279,7 +279,7 @@ ripe.Ripe.prototype.switchBuild = function(name, options, callback) {
 ripe.Ripe.prototype.switchBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.switchBuild(name, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -324,7 +324,7 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
 ripe.Ripe.prototype.getBuildArtifactsP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.getBuildArtifacts(name, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -361,7 +361,7 @@ ripe.Ripe.prototype.getBuildArtifact = function(name, version, options, callback
 ripe.Ripe.prototype.getBuildArtifactP = function(name, version, options) {
     return new Promise((resolve, reject) => {
         this.getBuildArtifact(name, version, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -398,7 +398,7 @@ ripe.Ripe.prototype.installArtifact = function(name, version, options, callback)
 ripe.Ripe.prototype.installArtifactP = function(name, version, options) {
     return new Promise((resolve, reject) => {
         this.installArtifact(name, version, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -435,7 +435,7 @@ ripe.Ripe.prototype.uninstallArtifact = function(name, version, options, callbac
 ripe.Ripe.prototype.uninstallArtifactP = function(name, version, options) {
     return new Promise((resolve, reject) => {
         this.uninstallArtifact(name, version, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -474,7 +474,7 @@ ripe.Ripe.prototype.switchArtifact = function(name, version, options, callback) 
 ripe.Ripe.prototype.switchArtifactP = function(name, version, options) {
     return new Promise((resolve, reject) => {
         this.switchArtifact(name, version, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -515,7 +515,7 @@ ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
 ripe.Ripe.prototype.getLocaleModelP = function(options) {
     return new Promise((resolve, reject) => {
         this.getLocaleModel(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -550,7 +550,7 @@ ripe.Ripe.prototype.getLocaleModelKeys = function(options, callback) {
 ripe.Ripe.prototype.getLocaleModelKeysP = function(options) {
     return new Promise((resolve, reject) => {
         this.getLocaleModelKeys(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

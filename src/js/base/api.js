@@ -52,7 +52,7 @@ ripe.Ripe.prototype.ping = function(options, callback) {
 ripe.Ripe.prototype.pingP = function(options) {
     return new Promise((resolve, reject) => {
         this.ping(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -85,7 +85,7 @@ ripe.Ripe.prototype.geoResolve = function(address, options, callback) {
 ripe.Ripe.prototype.geoResolveP = function(address, options) {
     return new Promise((resolve, reject) => {
         this.geoResolve(address, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -119,7 +119,7 @@ ripe.Ripe.prototype.signin = function(username, password, options, callback) {
 ripe.Ripe.prototype.signinP = function(username, password, options) {
     return new Promise((resolve, reject) => {
         this.signin(username, password, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -155,7 +155,7 @@ ripe.Ripe.prototype.signinAdmin = function(username, password, options, callback
 ripe.Ripe.prototype.signinAdminP = function(username, password, options) {
     return new Promise((resolve, reject) => {
         this.signinAdmin(username, password, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -187,7 +187,7 @@ ripe.Ripe.prototype.signinPid = function(token, options, callback) {
 ripe.Ripe.prototype.signinPidP = function(token, options) {
     return new Promise((resolve, reject) => {
         this.signinAdmin(token, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -212,7 +212,7 @@ ripe.Ripe.prototype.getPrice = function(options, callback) {
 ripe.Ripe.prototype.getPriceP = function(options) {
     return new Promise((resolve, reject) => {
         this.getPrice(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

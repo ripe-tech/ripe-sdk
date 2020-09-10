@@ -27,7 +27,7 @@ ripe.Ripe.prototype.locale = function(value, locale, options, callback) {
 ripe.Ripe.prototype.localeP = function(value, locale, options) {
     return new Promise((resolve, reject) => {
         this.locale(value, locale, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -61,7 +61,7 @@ ripe.Ripe.prototype.localeMultiple = function(values, locale, options, callback)
 ripe.Ripe.prototype.localeMultipleP = function(values, locale, options) {
     return new Promise((resolve, reject) => {
         this.localeMultiple(values, locale, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -94,7 +94,7 @@ ripe.Ripe.prototype.localeBundle = function(locale, context, options, callback) 
 ripe.Ripe.prototype.localeBundleP = function(locale, context, options) {
     return new Promise((resolve, reject) => {
         this.localeBundle(locale, context, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
