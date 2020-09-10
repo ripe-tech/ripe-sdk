@@ -1007,12 +1007,10 @@ ripe.ConfiguratorPRC.prototype._updateConfig = async function(animate) {
 };
 
 ripe.ConfiguratorPRC.prototype.disable = function () {
-    console.log("Disabling PRC")
     this._enabled = false;
 }
 
 ripe.ConfiguratorPRC.prototype.enable = function () {
-    console.log("Enabling PRC")
     this._enabled = true;
 }
 

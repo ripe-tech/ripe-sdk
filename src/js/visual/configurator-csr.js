@@ -309,12 +309,10 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
 };
 
 ripe.ConfiguratorCSR.prototype.disable = function () {
-    console.log("Disabling CSR")
     this._enabled = false;
 }
 
 ripe.ConfiguratorCSR.prototype.enable = function () {
-    console.log("Enabling CSR")
     this._enabled = true;
 }
 
@@ -672,7 +670,7 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
         }
 
         //this.populateScene(newScene);
-        this.render();
+        //this.render();
         //this.renderer.render(newScene, newCamera);
     }
 };
@@ -724,6 +722,11 @@ ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
     }
 
     if (!this.meshes) {
+        return;
+    }
+
+    // There's no intersection 
+    if (this.intersectedPart == "") {
         return;
     }
 
@@ -980,7 +983,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             return;
         }
         event = ripe.fixEvent(event);
-
+        
         // in case the index that was found is the zero one this is a special
         // position and the associated operation is the removal of the highlight
         // also if the target is being dragged the highlight should be removed
@@ -1072,7 +1075,7 @@ ripe.ConfiguratorCSR.prototype._getNormalizedCoordinatesRaycast = function (mous
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
     const newX = ((mouseEvent.x - this.elementBoundingBox.x) / this.elementBoundingBox.width) * 2 - 1;
     // TODO Fix offset problem
-    const newY = - ((mouseEvent.y - this.elementBoundingBox.y - this.bodyPadding) / this.elementBoundingBox.height) * 2 + 1;
+    const newY = - ((mouseEvent.y - this.elementBoundingBox.y - this.bodyPadding + window.scrollY) / this.elementBoundingBox.height) * 2 + 1;
 
     return {
         x: newX,
@@ -1421,7 +1424,6 @@ ripe.ConfiguratorCSR.prototype.applyDefaults = function () {
 }
 
 ripe.ConfiguratorCSR.prototype._assignMaterials = async function () {
-    console.log(this.owner.parts);
     for (var part in this.owner.parts) {
         if (part == "shadow")
             continue;
@@ -1445,6 +1447,7 @@ ripe.ConfiguratorCSR.prototype._applyMaterial = function (part, material) {
 }
 
 ripe.ConfiguratorCSR.prototype.render = function () {
+    console.log("RENDERING");
     if (this.renderer && this.scene && this.camera) {
         this.renderer.render(this.scene, this.camera);
     }
