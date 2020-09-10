@@ -108,10 +108,13 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     // the initial layout update operation if the
     // owner has a model and brand set (is ready)
     this._initLayout();
+    // register for all the necessary DOM events
+    this._registerHandlers();
+
     if (this.owner.brand && this.owner.model) {
         this._updateConfig();
     }
-    
+
     // registers for the pre config to be able to set the configurator
     // into a not ready state (update operations blocked)
     this._ownerBinds.pre_config = this.owner.bind("pre_config", () => {
@@ -123,6 +126,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._ownerBinds.post_config = this.owner.bind("post_config", config => {
         if (config) this._updateConfig();
     });
+    
 
     this._initializeLights();
     this._initializeCamera();
@@ -686,6 +690,8 @@ ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
 ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
+
+    //const test = new TimelineMax({paused: true});
     if (!this.useMasks) {
         return;
     }
@@ -699,13 +705,15 @@ ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
             this.meshes[i].material.color.r = 1;
             this.meshes[i].material.color.g = 1;
             this.meshes[i].material.color.b = 1;
-            this.render();
         } 
     }
 
+    this.intersectedPart = "";
+
     // triggers an event indicating that a lowlight operation has been
     // performed on the current configurator
-    //this.trigger("lowlighted");
+    this.trigger("lowlighted");
+
     this.render();
 };
 
@@ -777,11 +785,6 @@ ripe.ConfiguratorCSR.prototype._initLayout = function () {
     // sets the initial view and position
     this.element.dataset.view = this.view;
     this.element.dataset.position = this.position;
-
-    // register for all the necessary DOM events
-    this._registerHandlers();
-
-
 };
 
 /**
@@ -886,6 +889,9 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
     // are going to be used for event handler operations
     const area = this.element.querySelector(".area");
 
+    if (!this.elementBoundingBox) 
+        this.elementBoundingBox = this.element.getBoundingClientRect();
+
     // binds the mousedown event on the element to prepare
     // it for drag movements
     this._addElementHandler("mousedown", function (event) {
@@ -907,6 +913,10 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
         self.previous = self.percent;
         self.percent = 0;
         _element.classList.remove("drag");
+
+        event = ripe.fixEvent(event);
+
+        self._attemptRaycast(event);    
     });
 
     // listens for mouse leave events and if it occurs then
@@ -971,8 +981,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             return;
         }
         
-        const mouse = self._getNormalizedCoordinatesRaycast(event);
-        self._intersectRaycast(mouse);
+        self._attemptRaycast(event);    
     });
 
     area.addEventListener("dragstart", function (event) {
@@ -1021,7 +1030,13 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
     ripe.touchHandler(this.element);
 };
 
-ripe.ConfiguratorCSR.prototype._intersectRaycast = function (mouse) {
+ripe.ConfiguratorCSR.prototype._attemptRaycast = function (mouseEvent) {
+    if (!this.elementBoundingBox || this.element.classList.contains("animating") || this.element.classList.contains("drag")) {
+        return;    
+    }
+
+    const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
+    
     if (this.raycaster && this.scene) {
         this.raycaster.setFromCamera( mouse, this.camera );
 
@@ -1030,19 +1045,15 @@ ripe.ConfiguratorCSR.prototype._intersectRaycast = function (mouse) {
         if (intersects.length > 0) {
             if (this.intersectedPart != intersects[0].object.name) {
                 if (this.intersectedPart != "") {
-                    console.log("Changing part");
                     this.lowlight();
                 }
                 this.intersectedPart = intersects[0].object.name;
-                console.log("Intersecting " + this.intersectedPart);
                 this.highlight(this.intersectedPart);
             } 
         }
         else {
             if (this.intersectedPart != "") {
-                console.log("No part selected")
                 this.lowlight();
-                this.intersectedPart = "";
             }
         }
     }
@@ -1052,6 +1063,7 @@ ripe.ConfiguratorCSR.prototype._getNormalizedCoordinatesRaycast = function (mous
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
     const newX = ((mouseEvent.x - this.elementBoundingBox.x) / this.elementBoundingBox.width) * 2 - 1;
+    // TODO Fix offset problem
     const newY = - ((mouseEvent.y - this.elementBoundingBox.y - this.bodyPadding) / this.elementBoundingBox.height) * 2 + 1;
 
     return {
@@ -1133,21 +1145,21 @@ ripe.ConfiguratorCSR.prototype._buildSignature = function () {
 };
 
 ripe.ConfiguratorCSR.prototype._initializeLights = function () {
-    const keyLight = new this.library.PointLight(0xffffff, 2, 18);
+    const keyLight = new this.library.PointLight(0xffffff, 2.2, 18);
     keyLight.position.set(2, 2, 2);
     keyLight.castShadow = true;
     keyLight.shadow.camera.near = 0.000001;
     keyLight.shadow.camera.far = 10;
     keyLight.shadow.radius = 8;
 
-    const fillLight = new this.library.PointLight(0xffffff, 1, 18);
+    const fillLight = new this.library.PointLight(0xffffff, 1.1, 18);
     fillLight.position.set(-2, 1, 2);
     fillLight.castShadow = true;
     fillLight.shadow.camera.near = 0.000001;
     fillLight.shadow.camera.far = 10;
     fillLight.shadow.radius = 8;
 
-    const rimLight = new this.library.PointLight(0xffffff, 2.5, 18);
+    const rimLight = new this.library.PointLight(0xffffff, 3.1, 18);
     rimLight.position.set(-1, 1.5, -3);
     rimLight.castShadow = true;
     rimLight.shadow.camera.near = 0.000001;
