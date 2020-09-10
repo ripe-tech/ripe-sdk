@@ -381,8 +381,10 @@ window.onload = function () {
                 texturesPath: "/static/assets/textures/",
                 partsMap: CSRPartsMap,
                 library: THREE,
-                cameraDistance: 4.1,
+                cameraFOV: 32,
+                cameraDistance: 4.4,
                 cameraHeight: 0.9,
+                cameraTarget: {x: 0, y: 0.39, z: 0.4},
                 exposure: 0.7,
                 bodyPadding: document.body.getBoundingClientRect().y,
             });

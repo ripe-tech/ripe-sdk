@@ -76,12 +76,18 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._observer = null;
     this._ownerBinds = {};
     this._enabled = true;
-
     // Meshes 
     this.meshPath = this.options.meshPath || undefined;
 
     // ThreeJS
     this.library = this.options.library || null;
+
+    this.cameraTarget = new this.library.Vector3(
+        this.options.cameraTarget.x, 
+        this.options.cameraTarget.y,
+        this.options.cameraTarget.z
+    );
+    this.cameraFOV = this.options.cameraFOV;
 
     // Materials
     this.texturesPath = this.options.texturesPath || "";
@@ -1203,7 +1209,7 @@ ripe.ConfiguratorCSR.prototype._initializeCamera = function () {
     const width = this.element.getBoundingClientRect().width;
     const height = this.element.getBoundingClientRect().height;
 
-    this.camera = new this.library.PerspectiveCamera(35, width / height, 1, 20000);
+    this.camera = new this.library.PerspectiveCamera(this.cameraFOV, width / height, 1, 20000);
     this.camera.position.set(0, this.cameraHeight, this.cameraDistance);
 };
 
@@ -1388,8 +1394,8 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
 
     const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
     const centerY = box.min.y + (box.max.y - box.min.y) / 2.0;
+    const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
     // eslint-disable-next-line no-undef
-    this.cameraTarget = new this.library.Vector3(centerX, centerY, 0);
     this.camera.lookAt(this.cameraTarget);
     this.camera.position.x = centerX;
 
