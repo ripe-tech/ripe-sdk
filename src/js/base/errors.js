@@ -49,7 +49,7 @@ ripe.ActionException = function(message = null, error = null, critical = false) 
  * @class
  * @classdesc An error object for remote operations.
  */
-ripe.RemoteError = function(request, message = null, result = {}) {
+ripe.RemoteError = function(request, message = null, result = {}, debug = false) {
     this.name = "RemoteError";
     this.request = request;
     this.code = request.status;
@@ -57,6 +57,7 @@ ripe.RemoteError = function(request, message = null, result = {}) {
     this.response = request.response;
     this.responseText = request.responseText;
     this.result = result;
+    this.resultMessage = result ? result.message : null;
     this.message =
         message ||
         `Problem in remote operation (${
@@ -68,7 +69,10 @@ ripe.RemoteError = function(request, message = null, result = {}) {
                 ? this.responseText
                 : "unknown"
         })`;
-    if (result) {
+    if (this.resultMessage) {
+        this.message += ` - ${this.resultMessage}`;
+    }
+    if (debug && this.result) {
         this.message += "\n" + JSON.stringify(this.result, null, 2);
     }
     return this;
