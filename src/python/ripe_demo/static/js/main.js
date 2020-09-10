@@ -20,9 +20,12 @@ window.onload = function () {
     var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
     var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
     var currentRenderMode = "csr";
+    // TODO Remove this here
+    var configuratorCSR = null;
 
     var parts = [];
     var partsMap = {};
+    var CSRPartsMap = {};
 
     // eslint-disable-next-line no-undef
     var ripe = new Ripe({
@@ -46,15 +49,21 @@ window.onload = function () {
             parts.push(triplet);
         }
 
-        if (currentRenderMode == "prc") {
-            console.log(parts)
-            console.log(partsMap)
-            await ripe.setParts(parts, true, { partEvents: false });
+        var CSRParts = [];
+        for (var key in CSRPartsMap) {
+            var triplets = CSRPartsMap[key];
+            var index = Math.floor(Math.random() * triplets.length);
+            var triplet = triplets[index];
+            CSRParts.push(triplet);
         }
-        else if (currentRenderMode == "csr") {
-            configuratorCSR.randomize();
-        }          
         
+        if (currentRenderMode == "prc")
+            await ripe.setParts(parts, true, { partEvents: false });
+        else {
+            //await ripe.setParts(CSRParts, true, { partEvents: false, mode: "csr" });
+            configuratorCSR.setMaterials(CSRParts);
+        }
+            
     };
 
     var unique = function () {
@@ -119,7 +128,7 @@ window.onload = function () {
         var setMessage = document.getElementById("set-message");
         var getPrice = document.getElementById("get-price");
         var getCombinations = document.getElementById("get-combinations");
-        
+
         setMessage &&
             setMessage.addEventListener("click", function () {
                 alert("Not implemented");
@@ -148,8 +157,8 @@ window.onload = function () {
                     );
                 });
             });
-        
-        
+
+
 
         ripe.bind("error", function (error, description) {
             alert(error);
@@ -341,15 +350,39 @@ window.onload = function () {
                 view: bestFace(result),
                 render: "prc"
             });
+            
+            var partsMapArray = ["front", "laces", "sole", "side", "lining", "hardware", "logo"];
+            var materials = {
+                denim: ["blue", "green", "red"],
+                fabric: ["blue", "green", "red", "white"],
+                leather: ["brown", "red", "white"]
+            };
 
-            var configuratorCSR = ripe.bindConfigurator(elementCSR, {
+            for (let index = 0 ; index <  partsMapArray.length ; index++) {
+                var part = partsMapArray[index];
+                CSRPartsMap[part] = []
+
+                for (var material in materials) {
+                    for (var k = 0; k < materials[material].length; k++) {
+                        const color = materials[material][k]
+
+                        var triplet = [part, material, color]
+
+                        CSRPartsMap[part].push(triplet)
+                    }
+                }
+            }
+
+            console.log(CSRPartsMap)
+
+            configuratorCSR = ripe.bindConfigurator(elementCSR, {
                 duration: 250,
                 noMasks: false,
                 view: bestFace(result),
                 render: "csr",
                 meshPath: "/static/assets/vyner.glb",
                 texturesPath: "/static/assets/textures/",
-                materialNames: ["rocks", "wood", "leather_red", "leather_white", "concrete", "denim", "rusty_metal"],
+                partsMap: CSRPartsMap,
                 library: THREE,
                 cameraDistance: 4.1,
                 cameraHeight: 0.9,
@@ -357,7 +390,7 @@ window.onload = function () {
                 bodyPadding: document.body.getBoundingClientRect().y,
             });
 
-            configuratorPRC.bind("loaded", function() {
+            configuratorPRC.bind("loaded", function () {
                 if (configuratorPRC.isFirst) configuratorPRC.isFirst = false;
                 else return;
                 if (result.faces.indexOf("side") !== -1) {
@@ -368,7 +401,7 @@ window.onload = function () {
             });
 
 
-            configuratorCSR.bind("loaded", function() {
+            configuratorCSR.bind("loaded", function () {
                 if (configuratorCSR.isFirst) configuratorCSR.isFirst = false;
                 else return;
                 if (result.faces.indexOf("side") !== -1) {
@@ -378,7 +411,7 @@ window.onload = function () {
                 }
             });
 
-           
+
             var toggleRenderMode = document.getElementById("toggle-render");
 
             toggleRenderMode &&
@@ -390,16 +423,16 @@ window.onload = function () {
 
                     displayRenderMode();
                 });
-            
+
             displayRenderMode();
-            
+
             var setPart = document.getElementById("set-part");
-        
+
             setPart &&
                 setPart.addEventListener("click", function () {
                     randomize();
-            });
-        
+                });
+
             // eslint-disable-next-line no-undef
             var syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
 
@@ -412,7 +445,7 @@ window.onload = function () {
             ripe.addPlugin(restrictionsPlugin);
 
             // Added unloading function to avoid memory leaks in ThreeJS
-            window.onunload = function(){
+            window.onunload = function () {
                 ripe.unbindConfigurator(configuratorCSR);
                 ripe.unbindConfigurator(configuratorPRC);
             }

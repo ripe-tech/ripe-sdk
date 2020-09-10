@@ -75,22 +75,23 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._finalize = null;
     this._observer = null;
     this._ownerBinds = {};
-    
+
     // Meshes 
     this.meshPath = this.options.meshPath || undefined;
 
     // ThreeJS
     this.library = this.options.library || null;
-    
+
     // Materials
     this.texturesPath = this.options.texturesPath || "";
-    this.materialNames = this.options.materialNames || [];
+    this.partsMap = this.options.partsMap || {};
+    this.loadedMaterials = {}
 
     // Raycast 
     this.raycaster = new this.library.Raycaster();
     this.bodyPadding = this.options.bodyPadding || 0;
     this.intersectedPart = "";
-    
+
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
     this._ownerBinds.selected_part = this.owner.bind("selected_part", part => this.highlight(part));
@@ -126,7 +127,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._ownerBinds.post_config = this.owner.bind("post_config", config => {
         if (config) this._updateConfig();
     });
-    
+
 
     this._initializeLights();
     this._initializeCamera();
@@ -140,7 +141,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
  * cleanup operations can be executed.
  */
 ripe.ConfiguratorCSR.prototype.deinit = async function () {
-    await this.cancel();    
+    await this.cancel();
 
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -166,14 +167,14 @@ ripe.ConfiguratorCSR.prototype.deinit = async function () {
 ripe.ConfiguratorCSR.prototype._disposeResources = function () {
     console.log("Disposing resources");
     if (this.meshes) {
-        for (let i = 0 ; i < this.meshes.length; i++) {
-            this.scene.remove(this.meshes[i]);
-            this.meshes[i].geometry.dispose();
-            this.meshes[i].material.dispose();
+        for (var mesh in this.meshes) {
+            this.scene.remove(mesh);
+            this.meshes[mesh].geometry.dispose();
+            this.meshes[mesh].material.dispose();
         }
     }
     if (this.materials) {
-        for (let i = 0 ; i < this.materialNames.length ; i++) {
+        for (let i = 0; i < this.materialNames.length; i++) {
             this.materials[this.materialNames[i]].dispose();
         }
     }
@@ -279,8 +280,8 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     this.unique = unique;
 
     if (this.meshes) {
-        for (let i = 0; i < this.meshes.length; i++) {
-            this.meshes[i].rotation.y = (position / 24) * Math.PI * 2;
+        for (var mesh in this.meshes) {
+            this.meshes[mesh].rotation.y = (position / 24) * Math.PI * 2;
         }
     }
 
@@ -331,7 +332,7 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
     area.style.width = size + "px";
     area.style.height = size + "px";
     this.currentSize = size;
-    
+
     await this.update(
         {},
         {
@@ -668,13 +669,13 @@ ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
         return;
     }
 
-    for (let i = 0 ; i < this.meshes.length; i++) {
-        if (this.meshes[i].name == part) {
-            this.meshes[i].material.color.r = 0.5;
-            this.meshes[i].material.color.g = 0.5;
-            this.meshes[i].material.color.b = 0.5;
+    for (var mesh in this.meshes) {
+        if (this.meshes[mesh].name == part) {
+            this.meshes[mesh].material.color.r = 0.5;
+            this.meshes[mesh].material.color.g = 0.5;
+            this.meshes[mesh].material.color.b = 0.5;
             this.render();
-        } 
+        }
     }
     //ripe.cancelAnimation(frontMask);
     //ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration, false);
@@ -700,12 +701,12 @@ ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
         return;
     }
 
-    for (let i = 0 ; i < this.meshes.length; i++) {
-        if (this.meshes[i].name == this.intersectedPart) {
-            this.meshes[i].material.color.r = 1;
-            this.meshes[i].material.color.g = 1;
-            this.meshes[i].material.color.b = 1;
-        } 
+    for (var mesh in this.meshes) {
+        if (this.meshes[mesh].name == this.intersectedPart) {
+            this.meshes[mesh].material.color.r = 1;
+            this.meshes[mesh].material.color.g = 1;
+            this.meshes[mesh].material.color.b = 1;
+        }
     }
 
     this.intersectedPart = "";
@@ -790,22 +791,6 @@ ripe.ConfiguratorCSR.prototype._initLayout = function () {
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._initPartsList = async function () {
-    // creates a set of sorted parts to be used on the
-    // highlight operation (considers only the default ones)
-    this.partsList = [];
-    const config = this.owner.loadedConfig
-        ? this.owner.loadedConfig
-        : await this.owner.getConfigP();
-    const defaults = config.defaults || {};
-    this.hiddenParts = config.hidden || [];
-    this.partsList = Object.keys(defaults);
-    this.partsList.sort();
-};
-
-/**
- * @ignore
- */
 ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
@@ -814,9 +799,6 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
 
     // removes the highlight from any part
     this.lowlight();
-
-    // updates the parts list for the new product
-    this._initPartsList();
 
     // retrieves the new product frame object and sets it
     // under the current state, adapting then the internal
@@ -856,11 +838,11 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // the associated ready event to any event listener
     this.ready = true;
     this.trigger("ready");
-    
+
     // Only after the configurator is ready can the bounding box be
     // correctly identified
     this.elementBoundingBox = this.element.getBoundingClientRect();
-    
+
     // adds the config visual class indicating that
     // a configuration already exists for the current
     // interactive configurator (meta-data)
@@ -889,7 +871,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
     // are going to be used for event handler operations
     const area = this.element.querySelector(".area");
 
-    if (!this.elementBoundingBox) 
+    if (!this.elementBoundingBox)
         this.elementBoundingBox = this.element.getBoundingClientRect();
 
     // binds the mousedown event on the element to prepare
@@ -916,7 +898,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
 
         event = ripe.fixEvent(event);
 
-        self._attemptRaycast(event);    
+        self._attemptRaycast(event);
     });
 
     // listens for mouse leave events and if it occurs then
@@ -980,8 +962,8 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             self.lowlight();
             return;
         }
-        
-        self._attemptRaycast(event);    
+
+        self._attemptRaycast(event);
     });
 
     area.addEventListener("dragstart", function (event) {
@@ -1032,16 +1014,16 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
 
 ripe.ConfiguratorCSR.prototype._attemptRaycast = function (mouseEvent) {
     if (!this.elementBoundingBox || this.element.classList.contains("animating") || this.element.classList.contains("drag")) {
-        return;    
+        return;
     }
 
     const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
-    
-    if (this.raycaster && this.scene) {
-        this.raycaster.setFromCamera( mouse, this.camera );
 
-        var intersects = this.raycaster.intersectObjects( this.scene.children);
-        
+    if (this.raycaster && this.scene) {
+        this.raycaster.setFromCamera(mouse, this.camera);
+
+        var intersects = this.raycaster.intersectObjects(this.scene.children);
+
         if (intersects.length > 0) {
             if (this.intersectedPart != intersects[0].object.name) {
                 if (this.intersectedPart != "") {
@@ -1049,7 +1031,7 @@ ripe.ConfiguratorCSR.prototype._attemptRaycast = function (mouseEvent) {
                 }
                 this.intersectedPart = intersects[0].object.name;
                 this.highlight(this.intersectedPart);
-            } 
+            }
         }
         else {
             if (this.intersectedPart != "") {
@@ -1168,7 +1150,7 @@ ripe.ConfiguratorCSR.prototype._initializeLights = function () {
 
     const ambientLight = new this.library.AmbientLight(0xffffff, 0.1);
 
-    this.lights = [keyLight, fillLight, rimLight, ambientLight]    
+    this.lights = [keyLight, fillLight, rimLight, ambientLight]
 };
 
 ripe.ConfiguratorCSR.prototype._initializeRenderer = function () {
@@ -1200,73 +1182,14 @@ ripe.ConfiguratorCSR.prototype.populateScene = function (scene) {
     for (let i = 0; i < this.lights.length; i++) {
         scene.add(this.lights[i]);
     }
-    for (let i = 0; i < this.meshes.length; i++) {
-        scene.add(this.meshes[i]);
+    for (var mesh in this.meshes) {
+        scene.add(this.meshes[mesh]);
     }
     scene.add(this.floorMesh);
 }
 
 ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function () {
-    console.log("Initializing Textures");
-    const textureLoader = new this.library.TextureLoader();
-
-    this.materials = {};
-
-    for (let i = 0; i < this.materialNames.length; i++) {
-        var diffuseMapPath = this.getTexturePath(this.materialNames[i], "diffuse");
-        var roughnessMapPath = this.getTexturePath(this.materialNames[i], "roughness");
-        var normalMapPath = this.getTexturePath(this.materialNames[i], "normal");
-        var aoMapPath = this.getTexturePath(this.materialNames[i], "ao");
-
-        const diffuseTexture = await new Promise((resolve, reject) => {
-            textureLoader.load(diffuseMapPath, function (texture) {
-                resolve(texture);
-            });
-        });
-
-        const roughnessTexture = await new Promise((resolve, reject) => {
-            textureLoader.load(roughnessMapPath, function (texture) {
-                resolve(texture);
-            });
-        });
-
-        const normalTexture = await new Promise((resolve, reject) => {
-            textureLoader.load(normalMapPath, function (texture) {
-                resolve(texture);
-            });
-        });
-
-        const aoTexture = await new Promise((resolve, reject) => {
-            textureLoader.load(aoMapPath, function (texture) {
-                resolve(texture);
-            });
-        });
-
-        diffuseTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-        roughnessTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-        normalTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-        aoTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-
-        diffuseTexture.minFilter = this.library.NearestMipmapNearestFilter;
-        roughnessTexture.minFilter = this.library.NearestMipmapNearestFilter;
-        normalTexture.minFilter = this.library.NearestMipmapNearestFilter;
-        aoTexture.minFilter = this.library.NearestMipmapNearestFilter;
-
-        const material = new this.library.MeshStandardMaterial({
-            map: diffuseTexture,
-            roughnessMap: roughnessTexture,
-            normalMap: normalTexture,
-            aoMap: aoTexture
-        });
-
-        // Dispose of textures, as they are already stored
-        diffuseTexture.dispose();
-        roughnessTexture.dispose();
-        normalTexture.dispose();
-        aoTexture.dispose();
-
-        this.materials[this.materialNames[i]] = material;
-    }
+    this.loadedMaterials["default"] = new this.library.MeshBasicMaterial({color: "#ffffff"});
 
     this.crossFadeMaterial = new THREE.ShaderMaterial({
         uniforms: {
@@ -1332,11 +1255,78 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
 
     });
 
-    console.log("Finished loading textures");
+    
 };
 
-ripe.ConfiguratorCSR.prototype.getTexturePath = function (materialName, type) {
-    return this.texturesPath + materialName + "/" + materialName + "_" + type + ".jpg"
+ripe.ConfiguratorCSR.prototype.loadMaterial = async function (material, color) {
+    // Loadedmaterials store threejs materials in the format 
+    if (this.loadedMaterials[material + "_" + color]) {
+        console.log("Material " + material + " " + color + " already loaded, skipping.");
+        return;
+    }
+
+    console.log("Loading Textures");
+    const textureLoader = new this.library.TextureLoader();
+
+    var diffuseMapPath = this.getTexturePath(material, color, "diffuse");
+    var roughnessMapPath = this.getTexturePath(material, color, "roughness");
+    var normalMapPath = this.getTexturePath(material, color, "normal");
+    var aoMapPath = this.getTexturePath(material, color, "ao");
+
+    const diffuseTexture = await new Promise((resolve, reject) => {
+        textureLoader.load(diffuseMapPath, function (texture) {
+            resolve(texture);
+        });
+    });
+
+    const roughnessTexture = await new Promise((resolve, reject) => {
+        textureLoader.load(roughnessMapPath, function (texture) {
+            resolve(texture);
+        });
+    });
+
+    const normalTexture = await new Promise((resolve, reject) => {
+        textureLoader.load(normalMapPath, function (texture) {
+            resolve(texture);
+        });
+    });
+
+    const aoTexture = await new Promise((resolve, reject) => {
+        textureLoader.load(aoMapPath, function (texture) {
+            resolve(texture);
+        });
+    });
+
+    diffuseTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    roughnessTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    normalTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+    aoTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+
+    diffuseTexture.minFilter = this.library.NearestMipmapNearestFilter;
+    roughnessTexture.minFilter = this.library.NearestMipmapNearestFilter;
+    normalTexture.minFilter = this.library.NearestMipmapNearestFilter;
+    aoTexture.minFilter = this.library.NearestMipmapNearestFilter;
+
+    const threeJSmaterial = new this.library.MeshStandardMaterial({
+        map: diffuseTexture,
+        roughnessMap: roughnessTexture,
+        normalMap: normalTexture,
+        aoMap: aoTexture
+    });
+
+    // Dispose of textures, as they are already stored
+    diffuseTexture.dispose();
+    roughnessTexture.dispose();
+    normalTexture.dispose();
+    aoTexture.dispose();
+
+    this.loadedMaterials[material + "_" + color] = threeJSmaterial;
+
+    console.log("Finished loading textures");
+}
+
+ripe.ConfiguratorCSR.prototype.getTexturePath = function (materialName, color, type) {
+    return this.texturesPath + materialName + "/" + color + "/" + type + ".jpg"
 }
 
 ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
@@ -1375,33 +1365,55 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     this.camera.lookAt(this.cameraTarget);
     this.camera.position.x = centerX;
 
-    this.meshes = []
+    this.meshes = {}
 
     for (let i = 0; i < model.children.length; i++) {
         if (model.children[i].isMesh) {
             model.children[i].castShadow = true;
             model.children[i].receiveShadow = true;
-            this.meshes.push(model.children[i])
-        }   
+            
+            // remove "_part" from string
+            this.meshes[model.children[i].name.split("_")[0]] = model.children[i]
+        }
     }
 
     console.log("Finished loading models")
 
-    this.randomize();
-
+    this.applyDefaults();
     // Only now can we populate the scene safely
     this.scene = new this.library.Scene();
     this.populateScene(this.scene);
     this.render();
 };
 
-ripe.ConfiguratorCSR.prototype.randomize = function () {
-    for (let i = 0; i < this.meshes.length; i++) {
-        let index = Math.floor(Math.random() * this.materialNames.length);
-        this.meshes[i].material.dispose();
-        this.meshes[i].material = this.materials[this.materialNames[index]].clone();
+ripe.ConfiguratorCSR.prototype.applyDefaults = function () {
+    for (var mesh in this.meshes) {
+        this.meshes[mesh].material.dispose();
+        this.meshes[mesh].material = this.loadedMaterials["default"].clone();
         this.render();
-    }
+    } 
+}
+
+ripe.ConfiguratorCSR.prototype.setMaterials = async function (triplets) {
+    for (let i = 0 ; i < triplets.length ; i++) {
+        var part = triplets[i][0]
+        var partMaterial = triplets[i][1]
+        var partColor = triplets[i][2]
+        await this.loadMaterial(partMaterial, partColor);
+        
+        this.applyMaterial(part, this.loadedMaterials[partMaterial + "_" + partColor])
+    }    
+
+    this.render();
+}
+
+ripe.ConfiguratorCSR.prototype.applyMaterial = function (part, material) {
+    for (var mesh in this.meshes) {
+        if (mesh == part) {
+            this.meshes[mesh].material.dispose();
+            this.meshes[mesh].material = material;        
+        }
+    } 
 }
 
 ripe.ConfiguratorCSR.prototype.render = function () {
