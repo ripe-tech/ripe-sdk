@@ -804,8 +804,8 @@ ripe.Ripe.prototype._build = function(options) {
     }
     options.url = url;
     options.method = method;
-    options.params = params;
-    options.headers = headers;
+    options.params = Object.assign({}, this.params, params);
+    options.headers = Object.assign({}, this.headers, headers);
     options.auth = auth;
     return options;
 };
