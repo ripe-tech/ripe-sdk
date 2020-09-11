@@ -76,6 +76,8 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._observer = null;
     this._ownerBinds = {};
     this._enabled = true;
+    this._modelRotation = 0;
+    this._currentRotation = 0;
 
     // Meshes 
     this.meshPath = this.options.meshPath || undefined;
@@ -270,40 +272,21 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
         return;
     }
 
-    const view = this.element.dataset.view;
-    const position = this.element.dataset.position;
-
-    const force = options.force || false;
-
+    var needsUpdate = false;
+    
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
-    let previous = this.signature || "";
-    const signature = this._buildSignature();
-    const changed = signature !== previous;
-    const animate = options.animate === undefined ? (changed ? "simple" : false) : options.animate;
-    this.signature = signature;
-
-    // if the parts and the position haven't changed
-    // since the last frame load then ignores the
-    // load request and returns immediately
-    previous = this.unique;
-    const unique = `${signature}&view=${String(view)}&position=${String(position)}`;
-    if (previous === unique && !force) {
-        this.trigger("not_loaded");
-        return false;
-    }
-    this.unique = unique;
-
-    this.camera.rotation
-
-    if (this.meshes) {
+    if (this.meshes && this._modelRotation - this.mouseDeltaX != this._currentRotation) {
+        this._currentRotation = this._modelRotation - this.mouseDeltaX;
+        needsUpdate = true;
         for (var mesh in this.meshes) {
-            this.meshes[mesh].rotation.y = (position / 24) * Math.PI * 2;
+            this.meshes[mesh].rotation.y = this._currentRotation / 360 * Math.PI * 2;
         }
     }
 
     const animating = this.element.classList.contains("animating");
     if (!animating) {
+        needsUpdate = true;
         await this._assignMaterials();
     }
 
@@ -312,7 +295,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     // frame is going to be "calculated" and rendered (not same mask)
     this.lowlight();
 
-    this.render();
+    if (needsUpdate) this.render();
 
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
@@ -451,12 +434,14 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
         return;
     }
 
+    /*
     // in case the current view and position are already set then returns
     // the control flow immediately (animation safeguard)
     if (safe && this.element.dataset.view === nextView && position === nextPosition) {
         this.element.classList.remove("no-drag", "animating");
         return;
     }
+    */
 
     // removes any part highlight in case it is set
     // to replicate the behaviour of dragging the product
@@ -620,7 +605,7 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     // a rotation around the Y axis 
     const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
     this.trigger("changed_frame", newFrame);
-
+    
     try {
         // runs the update operation that should sync the visuals of the
         // configurator according to the current internal state (in data)
@@ -711,9 +696,10 @@ ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
             this.meshes[mesh].material.color.r = 0.5;
             this.meshes[mesh].material.color.g = 0.5;
             this.meshes[mesh].material.color.b = 0.5;
-            this.render();
         }
     }
+
+    this.render();
     //ripe.cancelAnimation(frontMask);
     //ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration, false);
 };
@@ -943,6 +929,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
         event = ripe.fixEvent(event);
 
         self._attemptRaycast(event);
+        self._modelRotation = self._currentRotation;
     });
 
     // listens for mouse leave events and if it occurs then
@@ -1063,8 +1050,6 @@ ripe.ConfiguratorCSR.prototype._attemptRaycast = function (mouseEvent) {
 
     const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
 
-    //console.log(mouse)
-
     if (this.raycaster && this.scene) {
         this.raycaster.setFromCamera(mouse, this.camera);
 
@@ -1112,12 +1097,12 @@ ripe.ConfiguratorCSR.prototype._parseDrag = function () {
     const mousePosX = this.mousePosX;
     const mousePosY = this.mousePosY;
     const base = this.base;
-    const deltaX = referenceX - mousePosX;
-    const deltaY = referenceY - mousePosY;
+    this.mouseDeltaX = referenceX - mousePosX;
+    this.mouseDeltaY = referenceY - mousePosY;
     const elementWidth = this.element.clientWidth;
     const elementHeight = this.element.clientHeight || child.clientHeight;
-    const percentX = deltaX / elementWidth;
-    const percentY = deltaY / elementHeight;
+    const percentX = this.mouseDeltaX / elementWidth;
+    const percentY = this.mouseDeltaY / elementHeight;
     this.percent = percentX;
     const sensitivity = this.element.dataset.sensitivity || this.sensitivity;
     const verticalThreshold = this.element.dataset.verticalThreshold || this.verticalThreshold;
