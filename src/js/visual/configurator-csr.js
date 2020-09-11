@@ -1197,15 +1197,18 @@ ripe.ConfiguratorCSR.prototype.populateScene = function (scene) {
 ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function () {
     this.loadedMaterials["default"] = new this.library.MeshPhongMaterial({ color: "#ffffff" });
 
-    this.crossFadeMaterial = new THREE.ShaderMaterial({
+    this.crossFadeMaterial = new this.library.ShaderMaterial({
         uniforms: {
-            tDiffuse1: {
+			tDiffuse1: {
+				type: 't',
                 value: null
             },
             tDiffuse2: {
+				type: 't',
                 value: null
             },
             mixRatio: {
+				type: 'f',
                 value: 0.0
             }
         },
@@ -1224,9 +1227,6 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
 
             "uniform sampler2D tDiffuse1;",
             "uniform sampler2D tDiffuse2;",
-            "uniform sampler2D tMixTexture;",
-
-            "uniform float threshold;",
 
             "varying vec2 vUv;",
 
@@ -1239,7 +1239,6 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
             
             "}"
         ].join("\n")
-
     });
 
 
@@ -1398,7 +1397,7 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
     var renderTargetParameters = { 
         minFilter: this.library.LinearFilter, 
         magFilter: this.library.LinearFilter, 
-        format: this.library.RGBAFormat 
+        format: this.library.RGBFormat 
     };
 
     var width = this.elementBoundingBox.width;
@@ -1425,12 +1424,13 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
         renderTargetParameters
     );
 
-    this.crossFadeMaterial.uniforms.tDiffuse1.value = previousSceneFBO.texture;
-    this.crossFadeMaterial.uniforms.tDiffuse2.value = currentSceneFBO.texture;
+    this.crossFadeMaterial.uniforms.tDiffuse1.value = previousSceneFBO;
+    this.crossFadeMaterial.uniforms.tDiffuse2.value = currentSceneFBO;
     this.crossFadeMaterial.uniforms.mixRatio.value = 0.0;
 
     var quadGeometry = new this.library.PlaneBufferGeometry(this.elementBoundingBox.width, this.elementBoundingBox.height);
     var quad = new this.library.Mesh(quadGeometry, this.crossFadeMaterial);
+    quad.position.z = 1;
     this.scene.add(quad);
 
     if (options["type"] == "material") {
@@ -1458,7 +1458,7 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
 
         this.renderer.setRenderTarget(null);
         this.renderer.clear();
-        this.renderer.render(this.scene, transitionCamera);
+        this.renderer.render(this.scene, transitionCamera, null, true);
     }
 
     this.scene.remove(quad);
