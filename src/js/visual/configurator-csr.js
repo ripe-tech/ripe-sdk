@@ -274,9 +274,11 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
 
     var needsUpdate = false;
     
+    const animating = this.element.classList.contains("animating");
+
     // checks if the parts drawed on the target have
     // changed and animates the transition if they did
-    if (this.meshes && this._modelRotation - this.mouseDeltaX != this._currentRotation) {
+    if (this.meshes && this._modelRotation - this.mouseDeltaX != this._currentRotation && animating) {
         this._currentRotation = this._modelRotation - this.mouseDeltaX;
         needsUpdate = true;
         for (var mesh in this.meshes) {
@@ -284,7 +286,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
         }
     }
 
-    const animating = this.element.classList.contains("animating");
+    
     if (!animating) {
         needsUpdate = true;
         await this._assignMaterials();
