@@ -288,7 +288,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
 
     
     if (!animating) {
-        needsUpdate = true;
+        //needsUpdate = true;
         await this._assignMaterials();
     }
 
@@ -350,6 +350,11 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
     area.style.width = size + "px";
     area.style.height = size + "px";
     this.currentSize = size;
+
+    console.log(this.element.clientWidth)
+    if (this.renderer) {
+        this.renderer.setSize(this.element.clientWidth, this.element.clientHeight)
+    }
 
     await this.update(
         {},
@@ -474,7 +479,6 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
             duration: duration
         };
 
-        this.transition(transitionOptions);
         return;
     }
 
@@ -643,36 +647,6 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     // runs the next tick operation to change the frame of the current
     // configurator to the next one (iteration cycle)
     await this.changeFrame(frame, options);
-};
-
-ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
-    if (options.changeView) {
-        this.view = options.nextView;
-        this.element.dataset.view = options.nextView;
-        this.duration = options.duration;
-
-        const newScene = new this.library.Scene();
-        const newCamera = new this.library.PerspectiveCamera(35, 620 / 620, 1, 20000);
-        if (options.nextView == "top") {
-            newCamera.position.set(0, this.cameraDistance, 0);
-            newCamera.lookAt(this.cameraTarget);
-
-            // TODO USE NEW CAMERA 
-            this.camera.position.set(0, this.cameraDistance, 0);
-            this.camera.lookAt(this.cameraTarget);
-        } else if (options.nextView == "side") {
-            newCamera.position.set(0, this.cameraHeight, this.cameraDistance);
-            newCamera.lookAt(this.cameraTarget);
-
-            // TODO USE NEW CAMERA 
-            this.camera.position.set(0, this.cameraHeight, this.cameraDistance);
-            this.camera.lookAt(this.cameraTarget);
-        }
-
-        //this.populateScene(newScene);
-        //this.render();
-        //this.renderer.render(newScene, newCamera);
-    }
 };
 
 /**
@@ -1189,14 +1163,14 @@ ripe.ConfiguratorCSR.prototype._initializeRenderer = function () {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
     this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
-    this.renderer.setSize(620, 620);
+    
+    this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
+    
     this.renderer.toneMappingExposure = this.exposure;
     this.renderer.toneMapping = this.library.CineonToneMapping;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = this.library.BasicShadowMap;
-
-    // retrieves the target area element and adds the DOM element
-    // of the renderer to it
+    
     const area = this.element.querySelector(".area");
 
     area.appendChild(this.renderer.domElement);
@@ -1233,12 +1207,6 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
             },
             mixRatio: {
                 value: 0.0
-            },
-            threshold: {
-                value: 0.1
-            },
-            useTexture: {
-                value: 1
             }
         },
         vertexShader: [
@@ -1258,7 +1226,6 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
             "uniform sampler2D tDiffuse2;",
             "uniform sampler2D tMixTexture;",
 
-            "uniform int useTexture;",
             "uniform float threshold;",
 
             "varying vec2 vUv;",
@@ -1267,21 +1234,9 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
 
             "	vec4 texel1 = texture2D( tDiffuse1, vUv );",
             "	vec4 texel2 = texture2D( tDiffuse2, vUv );",
-
-            "	if (useTexture==1) {",
-
-            "		vec4 transitionTexel = texture2D( tMixTexture, vUv );",
-            "		float r = mixRatio * (1.0 + threshold * 2.0) - threshold;",
-            "		float mixf=clamp((transitionTexel.r - r)*(1.0/threshold), 0.0, 1.0);",
-
-            "		gl_FragColor = mix( texel1, texel2, mixf );",
-
-            "	} else {",
-
-            "		gl_FragColor = mix( texel2, texel1, mixRatio );",
-
-            "	}",
-
+            
+            "   gl_FragColor = mix( texel2, texel1, mixRatio );",
+            
             "}"
         ].join("\n")
 
@@ -1373,8 +1328,7 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     const model = gltf.scene;
     // eslint-disable-next-line no-undef
     const box = new this.library.Box3().setFromObject(model);
-    console.log(box);
-
+    
     // eslint-disable-next-line no-undef
     const floorGeometry = new this.library.PlaneGeometry(100, 100);
     // eslint-disable-next-line no-undef
@@ -1436,11 +1390,79 @@ ripe.ConfiguratorCSR.prototype._assignMaterials = async function () {
         var material = this.owner.parts[part]["material"]
         var color = this.owner.parts[part]["color"]
         await this._loadMaterial(material, color);
-
-
-        this._applyMaterial(part, this.loadedMaterials[material + "_" + color])
     }
+    this.transition({type: "material"})
 }
+
+ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
+    var renderTargetParameters = { 
+        minFilter: this.library.LinearFilter, 
+        magFilter: this.library.LinearFilter, 
+        format: this.library.RGBAFormat 
+    };
+
+    var width = this.elementBoundingBox.width;
+    var height = this.elementBoundingBox.height;
+    
+    var transitionCamera = new this.library.OrthographicCamera(
+        -width / 2, width / 2, height / 2, -height / 2, -100 , 100
+    );
+
+    transitionCamera.position.x = this.camera.position.x;
+    transitionCamera.position.y = this.camera.position.y;
+    transitionCamera.position.z = this.camera.position.z;
+    transitionCamera.lookAt(this.cameraTarget);
+
+    var previousSceneFBO = new this.library.WebGLRenderTarget(
+        this.elementBoundingBox.width, 
+        this.elementBoundingBox.height, 
+        renderTargetParameters
+    );
+
+    var currentSceneFBO = new this.library.WebGLRenderTarget(
+        this.elementBoundingBox.width, 
+        this.elementBoundingBox.height, 
+        renderTargetParameters
+    );
+
+    this.crossFadeMaterial.uniforms.tDiffuse1.value = previousSceneFBO.texture;
+    this.crossFadeMaterial.uniforms.tDiffuse2.value = currentSceneFBO.texture;
+    this.crossFadeMaterial.uniforms.mixRatio.value = 0.0;
+
+    var quadGeometry = new this.library.PlaneBufferGeometry(this.elementBoundingBox.width, this.elementBoundingBox.height);
+    var quad = new this.library.Mesh(quadGeometry, this.crossFadeMaterial);
+    this.scene.add(quad);
+
+    if (options["type"] == "material") {
+        console.log(currentSceneFBO)
+        console.log(transitionCamera)
+
+        this.renderer.setRenderTarget(previousSceneFBO);
+        this.renderer.clear();
+        this.renderer.render(this.scene, this.camera);
+
+        // Update scene's materials 
+        for (var part in this.owner.parts) {
+            if (part == "shadow")
+                continue;
+
+            var material = this.owner.parts[part]["material"]
+            var color = this.owner.parts[part]["color"]
+            this._applyMaterial(part, this.loadedMaterials[material + "_" + color])
+        }
+
+
+        this.renderer.setRenderTarget(currentSceneFBO);
+        this.renderer.clear();
+        this.renderer.render(this.scene, this.camera);
+
+        this.renderer.setRenderTarget(null);
+        this.renderer.clear();
+        this.renderer.render(this.scene, transitionCamera);
+    }
+
+    this.scene.remove(quad);
+};
 
 ripe.ConfiguratorCSR.prototype._applyMaterial = function (part, material) {
     for (var mesh in this.meshes) {
