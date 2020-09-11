@@ -19,11 +19,11 @@ window.onload = function () {
     var clientSecret = _body.dataset.client_secret || null;
     var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
     var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
-    
+
     var currentRenderMode = "csr";
     var configuratorCSR = null;
     var configuratorPRC = null;
-    
+
     var parts = [];
     var partsMap = {};
     var CSRPartsMap = {};
@@ -57,7 +57,8 @@ window.onload = function () {
             var triplet = triplets[index];
             CSRParts.push(triplet);
         }
-        
+
+
         if (currentRenderMode == "prc")
             await ripe.setParts(parts, true, { partEvents: false });
         else {
@@ -349,7 +350,7 @@ window.onload = function () {
                 view: bestFace(result),
                 render: "prc"
             });
-            
+
             var partsMapArray = ["front", "laces", "sole", "side", "lining", "hardware", "logo"];
             var materials = {
                 denim: ["blue", "green", "red"],
@@ -357,7 +358,7 @@ window.onload = function () {
                 leather: ["brown", "red", "white"]
             };
 
-            for (let index = 0 ; index <  partsMapArray.length ; index++) {
+            for (let index = 0; index < partsMapArray.length; index++) {
                 var part = partsMapArray[index];
                 CSRPartsMap[part] = []
 
@@ -381,10 +382,10 @@ window.onload = function () {
                 texturesPath: "/static/assets/textures/",
                 partsMap: CSRPartsMap,
                 library: THREE,
-                cameraFOV: 32,
-                cameraDistance: 4.4,
-                cameraHeight: 0.9,
-                cameraTarget: {x: 0, y: 0.39, z: 0.4},
+                cameraFOV: 29,
+                cameraDistance: 4.9,
+                cameraHeight: 0.82,
+                cameraTarget: { x: 0, y: 0.42, z: 0.4 },
                 exposure: 0.7,
                 bodyPadding: document.body.getBoundingClientRect().y,
             });
@@ -419,7 +420,7 @@ window.onload = function () {
 
                     if (currentRenderMode == "prc") currentRenderMode = "csr";
                     else if (currentRenderMode == "csr") currentRenderMode = "prc";
-                    
+
                     displayRenderMode();
                 });
 
@@ -453,16 +454,18 @@ window.onload = function () {
 
     var displayRenderMode = function () {
         if (currentRenderMode == "prc") {
-            configuratorCSR.disable();
-            configuratorPRC.enable();
             elementCSR.style.display = "none";
             elementPRC.style.display = "inline-block";
+            configuratorCSR.disable();
+            configuratorPRC.resize();
+            configuratorPRC.enable();
         }
         else if (currentRenderMode == "csr") {
-            configuratorPRC.disable();
-            configuratorCSR.enable();
             elementPRC.style.display = "none";
             elementCSR.style.display = "inline-block";
+            configuratorPRC.disable();
+            configuratorCSR.resize();
+            configuratorCSR.enable();
         }
     }
 
