@@ -1408,13 +1408,12 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
     // eslint-disable-next-line no-undef
     this.camera.lookAt(this.cameraTarget);
-    this.camera.position.x = centerX;
-    this.camera.position.z = this.cameraDistance + centerZ;
-
+    
     this.meshes = {}
-
     for (let i = 0; i < model.children.length; i++) {
         if (model.children[i].isMesh) {
+            
+            model.children[i].geometry.translate(-centerX, 0, -centerZ);
             model.children[i].castShadow = true;
             model.children[i].receiveShadow = true;
 
@@ -1432,9 +1431,6 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     this.scene = new this.library.Scene();
     this.populateScene(this.scene);
     
-    //const axesHelper = new this.library.AxesHelper(500);
-    //this.scene.add(axesHelper);
-
     this.render();
 };
 
