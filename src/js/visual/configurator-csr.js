@@ -1198,7 +1198,7 @@ ripe.ConfiguratorCSR.prototype.populateScene = function (scene) {
 ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function () {
     this.loadedMaterials["default"] = new this.library.MeshPhongMaterial({ color: "#ffffff" });
 
-    this.crossFadeMaterial = new this.library.ShaderMaterial({
+    this.crossfadeShader = new this.library.ShaderMaterial({
         uniforms: {
 			tDiffuse1: {
 				type: 't',
@@ -1413,7 +1413,6 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     transitionCamera.position.z = this.camera.position.z;
     transitionCamera.lookAt(this.cameraTarget);
     
-    var previousScene = this.scene.clone();
     var previousSceneFBO = new this.library.WebGLRenderTarget(
         this.elementBoundingBox.width, 
         this.elementBoundingBox.height, 
@@ -1426,21 +1425,30 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
         renderTargetParameters
     );
 
+    var duration = 24;
+    var currentTime = 0;
+    var renderer = this.renderer;
+    var scene = this.scene;
+    var crossfadeShader = this.crossfadeShader;
+    var camera = this.camera;
+    var element = this.element;
     var mixRatio = 0.0
 
-    this.crossFadeMaterial.uniforms.tDiffuse1.value = previousSceneFBO.texture;
-    this.crossFadeMaterial.uniforms.tDiffuse2.value = currentSceneFBO.texture;
-    this.crossFadeMaterial.uniforms.mixRatio.value = mixRatio;
+    this.crossfadeShader.uniforms.tDiffuse1.value = previousSceneFBO.texture;
+    this.crossfadeShader.uniforms.tDiffuse2.value = currentSceneFBO.texture;
+    this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
     
     var quadGeometry = new this.library.PlaneBufferGeometry(this.elementBoundingBox.width, this.elementBoundingBox.height);
-    var quad = new this.library.Mesh(quadGeometry, this.crossFadeMaterial);
+    var quad = new this.library.Mesh(quadGeometry, this.crossfadeShader);
     quad.position.z = 1;
     this.scene.add(quad);
 
-    if (options["type"] == "material") {
-        console.log(currentSceneFBO)
-        console.log(transitionCamera)
+    // Store current image
+    renderer.setRenderTarget(previousSceneFBO);
+    renderer.clear();
+    renderer.render(this.scene, camera);
 
+    if (options["type"] == "material") {
         // Update scene's materials 
         for (var part in this.owner.parts) {
             if (part == "shadow")
@@ -1452,37 +1460,34 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
         }
     }
 
-    var duration = 24;
-    var currentTime = 0;
-    var renderer = this.renderer;
-    var scene = this.scene;
-    var crossFadeMaterial = this.crossFadeMaterial;
-    var camera = this.camera;
+    // Render next image
+    renderer.setRenderTarget(currentSceneFBO);
+    renderer.clear();
+    renderer.render(scene, camera);
 
-    function yooo() {
-        renderer.setRenderTarget(previousSceneFBO);
-        renderer.clear();
-        renderer.render(previousScene, camera);
-
-        renderer.setRenderTarget(currentSceneFBO);
-        renderer.clear();
-        renderer.render(scene, camera);
-
-        renderer.setRenderTarget(null);
-        renderer.clear();
-        renderer.render(scene, transitionCamera, null, true);
+    // Reset renderer
+    renderer.setRenderTarget(null);
+    renderer.clear();
+        
+    function crossfade() {
+        renderer.render(scene, transitionCamera);
 
         mixRatio += 1.0/duration;
         currentTime++;
-        crossFadeMaterial.uniforms.mixRatio.value = mixRatio;
+        crossfadeShader.uniforms.mixRatio.value = mixRatio;
         
         if (currentTime < duration)
-            requestAnimationFrame(yooo)
-        else 
+            requestAnimationFrame(crossfade)
+        else {
             scene.remove(quad);
+            element.classList.remove("animating");
+        }
     }
 
-    requestAnimationFrame(yooo)    
+    // Prevents transition from being initiated multiple times
+    this.element.classList.add("animating");
+
+    requestAnimationFrame(crossfade)    
 };
 
 ripe.ConfiguratorCSR.prototype._applyMaterial = function (part, material) {
