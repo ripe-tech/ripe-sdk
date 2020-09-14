@@ -77,16 +77,16 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._ownerBinds = {};
     this._enabled = true;
     this._modelRotation = 0;
-    this._currentRotation = 0;
+    this._currentModelRotation = 0;
+    this._cameraRotation = 0;
+    this._currentCameraRotation = 0;
 
     // Meshes 
     this.meshPath = this.options.meshPath || undefined;
 
     // ThreeJS
     this.library = this.options.library || null;
-    this.rotationAxis = new this.library.Vector3(0, 1, 0);
-
-
+    
     this.cameraTarget = new this.library.Vector3(
         this.options.cameraTarget.x,
         this.options.cameraTarget.y,
@@ -275,20 +275,29 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     
     const animating = this.element.classList.contains("animating");
 
-    // checks if the parts drawed on the target have
-    // changed and animates the transition if they did
-    if (this.meshes && this._modelRotation - this.mouseDeltaX != this._currentRotation && animating) {
-        this._currentRotation = this._modelRotation - this.mouseDeltaX;
+    // Checks if the rotation of the model has changed
+    if (this.meshes && this._modelRotation - this.mouseDeltaX != this._currentModelRotation && animating) {
+        this._currentModelRotation = this._modelRotation - this.mouseDeltaX;
         needsUpdate = true;
-        for (var mesh in this.meshes) {
-            this.meshes[mesh].rotation.y = this._currentRotation / 360 * Math.PI * 2;
+
+        this._rotateMeshes();
+    }
+    
+    console.log(this.mouseDeltaY)
+    var newRotation = this._cameraRotation + this.mouseDeltaY;
+    if (this.camera && newRotation != this._currentCameraRotation && animating) {
+        if (0 < newRotation && newRotation < 90) {
+            this._currentCameraRotation = newRotation;
+            needsUpdate = true;
+    
+            this._rotateCamera();
         }
     }
 
     
     if (!animating) {
-        //needsUpdate = true;
         await this._assignMaterials();
+        await this.transition({type: "material"})
     }
 
 
@@ -302,6 +311,21 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     // as been triggered with success (effective operation)
     return true;
 };
+
+ripe.ConfiguratorCSR.prototype._rotateMeshes = function () {
+    for (var mesh in this.meshes) {
+        this.meshes[mesh].rotation.y = this._currentModelRotation / 360 * Math.PI * 2;
+    }
+}
+
+ripe.ConfiguratorCSR.prototype._rotateCamera = function () {
+    var maxHeight = this.cameraDistance - this.cameraHeight;
+    this.camera.position.y = this.cameraHeight + maxHeight * Math.sin( (Math.PI / 2) / 90 * this._currentCameraRotation );
+    this.camera.position.z = this.cameraDistance * Math.cos( (Math.PI / 2) / 90 * this._currentCameraRotation )
+    this.camera.lookAt(this.cameraTarget)
+
+    //this.meshes[mesh].rotation.y = this._currentModelRotation / 360 * Math.PI * 2;
+}
 
 ripe.ConfiguratorCSR.prototype.disable = function () {
     this._enabled = false;
@@ -905,8 +929,12 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
         event = ripe.fixEvent(event);
         
         // Apply rotation to model
-        self._modelRotation = self._currentRotation;
+        self._modelRotation = self._currentModelRotation;
         self.mouseDeltaX = 0;
+        
+        // Apply rotation to camera
+        self._cameraRotation = self._currentCameraRotation;
+        self.mouseDeltaY = 0;
 
         self._attemptRaycast(event);
     });
@@ -1377,7 +1405,6 @@ ripe.ConfiguratorCSR.prototype._assignMaterials = async function () {
         var color = this.owner.parts[part]["color"]
         await this._loadMaterial(material, color);
     }
-    await this.transition({type: "material"})
 }
 
 ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
