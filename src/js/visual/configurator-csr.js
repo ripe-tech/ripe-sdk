@@ -272,7 +272,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     }
 
     var needsUpdate = false;
-    
+
     const animating = this.element.classList.contains("animating");
 
     // Checks if the rotation of the model has changed
@@ -280,32 +280,56 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
         this._currentModelRotation = this._modelRotation - this.mouseDeltaX;
         needsUpdate = true;
 
-        this._rotateMeshes();
-    }
-    
-    console.log(this.mouseDeltaY)
-    var newRotation = this._cameraRotation + this.mouseDeltaY;
-    if (this.camera && newRotation != this._currentCameraRotation && animating) {
-        if (0 < newRotation && newRotation < 90) {
-            this._currentCameraRotation = newRotation;
-            needsUpdate = true;
-    
-            this._rotateCamera();
+        // Rotate meshes based on drag
+        for (var mesh in this.meshes) {
+            this.meshes[mesh].rotation.y = this._currentModelRotation / 360 * Math.PI * 2;
+        }
+    } else {
+        console.log("Rotating based on update")
+        const position = this.element.dataset.position;
+        
+        for (var mesh in this.meshes) {
+            this.meshes[mesh].rotation.y = (position / 24) * Math.PI * 2;
         }
     }
+    
+    if (this.camera && this._cameraRotation + this.mouseDeltaY != this._currentCameraRotation && animating) {
+        var diff = this.mouseDeltaY;
 
+        if (this.mouseDeltaY >= 90 - this._cameraRotation) {
+
+            diff = this.mouseDeltaY - (90 - this._cameraRotation);
+
+            this.referenceY -= diff;
+            this.mouseDeltaY += diff;
+        } 
+        else if (this.mouseDeltaY <= -this._cameraRotation) {
+
+            diff = this.mouseDeltaY + this._cameraRotation;
+
+            this.referenceY -= diff;
+            this.mouseDeltaY += diff;
+        } else {
+            this._currentCameraRotation = this._cameraRotation + this.mouseDeltaY;
+            
+            this._rotateCamera();
+                    
+            needsUpdate = true;        
+        }
+    }
     
     if (!animating) {
         await this._assignMaterials();
         await this.transition({type: "material"})
     }
 
+    console.log("Updating and rendering: " + needsUpdate + " and animating: " + animating);
 
     // removes the highlight support from the matched object as a new
     // frame is going to be "calculated" and rendered (not same mask)
     this.lowlight();
 
-    if (needsUpdate) this.render();
+    if (needsUpdate || animating) this.render();
 
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
@@ -313,9 +337,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
 };
 
 ripe.ConfiguratorCSR.prototype._rotateMeshes = function () {
-    for (var mesh in this.meshes) {
-        this.meshes[mesh].rotation.y = this._currentModelRotation / 360 * Math.PI * 2;
-    }
+    
 }
 
 ripe.ConfiguratorCSR.prototype._rotateCamera = function () {
@@ -464,12 +486,15 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
         throw new RangeError("Frame " + frame + " is not supported");
     }
 
+    console.log("1")
     // in case the safe mode is enabled and there's an animation running
     // then this request is going to be ignored (not possible to change
     // frame when another animation is running)
     if (safe && this.element.classList.contains("animating")) {
         return;
     }
+
+    console.log("2")
 
     /*
     // in case the current view and position are already set then returns
@@ -511,6 +536,8 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
 
         return;
     }
+
+    console.log("3")
 
     // runs the defaulting values for the current step duration
     // and the next position that is going to be rendered
@@ -1099,6 +1126,7 @@ ripe.ConfiguratorCSR.prototype._parseDrag = function () {
     const referenceY = this.referenceY;
     const mousePosX = this.mousePosX;
     const mousePosY = this.mousePosY;
+
     const base = this.base;
     this.mouseDeltaX = referenceX - mousePosX;
     this.mouseDeltaY = referenceY - mousePosY;
@@ -1109,6 +1137,11 @@ ripe.ConfiguratorCSR.prototype._parseDrag = function () {
     this.percent = percentX;
     const sensitivity = this.element.dataset.sensitivity || this.sensitivity;
     const verticalThreshold = this.element.dataset.verticalThreshold || this.verticalThreshold;
+
+    //console.log(this.referenceY, mousePosY, this.mouseDeltaY);
+    //this.mouseDeltaY = newThing;    
+
+    //(lemons) ? alert("please give me a lemonade") : alert("then give me a beer");
 
     // if the drag was vertical then alters the
     // view if it is supported by the product
@@ -1494,6 +1527,7 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
         else {
             scene.remove(quad);
             element.classList.remove("animating");
+            element.classList.remove("no-drag");
             quad.geometry.dispose();
             quad.material.dispose();
             quadGeometry.dispose();
@@ -1504,6 +1538,7 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
 
     // Prevents transition from being initiated multiple times
     this.element.classList.add("animating");
+    this.element.classList.add("no-drag");
 
     requestAnimationFrame(crossfade)    
 };
@@ -1518,7 +1553,7 @@ ripe.ConfiguratorCSR.prototype._applyMaterial = function (part, material) {
 }
 
 ripe.ConfiguratorCSR.prototype.render = function () {
-    //console.log("RENDERING");
+    console.log("RENDERING" + this.meshes["front"].rotation.y);
     if (this.renderer && this.scene && this.camera) {
         this.renderer.render(this.scene, this.camera);
     }
