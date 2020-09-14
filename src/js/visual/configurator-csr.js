@@ -101,7 +101,6 @@ ripe.ConfiguratorCSR.prototype.init = function () {
 
     // Raycast 
     this.raycaster = new this.library.Raycaster();
-    this.bodyPadding = this.options.bodyPadding || 0;
     this.intersectedPart = "";
 
     // registers for the selected part event on the owner
@@ -309,8 +308,6 @@ ripe.ConfiguratorCSR.prototype.disable = function () {
 }
 
 ripe.ConfiguratorCSR.prototype.enable = function () {
-    //this.elementBoundingBox = this.element.getBoundingClientRect();
-    //console.log(this.elementBoundingBox);
     this._enabled = true;
 }
 
@@ -334,10 +331,19 @@ ripe.ConfiguratorCSR.prototype.cancel = async function (options = {}) {
  * @param {Number} size The number of pixels to resize to.
  */
 ripe.ConfiguratorCSR.prototype.resize = async function (size) {
+    console.log("Resizing");
     if (this.element === undefined) {
         return;
     }
 
+    if (!this._enabled) {
+        return;
+    }
+    
+    // Raycaster needs accurate positions of the element, needs to be 
+    // updated on every window resize event
+    this.elementBoundingBox = this.element.getBoundingClientRect();
+    
     size = size || this.element.clientWidth;
     if (this.currentSize === size) {
         return;
@@ -362,6 +368,8 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
             force: true
         }
     );
+
+    
 };
 
 /**
@@ -843,12 +851,6 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     this.ready = true;
     this.trigger("ready");
 
-    // Only after the configurator is ready can the bounding box be
-    // correctly identified
-    this.elementBoundingBox = this.element.getBoundingClientRect();
-    console.log(this.elementBoundingBox);
-
-
     // adds the config visual class indicating that
     // a configuration already exists for the current
     // interactive configurator (meta-data)
@@ -1052,7 +1054,7 @@ ripe.ConfiguratorCSR.prototype._getNormalizedCoordinatesRaycast = function (mous
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
     const newX = ((mouseEvent.x - this.elementBoundingBox.x) / this.elementBoundingBox.width) * 2 - 1;
-    const newY = - ((mouseEvent.y - this.elementBoundingBox.y - this.bodyPadding + window.scrollY) / this.elementBoundingBox.height) * 2 + 1;
+    const newY = - ((mouseEvent.y - this.elementBoundingBox.y + window.scrollY) / this.elementBoundingBox.height) * 2 + 1;
 
     return {
         x: newX,
@@ -1397,7 +1399,7 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
     var renderTargetParameters = { 
         minFilter: this.library.LinearFilter, 
         magFilter: this.library.LinearFilter, 
-        format: this.library.RGBFormat 
+        format: this.library.RGBAFormat 
     };
 
     var width = this.elementBoundingBox.width;
@@ -1424,8 +1426,8 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
         renderTargetParameters
     );
 
-    this.crossFadeMaterial.uniforms.tDiffuse1.value = previousSceneFBO;
-    this.crossFadeMaterial.uniforms.tDiffuse2.value = currentSceneFBO;
+    this.crossFadeMaterial.uniforms.tDiffuse1.value = previousSceneFBO.texture;
+    this.crossFadeMaterial.uniforms.tDiffuse2.value = currentSceneFBO.texture;
     this.crossFadeMaterial.uniforms.mixRatio.value = 0.0;
 
     var quadGeometry = new this.library.PlaneBufferGeometry(this.elementBoundingBox.width, this.elementBoundingBox.height);

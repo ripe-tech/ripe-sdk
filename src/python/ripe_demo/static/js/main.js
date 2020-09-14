@@ -449,6 +449,10 @@ window.onload = function () {
                 ripe.unbindConfigurator(configuratorCSR);
                 ripe.unbindConfigurator(configuratorPRC);
             }
+
+            window.onresize = function(event) {
+                configuratorCSR.resize();
+            };
         });
     };
 
