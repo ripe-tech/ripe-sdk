@@ -331,7 +331,6 @@ ripe.ConfiguratorCSR.prototype.cancel = async function (options = {}) {
  * @param {Number} size The number of pixels to resize to.
  */
 ripe.ConfiguratorCSR.prototype.resize = async function (size) {
-    console.log("Resizing");
     if (this.element === undefined) {
         return;
     }
@@ -1237,7 +1236,7 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
             "	vec4 texel1 = texture2D( tDiffuse1, vUv );",
             "	vec4 texel2 = texture2D( tDiffuse2, vUv );",
             
-            "   gl_FragColor = mix( texel2, texel1, mixRatio );",
+            "   gl_FragColor = mix( texel1, texel2, mixRatio );",
             
             "}"
         ].join("\n")
@@ -1392,10 +1391,10 @@ ripe.ConfiguratorCSR.prototype._assignMaterials = async function () {
         var color = this.owner.parts[part]["color"]
         await this._loadMaterial(material, color);
     }
-    this.transition({type: "material"})
+    await this.transition({type: "material"})
 }
 
-ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
+ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     var renderTargetParameters = { 
         minFilter: this.library.LinearFilter, 
         magFilter: this.library.LinearFilter, 
@@ -1413,7 +1412,8 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
     transitionCamera.position.y = this.camera.position.y;
     transitionCamera.position.z = this.camera.position.z;
     transitionCamera.lookAt(this.cameraTarget);
-
+    
+    var previousScene = this.scene.clone();
     var previousSceneFBO = new this.library.WebGLRenderTarget(
         this.elementBoundingBox.width, 
         this.elementBoundingBox.height, 
@@ -1426,10 +1426,12 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
         renderTargetParameters
     );
 
+    var mixRatio = 0.0
+
     this.crossFadeMaterial.uniforms.tDiffuse1.value = previousSceneFBO.texture;
     this.crossFadeMaterial.uniforms.tDiffuse2.value = currentSceneFBO.texture;
-    this.crossFadeMaterial.uniforms.mixRatio.value = 0.0;
-
+    this.crossFadeMaterial.uniforms.mixRatio.value = mixRatio;
+    
     var quadGeometry = new this.library.PlaneBufferGeometry(this.elementBoundingBox.width, this.elementBoundingBox.height);
     var quad = new this.library.Mesh(quadGeometry, this.crossFadeMaterial);
     quad.position.z = 1;
@@ -1438,10 +1440,6 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
     if (options["type"] == "material") {
         console.log(currentSceneFBO)
         console.log(transitionCamera)
-
-        this.renderer.setRenderTarget(previousSceneFBO);
-        this.renderer.clear();
-        this.renderer.render(this.scene, this.camera);
 
         // Update scene's materials 
         for (var part in this.owner.parts) {
@@ -1452,18 +1450,39 @@ ripe.ConfiguratorCSR.prototype.transition = function (options = {}) {
             var color = this.owner.parts[part]["color"]
             this._applyMaterial(part, this.loadedMaterials[material + "_" + color])
         }
-
-
-        this.renderer.setRenderTarget(currentSceneFBO);
-        this.renderer.clear();
-        this.renderer.render(this.scene, this.camera);
-
-        this.renderer.setRenderTarget(null);
-        this.renderer.clear();
-        this.renderer.render(this.scene, transitionCamera, null, true);
     }
 
-    this.scene.remove(quad);
+    var duration = 24;
+    var currentTime = 0;
+    var renderer = this.renderer;
+    var scene = this.scene;
+    var crossFadeMaterial = this.crossFadeMaterial;
+    var camera = this.camera;
+
+    function yooo() {
+        renderer.setRenderTarget(previousSceneFBO);
+        renderer.clear();
+        renderer.render(previousScene, camera);
+
+        renderer.setRenderTarget(currentSceneFBO);
+        renderer.clear();
+        renderer.render(scene, camera);
+
+        renderer.setRenderTarget(null);
+        renderer.clear();
+        renderer.render(scene, transitionCamera, null, true);
+
+        mixRatio += 1.0/duration;
+        currentTime++;
+        crossFadeMaterial.uniforms.mixRatio.value = mixRatio;
+        
+        if (currentTime < duration)
+            requestAnimationFrame(yooo)
+        else 
+            scene.remove(quad);
+    }
+
+    requestAnimationFrame(yooo)    
 };
 
 ripe.ConfiguratorCSR.prototype._applyMaterial = function (part, material) {
@@ -1481,3 +1500,4 @@ ripe.ConfiguratorCSR.prototype.render = function () {
         this.renderer.render(this.scene, this.camera);
     }
 };
+
