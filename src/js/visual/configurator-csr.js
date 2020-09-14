@@ -356,7 +356,6 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
     area.style.height = size + "px";
     this.currentSize = size;
 
-    console.log(this.element.clientWidth)
     if (this.renderer) {
         this.renderer.setSize(this.element.clientWidth, this.element.clientHeight)
     }
@@ -904,9 +903,12 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
         _element.classList.remove("drag");
 
         event = ripe.fixEvent(event);
+        
+        // Apply rotation to model
+        self._modelRotation = self._currentRotation;
+        self.mouseDeltaX = 0;
 
         self._attemptRaycast(event);
-        self._modelRotation = self._currentRotation;
     });
 
     // listens for mouse leave events and if it occurs then
@@ -941,10 +943,6 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             return;
         }
 
-        const animating = self.element.classList.contains("animating");
-        if (animating) {
-            return;
-        }
         event = ripe.fixEvent(event);
 
         // retrieves the reference to the part name by using the index
@@ -1113,7 +1111,6 @@ ripe.ConfiguratorCSR.prototype._parseDrag = function () {
     this.changeFrame(nextFrame);
 };
 
-
 /**
  * Builds the signature string for the current internal state
  * allowing a single unique representation of the current frame.
@@ -1248,11 +1245,9 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
 ripe.ConfiguratorCSR.prototype._loadMaterial = async function (material, color) {
     // Loadedmaterials store threejs materials in the format 
     if (this.loadedMaterials[material + "_" + color]) {
-        console.log("Material already loaded, skipping.");
         return;
     }
-
-    console.log("Loading " + material + " " + color);
+    
     const textureLoader = new this.library.TextureLoader();
 
     var diffuseMapPath = this.getTexturePath(material, color, "diffuse");
@@ -1308,8 +1303,6 @@ ripe.ConfiguratorCSR.prototype._loadMaterial = async function (material, color) 
     aoTexture.dispose();
 
     this.loadedMaterials[material + "_" + color] = threeJSmaterial;
-
-    console.log("Finished loading textures");
 }
 
 ripe.ConfiguratorCSR.prototype.getTexturePath = function (materialName, color, type) {
@@ -1317,7 +1310,6 @@ ripe.ConfiguratorCSR.prototype.getTexturePath = function (materialName, color, t
 }
 
 ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
-    console.log("Initializing Mesh");
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
         gltfLoader.load(this.meshPath, gltf => {
@@ -1326,28 +1318,24 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     });
 
     const model = gltf.scene;
-    // eslint-disable-next-line no-undef
+    
     const box = new this.library.Box3().setFromObject(model);
     
-    // eslint-disable-next-line no-undef
     const floorGeometry = new this.library.PlaneGeometry(100, 100);
-    // eslint-disable-next-line no-undef
     const floorMaterial = new this.library.ShadowMaterial();
     floorMaterial.opacity = 0.5;
 
-    // eslint-disable-next-line no-undef
     this.floorMesh = new this.library.Mesh(floorGeometry, floorMaterial);
     this.floorMesh.rotation.x = Math.PI / 2;
     this.floorMesh.receiveShadow = true;
     this.floorMesh.position.y = box.min.y;
-    // floorMesh.position.x = 0;
-
+    
     model.castShadow = true;
 
     const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
     const centerY = box.min.y + (box.max.y - box.min.y) / 2.0;
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
-    // eslint-disable-next-line no-undef
+    
     this.camera.lookAt(this.cameraTarget);
     
     this.meshes = {}
@@ -1362,8 +1350,6 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
             this.meshes[model.children[i].name.split("_")[0]] = model.children[i]
         }
     }
-
-    console.log("Finished loading models")
 
     // Load default material
     await this._initializeTexturesAndMaterials();
@@ -1481,6 +1467,11 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
         else {
             scene.remove(quad);
             element.classList.remove("animating");
+            quad.geometry.dispose();
+            quad.material.dispose();
+            quadGeometry.dispose();
+            previousSceneFBO.dispose();
+            currentSceneFBO.dispose();
         }
     }
 
@@ -1500,7 +1491,7 @@ ripe.ConfiguratorCSR.prototype._applyMaterial = function (part, material) {
 }
 
 ripe.ConfiguratorCSR.prototype.render = function () {
-    console.log("RENDERING");
+    //console.log("RENDERING");
     if (this.renderer && this.scene && this.camera) {
         this.renderer.render(this.scene, this.camera);
     }
