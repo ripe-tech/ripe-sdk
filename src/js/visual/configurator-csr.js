@@ -285,7 +285,10 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
             this.meshes[mesh].rotation.y = newRotation;
         }
 
-        this._modelRotation = newRotation;
+        this._modelRotation = newRotation * 360 / (Math.PI * 2);
+        this._currentModelRotation = newRotation * 360 / (Math.PI * 2);
+        this.mouseDeltaX = 0;
+        needsUpdate = true;
     } else if (this.meshes && this._modelRotation - this.mouseDeltaX != this._currentModelRotation) {
         this._currentModelRotation = this._modelRotation - this.mouseDeltaX;
         needsUpdate = true;
