@@ -295,7 +295,6 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     }
 
     if (options["reason"] === "set parts" || options["reason"] === "set part") {
-        console.log("Teste")
         await this._assignMaterials();
         await this.transition({ type: "material" });
     }
@@ -441,7 +440,7 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
     // Raycaster needs accurate positions of the element, needs to be
     // updated on every window resize event
     this.elementBoundingBox = this.element.getBoundingClientRect();
-
+    
     size = size || this.element.clientWidth;
     if (this.currentSize === size) {
         return;
@@ -510,11 +509,11 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
 
     if (position !== nextPosition) {
         
-        var currentRotation = this._positionToRotation(position);
+        var currentRotation = this._currentHorizontalRot;
         var finalRotation = this._positionToRotation(nextPosition);
-
+        
         var step;
-        if (currentRotation + Math.PI > finalRotation) {
+        if (currentRotation + 180 > finalRotation) {
             step = (finalRotation - currentRotation) / 24;
         } else {
             step = (currentRotation - finalRotation) / 24;
@@ -541,7 +540,7 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
  * @param {String} part The part of the model that should be highlighted.
  * @param {Object} options Set of optional parameters to adjust the highlighting.
  */
-ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
+ripe.ConfiguratorCSR.prototype.highlight = async function (part, options = {}) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -552,32 +551,14 @@ ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
         return;
     }
 
-    var currentValue = 1.0;
-    var meshTarget = null;
     // TODO Use time here
-    var duration = 24;
-    var currentTime = 0;
+    var duration = 100;
+    
+    await this.changeHighlight(part, 1.0, 0.5, duration);
 
-    for (var mesh in this.meshes) {
-        if (this.meshes[mesh].name === part) {
-            meshTarget = this.meshes[mesh];
-        }
-    }
-
-    const highlightTransition = () => {
-        meshTarget.material.color.r = currentValue;
-        meshTarget.material.color.g = currentValue;
-        meshTarget.material.color.b = currentValue;
-
-        currentValue -= 0.5 / duration;
-        currentTime++;
-
-        this.renderer.render(this.scene, this.camera);
-
-        if (currentTime < duration) requestAnimationFrame(highlightTransition);
-    }
-
-    requestAnimationFrame(highlightTransition);
+    // triggers an event indicating that a highlight operation has been
+    // performed on the current configurator
+    this.trigger("highlighted");
 };
 
 /**
@@ -587,7 +568,7 @@ ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
  * @param {String} part The part to lowlight.
  * @param {Object} options Set of optional parameters to adjust the lowlighting.
  */
-ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
+ripe.ConfiguratorCSR.prototype.lowlight = async function (options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
 
@@ -605,32 +586,9 @@ ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
         return;
     }
 
-    var currentValue = 0.5;
-    var meshTarget = null;
-    // TODO Use time here
-    var duration = 12;
-    var currentTime = 0;
+    var duration = 100;
 
-    for (var mesh in this.meshes) {
-        if (this.meshes[mesh].name === this.intersectedPart) {
-            meshTarget = this.meshes[mesh];
-        }
-    }
-
-    const lowlightTransition = () => {
-        meshTarget.material.color.r = currentValue;
-        meshTarget.material.color.g = currentValue;
-        meshTarget.material.color.b = currentValue;
-
-        currentValue += 0.5 / duration;
-        currentTime++;
-
-        this.renderer.render(this.scene, this.camera);
-
-        if (currentTime < duration) requestAnimationFrame(lowlightTransition);
-    }
-
-    requestAnimationFrame(lowlightTransition);
+    await this.changeHighlight(this.intersectedPart, 0.5, 1.0, duration);
 
     this.intersectedPart = "";
 
@@ -639,6 +597,43 @@ ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
     this.trigger("lowlighted");
 
     this.render();
+};
+
+ripe.ConfiguratorCSR.prototype.changeHighlight = async function(part, startValue, endValue, duration) {
+    var startingValue = startValue;
+    var meshTarget = null;
+    
+    var startTime = Date.now();
+    var currentTime = 0;
+
+    for (var mesh in this.meshes) {
+        if (this.meshes[mesh].name === part) {
+            meshTarget = this.meshes[mesh];
+            startingValue = meshTarget.material.color.r;
+        }
+    }
+
+    var currentValue = startingValue;
+
+    const changeHighlightTransition = () => {
+        meshTarget.material.color.r = currentValue;
+        meshTarget.material.color.g = currentValue;
+        meshTarget.material.color.b = currentValue;
+
+        currentTime = Date.now() - startTime;
+        currentValue = this.linearTween(currentTime, startingValue, endValue, duration);
+        
+        this.renderer.render(this.scene, this.camera);
+
+        if (currentTime < duration) requestAnimationFrame(changeHighlightTransition);
+    }
+
+    requestAnimationFrame(changeHighlightTransition)
+}
+
+ripe.ConfiguratorCSR.prototype.linearTween = function (currentTime, startValue, endValue, duration) {
+    var change = endValue - startValue;
+    return change * currentTime / duration + startValue;
 };
 
 /**
@@ -713,8 +708,8 @@ ripe.ConfiguratorCSR.prototype._initLayout = function () {
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
-    window.onresize = function (event) {
-        if (this.element) this.elementBoundingBox = this.element.getBoundingClientRect();
+    window.onresize = () => {
+        this.resize();
     };
 };
 
@@ -942,13 +937,10 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
 };
 
 ripe.ConfiguratorCSR.prototype._attemptRaycast = function (mouseEvent) {
-    if (
-        !this.elementBoundingBox ||
-        this.element.classList.contains("animating") ||
-        this.element.classList.contains("drag")
-    ) {
-        return;
-    }
+    const animating = this.element.classList.contains("animating");
+    const dragging = this.element.classList.contains("drag");
+    
+    if (!this.elementBoundingBox || animating || dragging) return;
 
     const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
 
@@ -1399,7 +1391,6 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     this.renderer.clear();
 
     const crossfadeFunction = () => {
-        console.log("Transition render")
         this.renderer.render(this.scene, transitionCamera);
 
         mixRatio += 1.0 / duration;
