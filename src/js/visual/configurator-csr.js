@@ -1150,8 +1150,8 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
 
             "void main() {",
 
-            "vUv = vec2( uv.x, uv.y );",
-            "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+            "     vUv = vec2( uv.x, uv.y );",
+            "     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
 
             "}"
         ].join("\n"),
@@ -1331,20 +1331,22 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
         100
     );
 
+    //transitionCamera = new this.library.PerspectiveCamera(this.cameraFOV, width / height, 1, 20000);
+
     transitionCamera.position.x = this.camera.position.x;
     transitionCamera.position.y = this.camera.position.y;
     transitionCamera.position.z = this.camera.position.z;
-    transitionCamera.lookAt(this.cameraTarget);
+    //transitionCamera.lookAt(this.cameraTarget);
 
     var previousSceneFBO = new this.library.WebGLRenderTarget(
-        this.elementBoundingBox.width,
-        this.elementBoundingBox.height,
+        width,
+        height,
         renderTargetParameters
     );
 
     var currentSceneFBO = new this.library.WebGLRenderTarget(
-        this.elementBoundingBox.width,
-        this.elementBoundingBox.height,
+        width,
+        height,
         renderTargetParameters
     );
 
@@ -1357,8 +1359,8 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
     var quadGeometry = new this.library.PlaneBufferGeometry(
-        this.elementBoundingBox.width,
-        this.elementBoundingBox.height
+        width,
+        height
     );
     var quad = new this.library.Mesh(quadGeometry, this.crossfadeShader);
     quad.position.z = 1;
