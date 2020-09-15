@@ -26,7 +26,7 @@ if (
  * @param {Object} options The options to be used to configure the
  * configurator instance to be created.
  */
-ripe.ConfiguratorCSR = function(owner, element, options) {
+ripe.ConfiguratorCSR = function (owner, element, options) {
     this.type = this.type || "ConfiguratorCSR";
 
     ripe.Visual.call(this, owner, element, options);
@@ -42,7 +42,7 @@ ripe.ConfiguratorCSR.prototype.constructor = ripe.ConfiguratorCSR;
  * Sets the various values for the Configurator taking into
  * owner's default values.
  */
-ripe.ConfiguratorCSR.prototype.init = function() {
+ripe.ConfiguratorCSR.prototype.init = function () {
     ripe.Visual.prototype.init.call(this);
 
     this.width = this.options.width || 1000;
@@ -82,6 +82,11 @@ ripe.ConfiguratorCSR.prototype.init = function() {
 
     this.maximumVerticalRot = this.options.maximumVerticalRot || 90;
     this.minimumVerticalRot = this.options.minimumVerticalRot || 0;
+
+    this.horizontalRot = this._positionToRotation(this.position);
+    this._currentHorizontalRot = this.horizontalRot;
+    this.verticalRot = 0;
+    this._currentVerticalRot = this.verticalRot;
 
     this.meshPath = this.options.meshPath || undefined;
     this.library = this.options.library || null;
@@ -147,84 +152,8 @@ ripe.ConfiguratorCSR.prototype.init = function() {
  * Converts the position of the element to a rotation that can be applied to
  * the model or the camera;
  */
-ripe.ConfiguratorCSR.prototype._positionToRotation = function() {
-    const position = this.element.dataset.position;
-
-    return (position / 24) * Math.PI * 2;
-};
-
-/**
- * Set the rotations of both the camera and meshes according to the
- * current view and position.
- */
-ripe.ConfiguratorCSR.prototype._setPositionalRotations = function() {
-    // rotation is appled
-    var newRotation = this._positionToRotation();
-
-    for (var mesh in this.meshes) {
-        this.meshes[mesh].rotation.y = newRotation;
-    }
-
-    this.horizontalRot = newRotation;
-    this._currentHorizontalRot = newRotation;
-
-    if (this.element.dataset.view === "side") {
-        // TODO Use previous position
-        this._currentVerticalRot = 0;
-        this.verticalRot = 0;
-    } else if (this.element.dataset.view === "top") {
-        this._currentVerticalRot = 90;
-        this.verticalRot = 90;
-    }
-
-    this._rotateCamera();
-};
-
-/**
- * Sets the rotation of the camera and meshes based on their current
- * continuous rotation.
- */
-ripe.ConfiguratorCSR.prototype._setContinuousRotations = function() {
-    var needsUpdate = false;
-
-    // horizontal rotation is done by rotating the meshes, vertical
-    // is done to the camera, easier to avoid any problems with rotation
-    if (this.meshes && this.horizontalRot - this.mouseDeltaX !== this._currentHorizontalRot) {
-        this._currentHorizontalRot = this.horizontalRot - this.mouseDeltaX;
-
-        needsUpdate = true;
-        var allowedRotation = this.maximumHorizontalRot - this.minimumHorizontalRot;
-
-        for (var mesh in this.meshes) {
-            this.meshes[mesh].rotation.y =
-                (this._currentHorizontalRot / allowedRotation) * Math.PI * 2;
-        }
-    }
-
-    if (this.camera && this.verticalRot + this.mouseDeltaY !== this._currentVerticalRot) {
-        var diff = this.mouseDeltaY;
-
-        if (this.mouseDeltaY >= this.maximumVerticalRot - this.verticalRot) {
-            diff = this.mouseDeltaY - (this.maximumVerticalRot - this.verticalRot);
-
-            this.referenceY -= diff;
-            this.mouseDeltaY += diff;
-        } else if (this.mouseDeltaY <= this.minimumVerticalRot - this.verticalRot) {
-            diff = this.mouseDeltaY + (this.minimumVerticalRot + this.verticalRot);
-
-            this.referenceY -= diff;
-            this.mouseDeltaY += diff;
-        } else {
-            // only rotate the camera when the input doesn't exceed the maximum allower rotation
-            this._currentVerticalRot = this.verticalRot + this.mouseDeltaY;
-
-            this._rotateCamera();
-
-            needsUpdate = true;
-        }
-    }
-
-    return needsUpdate;
+ripe.ConfiguratorCSR.prototype._positionToRotation = function (position) {
+    return (position / 24) * 360;
 };
 
 /**
@@ -232,7 +161,7 @@ ripe.ConfiguratorCSR.prototype._setContinuousRotations = function() {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.ConfiguratorCSR.prototype.deinit = async function() {
+ripe.ConfiguratorCSR.prototype.deinit = async function () {
     await this.cancel();
 
     while (this.element.firstChild) {
@@ -259,7 +188,7 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
  * Disposes all the stored resources to avoid memory leaks. Includes meshes,
  * geometries and materials.
  */
-ripe.ConfiguratorCSR.prototype._disposeResources = function() {
+ripe.ConfiguratorCSR.prototype._disposeResources = function () {
     if (this.meshes) {
         for (var mesh in this.meshes) {
             this.scene.remove(this.meshes[mesh]);
@@ -285,7 +214,7 @@ ripe.ConfiguratorCSR.prototype._disposeResources = function() {
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
  */
-ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = true) {
+ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
     if (options.meshPath && this.meshPath !== options.meshPath) {
@@ -341,7 +270,7 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = 
  * - 'preload' - If it's to execute the pre-loading process.
  * - 'force' - If the updating operation should be forced (ignores signature).
  */
-ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
+ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     // in case the configurator is currently nor ready for an
     // update none is performed and the control flow is returned
     // with the false value (indicating a no-op, nothing was done)
@@ -360,16 +289,12 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
 
-    // Checks if the rotation of the model has changed
-    if (!dragging && animating) {
-        this._setPositionalRotations();
-
-        needsUpdate = true;
-    } else {
+    // If the user is dragging
+    if (dragging) {
         needsUpdate = this._setContinuousRotations();
     }
 
-    if (!animating) {
+    if (options["reason"] === "set parts" || options["reason"] === "set part") {
         await this._assignMaterials();
         await this.transition({ type: "material" });
     }
@@ -385,22 +310,103 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     return true;
 };
 
-ripe.ConfiguratorCSR.prototype._rotateCamera = function() {
+/**
+ * Set the rotations of both the camera and meshes according to the
+ * current view and position.
+ */
+/*
+ripe.ConfiguratorCSR.prototype._setPositionalRotations = function () {
+    // rotation is appled
+    var newRotation = this._positionToRotation();
+
+    for (var mesh in this.meshes) {
+        this.meshes[mesh].rotation.y = newRotation;
+    }
+
+    this.horizontalRot = newRotation;
+    this._currentHorizontalRot = newRotation;
+
+    if (this.element.dataset.view === "side") {
+        // TODO Use previous position
+        this._currentVerticalRot = 0;
+        this.verticalRot = 0;
+    } else if (this.element.dataset.view === "top") {
+        this._currentVerticalRot = Math.PI / 2;
+        this.verticalRot = Math.PI / 2;
+    }
+
+    this._rotateCamera();
+};
+*/
+
+/**
+ * Sets the rotation of the camera and meshes based on their current
+ * continuous rotation.
+ */
+ripe.ConfiguratorCSR.prototype._setContinuousRotations = function () {
+    var needsUpdate = false;
+
+    // horizontal rotation is done by rotating the meshes, vertical
+    // is done to the camera, easier to avoid any problems with rotation
+    if (this.meshes && this.horizontalRot - this.mouseDeltaX !== this._currentHorizontalRot) {
+        this._currentHorizontalRot = this.horizontalRot - this.mouseDeltaX;
+
+        needsUpdate = true;
+
+        this._rotateMeshes();
+    }
+
+    if (this.camera && this.verticalRot + this.mouseDeltaY !== this._currentVerticalRot) {
+        if (this.mouseDeltaY >= this.maximumVerticalRot - this.verticalRot) {
+            var diff = this.mouseDeltaY - (this.maximumVerticalRot - this.verticalRot);
+
+            this.referenceY -= diff;
+            this.mouseDeltaY += diff;
+        } else if (this.mouseDeltaY <= this.minimumVerticalRot - this.verticalRot) {
+            var diff = this.mouseDeltaY + (this.minimumVerticalRot + this.verticalRot);
+
+            this.referenceY -= diff;
+            this.mouseDeltaY += diff;
+        } else {
+            // only rotate the camera when the input doesn't exceed the maximum allower rotation
+            this._currentVerticalRot = this.verticalRot + this.mouseDeltaY;
+
+            this._rotateCamera();
+
+            needsUpdate = true;
+        }
+    }
+
+    return needsUpdate;
+};
+
+ripe.ConfiguratorCSR.prototype._rotateMeshes = function () {
+    var allowedRotation = this.maximumHorizontalRot - this.minimumHorizontalRot;
+
+    for (var mesh in this.meshes) {
+        this.meshes[mesh].rotation.y = ripe.deg2rad((this._currentHorizontalRot / allowedRotation) * 360);
+    }
+}
+
+ripe.ConfiguratorCSR.prototype._rotateCamera = function () {
     var maxHeight = this.cameraDistance - this.cameraHeight;
+
+    var radVerticalRot = ripe.deg2rad(this._currentVerticalRot);
+
     this.camera.position.y =
-        this.cameraHeight + maxHeight * Math.sin((Math.PI / 2 / 90) * this._currentVerticalRot);
+        this.cameraHeight + maxHeight * Math.sin((Math.PI / 2 / 90) * radVerticalRot);
     this.camera.position.z =
-        this.cameraDistance * Math.cos((Math.PI / 2 / 90) * this._currentVerticalRot);
+        this.cameraDistance * Math.cos((ripe.deg2rad(this.minimumVerticalRot)) * radVerticalRot);
     this.camera.lookAt(this.cameraTarget);
 
     // this.meshes[mesh].rotation.y = this._currentHorizontalRot / 360 * Math.PI * 2;
 };
 
-ripe.ConfiguratorCSR.prototype.disable = function() {
+ripe.ConfiguratorCSR.prototype.disable = function () {
     this._enabled = false;
 };
 
-ripe.ConfiguratorCSR.prototype.enable = function() {
+ripe.ConfiguratorCSR.prototype.enable = function () {
     this._enabled = true;
 };
 
@@ -410,7 +416,7 @@ ripe.ConfiguratorCSR.prototype.enable = function() {
  *
  * @param {Object} options Set of optional parameters to adjust the Configurator.
  */
-ripe.ConfiguratorCSR.prototype.cancel = async function(options = {}) {
+ripe.ConfiguratorCSR.prototype.cancel = async function (options = {}) {
     if (this._buildSignature() === this.signature || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
     return true;
@@ -423,7 +429,7 @@ ripe.ConfiguratorCSR.prototype.cancel = async function(options = {}) {
  *
  * @param {Number} size The number of pixels to resize to.
  */
-ripe.ConfiguratorCSR.prototype.resize = async function(size) {
+ripe.ConfiguratorCSR.prototype.resize = async function (size) {
     if (this.element === undefined) {
         return;
     }
@@ -461,30 +467,7 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
     );
 };
 
-/**
- * Displays a new frame, with an animation from the starting frame
- * proper animation should be performed.
- *
- * This function is meant to be executed using a recursive approach
- * and each run represents a "tick" of the animation operation.
- *
- * @param {Object} frame The new frame to display using the extended and canonical
- * format for the frame description (eg: side-3).
- * @param {Object} options Set of optional parameters to adjust the change frame, such as:
- * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or 'null'
- * (without any style).
- * - 'duration' - The duration of the animation in milliseconds (defaults to 'null').
- * - 'stepDuration' - If defined the total duration of the animation is
- * calculated using the amount of steps times the number of steps, instead of
- * using the 'duration' field (defaults to 'null').
- * - 'revolutionDuration' - If defined the step duration is calculated by dividing
- * the revolution duration by the number of frames in the view (defaults to 'null').
- * - 'preventDrag' - If drag actions during an animated change of frames should be
- * ignored (defaults to 'true').
- * - 'safe' - If requested then the operation is only performed in case the configurator
- * is not in the an equivalent state (default to 'true').
- */
-ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {}) {
+ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}) {
     // Disabled Configurator, changing frame will lead to errors
     if (!this._enabled) return;
 
@@ -493,12 +476,8 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {})
     const _frame = ripe.parseFrameKey(frame);
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
-
-    // in case the next position value was not properly parsed (probably undefined)
-    // then it's not possible to change frame (throws exception)
-    if (isNaN(nextPosition)) {
-        throw new RangeError("Frame position is not defined");
-    }
+    const position = this.element.dataset.position;
+    
 
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
@@ -508,235 +487,53 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {})
         options.revolutionDuration === undefined
             ? this.revolutionDuration
             : options.revolutionDuration;
-    let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
-    const safe = options.safe === undefined ? true : options.safe;
-    const first = options.first === undefined ? true : options.first;
+    //const type = options.type === undefined ? null : options.type;
 
-    // updates the animation start timestamp with the current timestamp in
-    // case no start time is currently defined
-    options._start = options._start === undefined ? new Date().getTime() : options._start;
-    options._step = options._step === undefined ? 0 : options._step;
+    const dragging = this.element.classList.contains("drag");
 
-    // normalizes both the (current) view and position values
-    const view = this.element.dataset.view;
-    const position = parseInt(this.element.dataset.position);
+    // TODO Use time here
+    var currentTransition = 0;
+    const transition = () => {
+        console.log(this._currentHorizontalRot, currentRotation, finalRotation, step);
+        this._currentHorizontalRot += step;
 
-    // tries to retrieve the amount of frames for the target view and
-    // validates that the target view exists and that the target position
-    // (frame) does not overflow the amount of frames in for the view
-    const viewFrames = this.frames[nextView];
-    if (!viewFrames || nextPosition >= viewFrames) {
-        throw new RangeError("Frame " + frame + " is not supported");
+        if (currentTransition < 24) {
+            currentTransition++;
+            this._rotateMeshes();
+            this.render();
+            requestAnimationFrame(transition);
+        } else {
+            this.horizontalRot = this._currentHorizontalRot;
+            this.element.classList.remove("animating");
+            this.element.classList.remove("no-drag");
+        }
     }
 
-    // in case the safe mode is enabled and there's an animation running
-    // then this request is going to be ignored (not possible to change
-    // frame when another animation is running)
-    if (safe && this.element.classList.contains("animating")) {
-        return;
-    }
+    if (position !== nextPosition) {
+        
+        var currentRotation = this._positionToRotation(position);
+        var finalRotation = this._positionToRotation(nextPosition);
 
-    /*
-    // in case the current view and position are already set then returns
-    // the control flow immediately (animation safeguard)
-    if (safe && this.element.dataset.view === nextView && position === nextPosition) {
-        this.element.classList.remove("no-drag", "animating");
-        return;
-    }
-    */
-
-    // removes any part highlight in case it is set
-    // to replicate the behaviour of dragging the product
-    this.lowlight();
-
-    // saves the position of the current view
-    // so that it returns to the same position
-    // when coming back to the same view
-    this._lastFrame[view] = position;
-    this.position = nextPosition;
-    this.element.dataset.position = nextPosition;
-
-    // saves the position of the current view
-    // so that it returns to the same position
-    // when coming back to the same view
-    this._lastFrame[view] = position;
-    this.position = nextPosition;
-    this.element.dataset.position = nextPosition;
-
-    // if there is a new view and the product supports
-    // it then animates the transition with a crossfade
-    // and ignores all drag movements while it lasts
-    let animate = false;
-    if (view !== nextView && viewFrames !== undefined) {
-        return;
-    }
-
-    // runs the defaulting values for the current step duration
-    // and the next position that is going to be rendered
-    let stepDuration = null;
-    let stepPosition = nextPosition;
-
-    // sets the initial time reduction to be applied for the frame
-    // based animation (rotation), this value should be calculated
-    // taking into account the delay in the overall animation
-    let reducedTime = 0;
-
-    // in case any kind of duration was provided a timed animation
-    // should be performed and as such a proper calculus should be
-    // performed to determine the current step duration an the position
-    // associated with the current step operation
-    if (view === nextView && (duration || stepDurationRef || revolutionDuration)) {
-        // ensures that no animation on a pre-frame render exists
-        // the animation itself is going to be "managed" by the
-        // the change frame tick logic
-        animate = null;
-
-        // calculates the number of steps as the shortest path
-        // between the current and the next position, this should
-        // choose the proper way for the "rotation"
-        const stepCount =
-            view !== nextView
-                ? 1
-                : Math.min(
-                      Math.abs(position - nextPosition),
-                      viewFrames - Math.abs(position - nextPosition)
-                  );
-        options._stepCount = options._stepCount === undefined ? stepCount : options._stepCount;
-
-        // in case the (total) revolution time for the view is defined a
-        // step timing based animation is calculated based on the total
-        // number of frames for the view
-        if (revolutionDuration && first) {
-            // makes sure that we're able to find out the number of frames
-            // for the next view from the current loaded model, only then
-            // can the step duration be calculated, by dividing the total
-            // duration of the revolution by the number of frames of the view
-            if (viewFrames) {
-                stepDurationRef = parseInt(revolutionDuration / viewFrames);
-            }
-            // otherwise runs a fallback operation where the total duration
-            // of the animation is the revolution time (sub optimal fallback)
-            else {
-                duration = duration || revolutionDuration;
-            }
+        var step;
+        if (currentRotation + Math.PI > finalRotation) {
+            step = (finalRotation - currentRotation) / 24;
+        } else {
+            step = (currentRotation - finalRotation) / 24;
         }
 
-        // in case the options contain the step duration (reference) field
-        // then it's used to calculate the total duration of the animation
-        // (step driven animation timing)
-        if (stepDurationRef && first) {
-            duration = stepDurationRef * stepCount;
+        // only if the thing
+        if (!dragging) {
+            requestAnimationFrame(transition)
+            this.element.classList.add("animating");
+            this.element.classList.add("no-drag");
         }
 
-        // in case the end (target) timestamp is not yet defined then
-        // updates the value with the target duration
-        options._end = options._end === undefined ? options._start + duration : options._end;
-
-        // determines the duration (in seconds) for each step taking
-        // into account the complete duration and the number of steps
-        stepDuration = duration / Math.abs(stepCount);
-        options.duration = duration - stepDuration;
-
-        // in case no step duration has been defined defines one as that's relevant
-        // to be able to calculate expected time at this point in time and then
-        // calculate the amount of time and frames to skip
-        options._stepDuration =
-            options._stepDuration === undefined ? stepDuration : options._stepDuration;
-
-        // calculates the expected timestamp for the current position in
-        // time and then the delay against it (for proper frame dropping)
-        const expected = options._start + options._step * options._stepDuration;
-        const delay = Math.max(new Date().getTime() - expected, 0);
-
-        // calculates the number of frames that have to be skipped to re-catch
-        // the animation back to the expect time-frame
-        const frameSkip = Math.floor(delay / stepDuration);
-        reducedTime = delay % stepDuration;
-        const stepSize = frameSkip + 1;
-
-        // calculates the delta in terms of steps taking into account
-        // if any frame should be skipped in the animation
-        const nextStep = Math.min(options._stepCount, options._step + stepSize);
-        const delta = Math.min(stepSize, nextStep - options._step);
-        options._step = nextStep;
-
-        // checks if it should rotate in the positive or negative direction
-        // according to the current view definition and then calculates the
-        // next position taking into account that definition
-        const goPositive = (position + stepCount) % viewFrames === nextPosition;
-        stepPosition =
-            stepCount !== 0 ? (goPositive ? position + delta : position - delta) : position;
-
-        // wrap around as needed (avoiding index overflow)
-        stepPosition = stepPosition < 0 ? viewFrames + stepPosition : stepPosition;
-        stepPosition = stepPosition % viewFrames;
-
-        // updates the position according to the calculated one on
-        // the dataset, the next update operation should trigger
-        // the appropriate update on the visual resources
-        this.position = stepPosition;
-        this.element.dataset.position = stepPosition;
     }
 
-    // sets the initial values for the start of the animation, allows
-    // control of the current animation (and exclusive lock)
-    this.element.classList.add("animating");
+    await this.update();
 
-    // if the prevent drag is set and there's an animation then
-    // ignores drag movements until the animation is finished
-    preventDrag = preventDrag && (animate || duration);
-    if (preventDrag) this.element.classList.add("no-drag");
-
-    // calculates the amount of time that the current operation is
-    // going to sleep to able to correctly address the animation sequence
-    // (valid only for no animation scenarios, no cross fade) if this
-    // sleep time is valid (greater than zero) tuns the async based
-    // await operation for the amount of time
-    const sleepTime = animate ? 0 : stepDuration - reducedTime;
-    if (sleepTime > 0) {
-        await new Promise(resolve => setTimeout(() => resolve(), sleepTime));
-    }
-    // in case there's a mesh defined in the current instance then applies
-    // a rotation around the Y axis
-    const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    this.trigger("changed_frame", newFrame);
-
-    try {
-        // runs the update operation that should sync the visuals of the
-        // configurator according to the current internal state (in data)
-        // this operation waits for the proper drawing of the image (takes
-        // some time and resources to be completed)
-        await this.update(
-            {},
-            {
-                animate: animate,
-                duration: animate ? duration : 0
-            }
-        );
-    } catch (err) {
-        // removes the locking classes as the current operation has been
-        // finished, effectively re-allowing: dragging and animated operations
-        // and then re-throws the exception caused by update
-        this.element.classList.remove("no-drag", "animating");
-        throw err;
-    }
-
-    // in case the change frame operation has been completed
-    // target view and position has been reached, then it's
-    // time collect the garbage and return control flow
-    if (view === nextView && stepPosition === nextPosition) {
-        this.element.classList.remove("no-drag", "animating");
-        return;
-    }
-
-    // creates a new options instance that is going to be used in the
-    // possible next tick of the operation
-    options = Object.assign({}, options, { safe: false, first: false });
-
-    // runs the next tick operation to change the frame of the current
-    // configurator to the next one (iteration cycle)
-    await this.changeFrame(frame, options);
-};
+    this.element.dataset.position = nextPosition;
+}
 
 /**
  * Highlights a model's part, showing a dark mask on top of the such referred
@@ -745,7 +542,7 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {})
  * @param {String} part The part of the model that should be highlighted.
  * @param {Object} options Set of optional parameters to adjust the highlighting.
  */
-ripe.ConfiguratorCSR.prototype.highlight = function(part, options = {}) {
+ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -756,11 +553,9 @@ ripe.ConfiguratorCSR.prototype.highlight = function(part, options = {}) {
         return;
     }
 
-    var scene = this.scene;
-    var renderer = this.renderer;
-    var camera = this.camera;
     var currentValue = 1.0;
     var meshTarget = null;
+    // TODO Use time here
     var duration = 24;
     var currentTime = 0;
 
@@ -770,7 +565,7 @@ ripe.ConfiguratorCSR.prototype.highlight = function(part, options = {}) {
         }
     }
 
-    function highlightTransition() {
+    const highlightTransition = () => {
         meshTarget.material.color.r = currentValue;
         meshTarget.material.color.g = currentValue;
         meshTarget.material.color.b = currentValue;
@@ -778,7 +573,7 @@ ripe.ConfiguratorCSR.prototype.highlight = function(part, options = {}) {
         currentValue -= 0.5 / duration;
         currentTime++;
 
-        renderer.render(scene, camera);
+        this.renderer.render(this.scene, this.camera);
 
         if (currentTime < duration) requestAnimationFrame(highlightTransition);
     }
@@ -793,7 +588,7 @@ ripe.ConfiguratorCSR.prototype.highlight = function(part, options = {}) {
  * @param {String} part The part to lowlight.
  * @param {Object} options Set of optional parameters to adjust the lowlighting.
  */
-ripe.ConfiguratorCSR.prototype.lowlight = function(options) {
+ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
 
@@ -811,11 +606,9 @@ ripe.ConfiguratorCSR.prototype.lowlight = function(options) {
         return;
     }
 
-    var scene = this.scene;
-    var renderer = this.renderer;
-    var camera = this.camera;
     var currentValue = 0.5;
     var meshTarget = null;
+    // TODO Use time here
     var duration = 12;
     var currentTime = 0;
 
@@ -825,7 +618,7 @@ ripe.ConfiguratorCSR.prototype.lowlight = function(options) {
         }
     }
 
-    function lowlightTransition() {
+    const lowlightTransition = () => {
         meshTarget.material.color.r = currentValue;
         meshTarget.material.color.g = currentValue;
         meshTarget.material.color.b = currentValue;
@@ -833,7 +626,7 @@ ripe.ConfiguratorCSR.prototype.lowlight = function(options) {
         currentValue += 0.5 / duration;
         currentTime++;
 
-        renderer.render(scene, camera);
+        this.renderer.render(this.scene, this.camera);
 
         if (currentTime < duration) requestAnimationFrame(lowlightTransition);
     }
@@ -854,7 +647,7 @@ ripe.ConfiguratorCSR.prototype.lowlight = function(options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorCSR.prototype.enterFullscreen = async function(options) {
+ripe.ConfiguratorCSR.prototype.enterFullscreen = async function (options) {
     if (this.element === undefined) {
         return;
     }
@@ -868,7 +661,7 @@ ripe.ConfiguratorCSR.prototype.enterFullscreen = async function(options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function(options) {
+ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function (options) {
     if (this.element === undefined) {
         return;
     }
@@ -879,14 +672,14 @@ ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function(options) {
 /**
  * Turns on (enables) the masks on selection/highlight.
  */
-ripe.ConfiguratorCSR.prototype.enableMasks = function() {
+ripe.ConfiguratorCSR.prototype.enableMasks = function () {
     this.useMasks = true;
 };
 
 /**
  * Turns off (disables) the masks on selection/highlight.
  */
-ripe.ConfiguratorCSR.prototype.disableMasks = function() {
+ripe.ConfiguratorCSR.prototype.disableMasks = function () {
     this.useMasks = false;
 };
 
@@ -901,7 +694,7 @@ ripe.ConfiguratorCSR.prototype.disableMasks = function() {
  *
  * @private
  */
-ripe.ConfiguratorCSR.prototype._initLayout = function() {
+ripe.ConfiguratorCSR.prototype._initLayout = function () {
     // clears the elements children
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -921,7 +714,7 @@ ripe.ConfiguratorCSR.prototype._initLayout = function() {
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
-    window.onresize = function(event) {
+    window.onresize = function (event) {
         if (this.element) this.elementBoundingBox = this.element.getBoundingClientRect();
     };
 };
@@ -929,7 +722,7 @@ ripe.ConfiguratorCSR.prototype._initLayout = function() {
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
+ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
@@ -997,7 +790,7 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
+ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
     // captures the current context to be used inside clojures
     const self = this;
 
@@ -1007,7 +800,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
 
     // binds the mousedown event on the element to prepare
     // it for drag movements
-    this._addElementHandler("mousedown", function(event) {
+    this._addElementHandler("mousedown", function (event) {
         const _element = this;
         _element.dataset.view = _element.dataset.view || "side";
         self.base = parseInt(_element.dataset.position) || 0;
@@ -1020,7 +813,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
 
     // listens for mouseup events and if it occurs then
     // stops reacting to mouse move events has drag movements
-    this._addElementHandler("mouseup", function(event) {
+    this._addElementHandler("mouseup", function (event) {
         const _element = this;
         self.down = false;
         self.previous = self.percent;
@@ -1031,10 +824,12 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
 
         // Apply rotation to model
         self.horizontalRot = self._currentHorizontalRot;
+        self._currentHorizontalRot = self.horizontalRot;
         self.mouseDeltaX = 0;
 
         // Apply rotation to camera
         self.verticalRot = self._currentVerticalRot;
+        self._currentVerticalRot = self.verticalRot;
         self.mouseDeltaY = 0;
 
         self._attemptRaycast(event);
@@ -1042,7 +837,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
 
     // listens for mouse leave events and if it occurs then
     // stops reacting to mousemove events has drag movements
-    this._addElementHandler("mouseleave", function(event) {
+    this._addElementHandler("mouseleave", function (event) {
         const _element = this;
         self.down = false;
         self.previous = self.percent;
@@ -1052,7 +847,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
-    this._addElementHandler("mousemove", function(event) {
+    this._addElementHandler("mousemove", function (event) {
         if (!this.classList.contains("ready") || this.classList.contains("no-drag")) {
             return;
         }
@@ -1063,7 +858,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
         if (down) self._parseDrag();
     });
 
-    area.addEventListener("click", function(event) {
+    area.addEventListener("click", function (event) {
         // verifies if the previous drag operation (if any) has exceed
         // the minimum threshold to be considered drag (click avoided)
         if (Math.abs(self.previous) > self.clickThreshold) {
@@ -1082,7 +877,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
         event.stopPropagation();
     });
 
-    area.addEventListener("mousemove", function(event) {
+    area.addEventListener("mousemove", function (event) {
         const preloading = self.element.classList.contains("preloading");
         const animating = self.element.classList.contains("animating");
         if (preloading || animating) {
@@ -1101,11 +896,11 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
         self._attemptRaycast(event);
     });
 
-    area.addEventListener("dragstart", function(event) {
+    area.addEventListener("dragstart", function (event) {
         event.preventDefault();
     });
 
-    area.addEventListener("dragend", function(event) {
+    area.addEventListener("dragend", function (event) {
         event.preventDefault();
     });
 
@@ -1123,12 +918,12 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
             null;
         this._observer = Observer
             ? new Observer(mutations => {
-                  for (let index = 0; index < mutations.length; index++) {
-                      const mutation = mutations[index];
-                      if (mutation.type === "style") self.resize();
-                      if (mutation.type === "attributes") self.update();
-                  }
-              })
+                for (let index = 0; index < mutations.length; index++) {
+                    const mutation = mutations[index];
+                    if (mutation.type === "style") self.resize();
+                    if (mutation.type === "attributes") self.update();
+                }
+            })
             : null;
         if (this._observer) {
             this._observer.observe(this.element, {
@@ -1147,7 +942,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
     ripe.touchHandler(this.element);
 };
 
-ripe.ConfiguratorCSR.prototype._attemptRaycast = function(mouseEvent) {
+ripe.ConfiguratorCSR.prototype._attemptRaycast = function (mouseEvent) {
     if (
         !this.elementBoundingBox ||
         this.element.classList.contains("animating") ||
@@ -1179,7 +974,7 @@ ripe.ConfiguratorCSR.prototype._attemptRaycast = function(mouseEvent) {
     }
 };
 
-ripe.ConfiguratorCSR.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent) {
+ripe.ConfiguratorCSR.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
     const newX =
@@ -1189,7 +984,7 @@ ripe.ConfiguratorCSR.prototype._getNormalizedCoordinatesRaycast = function(mouse
             (mouseEvent.y - this.elementBoundingBox.y + window.scrollY) /
             this.elementBoundingBox.height
         ) *
-            2 +
+        2 +
         1;
 
     return {
@@ -1201,7 +996,7 @@ ripe.ConfiguratorCSR.prototype._getNormalizedCoordinatesRaycast = function(mouse
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._parseDrag = function() {
+ripe.ConfiguratorCSR.prototype._parseDrag = function () {
     // retrieves the last recorded mouse position
     // and the current one and calculates the
     // drag movement made by the user
@@ -1259,7 +1054,7 @@ ripe.ConfiguratorCSR.prototype._parseDrag = function() {
  *
  * @returns {String} The unique signature for the configurator state.
  */
-ripe.ConfiguratorCSR.prototype._buildSignature = function() {
+ripe.ConfiguratorCSR.prototype._buildSignature = function () {
     const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
@@ -1270,7 +1065,7 @@ ripe.ConfiguratorCSR.prototype._buildSignature = function() {
     )}&format=${String(format)}&background=${String(backgroundColor)}`;
 };
 
-ripe.ConfiguratorCSR.prototype._initializeLights = function() {
+ripe.ConfiguratorCSR.prototype._initializeLights = function () {
     const keyLight = new this.library.PointLight(0xffffff, 2.2, 18);
     keyLight.position.set(2, 2, 2);
     keyLight.castShadow = true;
@@ -1297,7 +1092,7 @@ ripe.ConfiguratorCSR.prototype._initializeLights = function() {
     this.lights = [keyLight, fillLight, rimLight, ambientLight];
 };
 
-ripe.ConfiguratorCSR.prototype._initializeRenderer = function() {
+ripe.ConfiguratorCSR.prototype._initializeRenderer = function () {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
     this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
@@ -1314,15 +1109,24 @@ ripe.ConfiguratorCSR.prototype._initializeRenderer = function() {
     area.appendChild(this.renderer.domElement);
 };
 
-ripe.ConfiguratorCSR.prototype._initializeCamera = function() {
+ripe.ConfiguratorCSR.prototype._initializeCamera = function () {
     const width = this.element.getBoundingClientRect().width;
     const height = this.element.getBoundingClientRect().height;
 
     this.camera = new this.library.PerspectiveCamera(this.cameraFOV, width / height, 1, 20000);
     this.camera.position.set(0, this.cameraHeight, this.cameraDistance);
+
+    if (this.element.dataset.view === "side") {
+        // TODO Use previous position
+        this._currentVerticalRot = 0;
+        this.verticalRot = 0;
+    } else if (this.element.dataset.view === "top") {
+        this._currentVerticalRot = Math.PI / 2;
+        this.verticalRot = Math.PI / 2;
+    }
 };
 
-ripe.ConfiguratorCSR.prototype.populateScene = function(scene) {
+ripe.ConfiguratorCSR.prototype.populateScene = function (scene) {
     for (let i = 0; i < this.lights.length; i++) {
         scene.add(this.lights[i]);
     }
@@ -1332,7 +1136,7 @@ ripe.ConfiguratorCSR.prototype.populateScene = function(scene) {
     // scene.add(this.floorMesh);
 };
 
-ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function() {
+ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function () {
     this.loadedMaterials.default = new this.library.MeshPhongMaterial({ color: "#ffffff" });
 
     this.crossfadeShader = new this.library.ShaderMaterial({
@@ -1380,7 +1184,7 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function(
     });
 };
 
-ripe.ConfiguratorCSR.prototype._loadMaterial = async function(material, color) {
+ripe.ConfiguratorCSR.prototype._loadMaterial = async function (material, color) {
     // Loadedmaterials store threejs materials in the format
     if (this.loadedMaterials[material + "_" + color]) {
         return;
@@ -1394,25 +1198,25 @@ ripe.ConfiguratorCSR.prototype._loadMaterial = async function(material, color) {
     var aoMapPath = this.getTexturePath(material, color, "ao");
 
     const diffuseTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(diffuseMapPath, function(texture) {
+        textureLoader.load(diffuseMapPath, function (texture) {
             resolve(texture);
         });
     });
 
     const roughnessTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(roughnessMapPath, function(texture) {
+        textureLoader.load(roughnessMapPath, function (texture) {
             resolve(texture);
         });
     });
 
     const normalTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(normalMapPath, function(texture) {
+        textureLoader.load(normalMapPath, function (texture) {
             resolve(texture);
         });
     });
 
     const aoTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(aoMapPath, function(texture) {
+        textureLoader.load(aoMapPath, function (texture) {
             resolve(texture);
         });
     });
@@ -1443,11 +1247,11 @@ ripe.ConfiguratorCSR.prototype._loadMaterial = async function(material, color) {
     this.loadedMaterials[material + "_" + color] = defaultMaterial;
 };
 
-ripe.ConfiguratorCSR.prototype.getTexturePath = function(materialName, color, type) {
+ripe.ConfiguratorCSR.prototype.getTexturePath = function (materialName, color, type) {
     return this.texturesPath + materialName + "/" + color + "/" + type + ".jpg";
 };
 
-ripe.ConfiguratorCSR.prototype._initializeMesh = async function() {
+ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
         gltfLoader.load(this.meshPath, gltf => {
@@ -1494,19 +1298,20 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function() {
     this.scene = new this.library.Scene();
     this.populateScene(this.scene);
 
-    this._setPositionalRotations();
+    // TODO set initial camera positions
+    //this._setPositionalRotations();
 
     this.render();
 };
 
-ripe.ConfiguratorCSR.prototype.applyDefaults = function() {
+ripe.ConfiguratorCSR.prototype.applyDefaults = function () {
     for (var mesh in this.meshes) {
         this.meshes[mesh].material.dispose();
         this.meshes[mesh].material = this.loadedMaterials.default.clone();
     }
 };
 
-ripe.ConfiguratorCSR.prototype._assignMaterials = async function() {
+ripe.ConfiguratorCSR.prototype._assignMaterials = async function () {
     for (var part in this.owner.parts) {
         if (part === "shadow") continue;
 
@@ -1516,7 +1321,7 @@ ripe.ConfiguratorCSR.prototype._assignMaterials = async function() {
     }
 };
 
-ripe.ConfiguratorCSR.prototype.transition = async function(options = {}) {
+ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     var renderTargetParameters = {
         minFilter: this.library.LinearFilter,
         magFilter: this.library.LinearFilter,
@@ -1554,11 +1359,6 @@ ripe.ConfiguratorCSR.prototype.transition = async function(options = {}) {
 
     var duration = 24;
     var currentTime = 0;
-    var renderer = this.renderer;
-    var scene = this.scene;
-    var crossfadeShader = this.crossfadeShader;
-    var camera = this.camera;
-    var element = this.element;
     var mixRatio = 0.0;
 
     this.crossfadeShader.uniforms.tDiffuse1.value = previousSceneFBO.texture;
@@ -1574,9 +1374,9 @@ ripe.ConfiguratorCSR.prototype.transition = async function(options = {}) {
     this.scene.add(quad);
 
     // Store current image
-    renderer.setRenderTarget(previousSceneFBO);
-    renderer.clear();
-    renderer.render(this.scene, camera);
+    this.renderer.setRenderTarget(previousSceneFBO);
+    this.renderer.clear();
+    this.renderer.render(this.scene, camera);
 
     if (options.type === "material") {
         // Update scene's materials
@@ -1590,33 +1390,33 @@ ripe.ConfiguratorCSR.prototype.transition = async function(options = {}) {
     }
 
     // Render next image
-    renderer.setRenderTarget(currentSceneFBO);
-    renderer.clear();
-    renderer.render(scene, camera);
+    this.renderer.setRenderTarget(currentSceneFBO);
+    this.renderer.clear();
+    this.renderer.render(scene, camera);
 
     // Reset renderer
-    renderer.setRenderTarget(null);
-    renderer.clear();
+    this.renderer.setRenderTarget(null);
+    this.renderer.clear();
 
-    function crossfade() {
-        renderer.render(scene, transitionCamera);
+    const crossfade = () => {
+        this.renderer.render(this.scene, transitionCamera);
 
         mixRatio += 1.0 / duration;
         currentTime++;
-        crossfadeShader.uniforms.mixRatio.value = mixRatio;
+        this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
         if (currentTime < duration) requestAnimationFrame(crossfade);
         else {
-            scene.remove(quad);
-            element.classList.remove("animating");
-            element.classList.remove("no-drag");
+            this.scene.remove(quad);
+            this.element.classList.remove("animating");
+            this.element.classList.remove("no-drag");
             quad.geometry.dispose();
             quad.material.dispose();
             quadGeometry.dispose();
             previousSceneFBO.dispose();
             currentSceneFBO.dispose();
         }
-    }
+    };
 
     // Prevents transition from being initiated multiple times
     this.element.classList.add("animating");
@@ -1625,7 +1425,7 @@ ripe.ConfiguratorCSR.prototype.transition = async function(options = {}) {
     requestAnimationFrame(crossfade);
 };
 
-ripe.ConfiguratorCSR.prototype._applyMaterial = function(part, material) {
+ripe.ConfiguratorCSR.prototype._applyMaterial = function (part, material) {
     for (var mesh in this.meshes) {
         if (mesh === part) {
             this.meshes[mesh].material.dispose();
@@ -1634,7 +1434,7 @@ ripe.ConfiguratorCSR.prototype._applyMaterial = function(part, material) {
     }
 };
 
-ripe.ConfiguratorCSR.prototype.render = function() {
+ripe.ConfiguratorCSR.prototype.render = function () {
     if (this.renderer && this.scene && this.camera) {
         this.renderer.render(this.scene, this.camera);
     }

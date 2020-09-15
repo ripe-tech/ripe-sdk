@@ -33,6 +33,20 @@ ripe.createElement = function(tagName, className) {
 /**
  * @ignore
  */
+ripe.rad2deg = function (angle) {
+    return (angle / Math.PI * 2) * 360;
+};
+
+/**
+ * @ignore
+ */
+ripe.deg2rad = function (angle) {
+    return (angle / 360) * Math.PI * 2;
+};
+
+/**
+ * @ignore
+ */
 ripe.animateProperty = async function(
     element,
     property,
