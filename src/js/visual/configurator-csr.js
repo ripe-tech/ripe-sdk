@@ -26,7 +26,7 @@ if (
  * @param {Object} options The options to be used to configure the
  * configurator instance to be created.
  */
-ripe.ConfiguratorCSR = function (owner, element, options) {
+ripe.ConfiguratorCSR = function(owner, element, options) {
     this.type = this.type || "ConfiguratorCSR";
 
     ripe.Visual.call(this, owner, element, options);
@@ -42,7 +42,7 @@ ripe.ConfiguratorCSR.prototype.constructor = ripe.ConfiguratorCSR;
  * Sets the various values for the Configurator taking into
  * owner's default values.
  */
-ripe.ConfiguratorCSR.prototype.init = function () {
+ripe.ConfiguratorCSR.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
     this.width = this.options.width || 1000;
@@ -76,17 +76,15 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._observer = null;
     this._ownerBinds = {};
     this._enabled = true;
-    this._modelRotation = 0;
-    this._currentModelRotation = 0;
-    this._cameraRotation = 0;
-    this._currentCameraRotation = 0;
 
-    // Meshes 
+    this.maximumHorizontalRot = this.options.maximumHorizontalRot || 180;
+    this.minimumHorizontalRot = this.options.minimumHorizontalRot || -180;
+
+    this.maximumVerticalRot = this.options.maximumVerticalRot || 90;
+    this.minimumVerticalRot = this.options.minimumVerticalRot || 0;
+
     this.meshPath = this.options.meshPath || undefined;
-
-    // ThreeJS
     this.library = this.options.library || null;
-    
     this.cameraTarget = new this.library.Vector3(
         this.options.cameraTarget.x,
         this.options.cameraTarget.y,
@@ -94,12 +92,11 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     );
     this.cameraFOV = this.options.cameraFOV;
 
-    // Materials
+    // materials
     this.texturesPath = this.options.texturesPath || "";
     this.partsMap = this.options.partsMap || {};
-    this.loadedMaterials = {}
+    this.loadedMaterials = {};
 
-    // Raycast 
     this.raycaster = new this.library.Raycaster();
     this.intersectedPart = "";
 
@@ -111,9 +108,9 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     // so that we can remove the highlight of the associated part
     this._ownerBinds.deselected_part = this.owner.bind("deselected_part", part => this.lowlight());
 
-    // creates a structure the store the last presented
-    // position of each view, to be used when returning
-    // to a view for better user experience
+    // creates a structure the store the last presented rotation
+    // of the meshes as well as the camera rotation to be used
+    // when returning to a view for better user experience
     this._lastFrame = {};
 
     // creates the necessary DOM elements and runs
@@ -139,7 +136,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
         if (config) this._updateConfig();
     });
 
-
+    // initialize all ThreeJS components
     this._initializeLights();
     this._initializeCamera();
     this._initializeRenderer();
@@ -147,11 +144,95 @@ ripe.ConfiguratorCSR.prototype.init = function () {
 };
 
 /**
+ * Converts the position of the element to a rotation that can be applied to
+ * the model or the camera;
+ */
+ripe.ConfiguratorCSR.prototype._positionToRotation = function() {
+    const position = this.element.dataset.position;
+
+    return (position / 24) * Math.PI * 2;
+};
+
+/**
+ * Set the rotations of both the camera and meshes according to the
+ * current view and position.
+ */
+ripe.ConfiguratorCSR.prototype._setPositionalRotations = function() {
+    // rotation is appled
+    var newRotation = this._positionToRotation();
+
+    for (var mesh in this.meshes) {
+        this.meshes[mesh].rotation.y = newRotation;
+    }
+
+    this.horizontalRot = newRotation;
+    this._currentHorizontalRot = newRotation;
+
+    if (this.element.dataset.view === "side") {
+        // TODO Use previous position
+        this._currentVerticalRot = 0;
+        this.verticalRot = 0;
+    } else if (this.element.dataset.view === "top") {
+        this._currentVerticalRot = 90;
+        this.verticalRot = 90;
+    }
+
+    this._rotateCamera();
+};
+
+/**
+ * Sets the rotation of the camera and meshes based on their current
+ * continuous rotation.
+ */
+ripe.ConfiguratorCSR.prototype._setContinuousRotations = function() {
+    var needsUpdate = false;
+
+    // horizontal rotation is done by rotating the meshes, vertical
+    // is done to the camera, easier to avoid any problems with rotation
+    if (this.meshes && this.horizontalRot - this.mouseDeltaX !== this._currentHorizontalRot) {
+        this._currentHorizontalRot = this.horizontalRot - this.mouseDeltaX;
+
+        needsUpdate = true;
+        var allowedRotation = this.maximumHorizontalRot - this.minimumHorizontalRot;
+
+        for (var mesh in this.meshes) {
+            this.meshes[mesh].rotation.y =
+                (this._currentHorizontalRot / allowedRotation) * Math.PI * 2;
+        }
+    }
+
+    if (this.camera && this.verticalRot + this.mouseDeltaY !== this._currentVerticalRot) {
+        var diff = this.mouseDeltaY;
+
+        if (this.mouseDeltaY >= this.maximumVerticalRot - this.verticalRot) {
+            diff = this.mouseDeltaY - (this.maximumVerticalRot - this.verticalRot);
+
+            this.referenceY -= diff;
+            this.mouseDeltaY += diff;
+        } else if (this.mouseDeltaY <= this.minimumVerticalRot - this.verticalRot) {
+            diff = this.mouseDeltaY + (this.minimumVerticalRot + this.verticalRot);
+
+            this.referenceY -= diff;
+            this.mouseDeltaY += diff;
+        } else {
+            // only rotate the camera when the input doesn't exceed the maximum allower rotation
+            this._currentVerticalRot = this.verticalRot + this.mouseDeltaY;
+
+            this._rotateCamera();
+
+            needsUpdate = true;
+        }
+    }
+
+    return needsUpdate;
+};
+
+/**
  * The Configurator deinitializer, to be called (by the owner) when
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.ConfiguratorCSR.prototype.deinit = async function () {
+ripe.ConfiguratorCSR.prototype.deinit = async function() {
     await this.cancel();
 
     while (this.element.firstChild) {
@@ -174,9 +255,11 @@ ripe.ConfiguratorCSR.prototype.deinit = async function () {
     ripe.Visual.prototype.deinit.call(this);
 };
 
-
-ripe.ConfiguratorCSR.prototype._disposeResources = function () {
-    console.log("Disposing resources");
+/**
+ * Disposes all the stored resources to avoid memory leaks. Includes meshes,
+ * geometries and materials.
+ */
+ripe.ConfiguratorCSR.prototype._disposeResources = function() {
     if (this.meshes) {
         for (var mesh in this.meshes) {
             this.scene.remove(this.meshes[mesh]);
@@ -189,7 +272,7 @@ ripe.ConfiguratorCSR.prototype._disposeResources = function () {
             this.loadedMaterials[material].dispose();
         }
     }
-}
+};
 
 /**
  * Updates configurator current options with the ones provided.
@@ -202,14 +285,14 @@ ripe.ConfiguratorCSR.prototype._disposeResources = function () {
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
  */
-ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update = true) {
+ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
-    if (options.meshPath && this.meshPath != options.meshPath) {
+    if (options.meshPath && this.meshPath !== options.meshPath) {
         this.meshPath = this.options.meshPath;
         this._initializeMesh();
     }
-    this.library = options.library === undefined ? this.library : options.library;
+    // this.library = options.library === undefined ? this.library : options.library;
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
     this.format = options.format === undefined ? this.format : options.format;
@@ -237,6 +320,7 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update =
         options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
 
+    // TODO Update this here with newer structures
     if (update) await this.update();
 };
 
@@ -257,7 +341,7 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update =
  * - 'preload' - If it's to execute the pre-loading process.
  * - 'force' - If the updating operation should be forced (ignores signature).
  */
-ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
+ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     // in case the configurator is currently nor ready for an
     // update none is performed and the control flow is returned
     // with the false value (indicating a no-op, nothing was done)
@@ -278,55 +362,16 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
 
     // Checks if the rotation of the model has changed
     if (!dragging && animating) {
-        const position = this.element.dataset.position;
+        this._setPositionalRotations();
 
-        var newRotation = (position / 24) * Math.PI * 2;
-        for (var mesh in this.meshes) {
-            this.meshes[mesh].rotation.y = newRotation;
-        }
-
-        this._modelRotation = newRotation * 360 / (Math.PI * 2);
-        this._currentModelRotation = newRotation * 360 / (Math.PI * 2);
-        this.mouseDeltaX = 0;
         needsUpdate = true;
-    } else if (this.meshes && this._modelRotation - this.mouseDeltaX != this._currentModelRotation) {
-        this._currentModelRotation = this._modelRotation - this.mouseDeltaX;
-        needsUpdate = true;
-
-        // Rotate meshes based on drag
-        for (var mesh in this.meshes) {
-            this.meshes[mesh].rotation.y = this._currentModelRotation / 360 * Math.PI * 2;
-        }
+    } else {
+        needsUpdate = this._setContinuousRotations();
     }
-    
-    if (this.camera && this._cameraRotation + this.mouseDeltaY != this._currentCameraRotation && animating) {
-        var diff = this.mouseDeltaY;
 
-        if (this.mouseDeltaY >= 90 - this._cameraRotation) {
-
-            diff = this.mouseDeltaY - (90 - this._cameraRotation);
-
-            this.referenceY -= diff;
-            this.mouseDeltaY += diff;
-        } 
-        else if (this.mouseDeltaY <= -this._cameraRotation) {
-
-            diff = this.mouseDeltaY + this._cameraRotation;
-
-            this.referenceY -= diff;
-            this.mouseDeltaY += diff;
-        } else {
-            this._currentCameraRotation = this._cameraRotation + this.mouseDeltaY;
-            
-            this._rotateCamera();
-                    
-            needsUpdate = true;        
-        }
-    }
-    
     if (!animating) {
         await this._assignMaterials();
-        await this.transition({type: "material"})
+        await this.transition({ type: "material" });
     }
 
     // removes the highlight support from the matched object as a new
@@ -340,26 +385,24 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     return true;
 };
 
-ripe.ConfiguratorCSR.prototype._rotateMeshes = function () {
-    
-}
-
-ripe.ConfiguratorCSR.prototype._rotateCamera = function () {
+ripe.ConfiguratorCSR.prototype._rotateCamera = function() {
     var maxHeight = this.cameraDistance - this.cameraHeight;
-    this.camera.position.y = this.cameraHeight + maxHeight * Math.sin( (Math.PI / 2) / 90 * this._currentCameraRotation );
-    this.camera.position.z = this.cameraDistance * Math.cos( (Math.PI / 2) / 90 * this._currentCameraRotation )
-    this.camera.lookAt(this.cameraTarget)
+    this.camera.position.y =
+        this.cameraHeight + maxHeight * Math.sin((Math.PI / 2 / 90) * this._currentVerticalRot);
+    this.camera.position.z =
+        this.cameraDistance * Math.cos((Math.PI / 2 / 90) * this._currentVerticalRot);
+    this.camera.lookAt(this.cameraTarget);
 
-    //this.meshes[mesh].rotation.y = this._currentModelRotation / 360 * Math.PI * 2;
-}
+    // this.meshes[mesh].rotation.y = this._currentHorizontalRot / 360 * Math.PI * 2;
+};
 
-ripe.ConfiguratorCSR.prototype.disable = function () {
+ripe.ConfiguratorCSR.prototype.disable = function() {
     this._enabled = false;
-}
+};
 
-ripe.ConfiguratorCSR.prototype.enable = function () {
+ripe.ConfiguratorCSR.prototype.enable = function() {
     this._enabled = true;
-}
+};
 
 /**
  * This function is called (by the owner) whenever the current operation
@@ -367,7 +410,7 @@ ripe.ConfiguratorCSR.prototype.enable = function () {
  *
  * @param {Object} options Set of optional parameters to adjust the Configurator.
  */
-ripe.ConfiguratorCSR.prototype.cancel = async function (options = {}) {
+ripe.ConfiguratorCSR.prototype.cancel = async function(options = {}) {
     if (this._buildSignature() === this.signature || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
     return true;
@@ -380,7 +423,7 @@ ripe.ConfiguratorCSR.prototype.cancel = async function (options = {}) {
  *
  * @param {Number} size The number of pixels to resize to.
  */
-ripe.ConfiguratorCSR.prototype.resize = async function (size) {
+ripe.ConfiguratorCSR.prototype.resize = async function(size) {
     if (this.element === undefined) {
         return;
     }
@@ -388,11 +431,11 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
     if (!this._enabled) {
         return;
     }
-    
-    // Raycaster needs accurate positions of the element, needs to be 
+
+    // Raycaster needs accurate positions of the element, needs to be
     // updated on every window resize event
     this.elementBoundingBox = this.element.getBoundingClientRect();
-    
+
     size = size || this.element.clientWidth;
     if (this.currentSize === size) {
         return;
@@ -407,7 +450,7 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
     this.currentSize = size;
 
     if (this.renderer) {
-        this.renderer.setSize(this.element.clientWidth, this.element.clientHeight)
+        this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
     }
 
     await this.update(
@@ -416,8 +459,6 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
             force: true
         }
     );
-
-    
 };
 
 /**
@@ -443,10 +484,9 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
  * - 'safe' - If requested then the operation is only performed in case the configurator
  * is not in the an equivalent state (default to 'true').
  */
-ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}) {
+ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {}) {
     // Disabled Configurator, changing frame will lead to errors
-    if (!this._enabled)
-        return;
+    if (!this._enabled) return;
 
     // parses the requested frame value according to the pre-defined
     // standard (eg: side-3) and then unpacks it as view and position
@@ -468,7 +508,6 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
         options.revolutionDuration === undefined
             ? this.revolutionDuration
             : options.revolutionDuration;
-    const type = options.type === undefined ? null : options.type;
     let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
     const safe = options.safe === undefined ? true : options.safe;
     const first = options.first === undefined ? true : options.first;
@@ -529,12 +568,6 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     // and ignores all drag movements while it lasts
     let animate = false;
     if (view !== nextView && viewFrames !== undefined) {
-        var transitionOptions = {
-            changeView: true,
-            nextView: nextView,
-            duration: duration
-        };
-
         return;
     }
 
@@ -565,9 +598,9 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
             view !== nextView
                 ? 1
                 : Math.min(
-                    Math.abs(position - nextPosition),
-                    viewFrames - Math.abs(position - nextPosition)
-                );
+                      Math.abs(position - nextPosition),
+                      viewFrames - Math.abs(position - nextPosition)
+                  );
         options._stepCount = options._stepCount === undefined ? stepCount : options._stepCount;
 
         // in case the (total) revolution time for the view is defined a
@@ -664,10 +697,10 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
         await new Promise(resolve => setTimeout(() => resolve(), sleepTime));
     }
     // in case there's a mesh defined in the current instance then applies
-    // a rotation around the Y axis 
+    // a rotation around the Y axis
     const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
     this.trigger("changed_frame", newFrame);
-    
+
     try {
         // runs the update operation that should sync the visuals of the
         // configurator according to the current internal state (in data)
@@ -712,7 +745,7 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
  * @param {String} part The part of the model that should be highlighted.
  * @param {Object} options Set of optional parameters to adjust the highlighting.
  */
-ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
+ripe.ConfiguratorCSR.prototype.highlight = function(part, options = {}) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -723,17 +756,34 @@ ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
         return;
     }
 
+    var scene = this.scene;
+    var renderer = this.renderer;
+    var camera = this.camera;
+    var currentValue = 1.0;
+    var meshTarget = null;
+    var duration = 24;
+    var currentTime = 0;
+
     for (var mesh in this.meshes) {
-        if (this.meshes[mesh].name == part) {
-            this.meshes[mesh].material.color.r = 0.5;
-            this.meshes[mesh].material.color.g = 0.5;
-            this.meshes[mesh].material.color.b = 0.5;
+        if (this.meshes[mesh].name === part) {
+            meshTarget = this.meshes[mesh];
         }
     }
 
-    this.render();
-    //ripe.cancelAnimation(frontMask);
-    //ripe.animateProperty(frontMask, "opacity", 0, maskOpacity, maskDuration, false);
+    function highlightTransition() {
+        meshTarget.material.color.r = currentValue;
+        meshTarget.material.color.g = currentValue;
+        meshTarget.material.color.b = currentValue;
+
+        currentValue -= 0.5 / duration;
+        currentTime++;
+
+        renderer.render(scene, camera);
+
+        if (currentTime < duration) requestAnimationFrame(highlightTransition);
+    }
+
+    requestAnimationFrame(highlightTransition);
 };
 
 /**
@@ -743,11 +793,11 @@ ripe.ConfiguratorCSR.prototype.highlight = function (part, options = {}) {
  * @param {String} part The part to lowlight.
  * @param {Object} options Set of optional parameters to adjust the lowlighting.
  */
-ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
+ripe.ConfiguratorCSR.prototype.lowlight = function(options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
 
-    //const test = new TimelineMax({paused: true});
+    // const test = new TimelineMax({paused: true});
     if (!this.useMasks) {
         return;
     }
@@ -756,18 +806,39 @@ ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
         return;
     }
 
-    // There's no intersection 
-    if (this.intersectedPart == "") {
+    // There's no intersection
+    if (this.intersectedPart === "") {
         return;
     }
 
+    var scene = this.scene;
+    var renderer = this.renderer;
+    var camera = this.camera;
+    var currentValue = 0.5;
+    var meshTarget = null;
+    var duration = 12;
+    var currentTime = 0;
+
     for (var mesh in this.meshes) {
-        if (this.meshes[mesh].name == this.intersectedPart) {
-            this.meshes[mesh].material.color.r = 1;
-            this.meshes[mesh].material.color.g = 1;
-            this.meshes[mesh].material.color.b = 1;
+        if (this.meshes[mesh].name === this.intersectedPart) {
+            meshTarget = this.meshes[mesh];
         }
     }
+
+    function lowlightTransition() {
+        meshTarget.material.color.r = currentValue;
+        meshTarget.material.color.g = currentValue;
+        meshTarget.material.color.b = currentValue;
+
+        currentValue += 0.5 / duration;
+        currentTime++;
+
+        renderer.render(scene, camera);
+
+        if (currentTime < duration) requestAnimationFrame(lowlightTransition);
+    }
+
+    requestAnimationFrame(lowlightTransition);
 
     this.intersectedPart = "";
 
@@ -783,7 +854,7 @@ ripe.ConfiguratorCSR.prototype.lowlight = function (options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorCSR.prototype.enterFullscreen = async function (options) {
+ripe.ConfiguratorCSR.prototype.enterFullscreen = async function(options) {
     if (this.element === undefined) {
         return;
     }
@@ -797,7 +868,7 @@ ripe.ConfiguratorCSR.prototype.enterFullscreen = async function (options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function (options) {
+ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function(options) {
     if (this.element === undefined) {
         return;
     }
@@ -808,14 +879,14 @@ ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function (options) {
 /**
  * Turns on (enables) the masks on selection/highlight.
  */
-ripe.ConfiguratorCSR.prototype.enableMasks = function () {
+ripe.ConfiguratorCSR.prototype.enableMasks = function() {
     this.useMasks = true;
 };
 
 /**
  * Turns off (disables) the masks on selection/highlight.
  */
-ripe.ConfiguratorCSR.prototype.disableMasks = function () {
+ripe.ConfiguratorCSR.prototype.disableMasks = function() {
     this.useMasks = false;
 };
 
@@ -830,7 +901,7 @@ ripe.ConfiguratorCSR.prototype.disableMasks = function () {
  *
  * @private
  */
-ripe.ConfiguratorCSR.prototype._initLayout = function () {
+ripe.ConfiguratorCSR.prototype._initLayout = function() {
     // clears the elements children
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -846,12 +917,19 @@ ripe.ConfiguratorCSR.prototype._initLayout = function () {
     // sets the initial view and position
     this.element.dataset.view = this.view;
     this.element.dataset.position = this.position;
+
+    // coordinates for raycaster requires the exact positioning
+    // of the element in the window, needs to be updated on
+    // every resize
+    window.onresize = function(event) {
+        if (this.element) this.elementBoundingBox = this.element.getBoundingClientRect();
+    };
 };
 
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
+ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
@@ -919,7 +997,7 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
+ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
     // captures the current context to be used inside clojures
     const self = this;
 
@@ -927,12 +1005,9 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
     // are going to be used for event handler operations
     const area = this.element.querySelector(".area");
 
-    if (!this.elementBoundingBox)
-        this.elementBoundingBox = this.element.getBoundingClientRect();
-
     // binds the mousedown event on the element to prepare
     // it for drag movements
-    this._addElementHandler("mousedown", function (event) {
+    this._addElementHandler("mousedown", function(event) {
         const _element = this;
         _element.dataset.view = _element.dataset.view || "side";
         self.base = parseInt(_element.dataset.position) || 0;
@@ -945,21 +1020,21 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
 
     // listens for mouseup events and if it occurs then
     // stops reacting to mouse move events has drag movements
-    this._addElementHandler("mouseup", function (event) {
+    this._addElementHandler("mouseup", function(event) {
         const _element = this;
         self.down = false;
         self.previous = self.percent;
         self.percent = 0;
         _element.classList.remove("drag");
-        
+
         event = ripe.fixEvent(event);
-        
+
         // Apply rotation to model
-        self._modelRotation = self._currentModelRotation;
+        self.horizontalRot = self._currentHorizontalRot;
         self.mouseDeltaX = 0;
-        
+
         // Apply rotation to camera
-        self._cameraRotation = self._currentCameraRotation;
+        self.verticalRot = self._currentVerticalRot;
         self.mouseDeltaY = 0;
 
         self._attemptRaycast(event);
@@ -967,7 +1042,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
 
     // listens for mouse leave events and if it occurs then
     // stops reacting to mousemove events has drag movements
-    this._addElementHandler("mouseleave", function (event) {
+    this._addElementHandler("mouseleave", function(event) {
         const _element = this;
         self.down = false;
         self.previous = self.percent;
@@ -977,7 +1052,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
-    this._addElementHandler("mousemove", function (event) {
+    this._addElementHandler("mousemove", function(event) {
         if (!this.classList.contains("ready") || this.classList.contains("no-drag")) {
             return;
         }
@@ -988,7 +1063,7 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
         if (down) self._parseDrag();
     });
 
-    area.addEventListener("click", function (event) {
+    area.addEventListener("click", function(event) {
         // verifies if the previous drag operation (if any) has exceed
         // the minimum threshold to be considered drag (click avoided)
         if (Math.abs(self.previous) > self.clickThreshold) {
@@ -1001,13 +1076,13 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
 
         // retrieves the reference to the part name by using the index
         // extracted from the masks image (typical strategy for retrieval)
-        //const part = self.partsList[index - 1];
-        //const isVisible = self.hiddenParts.indexOf(part) === -1;
-        //if (part && isVisible) self.owner.selectPart(part);
+        // const part = self.partsList[index - 1];
+        // const isVisible = self.hiddenParts.indexOf(part) === -1;
+        // if (part && isVisible) self.owner.selectPart(part);
         event.stopPropagation();
     });
 
-    area.addEventListener("mousemove", function (event) {
+    area.addEventListener("mousemove", function(event) {
         const preloading = self.element.classList.contains("preloading");
         const animating = self.element.classList.contains("animating");
         if (preloading || animating) {
@@ -1026,11 +1101,11 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
         self._attemptRaycast(event);
     });
 
-    area.addEventListener("dragstart", function (event) {
+    area.addEventListener("dragstart", function(event) {
         event.preventDefault();
     });
 
-    area.addEventListener("dragend", function (event) {
+    area.addEventListener("dragend", function(event) {
         event.preventDefault();
     });
 
@@ -1048,12 +1123,12 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
             null;
         this._observer = Observer
             ? new Observer(mutations => {
-                for (let index = 0; index < mutations.length; index++) {
-                    const mutation = mutations[index];
-                    if (mutation.type === "style") self.resize();
-                    if (mutation.type === "attributes") self.update();
-                }
-            })
+                  for (let index = 0; index < mutations.length; index++) {
+                      const mutation = mutations[index];
+                      if (mutation.type === "style") self.resize();
+                      if (mutation.type === "attributes") self.update();
+                  }
+              })
             : null;
         if (this._observer) {
             this._observer.observe(this.element, {
@@ -1072,8 +1147,12 @@ ripe.ConfiguratorCSR.prototype._registerHandlers = function () {
     ripe.touchHandler(this.element);
 };
 
-ripe.ConfiguratorCSR.prototype._attemptRaycast = function (mouseEvent) {
-    if (!this.elementBoundingBox || this.element.classList.contains("animating") || this.element.classList.contains("drag")) {
+ripe.ConfiguratorCSR.prototype._attemptRaycast = function(mouseEvent) {
+    if (
+        !this.elementBoundingBox ||
+        this.element.classList.contains("animating") ||
+        this.element.classList.contains("drag")
+    ) {
         return;
     }
 
@@ -1083,40 +1162,46 @@ ripe.ConfiguratorCSR.prototype._attemptRaycast = function (mouseEvent) {
         this.raycaster.setFromCamera(mouse, this.camera);
 
         var intersects = this.raycaster.intersectObjects(this.scene.children);
-        
+
         if (intersects.length > 0) {
-            if (this.intersectedPart != intersects[0].object.name) {
-                if (this.intersectedPart != "") {
+            if (this.intersectedPart !== intersects[0].object.name) {
+                if (this.intersectedPart !== "") {
                     this.lowlight();
                 }
                 this.intersectedPart = intersects[0].object.name;
                 this.highlight(this.intersectedPart);
             }
-        }
-        else {
-            if (this.intersectedPart != "") {
+        } else {
+            if (this.intersectedPart !== "") {
                 this.lowlight();
             }
         }
     }
 };
 
-ripe.ConfiguratorCSR.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
+ripe.ConfiguratorCSR.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent) {
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
-    const newX = ((mouseEvent.x - this.elementBoundingBox.x) / this.elementBoundingBox.width) * 2 - 1;
-    const newY = - ((mouseEvent.y - this.elementBoundingBox.y + window.scrollY) / this.elementBoundingBox.height) * 2 + 1;
+    const newX =
+        ((mouseEvent.x - this.elementBoundingBox.x) / this.elementBoundingBox.width) * 2 - 1;
+    const newY =
+        -(
+            (mouseEvent.y - this.elementBoundingBox.y + window.scrollY) /
+            this.elementBoundingBox.height
+        ) *
+            2 +
+        1;
 
     return {
         x: newX,
         y: newY
-    }
+    };
 };
 
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._parseDrag = function () {
+ripe.ConfiguratorCSR.prototype._parseDrag = function() {
     // retrieves the last recorded mouse position
     // and the current one and calculates the
     // drag movement made by the user
@@ -1174,7 +1259,7 @@ ripe.ConfiguratorCSR.prototype._parseDrag = function () {
  *
  * @returns {String} The unique signature for the configurator state.
  */
-ripe.ConfiguratorCSR.prototype._buildSignature = function () {
+ripe.ConfiguratorCSR.prototype._buildSignature = function() {
     const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;
@@ -1185,51 +1270,51 @@ ripe.ConfiguratorCSR.prototype._buildSignature = function () {
     )}&format=${String(format)}&background=${String(backgroundColor)}`;
 };
 
-ripe.ConfiguratorCSR.prototype._initializeLights = function () {
+ripe.ConfiguratorCSR.prototype._initializeLights = function() {
     const keyLight = new this.library.PointLight(0xffffff, 2.2, 18);
     keyLight.position.set(2, 2, 2);
     keyLight.castShadow = true;
     keyLight.shadow.camera.near = 0.000001;
     keyLight.shadow.camera.far = 10;
-    //keyLight.shadow.radius = 8;
+    // keyLight.shadow.radius = 8;
 
     const fillLight = new this.library.PointLight(0xffffff, 1.1, 18);
     fillLight.position.set(-2, 1, 2);
     fillLight.castShadow = true;
     fillLight.shadow.camera.near = 0.000001;
     fillLight.shadow.camera.far = 10;
-    //fillLight.shadow.radius = 8;
+    // fillLight.shadow.radius = 8;
 
     const rimLight = new this.library.PointLight(0xffffff, 3.1, 18);
     rimLight.position.set(-1, 1.5, -3);
     rimLight.castShadow = true;
     rimLight.shadow.camera.near = 0.000001;
     rimLight.shadow.camera.far = 10;
-    //rimLight.shadow.radius = 8;
+    // rimLight.shadow.radius = 8;
 
     const ambientLight = new this.library.AmbientLight(0xffffff, 0.1);
 
-    this.lights = [keyLight, fillLight, rimLight, ambientLight]
+    this.lights = [keyLight, fillLight, rimLight, ambientLight];
 };
 
-ripe.ConfiguratorCSR.prototype._initializeRenderer = function () {
+ripe.ConfiguratorCSR.prototype._initializeRenderer = function() {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
     this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
-    
+
     this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
-    
+
     this.renderer.toneMappingExposure = this.exposure;
     this.renderer.toneMapping = this.library.CineonToneMapping;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = this.library.BasicShadowMap;
-    
+
     const area = this.element.querySelector(".area");
 
     area.appendChild(this.renderer.domElement);
 };
 
-ripe.ConfiguratorCSR.prototype._initializeCamera = function () {
+ripe.ConfiguratorCSR.prototype._initializeCamera = function() {
     const width = this.element.getBoundingClientRect().width;
     const height = this.element.getBoundingClientRect().height;
 
@@ -1237,31 +1322,31 @@ ripe.ConfiguratorCSR.prototype._initializeCamera = function () {
     this.camera.position.set(0, this.cameraHeight, this.cameraDistance);
 };
 
-ripe.ConfiguratorCSR.prototype.populateScene = function (scene) {
+ripe.ConfiguratorCSR.prototype.populateScene = function(scene) {
     for (let i = 0; i < this.lights.length; i++) {
         scene.add(this.lights[i]);
     }
     for (var mesh in this.meshes) {
         scene.add(this.meshes[mesh]);
     }
-    scene.add(this.floorMesh);
-}
+    // scene.add(this.floorMesh);
+};
 
-ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function () {
-    this.loadedMaterials["default"] = new this.library.MeshPhongMaterial({ color: "#ffffff" });
+ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function() {
+    this.loadedMaterials.default = new this.library.MeshPhongMaterial({ color: "#ffffff" });
 
     this.crossfadeShader = new this.library.ShaderMaterial({
         uniforms: {
-			tDiffuse1: {
-				type: 't',
+            tDiffuse1: {
+                type: "t",
                 value: null
             },
             tDiffuse2: {
-				type: 't',
+                type: "t",
                 value: null
             },
             mixRatio: {
-				type: 'f',
+                type: "f",
                 value: 0.0
             }
         },
@@ -1285,24 +1370,22 @@ ripe.ConfiguratorCSR.prototype._initializeTexturesAndMaterials = async function 
 
             "void main() {",
 
-            "	vec4 texel1 = texture2D( tDiffuse1, vUv );",
-            "	vec4 texel2 = texture2D( tDiffuse2, vUv );",
-            
-            "   gl_FragColor = mix( texel1, texel2, mixRatio );",
-            
+            "    vec4 texel1 = texture2D( tDiffuse1, vUv );",
+            "    vec4 texel2 = texture2D( tDiffuse2, vUv );",
+
+            "    gl_FragColor = mix( texel1, texel2, mixRatio );",
+
             "}"
         ].join("\n")
     });
-
-
 };
 
-ripe.ConfiguratorCSR.prototype._loadMaterial = async function (material, color) {
-    // Loadedmaterials store threejs materials in the format 
+ripe.ConfiguratorCSR.prototype._loadMaterial = async function(material, color) {
+    // Loadedmaterials store threejs materials in the format
     if (this.loadedMaterials[material + "_" + color]) {
         return;
     }
-    
+
     const textureLoader = new this.library.TextureLoader();
 
     var diffuseMapPath = this.getTexturePath(material, color, "diffuse");
@@ -1311,25 +1394,25 @@ ripe.ConfiguratorCSR.prototype._loadMaterial = async function (material, color) 
     var aoMapPath = this.getTexturePath(material, color, "ao");
 
     const diffuseTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(diffuseMapPath, function (texture) {
+        textureLoader.load(diffuseMapPath, function(texture) {
             resolve(texture);
         });
     });
 
     const roughnessTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(roughnessMapPath, function (texture) {
+        textureLoader.load(roughnessMapPath, function(texture) {
             resolve(texture);
         });
     });
 
     const normalTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(normalMapPath, function (texture) {
+        textureLoader.load(normalMapPath, function(texture) {
             resolve(texture);
         });
     });
 
     const aoTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(aoMapPath, function (texture) {
+        textureLoader.load(aoMapPath, function(texture) {
             resolve(texture);
         });
     });
@@ -1344,7 +1427,7 @@ ripe.ConfiguratorCSR.prototype._loadMaterial = async function (material, color) 
     normalTexture.minFilter = this.library.NearestMipmapNearestFilter;
     aoTexture.minFilter = this.library.NearestMipmapNearestFilter;
 
-    const threeJSmaterial = new this.library.MeshStandardMaterial({
+    const defaultMaterial = new this.library.MeshStandardMaterial({
         map: diffuseTexture,
         roughnessMap: roughnessTexture,
         normalMap: normalTexture,
@@ -1357,14 +1440,14 @@ ripe.ConfiguratorCSR.prototype._loadMaterial = async function (material, color) 
     normalTexture.dispose();
     aoTexture.dispose();
 
-    this.loadedMaterials[material + "_" + color] = threeJSmaterial;
-}
+    this.loadedMaterials[material + "_" + color] = defaultMaterial;
+};
 
-ripe.ConfiguratorCSR.prototype.getTexturePath = function (materialName, color, type) {
-    return this.texturesPath + materialName + "/" + color + "/" + type + ".jpg"
-}
+ripe.ConfiguratorCSR.prototype.getTexturePath = function(materialName, color, type) {
+    return this.texturesPath + materialName + "/" + color + "/" + type + ".jpg";
+};
 
-ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
+ripe.ConfiguratorCSR.prototype._initializeMesh = async function() {
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
         gltfLoader.load(this.meshPath, gltf => {
@@ -1373,9 +1456,9 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     });
 
     const model = gltf.scene;
-    
+
     const box = new this.library.Box3().setFromObject(model);
-    
+
     const floorGeometry = new this.library.PlaneGeometry(100, 100);
     const floorMaterial = new this.library.ShadowMaterial();
     floorMaterial.opacity = 0.5;
@@ -1384,25 +1467,23 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     this.floorMesh.rotation.x = Math.PI / 2;
     this.floorMesh.receiveShadow = true;
     this.floorMesh.position.y = box.min.y;
-    
+
     model.castShadow = true;
 
     const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
-    const centerY = box.min.y + (box.max.y - box.min.y) / 2.0;
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
-    
+
     this.camera.lookAt(this.cameraTarget);
-    
-    this.meshes = {}
+
+    this.meshes = {};
     for (let i = 0; i < model.children.length; i++) {
         if (model.children[i].isMesh) {
-            
             model.children[i].geometry.translate(-centerX, 0, -centerZ);
             model.children[i].castShadow = true;
             model.children[i].receiveShadow = true;
 
             // remove "_part" from string
-            this.meshes[model.children[i].name.split("_")[0]] = model.children[i]
+            this.meshes[model.children[i].name.split("_")[0]] = model.children[i];
         }
     }
 
@@ -1412,56 +1493,62 @@ ripe.ConfiguratorCSR.prototype._initializeMesh = async function () {
     // Only now can we populate the scene safely
     this.scene = new this.library.Scene();
     this.populateScene(this.scene);
-    
+
+    this._setPositionalRotations();
+
     this.render();
 };
 
-ripe.ConfiguratorCSR.prototype.applyDefaults = function () {
+ripe.ConfiguratorCSR.prototype.applyDefaults = function() {
     for (var mesh in this.meshes) {
         this.meshes[mesh].material.dispose();
-        this.meshes[mesh].material = this.loadedMaterials["default"].clone();
+        this.meshes[mesh].material = this.loadedMaterials.default.clone();
     }
-}
+};
 
-ripe.ConfiguratorCSR.prototype._assignMaterials = async function () {
+ripe.ConfiguratorCSR.prototype._assignMaterials = async function() {
     for (var part in this.owner.parts) {
-        if (part == "shadow")
-            continue;
+        if (part === "shadow") continue;
 
-        var material = this.owner.parts[part]["material"]
-        var color = this.owner.parts[part]["color"]
+        var material = this.owner.parts[part].material;
+        var color = this.owner.parts[part].color;
         await this._loadMaterial(material, color);
     }
-}
+};
 
-ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
-    var renderTargetParameters = { 
-        minFilter: this.library.LinearFilter, 
-        magFilter: this.library.LinearFilter, 
-        format: this.library.RGBAFormat 
+ripe.ConfiguratorCSR.prototype.transition = async function(options = {}) {
+    var renderTargetParameters = {
+        minFilter: this.library.LinearFilter,
+        magFilter: this.library.LinearFilter,
+        format: this.library.RGBAFormat
     };
 
     var width = this.elementBoundingBox.width;
     var height = this.elementBoundingBox.height;
-    
+
     var transitionCamera = new this.library.OrthographicCamera(
-        -width / 2, width / 2, height / 2, -height / 2, -100 , 100
+        -width / 2,
+        width / 2,
+        height / 2,
+        -height / 2,
+        -100,
+        100
     );
 
     transitionCamera.position.x = this.camera.position.x;
     transitionCamera.position.y = this.camera.position.y;
     transitionCamera.position.z = this.camera.position.z;
     transitionCamera.lookAt(this.cameraTarget);
-    
+
     var previousSceneFBO = new this.library.WebGLRenderTarget(
-        this.elementBoundingBox.width, 
-        this.elementBoundingBox.height, 
+        this.elementBoundingBox.width,
+        this.elementBoundingBox.height,
         renderTargetParameters
     );
 
     var currentSceneFBO = new this.library.WebGLRenderTarget(
-        this.elementBoundingBox.width, 
-        this.elementBoundingBox.height, 
+        this.elementBoundingBox.width,
+        this.elementBoundingBox.height,
         renderTargetParameters
     );
 
@@ -1472,13 +1559,16 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     var crossfadeShader = this.crossfadeShader;
     var camera = this.camera;
     var element = this.element;
-    var mixRatio = 0.0
+    var mixRatio = 0.0;
 
     this.crossfadeShader.uniforms.tDiffuse1.value = previousSceneFBO.texture;
     this.crossfadeShader.uniforms.tDiffuse2.value = currentSceneFBO.texture;
     this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
-    
-    var quadGeometry = new this.library.PlaneBufferGeometry(this.elementBoundingBox.width, this.elementBoundingBox.height);
+
+    var quadGeometry = new this.library.PlaneBufferGeometry(
+        this.elementBoundingBox.width,
+        this.elementBoundingBox.height
+    );
     var quad = new this.library.Mesh(quadGeometry, this.crossfadeShader);
     quad.position.z = 1;
     this.scene.add(quad);
@@ -1488,15 +1578,14 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     renderer.clear();
     renderer.render(this.scene, camera);
 
-    if (options["type"] == "material") {
-        // Update scene's materials 
+    if (options.type === "material") {
+        // Update scene's materials
         for (var part in this.owner.parts) {
-            if (part == "shadow")
-                continue;
+            if (part === "shadow") continue;
 
-            var material = this.owner.parts[part]["material"]
-            var color = this.owner.parts[part]["color"]
-            this._applyMaterial(part, this.loadedMaterials[material + "_" + color])
+            var material = this.owner.parts[part].material;
+            var color = this.owner.parts[part].color;
+            this._applyMaterial(part, this.loadedMaterials[material + "_" + color]);
         }
     }
 
@@ -1508,16 +1597,15 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     // Reset renderer
     renderer.setRenderTarget(null);
     renderer.clear();
-        
+
     function crossfade() {
         renderer.render(scene, transitionCamera);
 
-        mixRatio += 1.0/duration;
+        mixRatio += 1.0 / duration;
         currentTime++;
         crossfadeShader.uniforms.mixRatio.value = mixRatio;
-        
-        if (currentTime < duration)
-            requestAnimationFrame(crossfade)
+
+        if (currentTime < duration) requestAnimationFrame(crossfade);
         else {
             scene.remove(quad);
             element.classList.remove("animating");
@@ -1534,21 +1622,20 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     this.element.classList.add("animating");
     this.element.classList.add("no-drag");
 
-    requestAnimationFrame(crossfade)    
+    requestAnimationFrame(crossfade);
 };
 
-ripe.ConfiguratorCSR.prototype._applyMaterial = function (part, material) {
+ripe.ConfiguratorCSR.prototype._applyMaterial = function(part, material) {
     for (var mesh in this.meshes) {
-        if (mesh == part) {
+        if (mesh === part) {
             this.meshes[mesh].material.dispose();
             this.meshes[mesh].material = material.clone();
         }
     }
-}
+};
 
-ripe.ConfiguratorCSR.prototype.render = function () {
+ripe.ConfiguratorCSR.prototype.render = function() {
     if (this.renderer && this.scene && this.camera) {
         this.renderer.render(this.scene, this.camera);
     }
 };
-

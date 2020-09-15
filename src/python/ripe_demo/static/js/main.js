@@ -58,12 +58,8 @@ window.onload = function () {
             CSRParts.push(triplet);
         }
 
-
-        if (currentRenderMode == "prc")
-            await ripe.setParts(parts, true, { partEvents: false });
-        else {
-            await ripe.setParts(CSRParts, true, { partEvents: false, mode: "csr" });
-        }
+        if (currentRenderMode == "prc") await ripe.setParts(parts, true, { partEvents: false });
+        else await ripe.setParts(CSRParts, true, { partEvents: false, mode: "csr" });
     };
 
     var unique = function () {
@@ -150,15 +146,13 @@ window.onload = function () {
                 ripe.getCombinations(function (combinations) {
                     alert(
                         "There are <strong>" +
-                        String(combinations.length.formatMoney(0)) +
-                        "</strong> combinations with <strong>" +
-                        String(unique().formatMoney(0)) +
-                        "</strong> possible compositions"
+                            String(combinations.length.formatMoney(0)) +
+                            "</strong> combinations with <strong>" +
+                            String(unique().formatMoney(0)) +
+                            "</strong> possible compositions"
                     );
                 });
             });
-
-
 
         ripe.bind("error", function (error, description) {
             alert(error);
@@ -247,8 +241,8 @@ window.onload = function () {
         // to define the visible frames and apply restrictions
         var caller = ripe.loadedConfig
             ? function (callback) {
-                callback(ripe.loadedConfig);
-            }
+                  callback(ripe.loadedConfig);
+              }
             : ripe.getConfig;
         caller(function (result) {
             var frame0 = document.getElementById("frame-0");
@@ -360,15 +354,15 @@ window.onload = function () {
 
             for (let index = 0; index < partsMapArray.length; index++) {
                 var part = partsMapArray[index];
-                CSRPartsMap[part] = []
+                CSRPartsMap[part] = [];
 
                 for (var material in materials) {
                     for (var k = 0; k < materials[material].length; k++) {
-                        const color = materials[material][k]
+                        const color = materials[material][k];
 
-                        var triplet = [part, material, color]
+                        var triplet = [part, material, color];
 
-                        CSRPartsMap[part].push(triplet)
+                        CSRPartsMap[part].push(triplet);
                     }
                 }
             }
@@ -386,8 +380,7 @@ window.onload = function () {
                 cameraDistance: 5.1,
                 cameraHeight: 0.9,
                 cameraTarget: { x: 0, y: 0.375, z: 0.0 },
-                exposure: 0.7,
-                bodyPadding: document.body.getBoundingClientRect().y,
+                exposure: 0.7
             });
 
             configuratorPRC.bind("loaded", function () {
@@ -400,7 +393,6 @@ window.onload = function () {
                 }
             });
 
-
             configuratorCSR.bind("loaded", function () {
                 if (configuratorCSR.isFirst) configuratorCSR.isFirst = false;
                 else return;
@@ -410,7 +402,6 @@ window.onload = function () {
                     });
                 }
             });
-
 
             var toggleRenderMode = document.getElementById("toggle-render");
 
@@ -448,10 +439,6 @@ window.onload = function () {
             window.onunload = function () {
                 ripe.unbindConfigurator(configuratorCSR);
                 ripe.unbindConfigurator(configuratorPRC);
-            }
-
-            window.onresize = function(event) {
-                configuratorCSR.resize();
             };
         });
     };
@@ -463,15 +450,14 @@ window.onload = function () {
             configuratorCSR.disable();
             configuratorPRC.resize();
             configuratorPRC.enable();
-        }
-        else if (currentRenderMode == "csr") {
+        } else if (currentRenderMode == "csr") {
             elementPRC.style.display = "none";
             elementCSR.style.display = "inline-block";
             configuratorPRC.disable();
             configuratorCSR.resize();
             configuratorCSR.enable();
         }
-    }
+    };
 
     var initInitials = function () {
         ripe.bindImage(document.getElementById("initials"), {
@@ -504,8 +490,8 @@ window.onload = function () {
         // associated drop down with these values
         var caller = ripe.loadedConfig
             ? function (callback) {
-                callback(ripe.loadedConfig);
-            }
+                  callback(ripe.loadedConfig);
+              }
             : ripe.getConfig;
         caller(function (result) {
             var initials = result.initials || {};

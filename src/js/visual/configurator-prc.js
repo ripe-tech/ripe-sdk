@@ -371,8 +371,7 @@ ripe.ConfiguratorPRC.prototype.resize = async function(size) {
  */
 ripe.ConfiguratorPRC.prototype.changeFrame = async function(frame, options = {}) {
     // Disabled Configurator, changing frame will lead to errors
-    if (!this._enabled)
-        return;
+    if (!this._enabled) return;
 
     // parses the requested frame value according to the pre-defined
     // standard (eg: side-3) and then unpacks it as view and position
@@ -1006,14 +1005,13 @@ ripe.ConfiguratorPRC.prototype._updateConfig = async function(animate) {
     );
 };
 
-ripe.ConfiguratorPRC.prototype.disable = function () {
+ripe.ConfiguratorPRC.prototype.disable = function() {
     this._enabled = false;
-}
+};
 
-ripe.ConfiguratorPRC.prototype.enable = function () {
+ripe.ConfiguratorPRC.prototype.enable = function() {
     this._enabled = true;
-}
-
+};
 
 /**
  * @ignore
