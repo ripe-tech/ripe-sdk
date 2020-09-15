@@ -149,14 +149,6 @@ ripe.ConfiguratorCSR.prototype.init = function() {
 };
 
 /**
- * Converts the position of the element to a rotation that can be applied to
- * the model or the camera;
- */
-ripe.ConfiguratorCSR.prototype._positionToRotation = function(position) {
-    return (position / 24) * 360;
-};
-
-/**
  * The Configurator deinitializer, to be called (by the owner) when
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
@@ -182,6 +174,14 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
     this._disposeResources();
 
     ripe.Visual.prototype.deinit.call(this);
+};
+
+/**
+ * Converts the position of the element to a rotation that can be applied to
+ * the model or the camera.
+ */
+ripe.ConfiguratorCSR.prototype._positionToRotation = function(position) {
+    return (position / 24) * 360;
 };
 
 /**
@@ -449,8 +449,10 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {})
     const _frame = ripe.parseFrameKey(frame);
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
-    const position = this.element.dataset.position;
+    const position = parseInt(this.element.dataset.position);
     const view = this.element.dataset.view;
+    const animating = this.element.classList.contains("animating");
+
 
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
@@ -469,20 +471,18 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {})
     var currentTransition = 0;
     var currentRotation;
     var finalRotation;
-    var step;
-    var direction = "horizontal";
-
+    var stepX = 0;
+    var stepY = 0;
+    var duration = 24;
+    
     const rotationTransition = () => {
-        if (direction === "horizontal") {
-            this._currentHorizontalRot += step;
-            this._rotateMeshes();
-        }
-        if (direction === "vertical") {
-            this._currentVerticalRot += step;
-            this._rotateCamera();
-        }
+        this._currentHorizontalRot += stepX;
+        this._currentVerticalRot += stepY;
 
-        if (currentTransition < 24) {
+        this._rotateMeshes();
+        this._rotateCamera();       
+
+        if (currentTransition < duration) {
             currentTransition++;
 
             this.render();
@@ -490,49 +490,45 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {})
         } else {
             this.horizontalRot = this._currentHorizontalRot;
             this.verticalRot = this._currentVerticalRot;
+
             this.element.classList.remove("animating");
             this.element.classList.remove("no-drag");
         }
     };
 
+    var requiresTransition = false;
+
     if (view !== nextView) {
-        finalRotation = this.maximumVerticalRot;
-        step = (finalRotation - this._currentVerticalRot) / 24;
+        finalRotation = 0;
+        
+        if (nextView === "top") finalRotation = this.maximumVerticalRot;
+        if (nextView === "bottom") finalRotation = this.minimumVerticalRot;
 
-        if (nextView === "bottom") {
-            finalRotation = this.minimumVerticalRot;
-            step = (this._currentVerticalRot - finalRotation) / 24;
-        }
+        stepY = (finalRotation - this.verticalRot) / duration;
 
-        direction = "vertical";
-
-        // only rotate if not dragging
-        if (!dragging) {
-            requestAnimationFrame(rotationTransition);
-            this.element.classList.add("animating");
-            this.element.classList.add("no-drag");
-        }
-    } else if (position !== nextPosition) {
-        currentRotation = this._currentHorizontalRot;
+        requiresTransition = true;
+    } if (position !== nextPosition) {
         finalRotation = this._positionToRotation(nextPosition);
 
-        if (currentRotation + 180 > finalRotation) {
-            step = (finalRotation - currentRotation) / 24;
+        if (this.horizontalRot + 180 > finalRotation) {
+            stepX = (finalRotation - this.horizontalRot) / duration;
         } else {
-            step = (currentRotation - finalRotation) / 24;
+            stepX = (currentRotation - this.horizontalRot) / duration;
         }
 
-        // only rotate if not dragging
-        if (!dragging) {
-            requestAnimationFrame(rotationTransition);
-            this.element.classList.add("animating");
-            this.element.classList.add("no-drag");
-        }
+        requiresTransition = true;
     }
 
-    await this.update();
-
     this.element.dataset.position = nextPosition;
+    this.element.dataset.view = nextView;
+
+    if (requiresTransition && !dragging && !animating) {
+        requestAnimationFrame(rotationTransition);
+        this.element.classList.add("animating");
+        this.element.classList.add("no-drag"); 
+    }
+
+    await this.update();    
 };
 
 /**
