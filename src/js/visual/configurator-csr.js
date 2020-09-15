@@ -295,6 +295,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     }
 
     if (options["reason"] === "set parts" || options["reason"] === "set part") {
+        console.log("Teste")
         await this._assignMaterials();
         await this.transition({ type: "material" });
     }
@@ -393,10 +394,9 @@ ripe.ConfiguratorCSR.prototype._rotateCamera = function () {
 
     var radVerticalRot = ripe.deg2rad(this._currentVerticalRot);
 
-    this.camera.position.y =
-        this.cameraHeight + maxHeight * Math.sin((Math.PI / 2 / 90) * radVerticalRot);
-    this.camera.position.z =
-        this.cameraDistance * Math.cos((ripe.deg2rad(this.minimumVerticalRot)) * radVerticalRot);
+    this.camera.position.y = this.cameraHeight + maxHeight * Math.sin( (Math.PI / 2) / 90 * this._currentVerticalRot );
+    this.camera.position.z = this.cameraDistance * Math.cos( (Math.PI / 2) / 90 * this._currentVerticalRot )
+
     this.camera.lookAt(this.cameraTarget);
 
     // this.meshes[mesh].rotation.y = this._currentHorizontalRot / 360 * Math.PI * 2;
@@ -494,7 +494,6 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}
     // TODO Use time here
     var currentTransition = 0;
     const transition = () => {
-        console.log(this._currentHorizontalRot, currentRotation, finalRotation, step);
         this._currentHorizontalRot += step;
 
         if (currentTransition < 24) {
@@ -1376,12 +1375,13 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     // Store current image
     this.renderer.setRenderTarget(previousSceneFBO);
     this.renderer.clear();
-    this.renderer.render(this.scene, camera);
+    this.renderer.render(this.scene, this.camera);
 
     if (options.type === "material") {
         // Update scene's materials
         for (var part in this.owner.parts) {
             if (part === "shadow") continue;
+
 
             var material = this.owner.parts[part].material;
             var color = this.owner.parts[part].color;
@@ -1392,20 +1392,21 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     // Render next image
     this.renderer.setRenderTarget(currentSceneFBO);
     this.renderer.clear();
-    this.renderer.render(scene, camera);
+    this.renderer.render(this.scene, this.camera);
 
     // Reset renderer
     this.renderer.setRenderTarget(null);
     this.renderer.clear();
 
-    const crossfade = () => {
+    const crossfadeFunction = () => {
+        console.log("Transition render")
         this.renderer.render(this.scene, transitionCamera);
 
         mixRatio += 1.0 / duration;
         currentTime++;
         this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
-        if (currentTime < duration) requestAnimationFrame(crossfade);
+        if (currentTime < duration) requestAnimationFrame(crossfadeFunction);
         else {
             this.scene.remove(quad);
             this.element.classList.remove("animating");
@@ -1422,7 +1423,7 @@ ripe.ConfiguratorCSR.prototype.transition = async function (options = {}) {
     this.element.classList.add("animating");
     this.element.classList.add("no-drag");
 
-    requestAnimationFrame(crossfade);
+    requestAnimationFrame(crossfadeFunction);
 };
 
 ripe.ConfiguratorCSR.prototype._applyMaterial = function (part, material) {
