@@ -13,14 +13,14 @@ if (
 
 /**
  * @class
- * @classdesc Class that defines the client sider renderer that supports 
- * the ConfiguratorCSR class. Stores and executes all logic for the 
+ * @classdesc Class that defines the client sider renderer that supports
+ * the ConfiguratorCSR class. Stores and executes all logic for the
  * rendering, including loading meshes and materials, as well as setting
  * up the scene to be used.
  *
  * @param {Object} owner The owner (customizer instance) for
  * this configurator.
- * @param {Object} element The DOM element in which the renderer will 
+ * @param {Object} element The DOM element in which the renderer will
  * render to.
  * @param {Object} options The options to be used to configure the
  * renderer instance to be created.
@@ -65,8 +65,6 @@ ripe.CSRenderer = function(owner, element, options) {
 
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRenderer.prototype.constructor = ripe.CSRenderer;
-
-ripe.CSRenderer.prototype.init = function() {};
 
 ripe.CSRenderer.prototype.updateOptions = async function(options) {
     if (options.meshPath && this.meshPath !== options.meshPath) {
@@ -587,7 +585,7 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}) {
     // Store current image
     this.renderer.setRenderTarget(previousSceneFBO);
     this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
+    this.render();
 
     if (options.type === "material") {
         // Update scene's materials
@@ -603,7 +601,7 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}) {
     // Render next image
     this.renderer.setRenderTarget(currentSceneFBO);
     this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
+    this.render();
 
     // Reset renderer
     this.renderer.setRenderTarget(null);

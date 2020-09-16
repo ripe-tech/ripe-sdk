@@ -76,17 +76,6 @@ ripe.ConfiguratorCSR.prototype.init = function() {
     this._ownerBinds = {};
     this._enabled = true;
 
-    this.maximumHorizontalRot = this.options.maximumHorizontalRot || 180;
-    this.minimumHorizontalRot = this.options.minimumHorizontalRot || -180;
-
-    this.maximumVerticalRot = this.options.maximumVerticalRot || 90;
-    this.minimumVerticalRot = this.options.minimumVerticalRot || 0;
-
-    this.horizontalRot = this._positionToRotation(this.position);
-    this._currentHorizontalRot = this.horizontalRot;
-    this.verticalRot = 0;
-    this._currentVerticalRot = this.verticalRot;
-
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
     this._ownerBinds.selected_part = this.owner.bind("selected_part", part =>
@@ -99,17 +88,10 @@ ripe.ConfiguratorCSR.prototype.init = function() {
         this.renderer.lowlight()
     );
 
-    // creates a structure the store the last presented rotation
-    // of the meshes as well as the camera rotation to be used
-    // when returning to a view for better user experience
-    this._lastFrame = {};
-
     // creates the necessary DOM elements and runs
     // the initial layout update operation if the
     // owner has a model and brand set (is ready)
     this._initLayout();
-    // register for all the necessary DOM events
-    this._registerHandlers();
 
     if (this.owner.brand && this.owner.model) {
         this._updateConfig();
@@ -127,6 +109,9 @@ ripe.ConfiguratorCSR.prototype.init = function() {
         if (config) this._updateConfig();
     });
 
+    // wait until configurator finished initializing to create the controls and
+    // renderer
+    this.controls = new ripe.OrbitalControls(this, this.owner, this.element, this.options);
     this.renderer = new ripe.CSRenderer(this.owner, this.element, this.options);
     this.renderer.updateElementBoundingBox();
 };
@@ -160,14 +145,6 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
 };
 
 /**
- * Converts the position of the element to a rotation that can be applied to
- * the model or the camera.
- */
-ripe.ConfiguratorCSR.prototype._positionToRotation = function(position) {
-    return (position / 24) * 360;
-};
-
-/**
  * Updates configurator current options with the ones provided.
  *
  * @param {Object} options Set of optional parameters to adjust the Configurator, such as:
@@ -182,6 +159,7 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = 
     ripe.Visual.prototype.updateOptions.call(this, options);
 
     this.renderer.updateOptions(options);
+    this.controls.updateOptions(options);
 
     // this.library = options.library === undefined ? this.library : options.library;
     this.width = options.width === undefined ? this.width : options.width;
@@ -246,17 +224,6 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
         return;
     }
 
-    var needsUpdate = false;
-
-    const animating = this.element.classList.contains("animating");
-    const dragging = this.element.classList.contains("drag");
-
-    // If the user is dragging
-    if (dragging) {
-        needsUpdate = this._setContinuousRotations();
-        // needsUpdate = true;
-    }
-
     if (options.reason === "set parts" || options.reason === "set part") {
         await this.renderer._assignMaterials();
         await this.renderer.crossfade({ type: "material" });
@@ -266,53 +233,15 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     // frame is going to be "calculated" and rendered (not same mask)
     this.renderer.lowlight();
 
-    if (needsUpdate || animating) this.renderer.render();
-
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
     return true;
 };
 
-/**
- * Sets the rotation of the camera and meshes based on their current
- * continuous rotation.
- */
-ripe.ConfiguratorCSR.prototype._setContinuousRotations = function() {
-    var needsUpdate = false;
-
-    // horizontal rotation is done by rotating the meshes, vertical
-    // is done to the camera, easier to avoid any problems with rotation
-    if (this.horizontalRot - this.mouseDeltaX !== this._currentHorizontalRot) {
-        this._currentHorizontalRot = this.horizontalRot - this.mouseDeltaX;
-
-        needsUpdate = true;
-
-        this.renderer._rotateMeshes(this._currentHorizontalRot);
-    }
-
-    var diff;
-    if (this.verticalRot + this.mouseDeltaY !== this._currentVerticalRot) {
-        if (this.mouseDeltaY >= this.maximumVerticalRot - this.verticalRot) {
-            diff = this.mouseDeltaY - (this.maximumVerticalRot - this.verticalRot);
-
-            this.referenceY -= diff;
-            this.mouseDeltaY += diff;
-        } else if (this.mouseDeltaY <= this.minimumVerticalRot - this.verticalRot) {
-            diff = this.mouseDeltaY + (this.minimumVerticalRot + this.verticalRot);
-
-            this.referenceY -= diff;
-            this.mouseDeltaY += diff;
-        } else {
-            // only rotate the camera when the input doesn't exceed the maximum allower rotation
-            this._currentVerticalRot = this.verticalRot + this.mouseDeltaY;
-
-            this.renderer._rotateCamera(this._currentVerticalRot);
-
-            needsUpdate = true;
-        }
-    }
-
-    return needsUpdate;
+ripe.ConfiguratorCSR.prototype.applyRotations = function() {
+    this.renderer._rotateMeshes(this.controls.currentHorizontalRot);
+    this.renderer._rotateCamera(this.controls.currentVerticalRot);
+    this.renderer.render();
 };
 
 ripe.ConfiguratorCSR.prototype.disable = function() {
@@ -330,7 +259,6 @@ ripe.ConfiguratorCSR.prototype.enable = function() {
  * @param {Object} options Set of optional parameters to adjust the Configurator.
  */
 ripe.ConfiguratorCSR.prototype.cancel = async function(options = {}) {
-    if (this._buildSignature() === this.signature || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
     return true;
 };
@@ -378,96 +306,9 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
     );
 };
 
-ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {}) {
-    // Disabled Configurator, changing frame will lead to errors
-    if (!this._enabled) return;
-
-    // parses the requested frame value according to the pre-defined
-    // standard (eg: side-3) and then unpacks it as view and position
-    const _frame = ripe.parseFrameKey(frame);
-    const nextView = _frame[0];
-    const nextPosition = parseInt(_frame[1]);
-    const position = parseInt(this.element.dataset.position);
-    const view = this.element.dataset.view;
-    const animating = this.element.classList.contains("animating");
-
-    // unpacks the other options to the frame change defaulting their values
-    // in case undefined values are found
-    /*
-    const duration = options.duration === undefined ? null : options.duration;
-    const stepDurationRef = options.stepDuration === this.stepDuration ? null : options.stepDuration;
-    const revolutionDuration =
-        options.revolutionDuration === undefined
-            ? this.revolutionDuration
-            : options.revolutionDuration;
-    const type = options.type === undefined ? null : options.type;
-    */
-    const dragging = this.element.classList.contains("drag");
-
-    // TODO Use time here
-    var currentTransition = 0;
-    var currentRotation;
-    var finalRotation;
-    var stepX = 0;
-    var stepY = 0;
-    var duration = 24;
-
-    const rotationTransition = () => {
-        console.log("Rendering rotation");
-        this._currentHorizontalRot += stepX;
-        this._currentVerticalRot += stepY;
-
-        this.renderer._rotateMeshes(this._currentHorizontalRot);
-        this.renderer._rotateCamera(this._currentVerticalRot);
-
-        if (currentTransition < duration) {
-            currentTransition++;
-
-            this.renderer.render();
-            requestAnimationFrame(rotationTransition);
-        } else {
-            this.horizontalRot = this._currentHorizontalRot;
-            this.verticalRot = this._currentVerticalRot;
-
-            this.element.classList.remove("animating");
-            this.element.classList.remove("no-drag");
-        }
-    };
-
-    var requiresTransition = false;
-
-    if (view !== nextView) {
-        finalRotation = 0;
-
-        if (nextView === "top") finalRotation = this.maximumVerticalRot;
-        if (nextView === "bottom") finalRotation = this.minimumVerticalRot;
-
-        stepY = (finalRotation - this.verticalRot) / duration;
-
-        requiresTransition = true;
-    }
-    if (position !== nextPosition) {
-        finalRotation = this._positionToRotation(nextPosition);
-
-        if (this.horizontalRot + 180 > finalRotation) {
-            stepX = (finalRotation - this.horizontalRot) / duration;
-        } else {
-            stepX = (currentRotation - this.horizontalRot) / duration;
-        }
-
-        requiresTransition = true;
-    }
-
-    this.element.dataset.position = nextPosition;
-    this.element.dataset.view = nextView;
-
-    if (requiresTransition && !dragging && !animating) {
-        requestAnimationFrame(rotationTransition);
-        this.element.classList.add("animating");
-        this.element.classList.add("no-drag");
-    }
-
-    await this.update();
+ripe.ConfiguratorCSR.prototype.updateElementPosition = function(newPosition, newView) {
+    this.element.dataset.position = newPosition;
+    this.element.dataset.view = newView;
 };
 
 /**
@@ -548,6 +389,22 @@ ripe.ConfiguratorCSR.prototype._initLayout = function() {
     };
 };
 
+ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {}) {
+    // Disabled Configurator, changing frame will lead to errors
+    if (!this._enabled) return;
+
+    const _frame = ripe.parseFrameKey(frame);
+    const nextView = _frame[0];
+    const nextPosition = parseInt(_frame[1]);
+
+    this.controls.updateRotation(_frame, options);
+
+    this.element.dataset.position = nextPosition;
+    this.element.dataset.view = nextView;
+
+    await this.update();
+};
+
 /**
  * @ignore
  */
@@ -616,212 +473,4 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
             force: true
         }
     );
-};
-
-/**
- * @ignore
- */
-ripe.ConfiguratorCSR.prototype._registerHandlers = function() {
-    // captures the current context to be used inside clojures
-    const self = this;
-
-    // retrieves the reference to the multiple elements that
-    // are going to be used for event handler operations
-    const area = this.element.querySelector(".area");
-
-    // binds the mousedown event on the element to prepare
-    // it for drag movements
-    this._addElementHandler("mousedown", function(event) {
-        const _element = this;
-        _element.dataset.view = _element.dataset.view || "side";
-        self.base = parseInt(_element.dataset.position) || 0;
-        self.down = true;
-        self.referenceX = event.pageX;
-        self.referenceY = event.pageY;
-        self.percent = 0;
-        _element.classList.add("drag");
-    });
-
-    // listens for mouseup events and if it occurs then
-    // stops reacting to mouse move events has drag movements
-    this._addElementHandler("mouseup", function(event) {
-        const _element = this;
-        self.down = false;
-        self.previous = self.percent;
-        self.percent = 0;
-        _element.classList.remove("drag");
-
-        event = ripe.fixEvent(event);
-
-        // Apply rotation to model
-        self.horizontalRot = self._currentHorizontalRot;
-        self._currentHorizontalRot = self.horizontalRot;
-        self.mouseDeltaX = 0;
-
-        // Apply rotation to camera
-        self.verticalRot = self._currentVerticalRot;
-        self._currentVerticalRot = self.verticalRot;
-        self.mouseDeltaY = 0;
-
-        // self.renderer._attemptRaycast(event);
-    });
-
-    // listens for mouse leave events and if it occurs then
-    // stops reacting to mousemove events has drag movements
-    this._addElementHandler("mouseleave", function(event) {
-        const _element = this;
-        self.down = false;
-        self.previous = self.percent;
-        self.percent = 0;
-        _element.classList.remove("drag");
-    });
-
-    // if a mouse move event is triggered while the mouse is
-    // pressed down then updates the position of the drag element
-    this._addElementHandler("mousemove", function(event) {
-        if (!this.classList.contains("ready") || this.classList.contains("no-drag")) {
-            return;
-        }
-
-        const down = self.down;
-        self.mousePosX = event.pageX;
-        self.mousePosY = event.pageY;
-        if (down) self._parseDrag();
-    });
-
-    area.addEventListener("click", function(event) {
-        // verifies if the previous drag operation (if any) has exceed
-        // the minimum threshold to be considered drag (click avoided)
-        if (Math.abs(self.previous) > self.clickThreshold) {
-            event.stopImmediatePropagation();
-            event.stopPropagation();
-            return;
-        }
-
-        event = ripe.fixEvent(event);
-
-        // retrieves the reference to the part name by using the index
-        // extracted from the masks image (typical strategy for retrieval)
-        // const part = self.partsList[index - 1];
-        // const isVisible = self.hiddenParts.indexOf(part) === -1;
-        // if (part && isVisible) self.owner.selectPart(part);
-        event.stopPropagation();
-    });
-
-    area.addEventListener("dragstart", function(event) {
-        event.preventDefault();
-    });
-
-    area.addEventListener("dragend", function(event) {
-        event.preventDefault();
-    });
-
-    // verifies if mutation should be "observed" for this visual
-    // and in such case registers for the observation of any DOM
-    // mutation (eg: attributes) for the configurator element, triggering
-    // a new update operation in case that happens
-    if (this.mutations) {
-        // listens for attribute changes to redraw the configurator
-        // if needed, this makes use of the mutation observer, the
-        // redraw should be done for width and height style and attributes
-        const Observer =
-            (typeof MutationObserver !== "undefined" && MutationObserver) ||
-            (typeof WebKitMutationObserver !== "undefined" && WebKitMutationObserver) || // eslint-disable-line no-undef
-            null;
-        this._observer = Observer
-            ? new Observer(mutations => {
-                  for (let index = 0; index < mutations.length; index++) {
-                      const mutation = mutations[index];
-                      if (mutation.type === "style") self.resize();
-                      if (mutation.type === "attributes") self.update();
-                  }
-              })
-            : null;
-        if (this._observer) {
-            this._observer.observe(this.element, {
-                attributes: true,
-                subtree: false,
-                characterData: true,
-                attributeFilter: ["style", "data-format", "data-size", "data-width", "data-height"]
-            });
-        }
-    }
-
-    // adds handlers for the touch events so that they get
-    // parsed to mouse events for the configurator element,
-    // taking into account that there may be a touch handler
-    // already defined
-    ripe.touchHandler(this.element);
-};
-
-/**
- * @ignore
- */
-ripe.ConfiguratorCSR.prototype._parseDrag = function() {
-    // retrieves the last recorded mouse position
-    // and the current one and calculates the
-    // drag movement made by the user
-    const child = this.element.querySelector("*:first-child");
-    const referenceX = this.referenceX;
-    const referenceY = this.referenceY;
-    const mousePosX = this.mousePosX;
-    const mousePosY = this.mousePosY;
-
-    const base = this.base;
-    this.mouseDeltaX = referenceX - mousePosX;
-    this.mouseDeltaY = referenceY - mousePosY;
-    const elementWidth = this.element.clientWidth;
-    const elementHeight = this.element.clientHeight || child.clientHeight;
-    const percentX = this.mouseDeltaX / elementWidth;
-    const percentY = this.mouseDeltaY / elementHeight;
-    this.percent = percentX;
-    const sensitivity = this.element.dataset.sensitivity || this.sensitivity;
-    const verticalThreshold = this.element.dataset.verticalThreshold || this.verticalThreshold;
-
-    // if the drag was vertical then alters the
-    // view if it is supported by the product
-    const view = this.element.dataset.view;
-    let nextView = view;
-    if (sensitivity * percentY > verticalThreshold) {
-        nextView = view === "top" ? "side" : "bottom";
-        this.referenceY = mousePosY;
-    } else if (sensitivity * percentY < verticalThreshold * -1) {
-        nextView = view === "bottom" ? "side" : "top";
-        this.referenceY = mousePosY;
-    }
-
-    // retrieves the current view and its frames
-    // and determines which one is the next frame
-    const viewFrames = 24;
-    const offset = Math.round((sensitivity * percentX * viewFrames) / 24);
-    let nextPosition = (base - offset) % viewFrames;
-    nextPosition = nextPosition >= 0 ? nextPosition : viewFrames + nextPosition;
-
-    // if the view changes then uses the last
-    // position presented in that view, if not
-    // then shows the next position according
-    // to the drag
-    nextPosition = view === nextView ? nextPosition : this._lastFrame[nextView] || 0;
-
-    const nextFrame = ripe.getFrameKey(nextView, nextPosition);
-    this.changeFrame(nextFrame);
-};
-
-/**
- * Builds the signature string for the current internal state
- * allowing a single unique representation of the current frame.
- *
- * This signature should allow dirty control for the configurator.
- *
- * @returns {String} The unique signature for the configurator state.
- */
-ripe.ConfiguratorCSR.prototype._buildSignature = function() {
-    const format = this.element.dataset.format || this.format;
-    const size = this.element.dataset.size || this.size;
-    const width = size || this.element.dataset.width || this.width;
-    const height = size || this.element.dataset.height || this.height;
-    const backgroundColor = this.element.dataset.background_color || this.backgroundColor;
-    return `${this.owner._getQuery()}&width=${String(width)}&height=${String(
-        height
-    )}&format=${String(format)}&background=${String(backgroundColor)}`;
 };
