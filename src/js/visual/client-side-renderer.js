@@ -554,13 +554,10 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}) {
         100
     );
 
-    // transitionCamera = new this.library.PerspectiveCamera(this.cameraFOV, width / height, 1, 20000);
-
     transitionCamera.position.x = this.camera.position.x;
     transitionCamera.position.y = this.camera.position.y;
     transitionCamera.position.z = this.camera.position.z;
-    // transitionCamera.lookAt(this.cameraTarget);
-
+    
     var previousSceneFBO = new this.library.WebGLRenderTarget(
         width,
         height,
@@ -634,19 +631,13 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}) {
     requestAnimationFrame(crossfadeFunction);
 };
 
-ripe.CSRenderer.prototype._rotateMeshes = function(modelRotation) {
-    // var allowedRotation = this.maximumHorizontalRot - this.minimumHorizontalRot;
-    for (var mesh in this.meshes) {
-        this.meshes[mesh].rotation.y = ripe.deg2rad(modelRotation);
-    }
-};
-
-ripe.CSRenderer.prototype._rotateCamera = function(cameraRotation) {
+ripe.CSRenderer.prototype._rotateCamera = function(cameraRotationX, cameraRotationY) {
     var maxHeight = this.cameraDistance - this.cameraHeight;
 
-    this.camera.position.y =
-        this.cameraHeight + maxHeight * Math.sin((Math.PI / 2 / 90) * cameraRotation);
-    this.camera.position.z = this.cameraDistance * Math.cos((Math.PI / 2 / 90) * cameraRotation);
+    var distance = this.cameraDistance * Math.cos((Math.PI / 180) * cameraRotationY);
+    this.camera.position.x = distance * Math.sin((Math.PI / 180) * cameraRotationX);
+    this.camera.position.y = this.cameraHeight + maxHeight * Math.sin((Math.PI / 180) * cameraRotationY);
+    this.camera.position.z = distance * Math.cos((Math.PI / 180) * cameraRotationX);
 
     this.camera.lookAt(this.cameraTarget);
 };

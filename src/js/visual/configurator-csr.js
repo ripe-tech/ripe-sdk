@@ -239,8 +239,7 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
 };
 
 ripe.ConfiguratorCSR.prototype.applyRotations = function() {
-    this.renderer._rotateMeshes(this.controls.currentHorizontalRot);
-    this.renderer._rotateCamera(this.controls.currentVerticalRot);
+    this.renderer._rotateCamera(this.controls.currentHorizontalRot, this.controls.currentVerticalRot);
     this.renderer.render();
 };
 
@@ -284,7 +283,12 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
         return;
     }
 
-    if (this.renderer) this.renderer.updateElementBoundingBox();
+    console.log("resize event ") 
+    console.log(this.element.getBoundingClientRect())
+    if (this.renderer) {
+        console.log("And being applied!")
+        this.renderer.updateElementBoundingBox();
+    }
 
     const area = this.element.querySelector(".area");
 
@@ -384,8 +388,10 @@ ripe.ConfiguratorCSR.prototype._initLayout = function() {
     // of the element in the window, needs to be updated on
     // every resize
     window.onresize = () => {
-        // this.resize();
+        this.resize();
         this.renderer.updateElementBoundingBox();
+        console.log("onresize event ") 
+        console.log(this.element.getBoundingClientRect());
     };
 };
 
