@@ -600,7 +600,6 @@ ripe.CSRenderer.prototype.crossfade = function(options = {}) {
             this._applyMaterial(part, this.loadedMaterials[material + "_" + color]);
         }
     } else if (options.type === "rotation") {
-        console.log(options);
         this._applyRotations(options.rotationX, options.rotationY);
     }
 

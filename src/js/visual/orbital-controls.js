@@ -28,7 +28,7 @@ ripe.OrbitalControls = function (configurator, element, options) {
     this.currentVerticalRot = this._baseVerticalRot;
     // Types of transition = "cross", "rotation" or "none"
     this.viewAnimate = options.viewAnimate === undefined ? "rotate" : options.viewAnimate;
-    this.rotationEasing = options.easing || "linear";
+    this.rotationEasing = options.rotationEasing || "easeInOutQuad";
 
     this.lockRotation = options.lockRotation || "";
 
@@ -240,10 +240,11 @@ ripe.OrbitalControls.prototype.updateRotation = function (frame, options) {
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
 
-    if (dragging) this._updateDragRotations();
-    else this._checkViewPositionRotations(_frame, options);
+    var needsUpdate = false;
+    if (dragging) needsUpdate = this._updateDragRotations();
+    else needsUpdate = this._checkViewPositionRotations(_frame, options);
     
-    this.configurator.updateViewPosition(nextView, nextPosition);
+    if (needsUpdate) this.configurator.updateViewPosition(nextView, nextPosition);
 };
 
 /**
@@ -288,6 +289,7 @@ ripe.OrbitalControls.prototype._updateDragRotations = function () {
     }
 
     if (needsUpdate) this.configurator._applyRotations();
+    return needsUpdate;
 };
 
 ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, options) {
@@ -301,7 +303,7 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, op
     const view = this.element.dataset.view;
 
     // Nothing has changed, or is performing other transition
-    if ((view === nextView && position === nextPosition) || animating) return;
+    if ((view === nextView && position === nextPosition) || animating) return false;
 
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
@@ -320,7 +322,7 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, op
     // We could allow the crossfade to happen even with the same view
     if (view === nextView || this.viewAnimate === "rotate") {
         this.rotationTransition(nextView, nextPosition, duration);
-        return;
+        return true;
     }
 
     this.currentHorizontalRot = this._positionToRotation(nextPosition);
@@ -331,7 +333,7 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, op
 
     if (this.viewAnimate === "none") {
         this.configurator._applyRotations();
-        return;
+        return true;
     }
 
     this.configurator._beginTransition({
@@ -341,6 +343,8 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, op
         rotationY: this.currentVerticalRot,
         duration: duration
     });
+
+    return true;
 };
 
 ripe.OrbitalControls.prototype.rotationTransition = function (nextView, nextPosition, duration) {

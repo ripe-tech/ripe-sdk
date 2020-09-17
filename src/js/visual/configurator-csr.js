@@ -232,6 +232,7 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
 };
 
 ripe.ConfiguratorCSR.prototype.updateViewPosition = function(nextView, nextPosition) {
+    console.log("Updating to " + nextView + " - " + nextPosition)
     this.element.dataset.position = nextPosition;
     this.element.dataset.view = nextView;
 };
