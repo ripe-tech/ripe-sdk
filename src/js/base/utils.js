@@ -44,6 +44,11 @@ ripe.deg2rad = function(angle) {
     return (angle / 360) * Math.PI * 2;
 };
 
+ripe.linearTween = function(currentTime, startValue, endValue, duration) {
+    var change = endValue - startValue;
+    return (change * currentTime) / duration + startValue;
+};
+
 /**
  * @ignore
  */

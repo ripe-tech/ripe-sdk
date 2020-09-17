@@ -26,7 +26,7 @@ if (
  * @param {Object} options The options to be used to configure the
  * configurator instance to be created.
  */
-ripe.ConfiguratorCSR = function(owner, element, options) {
+ripe.ConfiguratorCSR = function (owner, element, options) {
     this.type = this.type || "ConfiguratorCSR";
 
     ripe.Visual.call(this, owner, element, options);
@@ -42,7 +42,7 @@ ripe.ConfiguratorCSR.prototype.constructor = ripe.ConfiguratorCSR;
  * Sets the various values for the Configurator taking into
  * owner's default values.
  */
-ripe.ConfiguratorCSR.prototype.init = function() {
+ripe.ConfiguratorCSR.prototype.init = function () {
     ripe.Visual.prototype.init.call(this);
 
     this.width = this.options.width || 1000;
@@ -56,20 +56,18 @@ ripe.ConfiguratorCSR.prototype.init = function() {
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.clickThreshold = this.options.clickThreshold || 0.015;
+    // TOLEARN What does interval do? It's not accessed anywhere in the SDK, nor appears documented in the
+    // readme.
     this.interval = this.options.interval || 0;
-    this.preloadDelay = this.options.preloadDelay || 150;
     this.maskOpacity = this.options.maskOpacity || 0.4;
     this.maskDuration = this.options.maskDuration || 150;
     this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
     this.useMasks = this.options.useMasks === undefined ? !this.noMasks : this.options.useMasks;
     this.view = this.options.view || "side";
     this.position = this.options.position || 0;
-
     this.duration = this.options.duration || 500;
-
     this.configAnimate =
         this.options.configAnimate === undefined ? "cross" : this.options.configAnimate;
-    this.viewAnimate = this.options.viewAnimate === undefined ? "cross" : this.options.viewAnimate;
     this.ready = false;
     this._finalize = null;
     this._observer = null;
@@ -111,9 +109,8 @@ ripe.ConfiguratorCSR.prototype.init = function() {
 
     // wait until configurator finished initializing to create the controls and
     // renderer
-    this.controls = new ripe.OrbitalControls(this, this.owner, this.element, this.options);
-    this.renderer = new ripe.CSRenderer(this.owner, this.element, this.options);
-    this.renderer.updateElementBoundingBox();
+    this.controls = new ripe.OrbitalControls(this, this.element, this.options);
+    this.renderer = new ripe.CSRenderer(this.element, this.options);
 };
 
 /**
@@ -121,7 +118,7 @@ ripe.ConfiguratorCSR.prototype.init = function() {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.ConfiguratorCSR.prototype.deinit = async function() {
+ripe.ConfiguratorCSR.prototype.deinit = async function () {
     await this.cancel();
 
     while (this.element.firstChild) {
@@ -155,7 +152,7 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
  */
-ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = true) {
+ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
     this.renderer.updateOptions(options);
@@ -176,10 +173,9 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = 
             : options.verticalThreshold;
     this.clickThreshold =
         options.clickThreshold === undefined ? this.clickThreshold : options.clickThreshold;
+    // This is never used
     this.interval = options.interval === undefined ? this.interval : options.interval;
     this.duration = options.duration === undefined ? this.duration : options.duration;
-    this.preloadDelay =
-        options.preloadDelay === undefined ? this.preloadDelay : options.preloadDelay;
     this.maskOpacity = options.maskOpacity === undefined ? this.maskOpacity : options.maskOpacity;
     this.maskDuration =
         options.maskDuration === undefined ? this.maskDuration : options.maskDuration;
@@ -207,10 +203,9 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = 
  * - 'animate' - If it's to animate the update (defaults to 'false').
  * - 'duration' - The duration in milliseconds that the transition should take.
  * - 'callback' - The callback to be called at the end of the update.
- * - 'preload' - If it's to execute the pre-loading process.
  * - 'force' - If the updating operation should be forced (ignores signature).
  */
-ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
+ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     // in case the configurator is currently nor ready for an
     // update none is performed and the control flow is returned
     // with the false value (indicating a no-op, nothing was done)
@@ -225,8 +220,8 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     }
 
     if (options.reason === "set parts" || options.reason === "set part") {
-        await this.renderer._assignMaterials();
-        await this.renderer.crossfade({ type: "material" });
+        await this.renderer.loadMaterials(this.owner.parts);
+        await this.renderer.crossfade({ type: "material", parts: this.owner.parts });
     }
 
     // removes the highlight support from the matched object as a new
@@ -238,16 +233,35 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     return true;
 };
 
-ripe.ConfiguratorCSR.prototype.applyRotations = function() {
-    this.renderer._rotateCamera(this.controls.currentHorizontalRot, this.controls.currentVerticalRot);
+ripe.ConfiguratorCSR.prototype.updateViewPosition = function (nextView, nextPosition) {
+    this.element.dataset.position = nextPosition;
+    this.element.dataset.view = nextView;
+}
+
+/**
+ * Function called by the controls when a new rotation has been detected, 
+ * prompts a new render to update the scene.
+ */
+ripe.ConfiguratorCSR.prototype._applyRotations = function () {
+    this.renderer._applyRotations(this.controls.currentHorizontalRot, this.controls.currentVerticalRot);
     this.renderer.render();
 };
 
-ripe.ConfiguratorCSR.prototype.disable = function() {
+ripe.ConfiguratorCSR.prototype._beginTransition = function (options) {
+    this.renderer.transition(options);
+}
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCSR.prototype.disable = function () {
     this._enabled = false;
 };
 
-ripe.ConfiguratorCSR.prototype.enable = function() {
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCSR.prototype.enable = function () {
     this._enabled = true;
 };
 
@@ -257,7 +271,7 @@ ripe.ConfiguratorCSR.prototype.enable = function() {
  *
  * @param {Object} options Set of optional parameters to adjust the Configurator.
  */
-ripe.ConfiguratorCSR.prototype.cancel = async function(options = {}) {
+ripe.ConfiguratorCSR.prototype.cancel = async function (options = {}) {
     if (this._finalize) this._finalize({ canceled: true });
     return true;
 };
@@ -269,7 +283,7 @@ ripe.ConfiguratorCSR.prototype.cancel = async function(options = {}) {
  *
  * @param {Number} size The number of pixels to resize to.
  */
-ripe.ConfiguratorCSR.prototype.resize = async function(size) {
+ripe.ConfiguratorCSR.prototype.resize = async function (size) {
     if (this.element === undefined) {
         return;
     }
@@ -283,13 +297,6 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
         return;
     }
 
-    console.log("resize event ") 
-    console.log(this.element.getBoundingClientRect())
-    if (this.renderer) {
-        console.log("And being applied!")
-        this.renderer.updateElementBoundingBox();
-    }
-
     const area = this.element.querySelector(".area");
 
     area.width = size * this.pixelRatio;
@@ -298,8 +305,11 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
     area.style.height = size + "px";
     this.currentSize = size;
 
+    // On the resize of the configurator, the renderer needs to update 
+    // the bounding box to maintain correct raycasts
     if (this.renderer) {
-        this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
+        this.renderer.updateSize(this.element.clientWidth, this.element.clientHeight);
+        this.renderer.updateElementBoundingBox();
     }
 
     await this.update(
@@ -310,17 +320,12 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
     );
 };
 
-ripe.ConfiguratorCSR.prototype.updateElementPosition = function(newPosition, newView) {
-    this.element.dataset.position = newPosition;
-    this.element.dataset.view = newView;
-};
-
 /**
  * Resizes the Configurator to the defined maximum size.
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorCSR.prototype.enterFullscreen = async function(options) {
+ripe.ConfiguratorCSR.prototype.enterFullscreen = async function (options) {
     if (this.element === undefined) {
         return;
     }
@@ -334,7 +339,7 @@ ripe.ConfiguratorCSR.prototype.enterFullscreen = async function(options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function(options) {
+ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function (options) {
     if (this.element === undefined) {
         return;
     }
@@ -345,14 +350,14 @@ ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function(options) {
 /**
  * Turns on (enables) the masks on selection/highlight.
  */
-ripe.ConfiguratorCSR.prototype.enableMasks = function() {
+ripe.ConfiguratorCSR.prototype.enableMasks = function () {
     this.useMasks = true;
 };
 
 /**
  * Turns off (disables) the masks on selection/highlight.
  */
-ripe.ConfiguratorCSR.prototype.disableMasks = function() {
+ripe.ConfiguratorCSR.prototype.disableMasks = function () {
     this.useMasks = false;
 };
 
@@ -367,7 +372,7 @@ ripe.ConfiguratorCSR.prototype.disableMasks = function() {
  *
  * @private
  */
-ripe.ConfiguratorCSR.prototype._initLayout = function() {
+ripe.ConfiguratorCSR.prototype._initLayout = function () {
     // clears the elements children
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -383,30 +388,13 @@ ripe.ConfiguratorCSR.prototype._initLayout = function() {
     // sets the initial view and position
     this.element.dataset.view = this.view;
     this.element.dataset.position = this.position;
-
-    // coordinates for raycaster requires the exact positioning
-    // of the element in the window, needs to be updated on
-    // every resize
-    window.onresize = () => {
-        this.resize();
-        this.renderer.updateElementBoundingBox();
-        console.log("onresize event ") 
-        console.log(this.element.getBoundingClientRect());
-    };
 };
 
-ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {}) {
+ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}) {
     // Disabled Configurator, changing frame will lead to errors
     if (!this._enabled) return;
 
-    const _frame = ripe.parseFrameKey(frame);
-    const nextView = _frame[0];
-    const nextPosition = parseInt(_frame[1]);
-
-    this.controls.updateRotation(_frame, options);
-
-    this.element.dataset.position = nextPosition;
-    this.element.dataset.view = nextView;
+    this.controls.updateRotation(frame, options);
 
     await this.update();
 };
@@ -414,7 +402,7 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {})
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
+ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
@@ -423,6 +411,8 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
     if (this.renderer) {
         // removes the highlight from any part
         this.renderer.lowlight();
+        // update element bounding box for raycasting
+        this.renderer.updateElementBoundingBox();
     }
 
     // retrieves the new product frame object and sets it
@@ -474,8 +464,6 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
     this.update(
         {},
         {
-            preload: true,
-            animate: animate || this.configAnimate,
             force: true
         }
     );

@@ -380,7 +380,11 @@ window.onload = function () {
                 cameraDistance: 5.1,
                 cameraHeight: 0.9,
                 cameraTarget: { x: 0, y: 0.375, z: 0.0 },
-                exposure: 0.7
+                exposure: 0.7,
+                lockAxis: "y",
+                viewAnimate: "cross"
+                //viewAnimate: "none"
+                //viewAnimate: "rotate"
             });
 
             configuratorPRC.bind("loaded", function () {

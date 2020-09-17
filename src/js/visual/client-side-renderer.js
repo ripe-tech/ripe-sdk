@@ -25,11 +25,10 @@ if (
  * @param {Object} options The options to be used to configure the
  * renderer instance to be created.
  */
-ripe.CSRenderer = function(owner, element, options) {
+ripe.CSRenderer = function(element, options) {
     this.type = this.type || "CSRenderer";
     this.element = element;
-    this.owner = owner;
-
+    
     this.library = options.library;
     this.library = options.library || null;
     this.cameraTarget = new this.library.Vector3(
@@ -61,6 +60,13 @@ ripe.CSRenderer = function(owner, element, options) {
     this._initializeRenderer();
     this._initializeMesh();
     this._registerHandlers();
+
+    // coordinates for raycaster requires the exact positioning
+    // of the element in the window, needs to be updated on
+    // every resize
+    window.onresize = () => {
+        this.updateElementBoundingBox();
+    };
 };
 
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
@@ -222,10 +228,9 @@ ripe.CSRenderer.prototype.render = function() {
     }
 };
 
-ripe.CSRenderer.prototype._linearTween = function(currentTime, startValue, endValue, duration) {
-    var change = endValue - startValue;
-    return (change * currentTime) / duration + startValue;
-};
+ripe.CSRenderer.prototype.updateSize = function(width, height) {
+    this.renderer.setSize(width, height);
+}
 
 ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
     const animating = this.element.classList.contains("animating");
@@ -335,7 +340,7 @@ ripe.CSRenderer.prototype.changeHighlight = async function(part, startValue, end
         meshTarget.material.color.b = currentValue;
 
         currentTime = Date.now() - startTime;
-        currentValue = this._linearTween(currentTime, startingValue, endValue, duration);
+        currentValue = ripe.linearTween(currentTime, startingValue, endValue, duration);
 
         this.render();
 
@@ -364,12 +369,12 @@ ripe.CSRenderer.prototype._disposeResources = function() {
     }
 };
 
-ripe.CSRenderer.prototype._assignMaterials = async function() {
-    for (var part in this.owner.parts) {
+ripe.CSRenderer.prototype.loadMaterials = async function(parts) {
+    for (var part in parts) {
         if (part === "shadow") continue;
 
-        var material = this.owner.parts[part].material;
-        var color = this.owner.parts[part].color;
+        var material = parts[part].material;
+        var color = parts[part].color;
         await this._loadMaterial(material, color);
     }
 };
@@ -535,7 +540,11 @@ ripe.CSRenderer.prototype.updateElementBoundingBox = function() {
     }
 };
 
-ripe.CSRenderer.prototype.crossfade = async function(options = {}) {
+ripe.CSRenderer.prototype.transition = function (options) {
+    if (options.method === "cross") this.crossfade(options);
+}
+
+ripe.CSRenderer.prototype.crossfade = function(options = {}) {
     var renderTargetParameters = {
         minFilter: this.library.LinearFilter,
         magFilter: this.library.LinearFilter,
@@ -586,13 +595,16 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}) {
 
     if (options.type === "material") {
         // Update scene's materials
-        for (var part in this.owner.parts) {
+        for (var part in options.parts) {
             if (part === "shadow") continue;
 
-            var material = this.owner.parts[part].material;
-            var color = this.owner.parts[part].color;
+            var material = options.parts[part].material;
+            var color = options.parts[part].color;
             this._applyMaterial(part, this.loadedMaterials[material + "_" + color]);
         }
+    } else if (options.type === "rotation") {
+        console.log(options);
+        this._applyRotations(options.rotationX, options.rotationY);        
     }
 
     // Render next image
@@ -631,11 +643,11 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}) {
     requestAnimationFrame(crossfadeFunction);
 };
 
-ripe.CSRenderer.prototype._rotateCamera = function(cameraRotationX, cameraRotationY) {
+ripe.CSRenderer.prototype._applyRotations = function(cameraRotationX, cameraRotationY) {
     var maxHeight = this.cameraDistance - this.cameraHeight;
 
     var distance = this.cameraDistance * Math.cos((Math.PI / 180) * cameraRotationY);
-    this.camera.position.x = distance * Math.sin((Math.PI / 180) * cameraRotationX);
+    this.camera.position.x = distance * Math.sin((Math.PI / 180) * -cameraRotationX);
     this.camera.position.y = this.cameraHeight + maxHeight * Math.sin((Math.PI / 180) * cameraRotationY);
     this.camera.position.z = distance * Math.cos((Math.PI / 180) * cameraRotationX);
 
