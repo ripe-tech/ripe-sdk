@@ -14,24 +14,24 @@ if (
 // STRUCTURE
 // stores internal logic of mouse movement
 
-ripe.OrbitalControls = function(configurator, element, options) {
+ripe.OrbitalControls = function (configurator, element, options) {
     this.configurator = configurator;
     this.element = element;
-    this.options = options;
 
-    this.maximumHorizontalRot = this.options.maximumHorizontalRot || 180;
-    this.minimumHorizontalRot = this.options.minimumHorizontalRot || -180;
+    this.maximumHorizontalRot = options.maximumHorizontalRot || 180;
+    this.minimumHorizontalRot = options.minimumHorizontalRot || -180;
 
-    this.maximumVerticalRot = this.options.maximumVerticalRot || 90;
-    this.minimumVerticalRot = this.options.minimumVerticalRot || 0;
+    this.maximumVerticalRot = options.maximumVerticalRot || 90;
+    this.minimumVerticalRot = options.minimumVerticalRot || 0;
 
-    var startingPosition = this.options.position || 0;
+    var startingPosition = options.position || 0;
     this._baseHorizontalRot = this._positionToRotation(startingPosition);
     this.currentHorizontalRot = this._baseHorizontalRot;
     this._baseVerticalRot = 0;
     this.currentVerticalRot = this._baseVerticalRot;
     // Types of transition = "cross" "rotation" "none"
-    this.viewAnimate = this.options.viewAnimate === undefined ? "rotate" : this.options.viewAnimate;
+    this.viewAnimate = options.viewAnimate === undefined ? "rotate" : options.viewAnimate;
+    this.rotationEasing = options.easing || "linear";
 
     this._registerHandlers();
 };
@@ -39,7 +39,7 @@ ripe.OrbitalControls = function(configurator, element, options) {
 ripe.OrbitalControls.prototype = ripe.build(ripe.Observable.prototype);
 ripe.OrbitalControls.prototype.constructor = ripe.OrbitalControls;
 
-ripe.OrbitalControls.prototype._registerHandlers = function() {
+ripe.OrbitalControls.prototype._registerHandlers = function () {
     // captures the current context to be used inside clojures
     const self = this;
 
@@ -49,7 +49,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
 
     // binds the mousedown event on the element to prepare
     // it for drag movements
-    area.addEventListener("mousedown", function(event) {
+    area.addEventListener("mousedown", function (event) {
         const _element = self.element;
         _element.dataset.view = _element.dataset.view || "side";
         self.base = parseInt(_element.dataset.position) || 0;
@@ -62,7 +62,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
 
     // listens for mouseup events and if it occurs then
     // stops reacting to mouse move events has drag movements
-    area.addEventListener("mouseup", function(event) {
+    area.addEventListener("mouseup", function (event) {
         const _element = self.element;
         self.down = false;
         self.previous = self.percent;
@@ -84,7 +84,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
 
     // listens for mouse leave events and if it occurs then
     // stops reacting to mousemove events has drag movements
-    area.addEventListener("mouseleave", function(event) {
+    area.addEventListener("mouseleave", function (event) {
         const _element = this;
         self.down = false;
         self.previous = self.percent;
@@ -94,7 +94,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
-    area.addEventListener("mousemove", function(event) {
+    area.addEventListener("mousemove", function (event) {
         // if (this.classList.contains("no-drag")) {
         //  return;
         // }
@@ -105,7 +105,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
         if (down) self._parseDrag();
     });
 
-    area.addEventListener("click", function(event) {
+    area.addEventListener("click", function (event) {
         // verifies if the previous drag operation (if any) has exceed
         // the minimum threshold to be considered drag (click avoided)
         if (Math.abs(self.previous) > self.clickThreshold) {
@@ -124,11 +124,11 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
         event.stopPropagation();
     });
 
-    area.addEventListener("dragstart", function(event) {
+    area.addEventListener("dragstart", function (event) {
         event.preventDefault();
     });
 
-    area.addEventListener("dragend", function(event) {
+    area.addEventListener("dragend", function (event) {
         event.preventDefault();
     });
 
@@ -146,12 +146,12 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
             null;
         this._observer = Observer
             ? new Observer(mutations => {
-                  for (let index = 0; index < mutations.length; index++) {
-                      const mutation = mutations[index];
-                      if (mutation.type === "style") self.resize();
-                      if (mutation.type === "attributes") self.update();
-                  }
-              })
+                for (let index = 0; index < mutations.length; index++) {
+                    const mutation = mutations[index];
+                    if (mutation.type === "style") self.resize();
+                    if (mutation.type === "attributes") self.update();
+                }
+            })
             : null;
         if (this._observer) {
             this._observer.observe(this.element, {
@@ -174,18 +174,18 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
  * Converts the position of the element to a rotation that can be applied to
  * the model or the camera.
  */
-ripe.OrbitalControls.prototype._positionToRotation = function(position) {
+ripe.OrbitalControls.prototype._positionToRotation = function (position) {
     return (position / 24) * 360;
 };
 
-ripe.OrbitalControls.prototype.updateOptions = async function(options) {
+ripe.OrbitalControls.prototype.updateOptions = async function (options) {
     // TODO add here options
 };
 
 /**
  * @ignore
  */
-ripe.OrbitalControls.prototype._parseDrag = function() {
+ripe.OrbitalControls.prototype._parseDrag = function () {
     // retrieves the last recorded mouse position
     // and the current one and calculates the
     // drag movement made by the user
@@ -234,7 +234,7 @@ ripe.OrbitalControls.prototype._parseDrag = function() {
     this.configurator.changeFrame(nextFrame);
 };
 
-ripe.OrbitalControls.prototype.updateRotation = function(frame, options) {
+ripe.OrbitalControls.prototype.updateRotation = function (frame, options) {
     const dragging = this.element.classList.contains("drag");
 
     const _frame = ripe.parseFrameKey(frame);
@@ -247,7 +247,7 @@ ripe.OrbitalControls.prototype.updateRotation = function(frame, options) {
  * Sets the rotation of the camera and meshes based on their current
  * continuous rotation.
  */
-ripe.OrbitalControls.prototype._updateDragRotations = function() {
+ripe.OrbitalControls.prototype._updateDragRotations = function () {
     var needsUpdate = false;
 
     // if there is no difference to the previous drag rotation in the X axis
@@ -287,7 +287,7 @@ ripe.OrbitalControls.prototype._updateDragRotations = function() {
     if (needsUpdate) this.configurator._applyRotations();
 };
 
-ripe.OrbitalControls.prototype._checkViewPositionRotations = function(frame, options) {
+ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, options) {
     const animating = this.element.classList.contains("animating");
 
     // parses the requested frame value according to the pre-defined
@@ -300,188 +300,19 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function(frame, opt
     // Nothing has changed, or is performing other transition
     if ((view === nextView && position === nextPosition) || animating) return;
 
-    /*
-     // unpacks the other options to the frame change defaulting their values
-     // in case undefined values are found
-     let duration = options.duration === undefined ? null : options.duration;
-     let stepDurationRef = options.stepDuration === this.stepDuration ? null : options.stepDuration;
-     const revolutionDuration =
-         options.revolutionDuration === undefined
-             ? this.revolutionDuration
-             : options.revolutionDuration;
-     const type = options.type === undefined ? null : options.type;
-     let preventDrag = options.preventDrag === undefined ? true : options.preventDrag;
-     const safe = options.safe === undefined ? true : options.safe;
-     const first = options.first === undefined ? true : options.first;
+    // unpacks the other options to the frame change defaulting their values
+    // in case undefined values are found
+    let duration = options.duration === undefined ? null : options.duration;
+    const revolutionDuration =
+        options.revolutionDuration === undefined
+            ? this.revolutionDuration
+            : options.revolutionDuration;
 
-     // updates the animation start timestamp with the current timestamp in
-     // case no start time is currently defined
-     options._start = options._start === undefined ? new Date().getTime() : options._start;
-     options._step = options._step === undefined ? 0 : options._step;
-
-     // normalizes both the (current) view and position values
-     const view = this.element.dataset.view;
-     const position = parseInt(this.element.dataset.position);
-
-     // tries to retrieve the amount of frames for the target view and
-     // validates that the target view exists and that the target position
-     // (frame) does not overflow the amount of frames in for the view
-     const viewFrames = this.frames[nextView];
-     if (!viewFrames || nextPosition >= viewFrames) {
-         throw new RangeError("Frame " + frame + " is not supported");
-     }
-
-     // in case the safe mode is enabled and the current configuration is
-     // still under the preloading situation the change frame is ignored
-     if (safe && this.element.classList.contains("preloading")) {
-         return;
-     }
-
-     // in case the safe mode is enabled and there's an animation running
-     // then this request is going to be ignored (not possible to change
-     // frame when another animation is running)
-     if (safe && this.element.classList.contains("animating")) {
-         return;
-     }
-
-     // in case the current view and position are already set then returns
-     // the control flow immediately (animation safeguard)
-     if (safe && this.element.dataset.view === nextView && position === nextPosition) {
-         this.element.classList.remove("no-drag", "animating");
-         return;
-     }
-
-     // removes any part highlight in case it is set
-     // to replicate the behaviour of dragging the product
-     this.lowlight();
-
-     // saves the position of the current view
-     // so that it returns to the same position
-     // when coming back to the same view
-     this._lastFrame[view] = position;
-     this.position = nextPosition;
-     this.element.dataset.position = nextPosition;
-
-     // if there is a new view and the product supports
-     // it then animates the transition with a crossfade
-     // and ignores all drag movements while it lasts
-     let animate = false;
-     if (view !== nextView && viewFrames !== undefined) {
-         this.view = nextView;
-         this.element.dataset.view = nextView;
-         this.element.dataset.frames = viewFrames;
-         animate = type === null ? this.viewAnimate : type;
-         duration = duration || this.duration;
-     }
-
-     // runs the defaulting values for the current step duration
-     // and the next position that is going to be rendered
-     let stepDuration = null;
-     let stepPosition = nextPosition;
-
-     // sets the initial time reduction to be applied for the frame
-     // based animation (rotation), this value should be calculated
-     // taking into account the delay in the overall animation
-     let reducedTime = 0;
-
-     // in case any kind of duration was provided a timed animation
-     // should be performed and as such a proper calculus should be
-     // performed to determine the current step duration an the position
-     // associated with the current step operation
-     if (view === nextView && (duration || stepDurationRef || revolutionDuration)) {
-         // ensures that no animation on a pre-frame render exists
-         // the animation itself is going to be "managed" by the
-         // the change frame tick logic
-         animate = null;
-
-         // calculates the number of steps as the shortest path
-         // between the current and the next position, this should
-         // choose the proper way for the "rotation"
-         const stepCount =
-             view !== nextView
-                 ? 1
-                 : Math.min(
-                       Math.abs(position - nextPosition),
-                       viewFrames - Math.abs(position - nextPosition)
-                   );
-         options._stepCount = options._stepCount === undefined ? stepCount : options._stepCount;
-
-         // in case the (total) revolution time for the view is defined a
-         // step timing based animation is calculated based on the total
-         // number of frames for the view
-         if (revolutionDuration && first) {
-             // makes sure that we're able to find out the number of frames
-             // for the next view from the current loaded model, only then
-             // can the step duration be calculated, by dividing the total
-             // duration of the revolution by the number of frames of the view
-             if (viewFrames) {
-                 stepDurationRef = parseInt(revolutionDuration / viewFrames);
-             }
-             // otherwise runs a fallback operation where the total duration
-             // of the animation is the revolution time (sub optimal fallback)
-             else {
-                 duration = duration || revolutionDuration;
-             }
-         }
-
-         // in case the options contain the step duration (reference) field
-         // then it's used to calculate the total duration of the animation
-         // (step driven animation timing)
-         if (stepDurationRef && first) {
-             duration = stepDurationRef * stepCount;
-         }
-
-         // in case the end (target) timestamp is not yet defined then
-         // updates the value with the target duration
-         options._end = options._end === undefined ? options._start + duration : options._end;
-
-         // determines the duration (in seconds) for each step taking
-         // into account the complete duration and the number of steps
-         stepDuration = duration / Math.abs(stepCount);
-         options.duration = duration - stepDuration;
-
-         // in case no step duration has been defined defines one as that's relevant
-         // to be able to calculate expected time at this point in time and then
-         // calculate the amount of time and frames to skip
-         options._stepDuration =
-             options._stepDuration === undefined ? stepDuration : options._stepDuration;
-
-         // calculates the expected timestamp for the current position in
-         // time and then the delay against it (for proper frame dropping)
-         const expected = options._start + options._step * options._stepDuration;
-         const delay = Math.max(new Date().getTime() - expected, 0);
-
-         // calculates the number of frames that have to be skipped to re-catch
-         // the animation back to the expect time-frame
-         const frameSkip = Math.floor(delay / stepDuration);
-         reducedTime = delay % stepDuration;
-         const stepSize = frameSkip + 1;
-
-         // calculates the delta in terms of steps taking into account
-         // if any frame should be skipped in the animation
-         const nextStep = Math.min(options._stepCount, options._step + stepSize);
-         const delta = Math.min(stepSize, nextStep - options._step);
-         options._step = nextStep;
-
-         // checks if it should rotate in the positive or negative direction
-         // according to the current view definition and then calculates the
-         // next position taking into account that definition
-         const goPositive = (position + stepCount) % viewFrames === nextPosition;
-         stepPosition =
-             stepCount !== 0 ? (goPositive ? position + delta : position - delta) : position;
-
-         // wrap around as needed (avoiding index overflow)
-         stepPosition = stepPosition < 0 ? viewFrames + stepPosition : stepPosition;
-         stepPosition = stepPosition % viewFrames;
-
-         // updates the position according to the calculated one on
-         // the dataset, the next update operation should trigger
-         // the appropriate update on the visual resources
-         this.position = stepPosition;
-         this.element.dataset.position = stepPosition;
-     }
-    */
-    var duration = 500;
+    duration = duration || this.duration;
+    
+    if (revolutionDuration) {
+        duration = duration || revolutionDuration;
+    }
 
     if (view === nextView || this.viewAnimate === "rotate") {
         this.rotationTransition(nextView, nextPosition, duration);
@@ -505,12 +336,13 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function(frame, opt
         type: "rotation",
         method: this.viewAnimate,
         rotationX: this.currentHorizontalRot,
-        rotationY: this.currentVerticalRot
+        rotationY: this.currentVerticalRot,
+        duration: duration
     });
     this.configurator.updateViewPosition(nextView, nextPosition);
 };
 
-ripe.OrbitalControls.prototype.rotationTransition = function(nextView, nextPosition, duration) {
+ripe.OrbitalControls.prototype.rotationTransition = function (nextView, nextPosition, duration) {
     const position = parseInt(this.element.dataset.position);
     const view = this.element.dataset.view;
 
@@ -521,20 +353,20 @@ ripe.OrbitalControls.prototype.rotationTransition = function(nextView, nextPosit
     this._baseVerticalRot = this.currentVerticalRot;
 
     var startTime = Date.now();
-    var currentTime = startTime;
+    var pos = 0;
 
     const transition = () => {
-        currentTime = Date.now() - startTime;
+        pos = (Date.now() - startTime) / duration;
         // console.log(this._baseHorizontalRot, finalXRotation, this._baseVerticalRot, finalYRotation);
 
-        this.currentHorizontalRot = ripe.linearTween(
-            currentTime,
+        this.currentHorizontalRot = ripe.easing[this.rotationEasing](
+            pos,
             this._baseHorizontalRot,
             finalXRotation,
             duration
         );
-        this.currentVerticalRot = ripe.linearTween(
-            currentTime,
+        this.currentVerticalRot = ripe.easing[this.rotationEasing](
+            pos,
             this._baseVerticalRot,
             finalYRotation,
             duration
@@ -542,7 +374,7 @@ ripe.OrbitalControls.prototype.rotationTransition = function(nextView, nextPosit
 
         this.configurator._applyRotations();
 
-        if (currentTime < duration) requestAnimationFrame(transition);
+        if (pos < 1) requestAnimationFrame(transition);
         else {
             this._baseHorizontalRot = this.currentHorizontalRot;
             this._baseVerticalRot = this.currentVerticalRot;

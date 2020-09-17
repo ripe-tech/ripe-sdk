@@ -382,9 +382,12 @@ window.onload = function () {
                 cameraTarget: { x: 0, y: 0.375, z: 0.0 },
                 exposure: 0.7,
                 lockAxis: "y",
-                viewAnimate: "cross"
-                //viewAnimate: "none"
-                //viewAnimate: "rotate"
+                viewAnimate: "cross",
+                easing: "linear",
+                highlightEasing: "easeOutQuad",
+                materialEasing: "easeInOutQuad",
+                rotationEasing: "easeInQuad",
+                crossfadeEasing: "easeInOutQuad"
             });
 
             configuratorPRC.bind("loaded", function () {

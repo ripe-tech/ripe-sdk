@@ -37,7 +37,9 @@ ripe.CSRenderer = function(element, options) {
         options.cameraTarget.z
     );
     this.cameraFOV = options.cameraFOV;
-
+    this.materialEasing = options.materialEasing || this.easing || "linear";
+    this.crossfadeEasing = options.crossfadeEasing || this.easing || "linear";
+    this.highlightEasing = options.highlightEasing || this.easing || "linear";
     // materials
     this.texturesPath = options.texturesPath || "";
     this.partsMap = options.partsMap || {};
@@ -277,7 +279,7 @@ ripe.CSRenderer.prototype.highlight = async function(part, options = {}) {
     // TODO Use time here
     var duration = 100;
 
-    await this.changeHighlight(part, 1.0, 0.5, duration);
+    await this.changeHighlight(part, 0.5, duration);
 
     // triggers an event indicating that a highlight operation has been
     // performed on the current configurator
@@ -307,7 +309,7 @@ ripe.CSRenderer.prototype.lowlight = async function(options) {
 
     var duration = 100;
 
-    await this.changeHighlight(this.intersectedPart, 0.5, 1.0, duration);
+    await this.changeHighlight(this.intersectedPart, 1.0, duration);
 
     this.intersectedPart = "";
 
@@ -316,12 +318,12 @@ ripe.CSRenderer.prototype.lowlight = async function(options) {
     this.trigger("lowlighted");
 };
 
-ripe.CSRenderer.prototype.changeHighlight = async function(part, startValue, endValue, duration) {
-    var startingValue = startValue;
+ripe.CSRenderer.prototype.changeHighlight = async function(part, endValue, duration) {
+    var startingValue;
     var meshTarget = null;
 
     var startTime = Date.now();
-    var currentTime = 0;
+    var pos = 0;
 
     for (var mesh in this.meshes) {
         if (this.meshes[mesh].name === part) {
@@ -330,21 +332,22 @@ ripe.CSRenderer.prototype.changeHighlight = async function(part, startValue, end
         }
     }
 
+    if (!meshTarget) return;
+
     var currentValue = startingValue;
+    var pos = 0;
 
     const changeHighlightTransition = () => {
-        if (!meshTarget) return;
-
         meshTarget.material.color.r = currentValue;
         meshTarget.material.color.g = currentValue;
         meshTarget.material.color.b = currentValue;
-
-        currentTime = Date.now() - startTime;
-        currentValue = ripe.linearTween(currentTime, startingValue, endValue, duration);
-
+        
+        pos = (Date.now() - startTime) / duration;
+        currentValue = ripe.easing[this.highlightEasing](pos, startingValue, endValue, duration);
+        
         this.render();
 
-        if (currentTime < duration) requestAnimationFrame(changeHighlightTransition);
+        if (pos < 1) requestAnimationFrame(changeHighlightTransition);
     };
 
     requestAnimationFrame(changeHighlightTransition);
@@ -575,8 +578,6 @@ ripe.CSRenderer.prototype.crossfade = function(options = {}) {
 
     var currentSceneFBO = new this.library.WebGLRenderTarget(width, height, renderTargetParameters);
 
-    var duration = 24;
-    var currentTime = 0;
     var mixRatio = 0.0;
 
     this.crossfadeShader.uniforms.tDiffuse1.value = previousSceneFBO.texture;
@@ -616,14 +617,20 @@ ripe.CSRenderer.prototype.crossfade = function(options = {}) {
     this.renderer.setRenderTarget(null);
     this.renderer.clear();
 
+    var startTime = Date.now();
+    var pos = 0;
+    var duration = options.duration || 500;
+
     const crossfadeFunction = () => {
         this.renderer.render(this.scene, transitionCamera);
+        
+        pos = (Date.now() - startTime) / duration;
+        mixRatio = ripe.easing[this.crossfadeEasing](pos, 0.0, 1.0, duration);
 
         mixRatio += 1.0 / duration;
-        currentTime++;
         this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
-        if (currentTime < duration) requestAnimationFrame(crossfadeFunction);
+        if (pos < 1) requestAnimationFrame(crossfadeFunction);
         else {
             this.scene.remove(quad);
             this.element.classList.remove("animating");

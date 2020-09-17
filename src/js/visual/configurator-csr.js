@@ -219,7 +219,7 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
 
     if (options.reason === "set parts" || options.reason === "set part") {
         await this.renderer.loadMaterials(this.owner.parts);
-        await this.renderer.crossfade({ type: "material", parts: this.owner.parts });
+        await this.renderer.crossfade({ type: "material", parts: this.owner.parts, duration: 500 });
     }
 
     // removes the highlight support from the matched object as a new

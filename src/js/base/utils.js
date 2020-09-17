@@ -24,35 +24,41 @@ ripe.animations = {};
 /**
  * @ignore
  */
-ripe.createElement = function(tagName, className) {
+ripe.createElement = function (tagName, className) {
     const element = tagName && document.createElement(tagName);
     element.className = className || "";
     return element;
 };
 
-/**
- * @ignore
- */
-ripe.rad2deg = function(angle) {
-    return (angle / Math.PI) * 2 * 360;
+ripe.easing = {};
+
+ripe.easing.linear = function (pos, startValue, endValue, duration) {
+    var t = pos;
+    return (endValue - startValue) * t + startValue;
 };
+
+ripe.easing.easeInQuad = function (pos, startValue, endValue, duration) {
+    var t = pos;
+    t = t*(2-t);
+    return (endValue - startValue) * t + startValue;
+}
+
+ripe.easing.easeOutQuad = function (pos, startValue, endValue, duration) {
+    var t = pos;
+    t = t*t;
+    return (endValue - startValue) * t + startValue;
+}
+
+ripe.easing.easeInOutQuad = function (pos, startValue, endValue, duration) {
+    var t = pos;
+    t = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+    return (endValue - startValue) * t + startValue;
+}
 
 /**
  * @ignore
  */
-ripe.deg2rad = function(angle) {
-    return (angle / 360) * Math.PI * 2;
-};
-
-ripe.linearTween = function(currentTime, startValue, endValue, duration) {
-    var change = endValue - startValue;
-    return (change * currentTime) / duration + startValue;
-};
-
-/**
- * @ignore
- */
-ripe.animateProperty = async function(
+ripe.animateProperty = async function (
     element,
     property,
     initial,
@@ -139,7 +145,7 @@ ripe.animateProperty = async function(
 /**
  * @ignore
  */
-ripe.cancelAnimation = function(element) {
+ripe.cancelAnimation = function (element) {
     if (!element.dataset.animation_id) return;
     const animationId = parseInt(element.dataset.animation_id);
     const info = ripe.animations[animationId];
@@ -156,7 +162,7 @@ ripe.cancelAnimation = function(element) {
 /**
  * @ignore
  */
-ripe.getFrameKey = function(view, position, token) {
+ripe.getFrameKey = function (view, position, token) {
     token = token || "-";
     return view + token + position;
 };
@@ -164,7 +170,7 @@ ripe.getFrameKey = function(view, position, token) {
 /**
  * @ignore
  */
-ripe.parseFrameKey = function(frame, token) {
+ripe.parseFrameKey = function (frame, token) {
     token = token || "-";
     return frame.split(token, 2);
 };
@@ -172,7 +178,7 @@ ripe.parseFrameKey = function(frame, token) {
 /**
  * @ignore
  */
-ripe.frameNameHack = function(frame) {
+ripe.frameNameHack = function (frame) {
     if (!frame) return "";
     const _frame = ripe.parseFrameKey(frame);
     const view = _frame[0];
@@ -184,7 +190,7 @@ ripe.frameNameHack = function(frame) {
 /**
  * @ignore
  */
-ripe.fixEvent = function(event) {
+ripe.fixEvent = function (event) {
     if (event.offsetX !== undefined) {
         return event;
     }
@@ -205,7 +211,7 @@ ripe.fixEvent = function(event) {
 /**
  * @ignore
  */
-ripe.clone = function(object) {
+ripe.clone = function (object) {
     if (object === undefined) {
         return object;
     }
@@ -216,7 +222,7 @@ ripe.clone = function(object) {
 /**
  * @ignore
  */
-ripe.equal = function(first, second) {
+ripe.equal = function (first, second) {
     if (first === second) {
         return true;
     }
@@ -244,14 +250,14 @@ ripe.equal = function(first, second) {
 /**
  * @ignore
  */
-ripe.isPrimitive = function(object) {
+ripe.isPrimitive = function (object) {
     return object !== Object(object);
 };
 
 /**
  * @ignore
  */
-ripe.typeof = function(object) {
+ripe.typeof = function (object) {
     if (object === null) return "null";
     if (Array.isArray(object)) return "array";
     return typeof object;
@@ -260,7 +266,7 @@ ripe.typeof = function(object) {
 /**
  * @ignore
  */
-ripe.escape = function(value, char, escape = "\\") {
+ripe.escape = function (value, char, escape = "\\") {
     return value
         .replace(new RegExp("\\" + escape, "g"), () => escape + escape)
         .replace(new RegExp("\\" + char, "g"), () => escape + char);
@@ -269,7 +275,7 @@ ripe.escape = function(value, char, escape = "\\") {
 /**
  * @ignore
  */
-ripe.unescape = function(value, escape = "\\") {
+ripe.unescape = function (value, escape = "\\") {
     const result = [];
     const iterator = value[Symbol.iterator]();
     for (const char of iterator) {
@@ -290,7 +296,7 @@ ripe.unescape = function(value, escape = "\\") {
 /**
  * @ignore
  */
-ripe.countUnescape = function(value, sub, escape = "\\") {
+ripe.countUnescape = function (value, sub, escape = "\\") {
     const iterator = value[Symbol.iterator]();
     let count = 0;
     for (const char of iterator) {
@@ -306,7 +312,7 @@ ripe.countUnescape = function(value, sub, escape = "\\") {
 /**
  * @ignore
  */
-ripe.splitUnescape = function(value, delimiter = " ", max = -1, escape = "\\", unescape = true) {
+ripe.splitUnescape = function (value, delimiter = " ", max = -1, escape = "\\", unescape = true) {
     const result = [];
     let current = [];
     const iterator = value[Symbol.iterator]();
