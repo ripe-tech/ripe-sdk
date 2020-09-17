@@ -33,6 +33,8 @@ ripe.OrbitalControls = function (configurator, element, options) {
     this.viewAnimate = options.viewAnimate === undefined ? "rotate" : options.viewAnimate;
     this.rotationEasing = options.easing || "linear";
 
+    this.lockRotation = options.lockRotation || "";
+
     this._registerHandlers();
 };
 
@@ -251,7 +253,7 @@ ripe.OrbitalControls.prototype._updateDragRotations = function () {
     var needsUpdate = false;
 
     // if there is no difference to the previous drag rotation in the X axis
-    if (this._baseHorizontalRot - this.mouseDeltaX !== this.currentHorizontalRot) {
+    if (this._baseHorizontalRot - this.mouseDeltaX !== this.currentHorizontalRot && this.lockRotation != "vertical") {
         this.currentHorizontalRot = (this._baseHorizontalRot - this.mouseDeltaX) % 360;
 
         needsUpdate = true;
@@ -259,7 +261,7 @@ ripe.OrbitalControls.prototype._updateDragRotations = function () {
 
     var diff;
     // if there is no difference to the previous drag rotation in the Y axis
-    if (this._baseVerticalRot - this.mouseDeltaY !== this.currentVerticalRot) {
+    if (this._baseVerticalRot - this.mouseDeltaY !== this.currentVerticalRot && this.lockRotation != "horizontal") {
         // If reached bottom
         if (this.mouseDeltaY >= this.minimumVerticalRot + this._baseVerticalRot) {
             diff = this.mouseDeltaY - (this.minimumVerticalRot + this._baseVerticalRot);

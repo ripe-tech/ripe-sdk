@@ -386,8 +386,9 @@ window.onload = function () {
                 easing: "linear",
                 highlightEasing: "easeOutQuad",
                 materialEasing: "easeInOutQuad",
-                rotationEasing: "easeInQuad",
-                crossfadeEasing: "easeInOutQuad"
+                rotationEasing: "easeInOutQuad",
+                crossfadeEasing: "easeInOutQuad",
+                lockRotation: "horizontal"
             });
 
             configuratorPRC.bind("loaded", function () {

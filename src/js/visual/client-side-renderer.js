@@ -566,10 +566,6 @@ ripe.CSRenderer.prototype.crossfade = function(options = {}) {
         100
     );
 
-    transitionCamera.position.x = this.camera.position.x;
-    transitionCamera.position.y = this.camera.position.y;
-    transitionCamera.position.z = this.camera.position.z;
-
     var previousSceneFBO = new this.library.WebGLRenderTarget(
         width,
         height,
