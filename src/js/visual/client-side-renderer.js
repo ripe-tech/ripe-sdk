@@ -28,7 +28,7 @@ if (
 ripe.CSRenderer = function(element, options) {
     this.type = this.type || "CSRenderer";
     this.element = element;
-    
+
     this.library = options.library;
     this.library = options.library || null;
     this.cameraTarget = new this.library.Vector3(
@@ -230,7 +230,7 @@ ripe.CSRenderer.prototype.render = function() {
 
 ripe.CSRenderer.prototype.updateSize = function(width, height) {
     this.renderer.setSize(width, height);
-}
+};
 
 ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
     const animating = this.element.classList.contains("animating");
@@ -540,9 +540,9 @@ ripe.CSRenderer.prototype.updateElementBoundingBox = function() {
     }
 };
 
-ripe.CSRenderer.prototype.transition = function (options) {
+ripe.CSRenderer.prototype.transition = function(options) {
     if (options.method === "cross") this.crossfade(options);
-}
+};
 
 ripe.CSRenderer.prototype.crossfade = function(options = {}) {
     var renderTargetParameters = {
@@ -566,7 +566,7 @@ ripe.CSRenderer.prototype.crossfade = function(options = {}) {
     transitionCamera.position.x = this.camera.position.x;
     transitionCamera.position.y = this.camera.position.y;
     transitionCamera.position.z = this.camera.position.z;
-    
+
     var previousSceneFBO = new this.library.WebGLRenderTarget(
         width,
         height,
@@ -604,7 +604,7 @@ ripe.CSRenderer.prototype.crossfade = function(options = {}) {
         }
     } else if (options.type === "rotation") {
         console.log(options);
-        this._applyRotations(options.rotationX, options.rotationY);        
+        this._applyRotations(options.rotationX, options.rotationY);
     }
 
     // Render next image
@@ -648,7 +648,8 @@ ripe.CSRenderer.prototype._applyRotations = function(cameraRotationX, cameraRota
 
     var distance = this.cameraDistance * Math.cos((Math.PI / 180) * cameraRotationY);
     this.camera.position.x = distance * Math.sin((Math.PI / 180) * -cameraRotationX);
-    this.camera.position.y = this.cameraHeight + maxHeight * Math.sin((Math.PI / 180) * cameraRotationY);
+    this.camera.position.y =
+        this.cameraHeight + maxHeight * Math.sin((Math.PI / 180) * cameraRotationY);
     this.camera.position.z = distance * Math.cos((Math.PI / 180) * cameraRotationX);
 
     this.camera.lookAt(this.cameraTarget);
