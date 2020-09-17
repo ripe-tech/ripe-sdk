@@ -183,7 +183,6 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = 
         options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
 
-    // TODO Update this here with newer structures
     if (update) await this.update();
 };
 
@@ -232,7 +231,6 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
 };
 
 ripe.ConfiguratorCSR.prototype.updateViewPosition = function(nextView, nextPosition) {
-    console.log("Updating to " + nextView + " - " + nextPosition)
     this.element.dataset.position = nextPosition;
     this.element.dataset.view = nextView;
 };

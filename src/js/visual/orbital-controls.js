@@ -11,7 +11,7 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.OrbitalControls = function (configurator, element, options) {
+ripe.OrbitalControls = function(configurator, element, options) {
     this.configurator = configurator;
     this.element = element;
 
@@ -38,7 +38,7 @@ ripe.OrbitalControls = function (configurator, element, options) {
 ripe.OrbitalControls.prototype = ripe.build(ripe.Observable.prototype);
 ripe.OrbitalControls.prototype.constructor = ripe.OrbitalControls;
 
-ripe.OrbitalControls.prototype._registerHandlers = function () {
+ripe.OrbitalControls.prototype._registerHandlers = function() {
     // captures the current context to be used inside clojures
     const self = this;
 
@@ -48,7 +48,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
 
     // binds the mousedown event on the element to prepare
     // it for drag movements
-    area.addEventListener("mousedown", function (event) {
+    area.addEventListener("mousedown", function(event) {
         const _element = self.element;
         _element.dataset.view = _element.dataset.view || "side";
         self.base = parseInt(_element.dataset.position) || 0;
@@ -61,7 +61,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
 
     // listens for mouseup events and if it occurs then
     // stops reacting to mouse move events has drag movements
-    area.addEventListener("mouseup", function (event) {
+    area.addEventListener("mouseup", function(event) {
         const _element = self.element;
         self.down = false;
         self.previous = self.percent;
@@ -83,7 +83,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
 
     // listens for mouse leave events and if it occurs then
     // stops reacting to mousemove events has drag movements
-    area.addEventListener("mouseleave", function (event) {
+    area.addEventListener("mouseleave", function(event) {
         const _element = this;
         self.down = false;
         self.previous = self.percent;
@@ -93,7 +93,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
-    area.addEventListener("mousemove", function (event) {
+    area.addEventListener("mousemove", function(event) {
         // if (this.classList.contains("no-drag")) {
         //  return;
         // }
@@ -104,7 +104,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
         if (down) self._parseDrag();
     });
 
-    area.addEventListener("click", function (event) {
+    area.addEventListener("click", function(event) {
         // verifies if the previous drag operation (if any) has exceed
         // the minimum threshold to be considered drag (click avoided)
         if (Math.abs(self.previous) > self.clickThreshold) {
@@ -123,11 +123,11 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
         event.stopPropagation();
     });
 
-    area.addEventListener("dragstart", function (event) {
+    area.addEventListener("dragstart", function(event) {
         event.preventDefault();
     });
 
-    area.addEventListener("dragend", function (event) {
+    area.addEventListener("dragend", function(event) {
         event.preventDefault();
     });
 
@@ -145,12 +145,12 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
             null;
         this._observer = Observer
             ? new Observer(mutations => {
-                for (let index = 0; index < mutations.length; index++) {
-                    const mutation = mutations[index];
-                    if (mutation.type === "style") self.resize();
-                    if (mutation.type === "attributes") self.update();
-                }
-            })
+                  for (let index = 0; index < mutations.length; index++) {
+                      const mutation = mutations[index];
+                      if (mutation.type === "style") self.resize();
+                      if (mutation.type === "attributes") self.update();
+                  }
+              })
             : null;
         if (this._observer) {
             this._observer.observe(this.element, {
@@ -173,18 +173,50 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
  * Converts the position of the element to a rotation that can be applied to
  * the model or the camera.
  */
-ripe.OrbitalControls.prototype._positionToRotation = function (position) {
+ripe.OrbitalControls.prototype._positionToRotation = function(position) {
     return (position / 24) * 360;
 };
 
-ripe.OrbitalControls.prototype.updateOptions = async function (options) {
-    // TODO add here options
+ripe.OrbitalControls.prototype.updateOptions = async function(options) {
+    this.element = options.element === undefined ? this.element : options.element;
+
+    this.maximumHorizontalRot =
+        options.maximumHorizontalRot === undefined
+            ? this.maximumHorizontalRot
+            : options.maximumHorizontalRot;
+    this.minimumHorizontalRot =
+        options.minimumHorizontalRot === undefined
+            ? this.minimumHorizontalRot
+            : options.minimumHorizontalRot;
+
+    this.maximumVerticalRot =
+        options.maximumVerticalRot === undefined
+            ? this.maximumVerticalRot
+            : options.maximumVerticalRot;
+    this.minimumVerticalRot =
+        options.minimumVerticalRot === undefined
+            ? this.minimumVerticalRot
+            : options.minimumVerticalRot;
+
+    var startingPosition =
+        options.position === undefined ? this.element.position : options.position;
+    this._baseHorizontalRot = this._positionToRotation(startingPosition);
+    this.currentHorizontalRot = this._baseHorizontalRot;
+    this._baseVerticalRot = 0;
+    this.currentVerticalRot = this._baseVerticalRot;
+    // Types of transition = "cross", "rotation" or "none"
+    this.viewAnimate = options.viewAnimate === undefined ? "rotate" : options.viewAnimate;
+    this.rotationEasing =
+        options.rotationEasing === undefined ? this.rotationEasing : options.rotationEasing;
+
+    this.lockRotation =
+        options.lockRotation === undefined ? this.lockRotation : options.lockRotation;
 };
 
 /**
  * @ignore
  */
-ripe.OrbitalControls.prototype._parseDrag = function () {
+ripe.OrbitalControls.prototype._parseDrag = function() {
     // retrieves the last recorded mouse position
     // and the current one and calculates the
     // drag movement made by the user
@@ -233,7 +265,7 @@ ripe.OrbitalControls.prototype._parseDrag = function () {
     this.configurator.changeFrame(nextFrame);
 };
 
-ripe.OrbitalControls.prototype.updateRotation = function (frame, options) {
+ripe.OrbitalControls.prototype.updateRotation = function(frame, options) {
     const dragging = this.element.classList.contains("drag");
 
     const _frame = ripe.parseFrameKey(frame);
@@ -243,7 +275,7 @@ ripe.OrbitalControls.prototype.updateRotation = function (frame, options) {
     var needsUpdate = false;
     if (dragging) needsUpdate = this._updateDragRotations();
     else needsUpdate = this._checkViewPositionRotations(_frame, options);
-    
+
     if (needsUpdate) this.configurator.updateViewPosition(nextView, nextPosition);
 };
 
@@ -251,11 +283,14 @@ ripe.OrbitalControls.prototype.updateRotation = function (frame, options) {
  * Sets the rotation of the camera and meshes based on their current
  * continuous rotation.
  */
-ripe.OrbitalControls.prototype._updateDragRotations = function () {
+ripe.OrbitalControls.prototype._updateDragRotations = function() {
     var needsUpdate = false;
 
     // if there is no difference to the previous drag rotation in the X axis
-    if (this._baseHorizontalRot - this.mouseDeltaX !== this.currentHorizontalRot && this.lockRotation != "vertical") {
+    if (
+        this._baseHorizontalRot - this.mouseDeltaX !== this.currentHorizontalRot &&
+        this.lockRotation !== "vertical"
+    ) {
         this.currentHorizontalRot = (this._baseHorizontalRot - this.mouseDeltaX) % 360;
 
         needsUpdate = true;
@@ -263,7 +298,10 @@ ripe.OrbitalControls.prototype._updateDragRotations = function () {
 
     var diff;
     // if there is no difference to the previous drag rotation in the Y axis
-    if (this._baseVerticalRot - this.mouseDeltaY !== this.currentVerticalRot && this.lockRotation != "horizontal") {
+    if (
+        this._baseVerticalRot - this.mouseDeltaY !== this.currentVerticalRot &&
+        this.lockRotation !== "horizontal"
+    ) {
         // If reached bottom
         if (this.mouseDeltaY >= this.minimumVerticalRot + this._baseVerticalRot) {
             diff = this.mouseDeltaY - (this.minimumVerticalRot + this._baseVerticalRot);
@@ -292,7 +330,7 @@ ripe.OrbitalControls.prototype._updateDragRotations = function () {
     return needsUpdate;
 };
 
-ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, options) {
+ripe.OrbitalControls.prototype._checkViewPositionRotations = function(frame, options) {
     const animating = this.element.classList.contains("animating");
 
     // parses the requested frame value according to the pre-defined
@@ -308,16 +346,31 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, op
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
     let duration = options.duration === undefined ? null : options.duration;
+    duration = duration || this.duration;
     const revolutionDuration =
         options.revolutionDuration === undefined
             ? this.revolutionDuration
             : options.revolutionDuration;
 
-    duration = duration || this.duration;
-    
+    if (revolutionDuration) duration = revolutionDuration || duration;
+    console.log(duration);
+    // TODO Use revolution duration
+    /*
+
     if (revolutionDuration) {
-        duration = duration || revolutionDuration;
-    }
+        const stepCount =
+            view !== nextView
+                ? 1
+                : Math.min(
+                      Math.abs(position - nextPosition),
+                      24 - Math.abs(position - nextPosition)
+                  );
+        //options._stepCount = options._stepCount === undefined ? stepCount : options._stepCount;
+        var stepDurationRef = revolutionDuration / 24;
+
+        duration = stepDurationRef * stepCount;
+        console.log(stepCount, duration)
+    } */
 
     // We could allow the crossfade to happen even with the same view
     if (view === nextView || this.viewAnimate === "rotate") {
@@ -347,7 +400,7 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, op
     return true;
 };
 
-ripe.OrbitalControls.prototype.rotationTransition = function (nextView, nextPosition, duration) {
+ripe.OrbitalControls.prototype.rotationTransition = function(nextView, nextPosition, duration) {
     const position = parseInt(this.element.dataset.position);
     const view = this.element.dataset.view;
 
