@@ -11,9 +11,6 @@ if (
     var ripe = base.ripe;
 }
 
-// STRUCTURE
-// stores internal logic of mouse movement
-
 ripe.OrbitalControls = function (configurator, element, options) {
     this.configurator = configurator;
     this.element = element;
@@ -21,7 +18,7 @@ ripe.OrbitalControls = function (configurator, element, options) {
     this.maximumHorizontalRot = options.maximumHorizontalRot || 180;
     this.minimumHorizontalRot = options.minimumHorizontalRot || -180;
 
-    this.maximumVerticalRot = options.maximumVerticalRot || 90;
+    this.maximumVerticalRot = options.maximumVerticalRot || 89;
     this.minimumVerticalRot = options.minimumVerticalRot || 0;
 
     var startingPosition = options.position || 0;
@@ -29,7 +26,7 @@ ripe.OrbitalControls = function (configurator, element, options) {
     this.currentHorizontalRot = this._baseHorizontalRot;
     this._baseVerticalRot = 0;
     this.currentVerticalRot = this._baseVerticalRot;
-    // Types of transition = "cross" "rotation" "none"
+    // Types of transition = "cross", "rotation" or "none"
     this.viewAnimate = options.viewAnimate === undefined ? "rotate" : options.viewAnimate;
     this.rotationEasing = options.easing || "linear";
 
@@ -240,9 +237,13 @@ ripe.OrbitalControls.prototype.updateRotation = function (frame, options) {
     const dragging = this.element.classList.contains("drag");
 
     const _frame = ripe.parseFrameKey(frame);
+    const nextView = _frame[0];
+    const nextPosition = parseInt(_frame[1]);
 
     if (dragging) this._updateDragRotations();
     else this._checkViewPositionRotations(_frame, options);
+    
+    this.configurator.updateViewPosition(nextView, nextPosition);
 };
 
 /**
@@ -316,9 +317,9 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, op
         duration = duration || revolutionDuration;
     }
 
+    // We could allow the crossfade to happen even with the same view
     if (view === nextView || this.viewAnimate === "rotate") {
         this.rotationTransition(nextView, nextPosition, duration);
-        this.configurator.updateViewPosition(nextView, nextPosition);
         return;
     }
 
@@ -330,7 +331,6 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, op
 
     if (this.viewAnimate === "none") {
         this.configurator._applyRotations();
-        this.configurator.updateViewPosition(nextView, nextPosition);
         return;
     }
 
@@ -341,7 +341,6 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, op
         rotationY: this.currentVerticalRot,
         duration: duration
     });
-    this.configurator.updateViewPosition(nextView, nextPosition);
 };
 
 ripe.OrbitalControls.prototype.rotationTransition = function (nextView, nextPosition, duration) {
