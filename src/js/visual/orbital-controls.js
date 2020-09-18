@@ -71,7 +71,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
         event = ripe.fixEvent(event);
 
         // Apply rotation to model
-        self._baseHorizontalRot = self.currentHorizontalRot;
+        self._baseHorizontalRot = self._validatedAngle(self.currentHorizontalRot);
         self.currentHorizontalRot = self._baseHorizontalRot;
         self.mouseDeltaX = 0;
 
@@ -291,7 +291,7 @@ ripe.OrbitalControls.prototype._updateDragRotations = function() {
         this._baseHorizontalRot - this.mouseDeltaX !== this.currentHorizontalRot &&
         this.lockRotation !== "vertical"
     ) {
-        this.currentHorizontalRot = (this._baseHorizontalRot - this.mouseDeltaX) % 360;
+        this.currentHorizontalRot = this._baseHorizontalRot - this.mouseDeltaX;
 
         needsUpdate = true;
     }
@@ -353,7 +353,6 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function(frame, opt
             : options.revolutionDuration;
 
     if (revolutionDuration) duration = revolutionDuration || duration;
-    console.log(duration);
     // TODO Use revolution duration
     /*
 
@@ -414,8 +413,8 @@ ripe.OrbitalControls.prototype.rotationTransition = function(nextView, nextPosit
     var pos = 0;
 
     const transition = () => {
+        console.log(this._baseHorizontalRot, finalXRotation)
         pos = (Date.now() - startTime) / duration;
-        // console.log(this._baseHorizontalRot, finalXRotation, this._baseVerticalRot, finalYRotation);
 
         this.currentHorizontalRot = ripe.easing[this.rotationEasing](
             pos,
@@ -434,7 +433,7 @@ ripe.OrbitalControls.prototype.rotationTransition = function(nextView, nextPosit
 
         if (pos < 1) requestAnimationFrame(transition);
         else {
-            this._baseHorizontalRot = this.currentHorizontalRot;
+            this._baseHorizontalRot = this._validatedAngle(this.currentHorizontalRot);
             this._baseVerticalRot = this.currentVerticalRot;
 
             this.element.classList.remove("animating");
@@ -450,9 +449,20 @@ ripe.OrbitalControls.prototype.rotationTransition = function(nextView, nextPosit
     }
     if (position !== nextPosition) {
         finalXRotation = this._positionToRotation(nextPosition);
+        
+        // figures out the best final rotation to avoid going through longest path
+        const diff = finalXRotation - this._baseHorizontalRot;
+        if (diff < -180) finalXRotation += 360;
+        if (diff > 180) finalXRotation -= 360;
     }
 
     this.element.classList.add("no-drag");
     this.element.classList.add("animating");
     requestAnimationFrame(transition);
 };
+
+ripe.OrbitalControls.prototype._validatedAngle = function(angle) {
+    if (angle > 360) return angle - 360;
+    if (angle < 0) return angle + 360;
+    return angle;
+}
