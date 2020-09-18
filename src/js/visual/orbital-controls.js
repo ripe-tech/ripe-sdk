@@ -413,7 +413,6 @@ ripe.OrbitalControls.prototype.rotationTransition = function(nextView, nextPosit
     var pos = 0;
 
     const transition = () => {
-        console.log(this._baseHorizontalRot, finalXRotation)
         pos = (Date.now() - startTime) / duration;
 
         this.currentHorizontalRot = ripe.easing[this.rotationEasing](

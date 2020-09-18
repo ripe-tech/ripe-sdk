@@ -45,12 +45,17 @@ ripe.CSRenderer = function(element, options) {
     // materials
     this.texturesPath = options.texturesPath || "";
     this.partsMap = options.partsMap || {};
+    this.fontsPath = options.fontsPath || "";
+    this.fontType = options.fontType || "";
+    this.fontWeight = options.fontWeight || "";
     this.loadedMaterials = {};
+    this.loadedFonts = {};
 
     this.meshPath = options.meshPath;
 
     this.raycaster = new this.library.Raycaster();
     this.intersectedPart = "";
+    this.textMesh = null;
 
     this.cameraDistance = options.cameraDistance || 0;
     this.cameraHeight = options.cameraHeight || 0;
@@ -64,6 +69,7 @@ ripe.CSRenderer = function(element, options) {
     this._initializeRenderer();
     this._initializeMesh();
     this._registerHandlers();
+    this._initializeFonts(this.fontType, this.fontWeight);
 
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
@@ -136,9 +142,32 @@ ripe.CSRenderer.prototype._registerHandlers = function() {
             return;
         }
 
-        self._attemptRaycast(event);
+        self._attemptRaycast(event, "move");
+    });
+
+    area.addEventListener("click", function(event) {
+        event = ripe.fixEvent(event);
+
+        self._attemptRaycast(event, "click");
     });
 };
+
+ripe.CSRenderer.prototype._initializeFonts = async function (type, weight) {
+    const loader = new this.library.FontLoader();
+    console.log("Looking for ")
+    const newFont = await new Promise((resolve, reject) => {
+        loader.load(this.fontsPath + type + '/' + weight + '.json', function (font) {
+            console.log("Got font!")
+            resolve(font);
+            
+            //refreshText();
+        });
+    }); 
+
+    this.loadedFonts[type + "_" + weight] = newFont;
+
+}
+
 
 ripe.CSRenderer.prototype._initializeLights = function() {
     const keyLight = new this.library.PointLight(0xffffff, 2.2, 18);
@@ -270,7 +299,7 @@ ripe.CSRenderer.prototype.updateSize = function(width, height) {
     this.renderer.setSize(width, height);
 };
 
-ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
+ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent, motion) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
 
@@ -283,13 +312,40 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
 
         var intersects = this.raycaster.intersectObjects(this.scene.children);
         if (intersects.length > 0) {
-            if (this.intersectedPart !== intersects[0].object.name) {
-                if (this.intersectedPart !== "") {
-                    this.lowlight();
-                }
+            if (motion == "move" && this.intersectedPart !== intersects[0].object.name) {
+                this.lowlight();
                 this.intersectedPart = intersects[0].object.name;
                 this.highlight(this.intersectedPart);
             }
+
+            else if (motion == "click") {
+                const meshIntersection = this.raycaster.intersectObject(intersects[0].object, false)
+                console.log(meshIntersection)
+                
+                if (this.textMesh) {
+                    this.scene.remove(this.textMesh);
+                    this.textMesh.geometry.dispose();
+                    this.textMesh.material.dispose();
+                }
+                console.log(this.loadedFonts);
+                var textGeometry = new this.library.TextGeometry("cenas", {
+                    font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
+            
+                    size: 0.5,
+                    height: 0.5,
+                    curveSegments: 10,            
+                });
+
+                var textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
+
+                
+                const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }) // side
+                this.textMesh = new this.library.Mesh(textGeometry, material);
+                this.textMesh.position.set(meshIntersection[0].point.x, meshIntersection[0].point.y, meshIntersection[0].point.z)
+                this.scene.add(this.textMesh);
+                this.render();
+            }
+
         } else {
             if (this.intersectedPart !== "") {
                 this.lowlight();
@@ -332,7 +388,6 @@ ripe.CSRenderer.prototype.lowlight = async function(options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
 
-    // const test = new TimelineMax({paused: true});
     if (!this.useMasks) {
         return;
     }
@@ -510,7 +565,7 @@ ripe.CSRenderer.prototype._loadMaterial = async function(material, color) {
     normalTexture.minFilter = this.library.NearestMipmapNearestFilter;
     aoTexture.minFilter = this.library.NearestMipmapNearestFilter;
 
-    const defaultMaterial = new this.library.MeshStandardMaterial({
+    const newMaterial = new this.library.MeshStandardMaterial({
         map: diffuseTexture,
         roughnessMap: roughnessTexture,
         normalMap: normalTexture,
@@ -523,7 +578,7 @@ ripe.CSRenderer.prototype._loadMaterial = async function(material, color) {
     normalTexture.dispose();
     aoTexture.dispose();
 
-    this.loadedMaterials[material + "_" + color] = defaultMaterial;
+    this.loadedMaterials[material + "_" + color] = newMaterial;
 };
 
 ripe.CSRenderer.prototype._applyMaterial = function(part, material) {
