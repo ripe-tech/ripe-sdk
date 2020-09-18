@@ -220,6 +220,10 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
         await this.renderer.loadMaterials(this.owner.parts);
         await this.renderer.crossfade({ type: "material", parts: this.owner.parts, duration: 500 });
     }
+    if (options.reason && options.reason === "set initials") {
+        console.log(this.owner.initials)
+        this.renderer.updateInitials(this.owner.initials);
+    }
 
     // removes the highlight support from the matched object as a new
     // frame is going to be "calculated" and rendered (not same mask)

@@ -45,17 +45,19 @@ ripe.CSRenderer = function(element, options) {
     // materials
     this.texturesPath = options.texturesPath || "";
     this.partsMap = options.partsMap || {};
-    this.fontsPath = options.fontsPath || "";
-    this.fontType = options.fontType || "";
-    this.fontWeight = options.fontWeight || "";
     this.loadedMaterials = {};
-    this.loadedFonts = {};
-
+    
     this.meshPath = options.meshPath;
 
     this.raycaster = new this.library.Raycaster();
     this.intersectedPart = "";
+
+    // Initials
     this.textMesh = null;
+    this.fontsPath = options.fontsPath || "";
+    this.fontType = options.fontType || "";
+    this.fontWeight = options.fontWeight || "";
+    this.loadedFonts = {};
 
     this.cameraDistance = options.cameraDistance || 0;
     this.cameraHeight = options.cameraHeight || 0;
@@ -148,16 +150,15 @@ ripe.CSRenderer.prototype._registerHandlers = function() {
     area.addEventListener("click", function(event) {
         event = ripe.fixEvent(event);
 
-        self._attemptRaycast(event, "click");
+        if (!self.element.classList.contains("drag"))
+            self._attemptRaycast(event, "click");
     });
 };
 
 ripe.CSRenderer.prototype._initializeFonts = async function (type, weight) {
     const loader = new this.library.FontLoader();
-    console.log("Looking for ")
     const newFont = await new Promise((resolve, reject) => {
         loader.load(this.fontsPath + type + '/' + weight + '.json', function (font) {
-            console.log("Got font!")
             resolve(font);
             
             //refreshText();
@@ -165,7 +166,6 @@ ripe.CSRenderer.prototype._initializeFonts = async function (type, weight) {
     }); 
 
     this.loadedFonts[type + "_" + weight] = newFont;
-
 }
 
 
@@ -257,15 +257,23 @@ ripe.CSRenderer.prototype._initializeMesh = async function() {
 
     this.camera.lookAt(this.cameraTarget);
 
-    this.meshes = {};
+    this.meshes = {};    
     for (let i = 0; i < model.children.length; i++) {
         if (model.children[i].isMesh) {
-            model.children[i].geometry.translate(-centerX, 0, -centerZ);
-            model.children[i].castShadow = true;
-            model.children[i].receiveShadow = true;
-
-            // remove "_part" from string
-            this.meshes[model.children[i].name.split("_")[0]] = model.children[i];
+            //console.log(model.children[i])
+            if (model.children[i].name === "initials_part") {
+                // We do not add to the meshes, as this mesh only exists to guide the initials
+                // locations
+                this.initialsPlacementMesh = model.children[i];
+            }
+            else {
+                model.children[i].geometry.translate(-centerX, 0, -centerZ);
+                model.children[i].castShadow = true;
+                model.children[i].receiveShadow = true;
+    
+                // remove "_part" from string
+                this.meshes[model.children[i].name.split("_")[0]] = model.children[i];
+            }
         }
     }
 
@@ -299,7 +307,7 @@ ripe.CSRenderer.prototype.updateSize = function(width, height) {
     this.renderer.setSize(width, height);
 };
 
-ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent, motion) {
+ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
 
@@ -312,6 +320,26 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent, motion) {
 
         var intersects = this.raycaster.intersectObjects(this.scene.children);
         if (intersects.length > 0) {
+            if (this.intersectedPart !== intersects[0].object.name) {
+                if (this.intersectedPart !== "") {
+                    this.lowlight();
+                }
+                this.intersectedPart = intersects[0].object.name;
+                this.highlight(this.intersectedPart);
+            }
+        } else {
+            if (this.intersectedPart !== "") {
+                this.lowlight();
+            }
+        }
+    }
+
+    /*
+    if (this.raycaster && this.scene) {
+        this.raycaster.setFromCamera(mouse, this.camera);
+
+        var intersects = this.raycaster.intersectObjects(this.scene.children);
+        if (intersects.length > 0) {
             if (motion == "move" && this.intersectedPart !== intersects[0].object.name) {
                 this.lowlight();
                 this.intersectedPart = intersects[0].object.name;
@@ -319,31 +347,7 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent, motion) {
             }
 
             else if (motion == "click") {
-                const meshIntersection = this.raycaster.intersectObject(intersects[0].object, false)
-                console.log(meshIntersection)
                 
-                if (this.textMesh) {
-                    this.scene.remove(this.textMesh);
-                    this.textMesh.geometry.dispose();
-                    this.textMesh.material.dispose();
-                }
-                console.log(this.loadedFonts);
-                var textGeometry = new this.library.TextGeometry("cenas", {
-                    font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
-            
-                    size: 0.5,
-                    height: 0.5,
-                    curveSegments: 10,            
-                });
-
-                var textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
-
-                
-                const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }) // side
-                this.textMesh = new this.library.Mesh(textGeometry, material);
-                this.textMesh.position.set(meshIntersection[0].point.x, meshIntersection[0].point.y, meshIntersection[0].point.z)
-                this.scene.add(this.textMesh);
-                this.render();
             }
 
         } else {
@@ -352,7 +356,48 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent, motion) {
             }
         }
     }
+    */
 };
+
+ripe.CSRenderer.prototype.updateInitials = function (initials) {
+    if (!this.initialsPlacementMesh)
+        return;
+
+    if (this.textMesh) {
+        this.scene.remove(this.textMesh);
+        this.textMesh.geometry.dispose();
+        this.textMesh.material.dispose();
+    }
+
+    const size = 0.1;
+    const height = 0.01;
+
+    var textGeometry = new this.library.TextGeometry(initials, {
+        font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
+
+        size: size,
+        height: height,
+        curveSegments: 10
+    });
+
+    textGeometry.computeBoundingBox();
+    
+    console.log(this.initialsPlacementMesh)
+
+    const centerX = this.initialsPlacementMesh.position.x - 0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+    const centerY = this.initialsPlacementMesh.position.y - 0.5 * (textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
+    const centerZ = this.initialsPlacementMesh.position.z - 0.5 * (textGeometry.boundingBox.max.z - textGeometry.boundingBox.min.z);
+
+    textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
+    
+    const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }) // side
+    this.textMesh = new this.library.Mesh(textGeometry, material);
+    this.textMesh.position.set(centerX, centerY, centerZ);
+    //this.textMesh.rotation.set(this.initialsPlacementMesh.rotation.x - Math.PI/2, this.initialsPlacementMesh.rotation.y, this.initialsPlacementMesh.rotation.z + Math.PI/2)
+    this.textMesh.rotation.set(0, 0, this.initialsPlacementMesh.rotation.z)
+    this.scene.add(this.textMesh);
+    this.render();
+}
 
 /**
  * Highlights a model's part, showing a dark mask on top of the such referred

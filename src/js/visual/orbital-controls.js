@@ -70,6 +70,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
 
         event = ripe.fixEvent(event);
 
+        // TODO Add drift related to acceleration
         // Apply rotation to model
         self._baseHorizontalRot = self._validatedAngle(self.currentHorizontalRot);
         self.currentHorizontalRot = self._baseHorizontalRot;
@@ -111,7 +112,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
             event.stopImmediatePropagation();
             event.stopPropagation();
             return;
-        }
+        }        
 
         event = ripe.fixEvent(event);
 

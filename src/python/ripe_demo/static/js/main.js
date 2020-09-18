@@ -372,7 +372,7 @@ window.onload = function () {
                 noMasks: false,
                 view: bestFace(result),
                 render: "csr",
-                meshPath: "/static/assets/vyner.glb",
+                meshPath: "/static/assets/shoe.glb",
                 texturesPath: "/static/assets/textures/",
                 fontsPath: "/static/assets/fonts/",
                 fontType: "comic_sans",
@@ -391,7 +391,7 @@ window.onload = function () {
                 materialEasing: "easeInOutQuad",
                 rotationEasing: "easeInOutQuad",
                 crossfadeEasing: "easeInOutQuad",
-                lockRotation: "horizontal"
+                //lockRotation: "horizontal"
             });
 
             configuratorPRC.bind("loaded", function () {
