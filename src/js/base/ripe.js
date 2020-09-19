@@ -1001,7 +1001,7 @@ ripe.Ripe.prototype.setBackgroundColor = async function(
  */
 ripe.Ripe.prototype.getChildren = function(type = null) {
     if (type === null) return this.children;
-    return this.children.filter(child => type === null || child.type === type);
+    return this.children.filter(child => type === null || child.type.startsWith(type));
 };
 
 /**
