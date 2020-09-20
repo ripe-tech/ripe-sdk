@@ -50,7 +50,7 @@ ripe.Ripe.prototype.getCountryGroups = function(options, callback) {
 ripe.Ripe.prototype.getCountryGroupsP = function(options) {
     return new Promise((resolve, reject) => {
         this.getCountryGroups(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -87,7 +87,7 @@ ripe.Ripe.prototype.getCountryGroup = function(id, options, callback) {
 ripe.Ripe.prototype.getCountryGroupP = function(id, options) {
     return new Promise((resolve, reject) => {
         this.getCountryGroup(id, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -125,7 +125,7 @@ ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callbac
 ripe.Ripe.prototype.createCountryGroupP = function(countryGroup, options) {
     return new Promise((resolve, reject) => {
         this.createCountryGroup(countryGroup, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -165,7 +165,7 @@ ripe.Ripe.prototype.updateCountryGroup = function(id, countryGroup, options, cal
 ripe.Ripe.prototype.updateCountryGroupP = function(id, countryGroup, options) {
     return new Promise((resolve, reject) => {
         this.updateCountryGroup(id, countryGroup, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -202,7 +202,7 @@ ripe.Ripe.prototype.deleteCountryGroup = function(id, options, callback) {
 ripe.Ripe.prototype.deleteCountryGroupP = function(id, options) {
     return new Promise((resolve, reject) => {
         this.deleteCountryGroup(id, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

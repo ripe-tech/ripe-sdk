@@ -102,7 +102,7 @@ ripe.Ripe.prototype.auth = function(username, password, options, callback) {
 ripe.Ripe.prototype.authP = function(username, password, options) {
     return new Promise((resolve, reject) => {
         this.auth(username, password, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -150,7 +150,7 @@ ripe.Ripe.prototype.authAdmin = function(username, password, options, callback) 
 ripe.Ripe.prototype.authAdminP = function(username, password, options) {
     return new Promise((resolve, reject) => {
         this.authAdmin(username, password, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -188,7 +188,7 @@ ripe.Ripe.prototype.authPid = function(token, options, callback) {
 ripe.Ripe.prototype.authPidP = function(token, options) {
     return new Promise((resolve, reject) => {
         this.authPid(token, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -229,7 +229,7 @@ ripe.Ripe.prototype.authKey = function(key, options, callback) {
 ripe.Ripe.prototype.authKeyP = function(key, options) {
     return new Promise((resolve, reject) => {
         this.authKey(key, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

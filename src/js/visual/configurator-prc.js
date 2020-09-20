@@ -56,7 +56,6 @@ ripe.ConfiguratorPRC.prototype.init = function() {
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.clickThreshold = this.options.clickThreshold || 0.015;
-    this.interval = this.options.interval || 0;
     this.duration = this.options.duration || 500;
     this.preloadDelay = this.options.preloadDelay || 150;
     this.maskOpacity = this.options.maskOpacity || 0.4;
@@ -162,7 +161,6 @@ ripe.ConfiguratorPRC.prototype.updateOptions = async function(options, update = 
             : options.verticalThreshold;
     this.clickThreshold =
         options.clickThreshold === undefined ? this.clickThreshold : options.clickThreshold;
-    this.interval = options.interval === undefined ? this.interval : options.interval;
     this.duration = options.duration === undefined ? this.duration : options.duration;
     this.preloadDelay =
         options.preloadDelay === undefined ? this.preloadDelay : options.preloadDelay;

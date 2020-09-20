@@ -38,7 +38,7 @@ ripe.Ripe.prototype.configGlobal = function(options, callback) {
 ripe.Ripe.prototype.configGlobalP = function(options) {
     return new Promise((resolve, reject) => {
         this.configGlobal(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -72,7 +72,7 @@ ripe.Ripe.prototype.configInfo = function(options, callback) {
 ripe.Ripe.prototype.configInfoP = function(options) {
     return new Promise((resolve, reject) => {
         this.configInfo(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -109,7 +109,7 @@ ripe.Ripe.prototype.configDku = function(dku, options, callback) {
 ripe.Ripe.prototype.configDkuP = function(dku, options) {
     return new Promise((resolve, reject) => {
         this.configDku(dku, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -156,7 +156,7 @@ ripe.Ripe.prototype.configSku = function(sku, domain, options, callback) {
 ripe.Ripe.prototype.configSkuP = function(sku, domain, options) {
     return new Promise((resolve, reject) => {
         this.configSku(sku, domain, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -204,7 +204,7 @@ ripe.Ripe.prototype.configResolveSku = function(domain, options, callback) {
 ripe.Ripe.prototype.configResolveSkuP = function(domain, options) {
     return new Promise((resolve, reject) => {
         this.configResolveSku(domain, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -238,7 +238,7 @@ ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
 ripe.Ripe.prototype.configResolveP = function(productId, options) {
     return new Promise((resolve, reject) => {
         this.configResolve(productId, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

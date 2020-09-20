@@ -517,6 +517,8 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.dku = this.options.dku || null;
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.webUrl = this.options.webUrl || "https://sandbox.platforme.com/";
+    this.params = this.options.params || {};
+    this.headers = this.options.headers || {};
     this.parts = this.options.parts || {};
     this.country = this.options.country || null;
     this.currency = this.options.currency || null;
@@ -999,7 +1001,7 @@ ripe.Ripe.prototype.setBackgroundColor = async function(
  */
 ripe.Ripe.prototype.getChildren = function(type = null) {
     if (type === null) return this.children;
-    return this.children.filter(child => type === null || child.type === type);
+    return this.children.filter(child => type === null || child.type.startsWith(type));
 };
 
 /**

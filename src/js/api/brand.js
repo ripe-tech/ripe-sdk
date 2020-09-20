@@ -48,7 +48,7 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
 ripe.Ripe.prototype.getConfigP = function(options) {
     return new Promise((resolve, reject) => {
         this.getConfig(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -127,7 +127,7 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
 ripe.Ripe.prototype.getCombinationsP = function(options) {
     return new Promise((resolve, reject) => {
         this.getCombinations(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -165,7 +165,7 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
 ripe.Ripe.prototype.getFactoryP = function(options, callback) {
     return new Promise((resolve, reject) => {
         this.getFactory(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -211,7 +211,7 @@ ripe.Ripe.prototype.runLogic = function(options, callback) {
 ripe.Ripe.prototype.runLogicP = function(options, callback) {
     return new Promise((resolve, reject) => {
         this.runLogic(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -251,7 +251,7 @@ ripe.Ripe.prototype.onConfig = function(options, callback) {
 ripe.Ripe.prototype.onConfigP = function(options, callback) {
     return new Promise((resolve, reject) => {
         this.onConfig(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -291,7 +291,7 @@ ripe.Ripe.prototype.onPart = function(options, callback) {
 ripe.Ripe.prototype.onPartP = function(options, callback) {
     return new Promise((resolve, reject) => {
         this.onPart(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -333,7 +333,7 @@ ripe.Ripe.prototype.onInitials = function(options, callback) {
 ripe.Ripe.prototype.onInitialsP = function(options, callback) {
     return new Promise((resolve, reject) => {
         this.onInitials(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };

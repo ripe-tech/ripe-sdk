@@ -34,7 +34,7 @@ ripe.Ripe.prototype.getSizes = function(options, callback) {
 ripe.Ripe.prototype.getSizesP = function(options) {
     return new Promise((resolve, reject) => {
         this.getSizes(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -71,7 +71,7 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
 ripe.Ripe.prototype.sizeToNativeP = function(scale, value, gender, options) {
     return new Promise((resolve, reject) => {
         this.sizeToNative(scale, value, gender, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -116,7 +116,7 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
 ripe.Ripe.prototype.sizeToNativeBP = function(scales, values, genders, options) {
     return new Promise((resolve, reject) => {
         this.sizeToNativeB(scales, values, genders, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -152,7 +152,7 @@ ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callb
 ripe.Ripe.prototype.nativeToSizeP = function(scale, value, gender, options) {
     return new Promise((resolve, reject) => {
         this.nativeToSize(scale, value, gender, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -196,7 +196,7 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
 ripe.Ripe.prototype.nativeToSizeBP = function(scales, values, genders, options) {
     return new Promise((resolve, reject) => {
         this.nativeToSizeB(scales, values, genders, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -232,7 +232,7 @@ ripe.Ripe.prototype.sizeToLocale = function(scale, value, gender, options, callb
 ripe.Ripe.prototype.sizeToLocaleP = function(scale, value, gender, options) {
     return new Promise((resolve, reject) => {
         this.sizeToLocale(scale, value, gender, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -271,7 +271,7 @@ ripe.Ripe.prototype.sizeToLocaleB = function(scales, values, genders, options, c
 ripe.Ripe.prototype.sizeToLocaleBP = function(scales, values, genders, options) {
     return new Promise((resolve, reject) => {
         this.sizeToLocaleB(scales, values, genders, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -307,7 +307,7 @@ ripe.Ripe.prototype.nativeToLocale = function(scale, value, gender, options, cal
 ripe.Ripe.prototype.nativeToLocaleP = function(scale, value, gender, options) {
     return new Promise((resolve, reject) => {
         this.nativeToLocale(scale, value, gender, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
@@ -346,7 +346,7 @@ ripe.Ripe.prototype.nativeToLocaleB = function(scales, values, genders, options,
 ripe.Ripe.prototype.nativeToLocaleBP = function(scales, values, genders, options) {
     return new Promise((resolve, reject) => {
         this.nativeToLocaleB(scales, values, genders, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request));
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
