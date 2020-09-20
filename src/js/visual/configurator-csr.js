@@ -457,6 +457,8 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
     this.ready = true;
     this.trigger("ready");
 
+    if (this.renderer) this.renderer.updateElementBoundingBox();
+
     // adds the config visual class indicating that
     // a configuration already exists for the current
     // interactive configurator (meta-data)
