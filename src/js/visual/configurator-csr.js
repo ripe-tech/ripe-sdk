@@ -221,7 +221,6 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
         await this.renderer.crossfade({ type: "material", parts: this.owner.parts, duration: 500 });
     }
     if (options.reason && options.reason === "set initials") {
-        console.log(this.owner.initials)
         this.renderer.updateInitials(this.owner.initials);
     }
 

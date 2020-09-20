@@ -112,7 +112,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
             event.stopImmediatePropagation();
             event.stopPropagation();
             return;
-        }        
+        }
 
         event = ripe.fixEvent(event);
 
@@ -449,7 +449,7 @@ ripe.OrbitalControls.prototype.rotationTransition = function(nextView, nextPosit
     }
     if (position !== nextPosition) {
         finalXRotation = this._positionToRotation(nextPosition);
-        
+
         // figures out the best final rotation to avoid going through longest path
         const diff = finalXRotation - this._baseHorizontalRot;
         if (diff < -180) finalXRotation += 360;
@@ -465,4 +465,4 @@ ripe.OrbitalControls.prototype._validatedAngle = function(angle) {
     if (angle > 360) return angle - 360;
     if (angle < 0) return angle + 360;
     return angle;
-}
+};

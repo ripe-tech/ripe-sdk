@@ -390,7 +390,7 @@ window.onload = function () {
                 highlightEasing: "easeInOutQuad",
                 materialEasing: "easeInOutQuad",
                 rotationEasing: "easeInOutQuad",
-                crossfadeEasing: "easeInOutQuad",
+                crossfadeEasing: "easeInOutQuad"
                 //lockRotation: "horizontal"
             });
 

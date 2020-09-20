@@ -46,7 +46,7 @@ ripe.CSRenderer = function(element, options) {
     this.texturesPath = options.texturesPath || "";
     this.partsMap = options.partsMap || {};
     this.loadedMaterials = {};
-    
+
     this.meshPath = options.meshPath;
 
     this.raycaster = new this.library.Raycaster();
@@ -150,24 +150,20 @@ ripe.CSRenderer.prototype._registerHandlers = function() {
     area.addEventListener("click", function(event) {
         event = ripe.fixEvent(event);
 
-        if (!self.element.classList.contains("drag"))
-            self._attemptRaycast(event, "click");
+        if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
 };
 
-ripe.CSRenderer.prototype._initializeFonts = async function (type, weight) {
+ripe.CSRenderer.prototype._initializeFonts = async function(type, weight) {
     const loader = new this.library.FontLoader();
     const newFont = await new Promise((resolve, reject) => {
-        loader.load(this.fontsPath + type + '/' + weight + '.json', function (font) {
+        loader.load(this.fontsPath + type + "/" + weight + ".json", function(font) {
             resolve(font);
-            
-            //refreshText();
         });
-    }); 
+    });
 
     this.loadedFonts[type + "_" + weight] = newFont;
-}
-
+};
 
 ripe.CSRenderer.prototype._initializeLights = function() {
     const keyLight = new this.library.PointLight(0xffffff, 2.2, 18);
@@ -257,20 +253,18 @@ ripe.CSRenderer.prototype._initializeMesh = async function() {
 
     this.camera.lookAt(this.cameraTarget);
 
-    this.meshes = {};    
+    this.meshes = {};
     for (let i = 0; i < model.children.length; i++) {
         if (model.children[i].isMesh) {
-            //console.log(model.children[i])
             if (model.children[i].name === "initials_part") {
                 // We do not add to the meshes, as this mesh only exists to guide the initials
                 // locations
                 this.initialsPlacementMesh = model.children[i];
-            }
-            else {
+            } else {
                 model.children[i].geometry.translate(-centerX, 0, -centerZ);
                 model.children[i].castShadow = true;
                 model.children[i].receiveShadow = true;
-    
+
                 // remove "_part" from string
                 this.meshes[model.children[i].name.split("_")[0]] = model.children[i];
             }
@@ -333,35 +327,10 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
             }
         }
     }
-
-    /*
-    if (this.raycaster && this.scene) {
-        this.raycaster.setFromCamera(mouse, this.camera);
-
-        var intersects = this.raycaster.intersectObjects(this.scene.children);
-        if (intersects.length > 0) {
-            if (motion == "move" && this.intersectedPart !== intersects[0].object.name) {
-                this.lowlight();
-                this.intersectedPart = intersects[0].object.name;
-                this.highlight(this.intersectedPart);
-            }
-
-            else if (motion == "click") {
-                
-            }
-
-        } else {
-            if (this.intersectedPart !== "") {
-                this.lowlight();
-            }
-        }
-    }
-    */
 };
 
-ripe.CSRenderer.prototype.updateInitials = function (initials) {
-    if (!this.initialsPlacementMesh)
-        return;
+ripe.CSRenderer.prototype.updateInitials = function(initials) {
+    if (!this.initialsPlacementMesh) return;
 
     if (this.textMesh) {
         this.scene.remove(this.textMesh);
@@ -381,23 +350,27 @@ ripe.CSRenderer.prototype.updateInitials = function (initials) {
     });
 
     textGeometry.computeBoundingBox();
-    
-    console.log(this.initialsPlacementMesh)
 
-    const centerX = this.initialsPlacementMesh.position.x - 0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
-    const centerY = this.initialsPlacementMesh.position.y - 0.5 * (textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
-    const centerZ = this.initialsPlacementMesh.position.z - 0.5 * (textGeometry.boundingBox.max.z - textGeometry.boundingBox.min.z);
+    const centerX =
+        this.initialsPlacementMesh.position.x -
+        0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+    const centerY =
+        this.initialsPlacementMesh.position.y -
+        0.5 * (textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
+    const centerZ =
+        this.initialsPlacementMesh.position.z -
+        0.5 * (textGeometry.boundingBox.max.z - textGeometry.boundingBox.min.z);
 
     textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
-    
-    const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }) // side
+
+    const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }); // side
     this.textMesh = new this.library.Mesh(textGeometry, material);
     this.textMesh.position.set(centerX, centerY, centerZ);
-    //this.textMesh.rotation.set(this.initialsPlacementMesh.rotation.x - Math.PI/2, this.initialsPlacementMesh.rotation.y, this.initialsPlacementMesh.rotation.z + Math.PI/2)
-    this.textMesh.rotation.set(0, 0, this.initialsPlacementMesh.rotation.z)
+    // this.textMesh.rotation.set(this.initialsPlacementMesh.rotation.x - Math.PI/2, this.initialsPlacementMesh.rotation.y, this.initialsPlacementMesh.rotation.z + Math.PI/2)
+    this.textMesh.rotation.set(0, 0, this.initialsPlacementMesh.rotation.z);
     this.scene.add(this.textMesh);
     this.render();
-}
+};
 
 /**
  * Highlights a model's part, showing a dark mask on top of the such referred
