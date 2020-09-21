@@ -61,6 +61,7 @@ ripe.CSRenderer = function (element, options) {
     this.initialsPositions = {};
     this.initialsPlacement = options.initialsPlacement || "center";
     this.initialsType = options.initialsType || "emboss";
+    this.initialsText = options.initialsText || "";
 
     this.cameraDistance = options.cameraDistance || 0;
     this.cameraHeight = options.cameraHeight || 0;
@@ -271,10 +272,9 @@ ripe.CSRenderer.prototype._initializeMesh = async function () {
             // locations
             this.initialsPositions[initialPosition] = model.children[i];
             this.meshes[model.children[i].name.split("_")[0] + "_" + initialPosition] = model.children[i];
-            //this.scene.add(model.children[i])
             
-        } else {
-            model.children[i].geometry.translate(-centerX, 0, -centerZ);
+        } else if (model.children[i].name !== "logo_part") {
+            model.children[i].position.set(model.children[i].position.x - centerX, model.children[i].position.y, model.children[i].position.z -centerZ);
             model.children[i].castShadow = true;
             model.children[i].receiveShadow = true;
 
@@ -297,8 +297,10 @@ ripe.CSRenderer.prototype._initializeMesh = async function () {
 
 ripe.CSRenderer.prototype._applyDefaults = function () {
     for (var mesh in this.meshes) {
-        this.meshes[mesh].material.dispose();
-        this.meshes[mesh].material = this.loadedMaterials.default.clone();
+        if (!this.meshes[mesh].name.includes("initials")) {
+            this.meshes[mesh].material.dispose();
+            this.meshes[mesh].material = this.loadedMaterials.default.clone();
+        }
     }
 };
 
@@ -342,30 +344,35 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
 
 ripe.CSRenderer.prototype.updateInitials = function (initials) {
     if (!this.initialsPositions) return;
+    
+    const size = Object.keys(this.initialsPositions).length;
+
+    if (initials.length > size || initials === this.initialsText) return;
 
     for (let i = 0; i < this.textMeshes.length; i++) {
         this.scene.remove(this.textMeshes[i]);
         this.textMeshes[i].geometry.dispose();
         this.textMeshes[i].material.dispose();
-    }
+    }    
 
     this.textMeshes = [];
+    this.initialsText = initials;
 
-    if (initials.length === 0) return;
+    if (this.initialsType === "emboss") this.embossLetters()
+    else if (this.initialsType === "engrave") this.engraveLetters()
 
-    if (this.initialsType === "emboss") this.embossLetters(initials)
-    else if (this.initialsType === "engrave") this.engraveLetters(initials)
+    this.render();
 };
 
-ripe.CSRenderer.prototype.embossLetters = function (initials) {
+ripe.CSRenderer.prototype.embossLetters = function () {
     // TODO Pass this size as a parameter
-    const size = 0.1;
+    const size = 0.05;
     const height = 0.02;
 
     // Starts at 1 to line up with initials mesh position
-    for (var i = 1; i <= initials.length; i++) {
-        const posRot = this.getPosRotLetter(i, initials)
-        const letter = initials.charAt(i - 1);
+    for (var i = 1; i <= this.initialsText.length; i++) {
+        const posRot = this.getPosRotLetter(i)
+        const letter = this.initialsText.charAt(i - 1);
 
         var textGeometry = new this.library.TextGeometry(letter, {
             font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
@@ -375,38 +382,45 @@ ripe.CSRenderer.prototype.embossLetters = function (initials) {
             curveSegments: 10
         });
 
-        textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
-        
-        textGeometry.computeBoundingBox();
-
-        var centerX = posRot.position.x - 0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
-        var centerY = posRot.position.y - 0.5 * (textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
-        var centerZ = posRot.position.z - 0.5 * (textGeometry.boundingBox.max.z - textGeometry.boundingBox.min.z);
-
-        console.log("MESH " + letter);
-        console.log(posRot)
+        textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry); 
 
         const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }); // side
         var letterMesh = new this.library.Mesh(textGeometry, material);
-        letterMesh.position.set(centerX, centerY, centerZ);
-        //letterMesh.rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z);        
 
+        letterMesh.geometry.rotateX(-Math.PI/2 + posRot.rotation.x);
+        letterMesh.geometry.rotateY(Math.PI/2 + posRot.rotation.y);
+        letterMesh.geometry.rotateZ(posRot.rotation.z);
+
+        letterMesh.geometry.computeBoundingBox();
+        
+        const box = new this.library.Box3().setFromObject(letterMesh);
+        const offsetX = -0.5 * (box.max.x - box.min.x);
+        const offsetY = -0.5 * (box.max.y - box.min.y);
+        const offsetZ = -0.5 * (box.max.z - box.min.z);
+
+        console.log(offsetX, offsetY, offsetZ)
+
+        var centerX = posRot.position.x - offsetX;
+        var centerY = posRot.position.y + offsetY;
+        var centerZ = posRot.position.z - offsetZ;
+
+        letterMesh.rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z);
+        letterMesh.position.set(centerX, centerY, centerZ);
+        
         this.textMeshes.push(letterMesh);
         this.scene.add(letterMesh);
     }
-
-    this.render();
 };
 
-ripe.CSRenderer.prototype.getPosRotLetter = function (letterNumber, initials) {
+ripe.CSRenderer.prototype.getPosRotLetter = function (letterNumber) {
     // Check if placement is interpolated or in the precise spot
     var transform = {}
     const size = Object.keys(this.initialsPositions).length;
     const center = (size + 1) / 2;
-    const posInInitials = center + letterNumber - (initials.length + 1) / 2;
+    const posInInitials = center + letterNumber - (this.initialsText.length + 1) / 2;
 
     if (initials.length % 2 === size % 2) {
-        console.log("position " + letterNumber + " maps to " + posInInitials);
+        //console.log("position " + letterNumber + " maps to " + posInInitials);
 
         // TODO Check for placement
         transform["position"] = this.initialsPositions[posInInitials].position;
@@ -414,14 +428,14 @@ ripe.CSRenderer.prototype.getPosRotLetter = function (letterNumber, initials) {
 
     } else {
         // Interpolate between the two closest positions
-
         const previous = Math.floor(posInInitials);
         const next = Math.ceil(posInInitials);
 
-        console.log(letterNumber + " is INTERPOLATING between " + previous + " and " + next)
+        //console.log(letterNumber + " is interpolating between " + previous + " and " + next)
 
         var position = new this.library.Vector3(0, 0, 0);
         var rotation = new this.library.Vector3(0, 0, 0);
+        var quaternion = new this.library.Vector4(0,0, 0, 0);
 
         position.x = (this.initialsPositions[previous].position.x + this.initialsPositions[next].position.x) / 2
         position.y = (this.initialsPositions[previous].position.y + this.initialsPositions[next].position.y) / 2
@@ -438,7 +452,7 @@ ripe.CSRenderer.prototype.getPosRotLetter = function (letterNumber, initials) {
     return transform;
 };
 
-ripe.CSRenderer.prototype.engraveLetters = function (initials) {
+ripe.CSRenderer.prototype.engraveLetters = function () {
 
 }
 
@@ -543,10 +557,10 @@ ripe.CSRenderer.prototype._disposeResources = function () {
         }
     }
     if (this.textMeshes) {
-        for (var mesh in this.textMeshes) {
-            this.scene.remove(this.textMeshes[mesh]);
-            this.textMeshes[mesh].geometry.dispose();
-            this.textMeshes[mesh].material.dispose();
+        for (let i = 0 ; i < this.textMeshes.length; i++) {
+            this.scene.remove(this.textMeshes[i]);
+            this.textMeshes[i].geometry.dispose();
+            this.textMeshes[i].material.dispose();
         }
     }
     if (this.loadedMaterials) {
