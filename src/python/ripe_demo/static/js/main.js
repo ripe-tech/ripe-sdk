@@ -372,7 +372,7 @@ window.onload = function () {
                 noMasks: false,
                 view: bestFace(result),
                 render: "csr",
-                meshPath: "/static/assets/shoe.glb",
+                meshPath: "/static/assets/shoe_even.glb",
                 texturesPath: "/static/assets/textures/",
                 fontsPath: "/static/assets/fonts/",
                 fontType: "comic_sans",
@@ -385,12 +385,13 @@ window.onload = function () {
                 cameraTarget: { x: 0, y: 0.375, z: 0.0 },
                 exposure: 0.7,
                 lockAxis: "y",
-                //viewAnimate: "cross",
+                viewAnimate: "cross",
                 easing: "linear",
                 highlightEasing: "easeInOutQuad",
                 materialEasing: "easeInOutQuad",
                 rotationEasing: "easeInOutQuad",
-                crossfadeEasing: "easeInOutQuad"
+                crossfadeEasing: "easeInOutQuad",
+                initialsPlacement: "center"
                 //lockRotation: "horizontal"
             });
 

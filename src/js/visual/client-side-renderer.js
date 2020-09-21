@@ -25,7 +25,7 @@ if (
  * @param {Object} options The options to be used to configure the
  * renderer instance to be created.
  */
-ripe.CSRenderer = function(element, options) {
+ripe.CSRenderer = function (element, options) {
     this.type = this.type || "CSRenderer";
     this.element = element;
 
@@ -53,11 +53,14 @@ ripe.CSRenderer = function(element, options) {
     this.intersectedPart = "";
 
     // Initials
-    this.textMesh = null;
+    this.textMeshes = [];
     this.fontsPath = options.fontsPath || "";
     this.fontType = options.fontType || "";
     this.fontWeight = options.fontWeight || "";
     this.loadedFonts = {};
+    this.initialsPositions = {};
+    this.initialsPlacement = options.initialsPlacement || "center";
+    this.initialsType = options.initialsType || "emboss";
 
     this.cameraDistance = options.cameraDistance || 0;
     this.cameraHeight = options.cameraHeight || 0;
@@ -84,7 +87,7 @@ ripe.CSRenderer = function(element, options) {
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRenderer.prototype.constructor = ripe.CSRenderer;
 
-ripe.CSRenderer.prototype.updateOptions = async function(options) {
+ripe.CSRenderer.prototype.updateOptions = async function (options) {
     if (options.meshPath && this.meshPath !== options.meshPath) {
         this.meshPath = options.meshPath;
         this._initializeMesh();
@@ -98,10 +101,10 @@ ripe.CSRenderer.prototype.updateOptions = async function(options) {
         options.cameraTarget === undefined
             ? this.cameraTarget
             : new this.library.Vector3(
-                  options.cameraTarget.x,
-                  options.cameraTarget.y,
-                  options.cameraTarget.z
-              );
+                options.cameraTarget.x,
+                options.cameraTarget.y,
+                options.cameraTarget.z
+            );
     this.cameraFOV = options.cameraFOV === undefined ? this.cameraFOV : options.cameraFOV;
 
     this.materialEasing = options.materialEasing || this.easing || "linear";
@@ -128,11 +131,11 @@ ripe.CSRenderer.prototype.updateOptions = async function(options) {
     this.useMasks = options.useMasks === undefined ? this.useMasks : options.useMasks;
 };
 
-ripe.CSRenderer.prototype._registerHandlers = function() {
+ripe.CSRenderer.prototype._registerHandlers = function () {
     const self = this;
     const area = this.element.querySelector(".area");
 
-    area.addEventListener("mousemove", function(event) {
+    area.addEventListener("mousemove", function (event) {
         event = ripe.fixEvent(event);
 
         // in case the index that was found is the zero one this is a special
@@ -147,17 +150,17 @@ ripe.CSRenderer.prototype._registerHandlers = function() {
         self._attemptRaycast(event, "move");
     });
 
-    area.addEventListener("click", function(event) {
+    area.addEventListener("click", function (event) {
         event = ripe.fixEvent(event);
 
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
 };
 
-ripe.CSRenderer.prototype._initializeFonts = async function(type, weight) {
+ripe.CSRenderer.prototype._initializeFonts = async function (type, weight) {
     const loader = new this.library.FontLoader();
     const newFont = await new Promise((resolve, reject) => {
-        loader.load(this.fontsPath + type + "/" + weight + ".json", function(font) {
+        loader.load(this.fontsPath + type + "/" + weight + ".json", function (font) {
             resolve(font);
         });
     });
@@ -165,7 +168,7 @@ ripe.CSRenderer.prototype._initializeFonts = async function(type, weight) {
     this.loadedFonts[type + "_" + weight] = newFont;
 };
 
-ripe.CSRenderer.prototype._initializeLights = function() {
+ripe.CSRenderer.prototype._initializeLights = function () {
     const keyLight = new this.library.PointLight(0xffffff, 2.2, 18);
     keyLight.position.set(2, 2, 2);
     keyLight.castShadow = true;
@@ -192,7 +195,7 @@ ripe.CSRenderer.prototype._initializeLights = function() {
     this.lights = [keyLight, fillLight, rimLight, ambientLight];
 };
 
-ripe.CSRenderer.prototype._initializeRenderer = function() {
+ripe.CSRenderer.prototype._initializeRenderer = function () {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
     this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
@@ -209,7 +212,7 @@ ripe.CSRenderer.prototype._initializeRenderer = function() {
     area.appendChild(this.renderer.domElement);
 };
 
-ripe.CSRenderer.prototype._initializeCamera = function() {
+ripe.CSRenderer.prototype._initializeCamera = function () {
     const width = this.element.getBoundingClientRect().width;
     const height = this.element.getBoundingClientRect().height;
 
@@ -225,7 +228,7 @@ ripe.CSRenderer.prototype._initializeCamera = function() {
     }
 };
 
-ripe.CSRenderer.prototype._initializeMesh = async function() {
+ripe.CSRenderer.prototype._initializeMesh = async function () {
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
         gltfLoader.load(this.meshPath, gltf => {
@@ -233,8 +236,9 @@ ripe.CSRenderer.prototype._initializeMesh = async function() {
         });
     });
 
+    // Todo check if this results in leaks
     const model = gltf.scene;
-
+    
     const box = new this.library.Box3().setFromObject(model);
 
     const floorGeometry = new this.library.PlaneGeometry(100, 100);
@@ -254,20 +258,28 @@ ripe.CSRenderer.prototype._initializeMesh = async function() {
     this.camera.lookAt(this.cameraTarget);
 
     this.meshes = {};
-    for (let i = 0; i < model.children.length; i++) {
-        if (model.children[i].isMesh) {
-            if (model.children[i].name === "initials_part") {
-                // We do not add to the meshes, as this mesh only exists to guide the initials
-                // locations
-                this.initialsPlacementMesh = model.children[i];
-            } else {
-                model.children[i].geometry.translate(-centerX, 0, -centerZ);
-                model.children[i].castShadow = true;
-                model.children[i].receiveShadow = true;
+    this.scene = new this.library.Scene();
 
-                // remove "_part" from string
-                this.meshes[model.children[i].name.split("_")[0]] = model.children[i];
-            }
+    for (let i = 0; i < model.children.length; i++) {
+        //console.log(model);
+        if (model.children[i].name.includes("initials_part")) {
+            model.children[i].position.set(model.children[i].position.x - centerX, model.children[i].position.y, model.children[i].position.z -centerZ);
+            
+            // naming is of the type "initials_part_1", where 1 indicates the position            
+            var initialPosition = parseInt(model.children[i].name.split("_")[2])
+            // We do not add to the meshes, as this mesh only exists to guide the initials
+            // locations
+            this.initialsPositions[initialPosition] = model.children[i];
+            this.meshes[model.children[i].name.split("_")[0] + "_" + initialPosition] = model.children[i];
+            //this.scene.add(model.children[i])
+            
+        } else {
+            model.children[i].geometry.translate(-centerX, 0, -centerZ);
+            model.children[i].castShadow = true;
+            model.children[i].receiveShadow = true;
+
+            // remove "_part" from string
+            this.meshes[model.children[i].name.split("_")[0]] = model.children[i];
         }
     }
 
@@ -275,7 +287,6 @@ ripe.CSRenderer.prototype._initializeMesh = async function() {
     await this._initializeTexturesAndMaterials();
     this._applyDefaults();
     // Only now can we populate the scene safely
-    this.scene = new this.library.Scene();
     this.populateScene(this.scene);
 
     // TODO set initial camera positions
@@ -284,24 +295,24 @@ ripe.CSRenderer.prototype._initializeMesh = async function() {
     this.render();
 };
 
-ripe.CSRenderer.prototype._applyDefaults = function() {
+ripe.CSRenderer.prototype._applyDefaults = function () {
     for (var mesh in this.meshes) {
         this.meshes[mesh].material.dispose();
         this.meshes[mesh].material = this.loadedMaterials.default.clone();
     }
 };
 
-ripe.CSRenderer.prototype.render = function() {
+ripe.CSRenderer.prototype.render = function () {
     if (this.renderer && this.scene && this.camera) {
         this.renderer.render(this.scene, this.camera);
     }
 };
 
-ripe.CSRenderer.prototype.updateSize = function(width, height) {
+ripe.CSRenderer.prototype.updateSize = function (width, height) {
     this.renderer.setSize(width, height);
 };
 
-ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
+ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
 
@@ -329,48 +340,108 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
     }
 };
 
-ripe.CSRenderer.prototype.updateInitials = function(initials) {
-    if (!this.initialsPlacementMesh) return;
+ripe.CSRenderer.prototype.updateInitials = function (initials) {
+    if (!this.initialsPositions) return;
 
-    if (this.textMesh) {
-        this.scene.remove(this.textMesh);
-        this.textMesh.geometry.dispose();
-        this.textMesh.material.dispose();
+    for (let i = 0; i < this.textMeshes.length; i++) {
+        this.scene.remove(this.textMeshes[i]);
+        this.textMeshes[i].geometry.dispose();
+        this.textMeshes[i].material.dispose();
     }
 
+    this.textMeshes = [];
+
+    if (initials.length === 0) return;
+
+    if (this.initialsType === "emboss") this.embossLetters(initials)
+    else if (this.initialsType === "engrave") this.engraveLetters(initials)
+};
+
+ripe.CSRenderer.prototype.embossLetters = function (initials) {
+    // TODO Pass this size as a parameter
     const size = 0.1;
-    const height = 0.01;
+    const height = 0.02;
 
-    var textGeometry = new this.library.TextGeometry(initials, {
-        font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
+    // Starts at 1 to line up with initials mesh position
+    for (var i = 1; i <= initials.length; i++) {
+        const posRot = this.getPosRotLetter(i, initials)
+        const letter = initials.charAt(i - 1);
 
-        size: size,
-        height: height,
-        curveSegments: 10
-    });
+        var textGeometry = new this.library.TextGeometry(letter, {
+            font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
 
-    textGeometry.computeBoundingBox();
+            size: size,
+            height: height,
+            curveSegments: 10
+        });
 
-    const centerX =
-        this.initialsPlacementMesh.position.x -
-        0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
-    const centerY =
-        this.initialsPlacementMesh.position.y -
-        0.5 * (textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
-    const centerZ =
-        this.initialsPlacementMesh.position.z -
-        0.5 * (textGeometry.boundingBox.max.z - textGeometry.boundingBox.min.z);
+        textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
+        
+        textGeometry.computeBoundingBox();
 
-    textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
+        var centerX = posRot.position.x - 0.5 * (textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x);
+        var centerY = posRot.position.y - 0.5 * (textGeometry.boundingBox.max.y - textGeometry.boundingBox.min.y);
+        var centerZ = posRot.position.z - 0.5 * (textGeometry.boundingBox.max.z - textGeometry.boundingBox.min.z);
 
-    const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }); // side
-    this.textMesh = new this.library.Mesh(textGeometry, material);
-    this.textMesh.position.set(centerX, centerY, centerZ);
-    // this.textMesh.rotation.set(this.initialsPlacementMesh.rotation.x - Math.PI/2, this.initialsPlacementMesh.rotation.y, this.initialsPlacementMesh.rotation.z + Math.PI/2)
-    this.textMesh.rotation.set(0, 0, this.initialsPlacementMesh.rotation.z);
-    this.scene.add(this.textMesh);
+        console.log("MESH " + letter);
+        console.log(posRot)
+
+        const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }); // side
+        var letterMesh = new this.library.Mesh(textGeometry, material);
+        letterMesh.position.set(centerX, centerY, centerZ);
+        //letterMesh.rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z);        
+
+        this.textMeshes.push(letterMesh);
+        this.scene.add(letterMesh);
+    }
+
     this.render();
 };
+
+ripe.CSRenderer.prototype.getPosRotLetter = function (letterNumber, initials) {
+    // Check if placement is interpolated or in the precise spot
+    var transform = {}
+    const size = Object.keys(this.initialsPositions).length;
+    const center = (size + 1) / 2;
+    const posInInitials = center + letterNumber - (initials.length + 1) / 2;
+
+    if (initials.length % 2 === size % 2) {
+        console.log("position " + letterNumber + " maps to " + posInInitials);
+
+        // TODO Check for placement
+        transform["position"] = this.initialsPositions[posInInitials].position;
+        transform["rotation"] = this.initialsPositions[posInInitials].rotation;
+
+    } else {
+        // Interpolate between the two closest positions
+
+        const previous = Math.floor(posInInitials);
+        const next = Math.ceil(posInInitials);
+
+        console.log(letterNumber + " is INTERPOLATING between " + previous + " and " + next)
+
+        var position = new this.library.Vector3(0, 0, 0);
+        var rotation = new this.library.Vector3(0, 0, 0);
+
+        position.x = (this.initialsPositions[previous].position.x + this.initialsPositions[next].position.x) / 2
+        position.y = (this.initialsPositions[previous].position.y + this.initialsPositions[next].position.y) / 2
+        position.z = (this.initialsPositions[previous].position.z + this.initialsPositions[next].position.z) / 2
+
+        rotation.x = (this.initialsPositions[previous].rotation.x + this.initialsPositions[next].rotation.x) / 2
+        rotation.y = (this.initialsPositions[previous].rotation.y + this.initialsPositions[next].rotation.y) / 2
+        rotation.z = (this.initialsPositions[previous].rotation.z + this.initialsPositions[next].rotation.z) / 2
+
+        transform["position"] = position;
+        transform["rotation"] = rotation;
+    }
+
+    return transform;
+};
+
+ripe.CSRenderer.prototype.engraveLetters = function (initials) {
+
+}
+
 
 /**
  * Highlights a model's part, showing a dark mask on top of the such referred
@@ -379,7 +450,7 @@ ripe.CSRenderer.prototype.updateInitials = function(initials) {
  * @param {String} part The part of the model that should be highlighted.
  * @param {Object} options Set of optional parameters to adjust the highlighting.
  */
-ripe.CSRenderer.prototype.highlight = async function(part, options = {}) {
+ripe.CSRenderer.prototype.highlight = async function (part, options = {}) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -402,7 +473,7 @@ ripe.CSRenderer.prototype.highlight = async function(part, options = {}) {
  * @param {String} part The part to lowlight.
  * @param {Object} options Set of optional parameters to adjust the lowlighting.
  */
-ripe.CSRenderer.prototype.lowlight = async function(options) {
+ripe.CSRenderer.prototype.lowlight = async function (options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
 
@@ -426,7 +497,7 @@ ripe.CSRenderer.prototype.lowlight = async function(options) {
     this.trigger("lowlighted");
 };
 
-ripe.CSRenderer.prototype.changeHighlight = async function(part, endValue, duration) {
+ripe.CSRenderer.prototype.changeHighlight = async function (part, endValue, duration) {
     var startingValue;
     var meshTarget = null;
 
@@ -463,12 +534,19 @@ ripe.CSRenderer.prototype.changeHighlight = async function(part, endValue, durat
  * Disposes all the stored resources to avoid memory leaks. Includes meshes,
  * geometries and materials.
  */
-ripe.CSRenderer.prototype._disposeResources = function() {
+ripe.CSRenderer.prototype._disposeResources = function () {
     if (this.meshes) {
         for (var mesh in this.meshes) {
             this.scene.remove(this.meshes[mesh]);
             this.meshes[mesh].geometry.dispose();
             this.meshes[mesh].material.dispose();
+        }
+    }
+    if (this.textMeshes) {
+        for (var mesh in this.textMeshes) {
+            this.scene.remove(this.textMeshes[mesh]);
+            this.textMeshes[mesh].geometry.dispose();
+            this.textMeshes[mesh].material.dispose();
         }
     }
     if (this.loadedMaterials) {
@@ -478,7 +556,7 @@ ripe.CSRenderer.prototype._disposeResources = function() {
     }
 };
 
-ripe.CSRenderer.prototype.loadMaterials = async function(parts) {
+ripe.CSRenderer.prototype.loadMaterials = async function (parts) {
     for (var part in parts) {
         if (part === "shadow") continue;
 
@@ -488,7 +566,7 @@ ripe.CSRenderer.prototype.loadMaterials = async function(parts) {
     }
 };
 
-ripe.CSRenderer.prototype._initializeTexturesAndMaterials = async function() {
+ripe.CSRenderer.prototype._initializeTexturesAndMaterials = async function () {
     this.loadedMaterials.default = new this.library.MeshPhongMaterial({ color: "#ffffff" });
 
     this.crossfadeShader = new this.library.ShaderMaterial({
@@ -536,7 +614,7 @@ ripe.CSRenderer.prototype._initializeTexturesAndMaterials = async function() {
     });
 };
 
-ripe.CSRenderer.prototype._loadMaterial = async function(material, color) {
+ripe.CSRenderer.prototype._loadMaterial = async function (material, color) {
     // Loadedmaterials store threejs materials in the format
     if (this.loadedMaterials[material + "_" + color]) {
         return;
@@ -550,25 +628,25 @@ ripe.CSRenderer.prototype._loadMaterial = async function(material, color) {
     var aoMapPath = this.getTexturePath(material, color, "ao");
 
     const diffuseTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(diffuseMapPath, function(texture) {
+        textureLoader.load(diffuseMapPath, function (texture) {
             resolve(texture);
         });
     });
 
     const roughnessTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(roughnessMapPath, function(texture) {
+        textureLoader.load(roughnessMapPath, function (texture) {
             resolve(texture);
         });
     });
 
     const normalTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(normalMapPath, function(texture) {
+        textureLoader.load(normalMapPath, function (texture) {
             resolve(texture);
         });
     });
 
     const aoTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(aoMapPath, function(texture) {
+        textureLoader.load(aoMapPath, function (texture) {
             resolve(texture);
         });
     });
@@ -599,7 +677,7 @@ ripe.CSRenderer.prototype._loadMaterial = async function(material, color) {
     this.loadedMaterials[material + "_" + color] = newMaterial;
 };
 
-ripe.CSRenderer.prototype._applyMaterial = function(part, material) {
+ripe.CSRenderer.prototype._applyMaterial = function (part, material) {
     for (var mesh in this.meshes) {
         if (mesh === part) {
             this.meshes[mesh].material.dispose();
@@ -608,11 +686,11 @@ ripe.CSRenderer.prototype._applyMaterial = function(part, material) {
     }
 };
 
-ripe.CSRenderer.prototype.getTexturePath = function(materialName, color, type) {
+ripe.CSRenderer.prototype.getTexturePath = function (materialName, color, type) {
     return this.texturesPath + materialName + "/" + color + "/" + type + ".jpg";
 };
 
-ripe.CSRenderer.prototype.populateScene = function(scene) {
+ripe.CSRenderer.prototype.populateScene = function (scene) {
     for (let i = 0; i < this.lights.length; i++) {
         scene.add(this.lights[i]);
     }
@@ -622,7 +700,7 @@ ripe.CSRenderer.prototype.populateScene = function(scene) {
     // scene.add(this.floorMesh);
 };
 
-ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent) {
+ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
     const newX =
@@ -632,7 +710,7 @@ ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent
             (mouseEvent.y - this.elementBoundingBox.y + window.scrollY) /
             this.elementBoundingBox.height
         ) *
-            2 +
+        2 +
         1;
 
     return {
@@ -641,7 +719,7 @@ ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent
     };
 };
 
-ripe.CSRenderer.prototype.updateElementBoundingBox = function() {
+ripe.CSRenderer.prototype.updateElementBoundingBox = function () {
     // Raycaster needs accurate positions of the element, needs to be
     // updated on every window resize event
     if (this.element) {
@@ -649,11 +727,11 @@ ripe.CSRenderer.prototype.updateElementBoundingBox = function() {
     }
 };
 
-ripe.CSRenderer.prototype.transition = function(options) {
+ripe.CSRenderer.prototype.transition = function (options) {
     if (options.method === "cross") this.crossfade(options);
 };
 
-ripe.CSRenderer.prototype.crossfade = function(options = {}) {
+ripe.CSRenderer.prototype.crossfade = function (options = {}) {
     var renderTargetParameters = {
         minFilter: this.library.LinearFilter,
         magFilter: this.library.LinearFilter,
@@ -751,7 +829,7 @@ ripe.CSRenderer.prototype.crossfade = function(options = {}) {
     requestAnimationFrame(crossfadeFunction);
 };
 
-ripe.CSRenderer.prototype._applyRotations = function(cameraRotationX, cameraRotationY) {
+ripe.CSRenderer.prototype._applyRotations = function (cameraRotationX, cameraRotationY) {
     var maxHeight = this.cameraDistance - this.cameraHeight;
 
     var distance = this.cameraDistance * Math.cos((Math.PI / 180) * cameraRotationY);
