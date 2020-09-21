@@ -387,9 +387,9 @@ ripe.CSRenderer.prototype.embossLetters = function () {
         const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }); // side
         var letterMesh = new this.library.Mesh(textGeometry, material);
 
-        letterMesh.geometry.rotateX(-Math.PI/2 + posRot.rotation.x);
-        letterMesh.geometry.rotateY(Math.PI/2 + posRot.rotation.y);
-        letterMesh.geometry.rotateZ(posRot.rotation.z);
+        //letterMesh.geometry.rotateX(-Math.PI/2 + posRot.rotation.x);
+        //letterMesh.geometry.rotateY(Math.PI/2 + posRot.rotation.y);
+        //letterMesh.geometry.rotateZ(posRot.rotation.z);
 
         letterMesh.geometry.computeBoundingBox();
         
@@ -400,11 +400,11 @@ ripe.CSRenderer.prototype.embossLetters = function () {
 
         console.log(offsetX, offsetY, offsetZ)
 
-        var centerX = posRot.position.x - offsetX;
+        var centerX = posRot.position.x + offsetX;
         var centerY = posRot.position.y + offsetY;
-        var centerZ = posRot.position.z - offsetZ;
+        var centerZ = posRot.position.z + offsetZ;
 
-        letterMesh.rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z);
+        //letterMesh.rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z);
         letterMesh.position.set(centerX, centerY, centerZ);
         
         this.textMeshes.push(letterMesh);
