@@ -366,7 +366,7 @@ ripe.CSRenderer.prototype.updateInitials = function (initials) {
 
 ripe.CSRenderer.prototype.embossLetters = function () {
     // TODO Pass this size as a parameter
-    const size = 0.05;
+    const size = 0.03;
     const height = 0.02;
 
     // Starts at 1 to line up with initials mesh position
@@ -387,27 +387,18 @@ ripe.CSRenderer.prototype.embossLetters = function () {
         const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }); // side
         var letterMesh = new this.library.Mesh(textGeometry, material);
 
-        //letterMesh.geometry.rotateX(-Math.PI/2);
-        //letterMesh.geometry.rotateY(Math.PI/2);
+        letterMesh.geometry.rotateX(-Math.PI/2);
+        letterMesh.geometry.rotateY(Math.PI/2);
+        
+        letterMesh.geometry.center();
+
+
+        //letterMesh.geometry.rotateX(posRot.rotation.x);
+        //letterMesh.geometry.rotateY(posRot.rotation.y);
         //letterMesh.geometry.rotateZ(posRot.rotation.z);
 
-        letterMesh.geometry.computeBoundingBox();
-
-
-        
-        const box = new this.library.Box3().setFromObject(letterMesh);
-        const offsetX = -0.5 * (box.max.x - box.min.x);
-        const offsetY = -0.5 * (box.max.y - box.min.y);
-        const offsetZ = -0.5 * (box.max.z - box.min.z);
-
-        letterMesh.geometry.translate(offsetX, offsetY, offsetZ)
-        
-        var centerX = posRot.position.x;
-        var centerY = posRot.position.y;
-        var centerZ = posRot.position.z;
-
-        letterMesh.position.set(centerX, centerY, centerZ);
-        //letterMesh.rotation.set(-Math.PI/2, Math.PI/2, 0);
+        letterMesh.position.set(posRot.position.x, posRot.position.y, posRot.position.z);
+        letterMesh.rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z)
         
         this.textMeshes.push(letterMesh);
         this.scene.add(letterMesh);
