@@ -378,7 +378,7 @@ window.onload = function () {
                 fontType: "comic_sans",
                 fontWeight: "light",
                 partsMap: CSRPartsMap,
-                library: THREE,
+                library: THREE, 
                 cameraFOV: 28,
                 cameraDistance: 2,
                 cameraHeight: 1.2,
