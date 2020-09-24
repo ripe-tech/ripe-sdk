@@ -48,12 +48,15 @@ ripe.CSRenderer = function (owner, element, options) {
     this.partsMap = options.partsMap || {};
     this.loadedMaterials = {};
 
+    // meshes
+    this.meshes = {}
     this.meshPath = options.meshPath;
 
+    // raycast
     this.raycaster = new this.library.Raycaster();
     this.intersectedPart = "";
 
-    // Initials
+    // initials
     this.textMeshes = [];
     this.fontsPath = options.fontsPath || "";
     this.fontType = options.fontType || "";
@@ -69,16 +72,19 @@ ripe.CSRenderer = function (owner, element, options) {
     this.cameraHeight = options.cameraHeight || 0;
     this.exposure = options.exposure || 3.0;
 
+    // animations
+    this.introAnimation = options.introAnimation;
+
     this.useMasks = options.useMasks || true;
 
     // initialize all ThreeJS components
     this._initializeLights();
     this._initializeCamera();
     this._initializeRenderer();
-    this._initializeMesh();
     this._registerHandlers();
     this._initializeFonts(this.fontType, this.fontWeight);
-
+    this._initializeMeshAndAnimations();
+    
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
@@ -93,8 +99,10 @@ ripe.CSRenderer.prototype.constructor = ripe.CSRenderer;
 ripe.CSRenderer.prototype.updateOptions = async function (options) {
     if (options.meshPath && this.meshPath !== options.meshPath) {
         this.meshPath = options.meshPath;
-        this._initializeMesh();
+        this._initializeMeshAndAnimations();
     }
+
+    this.introAnimation = options.introAnimation === undefined ? this.introAnimation: options.introAnimation;
 
     this.width = options.width === undefined ? this.width : options.width;
 
@@ -236,7 +244,7 @@ ripe.CSRenderer.prototype._initializeCamera = function () {
     }
 };
 
-ripe.CSRenderer.prototype._initializeMesh = async function () {
+ripe.CSRenderer.prototype._initializeMeshAndAnimations = async function () {
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
         gltfLoader.load(this.meshPath, gltf => {
@@ -246,6 +254,23 @@ ripe.CSRenderer.prototype._initializeMesh = async function () {
 
     const model = gltf.scene;
 
+    await this._loadMeshes(model);
+    await this._loadAnimations(gltf);
+
+    // Load default material
+    await this._initializeTexturesAndMaterials();
+    
+    this._applyDefaults();
+    // Only now can we populate the scene safely
+    this.populateScene(this.scene);
+
+    if (this.introAnimation)
+        this._performAnimation(this.introAnimation);
+    else 
+        this.render();
+};
+
+ripe.CSRenderer.prototype._loadMeshes = function (model) {
     const floorGeometry = new this.library.PlaneBufferGeometry( 10, 10 );
     floorGeometry.rotateX( - Math.PI / 2 );
     floorGeometry.center();
@@ -264,39 +289,66 @@ ripe.CSRenderer.prototype._initializeMesh = async function () {
 
     this.camera.lookAt(this.cameraTarget);
 
-    this.meshes = {};
     this.scene = new this.library.Scene();
+    this.scene.add(model);
 
-    for (let i = 0; i < model.children.length; i++) {
-        if (model.children[i].name.includes("initials_part")) {
-            model.children[i].position.set(model.children[i].position.x - centerX, model.children[i].position.y, model.children[i].position.z -centerZ);
+    for (let i = 0; i < model.children[0].children.length; i++) {
+        const child = model.children[0].children[i]
+        
+        if (child.name.includes("initials_part")) {
+            child.position.set(child.position.x - centerX, child.position.y, child.position.z -centerZ);
             
             // naming is of the type "initials_part_1", where 1 indicates the position            
-            var initialPosition = parseInt(model.children[i].name.split("_")[2])
+            var initialPosition = parseInt(child.name.split("_")[2])
             // We do not add to the meshes, as this mesh only exists to guide the initials
             // locations
-            this.initialsPositions[initialPosition] = model.children[i];            
-        } else if (model.children[i].name !== "logo_part") {
-            model.children[i].position.set(model.children[i].position.x - centerX, model.children[i].position.y, model.children[i].position.z -centerZ);
-            model.children[i].castShadow = true;
-            model.children[i].receiveShadow = true;
+            this.initialsPositions[initialPosition] = child;
+        } else if (child.name !== "logo_part") {
+            child.position.set(child.position.x - centerX, child.position.y, child.position.z -centerZ);
+            child.castShadow = true;
+            child.receiveShadow = true;
 
             // remove "_part" from string
-            this.meshes[model.children[i].name.split("_")[0]] = model.children[i];
+            this.meshes[child.name.split("_")[0]] = child;
         }
     }
+}
 
-    // Load default material
-    await this._initializeTexturesAndMaterials();
+ripe.CSRenderer.prototype._loadAnimations = function (gltf) {
+    this.animationMixer = new this.library.AnimationMixer(gltf.scene);
+    this.animations = gltf.animations;
+}
+
+ripe.CSRenderer.prototype._performAnimation = function (animationName) {
+    var animation = this.library.AnimationClip.findByName( this.animations, animationName );
     
-    this._applyDefaults();
-    // Only now can we populate the scene safely
-    this.populateScene(this.scene);
+    console.log(animation)
+    if (!animation) return;
 
-    // TODO set initial camera positions
-    // this._setPositionalRotations();
+    const action = this.animationMixer.clipAction( animation );
+    action.clampWhenFinished = true;
+    action.loop = this.library.LoopOnce;
+    action.play();
 
+    //this.animationMixer.timeScale = 1.0;
+
+    const clock = new this.library.Clock();
+    var delta;
+
+    const doAnimation = () => {
+        delta = clock.getDelta(),
+        this.animationMixer.update(delta);
+        
+        this.render();
+
+        if (clock.elapsedTime < animation.duration) requestAnimationFrame(doAnimation);
+        else clock.stop();
+    };
+
+    clock.start();
     this.render();
+    delta = clock.getDelta();
+    requestAnimationFrame(doAnimation);
 };
 
 ripe.CSRenderer.prototype._applyDefaults = function () {
@@ -752,9 +804,10 @@ ripe.CSRenderer.prototype.populateScene = function (scene) {
     for (let i = 0; i < this.lights.length; i++) {
         scene.add(this.lights[i]);
     }
+    /*
     for (var mesh in this.meshes) {
         scene.add(this.meshes[mesh]);
-    }
+    }*/
     
     scene.add(this.floorMesh);
 };

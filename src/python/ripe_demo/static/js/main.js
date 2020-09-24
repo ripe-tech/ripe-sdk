@@ -372,7 +372,7 @@ window.onload = function () {
                 noMasks: false,
                 view: bestFace(result),
                 render: "csr",
-                meshPath: "/static/assets/shoe_even_debug_fixed12.glb",
+                meshPath: "/static/assets/vyner_animations_final.glb",
                 texturesPath: "/static/assets/textures/",
                 fontsPath: "/static/assets/fonts/",
                 fontType: "comic_sans",
@@ -391,7 +391,9 @@ window.onload = function () {
                 materialEasing: "easeInOutQuad",
                 rotationEasing: "easeInOutQuad",
                 crossfadeEasing: "easeInOutQuad",
-                initialsPlacement: "center"
+                initialsPlacement: "center",
+                introAnimation: "PopIn"
+                //introAnimation: "ScaleIn"
                 //lockRotation: "horizontal"
             });
 
