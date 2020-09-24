@@ -108,7 +108,7 @@ ripe.ConfiguratorCSR.prototype.init = function() {
     // wait until configurator finished initializing to create the controls and
     // renderer
     this.controls = new ripe.OrbitalControls(this, this.element, this.options);
-    this.renderer = new ripe.CSRenderer(this.element, this.options);
+    this.renderer = new ripe.CSRenderer(this.owner, this.element, this.options);
 };
 
 /**
@@ -221,7 +221,6 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
         await this.renderer.crossfade({ type: "material", parts: this.owner.parts, duration: 500 });
     }
     
-    //console.log(options);
     //console.log(this.owner);
 
     if (options.reason && options.reason === "set initials") {

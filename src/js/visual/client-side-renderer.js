@@ -25,7 +25,8 @@ if (
  * @param {Object} options The options to be used to configure the
  * renderer instance to be created.
  */
-ripe.CSRenderer = function (element, options) {
+ripe.CSRenderer = function (owner, element, options) {
+    this.owner = owner;
     this.type = this.type || "CSRenderer";
     this.element = element;
 
@@ -62,6 +63,7 @@ ripe.CSRenderer = function (element, options) {
     this.initialsPlacement = options.initialsPlacement || "center";
     this.initialsType = options.initialsType || "emboss";
     this.initialsText = options.initialsText || "";
+    this.engraving = "metal_gold";
 
     this.cameraDistance = options.cameraDistance || 0;
     this.cameraHeight = options.cameraHeight || 0;
@@ -170,41 +172,35 @@ ripe.CSRenderer.prototype._initializeFonts = async function (type, weight) {
 };
 
 ripe.CSRenderer.prototype._initializeLights = function () {
-    const ambientLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 0.2);
+    const ambientLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 0.5);
     //hemilight.castShadow = true;
     
     const keyLight = new this.library.PointLight(0xffffff, 2.2, 18);
     keyLight.position.set(2, 2, 2);
-    //keyLight.castShadow = true;
+    keyLight.castShadow = true;
     keyLight.shadow.camera.near = 0.000001;
     keyLight.shadow.camera.far = 10;
-    keyLight.shadow.radius = 4;
-    keyLight.shadow.bias = 0.001;
+    keyLight.shadow.radius = 2;
+    //keyLight.shadow.bias -= 0.001;
 
     const fillLight = new this.library.PointLight(0xffffff, 1.1, 18);
     fillLight.position.set(-2, 1, 2);
-    //fillLight.castShadow = true;
+    fillLight.castShadow = true;
     fillLight.shadow.camera.near = 0.000001;
     fillLight.shadow.camera.far = 10;
-    fillLight.shadow.radius = 4;
-    fillLight.shadow.bias = -0.001;
+    fillLight.shadow.radius = 2;
+    //fillLight.shadow.bias = -0.001;
 
     const rimLight = new this.library.PointLight(0xffffff, 3.1, 18);
     rimLight.position.set(-1, 1.5, -3);
-    //rimLight.castShadow = true;
+    rimLight.castShadow = true;
     rimLight.shadow.camera.near = 0.000001;
     rimLight.shadow.camera.far = 10;
-    rimLight.shadow.radius = 4;
-    rimLight.shadow.bias = -0.0001;
-
-    const shadowLight = new this.library.PointLight(0xffffff, 0.1);
-    shadowLight.position.set(0,2,0);
-    shadowLight.shadow.camera.near = 0.000001;
-    shadowLight.shadow.camera.far = 10;
-    keyLight.shadow.radius = 4;
-    keyLight.shadow.bias = 0.001;
+    rimLight.shadow.radius = 2;
+    //rimLight.shadow.bias = -0.0001;
 
     this.lights = [keyLight, fillLight, rimLight, ambientLight];
+    //this.lights = [ambientLight];
 };
 
 ripe.CSRenderer.prototype._initializeRenderer = function () {
@@ -217,8 +213,7 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
     this.renderer.toneMappingExposure = this.exposure;
     this.renderer.toneMapping = this.library.CineonToneMapping;
     this.renderer.shadowMap.enabled = true;
-    //this.renderer.shadowMap.type = this.library.PCFSoftShadowMap;
-    this.renderer.shadowMap.type = this.library.VSMShadowMap;
+    this.renderer.shadowMap.type = this.library.PCFSoftShadowMap;
     
     const area = this.element.querySelector(".area");
 
@@ -253,6 +248,7 @@ ripe.CSRenderer.prototype._initializeMesh = async function () {
 
     const floorGeometry = new this.library.PlaneBufferGeometry( 10, 10 );
     floorGeometry.rotateX( - Math.PI / 2 );
+    floorGeometry.center();
     const floorMaterial = new this.library.ShadowMaterial();
     floorMaterial.opacity = 0.5;
 
@@ -292,6 +288,7 @@ ripe.CSRenderer.prototype._initializeMesh = async function () {
 
     // Load default material
     await this._initializeTexturesAndMaterials();
+    
     this._applyDefaults();
     // Only now can we populate the scene safely
     this.populateScene(this.scene);
@@ -305,7 +302,9 @@ ripe.CSRenderer.prototype._initializeMesh = async function () {
 ripe.CSRenderer.prototype._applyDefaults = function () {
     for (var mesh in this.meshes) {
         if (!this.meshes[mesh].name.includes("initials")) {
-            this.meshes[mesh].material.dispose();
+            if (this.meshes[mesh].material)
+                this.meshes[mesh].material.dispose();
+                
             this.meshes[mesh].material = this.loadedMaterials.default.clone();
         }
     }
@@ -461,12 +460,12 @@ ripe.CSRenderer.prototype._disposeResources = function () {
 };
 
 
-ripe.CSRenderer.prototype.updateInitials = function (initials) {
+ripe.CSRenderer.prototype.updateInitials = async function (initials) {
     if (!this.initialsPositions) return;
     
     const size = Object.keys(this.initialsPositions).length;
 
-    if (initials.length > size || initials === this.initialsText) return;
+    if (initials.length > size || (initials === this.initials && this.owner.engraving === this.engraving)) return;
 
     for (let i = 0; i < this.textMeshes.length; i++) {
         this.scene.remove(this.textMeshes[i]);
@@ -477,16 +476,17 @@ ripe.CSRenderer.prototype.updateInitials = function (initials) {
     this.textMeshes = [];
     this.initialsText = initials;
 
-    if (this.initialsType === "emboss") this.embossLetters()
-    else if (this.initialsType === "engrave") this.engraveLetters()
+    if (this.initialsType === "emboss") await this.embossLetters()
+    else if (this.initialsType === "engrave") await this.engraveLetters()
 
     this.render();
 };
 
-ripe.CSRenderer.prototype.embossLetters = function () {
+ripe.CSRenderer.prototype.embossLetters = async function () {
     // TODO Pass this size as a parameter
     const size = 0.03;
     const height = 0.02;
+    const material = await this._getLetterMaterial()
 
     // Starts at 1 to line up with initials mesh position
     for (var i = 1; i <= this.initialsText.length; i++) {
@@ -503,7 +503,6 @@ ripe.CSRenderer.prototype.embossLetters = function () {
 
         textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry); 
 
-        const material = new this.library.MeshPhongMaterial({ color: 0xff0000 }); // side
         var letterMesh = new this.library.Mesh(textGeometry, material);
 
         // rotates geometry to negate default text rotation
@@ -519,6 +518,51 @@ ripe.CSRenderer.prototype.embossLetters = function () {
         this.scene.add(letterMesh);
     }
 };
+
+ripe.CSRenderer.prototype._getLetterMaterial = async function () {
+
+    var splitProps;
+    if (this.owner.engraving === null) 
+        splitProps = this.engraving.split("::");
+
+    if (splitProps[0] !== "viewport") 
+        this.engraving = this.owner.engraving;    
+        
+    var material, color;
+    
+    if (splitProps[0] === "style") {
+        material = splitProps[1].split("_")[0]
+        color = splitProps[1].split("_")[1]
+    } else {
+        material = splitProps[0].split("_")[0]
+        color = splitProps[0].split("_")[1]
+    }
+
+    var diffuseMapPath = this.getTexturePath(material, color, "diffuse", true);
+    // TODO Add roughness map path if it exists
+    //var roughnessMapPath = this.getTexturePath(material, color, "roughness", true);
+
+    console.log(diffuseMapPath);
+    const textureLoader = new this.library.TextureLoader();
+    
+    const diffuseTexture = await new Promise((resolve, reject) => {
+        textureLoader.load(diffuseMapPath, function (texture) {
+            resolve(texture);
+        });
+    });
+
+    /*
+    const roughnessTexture = await new Promise((resolve, reject) => {
+        textureLoader.load(diffuseMapPath, function (texture) {
+            resolve(texture);
+        });
+    }); */
+
+    return new this.library.MeshStandardMaterial({
+        map: diffuseTexture,
+        roughness: 0.0
+    });    
+}
 
 ripe.CSRenderer.prototype.getPosRotLetter = function (letterNumber) {
     // Check if placement is interpolated or in the precise spot
@@ -576,8 +620,10 @@ ripe.CSRenderer.prototype.loadMaterials = async function (parts) {
 };
 
 ripe.CSRenderer.prototype._initializeTexturesAndMaterials = async function () {
-    this.loadedMaterials.default = new this.library.MeshPhongMaterial({ color: "#ffffff" });
-
+    const defaultMaterial = new this.library.MeshPhongMaterial({ color: "#ffffff" });
+    defaultMaterial.perPixel = true;
+    this.loadedMaterials.default = defaultMaterial;
+    
     this.crossfadeShader = new this.library.ShaderMaterial({
         uniforms: {
             tDiffuse1: {
@@ -677,6 +723,8 @@ ripe.CSRenderer.prototype._loadMaterial = async function (material, color) {
         aoMap: aoTexture
     });
 
+    newMaterial.perPixel = true;
+
     // Dispose of textures, as they are already stored
     diffuseTexture.dispose();
     roughnessTexture.dispose();
@@ -695,7 +743,8 @@ ripe.CSRenderer.prototype._applyMaterial = function (part, material) {
     }
 };
 
-ripe.CSRenderer.prototype.getTexturePath = function (materialName, color, type) {
+ripe.CSRenderer.prototype.getTexturePath = function (materialName, color, type, isInitial = false) {
+    if (isInitial) return this.texturesPath + "initials/" + materialName + "/" + color + "/" + type + ".jpg";
     return this.texturesPath + materialName + "/" + color + "/" + type + ".jpg";
 };
 

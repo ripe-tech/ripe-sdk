@@ -372,7 +372,7 @@ window.onload = function () {
                 noMasks: false,
                 view: bestFace(result),
                 render: "csr",
-                meshPath: "/static/assets/shoe_even_debug_fixed3.glb",
+                meshPath: "/static/assets/shoe_even_debug_fixed12.glb",
                 texturesPath: "/static/assets/textures/",
                 fontsPath: "/static/assets/fonts/",
                 fontType: "comic_sans",
