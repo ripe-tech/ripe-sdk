@@ -373,17 +373,17 @@ window.onload = function () {
                 view: bestFace(result),
                 render: "csr",
                 meshPath: "/static/assets/vyner_animations_final.glb",
-                texturesPath: "/static/assets/textures/",
+                assetsPath: "/static/assets/",
                 fontsPath: "/static/assets/fonts/",
                 fontType: "comic_sans",
                 fontWeight: "light",
                 partsMap: CSRPartsMap,
-                library: THREE, 
+                library: THREE,
                 cameraFOV: 28,
                 cameraDistance: 5.1,
                 cameraHeight: 0.9,
                 cameraTarget: { x: 0, y: 0.375, z: 0.0 },
-                exposure: 0.7,
+                exposure: 1.6,
                 lockAxis: "y",
                 viewAnimate: "cross",
                 easing: "linear",
@@ -392,7 +392,8 @@ window.onload = function () {
                 rotationEasing: "easeInOutQuad",
                 crossfadeEasing: "easeInOutQuad",
                 initialsPlacement: "center",
-                introAnimation: "PopIn"
+                introAnimation: "PopIn",
+                environment: "exterior_building"
                 //introAnimation: "ScaleIn"
                 //lockRotation: "horizontal"
             });
