@@ -87,7 +87,22 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
         _element.classList.remove("drag");
 
         self._updateAngles();
+        self._canDrift = false;
     });
+
+        // listens for mouse leave events and if it occurs then
+    // stops reacting to mousemove events has drag movements
+    area.addEventListener("mouseenter", function(event) {
+        const _element = this;
+        self.down = false;
+        self.previous = self.percent;
+        self.percent = 0;
+        _element.classList.remove("drag");
+
+        self._updateAngles();
+        self._canDrift = false;
+    });
+
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
@@ -431,6 +446,8 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function(frame, opt
 
     this.currentHorizontalRot = this._positionToRotation(nextPosition);
     this.currentVerticalRot = 0;
+
+    this._updateAngles();    
 
     if (nextView === "top") this.currentVerticalRot = this.maximumVerticalRot;
     if (nextView === "bottom") this.currentVerticalRot = this.minimumVerticalRot;

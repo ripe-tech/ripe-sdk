@@ -345,12 +345,19 @@ window.onload = function () {
                 render: "prc"
             });
 
+            /*
             var partsMapArray = ["front", "laces", "sole", "side", "lining", "hardware", "logo"];
             var materials = {
                 denim: ["blue", "green", "red"],
                 fabric: ["blue", "green", "red", "white"],
                 leather: ["brown", "red", "white"]
             };
+            */
+
+           var partsMapArray = ["front", "laces", "sole", "side", "lining", "hardware", "logo"];
+           var materials = {
+               fabric: ["base"]
+           };
 
             for (let index = 0; index < partsMapArray.length; index++) {
                 var part = partsMapArray[index];
@@ -365,7 +372,7 @@ window.onload = function () {
                         CSRPartsMap[part].push(triplet);
                     }
                 }
-            }
+            } 
 
             configuratorCSR = ripe.bindConfigurator(elementCSR, {
                 duration: 250,

@@ -16,8 +16,19 @@
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/ripe.js', compress = 'js') }}"></script>
             
             <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r120/three.js"></script>
-            <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/GLTFLoader.js"></script>
-            <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/RGBELoader.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/loaders/GLTFLoader.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/loaders/RGBELoader.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/shaders/CopyShader.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/EffectComposer.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/RenderPass.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/SSAARenderPass.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/shaders/UnpackDepthRGBAShader.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/shaders/DepthLimitedBlurShader.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/shaders/SAOShader.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/SAOPass.js"></script> 
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/math/SimplexNoise.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/shaders/SSAOShader.js"></script>
+            <script src="https://gitcdn.link/repo/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/SSAOPass.js"></script>
             
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js', compress = 'js') }}"></script>
             <title>{{ title }}{% block title %}RIPE SDK Demo{% endblock %}</title>
