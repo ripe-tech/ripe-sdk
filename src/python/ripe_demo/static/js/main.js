@@ -386,7 +386,6 @@ window.onload = function () {
                 exposure: 1.6,
                 mouseDrift: true,
                 driftDuration: 200,
-                lockAxis: "horizontal",
                 viewAnimate: "cross",
                 easing: "linear",
                 highlightEasing: "easeInOutQuad",
@@ -395,7 +394,9 @@ window.onload = function () {
                 crossfadeEasing: "easeInOutQuad",
                 initialsPlacement: "center",
                 introAnimation: "PopIn",
-                environment: "exterior_building"
+                environment: "exterior_building",
+                textSize: 0.5,
+                textHeight: 0.01
                 //introAnimation: "ScaleIn"
                 //lockRotation: "horizontal"
             });

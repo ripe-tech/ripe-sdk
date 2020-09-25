@@ -250,6 +250,8 @@ ripe.ConfiguratorCSR.prototype._applyRotations = function() {
         this.controls.currentHorizontalRot,
         this.controls.currentVerticalRot
     );
+
+    this.updateViewPosition(this.controls._rotationToView(), this.controls._rotationToPosition());
     this.renderer.render();
 };
 

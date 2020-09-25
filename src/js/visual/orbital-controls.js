@@ -103,8 +103,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
             self.canDrift = true;
             self.isDrifting = false;
             self._parseDrag();
-        }
-        else if (self.canDrift && !self.isDrifting) {
+        } else if (self.canDrift && !self.isDrifting) {
             self.canDrift = false;
             self._drift(event);
         }
@@ -170,30 +169,28 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
     ripe.touchHandler(this.element);
 };
 
-ripe.OrbitalControls.prototype._drift = function (event) {
-    console.log(event);
+ripe.OrbitalControls.prototype._drift = function(event) {
     var startTime = Date.now();
-    var currentTime = startTime;
-    
+
     var currentValueX = event.movementX;
     var currentValueY = event.movementY;
 
     var pos = 0;
     const driftAnimation = () => {
-        if (!this.isDrifting)
-            return;
+        if (!this.isDrifting) return;
 
-        pos = (Date.now() - startTime) / (this.driftDuration);
-        
-        //console.log(currentValueX, currentValueY)
+        pos = (Date.now() - startTime) / this.driftDuration;
+
         currentValueX = ripe.easing.easeOutQuad(pos, event.movementX, 0, this.driftDuration);
         currentValueY = ripe.easing.easeOutQuad(pos, event.movementY, 0, this.driftDuration);
 
-        //this.currentHorizontalRot = Math.min(Math.max(this.currentHorizontalRot + currentValueX, this.minimumHorizontalRot), this.maximumHorizontalRot);
-        this.currentHorizontalRot += currentValueX;
-        this.currentVerticalRot = Math.min(Math.max(this.currentVerticalRot + currentValueY, this.minimumVerticalRot), this.maximumVerticalRot);
+        this.currentHorizontalRot = this._validatedAngle(currentValueX + this.currentHorizontalRot);
+        this.currentVerticalRot = Math.min(
+            Math.max(this.currentVerticalRot + currentValueY, this.minimumVerticalRot),
+            this.maximumVerticalRot
+        );
         this._updateAngles();
-        
+
         this.configurator._applyRotations();
 
         if (pos < 1.0) requestAnimationFrame(driftAnimation);
@@ -202,7 +199,7 @@ ripe.OrbitalControls.prototype._drift = function (event) {
 
     requestAnimationFrame(driftAnimation);
     this.isDrifting = true;
-}
+};
 
 ripe.OrbitalControls.prototype._updateAngles = function() {
     // TODO Add drift related to acceleration
@@ -223,6 +220,17 @@ ripe.OrbitalControls.prototype._updateAngles = function() {
  */
 ripe.OrbitalControls.prototype._positionToRotation = function(position) {
     return (position / 24) * 360;
+};
+
+ripe.OrbitalControls.prototype._rotationToPosition = function() {
+    return (this._validatedAngle(this.currentHorizontalRot) / 360) * 24;
+};
+
+ripe.OrbitalControls.prototype._rotationToView = function() {
+    if (this.currentVerticalRot > 85) return "top";
+    if (this.currentVerticalRot < -85) return "bottom";
+
+    return "side";
 };
 
 ripe.OrbitalControls.prototype.updateOptions = async function(options) {
@@ -354,15 +362,11 @@ ripe.OrbitalControls.prototype._updateDragRotations = function() {
         if (this.mouseDeltaY >= this.minimumVerticalRot + this._baseVerticalRot) {
             diff = this.mouseDeltaY - (this.minimumVerticalRot + this._baseVerticalRot);
 
-            // console.log("reached bottom with diff " + diff + " delta " + this.mouseDeltaY + " base " + this._baseVerticalRot + " minimum " + this.minimumVerticalRot)
-
             this.referenceY -= diff;
             this.mouseDeltaY += diff;
         } // If reached top
         else if (this.mouseDeltaY <= this._baseVerticalRot - this.maximumVerticalRot) {
             diff = -(this.mouseDeltaY - (this._baseVerticalRot - this.maximumVerticalRot));
-
-            // console.log("reached top with diff " + diff + " delta " + this.mouseDeltaY + " base " + this._baseVerticalRot + " maximum " + this.maximumVerticalRot)
 
             this.referenceY += diff;
             this.mouseDeltaY -= diff;

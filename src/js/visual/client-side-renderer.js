@@ -70,6 +70,8 @@ ripe.CSRenderer = function(owner, element, options) {
     this.initialsType = options.initialsType || "emboss";
     this.initialsText = options.initialsText || "";
     this.engraving = options.engraving === undefined ? "metal_gold" : options.engraving;
+    this.letterMaterial = null;
+    this.loadedLetterMaterials = {};
 
     this.cameraDistance = options.cameraDistance || 0;
     this.cameraHeight = options.cameraHeight || 0;
@@ -306,9 +308,7 @@ ripe.CSRenderer.prototype._loadMeshes = function(model) {
             // We do not add to the meshes, as this mesh only exists to guide the initials
             // locations
             this.initialsPositions[initialPosition] = child;
-            child.parent.remove(child);
-            child.geometry.dispose();
-            console.log("Disposing?");
+            child.visible = false;
             if (child.material) child.material.dispose();
         } else {
             child.position.set(
@@ -335,7 +335,6 @@ ripe.CSRenderer.prototype._loadAnimations = function(gltf) {
 ripe.CSRenderer.prototype._performAnimation = function(animationName) {
     var animation = this.library.AnimationClip.findByName(this.animations, animationName);
 
-    console.log(animation);
     if (!animation) return;
 
     const action = this.animationMixer.clipAction(animation);
@@ -346,7 +345,6 @@ ripe.CSRenderer.prototype._performAnimation = function(animationName) {
     const clock = new this.library.Clock();
 
     const doAnimation = () => {
-        // delta = clock.getDelta();
         this.animationMixer.update(clock.getDelta());
 
         this.render();
@@ -371,6 +369,7 @@ ripe.CSRenderer.prototype._applyDefaults = function() {
 };
 
 ripe.CSRenderer.prototype.render = function() {
+    // console.log("Rendering!")
     if (this.renderer && this.scene && this.camera) {
         this.renderer.render(this.scene, this.camera);
     }
@@ -520,62 +519,99 @@ ripe.CSRenderer.prototype._disposeResources = function() {
 };
 
 ripe.CSRenderer.prototype.updateInitials = async function(initials) {
+    // hides or unhides logo part
+    if (
+        (initials === "" && this.initialsText !== "") ||
+        (initials !== "" && this.initialsText === "")
+    ) {
+        var isLogoVisible = initials === "" && this.initialsText !== "";
+        for (var mesh in this.meshes) {
+            if (this.meshes[mesh].name === "logo_part") {
+                this.meshes[mesh].visible = isLogoVisible;
+            }
+        }
+    }
+
     if (!this.initialsPositions) return;
 
-    if (initials === this.initials && this.owner.engraving === this.engraving) {
+    if (initials === this.initialsText && this.owner.engraving === this.engraving) {
         return;
     }
 
-    for (let i = 0; i < this.textMeshes.length; i++) {
-        this.scene.remove(this.textMeshes[i]);
-        this.textMeshes[i].geometry.dispose();
-        this.textMeshes[i].material.dispose();
-    }
+    if (this.initialsType === "emboss") await this.embossLetters(initials);
+    else if (this.initialsType === "engrave") await this.engraveLetters(initials);
 
-    this.textMeshes = [];
     this.initialsText = initials;
-
-    if (this.initialsType === "emboss") await this.embossLetters();
-    else if (this.initialsType === "engrave") await this.engraveLetters();
 
     this.render();
 };
 
-ripe.CSRenderer.prototype.embossLetters = async function() {
+ripe.CSRenderer.prototype.embossLetters = async function(initials) {
     // TODO Pass this size as a parameter
     const size = 0.03;
     const height = 0.02;
-    const material = await this._getLetterMaterial();
+
+    // avoid creating new materials
+    this.letterMaterial =
+        this.letterMaterial === null || this.owner.engraving !== this.engraving
+            ? await this._getLetterMaterial()
+            : this.letterMaterial;
     const maxLength = Object.keys(this.initialsPositions).length;
 
+    if (initials.length < this.initialsText.length) {
+        var diff = this.initialsText.length - initials.length;
+        while (diff > 0) {
+            this.scene.remove(this.textMeshes[this.textMeshes.length - 1]);
+            this.textMeshes[this.textMeshes.length - 1].geometry.dispose();
+            this.textMeshes.pop();
+            diff--;
+        }
+    }
+
     // Starts at 1 to line up with initials mesh position
-    for (var i = 1; i <= Math.min(this.initialsText.length, maxLength); i++) {
-        const posRot = this.getPosRotLetter(i);
-        const letter = this.initialsText.charAt(i - 1);
+    for (var i = 1; i <= Math.min(initials.length, maxLength); i++) {
+        const posRot = this.getPosRotLetter(i, initials);
+        const letter = initials.charAt(i - 1);
 
-        var textGeometry = new this.library.TextGeometry(letter, {
-            font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
+        var letterMesh;
 
-            size: size,
-            height: height,
-            curveSegments: 10
-        });
+        const isNewLetter =
+            i > this.initialsText.length || letter !== this.initialsText.charAt(i - 1);
 
-        textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
+        if (isNewLetter) {
+            var textGeometry = new this.library.TextGeometry(letter, {
+                font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
 
-        var letterMesh = new this.library.Mesh(textGeometry, material);
+                size: size,
+                height: height,
+                curveSegments: 10
+            });
 
-        // rotates geometry to negate default text rotation
-        letterMesh.geometry.rotateX(-Math.PI / 2);
-        letterMesh.geometry.rotateY(Math.PI / 2);
+            textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
 
-        letterMesh.geometry.center();
+            if (i - 1 < this.textMeshes.length) {
+                this.scene.remove(this.textMeshes[i - 1]);
+                this.textMeshes[i - 1].geometry.dispose();
+            }
+
+            letterMesh = new this.library.Mesh(textGeometry, this.letterMaterial);
+
+            // rotates geometry to negate default text rotation
+            letterMesh.geometry.rotateX(-Math.PI / 2);
+            letterMesh.geometry.rotateY(Math.PI / 2);
+
+            letterMesh.geometry.center();
+
+            this.scene.add(letterMesh);
+        } else letterMesh = this.textMeshes[i - 1];
 
         letterMesh.position.set(posRot.position.x, posRot.position.y, posRot.position.z);
         letterMesh.rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z);
 
-        this.textMeshes.push(letterMesh);
-        this.scene.add(letterMesh);
+        this.textMeshes[i - 1] = letterMesh;
+
+        // this.textMeshes.push(letterMesh);
+        // this.scene.add(letterMesh);
     }
 };
 
@@ -620,16 +656,15 @@ ripe.CSRenderer.prototype._getLetterMaterial = async function() {
     });
 };
 
-ripe.CSRenderer.prototype.getPosRotLetter = function(letterNumber) {
+ripe.CSRenderer.prototype.getPosRotLetter = function(letterNumber, initials) {
     // Check if placement is interpolated or in the precise spot
     var transform = {};
     const size = Object.keys(this.initialsPositions).length;
     const center = (size + 1) / 2;
-    const posInInitials = center + letterNumber - (this.initialsText.length + 1) / 2;
 
-    if (this.initialsText.length % 2 === size % 2) {
-        // console.log("position " + letterNumber + " maps to " + posInInitials);
+    const posInInitials = center + letterNumber - (initials.length + 1) / 2;
 
+    if (initials.length % 2 === size % 2) {
         // TODO Check for placement
         transform.position = this.initialsPositions[posInInitials].position;
         transform.rotation = this.initialsPositions[posInInitials].rotation;
@@ -637,8 +672,6 @@ ripe.CSRenderer.prototype.getPosRotLetter = function(letterNumber) {
         // Interpolate between the two closest positions
         const previous = Math.floor(posInInitials);
         const next = Math.ceil(posInInitials);
-
-        // console.log(letterNumber + " is interpolating between " + previous + " and " + next)
 
         var position = new this.library.Vector3(0, 0, 0);
         var rotation = new this.library.Vector3(0, 0, 0);
