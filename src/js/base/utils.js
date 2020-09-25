@@ -32,24 +32,24 @@ ripe.createElement = function(tagName, className) {
 
 ripe.easing = {};
 
-ripe.easing.linear = function(pos, startValue, endValue, duration) {
+ripe.easing.linear = function(pos, startValue, endValue) {
     var t = pos;
     return (endValue - startValue) * t + startValue;
 };
 
-ripe.easing.easeInQuad = function(pos, startValue, endValue, duration) {
+ripe.easing.easeInQuad = function(pos, startValue, endValue) {
     var t = pos;
     t = t * (2 - t);
     return (endValue - startValue) * t + startValue;
 };
 
-ripe.easing.easeOutQuad = function(pos, startValue, endValue, duration) {
+ripe.easing.easeOutQuad = function(pos, startValue, endValue) {
     var t = pos;
     t = t * t;
     return (endValue - startValue) * t + startValue;
 };
 
-ripe.easing.easeInOutQuad = function(pos, startValue, endValue, duration) {
+ripe.easing.easeInOutQuad = function(pos, startValue, endValue) {
     var t = pos;
     t = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
     return (endValue - startValue) * t + startValue;

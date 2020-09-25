@@ -32,6 +32,10 @@ ripe.OrbitalControls = function(configurator, element, options) {
 
     this.lockRotation = options.lockRotation || "";
 
+    this.mouseDrift = options.mouseDrift || true;
+    this.canDrift = false;
+    this.driftDuration = options.driftDuration || 0.5;
+
     this._registerHandlers();
 };
 
@@ -95,7 +99,15 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
         const down = self.down;
         self.mousePosX = event.pageX;
         self.mousePosY = event.pageY;
-        if (down) self._parseDrag();
+        if (down) {
+            self.canDrift = true;
+            self.isDrifting = false;
+            self._parseDrag();
+        }
+        else if (self.canDrift && !self.isDrifting) {
+            self.canDrift = false;
+            self._drift(event);
+        }
     });
 
     area.addEventListener("click", function(event) {
@@ -109,11 +121,6 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
 
         event = ripe.fixEvent(event);
 
-        // retrieves the reference to the part name by using the index
-        // extracted from the masks image (typical strategy for retrieval)
-        // const part = self.partsList[index - 1];
-        // const isVisible = self.hiddenParts.indexOf(part) === -1;
-        // if (part && isVisible) self.owner.selectPart(part);
         event.stopPropagation();
     });
 
@@ -162,6 +169,40 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
     // already defined
     ripe.touchHandler(this.element);
 };
+
+ripe.OrbitalControls.prototype._drift = function (event) {
+    console.log(event);
+    var startTime = Date.now();
+    var currentTime = startTime;
+    
+    var currentValueX = event.movementX;
+    var currentValueY = event.movementY;
+
+    var pos = 0;
+    const driftAnimation = () => {
+        if (!this.isDrifting)
+            return;
+
+        pos = (Date.now() - startTime) / (this.driftDuration);
+        
+        //console.log(currentValueX, currentValueY)
+        currentValueX = ripe.easing.easeOutQuad(pos, event.movementX, 0, this.driftDuration);
+        currentValueY = ripe.easing.easeOutQuad(pos, event.movementY, 0, this.driftDuration);
+
+        //this.currentHorizontalRot = Math.min(Math.max(this.currentHorizontalRot + currentValueX, this.minimumHorizontalRot), this.maximumHorizontalRot);
+        this.currentHorizontalRot += currentValueX;
+        this.currentVerticalRot = Math.min(Math.max(this.currentVerticalRot + currentValueY, this.minimumVerticalRot), this.maximumVerticalRot);
+        this._updateAngles();
+        
+        this.configurator._applyRotations();
+
+        if (pos < 1.0) requestAnimationFrame(driftAnimation);
+        else this.isDrifting = false;
+    };
+
+    requestAnimationFrame(driftAnimation);
+    this.isDrifting = true;
+}
 
 ripe.OrbitalControls.prototype._updateAngles = function() {
     // TODO Add drift related to acceleration
@@ -425,14 +466,12 @@ ripe.OrbitalControls.prototype.rotationTransition = function(nextView, nextPosit
         this.currentHorizontalRot = ripe.easing[this.rotationEasing](
             pos,
             this._baseHorizontalRot,
-            finalXRotation,
-            duration
+            finalXRotation
         );
         this.currentVerticalRot = ripe.easing[this.rotationEasing](
             pos,
             this._baseVerticalRot,
-            finalYRotation,
-            duration
+            finalYRotation
         );
 
         this.configurator._applyRotations();

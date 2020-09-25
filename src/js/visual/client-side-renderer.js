@@ -306,6 +306,7 @@ ripe.CSRenderer.prototype._loadMeshes = function(model) {
             // We do not add to the meshes, as this mesh only exists to guide the initials
             // locations
             this.initialsPositions[initialPosition] = child;
+            child.parent.remove(child);
             child.geometry.dispose();
             console.log("Disposing?");
             if (child.material) child.material.dispose();
@@ -482,7 +483,7 @@ ripe.CSRenderer.prototype.changeHighlight = function(part, endValue, duration) {
         meshTarget.material.color.b = currentValue;
 
         pos = (Date.now() - startTime) / duration;
-        currentValue = ripe.easing[this.highlightEasing](pos, startingValue, endValue, duration);
+        currentValue = ripe.easing.easeOutQuad[this.highlightEasing](pos, startingValue, endValue);
 
         this.render();
 
@@ -968,7 +969,7 @@ ripe.CSRenderer.prototype.crossfade = function(options = {}) {
         this.renderer.render(this.scene, transitionCamera);
 
         pos = (Date.now() - startTime) / duration;
-        mixRatio = ripe.easing[this.crossfadeEasing](pos, 0.0, 1.0, duration);
+        mixRatio = ripe.easing[this.crossfadeEasing](pos, 0.0, 1.0);
 
         mixRatio += 1.0 / duration;
         this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
