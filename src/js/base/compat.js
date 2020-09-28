@@ -70,20 +70,18 @@ if (
         // (https://github.com/react-native-community/discussions-and-proposals/issues/120)
         const mixedModuleName = "Xmlhttprequest";
         const correctModuleName = mixedModuleName.toLowerCase();
-        try {
-            XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
-        } catch (err) {}
+        XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
     } else if (typeof window !== "undefined") {
         XMLHttpRequest = window.XMLHttpRequest;
-    } else if (typeof require !== "undefined") {
+        // eslint-disable-next-line camelcase
+    } else if (typeof require !== "undefined" && typeof __webpack_require__ !== "undefined") {
         const mixedModuleName = "Xmlhttprequest";
         const correctModuleName = mixedModuleName.toLowerCase();
-        try {
-            // catch exception if module not found, which happens when
-            // the sdk is used by server-side nuxt.js applications. It
-            // will default to the usage of fetch.
-            XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
-        } catch (err) {}
+        // using a plain require call to load the module, since using
+        // the webpack call will result in module not found by nuxt.js
+        // applications
+        // eslint-disable-next-line camelcase
+        XMLHttpRequest = __non_webpack_require__(correctModuleName).XMLHttpRequest;
     }
 }
 
