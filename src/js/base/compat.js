@@ -20,7 +20,7 @@ if (
  *
  * @ignore
  */
-ripe.assign = function(target) {
+ripe.assign = function (target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
     }
@@ -48,7 +48,7 @@ ripe.assign = function(target) {
 /**
  * @ignore
  */
-ripe.build = function() {
+ripe.build = function () {
     const _arguments = Array.prototype.slice.call(arguments);
     _arguments.unshift({});
     return ripe.assign.apply(this, _arguments);
@@ -70,12 +70,20 @@ if (
         // (https://github.com/react-native-community/discussions-and-proposals/issues/120)
         const mixedModuleName = "Xmlhttprequest";
         const correctModuleName = mixedModuleName.toLowerCase();
-        XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
-        // eslint-disable-next-line camelcase
-    } else if (typeof __webpack_require__ !== "undefined" && typeof window !== "undefined") {
-        XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+        try {
+            XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
+        } catch (err) {}
     } else if (typeof window !== "undefined") {
         XMLHttpRequest = window.XMLHttpRequest;
+    } else if (typeof require !== "undefined") {
+        const mixedModuleName = "Xmlhttprequest";
+        const correctModuleName = mixedModuleName.toLowerCase();
+        try {
+            // catch exception if module not found, which happens when
+            // the sdk is used by server-side nuxt.js applications. It
+            // will default to the usage of fetch.
+            XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
+        } catch (err) {}
     }
 }
 
@@ -89,15 +97,15 @@ if (
 ) {
     var fetch = null;
     if (
-         // eslint-disable-next-line camelcase
-        typeof __webpack_require__ !== "undefined" ||
         // eslint-disable-next-line camelcase
-        (typeof __webpack_require__ === "undefined" &&
-        (typeof navigator === "undefined" || navigator.product !== "ReactNative"))
+        typeof __webpack_require__ === "undefined" &&
+        (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
         fetch = require("node-fetch").default;
     } else if (typeof window !== "undefined") {
         fetch = window.fetch;
+    } else if (typeof require !== "undefined") {
+        fetch = require("node-fetch").default;
     }
 }
 
