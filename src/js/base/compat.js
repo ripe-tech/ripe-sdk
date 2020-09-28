@@ -74,14 +74,12 @@ if (
     } else if (typeof window !== "undefined") {
         XMLHttpRequest = window.XMLHttpRequest;
         // eslint-disable-next-line camelcase
-    } else if (typeof require !== "undefined" && typeof __webpack_require__ !== "undefined") {
-        const mixedModuleName = "Xmlhttprequest";
-        const correctModuleName = mixedModuleName.toLowerCase();
+    } else if (typeof __webpack_require__ !== "undefined") {
         // using a plain require call to load the module, since using
         // the webpack call will result in module not found by nuxt.js
         // applications
         // eslint-disable-next-line no-undef
-        XMLHttpRequest = __non_webpack_require__(correctModuleName).XMLHttpRequest;
+        XMLHttpRequest = __non_webpack_require__("xmlhttprequest").XMLHttpRequest;
     }
 }
 
@@ -102,7 +100,8 @@ if (
         fetch = require("node-fetch").default;
     } else if (typeof window !== "undefined") {
         fetch = window.fetch;
-    } else if (typeof require !== "undefined") {
+        // eslint-disable-next-line camelcase
+    } else if (typeof __webpack_require__ !== "undefined") {
         fetch = require("node-fetch").default;
     }
 }
