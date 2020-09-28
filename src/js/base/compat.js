@@ -80,7 +80,7 @@ if (
         // using a plain require call to load the module, since using
         // the webpack call will result in module not found by nuxt.js
         // applications
-        // eslint-disable-next-line camelcase
+        // eslint-disable-next-line no-undef
         XMLHttpRequest = __non_webpack_require__(correctModuleName).XMLHttpRequest;
     }
 }
