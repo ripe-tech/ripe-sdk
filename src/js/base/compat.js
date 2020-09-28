@@ -71,7 +71,10 @@ if (
         const mixedModuleName = "Xmlhttprequest";
         const correctModuleName = mixedModuleName.toLowerCase();
         XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
-    } else {
+        // eslint-disable-next-line camelcase
+    } else if (typeof __webpack_require__ !== "undefined" && typeof window !== "undefined") {
+        XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+    } else if (typeof window !== "undefined") {
         XMLHttpRequest = window.XMLHttpRequest;
     }
 }
@@ -86,12 +89,14 @@ if (
 ) {
     var fetch = null;
     if (
+         // eslint-disable-next-line camelcase
+        typeof __webpack_require__ !== "undefined" ||
         // eslint-disable-next-line camelcase
-        typeof __webpack_require__ === "undefined" &&
-        (typeof navigator === "undefined" || navigator.product !== "ReactNative")
+        (typeof __webpack_require__ === "undefined" &&
+        (typeof navigator === "undefined" || navigator.product !== "ReactNative"))
     ) {
-        fetch = require("node-fetch");
-    } else {
+        fetch = require("node-fetch").default;
+    } else if (typeof window !== "undefined") {
         fetch = window.fetch;
     }
 }
