@@ -75,9 +75,8 @@ if (
         XMLHttpRequest = window.XMLHttpRequest;
         // eslint-disable-next-line camelcase
     } else if (typeof __webpack_require__ !== "undefined") {
-        // using a plain require call to load the module, since using
-        // the webpack call will result in module not found by nuxt.js
-        // applications
+        // use a runtime 'require' call that is
+        // not parsed by webpack
         // eslint-disable-next-line no-undef
         XMLHttpRequest = __non_webpack_require__("xmlhttprequest").XMLHttpRequest;
     }
