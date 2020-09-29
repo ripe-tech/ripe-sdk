@@ -20,7 +20,7 @@ if (
  *
  * @ignore
  */
-ripe.assign = function(target) {
+ripe.assign = function (target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
     }
@@ -48,7 +48,7 @@ ripe.assign = function(target) {
 /**
  * @ignore
  */
-ripe.build = function() {
+ripe.build = function () {
     const _arguments = Array.prototype.slice.call(arguments);
     _arguments.unshift({});
     return ripe.assign.apply(this, _arguments);
@@ -74,7 +74,7 @@ if (
     } else if (typeof window !== "undefined") {
         XMLHttpRequest = window.XMLHttpRequest;
         // eslint-disable-next-line camelcase
-    } else if (typeof __webpack_require__ !== "undefined") {
+    } else if (typeof __non_webpack_require__ !== "undefined") {
         // use a runtime 'require' call that is
         // not parsed by webpack
         // eslint-disable-next-line no-undef
@@ -100,8 +100,11 @@ if (
     } else if (typeof window !== "undefined") {
         fetch = window.fetch;
         // eslint-disable-next-line camelcase
-    } else if (typeof __webpack_require__ !== "undefined") {
-        fetch = require("node-fetch").default;
+    } else if (typeof __non_webpack_require__ !== "undefined") {
+        // use a runtime 'require' call that is
+        // not parsed by webpack
+        // eslint-disable-next-line no-undef
+        fetch = __non_webpack_require__("node-fetch").default;
     }
 }
 
