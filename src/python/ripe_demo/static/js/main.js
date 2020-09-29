@@ -26,8 +26,7 @@ window.onload = function () {
 
     var parts = [];
     var partsMap = {};
-    var CSRPartsMap = {};
-
+    
     // eslint-disable-next-line no-undef
     var ripe = new Ripe({
         brand: brand,
@@ -49,17 +48,8 @@ window.onload = function () {
             var triplet = triplets[index];
             parts.push(triplet);
         }
-
-        var CSRParts = [];
-        for (var key in CSRPartsMap) {
-            var triplets = CSRPartsMap[key];
-            var index = Math.floor(Math.random() * triplets.length);
-            var triplet = triplets[index];
-            CSRParts.push(triplet);
-        }
-
-        if (currentRenderMode == "prc") await ripe.setParts(parts, true, { partEvents: false });
-        else await ripe.setParts(CSRParts, true, { partEvents: false, mode: "csr" });
+        
+        await ripe.setParts(parts, true, { partEvents: false });
     };
 
     var unique = function () {
@@ -354,42 +344,29 @@ window.onload = function () {
             };
             */
 
-           var partsMapArray = ["front", "laces", "sole", "side", "lining", "hardware", "logo"];
-           var materials = {
-               fabric: ["base"]
-           };
-
-            for (let index = 0; index < partsMapArray.length; index++) {
-                var part = partsMapArray[index];
-                CSRPartsMap[part] = [];
-
-                for (var material in materials) {
-                    for (var k = 0; k < materials[material].length; k++) {
-                        const color = materials[material][k];
-
-                        var triplet = [part, material, color];
-
-                        CSRPartsMap[part].push(triplet);
-                    }
-                }
-            } 
-
             configuratorCSR = ripe.bindConfigurator(elementCSR, {
                 duration: 250,
                 noMasks: false,
                 view: bestFace(result),
                 render: "csr",
+                
+                meshPath: "/static/assets/vyner_textures_test3.glb",
+                cameraFOV: 28,
+                cameraDistance: 28,
+                cameraHeight: 5,
+                cameraTarget: { x: 0, y: 2, z: 0.0 },
+               /*
                 meshPath: "/static/assets/vyner_animations_final.glb",
-                assetsPath: "/static/assets/",
-                fontsPath: "/static/assets/fonts/",
-                fontType: "comic_sans",
-                fontWeight: "light",
-                partsMap: CSRPartsMap,
-                library: THREE,
                 cameraFOV: 28,
                 cameraDistance: 5.1,
                 cameraHeight: 0.9,
                 cameraTarget: { x: 0, y: 0.375, z: 0.0 },
+                */
+                assetsPath: "/static/assets/",
+                fontsPath: "/static/assets/fonts/",
+                fontType: "comic_sans",
+                fontWeight: "light",
+                library: THREE,
                 exposure: 1.6,
                 mouseDrift: true,
                 driftDuration: 200,
@@ -401,9 +378,10 @@ window.onload = function () {
                 crossfadeEasing: "easeInOutQuad",
                 initialsPlacement: "center",
                 introAnimation: "PopIn",
-                environment: "exterior_building",
+                //environment: "exterior_building",
                 textSize: 0.5,
-                textHeight: 0.01
+                textHeight: 0.01,
+                shadowBias: -0.01
                 //introAnimation: "ScaleIn"
                 //lockRotation: "horizontal"
             });

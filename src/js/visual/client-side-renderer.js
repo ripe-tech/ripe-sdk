@@ -46,9 +46,13 @@ ripe.CSRenderer = function (owner, element, options) {
     // materials
     this.assetsPath = options.assetsPath || "";
     this.partsMap = options.partsMap || {};
-    this.loadedMaterials = {};
+    this.loadedTextures = {};
     this.environment = options.environment;
+    //this.environment = undefined;
     this.environmentTexture = null;
+    this.textureLoader = new this.library.TextureLoader();
+
+    this.shadowBias = options.shadowBias || 0.01;
 
     // meshes
     this.scene = new this.library.Scene();
@@ -89,11 +93,18 @@ ripe.CSRenderer = function (owner, element, options) {
     this._registerHandlers();
     this._initializeFonts(this.fontType, this.fontWeight);
     this._initializeMeshAndAnimations();
-
+    
+    this.gui = new dat.GUI();
+    const folder = this.gui.addFolder('Settings');
+    folder.add(this, 'exposure', 0.0, 4.0).name("Exposure").onChange( this.render );
+    folder.add( this , 'shadowBias', -1.0, 1.0 ).name("Shadow Bias").onChange( this.render );
+    folder.open();
+    
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
     window.onresize = () => {
+        this.updateSize(this.element.clientWidth, this.element.clientHeight);
         this.updateElementBoundingBox();
     };
 };
@@ -134,8 +145,6 @@ ripe.CSRenderer.prototype.updateOptions = async function (options) {
     // materials
     this.assetsPath = options.assetsPath === undefined ? this.assetsPath : options.assetsPath;
     this.partsMap = options.partsMap === undefined ? this.partsMap : options.partsMap;
-    this.loadedMaterials = {};
-
     this.meshPath = options.meshPath === undefined ? this.meshPath : options.meshPath;
 
     this.cameraDistance =
@@ -185,32 +194,34 @@ ripe.CSRenderer.prototype._initializeFonts = async function (type, weight) {
 };
 
 ripe.CSRenderer.prototype._initializeLights = function () {
-    const ambientLight = new this.library.HemisphereLight(0xffeeb1, 0x080820, 0.1);
+    const ambientLight = new this.library.HemisphereLight(0xffeeb1, 0x080820, 0.0);
     // hemilight.castShadow = true;
 
-    const keyLight = new this.library.PointLight(0xffffff, 2.2, 18);
-    keyLight.position.set(2, 2, 2);
+    var mult = this.cameraDistance;
+
+    const keyLight = new this.library.PointLight(0xffffff, 2.2, 9 * mult);
+    keyLight.position.set(1 * mult, 1 * mult, 1 * mult);
     keyLight.castShadow = true;
     keyLight.shadow.camera.near = 0.000001;
-    keyLight.shadow.camera.far = 10;
+    keyLight.shadow.camera.far = 200;
     keyLight.shadow.radius = 2;
-    // keyLight.shadow.bias -= 0.001;
+    keyLight.shadow.bias = this.shadowBias;
 
-    const fillLight = new this.library.PointLight(0xffffff, 1.1, 18);
-    fillLight.position.set(-2, 1, 2);
+    const fillLight = new this.library.PointLight(0xffffff, 1.1, 9 * mult);
+    fillLight.position.set(-1 * mult, 0.5 * mult, 1 * mult);
     fillLight.castShadow = true;
     fillLight.shadow.camera.near = 0.000001;
-    fillLight.shadow.camera.far = 10;
+    fillLight.shadow.camera.far = 200;
     fillLight.shadow.radius = 2;
-    // fillLight.shadow.bias = -0.001;
+    fillLight.shadow.bias = this.shadowBias;
 
-    const rimLight = new this.library.PointLight(0xffffff, 3.1, 18);
-    rimLight.position.set(-1, 1.5, -3);
+    const rimLight = new this.library.PointLight(0xffffff, 3.1, mult);
+    rimLight.position.set(-0.5 * mult, 0.75 * mult, -1.5 * mult);
     rimLight.castShadow = true;
     rimLight.shadow.camera.near = 0.000001;
-    rimLight.shadow.camera.far = 10;
+    rimLight.shadow.camera.far = 200;
     rimLight.shadow.radius = 2;
-    // rimLight.shadow.bias = -0.0001;
+    rimLight.shadow.bias = this.shadowBias;
 
     this.lights = [];
 
@@ -234,39 +245,38 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
     this.renderer.setPixelRatio(devicePixelRatio);
     this.renderer.setClearColor(0x000000);
 
+    this._setupPostProcessing();
+    
+    area.appendChild(this.renderer.domElement);
+};
+
+ripe.CSRenderer.prototype._setupPostProcessing = function () {
     this.composer = new this.library.EffectComposer(this.renderer);
 
-    var ssaaRenderPass = new this.library.SSAARenderPass(this.scene, this.camera)
-    this.composer.addPass(ssaaRenderPass)
+    var renderPass = new this.library.RenderPass(this.scene, this.camera)
+    this.composer.addPass(renderPass)
 
     var saoPass = new this.library.SAOPass(this.scene, this.camera, true, true);
 
     saoPass.resolution.set(8192, 8192)
-    
-    saoPass.params.saoBias = .5
-    saoPass.params.saoIntensity = .0012
-    saoPass.params.saoScale = .3
-    saoPass.params.saoKernelRadius = 100
+
+    saoPass.params.saoBias = 0.01
+    saoPass.params.saoIntensity = 1
+    saoPass.params.saoScale = 5
+    saoPass.params.saoKernelRadius = 20
     saoPass.params.saoMinResolution = 0
 
-    /*
+    this.composer.addPass(saoPass)
 
-    this.ssaaRenderPass = new SSAARenderPass(this._scene, this.camera)
-    this.composer.addPass(this.ssaaRenderPass)
-
-    saoPass.params.saoBlur = true;
-    saoPass.params.saoBlurRadius = 0.002;
-    saoPass.params.saoBlurStdDev = 1;
-    */
+    var bloomPass = new this.library.BloomPass(1, 25, 4, 256);
+    this.composer.addPass(bloomPass);
 
     var ssaoPass = new this.library.SSAOPass(this.scene, this.camera, 620, 620);
     ssaoPass.kernelRadius = 32;
-    ssaoPass.params
+    ssaoPass.renderToScreen = true;
+    
     this.composer.addPass(ssaoPass);
-    //this.composer.addPass(saoPass);
-
-    area.appendChild(this.renderer.domElement);
-};
+}
 
 ripe.CSRenderer.prototype._initializeCamera = function () {
     const width = this.element.getBoundingClientRect().width;
@@ -274,6 +284,7 @@ ripe.CSRenderer.prototype._initializeCamera = function () {
 
     this.camera = new this.library.PerspectiveCamera(this.cameraFOV, width / height, 1, 20000);
     this.camera.position.set(0, this.cameraHeight, this.cameraDistance);
+    this.camera.far = 500;
 
     if (this.element.dataset.view === "side") {
         this._currentVerticalRot = 0;
@@ -292,7 +303,8 @@ ripe.CSRenderer.prototype._initializeMeshAndAnimations = async function () {
         });
     });
 
-    const model = gltf.scene;
+    const model = gltf.scene.children[0];
+    console.log(gltf);
 
     await this._loadMeshes(model);
     await this._loadAnimations(gltf);
@@ -300,11 +312,12 @@ ripe.CSRenderer.prototype._initializeMeshAndAnimations = async function () {
     // Load default material
     await this._initializeTexturesAndMaterials();
 
-    this._applyDefaults();
+    //this._applyDefaults();
     // Only now can we populate the scene safely
     this.populateScene(this.scene);
 
     if (this.introAnimation) this._performAnimation(this.introAnimation);
+    else if (this.animations.length > 0) this._performAnimation("Idle");
     else this.render();
 };
 
@@ -315,20 +328,27 @@ ripe.CSRenderer.prototype._loadMeshes = function (model) {
     const floorMaterial = new this.library.ShadowMaterial();
     floorMaterial.opacity = 0.5;
 
-    const box = new this.library.Box3().setFromObject(model);
+    const box = new this.library.Box3().setFromObject(model.children[2]);
 
     this.floorMesh = new this.library.Mesh(floorGeometry, floorMaterial);
     // this.floorMesh.rotation.x = Math.PI / 2;
     this.floorMesh.receiveShadow = true;
     this.floorMesh.position.y = box.min.y;
 
-    const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
-    const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
+    //const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
+    //const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
+    var centerX = 0;
+    var centerZ = 0;
 
     this.camera.lookAt(this.cameraTarget);
 
-    for (let i = 0; i < model.children[0].children.length; i++) {
-        const child = model.children[0].children[i];
+    for (let i = 0; i < model.children.length; i++) {
+        const child = model.children[i];
+        console.log(child);
+        if (!child.isMesh) continue;
+
+        
+        //child.matrixAutoUpdate = false;
 
         if (child.name.includes("initials_part")) {
             child.position.set(
@@ -388,30 +408,33 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     };
 
     clock.start();
-    this.render();
     requestAnimationFrame(doAnimation);
 };
 
 ripe.CSRenderer.prototype._applyDefaults = function () {
+    const defaultMaterial = new this.library.MeshStandardMaterial({ color: "#ffffff" });
+    defaultMaterial.perPixel = true;
+
     for (var mesh in this.meshes) {
         if (!this.meshes[mesh].name.includes("initials")) {
             if (this.meshes[mesh].material) this.meshes[mesh].material.dispose();
 
-            this.meshes[mesh].material = this.loadedMaterials.default.clone();
+            this.meshes[mesh].material = defaultMaterial;
         }
     }
 };
 
-ripe.CSRenderer.prototype.render = function () {
-    // console.log("Rendering!")
-    if (this.renderer && this.composer && this.scene && this.camera) {
-        this.renderer.render(this.scene, this.camera);
-        this.composer.render(this.scene, this.camera);
+ripe.CSRenderer.prototype.render = function (useRenderer = false) {
+    //console.log("Rendering!")
+    if (this.composer && this.scene && this.camera) {
+        this.composer.render();
+        //this.composer.render(this.scene, this.camera);
     }
 };
 
 ripe.CSRenderer.prototype.updateSize = function (width, height) {
     this.renderer.setSize(width, height);
+    this.composer.setSize(this.renderer.domElement.width, this.renderer.domElement.height);
 };
 
 ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
@@ -546,9 +569,9 @@ ripe.CSRenderer.prototype._disposeResources = function () {
             this.textMeshes[i].material.dispose();
         }
     }
-    if (this.loadedMaterials) {
-        for (var material in this.loadedMaterials) {
-            this.loadedMaterials[material].dispose();
+    if (this.loadedTextures) {
+        for (var texture in this.loadedTextures) {
+            this.loadedTextures[texture].dispose();
         }
     }
 };
@@ -566,6 +589,8 @@ ripe.CSRenderer.prototype.updateInitials = async function (initials) {
             }
         }
     }
+
+    console.log(this.initialsPositions);
 
     if (!this.initialsPositions) return;
 
@@ -656,24 +681,22 @@ ripe.CSRenderer.prototype._getLetterMaterial = async function () {
     }
 
     var splitProps = this.engraving.split("::");
-    var material, color;
+    var material, type;
 
     if (splitProps[0] === "style") {
         material = splitProps[1].split("_")[0];
-        color = splitProps[1].split("_")[1];
+        type = splitProps[1].split("_")[1];
     } else {
         material = splitProps[0].split("_")[0];
-        color = splitProps[0].split("_")[1];
+        type = splitProps[0].split("_")[1];
     }
 
-    var diffuseMapPath = this.getTexturePath(material, color, "diffuse", true);
+    var diffuseMapPath = this.assetsPath + "textures/general/" + material + "/" + this.owner.brand + "_" + material + "_" + type + ".png";
 
     // TODO Add roughness map path if it exists
     // var roughnessMapPath = this.getTexturePath(material, color, "roughness", true);
-    const textureLoader = new this.library.TextureLoader();
-
     const diffuseTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(diffuseMapPath, function (texture) {
+        this.textureLoader.load(diffuseMapPath, function (texture) {
             resolve(texture);
         });
     });
@@ -698,6 +721,8 @@ ripe.CSRenderer.prototype.getPosRotLetter = function (letterNumber, initials) {
     const center = (size + 1) / 2;
 
     const posInInitials = center + letterNumber - (initials.length + 1) / 2;
+    console.log(posInInitials, initials, this.initialsPositions)
+
 
     if (initials.length % 2 === size % 2) {
         // TODO Check for placement
@@ -752,17 +777,13 @@ ripe.CSRenderer.prototype.loadMaterials = async function (parts) {
 
         var material = parts[part].material;
         var color = parts[part].color;
+        console.log("for part " + part + " apply " + material + " " + color);
         await this._loadMaterial(material, color);
     }
 };
 
 ripe.CSRenderer.prototype._initializeTexturesAndMaterials = async function () {
-    if (this.environment) await this._setupEnvironment();
-
-    const defaultMaterial = new this.library.MeshStandardMaterial({ color: "#ffffff" });
-    defaultMaterial.perPixel = true;
-
-    this.loadedMaterials.default = defaultMaterial;
+    if (this.environment) this._setupEnvironment();
 
     this.crossfadeShader = new this.library.ShaderMaterial({
         uniforms: {
@@ -831,106 +852,112 @@ ripe.CSRenderer.prototype._setupEnvironment = async function () {
 };
 
 ripe.CSRenderer.prototype._loadMaterial = async function (material, color) {
-    // Loadedmaterials store threejs materials in the format
-    if (this.loadedMaterials[material + "_" + color]) {
-        return;
+    //return new this.library.MeshStandardMaterial({ color: "#00FF0F" });
+    await Promise.all([this._loadTexture(material, color), this._loadTexture(material, "normal"), this._loadTexture(material, "occlusion"), this._loadTexture(material, "disp"), this._loadTexture(material, color + "_spec")]);
+    
+    const diffuseTexture = this.loadedTextures[material + "_" + color];
+    const normalTexture = this.loadedTextures[material + "_" + "normal"];
+    const aoTexture = this.loadedTextures[material + "_" + "occlusion"];
+    const displacementTexture = this.loadedTextures[material + "_" + "disp"];
+    const roughnessTexture = this.loadedTextures[material + "_" + color + "_spec"]; 
+
+    const newMaterial = new this.library.MeshStandardMaterial();
+
+    var debug = " material " + material + " " + color;
+
+    if (diffuseTexture) {
+        newMaterial.map = diffuseTexture;
+        debug += " has diffuse";
+    }
+        
+    if (roughnessTexture) {
+        //newMaterial.roughnessMap = roughnessTexture;
+        debug += ", has roughness";
+    }
+        
+    if (normalTexture) {
+        newMaterial.normalMap = normalTexture;
+        debug += ", has normal";
+    }
+        
+    if (aoTexture) {
+        newMaterial.aoMap = aoTexture;
+        debug += ", has ao";
+    }
+        
+    if (displacementTexture) {
+        //newMaterial.displacementMap = displacementTexture;
+        debug += ", has displacement";
     }
 
-    const textureLoader = new this.library.TextureLoader();
-
-    var diffuseMapPath = this.getTexturePath(material, color, "diffuse");
-    var roughnessMapPath = this.getTexturePath(material, color, "roughness");
-    var normalMapPath = this.getTexturePath(material, color, "normal");
-    var aoMapPath = this.getTexturePath(material, color, "ao");
-
-    const diffuseTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(diffuseMapPath, function (texture) {
-            resolve(texture);
-        });
-    });
-
-    const roughnessTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(roughnessMapPath, function (texture) {
-            resolve(texture);
-        });
-    });
-
-    const normalTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(normalMapPath, function (texture) {
-            resolve(texture);
-        });
-    });
-
-    const aoTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(aoMapPath, function (texture) {
-            resolve(texture);
-        });
-    });
-
-    diffuseTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-    roughnessTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-    normalTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-    aoTexture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
-
-    diffuseTexture.minFilter = this.library.NearestMipmapNearestFilter;
-    roughnessTexture.minFilter = this.library.NearestMipmapNearestFilter;
-    normalTexture.minFilter = this.library.NearestMipmapNearestFilter;
-    aoTexture.minFilter = this.library.NearestMipmapNearestFilter;
-
-    const newMaterial = new this.library.MeshStandardMaterial({
-        map: diffuseTexture,
-        roughnessMap: roughnessTexture,
-        normalMap: normalTexture,
-        aoMap: aoTexture
-    });
-
     newMaterial.perPixel = true;
+    //console.log(debug)
 
-    // Dispose of textures, as they are already stored
-    diffuseTexture.dispose();
-    roughnessTexture.dispose();
-    normalTexture.dispose();
-    aoTexture.dispose();
-
-    this.loadedMaterials[material + "_" + color] = newMaterial;
+    return newMaterial;
 };
 
-ripe.CSRenderer.prototype._applyMaterial = function (part, material) {
+ripe.CSRenderer.prototype._loadTexture = async function (material, type) {
+    if (this.loadedTextures[material + "_" + type])
+        return this.loadedTextures[material + "_" + type];
+
+
+    var generalMapPath = this.assetsPath + "textures/general/" + material + "/" + this.owner.brand + "_" + material + "_" + type + ".png";
+    var specificMapPath = this.assetsPath + "textures/" + this.owner.model + "/" + material + "/" + this.owner.brand + "_" + this.owner.model + "_" + material + "_" + type + ".png";
+
+    var texture;
+    texture = await new Promise((resolve, reject) => {
+        this.textureLoader.load(
+            specificMapPath,
+            function (texture) {
+                resolve(texture);
+            },
+            undefined,
+            function (err) {
+                resolve(undefined)
+            });
+    });
+
+
+    if (!texture) {
+        texture = await new Promise((resolve, reject) => {
+            this.textureLoader.load(
+                generalMapPath,
+                function (texture) {
+                    resolve(texture);
+                },
+                undefined,
+                function (err) {
+                    resolve(undefined)
+                });
+        });
+    };
+
+    if (texture) {
+        texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy();
+        texture.minFilter = this.library.NearestMipmapNearestFilter;
+        this.loadedTextures[material + "_" + type] = texture;
+    }
+
+    return texture;
+}
+
+ripe.CSRenderer.prototype._applyMaterial = async function (part, material, color) {
+    const newMaterial = await this._loadMaterial(material, color);
     for (var mesh in this.meshes) {
         if (mesh === part) {
             this.meshes[mesh].material.dispose();
-            this.meshes[mesh].material = material.clone();
+            this.meshes[mesh].material = newMaterial;
         }
     }
 };
 
-ripe.CSRenderer.prototype.getTexturePath = function (materialName, color, type, isInitial = false) {
-    if (isInitial) {
-        return (
-            this.assetsPath +
-            "textures/" +
-            "initials/" +
-            materialName +
-            "/" +
-            color +
-            "/" +
-            type +
-            ".jpg"
-        );
-    }
-    return this.assetsPath + "textures/" + materialName + "/" + color + "/" + type + ".jpg";
-};
 
 ripe.CSRenderer.prototype.populateScene = function (scene) {
     for (let i = 0; i < this.lights.length; i++) {
         scene.add(this.lights[i]);
     }
-    /*
-    for (var mesh in this.meshes) {
-        scene.add(this.meshes[mesh]);
-    } */
-
-    scene.add(this.floorMesh);
+    
+    //scene.add(this.floorMesh);
 };
 
 ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
@@ -964,7 +991,7 @@ ripe.CSRenderer.prototype.transition = function (options) {
     if (options.method === "cross") this.crossfade(options);
 };
 
-ripe.CSRenderer.prototype.crossfade = function (options = {}) {
+ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     var renderTargetParameters = {
         minFilter: this.library.LinearFilter,
         magFilter: this.library.LinearFilter,
@@ -1005,7 +1032,7 @@ ripe.CSRenderer.prototype.crossfade = function (options = {}) {
     // Store current image
     this.renderer.setRenderTarget(previousSceneFBO);
     this.renderer.clear();
-    this.render();
+    this.render(true);
 
     if (options.type === "material") {
         // Update scene's materials
@@ -1014,7 +1041,8 @@ ripe.CSRenderer.prototype.crossfade = function (options = {}) {
 
             var material = options.parts[part].material;
             var color = options.parts[part].color;
-            this._applyMaterial(part, this.loadedMaterials[material + "_" + color]);
+
+            await this._applyMaterial(part, material, color);
         }
     } else if (options.type === "rotation") {
         this._applyRotations(options.rotationX, options.rotationY);

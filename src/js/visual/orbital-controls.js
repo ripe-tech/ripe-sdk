@@ -37,6 +37,7 @@ ripe.OrbitalControls = function(configurator, element, options) {
     this.driftDuration = options.driftDuration || 0.5;
 
     this._registerHandlers();
+    this._previousEvent = null;
 };
 
 ripe.OrbitalControls.prototype = ripe.build(ripe.Observable.prototype);
@@ -74,20 +75,21 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
 
         event = ripe.fixEvent(event);
 
+        self._previousEvent = undefined;
         self._updateAngles();
     });
 
     // listens for mouse leave events and if it occurs then
     // stops reacting to mousemove events has drag movements
-    area.addEventListener("mouseleave", function(event) {
+    area.addEventListener("mouseout", function(event) {
         const _element = this;
         self.down = false;
         self.previous = self.percent;
         self.percent = 0;
         _element.classList.remove("drag");
-
-        self._updateAngles();
-        self._canDrift = false;
+        
+        if (self._previousEvent)
+            self._drift(self._previousEvent);
     });
 
         // listens for mouse leave events and if it occurs then
@@ -98,23 +100,21 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
         self.previous = self.percent;
         self.percent = 0;
         _element.classList.remove("drag");
-
+        
         self._updateAngles();
-        self._canDrift = false;
+        self.canDrift = false;        
     });
 
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
     area.addEventListener("mousemove", function(event) {
-        // if (this.classList.contains("no-drag")) {
-        //  return;
-        // }
-
         const down = self.down;
         self.mousePosX = event.pageX;
         self.mousePosY = event.pageY;
+        
         if (down) {
+            self._previousEvent = event;
             self.canDrift = true;
             self.isDrifting = false;
             self._parseDrag();
@@ -212,8 +212,8 @@ ripe.OrbitalControls.prototype._drift = function(event) {
         else this.isDrifting = false;
     };
 
-    requestAnimationFrame(driftAnimation);
     this.isDrifting = true;
+    requestAnimationFrame(driftAnimation);
 };
 
 ripe.OrbitalControls.prototype._updateAngles = function() {

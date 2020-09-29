@@ -75,13 +75,13 @@ ripe.ConfiguratorCSR.prototype.init = function() {
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
     this._ownerBinds.selected_part = this.owner.bind("selected_part", part =>
-        this.renderer.highlight(part)
+        this.rtrenderer.highlight(part)
     );
 
     // registers for the deselected part event on the owner
     // so that we can remove the highlight of the associated part
     this._ownerBinds.deselected_part = this.owner.bind("deselected_part", part =>
-        this.renderer.lowlight()
+        this.rtrenderer.lowlight()
     );
 
     // creates the necessary DOM elements and runs
@@ -106,9 +106,9 @@ ripe.ConfiguratorCSR.prototype.init = function() {
     });
 
     // wait until configurator finished initializing to create the controls and
-    // renderer
+    // rtrenderer
     this.controls = new ripe.OrbitalControls(this, this.element, this.options);
-    this.renderer = new ripe.CSRenderer(this.owner, this.element, this.options);
+    this.rtrenderer = new ripe.CSRenderer(this.owner, this.element, this.options);
 };
 
 /**
@@ -134,7 +134,7 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
     this._finalize = null;
     this._observer = null;
 
-    this.renderer._disposeResources();
+    this.rtrenderer._disposeResources();
 
     ripe.Visual.prototype.deinit.call(this);
 };
@@ -153,7 +153,7 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
 ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
-    this.renderer.updateOptions(options);
+    this.rtrenderer.updateOptions(options);
     this.controls.updateOptions(options);
 
     // this.library = options.library === undefined ? this.library : options.library;
@@ -217,19 +217,19 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     }
 
     if (options.reason === "set parts" || options.reason === "set part") {
-        await this.renderer.loadMaterials(this.owner.parts);
-        await this.renderer.crossfade({ type: "material", parts: this.owner.parts, duration: 500 });
+        await this.rtrenderer.loadMaterials(this.owner.parts);
+        await this.rtrenderer.crossfade({ type: "material", parts: this.owner.parts, duration: 500 });
     }
 
     // console.log(this.owner);
 
     if (options.reason && options.reason === "set initials") {
-        this.renderer.updateInitials(this.owner.initials);
+        this.rtrenderer.updateInitials(this.owner.initials);
     }
 
     // removes the highlight support from the matched object as a new
     // frame is going to be "calculated" and rendered (not same mask)
-    this.renderer.lowlight();
+    this.rtrenderer.lowlight();
 
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
@@ -246,17 +246,17 @@ ripe.ConfiguratorCSR.prototype.updateViewPosition = function(nextView, nextPosit
  * prompts a new render to update the scene.
  */
 ripe.ConfiguratorCSR.prototype._applyRotations = function() {
-    this.renderer._applyRotations(
+    this.rtrenderer._applyRotations(
         this.controls.currentHorizontalRot,
         this.controls.currentVerticalRot
     );
 
     this.updateViewPosition(this.controls._rotationToView(), this.controls._rotationToPosition());
-    this.renderer.render();
+    this.rtrenderer.render();
 };
 
 ripe.ConfiguratorCSR.prototype._beginTransition = function(options) {
-    this.renderer.transition(options);
+    this.rtrenderer.transition(options);
 };
 
 /**
@@ -313,11 +313,11 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
     area.style.height = size + "px";
     this.currentSize = size;
 
-    // On the resize of the configurator, the renderer needs to update
+    // On the resize of the configurator, the rtrenderer needs to update
     // the bounding box to maintain correct raycasts
-    if (this.renderer) {
-        this.renderer.updateSize(this.element.clientWidth, this.element.clientHeight);
-        this.renderer.updateElementBoundingBox();
+    if (this.rtrenderer) {
+        this.rtrenderer.updateSize(this.element.clientWidth, this.element.clientHeight);
+        this.rtrenderer.updateElementBoundingBox();
     }
 
     await this.update(
@@ -416,11 +416,11 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
     // is being loaded
     this.ready = false;
 
-    if (this.renderer) {
+    if (this.rtrenderer) {
         // removes the highlight from any part
-        this.renderer.lowlight();
+        this.rtrenderer.lowlight();
         // update element bounding box for raycasting
-        this.renderer.updateElementBoundingBox();
+        this.rtrenderer.updateElementBoundingBox();
     }
 
     // retrieves the new product frame object and sets it
@@ -462,7 +462,7 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
     this.ready = true;
     this.trigger("ready");
 
-    if (this.renderer) this.renderer.updateElementBoundingBox();
+    if (this.rtrenderer) this.rtrenderer.updateElementBoundingBox();
 
     // adds the config visual class indicating that
     // a configuration already exists for the current
