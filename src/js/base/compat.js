@@ -20,7 +20,7 @@ if (
  *
  * @ignore
  */
-ripe.assign = function (target) {
+ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
         return Object.assign.apply(this, arguments);
     }
@@ -48,7 +48,7 @@ ripe.assign = function (target) {
 /**
  * @ignore
  */
-ripe.build = function () {
+ripe.build = function() {
     const _arguments = Array.prototype.slice.call(arguments);
     _arguments.unshift({});
     return ripe.assign.apply(this, _arguments);
