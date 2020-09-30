@@ -134,7 +134,7 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
     this._finalize = null;
     this._observer = null;
 
-    this.rtrenderer._disposeResources();
+    this.rtrenderer.assetManager._disposeResources(this.rtrenderer.scene);
 
     ripe.Visual.prototype.deinit.call(this);
 };

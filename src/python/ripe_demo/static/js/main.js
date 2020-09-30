@@ -350,7 +350,7 @@ window.onload = function () {
                 view: bestFace(result),
                 render: "csr",
                 
-                meshPath: "/static/assets/vyner_textures_test3.glb",
+                meshPath: "/static/assets/vyner_test2.gltf",
                 cameraFOV: 28,
                 cameraDistance: 28,
                 cameraHeight: 5,
@@ -378,7 +378,7 @@ window.onload = function () {
                 crossfadeEasing: "easeInOutQuad",
                 initialsPlacement: "center",
                 introAnimation: "PopIn",
-                //environment: "exterior_building",
+                environment: "exterior_building",
                 textSize: 0.5,
                 textHeight: 0.01,
                 shadowBias: -0.01
