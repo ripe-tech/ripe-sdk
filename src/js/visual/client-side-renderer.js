@@ -61,6 +61,8 @@ ripe.CSRenderer = function (owner, element, options) {
     this.cameraHeight = options.cameraHeight || 0;
     this.exposure = options.exposure || 3.0;
 
+    this.environment = options.environment;
+
     // animations
     this.introAnimation = options.introAnimation;
 
@@ -74,6 +76,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this._initializeRenderer();
     this._setupPostProcessing();
     this._registerHandlers();
+    this._initializeShaders();
    
     this.assetManager = new ripe.CSRAssetManager(this.owner, options, this.renderer);
     this._loadAssets();
@@ -157,6 +160,10 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
     });
 };
 
+ripe.CSRenderer.prototype.loadMaterials = async function (parts) {
+    this.assetManager.loadMaterials(parts);
+}
+
 ripe.CSRenderer.prototype._loadAssets = async function () {
     await this.assetManager._loadMesh();
 
@@ -171,6 +178,52 @@ ripe.CSRenderer.prototype._loadAssets = async function () {
 
     if (this.introAnimation) this._performAnimation(this.introAnimation);
     else if (this.animations.length > 0) this._performAnimation("Idle");
+}
+
+ripe.CSRenderer.prototype._initializeShaders = function () {
+    this.crossfadeShader = new this.library.ShaderMaterial({
+        uniforms: {
+            tDiffuse1: {
+                type: "t",
+                value: null
+            },
+            tDiffuse2: {
+                type: "t",
+                value: null
+            },
+            mixRatio: {
+                type: "f",
+                value: 0.0
+            }
+        },
+        vertexShader: [
+            "varying vec2 vUv;",
+
+            "void main() {",
+
+            "     vUv = vec2( uv.x, uv.y );",
+            "     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
+
+            "}"
+        ].join("\n"),
+        fragmentShader: [
+            "uniform float mixRatio;",
+
+            "uniform sampler2D tDiffuse1;",
+            "uniform sampler2D tDiffuse2;",
+
+            "varying vec2 vUv;",
+
+            "void main() {",
+
+            "    vec4 texel1 = texture2D( tDiffuse1, vUv );",
+            "    vec4 texel2 = texture2D( tDiffuse2, vUv );",
+
+            "    gl_FragColor = mix( texel1, texel2, mixRatio );",
+
+            "}"
+        ].join("\n")
+    });
 }
 
 ripe.CSRenderer.prototype._initializeLights = function () {
@@ -195,7 +248,7 @@ ripe.CSRenderer.prototype._initializeLights = function () {
     fillLight.shadow.radius = 2;
     fillLight.shadow.bias = this.shadowBias;
 
-    const rimLight = new this.library.PointLight(0xffffff, 3.1, mult);
+    const rimLight = new this.library.PointLight(0xffffff, 3.1, 9 * mult);
     rimLight.position.set(-0.5 * mult, 0.75 * mult, -1.5 * mult);
     rimLight.castShadow = true;
     rimLight.shadow.camera.near = 0.000001;
@@ -203,9 +256,12 @@ ripe.CSRenderer.prototype._initializeLights = function () {
     rimLight.shadow.radius = 2;
     rimLight.shadow.bias = this.shadowBias;
 
-    this.lights = [];
-
-    if (!this.environment) this.lights = [keyLight, fillLight, rimLight, ambientLight];
+    if (!this.environment) {
+        this.scene.add(keyLight)
+        this.scene.add(fillLight)
+        this.scene.add(rimLight)
+        this.scene.add(ambientLight)
+    }
 };
 
 ripe.CSRenderer.prototype._initializeRenderer = function () {
@@ -594,7 +650,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     this.renderer.setRenderTarget(previousSceneFBO);
     this.renderer.clear();
     this.render(true);
-
+    
     if (options.type === "material") {
         // Update scene's materials
         for (var part in options.parts) {
@@ -603,7 +659,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
             var material = options.parts[part].material;
             var color = options.parts[part].color;
 
-            await this._applyMaterial(part, material, color);
+            await this.assetManager._applyMaterial(part, material, color);
         }
     } else if (options.type === "rotation") {
         this._applyRotations(options.rotationX, options.rotationY);
@@ -625,10 +681,11 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     const crossfadeFunction = () => {
         this.renderer.render(this.scene, transitionCamera);
 
+
         pos = (Date.now() - startTime) / duration;
         mixRatio = ripe.easing[this.crossfadeEasing](pos, 0.0, 1.0);
 
-        mixRatio += 1.0 / duration;
+        //mixRatio += 1.0 / duration;
         this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
         if (pos < 1) requestAnimationFrame(crossfadeFunction);
@@ -641,6 +698,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
             quadGeometry.dispose();
             previousSceneFBO.dispose();
             currentSceneFBO.dispose();
+            this.render();
         }
     };
 

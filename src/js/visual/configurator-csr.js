@@ -118,6 +118,8 @@ ripe.ConfiguratorCSR.prototype.init = function() {
  */
 ripe.ConfiguratorCSR.prototype.deinit = async function() {
     await this.cancel();
+    
+    this.rtrenderer.assetManager._disposeResources(this.rtrenderer.scene);
 
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -133,8 +135,6 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
 
     this._finalize = null;
     this._observer = null;
-
-    this.rtrenderer.assetManager._disposeResources(this.rtrenderer.scene);
 
     ripe.Visual.prototype.deinit.call(this);
 };

@@ -36,7 +36,6 @@ ripe.CSRAssetManager = function (owner, options, renderer) {
     this.textHeight = options.textHeight || 0.1;
     this.initialsPositions = {};
     this.modelConfig = options.modelConfig;
-    console.log(this.modelConfig);
 
     this.meshes = {};
     this.textMeshes = [];
@@ -172,6 +171,7 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
             child.visible = false;
             if (child.material) child.material.dispose();
         } else if (child.isMesh) {
+            console.log(child);
             child.position.set(
                 child.position.x - centerX,
                 child.position.y,
@@ -262,153 +262,74 @@ ripe.CSRAssetManager.prototype.loadMaterials = async function (parts) {
 
         var material = parts[part].material;
         var color = parts[part].color;
-        console.log("for part " + part + " apply " + material + " " + color);
-        await this._loadMaterial(material, color);
+        await this._loadMaterial(part, material, color);
     }
 };
 
 ripe.CSRAssetManager.prototype._loadTexturesAndMaterials = async function (scene) {
     if (this.environment) this._setupEnvironment(scene);
-
-    this.crossfadeShader = new this.library.ShaderMaterial({
-        uniforms: {
-            tDiffuse1: {
-                type: "t",
-                value: null
-            },
-            tDiffuse2: {
-                type: "t",
-                value: null
-            },
-            mixRatio: {
-                type: "f",
-                value: 0.0
-            }
-        },
-        vertexShader: [
-            "varying vec2 vUv;",
-
-            "void main() {",
-
-            "     vUv = vec2( uv.x, uv.y );",
-            "     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );",
-
-            "}"
-        ].join("\n"),
-        fragmentShader: [
-            "uniform float mixRatio;",
-
-            "uniform sampler2D tDiffuse1;",
-            "uniform sampler2D tDiffuse2;",
-
-            "varying vec2 vUv;",
-
-            "void main() {",
-
-            "    vec4 texel1 = texture2D( tDiffuse1, vUv );",
-            "    vec4 texel2 = texture2D( tDiffuse2, vUv );",
-
-            "    gl_FragColor = mix( texel1, texel2, mixRatio );",
-
-            "}"
-        ].join("\n")
-    });
 };
 
-ripe.CSRAssetManager.prototype._loadMaterial = async function (material, color) {
+ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, color) {
     //return new this.library.MeshStandardMaterial({ color: "#00FF0F" });
-    await Promise.all([this._loadTexture(material, color), this._loadTexture(material, "normal"), this._loadTexture(material, "occlusion"), this._loadTexture(material, "disp"), this._loadTexture(material, color + "_spec")]);
+    var newMaterial;
 
-    const diffuseTexture = this.loadedTextures[material + "_" + color];
-    const normalTexture = this.loadedTextures[material + "_" + "normal"];
-    const aoTexture = this.loadedTextures[material + "_" + "occlusion"];
-    const displacementTexture = this.loadedTextures[material + "_" + "disp"];
-    const roughnessTexture = this.loadedTextures[material + "_" + color + "_spec"];
-
-    const newMaterial = new this.library.MeshStandardMaterial();
-
-    var debug = " material " + material + " " + color;
-
-    if (diffuseTexture) {
-        newMaterial.map = diffuseTexture;
-        debug += " has diffuse";
+    var isSpecular;
+    // follows specular-glossiness workflow
+    if (this.modelConfig[part][material][color]["specularMap"]) {
+        newMaterial = new this.library.MeshPhongMaterial();
+        isSpecular = true;
+    } else { // follows PBR workflow
+        newMaterial = new this.library.MeshStandardMaterial();
+        isSpecular = false;
     }
 
-    if (roughnessTexture) {
-        //newMaterial.roughnessMap = roughnessTexture;
-        debug += ", has roughness";
+    const basePath = this.assetsPath + "textures/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "/";
+
+    for (var map in this.modelConfig[part][material][color]) {
+        var mapPath = basePath + this.modelConfig[part][material][color][map];
+        
+        if (!this.loadedTextures[mapPath]) {
+            var texture = await new Promise((resolve, reject) => {
+                this.textureLoader.load(mapPath, function (texture) {
+                    resolve(texture);
+                });
+            });
+            // If texture is used for color information, set colorspace.
+            texture.encoding = THREE.sRGBEncoding;
+
+            // UVs use the convention that (0, 0) corresponds to the upper left corner of a texture.
+            texture.flipY = false;
+            this.loadedTextures[mapPath] = texture;
+        }
+        
+        //console.log("Map " + map + " is " + mapPath)
+        newMaterial[map] = this.loadedTextures[mapPath];
     }
 
-    if (normalTexture) {
-        newMaterial.normalMap = normalTexture;
-        debug += ", has normal";
-    }
-
-    if (aoTexture) {
-        newMaterial.aoMap = aoTexture;
-        debug += ", has ao";
-    }
-
-    if (displacementTexture) {
-        //newMaterial.displacementMap = displacementTexture;
-        debug += ", has displacement";
-    }
-
+    /*
+    newMaterial.normalMap = null;
+    newMaterial.aoMap = null;
+    if (isSpecular)
+        newMaterial.specularMap = null;
+    else
+        newMaterial.metalnessMap = null;
+    */    
     newMaterial.perPixel = true;
     return newMaterial;
 };
 
-ripe.CSRAssetManager.prototype._loadTexture = async function (material, type) {
-    if (this.loadedTextures[material + "_" + type])
-        return this.loadedTextures[material + "_" + type];
-
-
-    var generalMapPath = this.assetsPath + "textures/general/" + material + "/" + this.owner.brand + "_" + material + "_" + type + ".png";
-    var specificMapPath = this.assetsPath + "textures/" + this.owner.model + "/" + material + "/" + this.owner.brand + "_" + this.owner.model + "_" + material + "_" + type + ".png";
-
-    var texture;
-    texture = await new Promise((resolve, reject) => {
-        this.textureLoader.load(
-            specificMapPath,
-            function (texture) {
-                resolve(texture);
-            },
-            undefined,
-            function (err) {
-                resolve(undefined)
-            });
-    });
-
-
-    if (!texture) {
-        texture = await new Promise((resolve, reject) => {
-            this.textureLoader.load(
-                generalMapPath,
-                function (texture) {
-                    resolve(texture);
-                },
-                undefined,
-                function (err) {
-                    resolve(undefined)
-                });
-        });
-    };
-
-    if (texture) {
-        texture.anisotropy = this.maxAnisotropy;
-        texture.minFilter = this.library.NearestMipmapNearestFilter;
-        this.loadedTextures[material + "_" + type] = texture;
-    }
-
-    return texture;
-}
-
 ripe.CSRAssetManager.prototype._applyMaterial = async function (part, material, color) {
-    const newMaterial = await this._loadMaterial(material, color);
+    console.log("Attempting change at " + part + ", for " + material + "_" + color)
+    const newMaterial = await this._loadMaterial(part, material, color);
+    
     for (var mesh in this.meshes) {
-        if (mesh === part) {
+        if (mesh.includes(part)) {
+            console.log("Changed!")
+            console.log(newMaterial)
             this.meshes[mesh].material.dispose();
-            this.meshes[mesh].material = newMaterial;
+            this.meshes[mesh].material = newMaterial.clone();
+            break;
         }
     }
 };

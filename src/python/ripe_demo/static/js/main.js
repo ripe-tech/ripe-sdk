@@ -49,7 +49,6 @@ window.onload = function () {
             parts.push(triplet);
         }
 
-        console.log(partsMap)
         console.log(parts)
 
         await ripe.setParts(parts, true, { partEvents: false });
@@ -173,8 +172,6 @@ window.onload = function () {
                 partsMap[part] = triplets;
                 parts.push(triplet);
             }
-
-            console.log(partsMap)
         });
     };
 
@@ -382,7 +379,7 @@ window.onload = function () {
                 crossfadeEasing: "easeInOutQuad",
                 initialsPlacement: "center",
                 introAnimation: "SlideIn",
-                environment: "exterior_building",
+                //environment: "exterior_building",
                 textSize: 0.5,
                 textHeight: 0.01,
                 shadowBias: -0.01,
