@@ -14,7 +14,7 @@
             
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/ripe.css') }}" />
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/ripe.js', compress = 'js') }}"></script>
-            
+            <script type="text/javascript" src="{{ url_for('static', filename = 'assets/configs/swear/vyner_hitop.json') }}"></script>
             
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/build/three.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/libs/dat.gui.min.js"></script>

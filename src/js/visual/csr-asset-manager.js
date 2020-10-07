@@ -14,7 +14,8 @@ if (
 ripe.CSRAssetManager = function (owner, options, renderer) {
     this.owner = owner;
     this.assetsPath = options.assetsPath;
-    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
+    //this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
+    this.meshPath = "/static/assets/models/swear/vyner_hitop4.glb";
     this.texturesPath = this.assetsPath + "textures/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
     this.library = options.library;
     this.owner = owner;
@@ -34,11 +35,12 @@ ripe.CSRAssetManager = function (owner, options, renderer) {
     this.textSize = options.textSize || 1;
     this.textHeight = options.textHeight || 0.1;
     this.initialsPositions = {};
-        
+    this.modelConfig = options.modelConfig;
+    console.log(this.modelConfig);
+
     this.meshes = {};
-    console.log(this.meshPath);
     this.textMeshes = [];
-    
+
     this.loadedGltf = undefined;
 
     this._initializeFonts(this.fontType, this.fontWeight);
@@ -107,25 +109,21 @@ ripe.CSRAssetManager.prototype._loadMesh = async function () {
     console.log(this.meshPath)
     if (this.meshPath.includes(".gltf") || this.meshPath.includes(".glb"))
         await this._loadGLTFMesh();
-    else if (this.meshPath.includes(".fbx")) 
+    else if (this.meshPath.includes(".fbx"))
         await this._loadFBXMesh();
-    
+
 };
 
 ripe.CSRAssetManager.prototype._loadFBXMesh = async function () {
-    console.log("Loading FBX?")
     var fbxLoader = new this.library.FBXLoader();
     const fbx = await new Promise((resolve, reject) => {
         fbxLoader.load(this.meshPath, fbx => {
             resolve(fbx);
         });
     });
-
-    console.log(fbx);
-
 }
 
-ripe.CSRAssetManager.prototype._loadGLTFMesh = async function() {
+ripe.CSRAssetManager.prototype._loadGLTFMesh = async function () {
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
         gltfLoader.load(this.meshPath, gltf => {
@@ -134,24 +132,22 @@ ripe.CSRAssetManager.prototype._loadGLTFMesh = async function() {
     });
 
     this.loadedGltf = gltf;
-    
-    const model = gltf.scene.children[0];
-    
-    await this._loadSubMeshes(model);
+
+    await this._loadSubMeshes();
 }
 
 
-ripe.CSRAssetManager.prototype._loadSubMeshes = function (model) {
+ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
     const floorGeometry = new this.library.PlaneBufferGeometry(10, 10);
     floorGeometry.rotateX(-Math.PI / 2);
     floorGeometry.center();
     const floorMaterial = new this.library.ShadowMaterial();
     floorMaterial.opacity = 0.5;
 
-    var box = new this.library.Box3().setFromObject(model);
-    
+    var box = new this.library.Box3().setFromObject(this.loadedGltf.scene);
+
     this.floorMesh = new this.library.Mesh(floorGeometry, floorMaterial);
-    // this.floorMesh.rotation.x = Math.PI / 2;
+
     this.floorMesh.receiveShadow = true;
     this.floorMesh.position.y = box.min.y;
 
@@ -160,15 +156,7 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function (model) {
     //var centerX = 0;
     //var centerZ = 0;
 
-    for (let i = 0; i < model.children.length; i++) {
-        const child = model.children[i];
-        //console.log(child);
-        //var box = new this.library.Box3().setFromObject(child);
-        //console.log(box)
-        if (!child.isMesh) continue;
-
-        child.matrixAutoUpdate = false;
-
+    const traverseScene = (child) => {
         if (child.name.includes("initials_part")) {
             child.position.set(
                 child.position.x - centerX,
@@ -183,7 +171,7 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function (model) {
             this.initialsPositions[initialPosition] = child;
             child.visible = false;
             if (child.material) child.material.dispose();
-        } else {
+        } else if (child.isMesh) {
             child.position.set(
                 child.position.x - centerX,
                 child.position.y,
@@ -191,12 +179,13 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function (model) {
             );
             child.castShadow = true;
             child.receiveShadow = true;
-            
-            // remove "_part" from string
-            this.meshes[child.name.split("_")[0]] = child;
-        }
-    }
 
+            // remove "_part" from string
+            this.meshes[child.name] = child;
+        }
+    };
+
+    this.loadedGltf.scene.traverse(traverseScene)
 };
 
 /**
@@ -244,6 +233,7 @@ ripe.CSRAssetManager.prototype._getLetterMaterial = async function () {
         type = splitProps[0].split("_")[1];
     }
 
+    // TODO Change this to use textures for initials
     var diffuseMapPath = this.assetsPath + "textures/general/" + material + "/" + this.owner.brand + "_" + material + "_" + type + ".png";
 
     // TODO Add roughness map path if it exists
@@ -365,8 +355,6 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (material, color) 
     }
 
     newMaterial.perPixel = true;
-    //console.log(debug)
-
     return newMaterial;
 };
 
@@ -435,7 +423,7 @@ ripe.CSRAssetManager.prototype._setupEnvironment = async function (scene) {
         });
     });
 
-    
+
     this.pmremGenerator.compileEquirectangularShader();
     this.environmentTexture = this.pmremGenerator.fromEquirectangular(texture).texture;
 

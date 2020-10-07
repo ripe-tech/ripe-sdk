@@ -160,14 +160,11 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
 ripe.CSRenderer.prototype._loadAssets = async function () {
     await this.assetManager._loadMesh();
 
-    for (var mesh in this.assetManager.meshes) {
-        if (this.assetManager.meshes[mesh].isMesh)
-            this.scene.add(this.assetManager.meshes[mesh])
-    }
+    this.scene.add(this.assetManager.loadedGltf.scene.children[0])
     
     this.animationMixer = new this.library.AnimationMixer(this.assetManager.loadedGltf.scene);
     this.animations = this.assetManager.loadedGltf.animations;
-
+    
     await this.assetManager._loadTexturesAndMaterials(this.scene);
 
     this.render();

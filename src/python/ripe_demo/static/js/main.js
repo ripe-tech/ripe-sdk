@@ -20,7 +20,7 @@ window.onload = function () {
     var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
     var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
 
-    var currentRenderMode = "prc";
+    var currentRenderMode = "csr";
     var configuratorCSR = null;
     var configuratorPRC = null;
 
@@ -349,11 +349,14 @@ window.onload = function () {
             };
             */
 
+            // Parsing the config
+            const modelConfig = JSON.parse(model_data)
+            
             configuratorCSR = ripe.bindConfigurator(elementCSR, {
                 duration: 250,
+                render: "csr",
                 noMasks: false,
                 view: bestFace(result),
-                render: "csr",
                 cameraFOV: 28,
                 cameraDistance: 28,
                 cameraHeight: 5,
@@ -364,6 +367,7 @@ window.onload = function () {
                 cameraHeight: 0.9,
                 cameraTarget: { x: 0, y: 0.375, z: 0.0 },
                 */
+                modelConfig: modelConfig,
                 assetsPath: "/static/assets/",
                 fontType: "comic_sans",
                 fontWeight: "light",
@@ -372,19 +376,17 @@ window.onload = function () {
                 mouseDrift: true,
                 driftDuration: 200,
                 viewAnimate: "cross",
-                easing: "linear",
                 highlightEasing: "easeOutQuad",
                 materialEasing: "easeInOutQuad",
                 rotationEasing: "easeInOutQuad",
                 crossfadeEasing: "easeInOutQuad",
                 initialsPlacement: "center",
-                introAnimation: "PopIn",
+                introAnimation: "SlideIn",
                 environment: "exterior_building",
                 textSize: 0.5,
                 textHeight: 0.01,
-                shadowBias: -0.01
-                //introAnimation: "ScaleIn"
-                //lockRotation: "horizontal"
+                shadowBias: -0.01,
+                lockRotation: "horizontal"
             });
 
             configuratorPRC.bind("loaded", function () {

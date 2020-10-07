@@ -221,8 +221,6 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
         await this.rtrenderer.crossfade({ type: "material", parts: this.owner.parts, duration: 500 });
     }
 
-    // console.log(this.owner);
-
     if (options.reason && options.reason === "set initials") {
         this.rtrenderer.updateInitials(this.owner.initials);
     }
