@@ -11,9 +11,13 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.CSRAssetManager = function (options, renderer, scene) {
+ripe.CSRAssetManager = function (owner, options, renderer) {
+    this.owner = owner;
     this.assetsPath = options.assetsPath;
+    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
+    this.texturesPath = this.assetsPath + "textures/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
     this.library = options.library;
+    this.owner = owner;
 
     this.assetsPath = options.assetsPath || "";
     this.loadedTextures = {};
@@ -21,7 +25,7 @@ ripe.CSRAssetManager = function (options, renderer, scene) {
     this.environmentTexture = null;
     this.textureLoader = new this.library.TextureLoader();
 
-    this.fontsPath = options.fontsPath || "";
+    this.fontsPath = options.fontsPath || this.assetsPath + "fonts/";
     this.fontType = options.fontType || "";
     this.fontWeight = options.fontWeight || "";
     this.loadedFonts = {};
@@ -32,7 +36,7 @@ ripe.CSRAssetManager = function (options, renderer, scene) {
     this.initialsPositions = {};
         
     this.meshes = {};
-    this.meshPath = options.meshPath;
+    console.log(this.meshPath);
     this.textMeshes = [];
     
     this.loadedGltf = undefined;
@@ -54,7 +58,6 @@ ripe.CSRAssetManager.prototype.updateOptions = function (options) {
     // materials
     this.assetsPath = options.assetsPath === undefined ? this.assetsPath : options.assetsPath;
     this.partsMap = options.partsMap === undefined ? this.partsMap : options.partsMap;
-    this.meshPath = options.meshPath === undefined ? this.meshPath : options.meshPath;
 }
 
 ripe.CSRAssetManager.prototype.createLetter = function (letter) {
@@ -101,6 +104,28 @@ ripe.CSRAssetManager.prototype._applyDefaults = function () {
 
 
 ripe.CSRAssetManager.prototype._loadMesh = async function () {
+    console.log(this.meshPath)
+    if (this.meshPath.includes(".gltf") || this.meshPath.includes(".glb"))
+        await this._loadGLTFMesh();
+    else if (this.meshPath.includes(".fbx")) 
+        await this._loadFBXMesh();
+    
+};
+
+ripe.CSRAssetManager.prototype._loadFBXMesh = async function () {
+    console.log("Loading FBX?")
+    var fbxLoader = new this.library.FBXLoader();
+    const fbx = await new Promise((resolve, reject) => {
+        fbxLoader.load(this.meshPath, fbx => {
+            resolve(fbx);
+        });
+    });
+
+    console.log(fbx);
+
+}
+
+ripe.CSRAssetManager.prototype._loadGLTFMesh = async function() {
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
         gltfLoader.load(this.meshPath, gltf => {
@@ -113,7 +138,7 @@ ripe.CSRAssetManager.prototype._loadMesh = async function () {
     const model = gltf.scene.children[0];
     
     await this._loadSubMeshes(model);
-};
+}
 
 
 ripe.CSRAssetManager.prototype._loadSubMeshes = function (model) {
@@ -201,7 +226,6 @@ ripe.CSRAssetManager.prototype._disposeResources = function (scene) {
             this.loadedTextures[texture].dispose();
         }
     }
-    this.loadedGltf.scene.dispose();
 };
 
 ripe.CSRAssetManager.prototype._getLetterMaterial = async function () {
@@ -223,7 +247,6 @@ ripe.CSRAssetManager.prototype._getLetterMaterial = async function () {
     var diffuseMapPath = this.assetsPath + "textures/general/" + material + "/" + this.owner.brand + "_" + material + "_" + type + ".png";
 
     // TODO Add roughness map path if it exists
-    // var roughnessMapPath = this.getTexturePath(material, color, "roughness", true);
     const diffuseTexture = await new Promise((resolve, reject) => {
         this.textureLoader.load(diffuseMapPath, function (texture) {
             resolve(texture);

@@ -1,0 +1,561 @@
+{
+    "front_part": {
+        "grain_metallic": {
+            "emerald": {
+                "albedo": "front_part/grain_metallic/emerald/diffuse.png",
+                "metallic": "front_part/grain_metallic/general/metallic.png",
+                "normal": "front_part/grain_metallic/general/normal.png"
+            },
+            "gold": {
+                "albedo": "front_part/grain_metallic/gold/diffuse.png",
+                "metallic": "front_part/grain_metallic/general/metallic.png",
+                "normal": "front_part/grain_metallic/general/normal.png"
+            },
+            "purple": {
+                "albedo": "front_part/grain_metallic/purple/diffuse.png",
+                "metallic": "front_part/grain_metallic/general/metallic.png",
+                "normal": "front_part/grain_metallic/general/normal.png"
+            }, 
+            "silver": {
+                "albedo": "front_part/grain_metallic/silver/diffuse.png",
+                "metallic": "front_part/grain_metallic/general/metallic.png",
+                "normal": "front_part/grain_metallic/general/normal.png"
+            }
+        },
+        "hairy_calf": {
+            "black": {
+                "albedo": "front_part/hairy_calf/black/diffuse.png",
+                "normal": "front_part/hairy_calf/general/normal.png"
+            },
+            "camouflage": {
+                "albedo": "front_part/hairy_calf/camouflage/diffuse.png",
+                "normal": "front_part/hairy_calf/general/normal.png"
+            },
+            "leopard": {
+                "albedo": "front_part/hairy_calf/leopard/diffuse.png",
+                "normal": "front_part/hairy_calf/general/normal.png"
+            },
+            "navy": {
+                "albedo": "front_part/hairy_calf/navy/diffuse.png",
+                "normal": "front_part/hairy_calf/general/normal.png"
+            },
+            "red": {
+                "albedo": "front_part/hairy_calf/red/diffuse.png",
+                "normal": "front_part/hairy_calf/general/normal.png"
+            },
+            "white": {
+                "albedo": "front_part/hairy_calf/white/diffuse.png",
+                "normal": "front_part/hairy_calf/general/normal.png"
+            }            
+        },
+        "nappa": {
+            "beige": {
+                "albedo": "front_part/nappa/beige/diffuse.png",
+                "normal": "front_part/nappa/general/normal.png"
+            },
+            "black": {
+                "albedo": "front_part/nappa/black/diffuse.png",
+                "normal": "front_part/nappa/general/normal.png"
+            },
+            "blush": {
+                "albedo": "front_part/nappa/blush/diffuse.png",
+                "normal": "front_part/nappa/general/normal.png"
+            },
+            "dark_cherry": {
+                "albedo": "front_part/nappa/dark_cherry/diffuse.png",
+                "normal": "front_part/nappa/general/normal.png"
+            },
+            "forest_green": {
+                "albedo": "front_part/nappa/forest_green/diffuse.png",
+                "normal": "front_part/nappa/general/normal.png"
+            },
+            "grey": {
+                "albedo": "front_part/nappa/grey/diffuse.png",
+                "normal": "front_part/nappa/general/normal.png"
+            },
+            "navy": {
+                "albedo": "front_part/nappa/navy/diffuse.png",
+                "normal": "front_part/nappa/general/normal.png"
+            },
+            "red": {
+                "albedo": "front_part/nappa/red/diffuse.png",
+                "normal": "front_part/nappa/general/normal.png"
+            },
+            "taupe": {
+                "albedo": "front_part/nappa/taupe/diffuse.png",
+                "normal": "front_part/nappa/general/normal.png"
+            },
+            "white": {
+                "albedo": "front_part/nappa/white/diffuse.png",
+                "normal": "front_part/nappa/general/normal.png"
+            }
+        },
+        "crocodile": {
+            "black": {
+                "albedo": "general/crocodile/black/diffuse.png",
+                "specular": "general/crocodile/black/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "chestnut": {
+                "albedo": "general/crocodile/chestnut/diffuse.png",
+                "specular": "general/crocodile/chestnut/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "navy": {
+                "albedo": "general/crocodile/navy/diffuse.png",
+                "specular": "general/crocodile/navy/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "nude": {
+                "albedo": "general/crocodile/nude/diffuse.png",
+                "specular": "general/crocodile/nude/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "red": {
+                "albedo": "general/crocodile/red/diffuse.png",
+                "specular": "general/crocodile/red/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "silver": {
+                "albedo": "general/crocodile/silver/diffuse.png",
+                "specular": "general/crocodile/silver/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "white": {
+                "albedo": "general/crocodile/white/diffuse.png",
+                "specular": "general/crocodile/white/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            }
+        },
+        "python": {
+            "black": {
+                "albedo": "general/python/black/diffuse.png",
+                "specular": "general/python/black/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "gold": {
+                "albedo": "general/python/gold/diffuse.png",
+                "specular": "general/python/gold/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "grey": {
+                "albedo": "general/python/grey/diffuse.png",
+                "specular": "general/python/grey/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "natural": {
+                "albedo": "general/python/natural/diffuse.png",
+                "specular": "general/python/natural/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "neon_white": {
+                "albedo": "general/python/neon_white/diffuse.png",
+                "specular": "general/python/neon_white/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "nude": {
+                "albedo": "general/python/nude/diffuse.png",
+                "specular": "general/python/nude/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "silver": {
+                "albedo": "general/python/silver/diffuse.png",
+                "specular": "general/python/silver/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "white": {
+                "albedo": "general/python/white/diffuse.png",
+                "specular": "general/python/white/specular.png",
+                "normal": "general/python/general/normal.png"
+            }
+        },
+        "suede": {
+            "beige": {
+                "albedo": "general/suede/beige/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "black": {
+                "albedo": "general/suede/black/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "forest_green": {
+                "albedo": "general/suede/forest_green/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "grey": {
+                "albedo": "general/suede/grey/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "navy": {
+                "albedo": "general/suede/navy/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "red": {
+                "albedo": "general/suede/red/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "taupe": {
+                "albedo": "general/suede/taupe/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "white": {
+                "albedo": "general/suede/white/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            }
+        }
+    },
+    "hardware_part": {
+        "copper": {
+            "albedo": "general/metal/copper/diffuse.png",
+            "metallic": "general/metal/general/metallic.png"
+        },
+        "gold": {
+            "albedo": "general/metal/gold/diffuse.png",
+            "metallic": "general/metal/general/metallic.png"
+        },
+        "silver": {
+            "albedo": "general/metal/silver/diffuse.png",
+            "metallic": "general/metal/general/metallic.png"
+        }
+    },
+    "laces_part": {
+        "nylon": {
+            "black": {
+                "albedo": "laces_part/nylon/black/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "blush": {
+                "albedo": "laces_part/nylon/blush/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "burnt_orange": {
+                "albedo": "laces_part/nylon/burnt_orange/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "cobalt": {
+                "albedo": "laces_part/nylon/cobalt/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "copper_brown": {
+                "albedo": "laces_part/nylon/copper_brown/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "dark_cherry": {
+                "albedo": "laces_part/nylon/dark_cherry/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "fuschia": {
+                "albedo": "laces_part/nylon/fuschia/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "golden_yellow": {
+                "albedo": "laces_part/nylon/golden_yellow/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "grey": {
+                "albedo": "laces_part/nylon/grey/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "navy": {
+                "albedo": "laces_part/nylon/navy/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "red": {
+                "albedo": "laces_part/nylon/red/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "taupe": {
+                "albedo": "laces_part/nylon/taupe/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            },
+            "white": {
+                "albedo": "laces_part/nylon/white/diffuse.png",
+                "normal": "laces_part/nylon/general/normal.png"
+            }
+        }
+    }, 
+    "lining_part": {
+        "calf_lining": {
+            "beige": {
+                "albedo": "lining_part/calf_lining/beige/diffuse.png",
+                "normal": "lining_part/calf_lining/general/normal.png"
+            },
+            "black": {
+                "albedo": "lining_part/calf_lining/black/diffuse.png",
+                "normal": "lining_part/calf_lining/general/normal.png"
+            },
+            "tan": {
+                "albedo": "lining_part/calf_lining/tan/diffuse.png",
+                "normal": "lining_part/calf_lining/general/normal.png"
+            },
+            "white": {
+                "albedo": "lining_part/calf_lining/white/diffuse.png",
+                "normal": "lining_part/calf_lining/general/normal.png"
+            }
+        }
+    },
+    "side_part": {
+        "grain_metallic": {
+            "emerald": {
+                "albedo": "side_part/grain_metallic/emerald/diffuse.png",
+                "metallic": "side_part/grain_metallic/general/metallic.png",
+                "normal": "side_part/grain_metallic/general/normal.png"
+            },
+            "gold": {
+                "albedo": "side_part/grain_metallic/gold/diffuse.png",
+                "metallic": "side_part/grain_metallic/general/metallic.png",
+                "normal": "side_part/grain_metallic/general/normal.png"
+            },
+            "purple": {
+                "albedo": "side_part/grain_metallic/purple/diffuse.png",
+                "metallic": "side_part/grain_metallic/general/metallic.png",
+                "normal": "side_part/grain_metallic/general/normal.png"
+            },
+            "silver": {
+                "albedo": "side_part/grain_metallic/silver/diffuse.png",
+                "metallic": "side_part/grain_metallic/general/metallic.png",
+                "normal": "side_part/grain_metallic/general/normal.png"
+            }
+        },
+        "hairy_calf": {
+            "black": {
+                "albedo": "side_part/hairy_calf/black/diffuse.png",
+                "normal": "side_part/hairy_calf/general/normal.png"
+            },
+            "camouflage": {
+                "albedo": "side_part/hairy_calf/camouflage/diffuse.png",
+                "normal": "side_part/hairy_calf/general/normal.png"
+            },
+            "leopard": {
+                "albedo": "side_part/hairy_calf/leopard/diffuse.png",
+                "normal": "side_part/hairy_calf/general/normal.png"
+            },
+            "navy": {
+                "albedo": "side_part/hairy_calf/navy/diffuse.png",
+                "normal": "side_part/hairy_calf/general/normal.png"
+            },
+            "red": {
+                "albedo": "side_part/hairy_calf/red/diffuse.png",
+                "normal": "side_part/hairy_calf/general/normal.png"
+            },
+            "white": {
+                "albedo": "side_part/hairy_calf/white/diffuse.png",
+                "normal": "side_part/hairy_calf/general/normal.png"
+            }
+        },
+        "metallic": {
+            "copper": {
+                "albedo": "side_part/metallic/copper/diffuse.png",
+                "metallic": "side_part/metallic/general/metallic.png",
+                "normal": "side_part/metallic/general/normal.png"
+            },
+            "fuschia": {
+                "albedo": "side_part/metallic/fuschia/diffuse.png",
+                "metallic": "side_part/metallic/general/metallic.png",
+                "normal": "side_part/metallic/general/normal.png"
+            },
+            "gold": {
+                "albedo": "side_part/metallic/gold/diffuse.png",
+                "metallic": "side_part/metallic/general/metallic.png",
+                "normal": "side_part/metallic/general/normal.png"
+            },
+            "navy": {
+                "albedo": "side_part/metallic/navy/diffuse.png",
+                "metallic": "side_part/metallic/general/metallic.png",
+                "normal": "side_part/metallic/general/normal.png"
+            },
+            "silver": {
+                "albedo": "side_part/metallic/silver/diffuse.png",
+                "metallic": "side_part/metallic/general/metallic.png",
+                "normal": "side_part/metallic/general/normal.png"
+            }
+        },
+        "nappa": {
+            "beige": {
+                "albedo": "side_part/nappa/beige/diffuse.png",
+                "normal": "side_part/nappa/general/normal.png"
+            },
+            "black": {
+                "albedo": "side_part/nappa/black/diffuse.png",
+                "normal": "side_part/nappa/general/normal.png"
+            },
+            "blush": {
+                "albedo": "side_part/nappa/blush/diffuse.png",
+                "normal": "side_part/nappa/general/normal.png"
+            },
+            "dark_cherry": {
+                "albedo": "side_part/nappa/dark_cherry/diffuse.png",
+                "normal": "side_part/nappa/general/normal.png"
+            },
+            "forest_green": {
+                "albedo": "side_part/nappa/forest_green/diffuse.png",
+                "normal": "side_part/nappa/general/normal.png"
+            },
+            "grey": {
+                "albedo": "side_part/nappa/grey/diffuse.png",
+                "normal": "side_part/nappa/general/normal.png"
+            },
+            "navy": {
+                "albedo": "side_part/nappa/navy/diffuse.png",
+                "normal": "side_part/nappa/general/normal.png"
+            },
+            "red": {
+                "albedo": "side_part/nappa/red/diffuse.png",
+                "normal": "side_part/nappa/general/normal.png"
+            },
+            "taupe": {
+                "albedo": "side_part/nappa/taupe/diffuse.png",
+                "normal": "side_part/nappa/general/normal.png"
+            },
+            "white": {
+                "albedo": "side_part/nappa/white/diffuse.png",
+                "normal": "side_part/nappa/general/normal.png"
+            }
+        },
+        "crocodile": {
+            "black": {
+                "albedo": "general/crocodile/black/diffuse.png",
+                "specular": "general/crocodile/black/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "chestnut": {
+                "albedo": "general/crocodile/chestnut/diffuse.png",
+                "specular": "general/crocodile/chestnut/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "navy": {
+                "albedo": "general/crocodile/navy/diffuse.png",
+                "specular": "general/crocodile/navy/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "nude": {
+                "albedo": "general/crocodile/nude/diffuse.png",
+                "specular": "general/crocodile/nude/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "red": {
+                "albedo": "general/crocodile/red/diffuse.png",
+                "specular": "general/crocodile/red/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "silver": {
+                "albedo": "general/crocodile/silver/diffuse.png",
+                "specular": "general/crocodile/silver/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            },
+            "white": {
+                "albedo": "general/crocodile/white/diffuse.png",
+                "specular": "general/crocodile/white/specular.png",
+                "normal": "general/crocodile/general/normal.png"
+            }
+        },
+        "python": {
+            "black": {
+                "albedo": "general/python/black/diffuse.png",
+                "specular": "general/python/black/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "gold": {
+                "albedo": "general/python/gold/diffuse.png",
+                "specular": "general/python/gold/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "grey": {
+                "albedo": "general/python/grey/diffuse.png",
+                "specular": "general/python/grey/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "natural": {
+                "albedo": "general/python/natural/diffuse.png",
+                "specular": "general/python/natural/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "neon_white": {
+                "albedo": "general/python/neon_white/diffuse.png",
+                "specular": "general/python/neon_white/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "nude": {
+                "albedo": "general/python/nude/diffuse.png",
+                "specular": "general/python/nude/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "silver": {
+                "albedo": "general/python/silver/diffuse.png",
+                "specular": "general/python/silver/specular.png",
+                "normal": "general/python/general/normal.png"
+            },
+            "white": {
+                "albedo": "general/python/white/diffuse.png",
+                "specular": "general/python/white/specular.png",
+                "normal": "general/python/general/normal.png"
+            }
+        },
+        "suede": {
+            "beige": {
+                "albedo": "general/suede/beige/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "black": {
+                "albedo": "general/suede/black/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "forest_green": {
+                "albedo": "general/suede/forest_green/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "grey": {
+                "albedo": "general/suede/grey/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "navy": {
+                "albedo": "general/suede/navy/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "red": {
+                "albedo": "general/suede/red/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "taupe": {
+                "albedo": "general/suede/taupe/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            },
+            "white": {
+                "albedo": "general/suede/white/diffuse.png",
+                "normal": "general/suede/general/normal.png"
+            }
+        }
+    },
+    "sole_part": {
+        "rubber": {
+            "black": {
+                "albedo": "sole_part/rubber/black/diffuse.png",
+                "normal": "sole_part/rubber/general/normal.png"
+            },
+            "grey": {
+                "albedo": "sole_part/rubber/grey/diffuse.png",
+                "normal": "sole_part/rubber/general/normal.png"
+            },
+            "pink": {
+                "albedo": "sole_part/rubber/pink/diffuse.png",
+                "normal": "sole_part/rubber/general/normal.png"
+            },
+            "red": {
+                "albedo": "sole_part/rubber/red/diffuse.png",
+                "normal": "sole_part/rubber/general/normal.png"
+            },
+            "tan": {
+                "albedo": "sole_part/rubber/tan/diffuse.png",
+                "normal": "sole_part/rubber/general/normal.png"
+            },
+            "white": {
+                "albedo": "sole_part/rubber/white/diffuse.png",
+                "normal": "sole_part/rubber/general/normal.png"
+            },
+            "yellow": {
+                "albedo": "sole_part/rubber/yellow/diffuse.png",
+                "normal": "sole_part/rubber/general/normal.png"
+            }
+        }
+    }
+}

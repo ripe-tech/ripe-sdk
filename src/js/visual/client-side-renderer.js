@@ -38,9 +38,10 @@ ripe.CSRenderer = function (owner, element, options) {
         options.cameraTarget.z
     );
     this.cameraFOV = options.cameraFOV;
-    this.materialEasing = options.materialEasing || this.easing || "linear";
-    this.crossfadeEasing = options.crossfadeEasing || this.easing || "linear";
-    this.highlightEasing = options.highlightEasing || this.easing || "linear";
+    this.easing = options.easing || "easeInOutQuad";
+    this.materialEasing = options.materialEasing || this.easing;
+    this.crossfadeEasing = options.crossfadeEasing || this.easing;
+    this.highlightEasing = options.highlightEasing || this.easing;
     this.highlightDuration = options.maskDuration || 150;
     this.partsMap = options.partsMap || {};
     
@@ -74,7 +75,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this._setupPostProcessing();
     this._registerHandlers();
    
-    this.assetManager = new ripe.CSRAssetManager(options, this.renderer);
+    this.assetManager = new ripe.CSRAssetManager(this.owner, options, this.renderer);
     this._loadAssets();
     
     this.gui = new dat.GUI();
@@ -87,8 +88,7 @@ ripe.CSRenderer = function (owner, element, options) {
     // of the element in the window, needs to be updated on
     // every resize
     window.onresize = () => {
-        this.updateSize(this.element.clientWidth, this.element.clientHeight);
-        this.updateElementBoundingBox();
+        this.updateSize();
     };
 };
 
@@ -311,9 +311,10 @@ ripe.CSRenderer.prototype.render = function (useRenderer = false) {
     }
 };
 
-ripe.CSRenderer.prototype.updateSize = function (width, height) {
-    this.renderer.setSize(width, height);
-    this.composer.setSize(this.renderer.domElement.width, this.renderer.domElement.height);
+ripe.CSRenderer.prototype.updateSize = function () {
+    this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
+    this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
+    this.updateElementBoundingBox();
 };
 
 ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
@@ -405,7 +406,7 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) 
         meshTarget.material.color.b = currentValue;
 
         pos = (Date.now() - startTime) / duration;
-        currentValue = ripe.easing.easeOutQuad[this.highlightEasing](pos, startingValue, endValue);
+        currentValue = ripe.easing[this.highlightEasing](pos, startingValue, endValue);
 
         this.render();
 

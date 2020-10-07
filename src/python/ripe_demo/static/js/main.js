@@ -10,7 +10,7 @@ window.onload = function () {
     var _body = document.querySelector("body");
     var url = _body.dataset.url || "https://sandbox.platforme.com/api/";
     var brand = _body.dataset.brand || "swear";
-    var model = _body.dataset.model || "vyner";
+    var model = _body.dataset.model || "vyner_hitop";
     var variant = _body.dataset.variant || "";
     var version = _body.dataset.version || null;
     var currency = _body.dataset.currency || "USD";
@@ -20,7 +20,7 @@ window.onload = function () {
     var guess = ["1", "true", "True"].indexOf(_body.dataset.guess) !== -1;
     var guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
 
-    var currentRenderMode = "csr";
+    var currentRenderMode = "prc";
     var configuratorCSR = null;
     var configuratorPRC = null;
 
@@ -48,7 +48,10 @@ window.onload = function () {
             var triplet = triplets[index];
             parts.push(triplet);
         }
-        
+
+        console.log(partsMap)
+        console.log(parts)
+
         await ripe.setParts(parts, true, { partEvents: false });
     };
 
@@ -170,6 +173,8 @@ window.onload = function () {
                 partsMap[part] = triplets;
                 parts.push(triplet);
             }
+
+            console.log(partsMap)
         });
     };
 
@@ -349,21 +354,17 @@ window.onload = function () {
                 noMasks: false,
                 view: bestFace(result),
                 render: "csr",
-                
-                meshPath: "/static/assets/vyner_test2.gltf",
                 cameraFOV: 28,
                 cameraDistance: 28,
                 cameraHeight: 5,
                 cameraTarget: { x: 0, y: 2, z: 0.0 },
                /*
-                meshPath: "/static/assets/vyner_animations_final.glb",
                 cameraFOV: 28,
                 cameraDistance: 5.1,
                 cameraHeight: 0.9,
                 cameraTarget: { x: 0, y: 0.375, z: 0.0 },
                 */
                 assetsPath: "/static/assets/",
-                fontsPath: "/static/assets/fonts/",
                 fontType: "comic_sans",
                 fontWeight: "light",
                 library: THREE,
@@ -372,7 +373,7 @@ window.onload = function () {
                 driftDuration: 200,
                 viewAnimate: "cross",
                 easing: "linear",
-                highlightEasing: "easeInOutQuad",
+                highlightEasing: "easeOutQuad",
                 materialEasing: "easeInOutQuad",
                 rotationEasing: "easeInOutQuad",
                 crossfadeEasing: "easeInOutQuad",

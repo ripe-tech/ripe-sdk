@@ -316,8 +316,7 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
     // On the resize of the configurator, the rtrenderer needs to update
     // the bounding box to maintain correct raycasts
     if (this.rtrenderer) {
-        this.rtrenderer.updateSize(this.element.clientWidth, this.element.clientHeight);
-        this.rtrenderer.updateElementBoundingBox();
+        this.rtrenderer.updateSize();
     }
 
     await this.update(
@@ -419,8 +418,6 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
     if (this.rtrenderer) {
         // removes the highlight from any part
         this.rtrenderer.lowlight();
-        // update element bounding box for raycasting
-        this.rtrenderer.updateElementBoundingBox();
     }
 
     // retrieves the new product frame object and sets it
@@ -461,8 +458,6 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
     // the associated ready event to any event listener
     this.ready = true;
     this.trigger("ready");
-
-    if (this.rtrenderer) this.rtrenderer.updateElementBoundingBox();
 
     // adds the config visual class indicating that
     // a configuration already exists for the current
