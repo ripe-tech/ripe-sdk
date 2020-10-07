@@ -171,7 +171,6 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
             child.visible = false;
             if (child.material) child.material.dispose();
         } else if (child.isMesh) {
-            console.log(child);
             child.position.set(
                 child.position.x - centerX,
                 child.position.y,
@@ -274,14 +273,11 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
     //return new this.library.MeshStandardMaterial({ color: "#00FF0F" });
     var newMaterial;
 
-    var isSpecular;
     // follows specular-glossiness workflow
     if (this.modelConfig[part][material][color]["specularMap"]) {
         newMaterial = new this.library.MeshPhongMaterial();
-        isSpecular = true;
     } else { // follows PBR workflow
         newMaterial = new this.library.MeshStandardMaterial();
-        isSpecular = false;
     }
 
     const basePath = this.assetsPath + "textures/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "/";
@@ -289,7 +285,8 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
     for (var map in this.modelConfig[part][material][color]) {
         var mapPath = basePath + this.modelConfig[part][material][color][map];
         
-        if (!this.loadedTextures[mapPath]) {
+        // if it's not a map, it's a property, don't load anything
+        if (!this.loadedTextures[mapPath] && (map.includes("map") || map.includes("Map"))) {
             var texture = await new Promise((resolve, reject) => {
                 this.textureLoader.load(mapPath, function (texture) {
                     resolve(texture);
@@ -297,36 +294,27 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
             });
             // If texture is used for color information, set colorspace.
             texture.encoding = THREE.sRGBEncoding;
+            texture.anisotropy = this.maxAnisotropy;
 
             // UVs use the convention that (0, 0) corresponds to the upper left corner of a texture.
             texture.flipY = false;
             this.loadedTextures[mapPath] = texture;
         }
         
-        //console.log("Map " + map + " is " + mapPath)
         newMaterial[map] = this.loadedTextures[mapPath];
     }
 
-    /*
-    newMaterial.normalMap = null;
-    newMaterial.aoMap = null;
-    if (isSpecular)
-        newMaterial.specularMap = null;
-    else
-        newMaterial.metalnessMap = null;
-    */    
     newMaterial.perPixel = true;
     return newMaterial;
 };
 
 ripe.CSRAssetManager.prototype._applyMaterial = async function (part, material, color) {
-    console.log("Attempting change at " + part + ", for " + material + "_" + color)
+    //console.log("Attempting change at " + part + ", for " + material + "_" + color)
     const newMaterial = await this._loadMaterial(part, material, color);
     
     for (var mesh in this.meshes) {
         if (mesh.includes(part)) {
-            console.log("Changed!")
-            console.log(newMaterial)
+            //console.log(newMaterial)
             this.meshes[mesh].material.dispose();
             this.meshes[mesh].material = newMaterial.clone();
             break;

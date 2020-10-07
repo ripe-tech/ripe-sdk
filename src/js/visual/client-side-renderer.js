@@ -74,7 +74,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this._initializeLights();
     this._initializeCamera();
     this._initializeRenderer();
-    this._setupPostProcessing();
+    //this._setupPostProcessing();
     this._registerHandlers();
     this._initializeShaders();
    
@@ -279,7 +279,7 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
     const area = this.element.querySelector(".area");
     var devicePixelRatio = window.devicePixelRatio || 1;
     this.renderer.setPixelRatio(devicePixelRatio);
-    this.renderer.setClearColor(0x000000);
+    this.renderer.setClearColor(0xFFFFFF);
 
     area.appendChild(this.renderer.domElement);
 };
@@ -358,15 +358,16 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
 
 ripe.CSRenderer.prototype.render = function (useRenderer = false) {
     //console.log("Rendering!")
-    if (this.composer && this.scene && this.camera) {
-        this.composer.render();
+    if (this.renderer && this.scene && this.camera) {
+        //this.composer.render();
+        this.renderer.render(this.scene, this.camera);
         //this.composer.render(this.scene, this.camera);
     }
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
     this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
-    this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
+    //this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
     this.updateElementBoundingBox();
 };
 
@@ -617,7 +618,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
 
     var width = this.elementBoundingBox.width;
     var height = this.elementBoundingBox.height;
-
+    
     var transitionCamera = new this.library.OrthographicCamera(
         -width / 2,
         width / 2,
@@ -668,7 +669,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     // Render next image
     this.renderer.setRenderTarget(currentSceneFBO);
     this.renderer.clear();
-    this.render();
+    this.renderer.render(this.scene, this.camera);
 
     // Reset renderer
     this.renderer.setRenderTarget(null);
@@ -681,10 +682,9 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     const crossfadeFunction = () => {
         this.renderer.render(this.scene, transitionCamera);
 
-
         pos = (Date.now() - startTime) / duration;
         mixRatio = ripe.easing[this.crossfadeEasing](pos, 0.0, 1.0);
-
+        
         //mixRatio += 1.0 / duration;
         this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
