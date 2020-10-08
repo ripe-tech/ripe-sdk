@@ -50,6 +50,7 @@ ripe.CSRenderer = function (owner, element, options) {
 
     // raycast
     this.raycaster = new this.library.Raycaster();
+    this.raycastingMeshes = [];
     this.intersectedPart = "";
 
     // initials
@@ -75,7 +76,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this._initializeLights();
     this._initializeCamera();
     this._initializeRenderer();
-    //this._setupPostProcessing();
+    this._setupPostProcessing();
     this._registerHandlers();
     this._initializeShaders();
 
@@ -162,6 +163,7 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
 };
 
 ripe.CSRenderer.prototype.disposeResources = async function () {
+    this.raycastingMeshes = [];
     await this.assetManager._disposeResources(this.scene);
 }
 
@@ -171,6 +173,13 @@ ripe.CSRenderer.prototype.loadMaterials = async function () {
 
 ripe.CSRenderer.prototype._loadAssets = async function () {
     await this.assetManager._loadMesh();
+
+    for (var mesh in this.assetManager.meshes) {
+        this.raycastingMeshes.push(this.assetManager.meshes[mesh])
+    }
+
+    console.log("Can raycast with")
+    console.log(this.raycastingMeshes)
 
     this.scene.add(this.assetManager.loadedGltf.scene);
 
@@ -345,6 +354,8 @@ ripe.CSRenderer.prototype._initializeCamera = function () {
 ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     console.log("Attempting to perform animation " + animationName)
     var animation = this.library.AnimationClip.findByName(this.animations, animationName);
+    
+    animation.optimize();
 
     console.log(animation)
     if (!animation) return;
@@ -352,6 +363,7 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     const action = this.animationMixer.clipAction(animation);
     action.clampWhenFinished = true;
     action.loop = this.library.LoopOnce;
+    
     
     action.play();
 
@@ -370,13 +382,12 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     requestAnimationFrame(doAnimation);
 };
 
-ripe.CSRenderer.prototype.render = function (useRenderer = false) {
+ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
     //console.log("Rendering!")
-    if (this.renderer && this.scene && this.camera) {
-        //this.composer.render();
-        this.renderer.render(this.scene, this.camera);
-        //this.composer.render(this.scene, this.camera);
-    }
+    const cam = camera === undefined ? this.camera : camera;
+    const renderer = useRenderer ? this.renderer : this.composer;
+
+    renderer.render(this.scene, cam);
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
@@ -392,12 +403,12 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     if (!this.elementBoundingBox || animating || dragging) return;
 
     const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
-
+    
     if (this.raycaster && this.scene) {
         this.raycaster.setFromCamera(mouse, this.camera);
 
-        var intersects = this.raycaster.intersectObjects(this.scene.children);
-
+        var intersects = this.raycaster.intersectObjects(this.raycastingMeshes);
+        
         if (intersects.length > 0) {
             if (this.intersectedPart !== intersects[0].object.name) {
                 this.lowlight();
@@ -462,6 +473,8 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) 
         }
     }
 
+    console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
+
     if (!meshTarget) return;
 
     var startTime = Date.now();
@@ -475,6 +488,8 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) 
 
         pos = (Date.now() - startTime) / duration;
         currentValue = ripe.easing[this.highlightEasing](pos, startingValue, endValue);
+        console.log(pos);
+        console.log(currentValue);
 
         this.render();
 
@@ -516,7 +531,7 @@ ripe.CSRenderer.prototype.embossLetters = async function (initials) {
     // avoid creating new materials
     this.letterMaterial =
         this.letterMaterial === null || this.owner.engraving !== this.engraving
-            ? await this._getLetterMaterial()
+            ? await this.assetManager._getLetterMaterial()
             : this.letterMaterial;
     const maxLength = Object.keys(this.assetManager.initialsPositions).length;
 
@@ -621,6 +636,7 @@ ripe.CSRenderer.prototype.transition = function (options) {
 };
 
 ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
+    console.log("Beginning crossfade")
     var renderTargetParameters = {
         minFilter: this.library.LinearFilter,
         magFilter: this.library.LinearFilter,
@@ -639,12 +655,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
         100
     );
 
-    var previousSceneFBO = new this.library.WebGLRenderTarget(
-        width,
-        height,
-        renderTargetParameters
-    );
-
+    var previousSceneFBO = new this.library.WebGLRenderTarget(width, height,renderTargetParameters);
     var currentSceneFBO = new this.library.WebGLRenderTarget(width, height, renderTargetParameters);
 
     var mixRatio = 0.0;
@@ -661,10 +672,13 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     // Store current image
     this.renderer.setRenderTarget(previousSceneFBO);
     this.renderer.clear();
-    this.render(true);
+    this.render(true)
+
+    var parts = options.parts === undefined ? this.owner.parts : options.parts;
+    console.log(parts)
 
     if (options.type === "material") {
-        await this.assetManager.setMaterials();
+        await this.assetManager.setMaterials(parts);
     } else if (options.type === "rotation") {
         this._applyRotations(options.rotationX, options.rotationY);
     }
@@ -672,7 +686,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     // Render next image
     this.renderer.setRenderTarget(currentSceneFBO);
     this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
+    this.render(true)
 
     // Reset renderer
     this.renderer.setRenderTarget(null);
@@ -683,7 +697,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     var duration = options.duration || 500;
 
     const crossfadeFunction = () => {
-        this.renderer.render(this.scene, transitionCamera);
+        this.render(true, transitionCamera);
 
         pos = (Date.now() - startTime) / duration;
         mixRatio = ripe.easing[this.crossfadeEasing](pos, 0.0, 1.0);

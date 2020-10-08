@@ -236,6 +236,14 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     return true;
 };
 
+ripe.ConfiguratorCSR.prototype.updateParts = async function (parts) {
+    await this.rtrenderer.crossfade({
+        type: "material",
+        duration: 500,
+        parts: parts
+    });
+}
+
 ripe.ConfiguratorCSR.prototype.updateViewPosition = function (nextView, nextPosition) {
     this.element.dataset.position = nextPosition;
     this.element.dataset.view = nextView;

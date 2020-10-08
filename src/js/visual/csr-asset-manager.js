@@ -184,34 +184,44 @@ ripe.CSRAssetManager.prototype._disposeResources = async function (scene) {
     console.log("Disposing Resources");
     this.pmremGenerator.dispose();
 
+    var count = 0;
+
     if (this.meshes) {
         for (var mesh in this.meshes) {
             this.meshes[mesh].geometry.dispose();
             this.meshes[mesh].material.dispose();
             scene.remove(this.meshes[mesh]);
+            count++;
         }
     }
 
     this.meshes = {}
-    console.log("Finished dispoing meshes.");
+    console.log("Finished disposing " + count + " meshes.");
+
+    count = 0;
 
     if (this.textMeshes) {
         for (let i = 0; i < this.textMeshes.length; i++) {
             this.textMeshes[i].geometry.dispose();
             this.textMeshes[i].material.dispose();
             scene.remove(this.textMeshes[i]);
+            count++;
         }
     }
 
+    console.log("Finished disposing " + count + " letters.");
+
     this.textMeshes = [];
+    count = 0;
 
     if (this.loadedTextures) {
         for (var texture in this.loadedTextures) {
             this.loadedTextures[texture].dispose();
+            count++;
         }
     }
 
-    console.log("Finished dispoing textures.");
+    console.log("Finished disposing " + count + " textures.");
     this.loadedTextures = {};
 };
 
@@ -237,22 +247,24 @@ ripe.CSRAssetManager.prototype._getLetterMaterial = async function () {
     return letterMaterial;
 };
 
-ripe.CSRAssetManager.prototype.setMaterials = async function () {
-    for (var part in this.owner.parts) {
+ripe.CSRAssetManager.prototype.setMaterials = async function (parts) {
+    for (var part in parts) {
         if (part === "shadow") continue;
 
-        var material = this.owner.parts[part].material;
-        var color = this.owner.parts[part].color;
-        console.log("\n\nChanging material for part " + part + " to " + color + " " + material)
+        var material = parts[part].material;
+        var color = parts[part].color;
         var newMaterial = await this._loadMaterial(part, material, color);
         
         for (var mesh in this.meshes) {
             if (mesh.includes(part)) {
                 this.meshes[mesh].material.dispose();
                 this.meshes[mesh].material = newMaterial.clone();
+                newMaterial.dispose();
                 break;
             }
         }
+
+        console.log("\n\nChanging material for part " + part + " to " + color + " " + material)
     }
 }
 

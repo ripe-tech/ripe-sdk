@@ -41,7 +41,7 @@ window.onload = function () {
     });
 
     var randomize = async function () {
-        var parts = [];
+        parts = [];
         for (var key in partsMap) {
             var triplets = partsMap[key];
             var index = Math.floor(Math.random() * triplets.length);
@@ -337,15 +337,6 @@ window.onload = function () {
                 render: "prc"
             });
 
-            /*
-            var partsMapArray = ["front", "laces", "sole", "side", "lining", "hardware", "logo"];
-            var materials = {
-                denim: ["blue", "green", "red"],
-                fabric: ["blue", "green", "red", "white"],
-                leather: ["brown", "red", "white"]
-            };
-            */
-
             // Parsing the config
             const modelConfig = JSON.parse(model_data);
 
@@ -425,6 +416,9 @@ window.onload = function () {
             setPart &&
                 setPart.addEventListener("click", function () {
                     randomize();
+                    //console.log(parts)
+                    //if (currentRenderMode == "prc") ripe.setParts(parts, true, { partEvents: false });
+                    //if (currentRenderMode == "csr") configuratorCSR.updateParts(parts);
                 });
 
             // eslint-disable-next-line no-undef
