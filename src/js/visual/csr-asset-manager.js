@@ -100,7 +100,7 @@ ripe.CSRAssetManager.prototype._loadMesh = async function () {
         await this._loadGLTFMesh();
     else if (this.meshPath.includes(".fbx")) await this._loadFBXMesh();
 
-    await this.setMaterials();
+    await this.setMaterials(this.owner.parts);
 };
 
 ripe.CSRAssetManager.prototype._loadFBXMesh = async function () {

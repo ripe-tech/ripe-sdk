@@ -178,9 +178,6 @@ ripe.CSRenderer.prototype._loadAssets = async function () {
         this.raycastingMeshes.push(this.assetManager.meshes[mesh])
     }
 
-    console.log("Can raycast with")
-    console.log(this.raycastingMeshes)
-
     this.scene.add(this.assetManager.loadedGltf.scene);
 
     this.animationMixer = new this.library.AnimationMixer(this.assetManager.loadedGltf.scene);
@@ -357,7 +354,6 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     
     animation.optimize();
 
-    console.log(animation)
     if (!animation) return;
 
     const action = this.animationMixer.clipAction(animation);
@@ -466,7 +462,7 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) 
     var meshTarget = this.assetManager.meshes[part];
     var startingValue = meshTarget.material.color.r;
     
-    console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
+    //console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
 
     if (!meshTarget) return;
 
