@@ -496,7 +496,7 @@ ripe.CSRenderer.prototype.updateInitials = async function (initials) {
     ) {
         var isLogoVisible = initials === "" && this.initialsText !== "";
         for (var mesh in this.assetManager.meshes) {
-            if (this.assetManager.meshes[mesh].name === "logo_part") {
+            if (mesh.includes("logo_part")) {
                 this.assetManager.meshes[mesh].visible = isLogoVisible;
             }
         }

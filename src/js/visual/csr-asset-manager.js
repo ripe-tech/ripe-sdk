@@ -152,8 +152,8 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
                 child.position.z - centerZ
             );
 
-            // naming is of the type "initials_part_1", where 1 indicates the position
-            var initialPosition = parseInt(child.name.split("_")[2]);
+            // naming is of the type "initials_part_1.001", where 1 indicates the position
+            var initialPosition = parseInt(child.name.split("_")[2].split(".")[0]);
             // We do not add to the meshes, as this mesh only exists to guide the initials
             // locations
             this.initialsPositions[initialPosition] = child;
@@ -225,12 +225,12 @@ ripe.CSRAssetManager.prototype._disposeResources = async function (scene) {
     this.loadedTextures = {};
 };
 
-ripe.CSRAssetManager.prototype._getLetterMaterial = async function () {
-    if (this.owner.engraving !== null && !this.owner.engraving.includes("viewport")) {
-        this.engraving = this.owner.engraving;
+ripe.CSRAssetManager.prototype._getLetterMaterial = async function (engraving) {
+    if (engraving !== null && !this.owner.engraving.includes("viewport")) {
+        engraving = this.owner.engraving;
     }
 
-    var splitProps = this.engraving.split("::");
+    var splitProps =  engraving.split("::");
     var material, type;
 
     if (splitProps[0] === "style") {
