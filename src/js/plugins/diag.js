@@ -19,7 +19,7 @@ if (
  *
  * @param {Object} options An object with options to configure the plugin.
  */
-ripe.Ripe.plugins.DiagPlugin = function(options = {}) {
+ripe.Ripe.plugins.DiagPlugin = function (options = {}) {
     ripe.Ripe.plugins.Plugin.call(this);
     this.options = options;
     this.preRequestCallback = this._setHeaders.bind(this);
@@ -33,7 +33,7 @@ ripe.Ripe.plugins.DiagPlugin.prototype.constructor = ripe.Ripe.plugins.DiagPlugi
  * the 'X-Ripe-Sdk-Version' header.
  * @param {Ripe} The Ripe instance in use.
  */
-ripe.Ripe.plugins.DiagPlugin.prototype.register = function(owner) {
+ripe.Ripe.plugins.DiagPlugin.prototype.register = function (owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
     this.owner.bind("build_request", this.preRequestCallback);
@@ -46,7 +46,7 @@ ripe.Ripe.plugins.DiagPlugin.prototype.register = function(owner) {
  *
  * @param {Ripe} The Ripe instance in use.
  */
-ripe.Ripe.plugins.DiagPlugin.prototype.unregister = function(owner) {
+ripe.Ripe.plugins.DiagPlugin.prototype.unregister = function (owner) {
     this.options = null;
     this.owner.unbind("build_request", this.preRequestCallback);
 
@@ -56,7 +56,7 @@ ripe.Ripe.plugins.DiagPlugin.prototype.unregister = function(owner) {
 /**
  * @ignore
  */
-ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
+ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function (request) {
     // sets the initial version header that correctly identifies
     // the version of the SDK in use
     request.setRequestHeader("X-Ripe-Sdk-Version", "__VERSION__");
@@ -86,7 +86,7 @@ ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
 /**
  * @ignore
  */
-ripe.Ripe.plugins.DiagPlugin.prototype._getPluginName = function(plugin) {
+ripe.Ripe.plugins.DiagPlugin.prototype._getPluginName = function (plugin) {
     for (const key in ripe.Ripe.plugins) {
         if (plugin.constructor === ripe.Ripe.plugins[key]) {
             return key;

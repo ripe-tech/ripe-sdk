@@ -20,7 +20,7 @@ if (
  * If defined, overrides the rules defined on the model's config.
  * @param {Object} options An object with options to configure the plugin.
  */
-ripe.Ripe.plugins.SyncPlugin = function(rules, options = {}) {
+ripe.Ripe.plugins.SyncPlugin = function (rules, options = {}) {
     ripe.Ripe.plugins.Plugin.call(this);
 
     this.rules = this._normalizeRules(rules);
@@ -39,7 +39,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.constructor = ripe.Ripe.plugins.SyncPlugi
  *
  * @param {Ripe} The Ripe instance in use.
  */
-ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
+ripe.Ripe.plugins.SyncPlugin.prototype.register = function (owner) {
     ripe.Ripe.plugins.Plugin.prototype.register.call(this, owner);
 
     // sets the initial set of rules from the owner, in case the
@@ -70,7 +70,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.register = function(owner) {
  *
  * @param {Ripe} The Ripe instance in use.
  */
-ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
+ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function (owner) {
     this.owner && this.owner.unbind("part", this._partBind);
     this.owner && this.owner.unbind("post_config", this._postConfigBind);
 
@@ -88,7 +88,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype.unregister = function(owner) {
  *
  * @ignore
  */
-ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
+ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function (rules) {
     const _rules = {};
 
     if (!rules) {
@@ -123,7 +123,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype._normalizeRules = function(rules) {
  *
  * @ignore
  */
-ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
+ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function (name, value) {
     // iterates over the complete set of rules to determine
     // if any of them should apply to the provided part
     for (const key in this.rules) {
@@ -183,7 +183,7 @@ ripe.Ripe.plugins.SyncPlugin.prototype._applySync = function(name, value) {
  *
  * @ignore
  */
-ripe.Ripe.plugins.SyncPlugin.prototype._shouldSync = function(rule, name, value) {
+ripe.Ripe.plugins.SyncPlugin.prototype._shouldSync = function (rule, name, value) {
     for (let index = 0; index < rule.length; index++) {
         const rulePart = rule[index];
         const part = rulePart.part;

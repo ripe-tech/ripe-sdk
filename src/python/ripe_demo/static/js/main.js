@@ -26,7 +26,7 @@ window.onload = function () {
 
     var parts = [];
     var partsMap = {};
-    
+
     // eslint-disable-next-line no-undef
     var ripe = new Ripe({
         brand: brand,
@@ -49,7 +49,7 @@ window.onload = function () {
             parts.push(triplet);
         }
 
-        console.log(parts)
+        console.log(parts);
 
         await ripe.setParts(parts, true, { partEvents: false });
     };
@@ -347,8 +347,8 @@ window.onload = function () {
             */
 
             // Parsing the config
-            const modelConfig = JSON.parse(model_data)
-            
+            const modelConfig = JSON.parse(model_data);
+
             configuratorCSR = ripe.bindConfigurator(elementCSR, {
                 duration: 250,
                 render: "csr",
@@ -358,7 +358,7 @@ window.onload = function () {
                 cameraDistance: 28,
                 cameraHeight: 5,
                 cameraTarget: { x: 0, y: 2, z: 0.0 },
-               /*
+                /*
                 cameraFOV: 28,
                 cameraDistance: 5.1,
                 cameraHeight: 0.9,
@@ -379,7 +379,7 @@ window.onload = function () {
                 crossfadeEasing: "easeInOutQuad",
                 initialsPlacement: "center",
                 introAnimation: "SlideIn",
-                //environment: "exterior_building",
+                environment: "exterior_building",
                 textSize: 0.5,
                 textHeight: 0.01,
                 shadowBias: -0.01,

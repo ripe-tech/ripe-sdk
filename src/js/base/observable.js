@@ -16,7 +16,7 @@ if (
  * @classdesc An object that emits events.
  * Listeners can bind to specific events and be notified when the event is triggered.
  */
-ripe.Observable = function() {
+ripe.Observable = function () {
     this.callbacks = {};
 };
 
@@ -24,13 +24,13 @@ ripe.Observable = function() {
  * The initializer of the class, called whenever this
  * observable starts its activity.
  */
-ripe.Observable.prototype.init = function() {};
+ripe.Observable.prototype.init = function () {};
 
 /**
  * The deinitializer of the class, called whenever this
  * observable ceases its activity.
  */
-ripe.Observable.prototype.deinit = async function() {
+ripe.Observable.prototype.deinit = async function () {
     this.callbacks = null;
 };
 
@@ -42,7 +42,7 @@ ripe.Observable.prototype.deinit = async function() {
  * @param {Function} callback Function to be executed when the event is triggered.
  * @returns {Function} Returns the provided callback, to be used when unbinding from the event.
  */
-ripe.Observable.prototype.addCallback = function(event, callback) {
+ripe.Observable.prototype.addCallback = function (event, callback) {
     const callbacks = this.callbacks[event] || [];
     callbacks.push(callback);
     this.callbacks[event] = callbacks;
@@ -55,7 +55,7 @@ ripe.Observable.prototype.addCallback = function(event, callback) {
  * @param {String} event The name of the event.
  * @param {Function} callback The callback that was returned when the bind method was called.
  */
-ripe.Observable.prototype.removeCallback = function(event, callback) {
+ripe.Observable.prototype.removeCallback = function (event, callback) {
     const callbacks = this.callbacks[event] || [];
     if (!callback) {
         delete this.callbacks[event];
@@ -79,7 +79,7 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
  * @returns {Promise} Returns a Promise of all results that will be completed
  * when all of the callbacks have finished processing the triggered event.
  */
-ripe.Observable.prototype.runCallbacks = async function(event, wait = true, ...args) {
+ripe.Observable.prototype.runCallbacks = async function (event, wait = true, ...args) {
     if (!this.callbacks) {
         const result = await Promise.all([null]);
         return result;
@@ -97,12 +97,12 @@ ripe.Observable.prototype.runCallbacks = async function(event, wait = true, ...a
     return result;
 };
 
-ripe.Observable.prototype.runCallbacksWait = async function(event, ...args) {
+ripe.Observable.prototype.runCallbacksWait = async function (event, ...args) {
     const result = await this.runCallbacks(event, true, ...args);
     return result;
 };
 
-ripe.Observable.prototype.runCallbackNoWait = async function(event, ...args) {
+ripe.Observable.prototype.runCallbackNoWait = async function (event, ...args) {
     const result = await this.runCallbacks(event, false, ...args);
     return result;
 };

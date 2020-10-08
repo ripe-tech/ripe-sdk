@@ -2,10 +2,10 @@ const assert = require("assert");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
-describe("BrandAPI", function() {
+describe("BrandAPI", function () {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#runLogicP()", function() {
+    describe("#runLogicP()", function () {
         it("should execute a simple logic", async () => {
             let result = null;
 
@@ -29,7 +29,7 @@ describe("BrandAPI", function() {
         });
     });
 
-    describe("#_getCombinationsOptions()", function() {
+    describe("#_getCombinationsOptions()", function () {
         it("should include use_name as 0 by default", async () => {
             let result = null;
 

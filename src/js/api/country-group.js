@@ -27,7 +27,7 @@ if (
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getCountryGroups = function(options, callback) {
+ripe.Ripe.prototype.getCountryGroups = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups`;
@@ -47,7 +47,7 @@ ripe.Ripe.prototype.getCountryGroups = function(options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The country group result list.
  */
-ripe.Ripe.prototype.getCountryGroupsP = function(options) {
+ripe.Ripe.prototype.getCountryGroupsP = function (options) {
     return new Promise((resolve, reject) => {
         this.getCountryGroups(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -64,7 +64,7 @@ ripe.Ripe.prototype.getCountryGroupsP = function(options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getCountryGroup = function(id, options, callback) {
+ripe.Ripe.prototype.getCountryGroup = function (id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups/${id}`;
@@ -84,7 +84,7 @@ ripe.Ripe.prototype.getCountryGroup = function(id, options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The country group result list.
  */
-ripe.Ripe.prototype.getCountryGroupP = function(id, options) {
+ripe.Ripe.prototype.getCountryGroupP = function (id, options) {
     return new Promise((resolve, reject) => {
         this.getCountryGroup(id, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -101,7 +101,7 @@ ripe.Ripe.prototype.getCountryGroupP = function(id, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callback) {
+ripe.Ripe.prototype.createCountryGroup = function (countryGroup, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups`;
@@ -122,7 +122,7 @@ ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callbac
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The country group result list.
  */
-ripe.Ripe.prototype.createCountryGroupP = function(countryGroup, options) {
+ripe.Ripe.prototype.createCountryGroupP = function (countryGroup, options) {
     return new Promise((resolve, reject) => {
         this.createCountryGroup(countryGroup, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -140,7 +140,7 @@ ripe.Ripe.prototype.createCountryGroupP = function(countryGroup, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.updateCountryGroup = function(id, countryGroup, options, callback) {
+ripe.Ripe.prototype.updateCountryGroup = function (id, countryGroup, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups/${id}`;
@@ -162,7 +162,7 @@ ripe.Ripe.prototype.updateCountryGroup = function(id, countryGroup, options, cal
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The country group result list.
  */
-ripe.Ripe.prototype.updateCountryGroupP = function(id, countryGroup, options) {
+ripe.Ripe.prototype.updateCountryGroupP = function (id, countryGroup, options) {
     return new Promise((resolve, reject) => {
         this.updateCountryGroup(id, countryGroup, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -179,7 +179,7 @@ ripe.Ripe.prototype.updateCountryGroupP = function(id, countryGroup, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.deleteCountryGroup = function(id, options, callback) {
+ripe.Ripe.prototype.deleteCountryGroup = function (id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}country_groups/${id}`;
@@ -199,7 +199,7 @@ ripe.Ripe.prototype.deleteCountryGroup = function(id, options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The country group result list.
  */
-ripe.Ripe.prototype.deleteCountryGroupP = function(id, options) {
+ripe.Ripe.prototype.deleteCountryGroupP = function (id, options) {
     return new Promise((resolve, reject) => {
         this.deleteCountryGroup(id, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));

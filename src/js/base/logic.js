@@ -26,7 +26,7 @@ if (
  * @param {String} locale The ISO 639-1 based locale identifier in the
  * underscore based form to be used in registration
  */
-ripe.Ripe.prototype.addBundle = function(bundle, locale = null) {
+ripe.Ripe.prototype.addBundle = function (bundle, locale = null) {
     locale = locale === null ? this.locale : locale;
     const _bundle = LOCALES_BASE[locale] || {};
     LOCALES_BASE[locale] = _bundle;
@@ -44,7 +44,7 @@ ripe.Ripe.prototype.addBundle = function(bundle, locale = null) {
  * @param {String} locale The ISO 639-1 based locale identifier in the
  * underscore based form to be used in removal
  */
-ripe.Ripe.prototype.removeBundle = function(bundle, locale = null) {
+ripe.Ripe.prototype.removeBundle = function (bundle, locale = null) {
     locale = locale === null ? this.locale : locale;
     if (LOCALES_BASE[locale] === undefined) return;
     const _bundle = LOCALES_BASE[locale];
@@ -66,7 +66,7 @@ ripe.Ripe.prototype.removeBundle = function(bundle, locale = null) {
  * @returns {String} The final localized string or the fallback in
  * case localization is not possible.
  */
-ripe.Ripe.prototype.localeLocal = function(
+ripe.Ripe.prototype.localeLocal = function (
     value,
     fallback = null,
     locale = null,
@@ -104,7 +104,7 @@ ripe.Ripe.prototype.localeLocal = function(
  * (e.g. gold) as defined in the engraving parameter. values is a
  * list of (type, name) that respects the order of the properties.
  */
-ripe.Ripe.prototype.parseEngraving = function(engraving, properties = null) {
+ripe.Ripe.prototype.parseEngraving = function (engraving, properties = null) {
     // gathers teh complete set of properties for the initials
     // definitions, to be used in the unpack
     properties = properties || this.loadedConfig.initials.properties;
@@ -166,7 +166,7 @@ ripe.Ripe.prototype.parseEngraving = function(engraving, properties = null) {
  * config initials strategy for the retrieval of properties definition.
  * @returns {string} The normalized engraving value.
  */
-ripe.Ripe.prototype.normalizeEngraving = function(engraving, properties = null) {
+ripe.Ripe.prototype.normalizeEngraving = function (engraving, properties = null) {
     const { values } = this.parseEngraving(engraving, properties);
     return values.map(v => `${v.name}:${v.type}`).join(".");
 };
@@ -184,7 +184,7 @@ ripe.Ripe.prototype.normalizeEngraving = function(engraving, properties = null) 
  * @returns {Boolean} If it's possible to render such frame for the
  * currently loaded model.
  */
-ripe.Ripe.prototype.hasFrame = function(frame) {
+ripe.Ripe.prototype.hasFrame = function (frame) {
     if (!this.loadedConfig) return true;
     if (!frame) return true;
 

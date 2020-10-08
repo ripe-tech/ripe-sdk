@@ -88,8 +88,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
         self.percent = 0;
         _element.classList.remove("drag");
 
-        if (self._previousEvent)
-            self._drift(self._previousEvent);
+        if (self._previousEvent) self._drift(self._previousEvent);
     });
 
     // listens for mouse leave events and if it occurs then
@@ -104,7 +103,6 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
         self._updateAngles();
         self.canDrift = false;
     });
-
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
@@ -160,12 +158,12 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
             null;
         this._observer = Observer
             ? new Observer(mutations => {
-                for (let index = 0; index < mutations.length; index++) {
-                    const mutation = mutations[index];
-                    if (mutation.type === "style") self.resize();
-                    if (mutation.type === "attributes") self.update();
-                }
-            })
+                  for (let index = 0; index < mutations.length; index++) {
+                      const mutation = mutations[index];
+                      if (mutation.type === "style") self.resize();
+                      if (mutation.type === "attributes") self.update();
+                  }
+              })
             : null;
         if (this._observer) {
             this._observer.observe(this.element, {
@@ -200,7 +198,9 @@ ripe.OrbitalControls.prototype._drift = function (event) {
         currentValueY = ripe.easing.easeOutQuad(pos, event.movementY, 0, this.driftDuration);
 
         if (this.lockRotation != "vertical")
-            this.currentHorizontalRot = this._validatedAngle(currentValueX + this.currentHorizontalRot);
+            this.currentHorizontalRot = this._validatedAngle(
+                currentValueX + this.currentHorizontalRot
+            );
         if (this.lockRotation != "horizontal") {
             this.currentVerticalRot = Math.min(
                 Math.max(this.currentVerticalRot + currentValueY, this.minimumVerticalRot),

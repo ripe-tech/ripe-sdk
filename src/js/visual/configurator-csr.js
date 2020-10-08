@@ -26,7 +26,7 @@ if (
  * @param {Object} options The options to be used to configure the
  * configurator instance to be created.
  */
-ripe.ConfiguratorCSR = function(owner, element, options) {
+ripe.ConfiguratorCSR = function (owner, element, options) {
     this.type = this.type || "ConfiguratorCSR";
 
     ripe.Visual.call(this, owner, element, options);
@@ -42,7 +42,7 @@ ripe.ConfiguratorCSR.prototype.constructor = ripe.ConfiguratorCSR;
  * Sets the various values for the Configurator taking into
  * owner's default values.
  */
-ripe.ConfiguratorCSR.prototype.init = function() {
+ripe.ConfiguratorCSR.prototype.init = function () {
     ripe.Visual.prototype.init.call(this);
 
     this.width = this.options.width || 1000;
@@ -116,10 +116,8 @@ ripe.ConfiguratorCSR.prototype.init = function() {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.ConfiguratorCSR.prototype.deinit = async function() {
+ripe.ConfiguratorCSR.prototype.deinit = async function () {
     await this.cancel();
-    
-    this.rtrenderer.assetManager._disposeResources(this.rtrenderer.scene);
 
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -150,7 +148,7 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
  */
-ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = true) {
+ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
     this.rtrenderer.updateOptions(options);
@@ -202,7 +200,7 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = 
  * - 'callback' - The callback to be called at the end of the update.
  * - 'force' - If the updating operation should be forced (ignores signature).
  */
-ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
+ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     // in case the configurator is currently nor ready for an
     // update none is performed and the control flow is returned
     // with the false value (indicating a no-op, nothing was done)
@@ -218,7 +216,11 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
 
     if (options.reason === "set parts" || options.reason === "set part") {
         await this.rtrenderer.loadMaterials(this.owner.parts);
-        await this.rtrenderer.crossfade({ type: "material", parts: this.owner.parts, duration: 500 });
+        await this.rtrenderer.crossfade({
+            type: "material",
+            parts: this.owner.parts,
+            duration: 500
+        });
     }
 
     if (options.reason && options.reason === "set initials") {
@@ -234,7 +236,7 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     return true;
 };
 
-ripe.ConfiguratorCSR.prototype.updateViewPosition = function(nextView, nextPosition) {
+ripe.ConfiguratorCSR.prototype.updateViewPosition = function (nextView, nextPosition) {
     this.element.dataset.position = nextPosition;
     this.element.dataset.view = nextView;
 };
@@ -243,7 +245,7 @@ ripe.ConfiguratorCSR.prototype.updateViewPosition = function(nextView, nextPosit
  * Function called by the controls when a new rotation has been detected,
  * prompts a new render to update the scene.
  */
-ripe.ConfiguratorCSR.prototype._applyRotations = function() {
+ripe.ConfiguratorCSR.prototype._applyRotations = function () {
     this.rtrenderer._applyRotations(
         this.controls.currentHorizontalRot,
         this.controls.currentVerticalRot
@@ -253,21 +255,21 @@ ripe.ConfiguratorCSR.prototype._applyRotations = function() {
     this.rtrenderer.render();
 };
 
-ripe.ConfiguratorCSR.prototype._beginTransition = function(options) {
+ripe.ConfiguratorCSR.prototype._beginTransition = function (options) {
     this.rtrenderer.transition(options);
 };
 
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype.disable = function() {
+ripe.ConfiguratorCSR.prototype.disable = function () {
     this._enabled = false;
 };
 
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype.enable = function() {
+ripe.ConfiguratorCSR.prototype.enable = function () {
     this._enabled = true;
 };
 
@@ -277,7 +279,7 @@ ripe.ConfiguratorCSR.prototype.enable = function() {
  *
  * @param {Object} options Set of optional parameters to adjust the Configurator.
  */
-ripe.ConfiguratorCSR.prototype.cancel = async function(options = {}) {
+ripe.ConfiguratorCSR.prototype.cancel = async function (options = {}) {
     if (this._finalize) this._finalize({ canceled: true });
     return true;
 };
@@ -289,7 +291,7 @@ ripe.ConfiguratorCSR.prototype.cancel = async function(options = {}) {
  *
  * @param {Number} size The number of pixels to resize to.
  */
-ripe.ConfiguratorCSR.prototype.resize = async function(size) {
+ripe.ConfiguratorCSR.prototype.resize = async function (size) {
     if (this.element === undefined) {
         return;
     }
@@ -330,7 +332,7 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorCSR.prototype.enterFullscreen = async function(options) {
+ripe.ConfiguratorCSR.prototype.enterFullscreen = async function (options) {
     if (this.element === undefined) {
         return;
     }
@@ -344,7 +346,7 @@ ripe.ConfiguratorCSR.prototype.enterFullscreen = async function(options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function(options) {
+ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function (options) {
     if (this.element === undefined) {
         return;
     }
@@ -355,14 +357,14 @@ ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function(options) {
 /**
  * Turns on (enables) the masks on selection/highlight.
  */
-ripe.ConfiguratorCSR.prototype.enableMasks = function() {
+ripe.ConfiguratorCSR.prototype.enableMasks = function () {
     this.useMasks = true;
 };
 
 /**
  * Turns off (disables) the masks on selection/highlight.
  */
-ripe.ConfiguratorCSR.prototype.disableMasks = function() {
+ripe.ConfiguratorCSR.prototype.disableMasks = function () {
     this.useMasks = false;
 };
 
@@ -377,7 +379,7 @@ ripe.ConfiguratorCSR.prototype.disableMasks = function() {
  *
  * @private
  */
-ripe.ConfiguratorCSR.prototype._initLayout = function() {
+ripe.ConfiguratorCSR.prototype._initLayout = function () {
     // clears the elements children
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -395,7 +397,7 @@ ripe.ConfiguratorCSR.prototype._initLayout = function() {
     this.element.dataset.position = this.position;
 };
 
-ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {}) {
+ripe.ConfiguratorCSR.prototype.changeFrame = async function (frame, options = {}) {
     // Disabled Configurator, changing frame will lead to errors
     if (!this._enabled) return;
 
@@ -407,7 +409,7 @@ ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {})
 /**
  * @ignore
  */
-ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
+ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded

@@ -17,7 +17,7 @@ if (
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.configGlobal = function(options, callback) {
+ripe.Ripe.prototype.configGlobal = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}config`;
@@ -35,7 +35,7 @@ ripe.Ripe.prototype.configGlobal = function(options, callback) {
  *
  * @param {Object} options An object of options to configure the request.
  */
-ripe.Ripe.prototype.configGlobalP = function(options) {
+ripe.Ripe.prototype.configGlobalP = function (options) {
     return new Promise((resolve, reject) => {
         this.configGlobal(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -52,7 +52,7 @@ ripe.Ripe.prototype.configGlobalP = function(options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.configInfo = function(options, callback) {
+ripe.Ripe.prototype.configInfo = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getConfigInfoOptions(options);
@@ -69,7 +69,7 @@ ripe.Ripe.prototype.configInfo = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * s {Promise} The model's configuration data.
  */
-ripe.Ripe.prototype.configInfoP = function(options) {
+ripe.Ripe.prototype.configInfoP = function (options) {
     return new Promise((resolve, reject) => {
         this.configInfo(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -87,7 +87,7 @@ ripe.Ripe.prototype.configInfoP = function(options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.configDku = function(dku, options, callback) {
+ripe.Ripe.prototype.configDku = function (dku, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = Object.assign({ dku: dku, queryOptions: false, initialsOptions: false }, options);
@@ -106,7 +106,7 @@ ripe.Ripe.prototype.configDku = function(dku, options, callback) {
  * @param {Function} callback Function with the result of the request.
  * s {Promise} The model's configuration data.
  */
-ripe.Ripe.prototype.configDkuP = function(dku, options) {
+ripe.Ripe.prototype.configDkuP = function (dku, options) {
     return new Promise((resolve, reject) => {
         this.configDku(dku, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -125,7 +125,7 @@ ripe.Ripe.prototype.configDkuP = function(dku, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.configSku = function(sku, domain, options, callback) {
+ripe.Ripe.prototype.configSku = function (sku, domain, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = Object.assign(
@@ -153,7 +153,7 @@ ripe.Ripe.prototype.configSku = function(sku, domain, options, callback) {
  * @param {Function} callback Function with the result of the request.
  * s {Promise} The model's configuration data.
  */
-ripe.Ripe.prototype.configSkuP = function(sku, domain, options) {
+ripe.Ripe.prototype.configSkuP = function (sku, domain, options) {
     return new Promise((resolve, reject) => {
         this.configSku(sku, domain, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -177,7 +177,7 @@ ripe.Ripe.prototype.configSkuP = function(sku, domain, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.configResolveSku = function(domain, options, callback) {
+ripe.Ripe.prototype.configResolveSku = function (domain, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getConfigSkuOptions(domain, options);
@@ -201,7 +201,7 @@ ripe.Ripe.prototype.configResolveSku = function(domain, options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The model's configuration data.
  */
-ripe.Ripe.prototype.configResolveSkuP = function(domain, options) {
+ripe.Ripe.prototype.configResolveSkuP = function (domain, options) {
     return new Promise((resolve, reject) => {
         this.configResolveSku(domain, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -218,7 +218,7 @@ ripe.Ripe.prototype.configResolveSkuP = function(domain, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
+ripe.Ripe.prototype.configResolve = function (productId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}config/resolve/${productId}`;
@@ -235,7 +235,7 @@ ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
  * - 'url' - The base URL.
  * s {Promise} The model's configuration data.
  */
-ripe.Ripe.prototype.configResolveP = function(productId, options) {
+ripe.Ripe.prototype.configResolveP = function (productId, options) {
     return new Promise((resolve, reject) => {
         this.configResolve(productId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -246,7 +246,7 @@ ripe.Ripe.prototype.configResolveP = function(productId, options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
+ripe.Ripe.prototype._getConfigInfoOptions = function (options = {}) {
     const sku = options.sku === undefined ? null : options.sku;
     const domain = options.domain === undefined ? null : options.domain;
     const dku = options.dku === undefined ? null : options.dku;
@@ -285,7 +285,7 @@ ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getConfigSkuOptions = function(domain, options = {}) {
+ripe.Ripe.prototype._getConfigSkuOptions = function (domain, options = {}) {
     const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
     const initialsOptions = options.initialsOptions === undefined ? true : options.initialsOptions;
 

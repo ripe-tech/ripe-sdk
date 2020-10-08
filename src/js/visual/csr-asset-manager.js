@@ -16,7 +16,13 @@ ripe.CSRAssetManager = function (owner, options, renderer) {
     this.assetsPath = options.assetsPath;
     //this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
     this.meshPath = "/static/assets/models/swear/vyner_hitop4.glb";
-    this.texturesPath = this.assetsPath + "textures/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
+    this.texturesPath =
+        this.assetsPath +
+        "textures/" +
+        this.owner.brand.toLowerCase() +
+        "/" +
+        this.owner.model.toLowerCase() +
+        ".glb";
     this.library = options.library;
     this.owner = owner;
 
@@ -45,7 +51,7 @@ ripe.CSRAssetManager = function (owner, options, renderer) {
     this._initializeFonts(this.fontType, this.fontWeight);
     this.pmremGenerator = new this.library.PMREMGenerator(renderer);
     this.maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
-}
+};
 
 ripe.CSRAssetManager.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRAssetManager.prototype.constructor = ripe.CSRAssetManager;
@@ -59,7 +65,7 @@ ripe.CSRAssetManager.prototype.updateOptions = function (options) {
     // materials
     this.assetsPath = options.assetsPath === undefined ? this.assetsPath : options.assetsPath;
     this.partsMap = options.partsMap === undefined ? this.partsMap : options.partsMap;
-}
+};
 
 ripe.CSRAssetManager.prototype.createLetter = function (letter) {
     var textGeometry = new this.library.TextGeometry(letter, {
@@ -83,12 +89,12 @@ ripe.CSRAssetManager.prototype.createLetter = function (letter) {
     this.textMeshes.push(letterMesh);
 
     return letterMesh;
-}
+};
 
 ripe.CSRAssetManager.prototype.disposeLastLetter = function () {
     this.textMeshes[this.textMeshes.length - 1].geometry.dispose();
     this.textMeshes.pop();
-}
+};
 
 ripe.CSRAssetManager.prototype._applyDefaults = function () {
     const defaultMaterial = new this.library.MeshStandardMaterial({ color: "#ffffff" });
@@ -103,14 +109,10 @@ ripe.CSRAssetManager.prototype._applyDefaults = function () {
     }
 };
 
-
 ripe.CSRAssetManager.prototype._loadMesh = async function () {
-    console.log(this.meshPath)
     if (this.meshPath.includes(".gltf") || this.meshPath.includes(".glb"))
         await this._loadGLTFMesh();
-    else if (this.meshPath.includes(".fbx"))
-        await this._loadFBXMesh();
-
+    else if (this.meshPath.includes(".fbx")) await this._loadFBXMesh();
 };
 
 ripe.CSRAssetManager.prototype._loadFBXMesh = async function () {
@@ -120,7 +122,7 @@ ripe.CSRAssetManager.prototype._loadFBXMesh = async function () {
             resolve(fbx);
         });
     });
-}
+};
 
 ripe.CSRAssetManager.prototype._loadGLTFMesh = async function () {
     const gltfLoader = new this.library.GLTFLoader();
@@ -133,8 +135,7 @@ ripe.CSRAssetManager.prototype._loadGLTFMesh = async function () {
     this.loadedGltf = gltf;
 
     await this._loadSubMeshes();
-}
-
+};
 
 ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
     const floorGeometry = new this.library.PlaneBufferGeometry(10, 10);
@@ -155,7 +156,7 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
     //var centerX = 0;
     //var centerZ = 0;
 
-    const traverseScene = (child) => {
+    const traverseScene = child => {
         if (child.name.includes("initials_part")) {
             child.position.set(
                 child.position.x - centerX,
@@ -184,7 +185,7 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
         }
     };
 
-    this.loadedGltf.scene.traverse(traverseScene)
+    this.loadedGltf.scene.traverse(traverseScene);
 };
 
 /**
@@ -195,23 +196,38 @@ ripe.CSRAssetManager.prototype._disposeResources = function (scene) {
     console.log("Disposing Resources");
     this.pmremGenerator.dispose();
 
+    console.log(this.meshes);
+    console.log(this.loadedTextures);
+    console.log(this.textMeshes);
+
     if (this.meshes) {
         for (var mesh in this.meshes) {
-            scene.remove(this.meshes[mesh]);
+            console.log("disposing " + mesh);
             this.meshes[mesh].geometry.dispose();
             this.meshes[mesh].material.dispose();
+            scene.remove(this.meshes[mesh]);
+            //this.meshes.delete(mesh);
         }
     }
+
+    console.log("Finished dispoing meshes?");
+
     if (this.textMeshes) {
         for (let i = 0; i < this.textMeshes.length; i++) {
-            scene.remove(this.textMeshes[i]);
+            console.log("disposing text mesh");
             this.textMeshes[i].geometry.dispose();
             this.textMeshes[i].material.dispose();
+            //scene.remove(this.textMeshes[i]);
         }
     }
+
+    this.textMeshes = [];
+
     if (this.loadedTextures) {
         for (var texture in this.loadedTextures) {
+            console.log("disposing " + texture);
             this.loadedTextures[texture].dispose();
+            //this.loadedTextures.delete(texture);
         }
     }
 };
@@ -233,7 +249,17 @@ ripe.CSRAssetManager.prototype._getLetterMaterial = async function () {
     }
 
     // TODO Change this to use textures for initials
-    var diffuseMapPath = this.assetsPath + "textures/general/" + material + "/" + this.owner.brand + "_" + material + "_" + type + ".png";
+    var diffuseMapPath =
+        this.assetsPath +
+        "textures/general/" +
+        material +
+        "/" +
+        this.owner.brand +
+        "_" +
+        material +
+        "_" +
+        type +
+        ".png";
 
     // TODO Add roughness map path if it exists
     const diffuseTexture = await new Promise((resolve, reject) => {
@@ -270,38 +296,56 @@ ripe.CSRAssetManager.prototype._loadTexturesAndMaterials = async function (scene
 };
 
 ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, color) {
-    //return new this.library.MeshStandardMaterial({ color: "#00FF0F" });
+    var materialConfig;
+
+    // If specific model doesn't exist, fallback to general parameters
+    if (!this.modelConfig[part][material])
+        materialConfig = this.modelConfig["general"][material][color];
+    else materialConfig = this.modelConfig[part][material][color];
+
     var newMaterial;
 
     // follows specular-glossiness workflow
-    if (this.modelConfig[part][material][color]["specularMap"]) {
+    if (materialConfig["specularMap"]) {
         newMaterial = new this.library.MeshPhongMaterial();
-    } else { // follows PBR workflow
+    } else {
+        // follows PBR workflow
         newMaterial = new this.library.MeshStandardMaterial();
     }
 
-    const basePath = this.assetsPath + "textures/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "/";
+    const basePath =
+        this.assetsPath +
+        "textures/" +
+        this.owner.brand.toLowerCase() +
+        "/" +
+        this.owner.model.toLowerCase() +
+        "/";
 
-    for (var map in this.modelConfig[part][material][color]) {
-        var mapPath = basePath + this.modelConfig[part][material][color][map];
-        
-        // if it's not a map, it's a property, don't load anything
-        if (!this.loadedTextures[mapPath] && (map.includes("map") || map.includes("Map"))) {
-            var texture = await new Promise((resolve, reject) => {
-                this.textureLoader.load(mapPath, function (texture) {
-                    resolve(texture);
+    for (var prop in materialConfig) {
+        // if it's a map, load and apply the texture
+        if (prop.includes("map") || prop.includes("Map")) {
+            var mapPath = basePath + materialConfig[prop];
+
+            if (!this.loadedTextures[mapPath]) {
+                var texture = await new Promise((resolve, reject) => {
+                    this.textureLoader.load(mapPath, function (texture) {
+                        resolve(texture);
+                    });
                 });
-            });
-            // If texture is used for color information, set colorspace.
-            texture.encoding = THREE.sRGBEncoding;
-            texture.anisotropy = this.maxAnisotropy;
+                // If texture is used for color information, set colorspace.
+                texture.encoding = THREE.sRGBEncoding;
+                texture.anisotropy = this.maxAnisotropy;
 
-            // UVs use the convention that (0, 0) corresponds to the upper left corner of a texture.
-            texture.flipY = false;
-            this.loadedTextures[mapPath] = texture;
+                // UVs use the convention that (0, 0) corresponds to the upper left corner of a texture.
+                texture.flipY = false;
+                this.loadedTextures[mapPath] = texture;
+            }
+
+            newMaterial[prop] = this.loadedTextures[mapPath];
+        } else {
+            // if it's not a map, it's a property, apply it
+            newMaterial[prop] = materialConfig[prop];
         }
-        
-        newMaterial[map] = this.loadedTextures[mapPath];
     }
 
     newMaterial.perPixel = true;
@@ -309,12 +353,11 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
 };
 
 ripe.CSRAssetManager.prototype._applyMaterial = async function (part, material, color) {
-    //console.log("Attempting change at " + part + ", for " + material + "_" + color)
+    console.log("Attempting change at " + part + ", for " + material + "_" + color);
     const newMaterial = await this._loadMaterial(part, material, color);
-    
+
     for (var mesh in this.meshes) {
         if (mesh.includes(part)) {
-            //console.log(newMaterial)
             this.meshes[mesh].material.dispose();
             this.meshes[mesh].material = newMaterial.clone();
             break;
@@ -332,11 +375,10 @@ ripe.CSRAssetManager.prototype._setupEnvironment = async function (scene) {
         });
     });
 
-
     this.pmremGenerator.compileEquirectangularShader();
     this.environmentTexture = this.pmremGenerator.fromEquirectangular(texture).texture;
 
-    scene.background = this.environmentTexture;
+    //scene.background = this.environmentTexture;
     scene.environment = this.environmentTexture;
 
     texture.dispose();

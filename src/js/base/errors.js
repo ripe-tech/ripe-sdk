@@ -15,7 +15,7 @@ if (
  * @class
  * @classdesc An error object for a runtime problem.
  */
-ripe.RuntimeError = function(message = null, error = null) {
+ripe.RuntimeError = function (message = null, error = null) {
     this.name = "RuntimeError";
     this.error = error;
     this.message = message || `Runtime error (${this.error ? this.error.message : "unknown"})`;
@@ -26,7 +26,7 @@ ripe.RuntimeError = function(message = null, error = null) {
  * @class
  * @classdesc An error object for an operational problem.
  */
-ripe.OperationalError = function(message = null, error = null) {
+ripe.OperationalError = function (message = null, error = null) {
     this.name = "OperationalError";
     this.error = error;
     this.message = message || `Operational error (${this.error ? this.error.message : "unknown"})`;
@@ -37,7 +37,7 @@ ripe.OperationalError = function(message = null, error = null) {
  * @class
  * @classdesc An error object for an action exception.
  */
-ripe.ActionException = function(message = null, error = null, critical = false) {
+ripe.ActionException = function (message = null, error = null, critical = false) {
     this.name = "ActionException";
     this.error = error;
     this.message = message || `Action exception (${this.error ? this.error.message : "unknown"})`;
@@ -49,7 +49,7 @@ ripe.ActionException = function(message = null, error = null, critical = false) 
  * @class
  * @classdesc An error object for remote operations.
  */
-ripe.RemoteError = function(request, message = null, result = {}, debug = false) {
+ripe.RemoteError = function (request, message = null, result = {}, debug = false) {
     this.name = "RemoteError";
     this.request = request;
     this.code = request.status;

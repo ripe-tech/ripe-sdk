@@ -19,7 +19,7 @@ if (
  * to be used in registration.
  * @returns {XMLHttpRequest} The current user's notify info instance.
  */
-ripe.Ripe.prototype.createDeviceId = function(deviceId, options, callback) {
+ripe.Ripe.prototype.createDeviceId = function (deviceId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}notify_infos/device_ids`;
@@ -41,7 +41,7 @@ ripe.Ripe.prototype.createDeviceId = function(deviceId, options, callback) {
  * to be used in registration.
  * @returns {Promise} The current user's notify info instance.
  */
-ripe.Ripe.prototype.createDeviceIdP = function(deviceId, options) {
+ripe.Ripe.prototype.createDeviceIdP = function (deviceId, options) {
     return new Promise((resolve, reject) => {
         this.createDeviceId(deviceId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -56,7 +56,7 @@ ripe.Ripe.prototype.createDeviceIdP = function(deviceId, options) {
  * @param {String} deviceId The device identifier to be removed.
  * @returns {XMLHttpRequest} The current user's notify info instance.
  */
-ripe.Ripe.prototype.removeDeviceId = function(deviceId, options, callback) {
+ripe.Ripe.prototype.removeDeviceId = function (deviceId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}notify_infos/device_ids/${deviceId}`;
@@ -77,7 +77,7 @@ ripe.Ripe.prototype.removeDeviceId = function(deviceId, options, callback) {
  * @param {String} deviceId The device identifier to be removed.
  * @returns {Promise} The current user's notify info instance.
  */
-ripe.Ripe.prototype.removeDeviceIdP = function(deviceId, options) {
+ripe.Ripe.prototype.removeDeviceIdP = function (deviceId, options) {
     return new Promise((resolve, reject) => {
         this.removeDeviceId(deviceId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));

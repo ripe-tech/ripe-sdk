@@ -4,11 +4,11 @@ const ripe = require("../../../src/js");
 const base = require("../../../src/js/base");
 const plugins = require("../../../src/js/plugins");
 
-const MockRipe = function() {
+const MockRipe = function () {
     const mockRipe = new base.ripe.Observable();
     mockRipe.ready = true;
     mockRipe.loadedConfig = {};
-    mockRipe.setPart = function(part, material, color) {
+    mockRipe.setPart = function (part, material, color) {
         this.parts[part] = {
             material: material,
             color: color
@@ -18,17 +18,17 @@ const MockRipe = function() {
             color: color
         });
     };
-    mockRipe.setParts = function(parts) {
+    mockRipe.setParts = function (parts) {
         this.parts = parts;
     };
 
     return mockRipe;
 };
 
-describe("Sync", function() {
+describe("Sync", function () {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#main", function() {
+    describe("#main", function () {
         it("should apply string sync rules", () => {
             const initialParts = {
                 upper: {

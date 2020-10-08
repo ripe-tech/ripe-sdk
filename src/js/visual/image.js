@@ -29,7 +29,7 @@ if (
  * - 'height' - The image height in pixels (defaults to 'null', meaning it will fallback to 'size').
  * - 'crop' - A Boolean indicating if it is to crop the image composition.
  */
-ripe.Image = function(owner, element, options) {
+ripe.Image = function (owner, element, options) {
     this.type = this.type || "Image";
 
     ripe.Visual.call(this, owner, element, options);
@@ -45,7 +45,7 @@ ripe.Image.prototype.constructor = ripe.Image;
  * Sets the various values for the Image taking into
  * owner's default values.
  */
-ripe.Image.prototype.init = function() {
+ripe.Image.prototype.init = function () {
     ripe.Visual.prototype.init.call(this);
 
     this.frame = this.options.frame || null;
@@ -59,7 +59,7 @@ ripe.Image.prototype.init = function() {
     this.initialsGroup = this.options.initialsGroup || null;
     this.initialsBuilder =
         this.options.initialsBuilder ||
-        function(initials, engraving, element) {
+        function (initials, engraving, element) {
             return {
                 initials: initials || "$empty",
                 profile: [engraving]
@@ -77,7 +77,7 @@ ripe.Image.prototype.init = function() {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.Image.prototype.deinit = async function() {
+ripe.Image.prototype.deinit = async function () {
     await this.cancel();
 
     this._unregisterHandlers();
@@ -98,7 +98,7 @@ ripe.Image.prototype.deinit = async function() {
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
  */
-ripe.Image.prototype.updateOptions = async function(options, update = true) {
+ripe.Image.prototype.updateOptions = async function (options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
     this.frame = options.frame === undefined ? this.frame : options.frame;
@@ -120,7 +120,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
  * @param {Object} state An object containing the new state of the owner.
  * @param {Object} options Set of optional parameters to adjust the Image.
  */
-ripe.Image.prototype.update = async function(state, options = {}) {
+ripe.Image.prototype.update = async function (state, options = {}) {
     // gathers the complete set of data values from the element if existent
     // defaulting to the instance one in case their are not defined
     const frame = this.element.dataset.frame || this.frame;
@@ -218,7 +218,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
  *
  * @param {Object} options Set of optional parameters to adjust the Image.
  */
-ripe.Image.prototype.cancel = async function(options = {}) {
+ripe.Image.prototype.cancel = async function (options = {}) {
     if (!this._loadedCallback) return false;
 
     // restores the internal URL state of the image back to
@@ -238,7 +238,7 @@ ripe.Image.prototype.cancel = async function(options = {}) {
  *
  * @param {String} size The number of pixels to resize to.
  */
-ripe.Image.prototype.resize = function(size) {
+ripe.Image.prototype.resize = function (size) {
     this.size = size;
     this.update();
 };
@@ -250,7 +250,7 @@ ripe.Image.prototype.resize = function(size) {
  * @param {Object} options An object with options to configure
  * the setting of the frame.
  */
-ripe.Image.prototype.setFrame = function(frame, options) {
+ripe.Image.prototype.setFrame = function (frame, options) {
     this.frame = frame;
     this.update();
 };
@@ -261,7 +261,7 @@ ripe.Image.prototype.setFrame = function(frame, options) {
  *
  * @param {String} showInitials If the image should display initials.
  */
-ripe.Image.prototype.setShowInitials = function(showInitials) {
+ripe.Image.prototype.setShowInitials = function (showInitials) {
     this.showInitials = showInitials;
     this.update();
 };
@@ -274,7 +274,7 @@ ripe.Image.prototype.setShowInitials = function(showInitials) {
  * @param {Object} options An object with options to configure
  * the setting of the 'initialsBuilder'.
  */
-ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
+ripe.Image.prototype.setInitialsBuilder = function (builder, options) {
     this.initialsBuilder = builder;
     this.update();
 };
@@ -282,7 +282,7 @@ ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
 /**
  * @ignore
  */
-ripe.Image.prototype._registerHandlers = function() {
+ripe.Image.prototype._registerHandlers = function () {
     // creates and add both the load and the error listeners
     // for the underlying image element to propagate those events
     // into the current observable context (event normalization)
@@ -326,7 +326,7 @@ ripe.Image.prototype._registerHandlers = function() {
 /**
  * @ignore
  */
-ripe.Image.prototype._unregisterHandlers = function() {
+ripe.Image.prototype._unregisterHandlers = function () {
     if (this.loadListener) this.element.removeEventListener("load", this.loadListener);
     if (this.errorListener) this.element.removeEventListener("error", this.errorListener);
     if (this.loadedHandler) this.unbind("loaded", this.loadedHandler);

@@ -3,11 +3,11 @@ const uuid = require("uuid");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
-describe("SkuAPI", function() {
+describe("SkuAPI", function () {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#createSku()", function() {
-        beforeEach(function() {
+    describe("#createSku()", function () {
+        beforeEach(function () {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
             }

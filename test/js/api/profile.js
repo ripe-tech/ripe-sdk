@@ -2,16 +2,16 @@ const assert = require("assert");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
-describe("ProfileAPI", function() {
+describe("ProfileAPI", function () {
     this.timeout(config.TEST_TIMEOUT);
 
-    beforeEach(function() {
+    beforeEach(function () {
         if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
             this.skip();
         }
     });
 
-    describe("#getProfiles()", function() {
+    describe("#getProfiles()", function () {
         it("should be able to retrieve profiles", async () => {
             let result = null;
 
@@ -27,7 +27,7 @@ describe("ProfileAPI", function() {
         });
     });
 
-    describe("#getProfile()", function() {
+    describe("#getProfile()", function () {
         it("should be able to retrieve an order information", async () => {
             let result = null;
 

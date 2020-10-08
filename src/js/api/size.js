@@ -19,7 +19,7 @@ if (
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getSizes = function(options, callback) {
+ripe.Ripe.prototype.getSizes = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}sizes`;
@@ -31,7 +31,7 @@ ripe.Ripe.prototype.getSizes = function(options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.getSizesP = function(options) {
+ripe.Ripe.prototype.getSizesP = function (options) {
     return new Promise((resolve, reject) => {
         this.getSizes(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -51,7 +51,7 @@ ripe.Ripe.prototype.getSizesP = function(options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callback) {
+ripe.Ripe.prototype.sizeToNative = function (scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}sizes/size_to_native`;
@@ -68,7 +68,7 @@ ripe.Ripe.prototype.sizeToNative = function(scale, value, gender, options, callb
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.sizeToNativeP = function(scale, value, gender, options) {
+ripe.Ripe.prototype.sizeToNativeP = function (scale, value, gender, options) {
     return new Promise((resolve, reject) => {
         this.sizeToNative(scale, value, gender, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -88,7 +88,7 @@ ripe.Ripe.prototype.sizeToNativeP = function(scale, value, gender, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, callback) {
+ripe.Ripe.prototype.sizeToNativeB = function (scales, values, genders, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const scalesP = [];
@@ -113,7 +113,7 @@ ripe.Ripe.prototype.sizeToNativeB = function(scales, values, genders, options, c
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.sizeToNativeBP = function(scales, values, genders, options) {
+ripe.Ripe.prototype.sizeToNativeBP = function (scales, values, genders, options) {
     return new Promise((resolve, reject) => {
         this.sizeToNativeB(scales, values, genders, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -132,7 +132,7 @@ ripe.Ripe.prototype.sizeToNativeBP = function(scales, values, genders, options) 
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callback) {
+ripe.Ripe.prototype.nativeToSize = function (scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}sizes/native_to_size`;
@@ -149,7 +149,7 @@ ripe.Ripe.prototype.nativeToSize = function(scale, value, gender, options, callb
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.nativeToSizeP = function(scale, value, gender, options) {
+ripe.Ripe.prototype.nativeToSizeP = function (scale, value, gender, options) {
     return new Promise((resolve, reject) => {
         this.nativeToSize(scale, value, gender, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -168,7 +168,7 @@ ripe.Ripe.prototype.nativeToSizeP = function(scale, value, gender, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, callback) {
+ripe.Ripe.prototype.nativeToSizeB = function (scales, values, genders, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const scalesP = [];
@@ -193,7 +193,7 @@ ripe.Ripe.prototype.nativeToSizeB = function(scales, values, genders, options, c
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.nativeToSizeBP = function(scales, values, genders, options) {
+ripe.Ripe.prototype.nativeToSizeBP = function (scales, values, genders, options) {
     return new Promise((resolve, reject) => {
         this.nativeToSizeB(scales, values, genders, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -212,7 +212,7 @@ ripe.Ripe.prototype.nativeToSizeBP = function(scales, values, genders, options) 
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.sizeToLocale = function(scale, value, gender, options, callback) {
+ripe.Ripe.prototype.sizeToLocale = function (scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}sizes/size_to_locale`;
@@ -229,7 +229,7 @@ ripe.Ripe.prototype.sizeToLocale = function(scale, value, gender, options, callb
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.sizeToLocaleP = function(scale, value, gender, options) {
+ripe.Ripe.prototype.sizeToLocaleP = function (scale, value, gender, options) {
     return new Promise((resolve, reject) => {
         this.sizeToLocale(scale, value, gender, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -248,7 +248,7 @@ ripe.Ripe.prototype.sizeToLocaleP = function(scale, value, gender, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.sizeToLocaleB = function(scales, values, genders, options, callback) {
+ripe.Ripe.prototype.sizeToLocaleB = function (scales, values, genders, options, callback) {
     scales = typeof scales === "string" ? [scales] : scales;
     values = typeof values === "string" ? [values] : values;
     genders = typeof genders === "string" ? [genders] : genders;
@@ -268,7 +268,7 @@ ripe.Ripe.prototype.sizeToLocaleB = function(scales, values, genders, options, c
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.sizeToLocaleBP = function(scales, values, genders, options) {
+ripe.Ripe.prototype.sizeToLocaleBP = function (scales, values, genders, options) {
     return new Promise((resolve, reject) => {
         this.sizeToLocaleB(scales, values, genders, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -287,7 +287,7 @@ ripe.Ripe.prototype.sizeToLocaleBP = function(scales, values, genders, options) 
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.nativeToLocale = function(scale, value, gender, options, callback) {
+ripe.Ripe.prototype.nativeToLocale = function (scale, value, gender, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}sizes/native_to_locale`;
@@ -304,7 +304,7 @@ ripe.Ripe.prototype.nativeToLocale = function(scale, value, gender, options, cal
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.nativeToLocaleP = function(scale, value, gender, options) {
+ripe.Ripe.prototype.nativeToLocaleP = function (scale, value, gender, options) {
     return new Promise((resolve, reject) => {
         this.nativeToLocale(scale, value, gender, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -323,7 +323,7 @@ ripe.Ripe.prototype.nativeToLocaleP = function(scale, value, gender, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.nativeToLocaleB = function(scales, values, genders, options, callback) {
+ripe.Ripe.prototype.nativeToLocaleB = function (scales, values, genders, options, callback) {
     scales = typeof scales === "string" ? [scales] : scales;
     values = typeof values === "string" ? [values] : values;
     genders = typeof genders === "string" ? [genders] : genders;
@@ -343,7 +343,7 @@ ripe.Ripe.prototype.nativeToLocaleB = function(scales, values, genders, options,
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.nativeToLocaleBP = function(scales, values, genders, options) {
+ripe.Ripe.prototype.nativeToLocaleBP = function (scales, values, genders, options) {
     return new Promise((resolve, reject) => {
         this.nativeToLocaleB(scales, values, genders, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));

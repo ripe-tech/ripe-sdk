@@ -29,6 +29,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this.owner = owner;
     this.type = this.type || "CSRenderer";
     this.element = element;
+    this.updateElementBoundingBox();
 
     this.library = options.library;
     this.library = options.library || null;
@@ -44,7 +45,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this.highlightEasing = options.highlightEasing || this.easing;
     this.highlightDuration = options.maskDuration || 150;
     this.partsMap = options.partsMap || {};
-    
+
     this.shadowBias = options.shadowBias || 0.01;
 
     // raycast
@@ -56,7 +57,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this.initialsType = options.initialsType || "emboss";
     this.initialsText = options.initialsText || "";
     this.engraving = options.engraving === undefined ? "metal_gold" : options.engraving;
-    
+
     this.cameraDistance = options.cameraDistance || 0;
     this.cameraHeight = options.cameraHeight || 0;
     this.exposure = options.exposure || 3.0;
@@ -77,16 +78,16 @@ ripe.CSRenderer = function (owner, element, options) {
     //this._setupPostProcessing();
     this._registerHandlers();
     this._initializeShaders();
-   
+
     this.assetManager = new ripe.CSRAssetManager(this.owner, options, this.renderer);
     this._loadAssets();
-    
+
     this.gui = new dat.GUI();
-    const folder = this.gui.addFolder('Settings');
-    folder.add(this, 'exposure', 0.0, 4.0).name("Exposure").onChange( this.render );
-    folder.add( this , 'shadowBias', -1.0, 1.0 ).name("Shadow Bias").onChange( this.render );
+    const folder = this.gui.addFolder("Settings");
+    folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
+    folder.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
     folder.open();
-    
+
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
@@ -112,10 +113,10 @@ ripe.CSRenderer.prototype.updateOptions = async function (options) {
         options.cameraTarget === undefined
             ? this.cameraTarget
             : new this.library.Vector3(
-                options.cameraTarget.x,
-                options.cameraTarget.y,
-                options.cameraTarget.z
-            );
+                  options.cameraTarget.x,
+                  options.cameraTarget.y,
+                  options.cameraTarget.z
+              );
     this.cameraFOV = options.cameraFOV === undefined ? this.cameraFOV : options.cameraFOV;
 
     this.materialEasing = options.materialEasing || this.easing || "linear";
@@ -158,27 +159,39 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
 
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
+
+    const beginDisposal = () => {
+        console.log("HOL UP A MINUTE");
+        this.assetManager._disposeResources(this.scene);
+    };
+
+    window.addEventListener("beforeunload", beginDisposal, false);
+
+    window.onbeforeunload = function () {
+        beginDisposal();
+        return null;
+    };
 };
 
 ripe.CSRenderer.prototype.loadMaterials = async function (parts) {
     this.assetManager.loadMaterials(parts);
-}
+};
 
 ripe.CSRenderer.prototype._loadAssets = async function () {
     await this.assetManager._loadMesh();
 
-    this.scene.add(this.assetManager.loadedGltf.scene.children[0])
-    
+    this.scene.add(this.assetManager.loadedGltf.scene.children[0]);
+
     this.animationMixer = new this.library.AnimationMixer(this.assetManager.loadedGltf.scene);
     this.animations = this.assetManager.loadedGltf.animations;
-    
+
     await this.assetManager._loadTexturesAndMaterials(this.scene);
 
     this.render();
 
     if (this.introAnimation) this._performAnimation(this.introAnimation);
     else if (this.animations.length > 0) this._performAnimation("Idle");
-}
+};
 
 ripe.CSRenderer.prototype._initializeShaders = function () {
     this.crossfadeShader = new this.library.ShaderMaterial({
@@ -224,7 +237,7 @@ ripe.CSRenderer.prototype._initializeShaders = function () {
             "}"
         ].join("\n")
     });
-}
+};
 
 ripe.CSRenderer.prototype._initializeLights = function () {
     const ambientLight = new this.library.HemisphereLight(0xffeeb1, 0x080820, 0.0);
@@ -256,12 +269,18 @@ ripe.CSRenderer.prototype._initializeLights = function () {
     rimLight.shadow.radius = 2;
     rimLight.shadow.bias = this.shadowBias;
 
+    this.scene.add(ambientLight);
+
+    this.scene.add(keyLight);
+    this.scene.add(fillLight);
+    this.scene.add(rimLight);
+    /*
     if (!this.environment) {
         this.scene.add(keyLight)
         this.scene.add(fillLight)
         this.scene.add(rimLight)
-        this.scene.add(ambientLight)
     }
+    */
 };
 
 ripe.CSRenderer.prototype._initializeRenderer = function () {
@@ -279,7 +298,7 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
     const area = this.element.querySelector(".area");
     var devicePixelRatio = window.devicePixelRatio || 1;
     this.renderer.setPixelRatio(devicePixelRatio);
-    this.renderer.setClearColor(0xFFFFFF);
+    this.renderer.setClearColor(0xffffff);
 
     area.appendChild(this.renderer.domElement);
 };
@@ -287,20 +306,20 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
 ripe.CSRenderer.prototype._setupPostProcessing = function () {
     this.composer = new this.library.EffectComposer(this.renderer);
 
-    var renderPass = new this.library.RenderPass(this.scene, this.camera)
-    this.composer.addPass(renderPass)
+    var renderPass = new this.library.RenderPass(this.scene, this.camera);
+    this.composer.addPass(renderPass);
 
     var saoPass = new this.library.SAOPass(this.scene, this.camera, true, true);
 
-    saoPass.resolution.set(8192, 8192)
+    saoPass.resolution.set(8192, 8192);
 
-    saoPass.params.saoBias = 0.01
-    saoPass.params.saoIntensity = 1
-    saoPass.params.saoScale = 5
-    saoPass.params.saoKernelRadius = 20
-    saoPass.params.saoMinResolution = 0
+    saoPass.params.saoBias = 0.01;
+    saoPass.params.saoIntensity = 1;
+    saoPass.params.saoScale = 5;
+    saoPass.params.saoKernelRadius = 20;
+    saoPass.params.saoMinResolution = 0;
 
-    this.composer.addPass(saoPass)
+    this.composer.addPass(saoPass);
 
     var bloomPass = new this.library.BloomPass(1, 25, 4, 256);
     this.composer.addPass(bloomPass);
@@ -308,9 +327,9 @@ ripe.CSRenderer.prototype._setupPostProcessing = function () {
     var ssaoPass = new this.library.SSAOPass(this.scene, this.camera, 620, 620);
     ssaoPass.kernelRadius = 32;
     ssaoPass.renderToScreen = true;
-    
+
     this.composer.addPass(ssaoPass);
-}
+};
 
 ripe.CSRenderer.prototype._initializeCamera = function () {
     const width = this.element.getBoundingClientRect().width;
@@ -470,7 +489,6 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) 
     requestAnimationFrame(changeHighlightTransition);
 };
 
-
 ripe.CSRenderer.prototype.updateInitials = async function (initials) {
     // hides or unhides logo part
     if (
@@ -524,14 +542,13 @@ ripe.CSRenderer.prototype.embossLetters = async function (initials) {
         if (i - 1 < this.textMeshes.length) {
             this.scene.remove(this.textMeshes[i - 1]);
             this.assetManager.disposeLastLetter();
-        }   
+        }
 
         const isNewLetter =
             i > this.initialsText.length || letter !== this.initialsText.charAt(i - 1);
 
         var mesh;
-        if (isNewLetter) 
-            mesh = this.assetManager.createLetter(letter)
+        if (isNewLetter) mesh = this.assetManager.createLetter(letter);
         else mesh = this.assetManager.textMeshes[i - 1];
 
         mesh.position.set(posRot.position.x, posRot.position.y, posRot.position.z);
@@ -546,8 +563,7 @@ ripe.CSRenderer.prototype.getPosRotLetter = function (letterNumber, initials) {
     const center = (size + 1) / 2;
 
     const posInInitials = center + letterNumber - (initials.length + 1) / 2;
-    console.log(posInInitials, initials, this.assetManager.initialsPositions)
-
+    console.log(posInInitials, initials, this.assetManager.initialsPositions);
 
     if (initials.length % 2 === size % 2) {
         // TODO Check for placement
@@ -576,7 +592,7 @@ ripe.CSRenderer.prototype.getPosRotLetter = function (letterNumber, initials) {
     return transform;
 };
 
-ripe.CSRenderer.prototype.engraveLetters = function () { };
+ripe.CSRenderer.prototype.engraveLetters = function () {};
 
 ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
     // Origin of the coordinate system is the center of the element
@@ -588,7 +604,7 @@ ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEven
             (mouseEvent.y - this.elementBoundingBox.y + window.scrollY) /
             this.elementBoundingBox.height
         ) *
-        2 +
+            2 +
         1;
 
     return {
@@ -618,7 +634,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
 
     var width = this.elementBoundingBox.width;
     var height = this.elementBoundingBox.height;
-    
+
     var transitionCamera = new this.library.OrthographicCamera(
         -width / 2,
         width / 2,
@@ -651,7 +667,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     this.renderer.setRenderTarget(previousSceneFBO);
     this.renderer.clear();
     this.render(true);
-    
+
     if (options.type === "material") {
         // Update scene's materials
         for (var part in options.parts) {
@@ -684,7 +700,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
 
         pos = (Date.now() - startTime) / duration;
         mixRatio = ripe.easing[this.crossfadeEasing](pos, 0.0, 1.0);
-        
+
         //mixRatio += 1.0 / duration;
         this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 

@@ -23,7 +23,7 @@ if (
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
+ripe.Ripe.prototype.oauthAccessToken = function (code, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}admin/oauth/access_token`;
@@ -52,7 +52,7 @@ ripe.Ripe.prototype.oauthAccessToken = function(code, options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.oauthLogin = function(accessToken, options, callback) {
+ripe.Ripe.prototype.oauthLogin = function (accessToken, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}admin/oauth/login`;

@@ -27,7 +27,7 @@ if (
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getOrders = function(options, callback) {
+ripe.Ripe.prototype.getOrders = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders`;
@@ -54,7 +54,7 @@ ripe.Ripe.prototype.getOrders = function(options, callback) {
  * - 'limit' - The number of results to retrieve.
  * @returns {Promise} The orders result list.
  */
-ripe.Ripe.prototype.getOrdersP = function(options) {
+ripe.Ripe.prototype.getOrdersP = function (options) {
     return new Promise((resolve, reject) => {
         this.getOrders(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -70,7 +70,7 @@ ripe.Ripe.prototype.getOrdersP = function(options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getOrder = function(number, options, callback) {
+ripe.Ripe.prototype.getOrder = function (number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}`;
@@ -90,7 +90,7 @@ ripe.Ripe.prototype.getOrder = function(number, options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The order requested by number.
  */
-ripe.Ripe.prototype.getOrderP = function(number, options) {
+ripe.Ripe.prototype.getOrderP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.getOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -106,7 +106,7 @@ ripe.Ripe.prototype.getOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.deleteOrder = function(number, options, callback) {
+ripe.Ripe.prototype.deleteOrder = function (number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}`;
@@ -126,7 +126,7 @@ ripe.Ripe.prototype.deleteOrder = function(number, options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The result of the order deletion.
  */
-ripe.Ripe.prototype.deleteOrderP = function(number, options) {
+ripe.Ripe.prototype.deleteOrderP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.deleteOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -137,7 +137,7 @@ ripe.Ripe.prototype.deleteOrderP = function(number, options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype.searchOrders = function(filterString, options, callback) {
+ripe.Ripe.prototype.searchOrders = function (filterString, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/search`;
@@ -158,7 +158,7 @@ ripe.Ripe.prototype.searchOrders = function(filterString, options, callback) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype.searchOrdersP = function(filterString, options) {
+ripe.Ripe.prototype.searchOrdersP = function (filterString, options) {
     return new Promise((resolve, reject) => {
         this.searchOrders(filterString, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -174,11 +174,11 @@ ripe.Ripe.prototype.searchOrdersP = function(filterString, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.createOrder = function(number, options, callback) {
+ripe.Ripe.prototype.createOrder = function (number, options, callback) {
     return this.setOrderStatus(number, "create", options, callback);
 };
 
-ripe.Ripe.prototype.createOrderP = function(number, options) {
+ripe.Ripe.prototype.createOrderP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.createOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -194,11 +194,11 @@ ripe.Ripe.prototype.createOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.produceOrder = function(number, options, callback) {
+ripe.Ripe.prototype.produceOrder = function (number, options, callback) {
     return this.setOrderStatus(number, "produce", options, callback);
 };
 
-ripe.Ripe.prototype.produceOrderP = function(number, options) {
+ripe.Ripe.prototype.produceOrderP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.produceOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -214,11 +214,11 @@ ripe.Ripe.prototype.produceOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.readyOrder = function(number, options, callback) {
+ripe.Ripe.prototype.readyOrder = function (number, options, callback) {
     return this.setOrderStatus(number, "ready", options, callback);
 };
 
-ripe.Ripe.prototype.readyOrderP = function(number, options) {
+ripe.Ripe.prototype.readyOrderP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.readyOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -226,7 +226,7 @@ ripe.Ripe.prototype.readyOrderP = function(number, options) {
     });
 };
 
-ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, options, callback) {
+ripe.Ripe.prototype.sendOrder = function (number, trackingNumber, trackingUrl, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = Object.assign(options, {
@@ -238,7 +238,7 @@ ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, op
     return this.setOrderStatus(number, "send", options, callback);
 };
 
-ripe.Ripe.prototype.sendOrderP = function(number, trackingNumber, trackingUrl, options) {
+ripe.Ripe.prototype.sendOrderP = function (number, trackingNumber, trackingUrl, options) {
     return new Promise((resolve, reject) => {
         this.sendOrder(number, trackingNumber, trackingUrl, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -254,11 +254,11 @@ ripe.Ripe.prototype.sendOrderP = function(number, trackingNumber, trackingUrl, o
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.receiveOrder = function(number, options, callback) {
+ripe.Ripe.prototype.receiveOrder = function (number, options, callback) {
     return this.setOrderStatus(number, "receive", options, callback);
 };
 
-ripe.Ripe.prototype.receiveOrderP = function(number, options) {
+ripe.Ripe.prototype.receiveOrderP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.receiveOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -274,11 +274,11 @@ ripe.Ripe.prototype.receiveOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.returnOrder = function(number, options, callback) {
+ripe.Ripe.prototype.returnOrder = function (number, options, callback) {
     return this.setOrderStatus(number, "return", options, callback);
 };
 
-ripe.Ripe.prototype.returnOrderP = function(number, options) {
+ripe.Ripe.prototype.returnOrderP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.returnOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -294,11 +294,11 @@ ripe.Ripe.prototype.returnOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.cancelOrder = function(number, options, callback) {
+ripe.Ripe.prototype.cancelOrder = function (number, options, callback) {
     return this.setOrderStatus(number, "cancel", options, callback);
 };
 
-ripe.Ripe.prototype.cancelOrderP = function(number, options) {
+ripe.Ripe.prototype.cancelOrderP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.cancelOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -329,7 +329,7 @@ ripe.Ripe.prototype.cancelOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.importOrder = function(ffOrderId, options, callback) {
+ripe.Ripe.prototype.importOrder = function (ffOrderId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._importOrder(ffOrderId, options);
@@ -359,7 +359,7 @@ ripe.Ripe.prototype.importOrder = function(ffOrderId, options, callback) {
  *  - 'meta' - Complementary information to be added, as a key:value list (ie: '['key1:value1', 'key2:value2']).
  * @returns {Promise} The production order's data.
  */
-ripe.Ripe.prototype.importOrderP = function(ffOrderId, options, callback) {
+ripe.Ripe.prototype.importOrderP = function (ffOrderId, options, callback) {
     return new Promise((resolve, reject) => {
         this.importOrder(ffOrderId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -387,7 +387,7 @@ ripe.Ripe.prototype.importOrderP = function(ffOrderId, options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.precustomizationOrder = function(ffId, options, callback) {
+ripe.Ripe.prototype.precustomizationOrder = function (ffId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._precustomizationOrder(ffId, options);
@@ -414,7 +414,7 @@ ripe.Ripe.prototype.precustomizationOrder = function(ffId, options, callback) {
  *  - 'meta' - Complementary information to be added, as a key:value list (ie: '['key1:value1', 'key2:value2']).
  * @returns {Promise} The production order's data.
  */
-ripe.Ripe.prototype.precustomizationOrderP = function(ffId, options, callback) {
+ripe.Ripe.prototype.precustomizationOrderP = function (ffId, options, callback) {
     return new Promise((resolve, reject) => {
         this.precustomizationOrder(ffId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -425,7 +425,7 @@ ripe.Ripe.prototype.precustomizationOrderP = function(ffId, options, callback) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback) {
+ripe.Ripe.prototype.setOrderStatus = function (number, status, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/${status}`;
@@ -444,7 +444,7 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
  * @param {Number} number The number of the order to get the subscription status.
  * @returns {XMLHttpRequest} The order subscription status.
  */
-ripe.Ripe.prototype.getOrderSubscription = function(number, options, callback) {
+ripe.Ripe.prototype.getOrderSubscription = function (number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/subscription`;
@@ -464,7 +464,7 @@ ripe.Ripe.prototype.getOrderSubscription = function(number, options, callback) {
  * @param {Number} number The number of the order to get the subscription status.
  * @returns {Promise} The order subscription status.
  */
-ripe.Ripe.prototype.getOrderSubscriptionP = function(number, options) {
+ripe.Ripe.prototype.getOrderSubscriptionP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.getOrderSubscription(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -478,7 +478,7 @@ ripe.Ripe.prototype.getOrderSubscriptionP = function(number, options) {
  * @param {Number} number The number of the order to subscribe.
  * @returns {XMLHttpRequest} The order subscription status.
  */
-ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
+ripe.Ripe.prototype.subscribeOrder = function (number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/subscription`;
@@ -497,7 +497,7 @@ ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
  * @param {Number} number The number of the order to subscribe.
  * @returns {Promise} The order subscription status.
  */
-ripe.Ripe.prototype.subscribeOrderP = function(number, options) {
+ripe.Ripe.prototype.subscribeOrderP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.subscribeOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -511,7 +511,7 @@ ripe.Ripe.prototype.subscribeOrderP = function(number, options) {
  * @param {Number} number The number of the order to unsubscribe.
  * @returns {XMLHttpRequest} The order subscription status.
  */
-ripe.Ripe.prototype.unsubscribeOrder = function(number, options, callback) {
+ripe.Ripe.prototype.unsubscribeOrder = function (number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/subscription`;
@@ -530,7 +530,7 @@ ripe.Ripe.prototype.unsubscribeOrder = function(number, options, callback) {
  * @param {Number} number The number of the order to unsubscribe.
  * @returns {Promise} The order subscription status.
  */
-ripe.Ripe.prototype.unsubscribeOrderP = function(number, options) {
+ripe.Ripe.prototype.unsubscribeOrderP = function (number, options) {
     return new Promise((resolve, reject) => {
         this.unsubscribeOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -541,7 +541,7 @@ ripe.Ripe.prototype.unsubscribeOrderP = function(number, options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
+ripe.Ripe.prototype._getOrderReportURL = function (number, key, options) {
     options = options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/report`;
     options = Object.assign(options, {
@@ -554,7 +554,7 @@ ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
+ripe.Ripe.prototype._getOrderReportPDFURL = function (number, key, options) {
     options = options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/report.pdf`;
     options = Object.assign(options, {
@@ -567,7 +567,7 @@ ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
+ripe.Ripe.prototype._getOrderReportPNGURL = function (number, key, options) {
     options = options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/report.png`;
     options = Object.assign(options, {
@@ -581,7 +581,7 @@ ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
  * @ignore
  * @see {link https://docs.platforme.com/#order-endpoints-import}
  */
-ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
+ripe.Ripe.prototype._importOrder = function (ffOrderId, options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const variant = options.variant === undefined ? this.variant : options.variant;
@@ -642,7 +642,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._precustomizationOrder = function(ffId, options = {}) {
+ripe.Ripe.prototype._precustomizationOrder = function (ffId, options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const variant = options.variant === undefined ? this.variant : options.variant;

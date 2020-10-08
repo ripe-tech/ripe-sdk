@@ -2,10 +2,10 @@ const assert = require("assert");
 const config = require("./config");
 const ripe = require("../../src/js");
 
-describe("Ripe", function() {
+describe("Ripe", function () {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#main", function() {
+    describe("#main", function () {
         it("should instance correctly", async () => {
             const instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
 
@@ -25,7 +25,7 @@ describe("Ripe", function() {
             await instance.isReady();
 
             result = await new Promise((resolve, reject) => {
-                instance.bind("price", function(value) {
+                instance.bind("price", function (value) {
                     resolve(value);
                 });
             });

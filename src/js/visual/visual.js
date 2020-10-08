@@ -29,7 +29,7 @@ ripe.visualGlobals = {
  * @param {Object} element The DOM element that should be updated.
  * @param {Object} options The options to be used to configure the Visual representation.
  */
-ripe.Visual = function(owner, element, options) {
+ripe.Visual = function (owner, element, options) {
     this.element = element;
     this.elementEvents = {};
     this.type = this.type || "Visual";
@@ -44,7 +44,7 @@ ripe.Visual.prototype.constructor = ripe.Visual;
  * The initializer which is called (by the owner)
  * whenever the Visual is going to become active.
  */
-ripe.Visual.prototype.init = function() {
+ripe.Visual.prototype.init = function () {
     ripe.Interactable.prototype.init.call(this);
     ripe.visualGlobals.id++;
     this.id = ripe.visualGlobals.id;
@@ -56,7 +56,7 @@ ripe.Visual.prototype.init = function() {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.Visual.prototype.deinit = async function() {
+ripe.Visual.prototype.deinit = async function () {
     this._removeElementHandlers();
     this.element = null;
     this.elementEvents = null;
@@ -78,7 +78,7 @@ ripe.Visual.prototype.deinit = async function() {
  *
  * @ignore
  */
-ripe.Visual.prototype._addElementHandler = function(event, callback) {
+ripe.Visual.prototype._addElementHandler = function (event, callback) {
     this.element.addEventListener(event, callback);
 
     const callbacks = this.elementEvents[event] || [];
@@ -91,7 +91,7 @@ ripe.Visual.prototype._addElementHandler = function(event, callback) {
  *
  * @ignore
  */
-ripe.Visual.prototype._removeElementHandlers = function() {
+ripe.Visual.prototype._removeElementHandlers = function () {
     for (const event in this.elementEvents) {
         const callbacks = this.elementEvents[event];
         for (let index = 0; index < callbacks.length; index++) {

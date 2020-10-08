@@ -24,7 +24,7 @@ if (
  *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
  * @returns {XMLHttpRequest} The model's configuration data.
  */
-ripe.Ripe.prototype.getConfig = function(options, callback) {
+ripe.Ripe.prototype.getConfig = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getConfigOptions(options);
@@ -45,7 +45,7 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
  *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
  * @returns {Promise} The model's configuration data.
  */
-ripe.Ripe.prototype.getConfigP = function(options) {
+ripe.Ripe.prototype.getConfigP = function (options) {
     return new Promise((resolve, reject) => {
         this.getConfig(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -63,12 +63,12 @@ ripe.Ripe.prototype.getConfigP = function(options) {
  *  - 'version' - The version of the build, defaults to latest
  * @returns {XMLHttpRequest} The model's default options.
  */
-ripe.Ripe.prototype.getDefaults = function(options, callback) {
+ripe.Ripe.prototype.getDefaults = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getDefaultsOptions(options);
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result, isValid, request) {
+    return this._cacheURL(options.url, options, function (result, isValid, request) {
         if (callback) callback(isValid ? result.parts : result, isValid, request);
     });
 };
@@ -83,8 +83,8 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
  *  - 'version' - The version of the build, defaults to latest
  * @returns {Object} The model's optional parts.
  */
-ripe.Ripe.prototype.getOptionals = function(options, callback) {
-    return this.getDefaults(options, function(defaults, isValid, request) {
+ripe.Ripe.prototype.getOptionals = function (options, callback) {
+    return this.getDefaults(options, function (defaults, isValid, request) {
         const optionals = [];
         for (const name in defaults) {
             const part = defaults[name];
@@ -104,12 +104,12 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
  *  - 'version' - The version of the build, defaults to latest
  * @returns {XMLHttpRequest} The model's total set of combinations.
  */
-ripe.Ripe.prototype.getCombinations = function(options, callback) {
+ripe.Ripe.prototype.getCombinations = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getCombinationsOptions(options);
     options = this._build(options);
-    return this._cacheURL(options.url, options, function(result, isValid, request) {
+    return this._cacheURL(options.url, options, function (result, isValid, request) {
         if (callback) callback(isValid ? result.combinations : result, isValid, request);
     });
 };
@@ -124,7 +124,7 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
  *  - 'version' - The version of the build, defaults to latest
  * @returns {Promise} The model's total set of combinations.
  */
-ripe.Ripe.prototype.getCombinationsP = function(options) {
+ripe.Ripe.prototype.getCombinationsP = function (options) {
     return new Promise((resolve, reject) => {
         this.getCombinations(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -143,7 +143,7 @@ ripe.Ripe.prototype.getCombinationsP = function(options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The factory information for the provided model.
  */
-ripe.Ripe.prototype.getFactory = function(options, callback) {
+ripe.Ripe.prototype.getFactory = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getFactoryOptions(options);
@@ -162,7 +162,7 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The factory information for the provided model.
  */
-ripe.Ripe.prototype.getFactoryP = function(options, callback) {
+ripe.Ripe.prototype.getFactoryP = function (options, callback) {
     return new Promise((resolve, reject) => {
         this.getFactory(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -185,7 +185,7 @@ ripe.Ripe.prototype.getFactoryP = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The result of the logic function of the provided model.
  */
-ripe.Ripe.prototype.runLogic = function(options, callback) {
+ripe.Ripe.prototype.runLogic = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._runLogicOptions(options);
@@ -208,7 +208,7 @@ ripe.Ripe.prototype.runLogic = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The result of the logic function of the provided model.
  */
-ripe.Ripe.prototype.runLogicP = function(options, callback) {
+ripe.Ripe.prototype.runLogicP = function (options, callback) {
     return new Promise((resolve, reject) => {
         this.runLogic(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -228,7 +228,7 @@ ripe.Ripe.prototype.runLogicP = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.onConfig = function(options, callback) {
+ripe.Ripe.prototype.onConfig = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._onConfigOptions(options);
@@ -248,7 +248,7 @@ ripe.Ripe.prototype.onConfig = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.onConfigP = function(options, callback) {
+ripe.Ripe.prototype.onConfigP = function (options, callback) {
     return new Promise((resolve, reject) => {
         this.onConfig(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -268,7 +268,7 @@ ripe.Ripe.prototype.onConfigP = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.onPart = function(options, callback) {
+ripe.Ripe.prototype.onPart = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._onPartOptions(options);
@@ -288,7 +288,7 @@ ripe.Ripe.prototype.onPart = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.onPartP = function(options, callback) {
+ripe.Ripe.prototype.onPartP = function (options, callback) {
     return new Promise((resolve, reject) => {
         this.onPart(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -309,7 +309,7 @@ ripe.Ripe.prototype.onPartP = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.onInitials = function(options, callback) {
+ripe.Ripe.prototype.onInitials = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._onInitialsOptions(options);
@@ -330,7 +330,7 @@ ripe.Ripe.prototype.onInitials = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.onInitialsP = function(options, callback) {
+ripe.Ripe.prototype.onInitialsP = function (options, callback) {
     return new Promise((resolve, reject) => {
         this.onInitials(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -342,7 +342,7 @@ ripe.Ripe.prototype.onInitialsP = function(options, callback) {
  * @see {link https://docs.platforme.com/#product-endpoints-config}
  * @ignore
  */
-ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
+ripe.Ripe.prototype._getConfigOptions = function (options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
@@ -373,7 +373,7 @@ ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
  * @see {link https://docs.platforme.com/#product-endpoints-defaults}
  * @ignore
  */
-ripe.Ripe.prototype._getDefaultsOptions = function(options = {}) {
+ripe.Ripe.prototype._getDefaultsOptions = function (options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
@@ -392,7 +392,7 @@ ripe.Ripe.prototype._getDefaultsOptions = function(options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getCombinationsOptions = function(options = {}) {
+ripe.Ripe.prototype._getCombinationsOptions = function (options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
@@ -434,7 +434,7 @@ ripe.Ripe.prototype._getCombinationsOptions = function(options = {}) {
  * @ignore
  * @see {link http://docs.platforme.com/#product-endpoints-factory}
  */
-ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
+ripe.Ripe.prototype._getFactoryOptions = function (options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const url = `${this.url}brands/${brand}/models/${model}/factory`;
@@ -447,7 +447,7 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
+ripe.Ripe.prototype._runLogicOptions = function (options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
@@ -470,7 +470,7 @@ ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
  * @ignore
  * @see {link http://docs.platforme.com/#product-endpoints-on_config}
  */
-ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
+ripe.Ripe.prototype._onConfigOptions = function (options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.model : options.version;
@@ -503,7 +503,7 @@ ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
  * @ignore
  * @see {link http://docs.platforme.com/#product-endpoints-on_part}
  */
-ripe.Ripe.prototype._onPartOptions = function(options = {}) {
+ripe.Ripe.prototype._onPartOptions = function (options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
@@ -534,7 +534,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
  * @ignore
  * @see {link http://docs.platforme.com/#product-endpoints-on_initials}
  */
-ripe.Ripe.prototype._onInitialsOptions = function(options = {}) {
+ripe.Ripe.prototype._onInitialsOptions = function (options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;

@@ -18,7 +18,7 @@ if (
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.accountMe = function(options, callback) {
+ripe.Ripe.prototype.accountMe = function (options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}accounts/me`;
@@ -38,7 +38,7 @@ ripe.Ripe.prototype.accountMe = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.accountMeP = function(options) {
+ripe.Ripe.prototype.accountMeP = function (options) {
     return new Promise((resolve, reject) => {
         this.accountMe(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
