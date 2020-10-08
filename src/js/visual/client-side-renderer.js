@@ -431,7 +431,7 @@ ripe.CSRenderer.prototype.highlight = function (part, options = {}) {
 
     const duration = this.element.dataset.mask_duration || this.highlightDuration;
 
-    this.changeHighlight(part, 0.5, duration);
+    this.changeHighlight(part, 0.2, duration);
 
     // triggers an event indicating that a highlight operation has been
     // performed on the current configurator
@@ -463,16 +463,9 @@ ripe.CSRenderer.prototype.lowlight = function (options) {
 };
 
 ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) {
-    var startingValue;
-    var meshTarget = null;
-
-    for (var mesh in this.assetManager.meshes) {
-        if (this.assetManager.meshes[mesh].name === part) {
-            meshTarget = this.assetManager.meshes[mesh];
-            startingValue = meshTarget.material.color.r;
-        }
-    }
-
+    var meshTarget = this.assetManager.meshes[part];
+    var startingValue = meshTarget.material.color.r;
+    
     console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
 
     if (!meshTarget) return;
@@ -488,10 +481,10 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) 
 
         pos = (Date.now() - startTime) / duration;
         currentValue = ripe.easing[this.highlightEasing](pos, startingValue, endValue);
-        console.log(pos);
-        console.log(currentValue);
+        //console.log(pos);
+        //console.log(currentValue);
 
-        this.render();
+        this.renderer.render(this.scene, this.camera);
 
         if (pos < 1) requestAnimationFrame(changeHighlightTransition);
     };
