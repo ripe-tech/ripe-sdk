@@ -159,28 +159,20 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
 
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
-
-    const beginDisposal = () => {
-        console.log("HOL UP A MINUTE");
-        this.assetManager._disposeResources(this.scene);
-    };
-
-    window.addEventListener("beforeunload", beginDisposal, false);
-
-    window.onbeforeunload = function () {
-        beginDisposal();
-        return null;
-    };
 };
 
-ripe.CSRenderer.prototype.loadMaterials = async function (parts) {
-    this.assetManager.loadMaterials(parts);
+ripe.CSRenderer.prototype.disposeResources = async function () {
+    await this.assetManager._disposeResources(this.scene);
+}
+
+ripe.CSRenderer.prototype.loadMaterials = async function () {
+    this.assetManager.loadMaterials();
 };
 
 ripe.CSRenderer.prototype._loadAssets = async function () {
     await this.assetManager._loadMesh();
 
-    this.scene.add(this.assetManager.loadedGltf.scene.children[0]);
+    this.scene.add(this.assetManager.loadedGltf.scene);
 
     this.animationMixer = new this.library.AnimationMixer(this.assetManager.loadedGltf.scene);
     this.animations = this.assetManager.loadedGltf.animations;
@@ -351,13 +343,16 @@ ripe.CSRenderer.prototype._initializeCamera = function () {
 };
 
 ripe.CSRenderer.prototype._performAnimation = function (animationName) {
+    console.log("Attempting to perform animation " + animationName)
     var animation = this.library.AnimationClip.findByName(this.animations, animationName);
 
+    console.log(animation)
     if (!animation) return;
 
     const action = this.animationMixer.clipAction(animation);
     action.clampWhenFinished = true;
     action.loop = this.library.LoopOnce;
+    
     action.play();
 
     const clock = new this.library.Clock();
@@ -669,15 +664,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     this.render(true);
 
     if (options.type === "material") {
-        // Update scene's materials
-        for (var part in options.parts) {
-            if (part === "shadow") continue;
-
-            var material = options.parts[part].material;
-            var color = options.parts[part].color;
-
-            await this.assetManager._applyMaterial(part, material, color);
-        }
+        await this.assetManager.setMaterials();
     } else if (options.type === "rotation") {
         this._applyRotations(options.rotationX, options.rotationY);
     }

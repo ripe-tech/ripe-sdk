@@ -14,8 +14,7 @@ if (
 ripe.CSRAssetManager = function (owner, options, renderer) {
     this.owner = owner;
     this.assetsPath = options.assetsPath;
-    //this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
-    this.meshPath = "/static/assets/models/swear/vyner_hitop4.glb";
+    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
     this.texturesPath =
         this.assetsPath +
         "textures/" +
@@ -96,23 +95,12 @@ ripe.CSRAssetManager.prototype.disposeLastLetter = function () {
     this.textMeshes.pop();
 };
 
-ripe.CSRAssetManager.prototype._applyDefaults = function () {
-    const defaultMaterial = new this.library.MeshStandardMaterial({ color: "#ffffff" });
-    defaultMaterial.perPixel = true;
-
-    for (var mesh in this.meshes) {
-        if (!this.meshes[mesh].name.includes("initials")) {
-            if (this.meshes[mesh].material) this.meshes[mesh].material.dispose();
-
-            this.meshes[mesh].material = defaultMaterial;
-        }
-    }
-};
-
 ripe.CSRAssetManager.prototype._loadMesh = async function () {
     if (this.meshPath.includes(".gltf") || this.meshPath.includes(".glb"))
         await this._loadGLTFMesh();
     else if (this.meshPath.includes(".fbx")) await this._loadFBXMesh();
+
+    await this.setMaterials();
 };
 
 ripe.CSRAssetManager.prototype._loadFBXMesh = async function () {
@@ -192,32 +180,26 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
  * Disposes all the stored resources to avoid memory leaks. Includes meshes,
  * geometries and materials.
  */
-ripe.CSRAssetManager.prototype._disposeResources = function (scene) {
+ripe.CSRAssetManager.prototype._disposeResources = async function (scene) {
     console.log("Disposing Resources");
     this.pmremGenerator.dispose();
 
-    console.log(this.meshes);
-    console.log(this.loadedTextures);
-    console.log(this.textMeshes);
-
     if (this.meshes) {
         for (var mesh in this.meshes) {
-            console.log("disposing " + mesh);
             this.meshes[mesh].geometry.dispose();
             this.meshes[mesh].material.dispose();
             scene.remove(this.meshes[mesh]);
-            //this.meshes.delete(mesh);
         }
     }
 
-    console.log("Finished dispoing meshes?");
+    this.meshes = {}
+    console.log("Finished dispoing meshes.");
 
     if (this.textMeshes) {
         for (let i = 0; i < this.textMeshes.length; i++) {
-            console.log("disposing text mesh");
             this.textMeshes[i].geometry.dispose();
             this.textMeshes[i].material.dispose();
-            //scene.remove(this.textMeshes[i]);
+            scene.remove(this.textMeshes[i]);
         }
     }
 
@@ -225,11 +207,12 @@ ripe.CSRAssetManager.prototype._disposeResources = function (scene) {
 
     if (this.loadedTextures) {
         for (var texture in this.loadedTextures) {
-            console.log("disposing " + texture);
             this.loadedTextures[texture].dispose();
-            //this.loadedTextures.delete(texture);
         }
     }
+
+    console.log("Finished dispoing textures.");
+    this.loadedTextures = {};
 };
 
 ripe.CSRAssetManager.prototype._getLetterMaterial = async function () {
@@ -248,48 +231,30 @@ ripe.CSRAssetManager.prototype._getLetterMaterial = async function () {
         type = splitProps[0].split("_")[1];
     }
 
-    // TODO Change this to use textures for initials
-    var diffuseMapPath =
-        this.assetsPath +
-        "textures/general/" +
-        material +
-        "/" +
-        this.owner.brand +
-        "_" +
-        material +
-        "_" +
-        type +
-        ".png";
+    console.log(material, type)
 
-    // TODO Add roughness map path if it exists
-    const diffuseTexture = await new Promise((resolve, reject) => {
-        this.textureLoader.load(diffuseMapPath, function (texture) {
-            resolve(texture);
-        });
-    });
-
-    /*
-    const roughnessTexture = await new Promise((resolve, reject) => {
-        textureLoader.load(diffuseMapPath, function (texture) {
-            resolve(texture);
-        });
-    }); */
-
-    return new this.library.MeshStandardMaterial({
-        map: diffuseTexture,
-        roughness: 0.0
-    });
+    const letterMaterial = await this._loadMaterial("initials", material, type);
+    return letterMaterial;
 };
 
-ripe.CSRAssetManager.prototype.loadMaterials = async function (parts) {
-    for (var part in parts) {
+ripe.CSRAssetManager.prototype.setMaterials = async function () {
+    for (var part in this.owner.parts) {
         if (part === "shadow") continue;
 
-        var material = parts[part].material;
-        var color = parts[part].color;
-        await this._loadMaterial(part, material, color);
+        var material = this.owner.parts[part].material;
+        var color = this.owner.parts[part].color;
+        console.log("\n\nChanging material for part " + part + " to " + color + " " + material)
+        var newMaterial = await this._loadMaterial(part, material, color);
+        
+        for (var mesh in this.meshes) {
+            if (mesh.includes(part)) {
+                this.meshes[mesh].material.dispose();
+                this.meshes[mesh].material = newMaterial.clone();
+                break;
+            }
+        }
     }
-};
+}
 
 ripe.CSRAssetManager.prototype._loadTexturesAndMaterials = async function (scene) {
     if (this.environment) this._setupEnvironment(scene);
@@ -350,19 +315,6 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
 
     newMaterial.perPixel = true;
     return newMaterial;
-};
-
-ripe.CSRAssetManager.prototype._applyMaterial = async function (part, material, color) {
-    console.log("Attempting change at " + part + ", for " + material + "_" + color);
-    const newMaterial = await this._loadMaterial(part, material, color);
-
-    for (var mesh in this.meshes) {
-        if (mesh.includes(part)) {
-            this.meshes[mesh].material.dispose();
-            this.meshes[mesh].material = newMaterial.clone();
-            break;
-        }
-    }
 };
 
 ripe.CSRAssetManager.prototype._setupEnvironment = async function (scene) {

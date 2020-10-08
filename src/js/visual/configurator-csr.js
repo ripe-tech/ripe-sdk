@@ -119,6 +119,8 @@ ripe.ConfiguratorCSR.prototype.init = function () {
 ripe.ConfiguratorCSR.prototype.deinit = async function () {
     await this.cancel();
 
+    await this.rtrenderer.disposeResources();
+
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
     }
@@ -215,10 +217,8 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     }
 
     if (options.reason === "set parts" || options.reason === "set part") {
-        await this.rtrenderer.loadMaterials(this.owner.parts);
         await this.rtrenderer.crossfade({
             type: "material",
-            parts: this.owner.parts,
             duration: 500
         });
     }
