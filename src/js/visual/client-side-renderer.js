@@ -76,7 +76,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this._initializeLights();
     this._initializeCamera();
     this._initializeRenderer();
-    this._setupPostProcessing();
+    //this._setupPostProcessing();
     this._registerHandlers();
     this._initializeShaders();
 
@@ -381,7 +381,8 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
 ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
     //console.log("Rendering!")
     const cam = camera === undefined ? this.camera : camera;
-    const renderer = useRenderer ? this.renderer : this.composer;
+    //const renderer = useRenderer ? this.renderer : this.composer;
+    const renderer = this.renderer;
 
     renderer.render(this.scene, cam);
 };

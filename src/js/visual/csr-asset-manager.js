@@ -14,7 +14,7 @@ if (
 ripe.CSRAssetManager = function (owner, options, renderer) {
     this.owner = owner;
     this.assetsPath = options.assetsPath;
-    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
+    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "_fixed.glb";
     this.texturesPath =
         this.assetsPath +
         "textures/" +
@@ -145,6 +145,7 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
     //var centerZ = 0;
 
     const traverseScene = child => {
+        child.matrixAutoUpdate = false;
         if (child.name.includes("initials_part")) {
             child.position.set(
                 child.position.x - centerX,
@@ -167,6 +168,7 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
             );
             child.castShadow = true;
             child.receiveShadow = true;
+            child.material.dispose();
 
             // remove "_part" from string
             this.meshes[child.name] = child;
