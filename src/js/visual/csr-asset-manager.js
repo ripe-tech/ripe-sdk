@@ -15,7 +15,7 @@ ripe.CSRAssetManager = function (configurator, owner, options) {
     this.owner = owner;
     this.configurator = configurator;
     this.assetsPath = options.assetsPath;
-    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + ".glb";
+    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "23.glb";
     this.texturesPath =
         this.assetsPath +
         "textures/" +
@@ -246,14 +246,12 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
         }
     }
 
-    if (this.environmentTexture)    
-        newMaterial.envMap = this.environmentTexture;
-
     newMaterial.perPixel = true;
     return newMaterial;
 };
 
-ripe.CSRAssetManager.prototype.setupEnvironment = async function (scene) {
+ripe.CSRAssetManager.prototype.setupEnvironment = async function (renderer, scene) {
+    this.pmremGenerator = new this.library.PMREMGenerator(renderer);
     var environmentMapPath = this.assetsPath + "environments/" + this.environment + ".hdr";
 
     console.log(environmentMapPath)
@@ -268,7 +266,6 @@ ripe.CSRAssetManager.prototype.setupEnvironment = async function (scene) {
     this.pmremGenerator.compileEquirectangularShader();
     this.environmentTexture = this.pmremGenerator.fromEquirectangular(texture).texture;
 
-    //scene.background = this.environmentTexture;
     scene.environment = this.environmentTexture;
 };
 

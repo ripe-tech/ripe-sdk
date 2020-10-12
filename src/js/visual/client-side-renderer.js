@@ -162,8 +162,6 @@ ripe.CSRenderer.prototype.disposeResources = async function () {
 }
 
 ripe.CSRenderer.prototype._loadAssets = async function () {
-    await this.assetManager._loadMesh();
-
     for (var mesh in this.assetManager.meshes) {
         this.raycastingMeshes.push(this.assetManager.meshes[mesh])
     }
@@ -173,7 +171,7 @@ ripe.CSRenderer.prototype._loadAssets = async function () {
     this.mixer = new this.library.AnimationMixer(this.assetManager.loadedGltf.scene);
     this.animations = this.assetManager.loadedGltf.animations;
 
-    if (this.environment) await this.assetManager.setupEnvironment(this.scene);
+    if (this.environment) await this.assetManager.setupEnvironment(this.renderer, this.scene);
 
     this.render();
 
