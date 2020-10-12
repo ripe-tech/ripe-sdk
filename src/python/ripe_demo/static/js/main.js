@@ -370,12 +370,12 @@ window.onload = function () {
                 crossfadeEasing: "easeInOutQuad",
                 initialsPlacement: "center",
                 //introAnimation: "SlideIn",
-                introAnimation: "ScaleIn",
-                environment: "fireplace",
+                introAnimation: "PopIn",
+                environment: "exterior_building",
                 textSize: 0.5,
                 textHeight: 0.01,
                 shadowBias: -0.01,
-                lockRotation: "horizontal"
+                //lockRotation: "horizontal"
             });
 
             configuratorPRC.bind("loaded", function () {

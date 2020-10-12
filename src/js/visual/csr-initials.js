@@ -50,8 +50,6 @@ ripe.CSRInitials.prototype.initialize = async function (assetManager) {
         else if (child.name.includes("initials_part")) {
             // naming is of the type "initials_part_1, where 1 indicates the position
             var initialPosition = parseInt(child.name.split("_")[2]);
-            // We do not add to the meshes, as this mesh only exists to guide the initials
-            // locations
             this.initialsPositions[initialPosition] = child;
             child.visible = false;
             if (child.material) child.material.dispose();
@@ -73,7 +71,6 @@ ripe.CSRInitials.prototype._initializeFonts = async function (type, weight) {
 
     this.loadedFonts[type + "_" + weight] = newFont;
 };
-
 
 ripe.CSRInitials.prototype.update = async function () {
     const initials = this.owner.initials;
@@ -131,13 +128,11 @@ ripe.CSRInitials.prototype.embossLetters = async function (initials) {
         const posRot = this.getPosRotLetter(i, initials);
         const letter = initials.charAt(i - 1);
 
-
         const canReplaceLetter = i <= this.initialsText.length;
         const isNewLetter = letter !== this.initialsText.charAt(i - 1);
 
-        var mesh;
         if (isNewLetter || !canReplaceLetter) {
-            mesh = this.createLetter(letter);
+            var mesh = this.createLetter(letter);
             
             if (canReplaceLetter) {
                 this.disposeLetter(i-1, true)
@@ -145,12 +140,10 @@ ripe.CSRInitials.prototype.embossLetters = async function (initials) {
             } else {
                 this.textMeshes.push(mesh)
             }
-
         }
-        else mesh = this.textMeshes[i - 1];
 
-        mesh.position.set(posRot.position.x, posRot.position.y, posRot.position.z);
-        mesh.rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z);
+        this.textMeshes[i-1].position.set(posRot.position.x, posRot.position.y, posRot.position.z);
+        this.textMeshes[i-1].rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z);        
     }
 };
 
@@ -169,7 +162,6 @@ ripe.CSRInitials.prototype.getPosRotLetter = function (letterNumber, initials) {
     const posInInitials = center + letterNumber - (initials.length + 1) / 2;
 
     if (initials.length % 2 === size % 2) {
-        // TODO Check for placement
         transform.position = this.initialsPositions[posInInitials].position;
         transform.rotation = this.initialsPositions[posInInitials].rotation;
     } else {
@@ -191,8 +183,6 @@ ripe.CSRInitials.prototype.getPosRotLetter = function (letterNumber, initials) {
         transform.position = position;
         transform.rotation = rotation;
     }
-
-    console.log(transform)
 
     return transform;
 };
