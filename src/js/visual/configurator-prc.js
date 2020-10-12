@@ -202,8 +202,6 @@ ripe.ConfiguratorPRC.prototype.update = async function (state, options = {}) {
         return false;
     }
 
-    console.log("PRC IS ENABLED? " + this._enabled)
-
     if (!this._enabled) {
         return;
     }

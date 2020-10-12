@@ -183,16 +183,18 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
 };
 
 ripe.OrbitalControls.prototype._drift = function (event) {
-    var startTime = Date.now();
-
+    
     var currentValueX = event.movementX;
     var currentValueY = event.movementY;
 
     var pos = 0;
-    const driftAnimation = () => {
+    var startTime = 0;
+    const driftAnimation = (time) => {
         if (!this.isDrifting) return;
-
-        pos = (Date.now() - startTime) / this.driftDuration;
+        
+        startTime = startTime === 0 ? time : startTime;
+        
+        pos = (time - startTime) / this.driftDuration;
 
         currentValueX = ripe.easing.easeOutQuad(pos, event.movementX, 0, this.driftDuration);
         currentValueY = ripe.easing.easeOutQuad(pos, event.movementY, 0, this.driftDuration);
@@ -481,11 +483,12 @@ ripe.OrbitalControls.prototype.rotationTransition = function (nextView, nextPosi
     this._baseHorizontalRot = this.currentHorizontalRot;
     this._baseVerticalRot = this.currentVerticalRot;
 
-    var startTime = Date.now();
     var pos = 0;
 
-    const transition = () => {
-        pos = (Date.now() - startTime) / duration;
+    var startTime = 0;
+    const transition = (time) => {
+        startTime = startTime === 0 ? time : startTime;
+        pos = (time - startTime) / duration;
 
         this.currentHorizontalRot = ripe.easing[this.rotationEasing](
             pos,

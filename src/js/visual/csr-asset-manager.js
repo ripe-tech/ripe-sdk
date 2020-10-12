@@ -14,7 +14,7 @@ if (
 ripe.CSRAssetManager = function (owner, options, renderer) {
     this.owner = owner;
     this.assetsPath = options.assetsPath;
-    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "_fixed.glb";
+    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "_fixed21.glb";
     this.texturesPath =
         this.assetsPath +
         "textures/" +
@@ -145,7 +145,6 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
     //var centerZ = 0;
 
     const traverseScene = child => {
-        child.matrixAutoUpdate = false;
         if (child.name.includes("initials_part")) {
             child.position.set(
                 child.position.x - centerX,
@@ -270,10 +269,6 @@ ripe.CSRAssetManager.prototype.setMaterials = async function (parts) {
     }
 }
 
-ripe.CSRAssetManager.prototype._loadTexturesAndMaterials = async function (scene) {
-    if (this.environment) this._setupEnvironment(scene);
-};
-
 ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, color) {
     var materialConfig;
 
@@ -331,7 +326,7 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
     return newMaterial;
 };
 
-ripe.CSRAssetManager.prototype._setupEnvironment = async function (scene) {
+ripe.CSRAssetManager.prototype.setupEnvironment = async function (scene) {
     var environmentMapPath = this.assetsPath + "environments/" + this.environment + ".hdr";
 
     const rgbeLoader = new this.library.RGBELoader();
