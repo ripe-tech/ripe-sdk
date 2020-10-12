@@ -32,7 +32,6 @@ ripe.CSRenderer = function (owner, element, options) {
     this.updateElementBoundingBox();
 
     this.library = options.library;
-    this.library = options.library || null;
     this.cameraTarget = new this.library.Vector3(
         options.cameraTarget.x,
         options.cameraTarget.y,
@@ -49,15 +48,8 @@ ripe.CSRenderer = function (owner, element, options) {
     this.shadowBias = options.shadowBias || 0.01;
 
     // raycast
-    this.raycaster = new this.library.Raycaster();
     this.raycastingMeshes = [];
     this.intersectedPart = "";
-
-    // initials
-    this.initialsPlacement = options.initialsPlacement || "center";
-    this.initialsType = options.initialsType || "emboss";
-    this.initialsText = options.initialsText || "";
-    this.engraving = options.engraving === undefined ? "metal_gold" : options.engraving;
 
     this.cameraDistance = options.cameraDistance || 0;
     this.cameraHeight = options.cameraHeight || 0;
@@ -69,20 +61,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this.introAnimation = options.introAnimation;
 
     this.useMasks = options.useMasks || true;
-
-    this.scene = new this.library.Scene();
-
-    // initialize all ThreeJS components
-    this._initializeLights();
-    this._initializeCamera();
-    this._initializeRenderer();
-    //this._setupPostProcessing();
-    this._registerHandlers();
-    this._initializeShaders();
-
-    this.assetManager = new ripe.CSRAssetManager(this.owner, options, this.renderer);
-    this._loadAssets();
-
+    
     this.gui = new dat.GUI();
     const folder = this.gui.addFolder("Settings");
     folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
@@ -99,6 +78,22 @@ ripe.CSRenderer = function (owner, element, options) {
 
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRenderer.prototype.constructor = ripe.CSRenderer;
+
+ripe.CSRenderer.prototype.initialize = async function (assetManager) {
+    this.assetManager = assetManager;
+    this.scene = new this.library.Scene();
+    this.raycaster = new this.library.Raycaster();
+    
+    // initialize all ThreeJS components
+    this._initializeLights();
+    this._initializeCamera();
+    this._initializeRenderer();
+    //this._setupPostProcessing();
+    this._registerHandlers();
+    this._initializeShaders();
+    this._loadAssets();
+
+}
 
 ripe.CSRenderer.prototype.updateOptions = async function (options) {
     this.assetManager.updateOptions(options);
@@ -157,20 +152,14 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
 
     area.addEventListener("click", function (event) {
         event = ripe.fixEvent(event);
-        self._performAnimation(self.introAnimation)
-
+        
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
 };
 
 ripe.CSRenderer.prototype.disposeResources = async function () {
     this.raycastingMeshes = [];
-    await this.assetManager._disposeResources(this.scene);
 }
-
-ripe.CSRenderer.prototype.loadMaterials = async function () {
-    this.assetManager.loadMaterials();
-};
 
 ripe.CSRenderer.prototype._loadAssets = async function () {
     await this.assetManager._loadMesh();
@@ -386,6 +375,15 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     requestAnimationFrame(doAnimation);
 };
 
+ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
+    for (let i = 0 ; i < meshes.length ; i++) {
+        if (operation === "remove")
+            this.scene.remove(meshes[i]);
+        if (operation === "add")
+            this.scene.add(meshes[i]);
+    }        
+}
+
 ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
     //console.log("Rendering!")
     const cam = camera === undefined ? this.camera : camera;
@@ -396,7 +394,8 @@ ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undef
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
-    this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
+    if (this.renderer)
+        this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
     //this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
     this.updateElementBoundingBox();
 };
@@ -497,110 +496,6 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) 
     requestAnimationFrame(changeHighlightTransition);
 };
 
-ripe.CSRenderer.prototype.updateInitials = async function (initials) {
-    // hides or unhides logo part
-    if (
-        (initials === "" && this.initialsText !== "") ||
-        (initials !== "" && this.initialsText === "")
-    ) {
-        var isLogoVisible = initials === "" && this.initialsText !== "";
-        for (var mesh in this.assetManager.meshes) {
-            if (mesh.includes("logo_part")) {
-                this.assetManager.meshes[mesh].visible = isLogoVisible;
-            }
-        }
-    }
-
-    if (!this.assetManager.initialsPositions) return;
-
-    if (initials === this.initialsText && this.owner.engraving === this.engraving) {
-        return;
-    }
-
-    if (this.initialsType === "emboss") await this.embossLetters(initials);
-    else if (this.initialsType === "engrave") await this.engraveLetters(initials);
-
-    this.initialsText = initials;
-
-    this.render();
-};
-
-ripe.CSRenderer.prototype.embossLetters = async function (initials) {
-    // avoid creating new materials
-    this.letterMaterial =
-        this.letterMaterial === null || this.owner.engraving !== this.engraving
-            ? await this.assetManager._getLetterMaterial()
-            : this.letterMaterial;
-    const maxLength = Object.keys(this.assetManager.initialsPositions).length;
-
-    if (initials.length < this.initialsText.length) {
-        var diff = this.initialsText.length - initials.length;
-        while (diff > 0) {
-            this.scene.remove(this.textMeshes[this.textMeshes.length - 1]);
-            this.assetManager.disposeLastLetter();
-            diff--;
-        }
-    }
-
-    // Starts at 1 to line up with initials mesh position
-    for (var i = 1; i <= Math.min(initials.length, maxLength); i++) {
-        const posRot = this.getPosRotLetter(i, initials);
-        const letter = initials.charAt(i - 1);
-
-        if (i - 1 < this.textMeshes.length) {
-            this.scene.remove(this.textMeshes[i - 1]);
-            this.assetManager.disposeLastLetter();
-        }
-
-        const isNewLetter =
-            i > this.initialsText.length || letter !== this.initialsText.charAt(i - 1);
-
-        var mesh;
-        if (isNewLetter) mesh = this.assetManager.createLetter(letter);
-        else mesh = this.assetManager.textMeshes[i - 1];
-
-        mesh.position.set(posRot.position.x, posRot.position.y, posRot.position.z);
-        mesh.rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z);
-    }
-};
-
-ripe.CSRenderer.prototype.getPosRotLetter = function (letterNumber, initials) {
-    // Check if placement is interpolated or in the precise spot
-    var transform = {};
-    const size = Object.keys(this.assetManager.initialsPositions).length;
-    const center = (size + 1) / 2;
-
-    const posInInitials = center + letterNumber - (initials.length + 1) / 2;
-    console.log(posInInitials, initials, this.assetManager.initialsPositions);
-
-    if (initials.length % 2 === size % 2) {
-        // TODO Check for placement
-        transform.position = this.assetManager.initialsPositions[posInInitials].position;
-        transform.rotation = this.assetManager.initialsPositions[posInInitials].rotation;
-    } else {
-        // Interpolate between the two closest positions
-        const previous = this.assetManager.initialsPosition[Math.floor(posInInitials)];
-        const next = this.assetManager.initialsPosition[Math.ceil(posInInitials)];
-
-        var position = new this.library.Vector3(0, 0, 0);
-        var rotation = new this.library.Vector3(0, 0, 0);
-
-        position.x = (previous.position.x + next.position.x) / 2;
-        position.y = (previous.position.y + next.position.y) / 2;
-        position.z = (previous.position.z + next.position.z) / 2;
-
-        rotation.x = (previous.rotation.x + next.rotation.x) / 2;
-        rotation.y = (previous.rotation.y + next.rotation.y) / 2;
-        rotation.z = (previous.rotation.z + next.rotation.z) / 2;
-
-        transform.position = position;
-        transform.rotation = rotation;
-    }
-
-    return transform;
-};
-
-ripe.CSRenderer.prototype.engraveLetters = function () { };
 
 ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
     // Origin of the coordinate system is the center of the element

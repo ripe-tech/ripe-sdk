@@ -60,6 +60,7 @@ const paths = {
         "src/js/visual/orbital-controls.js",
         "src/js/visual/client-side-renderer.js",
         "src/js/visual/csr-asset-manager.js",
+        "src/js/visual/csr-initials.js",
         "src/js/visual/configurator.js",
         "src/js/visual/image.js"
     ]

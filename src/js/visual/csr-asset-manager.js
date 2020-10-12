@@ -11,10 +11,11 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.CSRAssetManager = function (owner, options, renderer) {
+ripe.CSRAssetManager = function (configurator, owner, options) {
     this.owner = owner;
+    this.configurator = configurator;
     this.assetsPath = options.assetsPath;
-    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "_fixed21.glb";
+    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "6.glb";
     this.texturesPath =
         this.assetsPath +
         "textures/" +
@@ -31,25 +32,22 @@ ripe.CSRAssetManager = function (owner, options, renderer) {
     this.environmentTexture = null;
     this.textureLoader = new this.library.TextureLoader();
 
-    this.fontsPath = options.fontsPath || this.assetsPath + "fonts/";
-    this.fontType = options.fontType || "";
-    this.fontWeight = options.fontWeight || "";
-    this.loadedFonts = {};
-    this.letterMaterial = null;
-    this.loadedLetterMaterials = {};
     this.textSize = options.textSize || 1;
     this.textHeight = options.textHeight || 0.1;
-    this.initialsPositions = {};
     this.modelConfig = options.modelConfig;
 
     this.meshes = {};
-    this.textMeshes = [];
 
     this.loadedGltf = undefined;
 
-    this._initializeFonts(this.fontType, this.fontWeight);
-    this.pmremGenerator = new this.library.PMREMGenerator(renderer);
-    this.maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+    let tmpRenderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
+
+    this.pmremGenerator = new this.library.PMREMGenerator(tmpRenderer);
+    this.maxAnisotropy = tmpRenderer.capabilities.getMaxAnisotropy();
+
+    tmpRenderer.dispose();
+
+    this._loadMesh();
 };
 
 ripe.CSRAssetManager.prototype = ripe.build(ripe.Observable.prototype);
@@ -66,41 +64,16 @@ ripe.CSRAssetManager.prototype.updateOptions = function (options) {
     this.partsMap = options.partsMap === undefined ? this.partsMap : options.partsMap;
 };
 
-ripe.CSRAssetManager.prototype.createLetter = function (letter) {
-    var textGeometry = new this.library.TextGeometry(letter, {
-        font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
-
-        size: size,
-        height: height,
-        curveSegments: 10
-    });
-
-    textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
-
-    letterMesh = new this.library.Mesh(textGeometry, this.letterMaterial);
-
-    // rotates geometry to negate default text rotation
-    letterMesh.geometry.rotateX(-Math.PI / 2);
-    letterMesh.geometry.rotateY(Math.PI / 2);
-
-    letterMesh.geometry.center();
-
-    this.textMeshes.push(letterMesh);
-
-    return letterMesh;
-};
-
-ripe.CSRAssetManager.prototype.disposeLastLetter = function () {
-    this.textMeshes[this.textMeshes.length - 1].geometry.dispose();
-    this.textMeshes.pop();
-};
-
 ripe.CSRAssetManager.prototype._loadMesh = async function () {
+    if (this.loadedGltf) return;
+
     if (this.meshPath.includes(".gltf") || this.meshPath.includes(".glb"))
         await this._loadGLTFMesh();
     else if (this.meshPath.includes(".fbx")) await this._loadFBXMesh();
 
     await this.setMaterials(this.owner.parts);
+
+    this.configurator.initializeLoading();
 };
 
 ripe.CSRAssetManager.prototype._loadFBXMesh = async function () {
@@ -141,37 +114,22 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
 
     const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
-    //var centerX = 0;
-    //var centerZ = 0;
 
     const traverseScene = child => {
-        if (child.name.includes("initials_part")) {
-            child.position.set(
-                child.position.x - centerX,
-                child.position.y,
-                child.position.z - centerZ
-            );
+        child.position.set(
+            child.position.x - centerX,
+            child.position.y,
+            child.position.z - centerZ
+        );
 
-            // naming is of the type "initials_part_1.001", where 1 indicates the position
-            var initialPosition = parseInt(child.name.split("_")[2].split(".")[0]);
-            // We do not add to the meshes, as this mesh only exists to guide the initials
-            // locations
-            this.initialsPositions[initialPosition] = child;
-            child.visible = false;
-            if (child.material) child.material.dispose();
-        } else if (child.isMesh) {
-            child.position.set(
-                child.position.x - centerX,
-                child.position.y,
-                child.position.z - centerZ
-            );
-            child.castShadow = true;
-            child.receiveShadow = true;
-            child.material.dispose();
+        if (!child.isMesh)
+            return;
 
-            // remove "_part" from string
-            this.meshes[child.name] = child;
-        }
+        child.castShadow = true;
+        child.receiveShadow = true;
+        child.material.dispose();
+
+        this.meshes[child.name] = child;
     };
 
     this.loadedGltf.scene.traverse(traverseScene);
@@ -181,7 +139,7 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
  * Disposes all the stored resources to avoid memory leaks. Includes meshes,
  * geometries and materials.
  */
-ripe.CSRAssetManager.prototype._disposeResources = async function (scene) {
+ripe.CSRAssetManager.prototype.disposeResources = async function (scene) {
     console.log("Disposing Resources");
     this.pmremGenerator.dispose();
 
@@ -201,20 +159,6 @@ ripe.CSRAssetManager.prototype._disposeResources = async function (scene) {
 
     count = 0;
 
-    if (this.textMeshes) {
-        for (let i = 0; i < this.textMeshes.length; i++) {
-            this.textMeshes[i].geometry.dispose();
-            this.textMeshes[i].material.dispose();
-            scene.remove(this.textMeshes[i]);
-            count++;
-        }
-    }
-
-    console.log("Finished disposing " + count + " letters.");
-
-    this.textMeshes = [];
-    count = 0;
-
     if (this.loadedTextures) {
         for (var texture in this.loadedTextures) {
             this.loadedTextures[texture].dispose();
@@ -226,28 +170,6 @@ ripe.CSRAssetManager.prototype._disposeResources = async function (scene) {
     this.loadedTextures = {};
 };
 
-ripe.CSRAssetManager.prototype._getLetterMaterial = async function (engraving) {
-    if (engraving !== null && !this.owner.engraving.includes("viewport")) {
-        engraving = this.owner.engraving;
-    }
-
-    var splitProps =  engraving.split("::");
-    var material, type;
-
-    if (splitProps[0] === "style") {
-        material = splitProps[1].split("_")[0];
-        type = splitProps[1].split("_")[1];
-    } else {
-        material = splitProps[0].split("_")[0];
-        type = splitProps[0].split("_")[1];
-    }
-
-    console.log(material, type)
-
-    const letterMaterial = await this._loadMaterial("initials", material, type);
-    return letterMaterial;
-};
-
 ripe.CSRAssetManager.prototype.setMaterials = async function (parts) {
     for (var part in parts) {
         if (part === "shadow") continue;
@@ -255,7 +177,7 @@ ripe.CSRAssetManager.prototype.setMaterials = async function (parts) {
         var material = parts[part].material;
         var color = parts[part].color;
         var newMaterial = await this._loadMaterial(part, material, color);
-        
+
         for (var mesh in this.meshes) {
             if (mesh.includes(part)) {
                 this.meshes[mesh].material.dispose();
@@ -345,13 +267,3 @@ ripe.CSRAssetManager.prototype.setupEnvironment = async function (scene) {
     texture.dispose();
 };
 
-ripe.CSRAssetManager.prototype._initializeFonts = async function (type, weight) {
-    const loader = new this.library.FontLoader();
-    const newFont = await new Promise((resolve, reject) => {
-        loader.load(this.fontsPath + type + "/" + weight + ".json", function (font) {
-            resolve(font);
-        });
-    });
-
-    this.loadedFonts[type + "_" + weight] = newFont;
-};

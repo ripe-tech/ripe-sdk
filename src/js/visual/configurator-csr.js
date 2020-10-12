@@ -75,13 +75,13 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
     this._ownerBinds.selected_part = this.owner.bind("selected_part", part =>
-        this.rtrenderer.highlight(part)
+        this.renderer.highlight(part)
     );
 
     // registers for the deselected part event on the owner
     // so that we can remove the highlight of the associated part
     this._ownerBinds.deselected_part = this.owner.bind("deselected_part", part =>
-        this.rtrenderer.lowlight()
+        this.renderer.lowlight()
     );
 
     // creates the necessary DOM elements and runs
@@ -105,10 +105,18 @@ ripe.ConfiguratorCSR.prototype.init = function () {
         if (config) this._updateConfig();
     });
 
-    // wait until configurator finished initializing to create the controls and
-    // rtrenderer
     this.controls = new ripe.OrbitalControls(this, this.element, this.options);
-    this.rtrenderer = new ripe.CSRenderer(this.owner, this.element, this.options);
+    this.renderer = new ripe.CSRenderer(this.owner, this.element, this.options);
+    this.initials = new ripe.CSRInitials(this.owner, this.options)
+
+    // wait until configurator finished initializing to create the controls and
+    // renderer
+    this.assetManager = new ripe.CSRAssetManager(this, this.owner, this.options)
+};
+
+ripe.ConfiguratorCSR.prototype.initializeLoading = async function () {
+    await this.renderer.initialize(this.assetManager);
+    await this.initials.initialize(this.assetManager);
 };
 
 /**
@@ -119,7 +127,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
 ripe.ConfiguratorCSR.prototype.deinit = async function () {
     await this.cancel();
 
-    await this.rtrenderer.disposeResources();
+    await this.disposeResources();
 
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -139,6 +147,12 @@ ripe.ConfiguratorCSR.prototype.deinit = async function () {
     ripe.Visual.prototype.deinit.call(this);
 };
 
+ripe.ConfiguratorCSR.prototype.disposeResources = async function() {
+    this.renderer.disposeResources();
+    this.assetManager.disposeResources();
+    this.initials.disposeResources();
+}
+
 /**
  * Updates configurator current options with the ones provided.
  *
@@ -153,7 +167,7 @@ ripe.ConfiguratorCSR.prototype.deinit = async function () {
 ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
-    this.rtrenderer.updateOptions(options);
+    this.renderer.updateOptions(options);
     this.controls.updateOptions(options);
 
     // this.library = options.library === undefined ? this.library : options.library;
@@ -212,24 +226,27 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
         return false;
     }
 
-    if (!this._enabled) {
+    if (!this._enabled || !this.renderer) {
         return;
     }
 
     if (options.reason === "set parts" || options.reason === "set part") {
-        await this.rtrenderer.crossfade({
+        await this.renderer.crossfade({
             type: "material",
             duration: 500
         });
     }
 
     if (options.reason && options.reason === "set initials") {
-        this.rtrenderer.updateInitials(this.owner.initials);
+        this.renderer.updateInitials("remove", this.initials.textMeshes);
+        await this.initials.update();
+        this.renderer.updateInitials("add", this.initials.textMeshes);
+        this.renderer.render();
     }
 
     // removes the highlight support from the matched object as a new
     // frame is going to be "calculated" and rendered (not same mask)
-    this.rtrenderer.lowlight();
+    this.renderer.lowlight();
 
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
@@ -237,7 +254,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
 };
 
 ripe.ConfiguratorCSR.prototype.updateParts = async function (parts) {
-    await this.rtrenderer.crossfade({
+    await this.renderer.crossfade({
         type: "material",
         duration: 500,
         parts: parts
@@ -254,17 +271,17 @@ ripe.ConfiguratorCSR.prototype.updateViewPosition = function (nextView, nextPosi
  * prompts a new render to update the scene.
  */
 ripe.ConfiguratorCSR.prototype._applyRotations = function () {
-    this.rtrenderer._applyRotations(
+    this.renderer._applyRotations(
         this.controls.currentHorizontalRot,
         this.controls.currentVerticalRot
     );
 
     this.updateViewPosition(this.controls._rotationToView(), this.controls._rotationToPosition());
-    this.rtrenderer.render();
+    this.renderer.render();
 };
 
 ripe.ConfiguratorCSR.prototype._beginTransition = function (options) {
-    this.rtrenderer.transition(options);
+    this.renderer.transition(options);
 };
 
 /**
@@ -321,10 +338,10 @@ ripe.ConfiguratorCSR.prototype.resize = async function (size) {
     area.style.height = size + "px";
     this.currentSize = size;
 
-    // On the resize of the configurator, the rtrenderer needs to update
+    // On the resize of the configurator, the renderer needs to update
     // the bounding box to maintain correct raycasts
-    if (this.rtrenderer) {
-        this.rtrenderer.updateSize();
+    if (this.renderer) {
+        this.renderer.updateSize();
     }
 
     await this.update(
@@ -423,9 +440,9 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function (animate) {
     // is being loaded
     this.ready = false;
 
-    if (this.rtrenderer) {
+    if (this.renderer) {
         // removes the highlight from any part
-        this.rtrenderer.lowlight();
+        this.renderer.lowlight();
     }
 
     // retrieves the new product frame object and sets it
