@@ -75,6 +75,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.initials = "";
     this.engraving = null;
     this.initialsExtra = {};
+    this.baseInitialsBuilder = null;
     this.ctx = {};
     this.children = this.children || [];
     this.plugins = this.plugins || [];
@@ -395,6 +396,24 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
             err
         );
     }
+
+    try {
+        // get initials builder of the build and model, if there is one
+        // defined, later used in the image's initials builder logic
+        const logicScriptText = await this.getLogicP({
+            brand: this.brand,
+            model: this.model,
+            version: this.version,
+            format: "js"
+        });
+        // eslint-disable-next-line no-eval
+        const logicScript = eval(logicScriptText);
+        this.baseInitialsBuilder = logicScript.baseInitialsBuilder;
+    } catch (err) {
+        this.baseInitialsBuilder = null;
+    }
+
+    console.log("BASE", this.baseInitialsBuilder);
 
     // creates a "new" choices from the provided configuration for the
     // model that has just been "loaded" and sets it as the new set of
