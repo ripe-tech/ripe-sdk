@@ -92,19 +92,23 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
 }
 
 ripe.CSRenderer.prototype.createGUI = function () {
+    const area = this.element.querySelector(".area");
     this.gui = new dat.GUI({autoPlace: false});
     
-    const area = this.element.querySelector(".area");
     area.appendChild(this.gui.domElement);
-    
+
     this.gui.domElement.id = 'gui';
+    this.gui.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
+    this.gui.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
+
     console.log(this.gui.domElement)
     console.log(this.element)
 
-    const folder = this.gui.addFolder("Settings");
-    folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
-    folder.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
-    folder.open();
+
+    //const folder = this.gui.addFolder("Settings");
+    //folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
+    //folder.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
+    //folder.open();
 }
 
 ripe.CSRenderer.prototype.updateOptions = async function (options) {
