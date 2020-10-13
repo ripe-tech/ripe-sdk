@@ -115,31 +115,6 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     if (update) await this.update();
 };
 
-ripe.Image.prototype._baseInitialsBuilder = function(initials, engraving, element) {
-    const group = element.getAttribute("data-group");
-    const profiles = [];
-
-    if (group) {
-        profiles.push({
-            type: "group",
-            name: group
-        });
-    }
-
-    const parts = engraving ? engraving.split(".") : [];
-    for (const part of parts) {
-        const slices = part.split(":");
-        const name = slices[0];
-        const type = slices[1];
-        profiles.push({ name: name, type: type });
-    }
-
-    return {
-        initials: initials,
-        profile: profiles
-    };
-};
-
 ripe.Image.prototype.initialsBuilder = function(initials, engraving, element) {
     const result = this.baseInitialsBuilder(initials, engraving, element);
 
@@ -150,66 +125,6 @@ ripe.Image.prototype.initialsBuilder = function(initials, engraving, element) {
             profile: self._profilePermutations(result.profile, context)
         };
     };
-};
-
-ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":") {
-    const combinations = profiles.flatMap(p => profiles.map(p1 => Array.from(new Set([p, p1]))));
-
-    // iterate over the profiles and append the context
-    // to them, resulting in all the profile combinations
-    // for the provided context
-    profiles = new Set();
-    for (const combination of combinations) {
-        let profile = "";
-        let profileReversed = "";
-
-        // iterate over the combination values and creates all
-        // the permutations with both the name::type format and
-        // the its reverse
-        for (const index in combination) {
-            // support for string format, offering backward compatibility
-            // with existing initials builders
-            if (typeof combination[index] === "string") profile += combination[index];
-            else {
-                profile += `${combination[index].type}::${combination[index].name}`;
-                profileReversed += `${combination[index].name}::${combination[index].type}`;
-                profiles.add(combination[index].name);
-            }
-
-            if (index >= combination.length - 1) continue;
-            profile += sep;
-            if (profileReversed !== "") profileReversed += sep;
-        }
-        profiles.add(profile);
-        if (profileReversed !== "") profiles.add(profileReversed);
-
-        // iterate over the context values and construct all
-        // the permutations with the existing combinations, both
-        // normal and with their type and names reversed
-        for (const contextValue of context) {
-            profile = "";
-            profileReversed = "";
-
-            for (const index in combination) {
-                // support for string format, offering backward compatibility
-                // with existing initials builders
-                if (typeof combination[index] === "string") {
-                    profile += `${contextValue}${sep}${combination[index]}`;
-                } else {
-                    profile += `${contextValue}${sep}${combination[index].type}::${combination[index].name}`;
-                    profileReversed += `${contextValue}${sep}${combination[index].name}::${combination[index].type}`;
-                }
-
-                if (index >= combination.length - 1) continue;
-                profile += sep;
-                if (profileReversed !== "") profileReversed += sep;
-            }
-            profiles.add(profile);
-            if (profileReversed !== "") profiles.add(profileReversed);
-            profiles.add(contextValue);
-        }
-    }
-    return Array.from(profiles);
 };
 
 /**
@@ -435,4 +350,115 @@ ripe.Image.prototype._unregisterHandlers = function() {
     if (this.loadedHandler) this.unbind("loaded", this.loadedHandler);
     if (this.errorHandler) this.unbind("error", this.errorHandler);
     if (this._observer) this._observer.disconnect();
+};
+
+/**
+ * @ignore
+ */
+ripe.Image.prototype._baseInitialsBuilder = function(initials, engraving, element) {
+    console.log("HERE");
+    const group = element.getAttribute("data-group");
+    const profiles = [];
+
+    if (group) {
+        profiles.push({
+            type: "group",
+            name: group
+        });
+    }
+
+    const parts = engraving ? engraving.split(".") : [];
+    for (const part of parts) {
+        const slices = part.split(":");
+        const name = slices[0];
+        const type = slices[1];
+        profiles.push({ name: name, type: type });
+    }
+
+    return {
+        initials: initials,
+        profile: profiles
+    };
+};
+
+/**
+ * @ignore
+ */
+ripe.Image.prototype._profilePermutationConcat = function(item, index, length, sep, profiles) {
+    let profileString = "";
+    let profileStringReversed = "";
+
+    if (typeof item === "string") profileString += item;
+    else {
+        profileString += `${item.type}::${item.name}`;
+        profileStringReversed += `${item.name}::${item.type}`;
+        profiles.add(item.name);
+    }
+
+    if (index >= length - 1) {
+        profileString += sep;
+        if (profileStringReversed !== "") profileStringReversed += sep;
+    }
+    return { profileString, profileStringReversed };
+};
+
+/**
+ * @ignore
+ */
+ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":") {
+    const combinations = profiles.flatMap(p => profiles.map(p1 => Array.from(new Set([p, p1]))));
+
+    // iterate over the profiles and append the context
+    // to them, resulting in all the profile combinations
+    // for the provided context
+    profiles = new Set();
+    for (const combination of combinations) {
+        let profile = "";
+        let profileReversed = "";
+
+        // iterate over the combination values and creates all
+        // the permutations with both the name::type format and
+        // the its reverse
+        for (const index in combination) {
+            // support for string format, offering backward compatibility
+            // with existing initials builders
+            const profileStrings = this._profilePermutationConcat(
+                combination[index],
+                index,
+                combination.length,
+                sep,
+                profiles
+            );
+            profile += profileStrings.profileString;
+            profileReversed += profileStrings.profileStringReversed;
+        }
+        profiles.add(profile);
+        if (profileReversed !== "") profiles.add(profileReversed);
+
+        // iterate over the context values and construct all
+        // the permutations with the existing combinations, both
+        // normal and with their type and names reversed
+        for (const contextValue of context) {
+            profile = "";
+            profileReversed = "";
+
+            for (const index in combination) {
+                // support for string format, offering backward compatibility
+                // with existing initials builders
+                const profileStrings = this._profilePermutationConcat(
+                    combination[index],
+                    index,
+                    combination.length,
+                    sep,
+                    profiles
+                );
+                profile += profileStrings.profileString;
+                profileReversed += profileStrings.profileStringReversed;
+            }
+            profiles.add(profile);
+            if (profileReversed !== "") profiles.add(profileReversed);
+            profiles.add(contextValue);
+        }
+    }
+    return Array.from(profiles);
 };
