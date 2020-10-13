@@ -17,7 +17,7 @@
             <script type="text/javascript" src="{{ url_for('static', filename = 'assets/configs/swear/vyner_hitop.json') }}"></script>
             
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/build/three.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/libs/dat.gui.min.js"></script>
+            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/dat.gui/master/build/dat.gui.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/FBXLoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/GLTFLoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/RGBELoader.min.js"></script>
@@ -25,7 +25,6 @@
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/ConvolutionShader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/EffectComposer.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/RenderPass.min.js"></script>
-
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/BloomPass.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/SSAARenderPass.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/UnpackDepthRGBAShader.min.js"></script>

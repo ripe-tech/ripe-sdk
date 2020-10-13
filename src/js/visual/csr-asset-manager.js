@@ -15,7 +15,7 @@ ripe.CSRAssetManager = function (configurator, owner, options) {
     this.owner = owner;
     this.configurator = configurator;
     this.assetsPath = options.assetsPath;
-    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "23.glb";
+    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "_demo.glb";
     this.texturesPath =
         this.assetsPath +
         "textures/" +

@@ -349,6 +349,7 @@ window.onload = function () {
                 cameraDistance: 90,
                 cameraHeight: 12,
                 cameraTarget: { x: 0, y: 9, z: 0.0 },
+                debug: true,
                 /*
                 cameraFOV: 28,
                 cameraDistance: 5.1,

@@ -62,12 +62,8 @@ ripe.CSRenderer = function (owner, element, options) {
 
     this.useMasks = options.useMasks || true;
     
-    this.gui = new dat.GUI();
-    const folder = this.gui.addFolder("Settings");
-    folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
-    folder.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
-    folder.open();
-
+    if (options.debug) this.createGUI();
+    
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
@@ -93,6 +89,22 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
     this._initializeShaders();
     this._loadAssets();
 
+}
+
+ripe.CSRenderer.prototype.createGUI = function () {
+    this.gui = new dat.GUI({autoPlace: false});
+    
+    const area = this.element.querySelector(".area");
+    area.appendChild(this.gui.domElement);
+    
+    this.gui.domElement.id = 'gui';
+    console.log(this.gui.domElement)
+    console.log(this.element)
+
+    const folder = this.gui.addFolder("Settings");
+    folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
+    folder.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
+    folder.open();
 }
 
 ripe.CSRenderer.prototype.updateOptions = async function (options) {
