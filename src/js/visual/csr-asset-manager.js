@@ -24,6 +24,7 @@ ripe.CSRAssetManager = function (configurator, owner, options) {
         this.owner.model.toLowerCase() +
         ".glb";
     this.library = options.library;
+    this.library.Cache = false;
     this.owner = owner;
 
     this.assetsPath = options.assetsPath || "";
@@ -188,8 +189,8 @@ ripe.CSRAssetManager.prototype.setMaterials = async function (parts) {
                 break;
             }
         }
-
-        console.log("\n\nChanging material for part " + part + " to " + color + " " + material)
+        
+        console.log("\nChanging material for part " + part + " to " + color + " " + material)
     }
 }
 

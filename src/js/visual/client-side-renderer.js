@@ -60,10 +60,11 @@ ripe.CSRenderer = function (owner, element, options) {
     // animations
     this.introAnimation = options.introAnimation;
 
-    this.useMasks = options.useMasks || true;
-    
-    if (options.debug) this.createGUI();
-    
+    this.useMasks = options.useMasks && true;
+    this.usesPostProcessing = options.usesPostProcessing && true;
+
+    this.debug = options.debug || false;
+
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
@@ -74,42 +75,6 @@ ripe.CSRenderer = function (owner, element, options) {
 
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRenderer.prototype.constructor = ripe.CSRenderer;
-
-ripe.CSRenderer.prototype.initialize = async function (assetManager) {
-    this.assetManager = assetManager;
-    this.scene = new this.library.Scene();
-    this.raycaster = new this.library.Raycaster();
-    
-    // initialize all ThreeJS components
-    this._initializeLights();
-    this._initializeCamera();
-    this._initializeRenderer();
-    //this._setupPostProcessing();
-    this._registerHandlers();
-    this._initializeShaders();
-    this._loadAssets();
-
-}
-
-ripe.CSRenderer.prototype.createGUI = function () {
-    const area = this.element.querySelector(".area");
-    this.gui = new dat.GUI({autoPlace: false});
-    
-    area.appendChild(this.gui.domElement);
-
-    this.gui.domElement.id = 'gui';
-    this.gui.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
-    this.gui.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
-
-    console.log(this.gui.domElement)
-    console.log(this.element)
-
-
-    //const folder = this.gui.addFolder("Settings");
-    //folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
-    //folder.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
-    //folder.open();
-}
 
 ripe.CSRenderer.prototype.updateOptions = async function (options) {
     this.assetManager.updateOptions(options);
@@ -147,6 +112,26 @@ ripe.CSRenderer.prototype.updateOptions = async function (options) {
     this.useMasks = options.useMasks === undefined ? this.useMasks : options.useMasks;
 };
 
+ripe.CSRenderer.prototype.initialize = async function (assetManager) {
+    this.assetManager = assetManager;
+    this.scene = new this.library.Scene();
+    this.raycaster = new this.library.Raycaster();
+
+    // initialize all ThreeJS components
+    this._initializeLights();
+    this._initializeCamera();
+    this._initializeRenderer();
+    this._registerHandlers();
+    this._initializeShaders();
+    this._loadAssets();
+
+    if (this.usesPostProcessing)
+        this._setupPostProcessing();
+
+    if (this.debug) 
+        this.createGUI();
+}
+
 ripe.CSRenderer.prototype._registerHandlers = function () {
     const self = this;
     const area = this.element.querySelector(".area");
@@ -168,7 +153,7 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
 
     area.addEventListener("click", function (event) {
         event = ripe.fixEvent(event);
-        
+
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
 };
@@ -306,32 +291,56 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
     area.appendChild(this.renderer.domElement);
 };
 
+ripe.CSRenderer.prototype.createGUI = function () {
+    const area = this.element.querySelector(".area");
+    this.gui = new dat.GUI({ autoPlace: false});
+
+    document.appendChild(this.gui.domElement);
+
+    this.gui.domElement.id = 'gui';
+
+    console.log(this.gui.domElement)
+    console.log(this.element)
+
+    const folder = this.gui.addFolder("Render Settings");
+    folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
+    folder.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
+    folder.open();
+
+    if (this.usesPostProcessing) {
+        const folderPostProcess = this.gui.addFolder("Post Processing Settings Settings");
+        folderPostProcess.add(this, "exposure", 0.0, 4.0).name("SA").onChange(this.render);
+        folderPostProcess.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
+        folderPostProcess.open();
+    }   
+}
+
 ripe.CSRenderer.prototype._setupPostProcessing = function () {
     this.composer = new this.library.EffectComposer(this.renderer);
 
     var renderPass = new this.library.RenderPass(this.scene, this.camera);
     this.composer.addPass(renderPass);
 
-    var saoPass = new this.library.SAOPass(this.scene, this.camera, true, true);
+    this.saoPass = new this.library.SAOPass(this.scene, this.camera, true, true);
 
-    saoPass.resolution.set(8192, 8192);
+    this.saoPass.resolution.set(1024, 1024);
 
-    saoPass.params.saoBias = 0.01;
-    saoPass.params.saoIntensity = 1;
-    saoPass.params.saoScale = 5;
-    saoPass.params.saoKernelRadius = 20;
-    saoPass.params.saoMinResolution = 0;
+    this.saoPass.params.saoBias = 0.01;
+    this.saoPass.params.saoIntensity = 1;
+    this.saoPass.params.saoScale = 5;
+    this.saoPass.params.saoKernelRadius = 20;
+    this.saoPass.params.saoMinResolution = 0;
 
-    this.composer.addPass(saoPass);
+    this.composer.addPass(this.saoPass);
 
-    var bloomPass = new this.library.BloomPass(1, 25, 4, 256);
-    this.composer.addPass(bloomPass);
+    this.bloomPass = new this.library.BloomPass(1, 25, 4, 256);
+    this.composer.addPass(this.bloomPass);
 
-    var ssaoPass = new this.library.SSAOPass(this.scene, this.camera, 620, 620);
-    ssaoPass.kernelRadius = 32;
-    ssaoPass.renderToScreen = true;
+    this.ssaoPass = new this.library.SSAOPass(this.scene, this.camera, 620, 620);
+    this.ssaoPass.kernelRadius = 32;
+    this.ssaoPass.renderToScreen = true;
 
-    this.composer.addPass(ssaoPass);
+    this.composer.addPass(this.ssaoPass);
 };
 
 ripe.CSRenderer.prototype._initializeCamera = function () {
@@ -367,12 +376,12 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
             action.loop = this.library.LoopOnce;
         }
     });
-    
+
     var previousTime = 0;
 
     const doAnimation = (time) => {
         previousTime = previousTime == 0 ? time : previousTime;
-    
+
         const dt = (time - previousTime) / 1000;
         this.mixer && this.mixer.update(dt);
 
@@ -384,26 +393,25 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
 
         if (!action.paused) requestAnimationFrame(doAnimation);
     };
-    
+
     action.play();
     requestAnimationFrame(doAnimation);
 };
 
 ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
-    for (let i = 0 ; i < meshes.length ; i++) {
+    for (let i = 0; i < meshes.length; i++) {
         if (operation === "remove")
             this.scene.remove(meshes[i]);
         if (operation === "add")
             this.scene.add(meshes[i]);
-    }        
+    }
 }
 
 ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
     //console.log("Rendering!")
     const cam = camera === undefined ? this.camera : camera;
-    //const renderer = useRenderer ? this.renderer : this.composer;
-    const renderer = this.renderer;
-
+    const renderer = useRenderer ? this.renderer : this.composer;
+    
     renderer.render(this.scene, cam);
 };
 
@@ -485,7 +493,6 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) 
     var startingValue = meshTarget.material.color.r;
 
     //console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
-
     if (!meshTarget) return;
 
     var currentValue = startingValue;
@@ -547,7 +554,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     var renderTargetParameters = {
         minFilter: this.library.LinearFilter,
         magFilter: this.library.LinearFilter,
-        format: this.library.RGBAFormat
+        format: this.library.RGBFormat
     };
 
     var width = this.elementBoundingBox.width;

@@ -410,28 +410,28 @@
                 "aoMap": "general/ao/main_ao.jpg",
                 "map": "side_part/grain_metallic/emerald/diffuse.jpg",
                 "metalness": 1,
-                "roughnessMap": "front_part/grain_metallic/general/roughness.jpg",
+                "roughnessMap": "side_part/grain_metallic/general/roughness.jpg",
                 "normalMap": "side_part/grain_metallic/general/normal.jpg"
             },
             "gold": {
                 "aoMap": "general/ao/main_ao.jpg",
                 "map": "side_part/grain_metallic/gold/diffuse.jpg",
                 "metalness": 1,
-                "roughnessMap": "front_part/grain_metallic/general/roughness.jpg",
+                "roughnessMap": "side_part/grain_metallic/general/roughness.jpg",
                 "normalMap": "side_part/grain_metallic/general/normal.jpg"
             },
             "purple": {
                 "aoMap": "general/ao/main_ao.jpg",
                 "map": "side_part/grain_metallic/purple/diffuse.jpg",
                 "metalness": 1,
-                "roughnessMap": "front_part/grain_metallic/general/roughness.jpg",
+                "roughnessMap": "side_part/grain_metallic/general/roughness.jpg",
                 "normalMap": "side_part/grain_metallic/general/normal.jpg"
             },
             "silver": {
                 "aoMap": "general/ao/main_ao.jpg",
                 "map": "side_part/grain_metallic/silver/diffuse.jpg",
                 "metalness": 1,
-                "roughnessMap": "front_part/grain_metallic/general/roughness.jpg",
+                "roughnessMap": "side_part/grain_metallic/general/roughness.jpg",
                 "normalMap": "side_part/grain_metallic/general/normal.jpg"
             }
         },

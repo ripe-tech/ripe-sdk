@@ -17,6 +17,8 @@
 
 #gui { 
     position: absolute; 
+    top: 20px; 
+    right: 20px;
 }
 
 .configurator .back {

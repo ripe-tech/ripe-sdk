@@ -350,6 +350,7 @@ window.onload = function () {
                 cameraHeight: 12,
                 cameraTarget: { x: 0, y: 9, z: 0.0 },
                 debug: true,
+                usesPostProcessing: true,
                 /*
                 cameraFOV: 28,
                 cameraDistance: 5.1,
@@ -417,9 +418,6 @@ window.onload = function () {
             setPart &&
                 setPart.addEventListener("click", function () {
                     randomize();
-                    //console.log(parts)
-                    //if (currentRenderMode == "prc") ripe.setParts(parts, true, { partEvents: false });
-                    //if (currentRenderMode == "csr") configuratorCSR.updateParts(parts);
                 });
 
             // eslint-disable-next-line no-undef
