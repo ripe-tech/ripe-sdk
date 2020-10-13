@@ -15,7 +15,7 @@ ripe.CSRAssetManager = function (configurator, owner, options) {
     this.owner = owner;
     this.configurator = configurator;
     this.assetsPath = options.assetsPath;
-    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "_demo2.glb";
+    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "_demo4.glb";
     this.texturesPath =
         this.assetsPath +
         "textures/" +
@@ -117,20 +117,17 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
 
     const traverseScene = child => {
-        /*
         child.position.set(
             child.position.x - centerX,
             child.position.y,
             child.position.z - centerZ
         );
-        */
-
-        if (!child.isMesh)
-            return;
-
+        
         child.castShadow = true;
         child.receiveShadow = true;
-        child.material.dispose();
+        
+        if (child.material)
+            child.material.dispose();
 
         this.meshes[child.name] = child;
     };
@@ -254,8 +251,6 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
 ripe.CSRAssetManager.prototype.setupEnvironment = async function (renderer, scene) {
     this.pmremGenerator = new this.library.PMREMGenerator(renderer);
     var environmentMapPath = this.assetsPath + "environments/" + this.environment + ".hdr";
-
-    console.log(environmentMapPath)
 
     const rgbeLoader = new this.library.RGBELoader();
     const texture = await new Promise((resolve, reject) => {

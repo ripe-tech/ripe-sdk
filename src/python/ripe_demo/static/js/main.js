@@ -376,6 +376,7 @@ window.onload = function () {
                 textSize: 0.5,
                 textHeight: 0.01,
                 shadowBias: -0.01,
+                canZoom: true
                 //lockRotation: "horizontal"
             });
 

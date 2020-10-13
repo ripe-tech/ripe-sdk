@@ -60,11 +60,11 @@ ripe.CSRenderer = function (owner, element, options) {
     // animations
     this.introAnimation = options.introAnimation;
 
-    this.useMasks = options.useMasks && true;
-    this.usesPostProcessing = options.usesPostProcessing && true;
+    this.useMasks = options.useMasks === undefined ? true : options.useMasks;
+    this.usesPostProcessing = options.usesPostProcessing === undefined ? true : options.usesPostProcessing;
 
     this.debug = options.debug || false;
-
+    this.canZoom = options.canZoom === undefined ? true : options.canZoom;
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
@@ -128,7 +128,7 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
     if (this.usesPostProcessing)
         this._setupPostProcessing();
 
-    if (this.debug) 
+    if (this.debug)
         this.createGUI();
 }
 
@@ -156,6 +156,18 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
 
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
+
+    if (!this.canZoom)
+        return;
+
+    area.addEventListener("wheel", function(event) {
+        event.preventDefault();
+
+        self.cameraDistance += event.deltaY;
+        self._applyRotations(self.camera.rotation.x, self.camera.rotation.y);
+        self.render();
+        //console.log(event);
+    },  {passive: false});
 };
 
 ripe.CSRenderer.prototype.disposeResources = async function () {
@@ -293,14 +305,11 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
 
 ripe.CSRenderer.prototype.createGUI = function () {
     const area = this.element.querySelector(".area");
-    this.gui = new dat.GUI({ autoPlace: false});
+    this.gui = new dat.GUI({ autoPlace: false });
 
-    document.appendChild(this.gui.domElement);
+    area.appendChild(this.gui.domElement);
 
     this.gui.domElement.id = 'gui';
-
-    console.log(this.gui.domElement)
-    console.log(this.element)
 
     const folder = this.gui.addFolder("Render Settings");
     folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
@@ -308,11 +317,71 @@ ripe.CSRenderer.prototype.createGUI = function () {
     folder.open();
 
     if (this.usesPostProcessing) {
-        const folderPostProcess = this.gui.addFolder("Post Processing Settings Settings");
-        folderPostProcess.add(this, "exposure", 0.0, 4.0).name("SA").onChange(this.render);
-        folderPostProcess.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
-        folderPostProcess.open();
-    }   
+        // TODO Add debug controls here
+        return;
+        const updateSAO = (param, value) => {
+            this.saoPass[param] = value;
+            this.render();
+        }
+
+        const folderSAO = this.gui.addFolder("Scalable Ambient Occlusion Pass");
+
+        folderSAO.add(this.saoPass, "saoIntensity", 0.0, 1.0).name("Intensity").onChange(function (value) {
+            updateSAO("saoIntensity", value)
+        });
+        folderSAO.add(this.saoPass, "saoScale", 0.0, 10.0).name("Scale").onChange(function (value) {
+            updateSAO("saoScale", value)
+        });
+        folderSAO.add(this.saoPass, "saoKernelRadius", 0.0, 100.0).name("KernelRadius").onChange(function (value) {
+            updateSAO("saoKernelRadius", value)
+        });
+        folderSAO.add(this.saoPass, "saoBlur").name("Blur").onChange(function (value) {
+            updateSAO("saoBlur", value)
+        });
+        folderSAO.add(this.saoPass, "saoBlurRadius", 0.0, 200.0).name("Blur Radius").onChange(function (value) {
+            updateSAO("saoIntensity", value)
+        });
+        folderSAO.add(this.saoPass, "saoBlurStdDev", 0.0, 150.0).name("Blur StdDev").onChange(function (value) {
+            updateSAO("saoBlurStdDev", value)
+        });
+
+        folderSAO.open();
+
+        const updateSSAO = (param, value) => {
+            this.ssaoPass[param] = value;
+            this.render();
+        }
+
+        const folderSSAO = this.gui.addFolder("Screen Space Ambient Occlusion Pass");
+
+        folderSSAO.add(this.ssaoPass, "kernelRadius", 0.0, 32.0).name("Kernel Radius").onChange(function (value) {
+            updateSSAO("kernelRadius", value)
+        });
+        folderSSAO.add(this.ssaoPass, "minDistance", 0.001, 0.02).name("Min Distance").onChange(function (value) {
+            updateSSAO("minDistance", value)
+        });
+        folderSSAO.add(this.ssaoPass, "maxDistance", 0.01, 0.3).name("Max Distance").onChange(function (value) {
+            updateSSAO("maxDistance", value)
+        });
+
+        folderSSAO.open();
+
+        const updateBloom = (param, value) => {
+            this.bloomPass[param] = value;
+            this.render();
+        }
+
+        const folderBloom = this.gui.addFolder("Bloom Pass");
+
+        folderBloom.add(this.bloomPass, "bloomThreshold", 0.0, 1.0).name("Threshold").onChange(function (value) {
+            updateBloom("threshold", value)
+        });
+        folderBloom.add(this.bloomPass, "bloomStrength", 0.0, 3.0).name("Strength").onChange(function (value) {
+            updateBloom("bloomStrength", value)
+        });
+
+        folderBloom.open();
+    }
 }
 
 ripe.CSRenderer.prototype._setupPostProcessing = function () {
@@ -411,14 +480,16 @@ ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undef
     //console.log("Rendering!")
     const cam = camera === undefined ? this.camera : camera;
     const renderer = useRenderer ? this.renderer : this.composer;
-    
+
     renderer.render(this.scene, cam);
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
     if (this.renderer)
         this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
-    //this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
+    if (this.composer)
+        this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
+
     this.updateElementBoundingBox();
 };
 
@@ -426,9 +497,11 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
 
+
     if (!this.elementBoundingBox || animating || dragging) return;
 
     const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
+    //console.log(mouse.x, mouse.y)
 
     if (this.raycaster && this.scene) {
         this.raycaster.setFromCamera(mouse, this.camera);
@@ -442,6 +515,7 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
                 this.intersectedPart = intersects[0].object.name;
                 this.highlight(this.intersectedPart);
             }
+
         } else {
             this.lowlight();
         }
@@ -467,7 +541,6 @@ ripe.CSRenderer.prototype.highlight = function (part, options = {}) {
 ripe.CSRenderer.prototype.lowlight = function (options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
-
     if (!this.useMasks) {
         return;
     }
@@ -489,10 +562,11 @@ ripe.CSRenderer.prototype.lowlight = function (options) {
 };
 
 ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) {
+    //console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
+
     var meshTarget = this.assetManager.meshes[part];
     var startingValue = meshTarget.material.color.r;
 
-    //console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
     if (!meshTarget) return;
 
     var currentValue = startingValue;
@@ -589,7 +663,6 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     this.render(true)
 
     var parts = options.parts === undefined ? this.owner.parts : options.parts;
-    console.log(parts)
 
     if (options.type === "material") {
         await this.assetManager.setMaterials(parts);
