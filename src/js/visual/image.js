@@ -57,13 +57,14 @@ ripe.Image.prototype.init = function() {
     this.mutations = this.options.mutations || false;
     this.showInitials = this.options.showInitials || false;
     this.initialsGroup = this.options.initialsGroup || null;
-    this.initialsBuilder =
-        this.options.initialsBuilder ||
-        function(initials, engraving, element) {
-            return {
-                initials: initials || "$empty",
-                profile: [engraving]
-            };
+    this.baseInitialsBuilder =
+        this.options.baseInitialsBuilder ||
+        this.owner.baseInitialsBuilder ||
+        this._baseInitialsBuilder;
+    this.context =
+        this.options.context ||
+        function() {
+            return [];
         };
     this._observer = null;
     this._url = null;
@@ -83,7 +84,8 @@ ripe.Image.prototype.deinit = async function() {
     this._unregisterHandlers();
 
     this._observer = null;
-    this.initialsBuilder = null;
+    this.baseInitialsBuilder = null;
+    this.context = null;
 
     ripe.Visual.prototype.deinit.call(this);
 };
@@ -111,6 +113,103 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
         options.initialsGroup === undefined ? this.initialsGroup : options.initialsGroup;
 
     if (update) await this.update();
+};
+
+ripe.Image.prototype._baseInitialsBuilder = function(initials, engraving, element) {
+    const group = element.getAttribute("data-group");
+    const profiles = [];
+
+    if (group) {
+        profiles.push({
+            type: "group",
+            name: group
+        });
+    }
+
+    const parts = engraving ? engraving.split(".") : [];
+    for (const part of parts) {
+        const slices = part.split(":");
+        const name = slices[0];
+        const type = slices[1];
+        profiles.push({ name: name, type: type });
+    }
+
+    return {
+        initials: initials,
+        profile: profiles
+    };
+};
+
+ripe.Image.prototype.initialsBuilder = function(initials, engraving, element) {
+    const result = this.baseInitialsBuilder(initials, engraving, element);
+
+    const self = this;
+    return function build(context) {
+        return {
+            initials: result.initials,
+            profile: self._profilePermutations(result.profile, context)
+        };
+    };
+};
+
+ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":") {
+    const combinations = profiles.flatMap(p => profiles.map(p1 => Array.from(new Set([p, p1]))));
+
+    // iterate over the profiles and append the context
+    // to them, resulting in all the profile combinations
+    // for the provided context
+    profiles = new Set();
+    for (const combination of combinations) {
+        let profile = "";
+        let profileReversed = "";
+
+        // iterate over the combination values and creates all
+        // the permutations with both the name::type format and
+        // the its reverse
+        for (const index in combination) {
+            // support for string format, offering backward compatibility
+            // with existing initials builders
+            if (typeof combination[index] === "string") profile += combination[index];
+            else {
+                profile += `${combination[index].type}::${combination[index].name}`;
+                profileReversed += `${combination[index].name}::${combination[index].type}`;
+                profiles.add(combination[index].name);
+            }
+
+            if (index >= combination.length - 1) continue;
+            profile += sep;
+            if (profileReversed !== "") profileReversed += sep;
+        }
+        profiles.add(profile);
+        if (profileReversed !== "") profiles.add(profileReversed);
+
+        // iterate over the context values and construct all
+        // the permutations with the existing combinations, both
+        // normal and with their type and names reversed
+        for (const contextValue of context) {
+            profile = "";
+            profileReversed = "";
+
+            for (const index in combination) {
+                // support for string format, offering backward compatibility
+                // with existing initials builders
+                if (typeof combination[index] === "string") {
+                    profile += `${contextValue}${sep}${combination[index]}`;
+                } else {
+                    profile += `${contextValue}${sep}${combination[index].type}::${combination[index].name}`;
+                    profileReversed += `${contextValue}${sep}${combination[index].name}::${combination[index].type}`;
+                }
+
+                if (index >= combination.length - 1) continue;
+                profile += sep;
+                if (profileReversed !== "") profileReversed += sep;
+            }
+            profiles.add(profile);
+            if (profileReversed !== "") profiles.add(profileReversed);
+            profiles.add(contextValue);
+        }
+    }
+    return Array.from(profiles);
 };
 
 /**
@@ -141,7 +240,11 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     }
 
     const initialsSpec = this.showInitials
-        ? this.initialsBuilder(this.initials, this.engraving, this.element)
+        ? this.initialsBuilder(
+              this.initials,
+              this.engraving,
+              this.element
+          )(this.context(initialsGroup))
         : {};
 
     // verifies if the model currently loaded in the RIPE instance can
@@ -274,8 +377,8 @@ ripe.Image.prototype.setShowInitials = function(showInitials) {
  * @param {Object} options An object with options to configure
  * the setting of the 'initialsBuilder'.
  */
-ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
-    this.initialsBuilder = builder;
+ripe.Image.prototype.setBaseInitialsBuilder = function(builder, options) {
+    this.baseInitialsBuilder = builder;
     this.update();
 };
 
