@@ -413,8 +413,6 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
         this.baseInitialsBuilder = null;
     }
 
-    console.log("BASE", this.baseInitialsBuilder);
-
     // creates a "new" choices from the provided configuration for the
     // model that has just been "loaded" and sets it as the new set of
     // choices for the configuration context
