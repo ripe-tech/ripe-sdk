@@ -18,7 +18,6 @@
             
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/build/three.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/dat.gui/master/build/dat.gui.min.js"></script>
-            <script src="https://cdn.statically.io/gh/jeromeetienne/threex.rendererstats/master/threex.rendererstats.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/FBXLoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/GLTFLoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/RGBELoader.min.js"></script>

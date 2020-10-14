@@ -231,9 +231,6 @@ ripe.CSRInitials.prototype.disposeResources = async function () {
         await this.assetManager.disposeMesh(this.initialsPositions[mesh]);
         count++;
     }
-
-    console.log("Finished disposing " + count + " initials positions mesh.");
-
     if (this.letterMaterial) await this.assetManager.disposeMaterial(this.letterMaterial);
 
     this.loadedFonts = {};
@@ -243,7 +240,7 @@ ripe.CSRInitials.prototype.disposeResources = async function () {
     this.library = null;
     this.textMeshes = [];
     
-    
+    console.log("Finished disposing " + count + " initials positions mesh.");
 }
 
 ripe.CSRInitials.prototype._getLetterMaterial = async function () {

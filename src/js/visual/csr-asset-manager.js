@@ -19,7 +19,6 @@ ripe.CSRAssetManager = function (configurator, owner, options, renderer) {
     this.owner = owner;
     this.configurator = configurator;
     this.assetsPath = options.assetsPath;
-    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "_demo25.glb";
     this.texturesPath =
         this.assetsPath +
         "textures/" +
@@ -37,6 +36,7 @@ ripe.CSRAssetManager = function (configurator, owner, options, renderer) {
     this.environment = options.environment;
 
     this.textureLoader = new this.library.TextureLoader();
+    this.loadingManager = new this.library.LoadingManager();
 
     this.textSize = options.textSize || 1;
     this.textHeight = options.textHeight || 0.1;
@@ -59,11 +59,6 @@ ripe.CSRAssetManager.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRAssetManager.prototype.constructor = ripe.CSRAssetManager;
 
 ripe.CSRAssetManager.prototype.updateOptions = function (options) {
-    if (options.meshPath && this.meshPath !== options.meshPath) {
-        this.meshPath = options.meshPath;
-        this._loadMesh();
-    }
-
     // materials
     this.assetsPath = options.assetsPath === undefined ? this.assetsPath : options.assetsPath;
     this.partsMap = options.partsMap === undefined ? this.partsMap : options.partsMap;
@@ -72,36 +67,27 @@ ripe.CSRAssetManager.prototype.updateOptions = function (options) {
 ripe.CSRAssetManager.prototype._loadMesh = async function () {
     if (this.loadedGltf) return;
 
-    if (this.meshPath.includes(".gltf") || this.meshPath.includes(".glb"))
-        await this._loadGLTFMesh();
-    else if (this.meshPath.includes(".fbx")) await this._loadFBXMesh();
+    var meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/";
+    var meshModelPath = this.owner.model.toLowerCase() + ".glb";
 
-    await this.setMaterials(this.owner.parts);
+    console.log(this.loadingManager)
 
-    this.configurator.initializeLoading();
-};
+    const gltfLoader = new this.library.GLTFLoader(this.loadingManager);
+    gltfLoader.setPath(meshPath);
 
-ripe.CSRAssetManager.prototype._loadFBXMesh = async function () {
-    var fbxLoader = new this.library.FBXLoader();
-    const fbx = await new Promise((resolve, reject) => {
-        fbxLoader.load(this.meshPath, fbx => {
-            resolve(fbx);
-        });
-    });
-};
-
-ripe.CSRAssetManager.prototype._loadGLTFMesh = async function () {
-    var meshPath = this.meshPath;
-    const gltfLoader = new this.library.GLTFLoader();
-    const gltf = await new Promise((resolve, reject) => {
-        gltfLoader.load(meshPath, gltf => {
-            resolve(gltf);
+    let gltf = await new Promise((resolve, reject) => {
+        gltfLoader.load(meshModelPath, (foundGltf) => {
+            resolve(foundGltf);
         });
     });
 
     this.loadedGltf = gltf;
 
     await this._loadSubMeshes();
+
+    await this.setMaterials(this.owner.parts);
+
+    this.configurator.initializeLoading();
 };
 
 ripe.CSRAssetManager.prototype._loadSubMeshes = async function () {
@@ -170,8 +156,6 @@ ripe.CSRAssetManager.prototype.disposeMesh = async function (mesh) {
 
 
 ripe.CSRAssetManager.prototype.disposeScene = async function (scene) {
-    console.log("I am going to destroy you, scene.");
-    //console.log(scene)
     if (scene.environment) scene.environment.dispose();
 
     const self = this;
@@ -181,9 +165,6 @@ ripe.CSRAssetManager.prototype.disposeScene = async function (scene) {
         if (child.isMesh) await self.disposeMesh(mesh);
         scene.remove(child);
     });
-
-    console.log("Destroyed.")
-    //console.log(scene)
 }
 
 /**
@@ -221,7 +202,7 @@ ripe.CSRAssetManager.prototype.disposeResources = async function (scene) {
             count++;
         }
     }
-    console.log("Finished disposing " + count + " textures.");
+    //console.log("Finished disposing " + count + " textures.");
     
     this.meshes = {};
     this.loadedTextures = {};

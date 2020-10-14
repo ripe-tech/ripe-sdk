@@ -304,12 +304,6 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
     this.renderer.setClearColor(0xffffff);
 
     area.appendChild(this.renderer.domElement);
-
-    this.rendererStats = new THREEx.RendererStats()
-    this.rendererStats.domElement.style.position = 'absolute'
-    this.rendererStats.domElement.style.left = '0px'
-    this.rendererStats.domElement.style.bottom = '0px'
-    document.body.appendChild(this.rendererStats.domElement)
 };
 
 ripe.CSRenderer.prototype.createGUI = function () {
@@ -491,8 +485,6 @@ ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undef
     const renderer = useRenderer || this.composer === undefined ? this.renderer : this.composer;
 
     renderer.render(this.scene, cam);
-    if (this.rendererStats)
-        this.rendererStats.update(this.renderer);
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
