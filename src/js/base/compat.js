@@ -73,9 +73,6 @@ if (
         const mixedModuleName = "Xmlhttprequest";
         const correctModuleName = mixedModuleName.toLowerCase();
         XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
-    } else if (typeof __non_webpack_require__ !== "undefined") { // eslint-disable-line camelcase
-        // eslint-disable-next-line no-undef
-        XMLHttpRequest = __non_webpack_require__("xmlhttprequest").XMLHttpRequest;
     }
 }
 
@@ -96,9 +93,6 @@ if (
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
         fetch = require("node-fetch").default;
-    } else if (typeof __non_webpack_require__ !== "undefined") { // eslint-disable-line camelcase
-        // eslint-disable-next-line no-undef
-        fetch = __non_webpack_require__("node-fetch").default;
     }
 }
 
