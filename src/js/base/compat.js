@@ -62,6 +62,8 @@ if (
     var XMLHttpRequest = null;
     if (typeof window !== "undefined" && typeof window.XMLHttpRequest !== "undefined") {
         XMLHttpRequest = window.XMLHttpRequest;
+    } else if (typeof global !== "undefined" && typeof global.XMLHttpRequest !== "undefined") {
+        XMLHttpRequest = global.XMLHttpRequest;
     } else if (
         // eslint-disable-next-line camelcase
         typeof __webpack_require__ === "undefined" &&
@@ -73,9 +75,6 @@ if (
         const mixedModuleName = "Xmlhttprequest";
         const correctModuleName = mixedModuleName.toLowerCase();
         XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
-    } else if (typeof __non_webpack_require__ !== "undefined") { // eslint-disable-line camelcase
-        // eslint-disable-next-line no-undef
-        XMLHttpRequest = __non_webpack_require__("xmlhttprequest").XMLHttpRequest;
     }
 }
 
@@ -90,15 +89,14 @@ if (
     var fetch = null;
     if (typeof window !== "undefined" && typeof window.fetch !== "undefined") {
         fetch = window.fetch;
+    } else if (typeof global !== "undefined" && typeof global.fetch !== "undefined") {
+        fetch = global.fetch;
     } else if (
         // eslint-disable-next-line camelcase
         typeof __webpack_require__ === "undefined" &&
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
         fetch = require("node-fetch").default;
-    } else if (typeof __non_webpack_require__ !== "undefined") { // eslint-disable-line camelcase
-        // eslint-disable-next-line no-undef
-        fetch = __non_webpack_require__("node-fetch").default;
     }
 }
 
