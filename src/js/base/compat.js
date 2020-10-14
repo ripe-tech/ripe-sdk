@@ -74,8 +74,12 @@ if (
         const correctModuleName = mixedModuleName.toLowerCase();
         XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
     } else if (typeof __non_webpack_require__ !== "undefined") { // eslint-disable-line camelcase
+        // this is an hack to work around webpack static analysis when
+        // importing child_process, a dependency of xmlhttprequest
+        const mixedModuleName = "Xmlhttprequest";
+        const correctModuleName = mixedModuleName.toLowerCase();
         // eslint-disable-next-line no-undef
-        XMLHttpRequest = __non_webpack_require__("xmlhttprequest").XMLHttpRequest;
+        XMLHttpRequest = __non_webpack_require__(correctModuleName).XMLHttpRequest;
     }
 }
 
