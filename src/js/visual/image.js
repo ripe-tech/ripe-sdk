@@ -392,7 +392,7 @@ ripe.Image.prototype._profilePermutationConcat = function(item, index, length, p
         profiles.add(item.name);
     }
 
-    if (index >= length - 1) {
+    if (index < length - 1) {
         profileString += sep;
     }
     return profileString;
@@ -426,13 +426,13 @@ ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":
                 combination[index],
                 index,
                 combination.length,
-                sep,
-                profiles
+                profiles,
+                sep
             );
         }
         profiles.add(profile);
 
-        // iterate over the context values and construct all
+        // iterates over the context values and construct all
         // the permutations with the existing combinations, both
         // normal and with their type and names reversed
         for (const contextValue of context) {
@@ -440,13 +440,13 @@ ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":
 
             for (const index in combination) {
                 // support for string format, offering backward compatibility
-                // with existing initials builders
+                // with existing builders
                 profile += this._profilePermutationConcat(
                     combination[index],
                     index,
                     combination.length,
-                    sep,
-                    profiles
+                    profiles,
+                    sep
                 );
             }
             profiles.add(profile);
