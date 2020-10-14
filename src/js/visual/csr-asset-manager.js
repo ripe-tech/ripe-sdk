@@ -11,11 +11,15 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.CSRAssetManager = function (configurator, owner, options) {
+ripe.CSRAssetManager = function (configurator, owner, options, renderer) {
+    //console.log("Before")
+    ////console.log(renderer.info)
+    //renderer.info.reset();
+    ////console.log(renderer.info)
     this.owner = owner;
     this.configurator = configurator;
     this.assetsPath = options.assetsPath;
-    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "_demo4.glb";
+    this.meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/" + this.owner.model.toLowerCase() + "_demo25.glb";
     this.texturesPath =
         this.assetsPath +
         "textures/" +
@@ -23,14 +27,15 @@ ripe.CSRAssetManager = function (configurator, owner, options) {
         "/" +
         this.owner.model.toLowerCase() +
         ".glb";
+    
     this.library = options.library;
-    this.library.Cache = false;
     this.owner = owner;
 
+    this.library.Cache.enabled = false;
+    
     this.assetsPath = options.assetsPath || "";
-    this.loadedTextures = {};
     this.environment = options.environment;
-    this.environmentTexture = null;
+
     this.textureLoader = new this.library.TextureLoader();
 
     this.textSize = options.textSize || 1;
@@ -38,15 +43,14 @@ ripe.CSRAssetManager = function (configurator, owner, options) {
     this.modelConfig = options.modelConfig;
 
     this.meshes = {};
-
+    this.loadedTextures = {};
+    this.environmentTexture = null;
     this.loadedGltf = undefined;
+    this.library = options.library;
+    
 
-    let tmpRenderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
-
-    this.pmremGenerator = new this.library.PMREMGenerator(tmpRenderer);
-    this.maxAnisotropy = tmpRenderer.capabilities.getMaxAnisotropy();
-
-    tmpRenderer.dispose();
+    this.pmremGenerator = new this.library.PMREMGenerator(renderer);
+    this.maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
     this._loadMesh();
 };
@@ -87,9 +91,10 @@ ripe.CSRAssetManager.prototype._loadFBXMesh = async function () {
 };
 
 ripe.CSRAssetManager.prototype._loadGLTFMesh = async function () {
+    var meshPath = this.meshPath;
     const gltfLoader = new this.library.GLTFLoader();
     const gltf = await new Promise((resolve, reject) => {
-        gltfLoader.load(this.meshPath, gltf => {
+        gltfLoader.load(meshPath, gltf => {
             resolve(gltf);
         });
     });
@@ -99,7 +104,7 @@ ripe.CSRAssetManager.prototype._loadGLTFMesh = async function () {
     await this._loadSubMeshes();
 };
 
-ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
+ripe.CSRAssetManager.prototype._loadSubMeshes = async function () {
     const floorGeometry = new this.library.PlaneBufferGeometry(10, 10);
     floorGeometry.rotateX(-Math.PI / 2);
     floorGeometry.center();
@@ -116,40 +121,90 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function () {
     const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
 
-    const traverseScene = child => {
+    const self = this;
+    await this.loadedGltf.scene.traverse(async function(child) {
+        if (!child.isMesh)
+            return;
+
         child.position.set(
             child.position.x - centerX,
             child.position.y,
-            child.position.z - centerZ
+            child.position.z - centerZ,
         );
-        
+
         child.castShadow = true;
         child.receiveShadow = true;
-        
-        if (child.material)
-            child.material.dispose();
 
-        this.meshes[child.name] = child;
-    };
+        if (child.material) {
+            await self.disposeMaterial(child.material);
+        }
 
-    this.loadedGltf.scene.traverse(traverseScene);
+        self.meshes[child.name] = child;
+    });
 };
+
+ripe.CSRAssetManager.prototype.disposeMaterial = async function (material) {
+    if (material.map) material.map.dispose();
+    if (material.aoMap) material.aoMap.dispose();
+    if (material.roughnessMap) material.roughnessMap.dispose();
+    if (material.specularMap) material.specularMap.dispose();
+    if (material.normalMap) material.normalMap.dispose();
+    if (material.envMap) material.envMap.dispose();
+    if (material.metalnessMap) material.metalnessMap.dispose();
+    if (material.emissiveMap) material.emissiveMap.dispose();
+    if (material.aoMap) material.aoMap.dispose();
+
+    material = null;
+}
+
+ripe.CSRAssetManager.prototype.disposeMesh = async function (mesh) {
+    if (mesh.material) await this.disposeMaterial(mesh.material);
+    if (!mesh.geometry) return;
+    for (const key in mesh.geometry.attributes) {
+        mesh.geometry.deleteAttribute(key);
+    }
+    mesh.geometry.setIndex([]);
+    mesh.geometry.dispose();
+    mesh.geometry = null;
+}
+
+
+ripe.CSRAssetManager.prototype.disposeScene = async function (scene) {
+    console.log("I am going to destroy you, scene.");
+    //console.log(scene)
+    if (scene.environment) scene.environment.dispose();
+
+    const self = this;
+
+    await scene.traverse(async function (child) {
+        if (child.type.includes("Light")) child = null;
+        if (child.isMesh) await self.disposeMesh(mesh);
+        scene.remove(child);
+    });
+
+    console.log("Destroyed.")
+    //console.log(scene)
+}
 
 /**
  * Disposes all the stored resources to avoid memory leaks. Includes meshes,
  * geometries and materials.
  */
 ripe.CSRAssetManager.prototype.disposeResources = async function (scene) {
-    console.log("Disposing Resources");
+    console.log("Disposing Asset Manager Resources.");
     this.pmremGenerator.dispose();
+    this.pmremGenerator = null;
+
+    if (this.environmentTexture) {
+        this.environmentTexture.dispose();
+        this.environmentTexture = null;
+    } 
 
     var count = 0;
 
     if (this.meshes) {
         for (var mesh in this.meshes) {
-            this.meshes[mesh].geometry.dispose();
-            this.meshes[mesh].material.dispose();
-            scene.remove(this.meshes[mesh]);
+            await this.disposeMesh(this.meshes[mesh]);
             count++;
         }
     }
@@ -162,12 +217,16 @@ ripe.CSRAssetManager.prototype.disposeResources = async function (scene) {
     if (this.loadedTextures) {
         for (var texture in this.loadedTextures) {
             this.loadedTextures[texture].dispose();
+            this.loadedTextures[texture] = null;
             count++;
         }
     }
-
     console.log("Finished disposing " + count + " textures.");
+    
+    this.meshes = {};
     this.loadedTextures = {};
+    this.loadedGltf = null;
+    this.library = null;    
 };
 
 ripe.CSRAssetManager.prototype.setMaterials = async function (parts) {
@@ -180,14 +239,17 @@ ripe.CSRAssetManager.prototype.setMaterials = async function (parts) {
 
         for (var mesh in this.meshes) {
             if (mesh.includes(part)) {
-                this.meshes[mesh].material.dispose();
+                if (this.meshes[mesh].material) {
+                    this.meshes[mesh].material.dispose();
+                    this.meshes[mesh].material = null;
+                }
                 this.meshes[mesh].material = newMaterial.clone();
-                newMaterial.dispose();
+                this.disposeMaterial(newMaterial);
                 break;
             }
         }
-        
-        console.log("\nChanging material for part " + part + " to " + color + " " + material)
+
+        //console.log("\nChanging material for part " + part + " to " + color + " " + material)
     }
 }
 
@@ -248,8 +310,7 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
     return newMaterial;
 };
 
-ripe.CSRAssetManager.prototype.setupEnvironment = async function (renderer, scene) {
-    this.pmremGenerator = new this.library.PMREMGenerator(renderer);
+ripe.CSRAssetManager.prototype.setupEnvironment = async function (scene) {
     var environmentMapPath = this.assetsPath + "environments/" + this.environment + ".hdr";
 
     const rgbeLoader = new this.library.RGBELoader();

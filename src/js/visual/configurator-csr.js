@@ -111,7 +111,7 @@ ripe.ConfiguratorCSR.prototype.init = function () {
 
     // wait until configurator finished initializing to create the controls and
     // renderer
-    this.assetManager = new ripe.CSRAssetManager(this, this.owner, this.options)
+    this.assetManager = new ripe.CSRAssetManager(this, this.owner, this.options, this.renderer.renderer)
 };
 
 ripe.ConfiguratorCSR.prototype.initializeLoading = async function () {
@@ -148,9 +148,9 @@ ripe.ConfiguratorCSR.prototype.deinit = async function () {
 };
 
 ripe.ConfiguratorCSR.prototype.disposeResources = async function() {
-    this.renderer.disposeResources();
-    this.assetManager.disposeResources();
-    this.initials.disposeResources();
+    await this.renderer.disposeResources(); 
+    await this.initials.disposeResources();
+    await this.assetManager.disposeResources();       
 }
 
 /**

@@ -48,7 +48,6 @@ ripe.CSRenderer = function (owner, element, options) {
     this.shadowBias = options.shadowBias || 0.01;
 
     // raycast
-    this.raycastingMeshes = [];
     this.intersectedPart = "";
 
     this.cameraDistance = options.cameraDistance || 0;
@@ -71,6 +70,9 @@ ripe.CSRenderer = function (owner, element, options) {
     window.onresize = () => {
         this.updateSize();
     };
+
+    this._initializeRenderer();
+    this.previousRotation = new this.library.Vector2(0, 0);
 };
 
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
@@ -120,7 +122,7 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
     // initialize all ThreeJS components
     this._initializeLights();
     this._initializeCamera();
-    this._initializeRenderer();
+    //this._initializeRenderer();
     this._registerHandlers();
     this._initializeShaders();
     this._loadAssets();
@@ -160,31 +162,32 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
     if (!this.canZoom)
         return;
 
-    area.addEventListener("wheel", function(event) {
+    area.addEventListener("wheel", function (event) {
         event.preventDefault();
 
         self.cameraDistance += event.deltaY;
-        self._applyRotations(self.camera.rotation.x, self.camera.rotation.y);
+        self._applyRotations(self.previousRotation.x, self.previousRotation.y);
         self.render();
         //console.log(event);
-    },  {passive: false});
+    }, { passive: false });
 };
 
 ripe.CSRenderer.prototype.disposeResources = async function () {
-    this.raycastingMeshes = [];
+    console.log("Disposing Renderer resources.")
+    this.renderer.renderLists.dispose();
+    this.renderer.dispose();
+    this.renderer = null;
+    await this.assetManager.disposeScene(this.scene);
+    console.log("Finished Disposing Renderer Resources.")
 }
 
 ripe.CSRenderer.prototype._loadAssets = async function () {
-    for (var mesh in this.assetManager.meshes) {
-        this.raycastingMeshes.push(this.assetManager.meshes[mesh])
-    }
-
     this.scene.add(this.assetManager.loadedGltf.scene);
 
     this.mixer = new this.library.AnimationMixer(this.assetManager.loadedGltf.scene);
     this.animations = this.assetManager.loadedGltf.animations;
 
-    if (this.environment) await this.assetManager.setupEnvironment(this.renderer, this.scene);
+    if (this.environment) await this.assetManager.setupEnvironment(this.scene);
 
     this.render();
 
@@ -301,6 +304,12 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
     this.renderer.setClearColor(0xffffff);
 
     area.appendChild(this.renderer.domElement);
+
+    this.rendererStats = new THREEx.RendererStats()
+    this.rendererStats.domElement.style.position = 'absolute'
+    this.rendererStats.domElement.style.left = '0px'
+    this.rendererStats.domElement.style.bottom = '0px'
+    document.body.appendChild(this.rendererStats.domElement)
 };
 
 ripe.CSRenderer.prototype.createGUI = function () {
@@ -479,9 +488,11 @@ ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
 ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
     //console.log("Rendering!")
     const cam = camera === undefined ? this.camera : camera;
-    const renderer = useRenderer ? this.renderer : this.composer;
+    const renderer = useRenderer || this.composer === undefined ? this.renderer : this.composer;
 
     renderer.render(this.scene, cam);
+    if (this.rendererStats)
+        this.rendererStats.update(this.renderer);
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
@@ -506,7 +517,7 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     if (this.raycaster && this.scene) {
         this.raycaster.setFromCamera(mouse, this.camera);
 
-        var intersects = this.raycaster.intersectObjects(this.raycastingMeshes);
+        var intersects = this.raycaster.intersectObjects(this.assetManager.meshes);
 
         if (intersects.length > 0) {
             if (this.intersectedPart !== intersects[0].object.name) {
@@ -699,10 +710,11 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
             this.scene.remove(quad);
             this.element.classList.remove("animating");
             this.element.classList.remove("no-drag");
-            quad.geometry.dispose();
-            quad.material.dispose();
             quadGeometry.dispose();
+            this.assetManager.disposeMesh(quad);
+            previousSceneFBO.texture.dispose();
             previousSceneFBO.dispose();
+            currentSceneFBO.texture.dispose();
             currentSceneFBO.dispose();
             this.render();
         }
@@ -725,4 +737,7 @@ ripe.CSRenderer.prototype._applyRotations = function (cameraRotationX, cameraRot
     this.camera.position.z = distance * Math.cos((Math.PI / 180) * cameraRotationX);
 
     this.camera.lookAt(this.cameraTarget);
+
+    this.previousRotation.x = cameraRotationX;
+    this.previousRotation.y = cameraRotationY;
 };

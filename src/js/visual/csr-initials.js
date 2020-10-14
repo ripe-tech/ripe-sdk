@@ -14,9 +14,7 @@ if (
 
 ripe.CSRInitials = function (owner, options) {
     this.owner = owner;
-    this.textMeshes = [];
-    this.library = options.library;
-
+    
     // initials
     this.initialsPlacement = options.initialsPlacement || "center";
     this.initialsType = options.initialsType || "emboss";
@@ -25,14 +23,17 @@ ripe.CSRInitials = function (owner, options) {
     this.textSize = options.textSize === undefined ? 1 : options.textSize;
     this.textHeight = options.textHeight === undefined ? 1 : options.textHeight;
 
-    this.initialsPositions = {};
     this.fontsPath = options.fontsPath || options.assetsPath + "fonts/";
     this.fontType = options.fontType || "";
     this.fontWeight = options.fontWeight || "";
+    
     this.loadedFonts = {};
     this.letterMaterial = null;
     this.loadedLetterMaterials = {};
-
+    this.initialsPositions = {};
+    this.textMeshes = [];
+    this.library = options.library;
+    
     this.engraving = options.engraving === undefined ? "metal_gold" : options.engraving;
     this.logoMesh;
 };
@@ -212,19 +213,37 @@ ripe.CSRInitials.prototype.createLetter = function (letter) {
 ripe.CSRInitials.prototype.engraveLetters = function () { };
 
 ripe.CSRInitials.prototype.disposeResources = async function () {
+    console.log("Disposing Initials Resources.")
     var count = 0;
 
-    if (textMeshes) {
-        for (let i = 0; i < textMeshes.length; i++) {
-            textMeshes[i].geometry.dispose();
-            textMeshes[i].material.dispose();
+    if (this.textMeshes.length > 0) {
+        for (let i = 0; i < this.textMeshes.length; i++) {
+            await this.assetManager.disposeMesh(this.textMeshes[i])
             count++;
         }
+        
     }
 
     console.log("Finished disposing " + count + " letters.");
 
-    textMeshes = [];
+    count = 0;
+    for (var mesh in this.initialsPositions) {
+        await this.assetManager.disposeMesh(this.initialsPositions[mesh]);
+        count++;
+    }
+
+    console.log("Finished disposing " + count + " initials positions mesh.");
+
+    if (this.letterMaterial) await this.assetManager.disposeMaterial(this.letterMaterial);
+
+    this.loadedFonts = {};
+    this.loadedLetterMaterials = {};
+    this.initialsPositions = {};
+    this.textMeshes = [];
+    this.library = null;
+    this.textMeshes = [];
+    
+    
 }
 
 ripe.CSRInitials.prototype._getLetterMaterial = async function () {
