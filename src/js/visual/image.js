@@ -159,7 +159,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
               this.initials,
               this.engraving,
               this.element
-          )(this.context(initialsGroup))
+          )(this.context(this.engraving, initialsGroup))
         : {};
 
     // verifies if the model currently loaded in the RIPE instance can
@@ -383,7 +383,7 @@ ripe.Image.prototype._baseInitialsBuilder = function(initials, engraving, elemen
 /**
  * @ignore
  */
-ripe.Image.prototype._profilePermutationConcat = function(item, index, length, sep, profiles) {
+ripe.Image.prototype._profilePermutationConcat = function(item, index, length, profiles, sep) {
     let profileString = "";
 
     if (typeof item === "string") profileString += item;
@@ -402,9 +402,14 @@ ripe.Image.prototype._profilePermutationConcat = function(item, index, length, s
  * @ignore
  */
 ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":") {
-    const combinations = profiles.flatMap(p => profiles.map(p1 => Array.from(new Set([p, p1]))));
+    // create all the multiple combinations of values and reverses the
+    // array so that they are sorted from the more specific (larger)
+    // combinations to the less specific ones
+    const combinations = profiles
+        .flatMap(p => profiles.map(p1 => Array.from(new Set([p, p1]))))
+        .reverse();
 
-    // iterate over the profiles and append the context
+    // iterates over the profiles and append the context
     // to them, resulting in all the profile combinations
     // for the provided context
     profiles = new Set();
