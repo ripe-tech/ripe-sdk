@@ -356,7 +356,6 @@ ripe.Image.prototype._unregisterHandlers = function() {
  * @ignore
  */
 ripe.Image.prototype._baseInitialsBuilder = function(initials, engraving, element) {
-    console.log("HERE");
     const group = element.getAttribute("data-group");
     const profiles = [];
 
