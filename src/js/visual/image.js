@@ -118,13 +118,10 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
 ripe.Image.prototype.initialsBuilder = function(initials, engraving, element) {
     const result = this.baseInitialsBuilder(initials, engraving, element);
 
-    const self = this;
-    return function build(context) {
-        return {
-            initials: result.initials,
-            profile: self._profilePermutations(result.profile, context)
-        };
-    };
+    return (context) => ({
+        initials: result.initials,
+        profile: this._profilePermutations(result.profile, context)
+    });
 };
 
 /**
