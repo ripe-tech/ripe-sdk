@@ -62,6 +62,8 @@ if (
     var XMLHttpRequest = null;
     if (typeof window !== "undefined" && typeof window.XMLHttpRequest !== "undefined") {
         XMLHttpRequest = window.XMLHttpRequest;
+    } else if (typeof global !== "undefined" && typeof global.XMLHttpRequest !== "undefined") {
+        XMLHttpRequest = global.XMLHttpRequest;
     } else if (
         // eslint-disable-next-line camelcase
         typeof __webpack_require__ === "undefined" &&
@@ -87,6 +89,8 @@ if (
     var fetch = null;
     if (typeof window !== "undefined" && typeof window.fetch !== "undefined") {
         fetch = window.fetch;
+    } else if (typeof global !== "undefined" && typeof global.fetch !== "undefined") {
+        fetch = global.fetch;
     } else if (
         // eslint-disable-next-line camelcase
         typeof __webpack_require__ === "undefined" &&
