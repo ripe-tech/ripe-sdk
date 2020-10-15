@@ -63,6 +63,7 @@ ripe.Image.prototype.init = function() {
         this._baseInitialsBuilder;
     this.context =
         this.options.context ||
+        this.owner.context ||
         function() {
             return [];
         };
@@ -118,7 +119,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
 ripe.Image.prototype.initialsBuilder = function(initials, engraving, element) {
     const result = this.baseInitialsBuilder(initials, engraving, element);
 
-    return (context) => ({
+    return context => ({
         initials: result.initials,
         profile: this._profilePermutations(result.profile, context)
     });
@@ -156,7 +157,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
               this.initials,
               this.engraving,
               this.element
-          )(this.context(this.engraving, initialsGroup))
+          )(this.context(this.initials, this.engraving, initialsGroup))
         : {};
 
     // verifies if the model currently loaded in the RIPE instance can
