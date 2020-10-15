@@ -374,75 +374,63 @@ ripe.Image.prototype._baseInitialsBuilder = function(initials, engraving, elemen
 /**
  * @ignore
  */
-ripe.Image.prototype._profilePermutationConcat = function(item, index, length, profiles, sep) {
-    let profileString = "";
-
-    if (typeof item === "string") profileString += item;
-    else {
-        profileString += `${item.type}::${item.name}`;
-        profiles.add(item.name);
-    }
-
-    if (index < length - 1) {
-        profileString += sep;
-    }
-    return profileString;
-};
-
-/**
- * @ignore
- */
 ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":") {
     // create all the multiple combinations of values and reverses the
     // array so that they are sorted from the more specific (larger)
     // combinations to the less specific ones
-    const combinations = profiles
-        .flatMap(p => profiles.map(p1 => Array.from(new Set([p, p1]))))
-        .reverse();
+    const combinations = profiles.flatMap(p =>
+        profiles.map(p1 => (ripe.equal(p, p1) ? [p] : [p, p1]))
+    ).reverse();
 
     // iterates over the profiles and append the context
     // to them, resulting in all the profile combinations
     // for the provided context
-    profiles = new Set();
+    profiles = {};
     for (const combination of combinations) {
-        let profile = "";
+        let profile = [];
 
         // iterate over the combination values and creates all
         // the permutations with both the name::type format and
         // the its reverse
-        for (const index in combination) {
+        for (const value of combination) {
             // support for string format, offering backward compatibility
             // with existing initials builders
-            profile += this._profilePermutationConcat(
-                combination[index],
-                index,
-                combination.length,
-                profiles,
-                sep
-            );
+            if (typeof value === "string") profile.push(value);
+            else {
+                // add property name and the string composed of its name and type
+                // to the profile
+                if (!profiles[value.name]) profiles[value.name] = true;
+                profile.push(`${value.type}::${value.name}`);
+            }
         }
-        profiles.add(profile);
+
+        let profileString = profile.join(sep);
+        if (!profiles[profileString]) profiles[profileString] = true;
 
         // iterates over the context values and construct all
         // the permutations with the existing combinations, both
         // normal and with their type and names reversed
         for (const contextValue of context) {
-            profile = "";
+            profile = [];
 
-            for (const index in combination) {
+            for (const value of combination) {
                 // support for string format, offering backward compatibility
-                // with existing builders
-                profile += this._profilePermutationConcat(
-                    combination[index],
-                    index,
-                    combination.length,
-                    profiles,
-                    sep
-                );
+                // with existing initials builders
+                if (typeof value === "string") profile.push(value);
+                else {
+                    // add property name and the string composed of its name and type
+                    // to the profile
+                    if (!profiles[value.name]) profiles[value.name] = true;
+                    profile.push(`${value.type}::${value.name}`);
+                }
             }
-            profiles.add(profile);
-            profiles.add(contextValue);
+
+            // add the profile string combination to the profile list, as well as
+            // the context value
+            profileString = profile.join(sep);
+            if (!profiles[profileString]) profiles[profileString] = true;
+            if (!profiles[contextValue]) profiles[contextValue] = true;
         }
     }
-    return Array.from(profiles);
+    return Object.keys(profiles);
 };
