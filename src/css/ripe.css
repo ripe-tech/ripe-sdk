@@ -19,6 +19,15 @@
     position: absolute; 
     top: 20px; 
     right: 20px;
+    visibility: visible;
+}
+
+li > div {
+    visibility: visible !important; 
+    background: black !important;
+}
+#gui > * {
+    visibility: visible !important; 
 }
 
 .configurator .back {

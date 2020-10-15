@@ -287,8 +287,8 @@ ripe.CSRenderer.prototype._initializeLights = function () {
 ripe.CSRenderer.prototype._initializeRenderer = function () {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
-    this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true  });
-    
+    this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true });
+
     this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
 
     this.renderer.toneMappingExposure = this.exposure;
@@ -312,10 +312,12 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
 ripe.CSRenderer.prototype.createGUI = function () {
     if (this.guiLibrary === null) return;
 
-    this.gui = new this.guiLibrary.GUI({ autoPlace: false });
+    //this.gui = new this.guiLibrary.GUI({ autoPlace: false });
+    this.gui = new this.guiLibrary.GUI({ width: 600 });
+    
     const area = this.element.querySelector(".area");
 
-    area.appendChild(this.gui.domElement);
+    //area.appendChild(this.gui.domElement);
 
     this.gui.domElement.id = "gui";
 
@@ -515,14 +517,13 @@ ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
 ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
     // console.log("Rendering!")
     const cam = camera === undefined ? this.camera : camera;
-    
-    
+
     if (useRenderer)
         this.renderer.render(this.scene, cam);
     else
         // Fix post process first
-        //this.composer.render(this.renderer, this.scene, cam) 
-        this.renderer.render(this.scene, cam)
+        this.composer.render() 
+        //this.renderer.render(this.scene, cam)
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
@@ -676,13 +677,6 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
     );
     var currentSceneFBO = new this.library.WebGLRenderTarget(width, height, renderTargetParameters);
 
-    /*
-    if (this.usesPostProcessing) {
-        console.log(this.renderer)
-        console.log(this.composer)
-    }
-    */
-
     this.composer.renderTarget1 = previousSceneFBO;
     this.composer.renderTarget2 = currentSceneFBO;
 
@@ -710,7 +704,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
         await this.assetManager.setMaterials(parts);
     } else if (type === "rotation") {
         this.rotate(options);
-    }    
+    }
     // Render next image
     this.renderer.setRenderTarget(currentSceneFBO);
     this.renderer.clear();
