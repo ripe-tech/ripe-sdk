@@ -116,9 +116,9 @@ ripe.ConfiguratorCSR.prototype.init = function() {
     this.assetManager = new ripe.CSRAssetManager(this, this.owner, this.options);
 };
 
-ripe.ConfiguratorCSR.prototype.initializeLoading = async function() {
-    await this.renderer.initialize(this.assetManager);
-    await this.initials.initialize(this.assetManager);
+ripe.ConfiguratorCSR.prototype.initializeLoading = function() {
+    this.renderer.initialize(this.assetManager);
+    this.initials.initialize(this.assetManager);
 };
 
 /**

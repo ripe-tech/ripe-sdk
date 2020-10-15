@@ -234,6 +234,7 @@ ripe.CSRInitials.prototype.disposeResources = async function() {
         await this.assetManager.disposeMesh(this.initialsPositions[mesh]);
         count++;
     }
+    
     if (this.letterMaterial) await this.assetManager.disposeMaterial(this.letterMaterial);
 
     this.loadedFonts = {};

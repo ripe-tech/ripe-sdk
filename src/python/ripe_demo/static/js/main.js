@@ -347,7 +347,6 @@ window.onload = function () {
                 cameraHeight: 12,
                 cameraTarget: { x: 0, y: 9, z: 0.0 },
                 debug: true,
-                usesPostProcessing: true,
                 // Model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
                 // that is downloaded, or present in a spec file
                 modelConfig: model_data,
@@ -375,7 +374,7 @@ window.onload = function () {
                 textHeight: 0.01,
                 shadowBias: -0.01,
                 canZoom: true,
-                usesPostProcessing: false
+                usesPostProcessing: true
                 //lockRotation: "horizontal"
             });
 

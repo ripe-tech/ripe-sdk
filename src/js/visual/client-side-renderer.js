@@ -25,7 +25,7 @@ if (
  * @param {Object} options The options to be used to configure the
  * renderer instance to be created.
  */
-ripe.CSRenderer = function(owner, element, options) {
+ripe.CSRenderer = function (owner, element, options) {
     this.owner = owner;
     this.type = this.type || "CSRenderer";
     this.element = element;
@@ -87,7 +87,7 @@ ripe.CSRenderer = function(owner, element, options) {
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRenderer.prototype.constructor = ripe.CSRenderer;
 
-ripe.CSRenderer.prototype.updateOptions = async function(options) {
+ripe.CSRenderer.prototype.updateOptions = async function (options) {
     this.assetManager.updateOptions(options);
 
     this.introAnimation =
@@ -101,10 +101,10 @@ ripe.CSRenderer.prototype.updateOptions = async function(options) {
         options.cameraTarget === undefined
             ? this.cameraTarget
             : new this.library.Vector3(
-                  options.cameraTarget.x,
-                  options.cameraTarget.y,
-                  options.cameraTarget.z
-              );
+                options.cameraTarget.x,
+                options.cameraTarget.y,
+                options.cameraTarget.z
+            );
     this.cameraFOV = options.cameraFOV === undefined ? this.cameraFOV : options.cameraFOV;
 
     this.materialEasing = options.materialEasing || this.easing || "linear";
@@ -114,6 +114,8 @@ ripe.CSRenderer.prototype.updateOptions = async function(options) {
     this.cameraHeight =
         options.cameraHeight === undefined ? this.cameraHeight : options.cameraHeight;
     this.exposure = options.exposure === undefined ? this.exposure : options.exposure;
+    this.usesPostProcessing =
+        options.usesPostProcessing === undefined ? this.usesPostProcessing : options.usesPostProcessing;
 
     this.useMasks = options.useMasks === undefined ? this.useMasks : options.useMasks;
     this.maskOpacity = options.maskOpacity === undefined ? this.maskOpacity : options.maskOpacity;
@@ -122,7 +124,7 @@ ripe.CSRenderer.prototype.updateOptions = async function(options) {
     this.noMasks = options.noMasks === undefined ? this.noMasks : this.options.noMasks;
 };
 
-ripe.CSRenderer.prototype.initialize = async function(assetManager) {
+ripe.CSRenderer.prototype.initialize = function (assetManager) {
     this.assetManager = assetManager;
     this.scene = new this.library.Scene();
     this.raycaster = new this.library.Raycaster();
@@ -140,11 +142,11 @@ ripe.CSRenderer.prototype.initialize = async function(assetManager) {
     if (this.debug) this.createGUI();
 };
 
-ripe.CSRenderer.prototype._registerHandlers = function() {
+ripe.CSRenderer.prototype._registerHandlers = function () {
     const self = this;
     const area = this.element.querySelector(".area");
 
-    area.addEventListener("mousemove", function(event) {
+    area.addEventListener("mousemove", function (event) {
         event = ripe.fixEvent(event);
 
         // in case the index that was found is the zero one this is a special
@@ -159,16 +161,17 @@ ripe.CSRenderer.prototype._registerHandlers = function() {
         self._attemptRaycast(event, "move");
     });
 
-    area.addEventListener("click", function(event) {
+    area.addEventListener("click", function (event) {
         event = ripe.fixEvent(event);
 
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
 };
 
-ripe.CSRenderer.prototype.disposeResources = async function() {
+ripe.CSRenderer.prototype.disposeResources = async function () {
     console.log("Disposing Renderer resources.");
     this.renderer.renderLists.dispose();
+    if (this.composer) this.composer.renderlists.dispose();
     this.renderer.dispose();
     this.renderer = null;
 
@@ -180,7 +183,7 @@ ripe.CSRenderer.prototype.disposeResources = async function() {
     console.log("Finished Disposing Renderer Resources.");
 };
 
-ripe.CSRenderer.prototype._loadAssets = async function() {
+ripe.CSRenderer.prototype._loadAssets = async function () {
     for (var mesh in this.assetManager.meshes) {
         this.raycastingMeshes.push(this.assetManager.meshes[mesh]);
     }
@@ -198,7 +201,7 @@ ripe.CSRenderer.prototype._loadAssets = async function() {
     else if (this.animations.length > 0) this._performAnimation("Idle");
 };
 
-ripe.CSRenderer.prototype._initializeShaders = function() {
+ripe.CSRenderer.prototype._initializeShaders = function () {
     this.crossfadeShader = new this.library.ShaderMaterial({
         uniforms: {
             tDiffuse1: {
@@ -244,7 +247,7 @@ ripe.CSRenderer.prototype._initializeShaders = function() {
     });
 };
 
-ripe.CSRenderer.prototype._initializeLights = function() {
+ripe.CSRenderer.prototype._initializeLights = function () {
     const ambientLight = new this.library.HemisphereLight(0xffeeb1, 0x080820, 0.0);
     // hemilight.castShadow = true;
 
@@ -281,11 +284,11 @@ ripe.CSRenderer.prototype._initializeLights = function() {
     this.scene.add(rimLight);
 };
 
-ripe.CSRenderer.prototype._initializeRenderer = function() {
+ripe.CSRenderer.prototype._initializeRenderer = function () {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
     this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
-
+    
     this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
 
     this.renderer.toneMappingExposure = this.exposure;
@@ -299,9 +302,14 @@ ripe.CSRenderer.prototype._initializeRenderer = function() {
     this.renderer.setClearColor(0xffffff);
 
     area.appendChild(this.renderer.domElement);
+
+    this.composer = new this.library.EffectComposer(this.renderer);
+
+    var renderPass = new this.library.RenderPass(this.scene, this.camera);
+    this.composer.addPass(renderPass);
 };
 
-ripe.CSRenderer.prototype.createGUI = function() {
+ripe.CSRenderer.prototype.createGUI = function () {
     if (this.guiLibrary === null) return;
 
     this.gui = new this.guiLibrary.GUI({ autoPlace: false });
@@ -317,49 +325,46 @@ ripe.CSRenderer.prototype.createGUI = function() {
     folder.open();
 
     if (this.usesPostProcessing) {
-        // TODO Add debug controls here
-
         const updateSAO = (param, value) => {
             this.saoPass[param] = value;
             this.render();
         };
 
         const folderSAO = this.gui.addFolder("Scalable Ambient Occlusion Pass");
-
         folderSAO
-            .add(this.saoPass, "saoIntensity", 0.0, 1.0)
+            .add(this.saoPass.params, "saoIntensity", 0.0, 1.0)
             .name("Intensity")
-            .onChange(function(value) {
+            .onChange(function (value) {
                 updateSAO("saoIntensity", value);
             });
         folderSAO
-            .add(this.saoPass, "saoScale", 0.0, 10.0)
+            .add(this.saoPass.params, "saoScale", 0.0, 10.0)
             .name("Scale")
-            .onChange(function(value) {
+            .onChange(function (value) {
                 updateSAO("saoScale", value);
             });
         folderSAO
-            .add(this.saoPass, "saoKernelRadius", 0.0, 100.0)
+            .add(this.saoPass.params, "saoKernelRadius", 0.0, 100.0)
             .name("KernelRadius")
-            .onChange(function(value) {
+            .onChange(function (value) {
                 updateSAO("saoKernelRadius", value);
             });
         folderSAO
-            .add(this.saoPass, "saoBlur")
+            .add(this.saoPass.params, "saoBlur")
             .name("Blur")
-            .onChange(function(value) {
+            .onChange(function (value) {
                 updateSAO("saoBlur", value);
             });
         folderSAO
-            .add(this.saoPass, "saoBlurRadius", 0.0, 200.0)
+            .add(this.saoPass.params, "saoBlurRadius", 0.0, 200.0)
             .name("Blur Radius")
-            .onChange(function(value) {
+            .onChange(function (value) {
                 updateSAO("saoIntensity", value);
             });
         folderSAO
-            .add(this.saoPass, "saoBlurStdDev", 0.0, 150.0)
+            .add(this.saoPass.params, "saoBlurStdDev", 0.0, 150.0)
             .name("Blur StdDev")
-            .onChange(function(value) {
+            .onChange(function (value) {
                 updateSAO("saoBlurStdDev", value);
             });
 
@@ -375,19 +380,19 @@ ripe.CSRenderer.prototype.createGUI = function() {
         folderSSAO
             .add(this.ssaoPass, "kernelRadius", 0.0, 32.0)
             .name("Kernel Radius")
-            .onChange(function(value) {
+            .onChange(function (value) {
                 updateSSAO("kernelRadius", value);
             });
         folderSSAO
             .add(this.ssaoPass, "minDistance", 0.001, 0.02)
             .name("Min Distance")
-            .onChange(function(value) {
+            .onChange(function (value) {
                 updateSSAO("minDistance", value);
             });
         folderSSAO
             .add(this.ssaoPass, "maxDistance", 0.01, 0.3)
             .name("Max Distance")
-            .onChange(function(value) {
+            .onChange(function (value) {
                 updateSSAO("maxDistance", value);
             });
 
@@ -401,28 +406,23 @@ ripe.CSRenderer.prototype.createGUI = function() {
         const folderBloom = this.gui.addFolder("Bloom Pass");
 
         folderBloom
-            .add(this.bloomPass, "bloomThreshold", 0.0, 1.0)
+            .add(this.bloomPass, "threshold", 0.0, 1.0)
             .name("Threshold")
-            .onChange(function(value) {
+            .onChange(function (value) {
                 updateBloom("threshold", value);
             });
         folderBloom
-            .add(this.bloomPass, "bloomStrength", 0.0, 3.0)
+            .add(this.bloomPass, "strength", 0.0, 3.0)
             .name("Strength")
-            .onChange(function(value) {
-                updateBloom("bloomStrength", value);
+            .onChange(function (value) {
+                updateBloom("strength", value);
             });
 
         folderBloom.open();
     }
 };
 
-ripe.CSRenderer.prototype._setupPostProcessing = function() {
-    this.composer = new this.library.EffectComposer(this.renderer);
-
-    var renderPass = new this.library.RenderPass(this.scene, this.camera);
-    this.composer.addPass(renderPass);
-
+ripe.CSRenderer.prototype._setupPostProcessing = function () {
     this.saoPass = new this.library.SAOPass(this.scene, this.camera, true, true);
 
     this.saoPass.resolution.set(1024, 1024);
@@ -434,7 +434,7 @@ ripe.CSRenderer.prototype._setupPostProcessing = function() {
 
     this.composer.addPass(this.saoPass);
 
-    this.bloomPass = new this.library.BloomPass(1, 25, 4, 256);
+    this.bloomPass = new this.library.UnrealBloomPass(1, 25, 4, 256);
     this.composer.addPass(this.bloomPass);
 
     this.ssaoPass = new this.library.SSAOPass(this.scene, this.camera, 620, 620);
@@ -444,7 +444,7 @@ ripe.CSRenderer.prototype._setupPostProcessing = function() {
     this.composer.addPass(this.ssaoPass);
 };
 
-ripe.CSRenderer.prototype._initializeCamera = function() {
+ripe.CSRenderer.prototype._initializeCamera = function () {
     const width = this.element.getBoundingClientRect().width;
     const height = this.element.getBoundingClientRect().height;
 
@@ -463,7 +463,7 @@ ripe.CSRenderer.prototype._initializeCamera = function() {
     this.camera.lookAt(this.cameraTarget);
 };
 
-ripe.CSRenderer.prototype._performAnimation = function(animationName) {
+ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     var animation = this.library.AnimationClip.findByName(this.animations, animationName);
     if (!animation) return;
 
@@ -497,7 +497,7 @@ ripe.CSRenderer.prototype._performAnimation = function(animationName) {
     requestAnimationFrame(doAnimation);
 };
 
-ripe.CSRenderer.prototype.updateInitials = function(operation, meshes) {
+ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
     for (let i = 0; i < meshes.length; i++) {
         if (operation === "remove") {
             this.scene.remove(meshes[i]);
@@ -512,22 +512,24 @@ ripe.CSRenderer.prototype.updateInitials = function(operation, meshes) {
     }
 };
 
-ripe.CSRenderer.prototype.render = function(useRenderer = false, camera = undefined) {
+ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
     // console.log("Rendering!")
     const cam = camera === undefined ? this.camera : camera;
-    const renderer = useRenderer || this.composer === undefined ? this.renderer : this.composer;
-
-    renderer.render(this.scene, cam);
+    
+    if (useRenderer)
+        this.renderer.render(this.scene, cam);
+    else
+        this.composer.render(this.renderer, this.scene, cam) 
 };
 
-ripe.CSRenderer.prototype.updateSize = function() {
+ripe.CSRenderer.prototype.updateSize = function () {
     if (this.renderer) this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
     if (this.composer) this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
 
     this.updateElementBoundingBox();
 };
 
-ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
+ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
 
@@ -553,7 +555,7 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
     }
 };
 
-ripe.CSRenderer.prototype.highlight = function(part, options = {}) {
+ripe.CSRenderer.prototype.highlight = function (part, options = {}) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -567,7 +569,7 @@ ripe.CSRenderer.prototype.highlight = function(part, options = {}) {
     this.trigger("highlighted");
 };
 
-ripe.CSRenderer.prototype.lowlight = function(options) {
+ripe.CSRenderer.prototype.lowlight = function (options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -588,7 +590,7 @@ ripe.CSRenderer.prototype.lowlight = function(options) {
     this.trigger("lowlighted");
 };
 
-ripe.CSRenderer.prototype.changeHighlight = function(part, endValue) {
+ripe.CSRenderer.prototype.changeHighlight = function (part, endValue) {
     // console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
 
     var meshTarget = this.assetManager.meshes[part];
@@ -618,7 +620,7 @@ ripe.CSRenderer.prototype.changeHighlight = function(part, endValue) {
     requestAnimationFrame(changeHighlightTransition);
 };
 
-ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent) {
+ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
     const newX =
@@ -628,7 +630,7 @@ ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent
             (mouseEvent.y - this.elementBoundingBox.y + window.scrollY) /
             this.elementBoundingBox.height
         ) *
-            2 +
+        2 +
         1;
 
     return {
@@ -637,7 +639,7 @@ ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent
     };
 };
 
-ripe.CSRenderer.prototype.updateElementBoundingBox = function() {
+ripe.CSRenderer.prototype.updateElementBoundingBox = function () {
     // Raycaster needs accurate positions of the element, needs to be
     // updated on every window resize event
     if (this.element) {
@@ -645,7 +647,7 @@ ripe.CSRenderer.prototype.updateElementBoundingBox = function() {
     }
 };
 
-ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
+ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
     var renderTargetParameters = {
         minFilter: this.library.LinearFilter,
         magFilter: this.library.LinearFilter,
@@ -671,6 +673,16 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
     );
     var currentSceneFBO = new this.library.WebGLRenderTarget(width, height, renderTargetParameters);
 
+    /*
+    if (this.usesPostProcessing) {
+        console.log(this.renderer)
+        console.log(this.composer)
+    }
+    */
+
+    this.composer.renderTarget1 = previousSceneFBO;
+    this.composer.renderTarget2 = currentSceneFBO;
+
     var mixRatio = 0.0;
 
     this.crossfadeShader.uniforms.tDiffuse1.value = previousSceneFBO.texture;
@@ -685,7 +697,9 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
     // Store current image
     this.renderer.setRenderTarget(previousSceneFBO);
     this.renderer.clear();
+    //this.composer.render(this.renderer, previousSceneFBO)
     this.render(true);
+
 
     var parts = options.parts === undefined ? this.owner.parts : options.parts;
 
@@ -693,13 +707,13 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
         await this.assetManager.setMaterials(parts);
     } else if (type === "rotation") {
         this.rotate(options);
-    }
-
+    }    
     // Render next image
     this.renderer.setRenderTarget(currentSceneFBO);
     this.renderer.clear();
-    // if (this.composer) this.composer.clear();
+    //this.composer.render(this.renderer, currentSceneFBO)
     this.render(true);
+
 
     // Reset renderer
     this.renderer.setRenderTarget(null);
@@ -741,7 +755,7 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
     requestAnimationFrame(crossfadeFunction);
 };
 
-ripe.CSRenderer.prototype.rotate = function(options) {
+ripe.CSRenderer.prototype.rotate = function (options) {
     var maxHeight = options.distance - this.cameraHeight;
 
     var distance = options.distance * Math.cos((Math.PI / 180) * options.rotationY);

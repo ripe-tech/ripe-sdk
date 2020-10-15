@@ -23,9 +23,10 @@
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/RGBELoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/CopyShader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/ConvolutionShader.min.js"></script>
+            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/LuminosityHighPassShader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/EffectComposer.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/RenderPass.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/BloomPass.min.js"></script>
+            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/UnrealBloomPass.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/SSAARenderPass.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/TAARenderPass.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/UnpackDepthRGBAShader.min.js"></script>
