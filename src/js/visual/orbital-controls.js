@@ -182,45 +182,6 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
     ripe.touchHandler(this.element);
 };
 
-ripe.OrbitalControls.prototype._drift = function (event) {
-    
-    var currentValueX = event.movementX;
-    var currentValueY = event.movementY;
-
-    var pos = 0;
-    var startTime = 0;
-    const driftAnimation = (time) => {
-        if (!this.isDrifting) return;
-        
-        startTime = startTime === 0 ? time : startTime;
-        
-        pos = (time - startTime) / this.driftDuration;
-
-        currentValueX = ripe.easing.easeOutQuad(pos, event.movementX, 0, this.driftDuration);
-        currentValueY = ripe.easing.easeOutQuad(pos, event.movementY, 0, this.driftDuration);
-
-        if (this.lockRotation != "vertical")
-            this.currentHorizontalRot = this._validatedAngle(
-                currentValueX + this.currentHorizontalRot
-            );
-        if (this.lockRotation != "horizontal") {
-            this.currentVerticalRot = Math.min(
-                Math.max(this.currentVerticalRot + currentValueY, this.minimumVerticalRot),
-                this.maximumVerticalRot
-            );
-        }
-        this._updateAngles();
-
-        this.configurator._applyRotations();
-
-        if (pos < 1.0) requestAnimationFrame(driftAnimation);
-        else this.isDrifting = false;
-    };
-
-    this.isDrifting = true;
-    requestAnimationFrame(driftAnimation);
-};
-
 ripe.OrbitalControls.prototype._updateAngles = function () {
     // TODO Add drift related to acceleration
     // Apply rotation to model
@@ -242,13 +203,13 @@ ripe.OrbitalControls.prototype._positionToRotation = function (position) {
     return (position / 24) * 360;
 };
 
-ripe.OrbitalControls.prototype._rotationToPosition = function () {
-    return (this._validatedAngle(this.currentHorizontalRot) / 360) * 24;
+ripe.OrbitalControls.prototype._rotationToPosition = function (rotationX) {
+    return (this._validatedAngle(parseInt(rotationX)) / 360) * 24;
 };
 
-ripe.OrbitalControls.prototype._rotationToView = function () {
-    if (this.currentVerticalRot > 85) return "top";
-    if (this.currentVerticalRot < -85) return "bottom";
+ripe.OrbitalControls.prototype._rotationToView = function (rotationY) {
+    if (rotationY > 85) return "top";
+    if (rotationY < -85) return "bottom";
 
     return "side";
 };
@@ -345,14 +306,9 @@ ripe.OrbitalControls.prototype.updateRotation = function (frame, options) {
     const dragging = this.element.classList.contains("drag");
 
     const _frame = ripe.parseFrameKey(frame);
-    const nextView = _frame[0];
-    const nextPosition = parseInt(_frame[1]);
 
-    var needsUpdate = false;
-    if (dragging) needsUpdate = this._updateDragRotations();
-    else needsUpdate = this._checkViewPositionRotations(_frame, options);
-
-    if (needsUpdate) this.configurator.updateViewPosition(nextView, nextPosition);
+    if (dragging) this._updateDragRotations();
+    else this._updateRotations(_frame, options);
 };
 
 /**
@@ -398,11 +354,10 @@ ripe.OrbitalControls.prototype._updateDragRotations = function () {
         }
     }
 
-    if (needsUpdate) this.configurator._applyRotations();
-    return needsUpdate;
+    if (needsUpdate) this.configurator.rotate(this.currentHorizontalRot, this.currentVerticalRot);
 };
 
-ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, options) {
+ripe.OrbitalControls.prototype._updateRotations = async function (frame, options) {
     const animating = this.element.classList.contains("animating");
 
     // parses the requested frame value according to the pre-defined
@@ -443,42 +398,74 @@ ripe.OrbitalControls.prototype._checkViewPositionRotations = function (frame, op
         console.log(stepCount, duration)
     } */
 
-    // We could allow the crossfade to happen even with the same view
-    if (view === nextView || this.viewAnimate === "rotate") {
-        this.rotationTransition(nextView, nextPosition, duration);
-        return true;
-    }
+    // New rotation values
+    let nextHorizontalRot = this._positionToRotation(nextPosition);
+    let nextVerticalRot = 0;
 
-    this.currentHorizontalRot = this._positionToRotation(nextPosition);
-    this.currentVerticalRot = 0;
-
-    this._updateAngles();
-
-    if (nextView === "top") this.currentVerticalRot = this.maximumVerticalRot;
-    if (nextView === "bottom") this.currentVerticalRot = this.minimumVerticalRot;
-
-    if (this.viewAnimate === "none") {
-        this.configurator._applyRotations();
-        return true;
-    }
-
-    this.configurator._beginTransition({
+    if (nextView === "top") nextVerticalRot = this.maximumVerticalRot;
+    if (nextView === "bottom") nextVerticalRot = this.minimumVerticalRot;
+    
+    // Apply rotations with transition
+    await this.configurator.updateViewPosition({
         type: "rotation",
-        method: this.viewAnimate,
-        rotationX: this.currentHorizontalRot,
-        rotationY: this.currentVerticalRot,
+        rotationX: nextHorizontalRot,
+        rotationY: nextVerticalRot,
         duration: duration
     });
+
+    this._updateAngles();
 
     return true;
 };
 
-ripe.OrbitalControls.prototype.rotationTransition = function (nextView, nextPosition, duration) {
+ripe.OrbitalControls.prototype._drift = function (event) {
+    
+    var currentValueX = event.movementX;
+    var currentValueY = event.movementY;
+
+    var pos = 0;
+    var startTime = 0;
+    const driftAnimation = (time) => {
+        if (!this.isDrifting) return;
+        
+        startTime = startTime === 0 ? time : startTime;
+        
+        pos = (time - startTime) / this.driftDuration;
+
+        currentValueX = ripe.easing.easeOutQuad(pos, event.movementX, 0, this.driftDuration);
+        currentValueY = ripe.easing.easeOutQuad(pos, event.movementY, 0, this.driftDuration);
+
+        if (this.lockRotation != "vertical")
+            this.currentHorizontalRot = this._validatedAngle(
+                currentValueX + this.currentHorizontalRot
+            );
+        if (this.lockRotation != "horizontal") {
+            this.currentVerticalRot = Math.min(
+                Math.max(this.currentVerticalRot + currentValueY, this.minimumVerticalRot),
+                this.maximumVerticalRot
+            );
+        }
+        this._updateAngles();
+
+        this.configurator.rotate(this.currentHorizontalRot, this.currentVerticalRot);
+
+        if (pos < 1.0) requestAnimationFrame(driftAnimation);
+        else this.isDrifting = false;
+    };
+
+    this.isDrifting = true;
+    requestAnimationFrame(driftAnimation);
+};
+
+ripe.OrbitalControls.prototype.rotationTransition = function (options) {
     const position = parseInt(this.element.dataset.position);
     const view = this.element.dataset.view;
 
-    var finalXRotation = this.currentHorizontalRot;
-    var finalYRotation = this.currentVerticalRot;
+    let finalXRotation = parseInt(options.rotationX);
+    let finalYRotation = parseInt(options.rotationY);
+
+    let nextView = this._rotationToView(finalYRotation)
+    let nextPosition = this._rotationToPosition(finalXRotation)
 
     this._baseHorizontalRot = this.currentHorizontalRot;
     this._baseVerticalRot = this.currentVerticalRot;
@@ -488,7 +475,7 @@ ripe.OrbitalControls.prototype.rotationTransition = function (nextView, nextPosi
     var startTime = 0;
     const transition = (time) => {
         startTime = startTime === 0 ? time : startTime;
-        pos = (time - startTime) / duration;
+        pos = (time - startTime) / options.duration;
 
         this.currentHorizontalRot = ripe.easing[this.rotationEasing](
             pos,
@@ -501,12 +488,11 @@ ripe.OrbitalControls.prototype.rotationTransition = function (nextView, nextPosi
             finalYRotation
         );
 
-        this.configurator._applyRotations();
+        this.configurator.rotate(this.currentHorizontalRot, this.currentVerticalRot);
 
         if (pos < 1) requestAnimationFrame(transition);
         else {
-            this._baseHorizontalRot = this._validatedAngle(this.currentHorizontalRot);
-            this._baseVerticalRot = this.currentVerticalRot;
+            this._updateAngles();
 
             this.element.classList.remove("animating");
             this.element.classList.remove("no-drag");

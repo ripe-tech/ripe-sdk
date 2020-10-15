@@ -49,6 +49,7 @@ ripe.CSRenderer = function (owner, element, options) {
 
     // raycast
     this.intersectedPart = "";
+    this.raycastingMeshes = [];
 
     this.cameraDistance = options.cameraDistance || 0;
     this.cameraHeight = options.cameraHeight || 0;
@@ -64,6 +65,7 @@ ripe.CSRenderer = function (owner, element, options) {
 
     this.debug = options.debug || false;
     this.canZoom = options.canZoom === undefined ? true : options.canZoom;
+    
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
@@ -71,7 +73,6 @@ ripe.CSRenderer = function (owner, element, options) {
         this.updateSize();
     };
 
-    this._initializeRenderer();
     this.previousRotation = new this.library.Vector2(0, 0);
 };
 
@@ -122,7 +123,7 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
     // initialize all ThreeJS components
     this._initializeLights();
     this._initializeCamera();
-    //this._initializeRenderer();
+    this._initializeRenderer();
     this._registerHandlers();
     this._initializeShaders();
     this._loadAssets();
@@ -166,9 +167,9 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
         event.preventDefault();
 
         self.cameraDistance += event.deltaY;
-        self._applyRotations(self.previousRotation.x, self.previousRotation.y);
+        self.rotate(self.previousRotation.x, self.previousRotation.y);
         self.render();
-        //console.log(event);
+        
     }, { passive: false });
 };
 
@@ -177,17 +178,26 @@ ripe.CSRenderer.prototype.disposeResources = async function () {
     this.renderer.renderLists.dispose();
     this.renderer.dispose();
     this.renderer = null;
+    
+    for (let i = 0; i < this.raycastingMeshes.length; i++) {
+        await this.assetManager.disposeMesh(this.raycastingMeshes[i]);
+    }
+
     await this.assetManager.disposeScene(this.scene);
     console.log("Finished Disposing Renderer Resources.")
 }
 
 ripe.CSRenderer.prototype._loadAssets = async function () {
+    for (var mesh in this.assetManager.meshes) {
+        this.raycastingMeshes.push(this.assetManager.meshes[mesh])
+    }
+
     this.scene.add(this.assetManager.loadedGltf.scene);
 
     this.mixer = new this.library.AnimationMixer(this.assetManager.loadedGltf.scene);
     this.animations = this.assetManager.loadedGltf.animations;
 
-    if (this.environment) await this.assetManager.setupEnvironment(this.scene);
+    if (this.environment) await this.assetManager.setupEnvironment(this.scene, this.renderer);
 
     this.render();
 
@@ -435,8 +445,6 @@ ripe.CSRenderer.prototype._initializeCamera = function () {
 };
 
 ripe.CSRenderer.prototype._performAnimation = function (animationName) {
-    console.log("Attempting to perform animation " + animationName)
-
     var animation = this.library.AnimationClip.findByName(this.animations, animationName);
     if (!animation) return;
 
@@ -472,10 +480,18 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
 
 ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
     for (let i = 0; i < meshes.length; i++) {
-        if (operation === "remove")
+        if (operation === "remove") {
             this.scene.remove(meshes[i]);
-        if (operation === "add")
+            meshes[i].geometry.dispose();
+            
+            if (meshes[i].material)
+                meshes[i].material.dispose();
+        }
+            
+        if (operation === "add") {
             this.scene.add(meshes[i]);
+        }
+            
     }
 }
 
@@ -506,10 +522,10 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
     //console.log(mouse.x, mouse.y)
 
-    if (this.raycaster && this.scene) {
+    if (this.raycaster && this.scene && this.assetManager) {
         this.raycaster.setFromCamera(mouse, this.camera);
 
-        var intersects = this.raycaster.intersectObjects(this.assetManager.meshes);
+        var intersects = this.raycaster.intersectObjects(this.raycastingMeshes);
 
         if (intersects.length > 0) {
             if (this.intersectedPart !== intersects[0].object.name) {
@@ -622,10 +638,6 @@ ripe.CSRenderer.prototype.updateElementBoundingBox = function () {
     }
 };
 
-ripe.CSRenderer.prototype.transition = function (options) {
-    if (options.method === "cross") this.crossfade(options);
-};
-
 ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     console.log("Beginning crossfade")
     var renderTargetParameters = {
@@ -670,7 +682,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     if (options.type === "material") {
         await this.assetManager.setMaterials(parts);
     } else if (options.type === "rotation") {
-        this._applyRotations(options.rotationX, options.rotationY);
+        this.rotate(options.rotationX, options.rotationY);
     }
 
     // Render next image
@@ -719,7 +731,7 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     requestAnimationFrame(crossfadeFunction);
 };
 
-ripe.CSRenderer.prototype._applyRotations = function (cameraRotationX, cameraRotationY) {
+ripe.CSRenderer.prototype.rotate = function (cameraRotationX, cameraRotationY) {
     var maxHeight = this.cameraDistance - this.cameraHeight;
 
     var distance = this.cameraDistance * Math.cos((Math.PI / 180) * cameraRotationY);

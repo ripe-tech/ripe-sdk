@@ -1240,7 +1240,7 @@ ripe.ConfiguratorPRC.prototype._drawFrame = async function (image, animate, dura
     // creates an array of promises that are going to be waiting for so that
     // the animation on the draw is considered finished
     const promises = [];
-    if (animate === "cross") {
+    if (animate === "crossfade") {
         promises.push(ripe.animateProperty(current, "opacity", 1, 0, duration));
     }
     promises.push(ripe.animateProperty(target, "opacity", 0, 1, duration));

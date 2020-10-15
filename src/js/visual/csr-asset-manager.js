@@ -11,7 +11,7 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.CSRAssetManager = function (configurator, owner, options, renderer) {
+ripe.CSRAssetManager = function (configurator, owner, options) {
     //console.log("Before")
     ////console.log(renderer.info)
     //renderer.info.reset();
@@ -26,17 +26,14 @@ ripe.CSRAssetManager = function (configurator, owner, options, renderer) {
         "/" +
         this.owner.model.toLowerCase() +
         ".glb";
-    
+
     this.library = options.library;
     this.owner = owner;
 
-    this.library.Cache.enabled = false;
-    
     this.assetsPath = options.assetsPath || "";
     this.environment = options.environment;
 
     this.textureLoader = new this.library.TextureLoader();
-    this.loadingManager = new this.library.LoadingManager();
 
     this.textSize = options.textSize || 1;
     this.textHeight = options.textHeight || 0.1;
@@ -47,10 +44,13 @@ ripe.CSRAssetManager = function (configurator, owner, options, renderer) {
     this.environmentTexture = null;
     this.loadedGltf = undefined;
     this.library = options.library;
-    
 
-    this.pmremGenerator = new this.library.PMREMGenerator(renderer);
-    this.maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+
+    let tmpRenderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
+
+    this.maxAnisotropy = tmpRenderer.capabilities.getMaxAnisotropy();
+
+    tmpRenderer.dispose();
 
     this._loadMesh();
 };
@@ -70,24 +70,20 @@ ripe.CSRAssetManager.prototype._loadMesh = async function () {
     var meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/";
     var meshModelPath = this.owner.model.toLowerCase() + ".glb";
 
-    console.log(this.loadingManager)
-
-    const gltfLoader = new this.library.GLTFLoader(this.loadingManager);
+    const gltfLoader = new this.library.GLTFLoader();
     gltfLoader.setPath(meshPath);
 
-    let gltf = await new Promise((resolve, reject) => {
-        gltfLoader.load(meshModelPath, (foundGltf) => {
-            resolve(foundGltf);
-        });
+    const self = this;
+    gltfLoader.load(meshModelPath, async function(gltf) {
+        self.loadedGltf = gltf;
+
+        await self._loadSubMeshes();
+    
+        await self.setMaterials(self.owner.parts);
+    
+        self.configurator.initializeLoading();
     });
-
-    this.loadedGltf = gltf;
-
-    await this._loadSubMeshes();
-
-    await this.setMaterials(this.owner.parts);
-
-    this.configurator.initializeLoading();
+    
 };
 
 ripe.CSRAssetManager.prototype._loadSubMeshes = async function () {
@@ -108,7 +104,7 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = async function () {
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
 
     const self = this;
-    await this.loadedGltf.scene.traverse(async function(child) {
+    await this.loadedGltf.scene.traverse(async function (child) {
         if (!child.isMesh)
             return;
 
@@ -179,7 +175,7 @@ ripe.CSRAssetManager.prototype.disposeResources = async function (scene) {
     if (this.environmentTexture) {
         this.environmentTexture.dispose();
         this.environmentTexture = null;
-    } 
+    }
 
     var count = 0;
 
@@ -202,12 +198,13 @@ ripe.CSRAssetManager.prototype.disposeResources = async function (scene) {
             count++;
         }
     }
-    //console.log("Finished disposing " + count + " textures.");
-    
+
     this.meshes = {};
     this.loadedTextures = {};
     this.loadedGltf = null;
-    this.library = null;    
+    this.library = null;
+
+    console.log("Finished disposing " + count + " textures.");
 };
 
 ripe.CSRAssetManager.prototype.setMaterials = async function (parts) {
@@ -291,7 +288,8 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
     return newMaterial;
 };
 
-ripe.CSRAssetManager.prototype.setupEnvironment = async function (scene) {
+ripe.CSRAssetManager.prototype.setupEnvironment = async function (scene, renderer) {
+    this.pmremGenerator = new this.library.PMREMGenerator(renderer);
     var environmentMapPath = this.assetsPath + "environments/" + this.environment + ".hdr";
 
     const rgbeLoader = new this.library.RGBELoader();

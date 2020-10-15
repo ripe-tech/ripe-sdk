@@ -49,7 +49,6 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this.height = this.options.height || 1000;
     this.format = this.options.format || null;
     this.size = this.options.size || null;
-    this.mutations = this.options.mutations || false;
     this.maxSize = this.options.maxSize || 1000;
     this.pixelRatio =
         this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
@@ -71,6 +70,9 @@ ripe.ConfiguratorCSR.prototype.init = function () {
     this._observer = null;
     this._ownerBinds = {};
     this._enabled = true;
+
+    this.viewAnimate = this.options.viewAnimate === undefined ? "crossfade" : this.options.viewAnimate;
+    this.positionAnimate = this.options.positionAnimate === undefined ? "rotate" : this.options.positionAnimate;
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
@@ -105,17 +107,16 @@ ripe.ConfiguratorCSR.prototype.init = function () {
         if (config) this._updateConfig();
     });
 
-    console.log(this.options.library.Cache);
     this.options.library.Cache.enabled = false;
     this.options.library.Cache.clear();
-    console.log(this.options.library.Cache);
+
     this.controls = new ripe.OrbitalControls(this, this.element, this.options);
     this.renderer = new ripe.CSRenderer(this.owner, this.element, this.options);
     this.initials = new ripe.CSRInitials(this.owner, this.options)
 
     // wait until configurator finished initializing to create the controls and
     // renderer
-    this.assetManager = new ripe.CSRAssetManager(this, this.owner, this.options, this.renderer.renderer)
+    this.assetManager = new ripe.CSRAssetManager(this, this.owner, this.options)
 };
 
 ripe.ConfiguratorCSR.prototype.initializeLoading = async function () {
@@ -179,7 +180,6 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update =
     this.height = options.height === undefined ? this.height : options.height;
     this.format = options.format === undefined ? this.format : options.format;
     this.size = options.size === undefined ? this.size : options.size;
-    this.mutations = options.mutations === undefined ? this.mutations : options.mutations;
     this.maxSize = options.maxSize === undefined ? this.maxSize : this.maxSize;
     this.pixelRatio = options.pixelRation === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
@@ -200,6 +200,7 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function (options, update =
     this.configAnimate =
         options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
+    this.positionAnimate = options.positionAnimate === undefined ? this.positionAnimation : options.positionAnimation;
 
     if (update) await this.update();
 };
@@ -234,7 +235,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
         return;
     }
 
-    if (options.reason === "set parts" || options.reason === "set part") {
+    if (options.reason && options.reason.includes("set part")) {
         await this.renderer.crossfade({
             type: "material",
             duration: 500
@@ -257,35 +258,44 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
     return true;
 };
 
-ripe.ConfiguratorCSR.prototype.updateParts = async function (parts) {
-    await this.renderer.crossfade({
-        type: "material",
-        duration: 500,
-        parts: parts
-    });
-}
+ripe.ConfiguratorCSR.prototype.updateViewPosition = async function (options) {
+    let newPos = this.controls._rotationToPosition(options.rotationX);
+    let newView = this.controls._rotationToView(options.rotationY);
 
-ripe.ConfiguratorCSR.prototype.updateViewPosition = function (nextView, nextPosition) {
-    this.element.dataset.position = nextPosition;
-    this.element.dataset.view = nextView;
+    // Change View
+    if (this.view !== newView) {
+        if (this.viewAnimate === "crossfade") {
+            await this.renderer.crossfade(options);  
+        } else if (this.viewAnimate === "rotate") {
+            this.controls.rotationTransition(options);
+        } else if (this.viewAnimate === "none") {
+            this.rotate(options.rotationX, options.rotationY)   
+        }
+    } else if (this.position !== newPos) {
+        if (this.positionAnimate === "crossfade") {
+            await this.renderer.crossfade(options);  
+        } else if (this.positionAnimate === "rotate") {
+            this.controls.rotationTransition(options);
+        } else if (this.positionAnimate === "none") {
+            this.rotate(options.rotationX, options.rotationY)   
+        }
+    }
+
+    this.position = newPos;
+    this.view = newView;
+    
+    this.element.dataset.position = newPos;
+    this.element.dataset.view = newView;
 };
 
 /**
  * Function called by the controls when a new rotation has been detected,
  * prompts a new render to update the scene.
  */
-ripe.ConfiguratorCSR.prototype._applyRotations = function () {
-    this.renderer._applyRotations(
-        this.controls.currentHorizontalRot,
-        this.controls.currentVerticalRot
-    );
+ripe.ConfiguratorCSR.prototype.rotate = function (horizontalRot, verticalRot) {
+    this.renderer.rotate(horizontalRot, verticalRot);
 
-    this.updateViewPosition(this.controls._rotationToView(), this.controls._rotationToPosition());
     this.renderer.render();
-};
-
-ripe.ConfiguratorCSR.prototype._beginTransition = function (options) {
-    this.renderer.transition(options);
 };
 
 /**

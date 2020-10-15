@@ -49,8 +49,6 @@ window.onload = function () {
             parts.push(triplet);
         }
 
-        console.log(parts);
-
         await ripe.setParts(parts, true, { partEvents: false });
     };
 
@@ -346,7 +344,7 @@ window.onload = function () {
                 noMasks: false,
                 view: bestFace(result),
                 cameraFOV: 20,
-                cameraDistance: 90,
+                cameraDistance: 105,
                 cameraHeight: 12,
                 cameraTarget: { x: 0, y: 9, z: 0.0 },
                 debug: true,
@@ -365,7 +363,11 @@ window.onload = function () {
                 exposure: 1.6,
                 mouseDrift: true,
                 driftDuration: 200,
-                viewAnimate: "cross",
+                // can be "crossfade", "rotate" or "none"
+                viewAnimate: "crossfade",
+                positionAnimate: "rotate",
+                //viewAnimate: "rotate",
+                //positionAnimate: "crossfade",
                 highlightEasing: "easeOutQuad",
                 materialEasing: "easeInOutQuad",
                 rotationEasing: "easeInOutQuad",
