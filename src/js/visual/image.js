@@ -364,17 +364,10 @@ ripe.Image.prototype._baseInitialsBuilder = function(initials, engraving, elemen
         });
     }
 
-    const parts = engraving ? engraving.split(".") : [];
-    for (const part of parts) {
-        const slices = part.split(":");
-        const name = slices[0];
-        const type = slices[1];
-        profiles.push({ name: name, type: type });
-    }
-
+    const engravingProfiles = engraving ? this.owner.parseEngraving(engraving).values : [];
     return {
         initials: initials,
-        profile: profiles
+        profile: [...profiles, ...engravingProfiles]
     };
 };
 
