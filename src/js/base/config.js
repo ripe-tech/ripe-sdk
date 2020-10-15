@@ -12,17 +12,17 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.Ripe.prototype.hasCustomization = function () {
+ripe.Ripe.prototype.hasCustomization = function() {
     const tags = this.loadedConfig.tags || [];
     return !tags.includes("no_customization");
 };
 
-ripe.Ripe.prototype.hasPersonalization = function () {
+ripe.Ripe.prototype.hasPersonalization = function() {
     const tags = this.loadedConfig.tags || [];
     return !tags.includes("no_initials") && !tags.includes("no_personalization");
 };
 
-ripe.Ripe.prototype.hasSize = function () {
+ripe.Ripe.prototype.hasSize = function() {
     const tags = this.loadedConfig.tags || [];
     return !tags.includes("no_size");
 };

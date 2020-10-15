@@ -18,7 +18,7 @@ if (
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getProfiles = function (options, callback) {
+ripe.Ripe.prototype.getProfiles = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}profiles`;
@@ -37,7 +37,7 @@ ripe.Ripe.prototype.getProfiles = function (options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The sequence of profiles for the options.
  */
-ripe.Ripe.prototype.getProfilesP = function (options) {
+ripe.Ripe.prototype.getProfilesP = function(options) {
     return new Promise((resolve, reject) => {
         this.getProfiles(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -53,7 +53,7 @@ ripe.Ripe.prototype.getProfilesP = function (options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getProfile = function (name, options, callback) {
+ripe.Ripe.prototype.getProfile = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}profiles/${name}`;
@@ -73,7 +73,7 @@ ripe.Ripe.prototype.getProfile = function (name, options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The profile requested by name.
  */
-ripe.Ripe.prototype.getProfileP = function (name, options) {
+ripe.Ripe.prototype.getProfileP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.getProfile(name, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));

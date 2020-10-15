@@ -20,11 +20,11 @@ if (
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.locale = function (value, locale, options, callback) {
+ripe.Ripe.prototype.locale = function(value, locale, options, callback) {
     return this.localeMultiple(value, locale, options, callback);
 };
 
-ripe.Ripe.prototype.localeP = function (value, locale, options) {
+ripe.Ripe.prototype.localeP = function(value, locale, options) {
     return new Promise((resolve, reject) => {
         this.locale(value, locale, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -41,7 +41,7 @@ ripe.Ripe.prototype.localeP = function (value, locale, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.localeMultiple = function (values, locale, options, callback) {
+ripe.Ripe.prototype.localeMultiple = function(values, locale, options, callback) {
     values = typeof values === "string" ? [values] : values;
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -58,7 +58,7 @@ ripe.Ripe.prototype.localeMultiple = function (values, locale, options, callback
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.localeMultipleP = function (values, locale, options) {
+ripe.Ripe.prototype.localeMultipleP = function(values, locale, options) {
     return new Promise((resolve, reject) => {
         this.localeMultiple(values, locale, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -75,7 +75,7 @@ ripe.Ripe.prototype.localeMultipleP = function (values, locale, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.localeBundle = function (locale, context, options, callback) {
+ripe.Ripe.prototype.localeBundle = function(locale, context, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}locale/bundle`;
@@ -91,7 +91,7 @@ ripe.Ripe.prototype.localeBundle = function (locale, context, options, callback)
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.localeBundleP = function (locale, context, options) {
+ripe.Ripe.prototype.localeBundleP = function(locale, context, options) {
     return new Promise((resolve, reject) => {
         this.localeBundle(locale, context, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));

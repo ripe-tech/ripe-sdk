@@ -24,7 +24,7 @@ if (
  * @param {Object} options The options to be used to configure the API client.
  * @returns {Ripe} The newly created RipeAPI object.
  */
-ripe.RipeAPI = function (options = {}) {
+ripe.RipeAPI = function(options = {}) {
     options.cached = typeof options.cached === "undefined" ? false : options.cached;
     return new ripe.Ripe(options);
 };
@@ -37,7 +37,7 @@ ripe.RipeAPI = function (options = {}) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.ping = function (options, callback) {
+ripe.Ripe.prototype.ping = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}ping`;
@@ -49,7 +49,7 @@ ripe.Ripe.prototype.ping = function (options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.pingP = function (options) {
+ripe.Ripe.prototype.pingP = function(options) {
     return new Promise((resolve, reject) => {
         this.ping(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -67,7 +67,7 @@ ripe.Ripe.prototype.pingP = function (options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.geoResolve = function (address, options, callback) {
+ripe.Ripe.prototype.geoResolve = function(address, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}geo_resolve`;
@@ -82,7 +82,7 @@ ripe.Ripe.prototype.geoResolve = function (address, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.geoResolveP = function (address, options) {
+ripe.Ripe.prototype.geoResolveP = function(address, options) {
     return new Promise((resolve, reject) => {
         this.geoResolve(address, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -100,7 +100,7 @@ ripe.Ripe.prototype.geoResolveP = function (address, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.signin = function (username, password, options, callback) {
+ripe.Ripe.prototype.signin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}signin`;
@@ -116,7 +116,7 @@ ripe.Ripe.prototype.signin = function (username, password, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.signinP = function (username, password, options) {
+ripe.Ripe.prototype.signinP = function(username, password, options) {
     return new Promise((resolve, reject) => {
         this.signin(username, password, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -136,7 +136,7 @@ ripe.Ripe.prototype.signinP = function (username, password, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.signinAdmin = function (username, password, options, callback) {
+ripe.Ripe.prototype.signinAdmin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}signin_admin`;
@@ -152,7 +152,7 @@ ripe.Ripe.prototype.signinAdmin = function (username, password, options, callbac
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.signinAdminP = function (username, password, options) {
+ripe.Ripe.prototype.signinAdminP = function(username, password, options) {
     return new Promise((resolve, reject) => {
         this.signinAdmin(username, password, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -169,7 +169,7 @@ ripe.Ripe.prototype.signinAdminP = function (username, password, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.signinPid = function (token, options, callback) {
+ripe.Ripe.prototype.signinPid = function(token, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}signin_pid`;
@@ -184,7 +184,7 @@ ripe.Ripe.prototype.signinPid = function (token, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.signinPidP = function (token, options) {
+ripe.Ripe.prototype.signinPidP = function(token, options) {
     return new Promise((resolve, reject) => {
         this.signinAdmin(token, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -201,7 +201,7 @@ ripe.Ripe.prototype.signinPidP = function (token, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getPrice = function (options, callback) {
+ripe.Ripe.prototype.getPrice = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getPriceOptions(options);
@@ -209,7 +209,7 @@ ripe.Ripe.prototype.getPrice = function (options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.getPriceP = function (options) {
+ripe.Ripe.prototype.getPriceP = function(options) {
     return new Promise((resolve, reject) => {
         this.getPrice(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -220,7 +220,7 @@ ripe.Ripe.prototype.getPriceP = function (options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._cacheURL = function (url, options, callback) {
+ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // runs the defaulting operation on the provided options
     // optional parameter (ensures valid object there)
     callback = typeof options === "function" ? options : callback;
@@ -278,7 +278,7 @@ ripe.Ripe.prototype._cacheURL = function (url, options, callback) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._requestURL = function (url, options, callback) {
+ripe.Ripe.prototype._requestURL = function(url, options, callback) {
     if (typeof fetch !== "undefined") return this._requestURLFetch(url, options, callback);
     else return this._requestURLLegacy(url, options, callback);
 };
@@ -286,7 +286,7 @@ ripe.Ripe.prototype._requestURL = function (url, options, callback) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._requestURLFetch = function (url, options, callback) {
+ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
 
@@ -354,7 +354,7 @@ ripe.Ripe.prototype._requestURLFetch = function (url, options, callback) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._requestURLLegacy = function (url, options, callback) {
+ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
 
@@ -392,7 +392,7 @@ ripe.Ripe.prototype._requestURLLegacy = function (url, options, callback) {
     request.validCodes = validCodes;
     request.withCredentials = withCredentials;
 
-    request.addEventListener("load", function () {
+    request.addEventListener("load", function() {
         let result = null;
         const isValid = this.validCodes.includes(this.status);
         try {
@@ -407,7 +407,7 @@ ripe.Ripe.prototype._requestURLLegacy = function (url, options, callback) {
         }
     });
 
-    request.addEventListener("error", function (error) {
+    request.addEventListener("error", function(error) {
         request.error = request.error || error;
         if (this.callback) this.callback.call(context, null, false, this);
         if (this.timeoutHandler) {
@@ -416,11 +416,11 @@ ripe.Ripe.prototype._requestURLLegacy = function (url, options, callback) {
         }
     });
 
-    request.addEventListener("loadstart", function () {
+    request.addEventListener("loadstart", function() {
         context.trigger("pre_request", request, options);
     });
 
-    request.addEventListener("loadend", function () {
+    request.addEventListener("loadend", function() {
         context.trigger("post_request", request, options);
     });
 
@@ -456,7 +456,7 @@ ripe.Ripe.prototype._requestURLLegacy = function (url, options, callback) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getQueryOptions = function (options = {}) {
+ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
     if (!options.noEvents) this.trigger("pre_query_options", options);
 
     const params = options.params || {};
@@ -533,7 +533,7 @@ ripe.Ripe.prototype._getQueryOptions = function (options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getInitialsOptions = function (options = {}) {
+ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
     if (!options.noEvents) this.trigger("pre_initials_options", options);
 
     const params = options.params || {};
@@ -564,7 +564,7 @@ ripe.Ripe.prototype._getInitialsOptions = function (options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getQuery = function (options = {}) {
+ripe.Ripe.prototype._getQuery = function(options = {}) {
     options = this._getQueryOptions(options);
     return this._buildQuery(options.params);
 };
@@ -573,7 +573,7 @@ ripe.Ripe.prototype._getQuery = function (options = {}) {
  * @ignore
  * @see {link http://docs.platforme.com/#config-endpoints-price}
  */
-ripe.Ripe.prototype._getPriceOptions = function (options = {}) {
+ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
     if (!options.noEvents) this.trigger("pre_price_options", options);
 
     options = this._getQueryOptions(options);
@@ -603,7 +603,7 @@ ripe.Ripe.prototype._getPriceOptions = function (options = {}) {
  * @ignore
  * @see {link http://docs.platforme.com/#render-endpoints-compose}
  */
-ripe.Ripe.prototype._getImageOptions = function (options = {}) {
+ripe.Ripe.prototype._getImageOptions = function(options = {}) {
     if (!options.noEvents) this.trigger("pre_image_options", options);
 
     options.country = options.country || null;
@@ -665,7 +665,7 @@ ripe.Ripe.prototype._getImageOptions = function (options = {}) {
  * @ignore
  * @see {link http://docs.platforme.com/#render-endpoints-mask}
  */
-ripe.Ripe.prototype._getMaskOptions = function (options = {}) {
+ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     if (!options.noEvents) this.trigger("pre_mask_options", options);
 
     options.parts = options.parts || {};
@@ -697,7 +697,7 @@ ripe.Ripe.prototype._getMaskOptions = function (options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getSwatchOptions = function (options = {}) {
+ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
     if (!options.noEvents) this.trigger("pre_swatch_options", options);
 
     const brand = options.brand === undefined ? this.brand : options.brand;
@@ -747,7 +747,7 @@ ripe.Ripe.prototype._getSwatchOptions = function (options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getImageURL = function (options) {
+ripe.Ripe.prototype._getImageURL = function(options) {
     options = this._getImageOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
@@ -755,7 +755,7 @@ ripe.Ripe.prototype._getImageURL = function (options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getMaskURL = function (options) {
+ripe.Ripe.prototype._getMaskURL = function(options) {
     options = this._getMaskOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
@@ -763,7 +763,7 @@ ripe.Ripe.prototype._getMaskURL = function (options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getSwatchURL = function (options) {
+ripe.Ripe.prototype._getSwatchURL = function(options) {
     options = this._getSwatchOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
@@ -783,7 +783,7 @@ ripe.Ripe.prototype._getSwatchURL = function (options) {
  *
  * @ignore
  */
-ripe.Ripe.prototype._build = function (options) {
+ripe.Ripe.prototype._build = function(options) {
     const url = options.url || "";
     const method = options.method || "GET";
     const params = options.params || {};
@@ -823,7 +823,7 @@ ripe.Ripe.prototype._build = function (options) {
  *
  * @ignore
  */
-ripe.Ripe.prototype._buildQuery = function (params) {
+ripe.Ripe.prototype._buildQuery = function(params) {
     let key;
     let value;
     let index;
@@ -878,7 +878,7 @@ ripe.Ripe.prototype._buildQuery = function (params) {
  *
  * @ignore
  */
-ripe.Ripe.prototype._unpackQuery = function (query) {
+ripe.Ripe.prototype._unpackQuery = function(query) {
     query = query[0] === "?" ? query.slice(1) : query;
 
     const parts = query.split("&");
@@ -906,7 +906,7 @@ ripe.Ripe.prototype._unpackQuery = function (query) {
     return options;
 };
 
-ripe.Ripe.prototype._queryToSpec = function (query) {
+ripe.Ripe.prototype._queryToSpec = function(query) {
     const options = this._unpackQuery(query);
     const brand = options.brand || null;
     const model = options.model || null;
@@ -934,7 +934,7 @@ ripe.Ripe.prototype._queryToSpec = function (query) {
     return spec;
 };
 
-ripe.Ripe.prototype._specToQuery = function (spec) {
+ripe.Ripe.prototype._specToQuery = function(spec) {
     const queryL = [];
     const brand = spec.brand || null;
     const model = spec.model || null;
@@ -961,7 +961,7 @@ ripe.Ripe.prototype._specToQuery = function (spec) {
     return queryL.join("&");
 };
 
-ripe.Ripe.prototype._tuplesToParts = function (tuples) {
+ripe.Ripe.prototype._tuplesToParts = function(tuples) {
     const parts = [];
     for (const tuple of tuples) {
         const [name, material, color] = ripe.splitUnescape(tuple, ":", 2);
@@ -975,7 +975,7 @@ ripe.Ripe.prototype._tuplesToParts = function (tuples) {
     return parts;
 };
 
-ripe.Ripe.prototype._partsToPartsM = function (parts) {
+ripe.Ripe.prototype._partsToPartsM = function(parts) {
     const partsM = {};
     for (const part of parts) {
         const name = part.name;
@@ -989,7 +989,7 @@ ripe.Ripe.prototype._partsToPartsM = function (parts) {
     return partsM;
 };
 
-ripe.Ripe.prototype._partsMToQuery = function (partsM, sort = true) {
+ripe.Ripe.prototype._partsMToQuery = function(partsM, sort = true) {
     const queryL = [];
     const names = Object.keys(partsM);
     if (sort) names.sort();
@@ -1006,7 +1006,7 @@ ripe.Ripe.prototype._partsMToQuery = function (partsM, sort = true) {
     return queryL.join("&");
 };
 
-ripe.Ripe.prototype._parseExtraS = function (extraS) {
+ripe.Ripe.prototype._parseExtraS = function(extraS) {
     const extra = {};
     for (const extraI of extraS) {
         const [name, initials, engraving] = ripe.splitUnescape(extraI, ":", 2);
@@ -1018,7 +1018,7 @@ ripe.Ripe.prototype._parseExtraS = function (extraS) {
     return extra;
 };
 
-ripe.Ripe.prototype._generateExtraS = function (extra, sort = true) {
+ripe.Ripe.prototype._generateExtraS = function(extra, sort = true) {
     const extraS = [];
     const names = Object.keys(extra);
     if (sort) names.sort();

@@ -226,7 +226,7 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     }
 
     if (options.reason && options.reason.includes("set part")) {
-        await this.renderer.crossfade({duration: 500}, "material");
+        await this.renderer.crossfade({ duration: 500 }, "material");
     }
 
     if (options.reason && options.reason === "set initials") {
@@ -245,13 +245,13 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     return true;
 };
 
-ripe.ConfiguratorCSR.prototype.updateViewPosition = function (newPos, newView) {
+ripe.ConfiguratorCSR.prototype.updateViewPosition = function(newPos, newView) {
     this.position = newPos;
     this.view = newView;
 
     this.element.dataset.position = newPos;
-    this.element.dataset.view = newView;    
-}
+    this.element.dataset.view = newView;
+};
 
 /**
  * Function called by the controls when a new rotation has been detected,
@@ -260,7 +260,7 @@ ripe.ConfiguratorCSR.prototype.updateViewPosition = function (newPos, newView) {
 ripe.ConfiguratorCSR.prototype.rotate = async function(options, isAnimated = true) {
     const newPos = this.controls._rotationToPosition(options.rotationX);
     const newView = this.controls._rotationToView(options.rotationY);
-    
+
     // simple rotate, no need for transitions
     if (!isAnimated) {
         this.renderer.rotate(options);
@@ -290,7 +290,7 @@ ripe.ConfiguratorCSR.prototype.rotate = async function(options, isAnimated = tru
         }
     }
 
-    this.updateViewPosition(newPos, newView)
+    this.updateViewPosition(newPos, newView);
 };
 
 /**
@@ -392,16 +392,14 @@ ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function(options) {
  * Turns on (enables) the masks on selection/highlight.
  */
 ripe.ConfiguratorCSR.prototype.enableMasks = function() {
-    if (this.renderer)
-        this.renderer.useMasks = true;
+    if (this.renderer) this.renderer.useMasks = true;
 };
 
 /**
  * Turns off (disables) the masks on selection/highlight.
  */
 ripe.ConfiguratorCSR.prototype.disableMasks = function() {
-    if (this.renderer)
-        this.renderer.useMasks = false;
+    if (this.renderer) this.renderer.useMasks = false;
 };
 
 /**

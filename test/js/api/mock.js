@@ -2,7 +2,7 @@ const uuid = require("uuid");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
-const buildOrder = async function (ffOrderId = null) {
+const buildOrder = async function(ffOrderId = null) {
     const remote = ripe.RipeAPI();
     await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
     ffOrderId = ffOrderId || uuid.v4();
@@ -34,7 +34,7 @@ const buildOrder = async function (ffOrderId = null) {
     return order;
 };
 
-const destroyOrder = async function (order) {
+const destroyOrder = async function(order) {
     const remote = ripe.RipeAPI();
     await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
     await remote.deleteOrderP(order.number);

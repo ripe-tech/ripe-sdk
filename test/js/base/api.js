@@ -2,10 +2,10 @@ const assert = require("assert");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
-describe("RipeAPI", function () {
+describe("RipeAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#_queryToSpec()", function () {
+    describe("#_queryToSpec()", function() {
         it("should be able to convert a query to spec", async () => {
             const remote = ripe.RipeAPI();
 
@@ -45,7 +45,7 @@ describe("RipeAPI", function () {
         });
     });
 
-    describe("#_buildQuery()", function () {
+    describe("#_buildQuery()", function() {
         it("should correctly generate a query string from array", async () => {
             let result = null;
 
@@ -102,7 +102,7 @@ describe("RipeAPI", function () {
         });
     });
 
-    describe("#_unpackQuery()", function () {
+    describe("#_unpackQuery()", function() {
         it("should properly unescape characters", async () => {
             let result = null;
 
@@ -113,7 +113,7 @@ describe("RipeAPI", function () {
         });
     });
 
-    describe("#_parseExtraS()", function () {
+    describe("#_parseExtraS()", function() {
         it("should properly parse an initials extra string", async () => {
             let result = null;
 
@@ -144,7 +144,7 @@ describe("RipeAPI", function () {
         });
     });
 
-    describe("#_generateExtraS()", function () {
+    describe("#_generateExtraS()", function() {
         it("should properly generate an initials extra string", async () => {
             let result = null;
 

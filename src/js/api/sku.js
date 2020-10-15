@@ -28,7 +28,7 @@ if (
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.createSku = function (identifier, domain, options, callback) {
+ripe.Ripe.prototype.createSku = function(identifier, domain, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}skus`;
@@ -62,7 +62,7 @@ ripe.Ripe.prototype.createSku = function (identifier, domain, options, callback)
  *  - 'initialsExtra' - The value for the initials extra of the personalized model.
  * @returns {Promise} The SKU's data.
  */
-ripe.Ripe.prototype.createSkuP = function (identifier, domain, options) {
+ripe.Ripe.prototype.createSkuP = function(identifier, domain, options) {
     return new Promise((resolve, reject) => {
         this.createSku(identifier, domain, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));

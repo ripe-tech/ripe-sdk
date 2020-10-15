@@ -4,12 +4,12 @@ const ripe = require("../../../src/js");
 const base = require("../../../src/js/base");
 const plugins = require("../../../src/js/plugins");
 
-const MockRipe = function (partOptions, optionals) {
+const MockRipe = function(partOptions, optionals) {
     const mockRipe = new base.ripe.Observable();
 
     const defaults = {};
     optionals = optionals || [];
-    optionals.forEach(function (optional) {
+    optionals.forEach(function(optional) {
         defaults[optional] = {
             optional: true
         };
@@ -18,7 +18,7 @@ const MockRipe = function (partOptions, optionals) {
         defaults: defaults,
         parts: partOptions
     };
-    mockRipe.setPart = function (part, material, color) {
+    mockRipe.setPart = function(part, material, color) {
         this.parts[part] = {
             material: material,
             color: color
@@ -29,16 +29,16 @@ const MockRipe = function (partOptions, optionals) {
         });
     };
 
-    mockRipe.setParts = function (parts) {
+    mockRipe.setParts = function(parts) {
         this.parts = parts;
     };
     return mockRipe;
 };
 
-describe("Restrictions", function () {
+describe("Restrictions", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#main", function () {
+    describe("#main", function() {
         it("should apply restrictions", async () => {
             const initialParts = {
                 upper: {
@@ -185,7 +185,7 @@ describe("Restrictions", function () {
         });
     });
 
-    describe("#auto()", function () {
+    describe("#auto()", function() {
         it("should load restrictions from ripe instance", async () => {
             const restrictionsPlugin = new plugins.ripe.Ripe.plugins.RestrictionsPlugin();
             const instance = new ripe.Ripe("swear", "vyner", {
@@ -218,7 +218,7 @@ describe("Restrictions", function () {
         });
     });
 
-    describe("#_applyChanges()", function () {
+    describe("#_applyChanges()", function() {
         it("should apply simple changes", () => {
             let result;
             let target;

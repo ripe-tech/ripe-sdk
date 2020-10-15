@@ -2,11 +2,11 @@ const assert = require("assert");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
-describe("Auth", function () {
+describe("Auth", function() {
     this.timeout(config.TEST_TIMEOUT);
 
-    describe("#auth()", function () {
-        beforeEach(function () {
+    describe("#auth()", function() {
+        beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
             }
@@ -24,8 +24,8 @@ describe("Auth", function () {
         });
     });
 
-    describe("#auth key()", function () {
-        beforeEach(function () {
+    describe("#auth key()", function() {
+        beforeEach(function() {
             if (!config.TEST_KEY) {
                 this.skip();
             }

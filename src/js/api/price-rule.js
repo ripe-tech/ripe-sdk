@@ -19,7 +19,7 @@ if (
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getPriceRules = function (options, callback) {
+ripe.Ripe.prototype.getPriceRules = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}price_rules`;
@@ -39,7 +39,7 @@ ripe.Ripe.prototype.getPriceRules = function (options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The price rules list.
  */
-ripe.Ripe.prototype.getPriceRulesP = function (options) {
+ripe.Ripe.prototype.getPriceRulesP = function(options) {
     return new Promise((resolve, reject) => {
         this.getPriceRules(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -56,7 +56,7 @@ ripe.Ripe.prototype.getPriceRulesP = function (options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getPriceRule = function (id, options, callback) {
+ripe.Ripe.prototype.getPriceRule = function(id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}price_rules/${id}`;
@@ -77,7 +77,7 @@ ripe.Ripe.prototype.getPriceRule = function (id, options, callback) {
  * @param {Object} options An object of options to configure the request
  * @returns {Promise} The price rules list.
  */
-ripe.Ripe.prototype.getPriceRuleP = function (id, options) {
+ripe.Ripe.prototype.getPriceRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
         this.getPriceRule(id, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -93,7 +93,7 @@ ripe.Ripe.prototype.getPriceRuleP = function (id, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.createPriceRule = function (priceRule, options, callback) {
+ripe.Ripe.prototype.createPriceRule = function(priceRule, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}price_rules`;
@@ -114,7 +114,7 @@ ripe.Ripe.prototype.createPriceRule = function (priceRule, options, callback) {
  * @param {Object} options An object with options
  * @returns {Promise} The price rule's data.
  */
-ripe.Ripe.prototype.createPriceRuleP = function (priceRule, options) {
+ripe.Ripe.prototype.createPriceRuleP = function(priceRule, options) {
     return new Promise((resolve, reject) => {
         this.createPriceRule(priceRule, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -130,7 +130,7 @@ ripe.Ripe.prototype.createPriceRuleP = function (priceRule, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.updatePriceRule = function (priceRule, options, callback) {
+ripe.Ripe.prototype.updatePriceRule = function(priceRule, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}price_rules/${priceRule.id}`;
@@ -151,7 +151,7 @@ ripe.Ripe.prototype.updatePriceRule = function (priceRule, options, callback) {
  * @param {Object} options An object of options to configure the request
  * @returns {Promise} The Price Rule's data.
  */
-ripe.Ripe.prototype.updatePriceRuleP = function (priceRule, options) {
+ripe.Ripe.prototype.updatePriceRuleP = function(priceRule, options) {
     return new Promise((resolve, reject) => {
         this.updatePriceRule(priceRule, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -168,7 +168,7 @@ ripe.Ripe.prototype.updatePriceRuleP = function (priceRule, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.deletePriceRule = function (id, options, callback) {
+ripe.Ripe.prototype.deletePriceRule = function(id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}price_rules/${id}`;
@@ -189,7 +189,7 @@ ripe.Ripe.prototype.deletePriceRule = function (id, options, callback) {
  * @param {Object} options An object of options to configure the request
  * @returns {Promise} The price rules list.
  */
-ripe.Ripe.prototype.deletePriceRuleP = function (id, options) {
+ripe.Ripe.prototype.deletePriceRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
         this.deletePriceRule(id, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));

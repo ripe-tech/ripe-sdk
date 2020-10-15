@@ -14,7 +14,7 @@ if (
 /**
  * @ignore
  */
-ripe.touchHandler = function (element, options = {}) {
+ripe.touchHandler = function(element, options = {}) {
     // eslint-disable-next-line no-undef
     if (typeof Mobile !== "undefined" && Mobile.touchHandler) {
         return;
@@ -23,7 +23,7 @@ ripe.touchHandler = function (element, options = {}) {
     const SAFE = options.safe === undefined ? true : options.safe;
     const VALID = options.valid || ["DIV", "IMG", "SPAN", "CANVAS"];
 
-    const eventHandler = function (event) {
+    const eventHandler = function(event) {
         // retrieves the complete set of touches and uses
         // only the first one for type reference
         const touches = event.changedTouches;

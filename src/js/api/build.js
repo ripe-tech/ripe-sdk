@@ -17,7 +17,7 @@ if (
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getBuilds = function (options, callback) {
+ripe.Ripe.prototype.getBuilds = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}builds`;
@@ -36,7 +36,7 @@ ripe.Ripe.prototype.getBuilds = function (options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The builds list (as a promise).
  */
-ripe.Ripe.prototype.getBuildsP = function (options) {
+ripe.Ripe.prototype.getBuildsP = function(options) {
     return new Promise((resolve, reject) => {
         this.getBuilds(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -50,7 +50,7 @@ ripe.Ripe.prototype.getBuildsP = function (options) {
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getLocalBuilds = function (options, callback) {
+ripe.Ripe.prototype.getLocalBuilds = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}builds/local`;
@@ -69,7 +69,7 @@ ripe.Ripe.prototype.getLocalBuilds = function (options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The builds list (as a promise).
  */
-ripe.Ripe.prototype.getLocalBuildsP = function (options) {
+ripe.Ripe.prototype.getLocalBuildsP = function(options) {
     return new Promise((resolve, reject) => {
         this.getLocalBuilds(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -84,7 +84,7 @@ ripe.Ripe.prototype.getLocalBuildsP = function (options) {
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getBuild = function (name, options, callback) {
+ripe.Ripe.prototype.getBuild = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}builds/${name}`;
@@ -104,7 +104,7 @@ ripe.Ripe.prototype.getBuild = function (name, options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build's information (as a promise).
  */
-ripe.Ripe.prototype.getBuildP = function (name, options) {
+ripe.Ripe.prototype.getBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.getBuild(name, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -121,7 +121,7 @@ ripe.Ripe.prototype.getBuildP = function (name, options) {
  * installs the latest one.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.installBuild = function (name, options, callback) {
+ripe.Ripe.prototype.installBuild = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const version = options.version === undefined ? null : options.version;
@@ -149,7 +149,7 @@ ripe.Ripe.prototype.installBuild = function (name, options, callback) {
  * installs the latest one.
  * @returns {Promise} The build install (as a promise).
  */
-ripe.Ripe.prototype.installBuildP = function (name, options) {
+ripe.Ripe.prototype.installBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.installBuild(name, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -166,7 +166,7 @@ ripe.Ripe.prototype.installBuildP = function (name, options) {
  * uninstalls all builds for the name.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.uninstallBuild = function (name, options, callback) {
+ripe.Ripe.prototype.uninstallBuild = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const version = options.version === undefined ? null : options.version;
@@ -194,7 +194,7 @@ ripe.Ripe.prototype.uninstallBuild = function (name, options, callback) {
  * uninstalls all builds for the name.
  * @returns {Promise} The build uninstall (as a promise).
  */
-ripe.Ripe.prototype.uninstallBuildP = function (name, options) {
+ripe.Ripe.prototype.uninstallBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.uninstallBuild(name, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -210,7 +210,7 @@ ripe.Ripe.prototype.uninstallBuildP = function (name, options) {
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.updateBuild = function (name, options, callback) {
+ripe.Ripe.prototype.updateBuild = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}builds/${name}/update`;
@@ -231,7 +231,7 @@ ripe.Ripe.prototype.updateBuild = function (name, options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build update (as a promise).
  */
-ripe.Ripe.prototype.updateBuildP = function (name, options) {
+ripe.Ripe.prototype.updateBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.updateBuild(name, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -248,7 +248,7 @@ ripe.Ripe.prototype.updateBuildP = function (name, options) {
  *  - 'version' - The version of the build to activate.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.switchBuild = function (name, options, callback) {
+ripe.Ripe.prototype.switchBuild = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const version = options.version === undefined ? null : options.version;
@@ -276,7 +276,7 @@ ripe.Ripe.prototype.switchBuild = function (name, options, callback) {
  *  - 'version' - The version of the build to activate.
  * @returns {Promise} The build switch (as a promise).
  */
-ripe.Ripe.prototype.switchBuildP = function (name, options) {
+ripe.Ripe.prototype.switchBuildP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.switchBuild(name, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -293,7 +293,7 @@ ripe.Ripe.prototype.switchBuildP = function (name, options) {
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getBuildArtifacts = function (name, options, callback) {
+ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const branch = options.branch === undefined ? "master" : options.branch;
@@ -321,7 +321,7 @@ ripe.Ripe.prototype.getBuildArtifacts = function (name, options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build artifacts (as a promise).
  */
-ripe.Ripe.prototype.getBuildArtifactsP = function (name, options) {
+ripe.Ripe.prototype.getBuildArtifactsP = function(name, options) {
     return new Promise((resolve, reject) => {
         this.getBuildArtifacts(name, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -337,7 +337,7 @@ ripe.Ripe.prototype.getBuildArtifactsP = function (name, options) {
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getBuildArtifact = function (name, version, options, callback) {
+ripe.Ripe.prototype.getBuildArtifact = function(name, version, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}builds/${name}/artifacts/${version}`;
@@ -358,7 +358,7 @@ ripe.Ripe.prototype.getBuildArtifact = function (name, version, options, callbac
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build artifact (as a promise).
  */
-ripe.Ripe.prototype.getBuildArtifactP = function (name, version, options) {
+ripe.Ripe.prototype.getBuildArtifactP = function(name, version, options) {
     return new Promise((resolve, reject) => {
         this.getBuildArtifact(name, version, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -374,7 +374,7 @@ ripe.Ripe.prototype.getBuildArtifactP = function (name, version, options) {
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.installArtifact = function (name, version, options, callback) {
+ripe.Ripe.prototype.installArtifact = function(name, version, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}builds/${name}/artifacts/${version}/install`;
@@ -395,7 +395,7 @@ ripe.Ripe.prototype.installArtifact = function (name, version, options, callback
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build install (as a promise).
  */
-ripe.Ripe.prototype.installArtifactP = function (name, version, options) {
+ripe.Ripe.prototype.installArtifactP = function(name, version, options) {
     return new Promise((resolve, reject) => {
         this.installArtifact(name, version, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -411,7 +411,7 @@ ripe.Ripe.prototype.installArtifactP = function (name, version, options) {
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.uninstallArtifact = function (name, version, options, callback) {
+ripe.Ripe.prototype.uninstallArtifact = function(name, version, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}builds/${name}/artifacts/${version}/uninstall`;
@@ -432,7 +432,7 @@ ripe.Ripe.prototype.uninstallArtifact = function (name, version, options, callba
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The artifact uninstall (as a promise).
  */
-ripe.Ripe.prototype.uninstallArtifactP = function (name, version, options) {
+ripe.Ripe.prototype.uninstallArtifactP = function(name, version, options) {
     return new Promise((resolve, reject) => {
         this.uninstallArtifact(name, version, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -449,7 +449,7 @@ ripe.Ripe.prototype.uninstallArtifactP = function (name, version, options) {
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.switchArtifact = function (name, version, options, callback) {
+ripe.Ripe.prototype.switchArtifact = function(name, version, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}builds/${name}/artifacts/${version}/switch`;
@@ -471,7 +471,7 @@ ripe.Ripe.prototype.switchArtifact = function (name, version, options, callback)
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build switch (as a promise).
  */
-ripe.Ripe.prototype.switchArtifactP = function (name, version, options) {
+ripe.Ripe.prototype.switchArtifactP = function(name, version, options) {
     return new Promise((resolve, reject) => {
         this.switchArtifact(name, version, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -492,7 +492,7 @@ ripe.Ripe.prototype.switchArtifactP = function (name, version, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getLocaleModel = function (options, callback) {
+ripe.Ripe.prototype.getLocaleModel = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getLocaleModelOptions(options);
@@ -512,7 +512,7 @@ ripe.Ripe.prototype.getLocaleModel = function (options, callback) {
  * - 'prefix' - A prefix to prepend to the locale keys (defaults to 'builds').
  * @returns {Promise} The resolved locale data (as a promise).
  */
-ripe.Ripe.prototype.getLocaleModelP = function (options) {
+ripe.Ripe.prototype.getLocaleModelP = function(options) {
     return new Promise((resolve, reject) => {
         this.getLocaleModel(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -530,7 +530,7 @@ ripe.Ripe.prototype.getLocaleModelP = function (options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getLocaleModelKeys = function (options, callback) {
+ripe.Ripe.prototype.getLocaleModelKeys = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = this._getLocaleModelKeysOptions(options);
@@ -547,7 +547,7 @@ ripe.Ripe.prototype.getLocaleModelKeys = function (options, callback) {
  * - 'version' - The version of the build. If no version is defined it retrieves the keys of the owner's current version.
  * @returns {Promise} The resolved locale data (as a promise).
  */
-ripe.Ripe.prototype.getLocaleModelKeysP = function (options) {
+ripe.Ripe.prototype.getLocaleModelKeysP = function(options) {
     return new Promise((resolve, reject) => {
         this.getLocaleModelKeys(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -559,7 +559,7 @@ ripe.Ripe.prototype.getLocaleModelKeysP = function (options) {
  * @ignore
  * @see {link http://docs.platforme.com/#build-endpoints-locale}
  */
-ripe.Ripe.prototype._getLocaleModelOptions = function (options = {}) {
+ripe.Ripe.prototype._getLocaleModelOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
@@ -589,7 +589,7 @@ ripe.Ripe.prototype._getLocaleModelOptions = function (options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._getLocaleModelKeysOptions = function (options = {}) {
+ripe.Ripe.prototype._getLocaleModelKeysOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;

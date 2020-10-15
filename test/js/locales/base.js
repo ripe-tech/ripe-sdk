@@ -1,7 +1,7 @@
 const assert = require("assert");
 const ripe = require("../../../src/js");
 
-describe("LOCALES_BASE", function () {
+describe("LOCALES_BASE", function() {
     it("should be able to properly translate an hello string", () => {
         const remote = ripe.RipeAPI();
 
