@@ -42,30 +42,37 @@ ripe.CSRenderer = function (owner, element, options) {
     this.materialEasing = options.materialEasing || this.easing;
     this.crossfadeEasing = options.crossfadeEasing || this.easing;
     this.highlightEasing = options.highlightEasing || this.easing;
-    this.highlightDuration = options.maskDuration || 150;
     this.partsMap = options.partsMap || {};
 
     this.shadowBias = options.shadowBias || 0.01;
+    
+    // Initial distance to set camera position
+    this.initialDistance = options.cameraDistance;
 
     // raycast
     this.intersectedPart = "";
     this.raycastingMeshes = [];
 
-    this.cameraDistance = options.cameraDistance || 0;
     this.cameraHeight = options.cameraHeight || 0;
     this.exposure = options.exposure || 3.0;
+
+    this.maskOpacity = options.maskOpacity || 0.4;
+    this.maskDuration = options.maskDuration || 150;
+    this.noMasks = options.noMasks === undefined ? true : options.noMasks;
+    this.useMasks = options.useMasks === undefined ? true : options.useMasks;
 
     this.environment = options.environment;
 
     // animations
     this.introAnimation = options.introAnimation;
 
-    this.useMasks = options.useMasks === undefined ? true : options.useMasks;
-    this.usesPostProcessing = options.usesPostProcessing === undefined ? true : options.usesPostProcessing;
+    this.usesPostProcessing =
+        options.usesPostProcessing === undefined ? true : options.usesPostProcessing;
 
     this.debug = options.debug || false;
-    this.canZoom = options.canZoom === undefined ? true : options.canZoom;
     
+    this.canZoom = options.canZoom === undefined ? true : options.canZoom;
+
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
@@ -74,6 +81,7 @@ ripe.CSRenderer = function (owner, element, options) {
     };
 
     this.previousRotation = new this.library.Vector2(0, 0);
+    //this.guiLibrary = options.dat === undefined ? null : options.dat;
 };
 
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
@@ -102,17 +110,16 @@ ripe.CSRenderer.prototype.updateOptions = async function (options) {
     this.materialEasing = options.materialEasing || this.easing || "linear";
     this.crossfadeEasing = options.crossfadeEasing || this.easing || "linear";
     this.highlightEasing = options.highlightEasing || this.easing || "linear";
-
-    this.highlightDuration =
-        options.maskDuration === undefined ? this.highlightDuration : options.maskDuration;
-
-    this.cameraDistance =
-        options.cameraDistance === undefined ? this.cameraDistance : options.cameraDistance;
+    
     this.cameraHeight =
         options.cameraHeight === undefined ? this.cameraHeight : options.cameraHeight;
     this.exposure = options.exposure === undefined ? this.exposure : options.exposure;
 
     this.useMasks = options.useMasks === undefined ? this.useMasks : options.useMasks;
+    this.maskOpacity = options.maskOpacity === undefined ? this.maskOpacity : options.maskOpacity;
+    this.maskDuration =
+        options.maskDuration === undefined ? this.maskDuration : options.maskDuration;
+    this.noMasks = options.noMasks === undefined ? this.noMasks : this.options.noMasks;
 };
 
 ripe.CSRenderer.prototype.initialize = async function (assetManager) {
@@ -128,12 +135,10 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
     this._initializeShaders();
     this._loadAssets();
 
-    if (this.usesPostProcessing)
-        this._setupPostProcessing();
+    if (this.usesPostProcessing) this._setupPostProcessing();
 
-    if (this.debug)
-        this.createGUI();
-}
+    if (this.debug) this.createGUI();
+};
 
 ripe.CSRenderer.prototype._registerHandlers = function () {
     const self = this;
@@ -160,36 +165,25 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
 
-    if (!this.canZoom)
-        return;
-
-    area.addEventListener("wheel", function (event) {
-        event.preventDefault();
-
-        self.cameraDistance += event.deltaY;
-        self.rotate(self.previousRotation.x, self.previousRotation.y);
-        self.render();
-        
-    }, { passive: false });
 };
 
 ripe.CSRenderer.prototype.disposeResources = async function () {
-    console.log("Disposing Renderer resources.")
+    console.log("Disposing Renderer resources.");
     this.renderer.renderLists.dispose();
     this.renderer.dispose();
     this.renderer = null;
-    
+
     for (let i = 0; i < this.raycastingMeshes.length; i++) {
         await this.assetManager.disposeMesh(this.raycastingMeshes[i]);
     }
 
     await this.assetManager.disposeScene(this.scene);
-    console.log("Finished Disposing Renderer Resources.")
-}
+    console.log("Finished Disposing Renderer Resources.");
+};
 
 ripe.CSRenderer.prototype._loadAssets = async function () {
     for (var mesh in this.assetManager.meshes) {
-        this.raycastingMeshes.push(this.assetManager.meshes[mesh])
+        this.raycastingMeshes.push(this.assetManager.meshes[mesh]);
     }
 
     this.scene.add(this.assetManager.loadedGltf.scene);
@@ -255,7 +249,7 @@ ripe.CSRenderer.prototype._initializeLights = function () {
     const ambientLight = new this.library.HemisphereLight(0xffeeb1, 0x080820, 0.0);
     // hemilight.castShadow = true;
 
-    var mult = this.cameraDistance;
+    var mult = this.initialDistance;
 
     const keyLight = new this.library.PointLight(0xffffff, 2.2, 9 * mult);
     keyLight.position.set(1 * mult, 1 * mult, 1 * mult);
@@ -286,14 +280,6 @@ ripe.CSRenderer.prototype._initializeLights = function () {
     this.scene.add(keyLight);
     this.scene.add(fillLight);
     this.scene.add(rimLight);
-
-    /*
-    if (!this.environment) {
-        this.scene.add(keyLight)
-        this.scene.add(fillLight)
-        this.scene.add(rimLight)
-    }
-    */
 };
 
 ripe.CSRenderer.prototype._initializeRenderer = function () {
@@ -317,12 +303,12 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
 };
 
 ripe.CSRenderer.prototype.createGUI = function () {
+    this.gui = new dat.GUI({autoPlace: false});
     const area = this.element.querySelector(".area");
-    this.gui = new dat.GUI({ autoPlace: false });
 
     area.appendChild(this.gui.domElement);
 
-    this.gui.domElement.id = 'gui';
+    this.gui.domElement.id = "gui";
 
     const folder = this.gui.addFolder("Render Settings");
     folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
@@ -331,71 +317,105 @@ ripe.CSRenderer.prototype.createGUI = function () {
 
     if (this.usesPostProcessing) {
         // TODO Add debug controls here
-        return;
+        /*
         const updateSAO = (param, value) => {
             this.saoPass[param] = value;
             this.render();
-        }
+        };
 
         const folderSAO = this.gui.addFolder("Scalable Ambient Occlusion Pass");
 
-        folderSAO.add(this.saoPass, "saoIntensity", 0.0, 1.0).name("Intensity").onChange(function (value) {
-            updateSAO("saoIntensity", value)
-        });
-        folderSAO.add(this.saoPass, "saoScale", 0.0, 10.0).name("Scale").onChange(function (value) {
-            updateSAO("saoScale", value)
-        });
-        folderSAO.add(this.saoPass, "saoKernelRadius", 0.0, 100.0).name("KernelRadius").onChange(function (value) {
-            updateSAO("saoKernelRadius", value)
-        });
-        folderSAO.add(this.saoPass, "saoBlur").name("Blur").onChange(function (value) {
-            updateSAO("saoBlur", value)
-        });
-        folderSAO.add(this.saoPass, "saoBlurRadius", 0.0, 200.0).name("Blur Radius").onChange(function (value) {
-            updateSAO("saoIntensity", value)
-        });
-        folderSAO.add(this.saoPass, "saoBlurStdDev", 0.0, 150.0).name("Blur StdDev").onChange(function (value) {
-            updateSAO("saoBlurStdDev", value)
-        });
+        folderSAO
+            .add(this.saoPass, "saoIntensity", 0.0, 1.0)
+            .name("Intensity")
+            .onChange(function(value) {
+                updateSAO("saoIntensity", value);
+            });
+        folderSAO
+            .add(this.saoPass, "saoScale", 0.0, 10.0)
+            .name("Scale")
+            .onChange(function(value) {
+                updateSAO("saoScale", value);
+            });
+        folderSAO
+            .add(this.saoPass, "saoKernelRadius", 0.0, 100.0)
+            .name("KernelRadius")
+            .onChange(function(value) {
+                updateSAO("saoKernelRadius", value);
+            });
+        folderSAO
+            .add(this.saoPass, "saoBlur")
+            .name("Blur")
+            .onChange(function(value) {
+                updateSAO("saoBlur", value);
+            });
+        folderSAO
+            .add(this.saoPass, "saoBlurRadius", 0.0, 200.0)
+            .name("Blur Radius")
+            .onChange(function(value) {
+                updateSAO("saoIntensity", value);
+            });
+        folderSAO
+            .add(this.saoPass, "saoBlurStdDev", 0.0, 150.0)
+            .name("Blur StdDev")
+            .onChange(function(value) {
+                updateSAO("saoBlurStdDev", value);
+            });
 
         folderSAO.open();
 
         const updateSSAO = (param, value) => {
             this.ssaoPass[param] = value;
             this.render();
-        }
+        };
 
         const folderSSAO = this.gui.addFolder("Screen Space Ambient Occlusion Pass");
 
-        folderSSAO.add(this.ssaoPass, "kernelRadius", 0.0, 32.0).name("Kernel Radius").onChange(function (value) {
-            updateSSAO("kernelRadius", value)
-        });
-        folderSSAO.add(this.ssaoPass, "minDistance", 0.001, 0.02).name("Min Distance").onChange(function (value) {
-            updateSSAO("minDistance", value)
-        });
-        folderSSAO.add(this.ssaoPass, "maxDistance", 0.01, 0.3).name("Max Distance").onChange(function (value) {
-            updateSSAO("maxDistance", value)
-        });
+        folderSSAO
+            .add(this.ssaoPass, "kernelRadius", 0.0, 32.0)
+            .name("Kernel Radius")
+            .onChange(function(value) {
+                updateSSAO("kernelRadius", value);
+            });
+        folderSSAO
+            .add(this.ssaoPass, "minDistance", 0.001, 0.02)
+            .name("Min Distance")
+            .onChange(function(value) {
+                updateSSAO("minDistance", value);
+            });
+        folderSSAO
+            .add(this.ssaoPass, "maxDistance", 0.01, 0.3)
+            .name("Max Distance")
+            .onChange(function(value) {
+                updateSSAO("maxDistance", value);
+            });
 
         folderSSAO.open();
 
         const updateBloom = (param, value) => {
             this.bloomPass[param] = value;
             this.render();
-        }
+        };
 
         const folderBloom = this.gui.addFolder("Bloom Pass");
 
-        folderBloom.add(this.bloomPass, "bloomThreshold", 0.0, 1.0).name("Threshold").onChange(function (value) {
-            updateBloom("threshold", value)
-        });
-        folderBloom.add(this.bloomPass, "bloomStrength", 0.0, 3.0).name("Strength").onChange(function (value) {
-            updateBloom("bloomStrength", value)
-        });
+        folderBloom
+            .add(this.bloomPass, "bloomThreshold", 0.0, 1.0)
+            .name("Threshold")
+            .onChange(function(value) {
+                updateBloom("threshold", value);
+            });
+        folderBloom
+            .add(this.bloomPass, "bloomStrength", 0.0, 3.0)
+            .name("Strength")
+            .onChange(function(value) {
+                updateBloom("bloomStrength", value);
+            });
 
         folderBloom.open();
+        */
     }
-}
+};
 
 ripe.CSRenderer.prototype._setupPostProcessing = function () {
     this.composer = new this.library.EffectComposer(this.renderer);
@@ -430,7 +450,7 @@ ripe.CSRenderer.prototype._initializeCamera = function () {
     const height = this.element.getBoundingClientRect().height;
 
     this.camera = new this.library.PerspectiveCamera(this.cameraFOV, width / height, 1, 20000);
-    this.camera.position.set(0, this.cameraHeight, this.cameraDistance);
+    this.camera.position.set(0, this.cameraHeight, this.initialDistance);
     this.camera.far = 500;
 
     if (this.element.dataset.view === "side") {
@@ -449,8 +469,8 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     if (!animation) return;
 
     var action;
-    this.animations.forEach((clip) => {
-        if (clip.name == animationName) {
+    this.animations.forEach(clip => {
+        if (clip.name === animationName) {
             action = this.mixer.clipAction(clip);
             action.clampWhenFinished = true;
             action.loop = this.library.LoopOnce;
@@ -459,8 +479,8 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
 
     var previousTime = 0;
 
-    const doAnimation = (time) => {
-        previousTime = previousTime == 0 ? time : previousTime;
+    const doAnimation = time => {
+        previousTime = previousTime === 0 ? time : previousTime;
 
         const dt = (time - previousTime) / 1000;
         this.mixer && this.mixer.update(dt);
@@ -483,20 +503,18 @@ ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
         if (operation === "remove") {
             this.scene.remove(meshes[i]);
             meshes[i].geometry.dispose();
-            
-            if (meshes[i].material)
-                meshes[i].material.dispose();
+
+            if (meshes[i].material) meshes[i].material.dispose();
         }
-            
+
         if (operation === "add") {
             this.scene.add(meshes[i]);
         }
-            
     }
-}
+};
 
 ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
-    //console.log("Rendering!")
+    // console.log("Rendering!")
     const cam = camera === undefined ? this.camera : camera;
     const renderer = useRenderer || this.composer === undefined ? this.renderer : this.composer;
 
@@ -504,10 +522,8 @@ ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undef
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
-    if (this.renderer)
-        this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
-    if (this.composer)
-        this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
+    if (this.renderer) this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
+    if (this.composer) this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
 
     this.updateElementBoundingBox();
 };
@@ -516,11 +532,9 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
 
-
     if (!this.elementBoundingBox || animating || dragging) return;
 
     const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
-    //console.log(mouse.x, mouse.y)
 
     if (this.raycaster && this.scene && this.assetManager) {
         this.raycaster.setFromCamera(mouse, this.camera);
@@ -534,7 +548,6 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
                 this.intersectedPart = intersects[0].object.name;
                 this.highlight(this.intersectedPart);
             }
-
         } else {
             this.lowlight();
         }
@@ -548,9 +561,7 @@ ripe.CSRenderer.prototype.highlight = function (part, options = {}) {
         return;
     }
 
-    const duration = this.element.dataset.mask_duration || this.highlightDuration;
-
-    this.changeHighlight(part, 0.2, duration);
+    this.changeHighlight(part, 1 - this.maskOpacity);
 
     // triggers an event indicating that a highlight operation has been
     // performed on the current configurator
@@ -569,9 +580,7 @@ ripe.CSRenderer.prototype.lowlight = function (options) {
         return;
     }
 
-    const duration = this.element.dataset.mask_duration || this.highlightDuration;
-
-    this.changeHighlight(this.intersectedPart, 1.0, duration);
+    this.changeHighlight(this.intersectedPart, 1.0);
 
     this.intersectedPart = "";
 
@@ -580,8 +589,8 @@ ripe.CSRenderer.prototype.lowlight = function (options) {
     this.trigger("lowlighted");
 };
 
-ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) {
-    //console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
+ripe.CSRenderer.prototype.changeHighlight = function (part, endValue) {
+    // console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
 
     var meshTarget = this.assetManager.meshes[part];
     var startingValue = meshTarget.material.color.r;
@@ -592,14 +601,14 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) 
     var pos = 0;
 
     var startTime = 0;
-    const changeHighlightTransition = (time) => {
+    const changeHighlightTransition = time => {
         startTime = startTime === 0 ? time : startTime;
 
         meshTarget.material.color.r = currentValue;
         meshTarget.material.color.g = currentValue;
         meshTarget.material.color.b = currentValue;
 
-        pos = (time - startTime) / duration;
+        pos = (time - startTime) / this.maskDuration;
         currentValue = ripe.easing[this.highlightEasing](pos, startingValue, endValue);
 
         this.render();
@@ -609,7 +618,6 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue, duration) 
 
     requestAnimationFrame(changeHighlightTransition);
 };
-
 
 ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
     // Origin of the coordinate system is the center of the element
@@ -638,8 +646,9 @@ ripe.CSRenderer.prototype.updateElementBoundingBox = function () {
     }
 };
 
-ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
-    console.log("Beginning crossfade")
+ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
+    console.log(options)
+    
     var renderTargetParameters = {
         minFilter: this.library.LinearFilter,
         magFilter: this.library.LinearFilter,
@@ -658,7 +667,11 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
         100
     );
 
-    var previousSceneFBO = new this.library.WebGLRenderTarget(width, height, renderTargetParameters);
+    var previousSceneFBO = new this.library.WebGLRenderTarget(
+        width,
+        height,
+        renderTargetParameters
+    );
     var currentSceneFBO = new this.library.WebGLRenderTarget(width, height, renderTargetParameters);
 
     var mixRatio = 0.0;
@@ -675,21 +688,21 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     // Store current image
     this.renderer.setRenderTarget(previousSceneFBO);
     this.renderer.clear();
-    this.render(true)
+    this.render(true);
 
     var parts = options.parts === undefined ? this.owner.parts : options.parts;
 
-    if (options.type === "material") {
+    if (type === "material") {
         await this.assetManager.setMaterials(parts);
-    } else if (options.type === "rotation") {
-        this.rotate(options.rotationX, options.rotationY);
+    } else if (type === "rotation") {
+        this.rotate(options);
     }
 
     // Render next image
     this.renderer.setRenderTarget(currentSceneFBO);
     this.renderer.clear();
-    //if (this.composer) this.composer.clear();
-    this.render(true)
+    // if (this.composer) this.composer.clear();
+    this.render(true);
 
     // Reset renderer
     this.renderer.setRenderTarget(null);
@@ -699,14 +712,14 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     var duration = options.duration || 500;
 
     var startTime = 0;
-    const crossfadeFunction = (time) => {
+    const crossfadeFunction = time => {
         startTime = startTime === 0 ? time : startTime;
         this.render(true, transitionCamera);
 
         pos = (time - startTime) / duration;
         mixRatio = ripe.easing[this.crossfadeEasing](pos, 0.0, 1.0);
 
-        //mixRatio += 1.0 / duration;
+        // mixRatio += 1.0 / duration;
         this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
         if (pos < 1) requestAnimationFrame(crossfadeFunction);
@@ -731,17 +744,17 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}) {
     requestAnimationFrame(crossfadeFunction);
 };
 
-ripe.CSRenderer.prototype.rotate = function (cameraRotationX, cameraRotationY) {
-    var maxHeight = this.cameraDistance - this.cameraHeight;
+ripe.CSRenderer.prototype.rotate = function (options) {
+    var maxHeight = options.distance - this.cameraHeight;
 
-    var distance = this.cameraDistance * Math.cos((Math.PI / 180) * cameraRotationY);
-    this.camera.position.x = distance * Math.sin((Math.PI / 180) * -cameraRotationX);
+    var distance = options.distance * Math.cos((Math.PI / 180) * options.rotationY);
+    this.camera.position.x = distance * Math.sin((Math.PI / 180) * -options.rotationX);
     this.camera.position.y =
-        this.cameraHeight + maxHeight * Math.sin((Math.PI / 180) * cameraRotationY);
-    this.camera.position.z = distance * Math.cos((Math.PI / 180) * cameraRotationX);
+        this.cameraHeight + maxHeight * Math.sin((Math.PI / 180) * options.rotationY);
+    this.camera.position.z = distance * Math.cos((Math.PI / 180) * options.rotationX);
 
     this.camera.lookAt(this.cameraTarget);
 
-    this.previousRotation.x = cameraRotationX;
-    this.previousRotation.y = cameraRotationY;
+    this.previousRotation.x = options.rotationX;
+    this.previousRotation.y = options.rotationY;
 };

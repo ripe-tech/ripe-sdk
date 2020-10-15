@@ -335,9 +335,6 @@ window.onload = function () {
                 render: "prc"
             });
 
-            // Parsing the config
-            const modelConfig = JSON.parse(model_data);
-
             configuratorCSR = ripe.bindConfigurator(elementCSR, {
                 duration: 250,
                 render: "csr",
@@ -345,21 +342,20 @@ window.onload = function () {
                 view: bestFace(result),
                 cameraFOV: 20,
                 cameraDistance: 105,
+                maxDistance: 125,
+                minDistance: 70,
                 cameraHeight: 12,
                 cameraTarget: { x: 0, y: 9, z: 0.0 },
-                debug: true,
+                //debug: true,
                 usesPostProcessing: true,
-                /*
-                cameraFOV: 28,
-                cameraDistance: 5.1,
-                cameraHeight: 0.9,
-                cameraTarget: { x: 0, y: 0.375, z: 0.0 },
-                */
-                modelConfig: modelConfig,
+                // Model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
+                // that is downloaded, or present in a spec file
+                modelConfig: model_data,
                 assetsPath: "/static/assets/",
                 fontType: "comic_sans",
                 fontWeight: "light",
                 library: THREE,
+                //dat: dat,
                 exposure: 1.6,
                 mouseDrift: true,
                 driftDuration: 200,

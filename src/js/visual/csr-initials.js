@@ -1,4 +1,3 @@
-
 if (
     typeof require !== "undefined" &&
     (typeof window === "undefined" ||
@@ -12,9 +11,9 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.CSRInitials = function (owner, options) {
+ripe.CSRInitials = function(owner, options) {
     this.owner = owner;
-    
+
     // initials
     this.initialsPlacement = options.initialsPlacement || "center";
     this.initialsType = options.initialsType || "emboss";
@@ -26,29 +25,28 @@ ripe.CSRInitials = function (owner, options) {
     this.fontsPath = options.fontsPath || options.assetsPath + "fonts/";
     this.fontType = options.fontType || "";
     this.fontWeight = options.fontWeight || "";
-    
+
     this.loadedFonts = {};
     this.letterMaterial = null;
     this.loadedLetterMaterials = {};
     this.initialsPositions = {};
     this.textMeshes = [];
     this.library = options.library;
-    
+    this.logoMesh = null;
+
     this.engraving = options.engraving === undefined ? "metal_gold" : options.engraving;
-    this.logoMesh;
 };
 
 ripe.CSRInitials.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRInitials.prototype.constructor = ripe.CSRInitials;
 
-ripe.CSRInitials.prototype.initialize = async function (assetManager) {
+ripe.CSRInitials.prototype.initialize = async function(assetManager) {
     this.assetManager = assetManager;
 
     const traverseScene = child => {
         if (child.name === "logo_part") {
             this.logoMesh = child;
-        }
-        else if (child.name.includes("initials_part")) {
+        } else if (child.name.includes("initials_part")) {
             // naming is of the type "initials_part_1, where 1 indicates the position
             var initialPosition = parseInt(child.name.split("_")[2]);
             this.initialsPositions[initialPosition] = child;
@@ -60,12 +58,12 @@ ripe.CSRInitials.prototype.initialize = async function (assetManager) {
     this.assetManager.loadedGltf.scene.traverse(traverseScene);
 
     await this._initializeFonts(this.fontType, this.fontWeight);
-}
+};
 
-ripe.CSRInitials.prototype._initializeFonts = async function (type, weight) {
+ripe.CSRInitials.prototype._initializeFonts = async function(type, weight) {
     const loader = new this.library.FontLoader();
     const newFont = await new Promise((resolve, reject) => {
-        loader.load(this.fontsPath + type + "/" + weight + ".json", function (font) {
+        loader.load(this.fontsPath + type + "/" + weight + ".json", function(font) {
             resolve(font);
         });
     });
@@ -73,12 +71,12 @@ ripe.CSRInitials.prototype._initializeFonts = async function (type, weight) {
     this.loadedFonts[type + "_" + weight] = newFont;
 };
 
-ripe.CSRInitials.prototype.update = async function () {
+ripe.CSRInitials.prototype.update = async function() {
     const initials = this.owner.initials;
 
     // hides or unhides logo part
-    if (this.logoMesh &&
-        (initials === "" && this.initialsText !== "") ||
+    if (
+        (this.logoMesh && initials === "" && this.initialsText !== "") ||
         (initials !== "" && this.initialsText === "")
     ) {
         var isLogoVisible = initials === "" && this.initialsText !== "";
@@ -86,7 +84,7 @@ ripe.CSRInitials.prototype.update = async function () {
     }
 
     console.log("Engraving is " + this.engraving);
-    console.log("Initials are " + initials)
+    console.log("Initials are " + initials);
 
     // If there are no initials in mesh
     if (!this.initialsPositions) return;
@@ -109,17 +107,16 @@ ripe.CSRInitials.prototype.update = async function () {
     this.initialsText = initials;
 };
 
-ripe.CSRInitials.prototype.embossLetters = async function (initials) {
+ripe.CSRInitials.prototype.embossLetters = async function(initials) {
     // avoid creating new materials
-    if (this.letterMaterial === null)
-        this.letterMaterial = await this._getLetterMaterial();
+    if (this.letterMaterial === null) this.letterMaterial = await this._getLetterMaterial();
 
     const maxLength = Object.keys(this.initialsPositions).length;
 
     if (initials.length < this.initialsText.length) {
         var diff = this.initialsText.length - initials.length;
         while (diff > 0) {
-            this.disposeLetter(this.textMeshes.length - 1)
+            this.disposeLetter(this.textMeshes.length - 1);
             diff--;
         }
     }
@@ -134,27 +131,34 @@ ripe.CSRInitials.prototype.embossLetters = async function (initials) {
 
         if (isNewLetter || !canReplaceLetter) {
             var mesh = this.createLetter(letter);
-            
+
             if (canReplaceLetter) {
-                this.disposeLetter(i-1, true)
-                this.textMeshes[i-1] = mesh;
+                this.disposeLetter(i - 1, true);
+                this.textMeshes[i - 1] = mesh;
             } else {
-                this.textMeshes.push(mesh)
+                this.textMeshes.push(mesh);
             }
         }
 
-        this.textMeshes[i-1].position.set(posRot.position.x, posRot.position.y, posRot.position.z);
-        this.textMeshes[i-1].rotation.set(posRot.rotation.x, posRot.rotation.y, posRot.rotation.z);        
+        this.textMeshes[i - 1].position.set(
+            posRot.position.x,
+            posRot.position.y,
+            posRot.position.z
+        );
+        this.textMeshes[i - 1].rotation.set(
+            posRot.rotation.x,
+            posRot.rotation.y,
+            posRot.rotation.z
+        );
     }
 };
 
-ripe.CSRInitials.prototype.disposeLetter = function (index, willReplace = false) {
+ripe.CSRInitials.prototype.disposeLetter = function(index, willReplace = false) {
     this.textMeshes[index].geometry.dispose();
-    if (!willReplace)
-        this.textMeshes.pop();
-}
+    if (!willReplace) this.textMeshes.pop();
+};
 
-ripe.CSRInitials.prototype.getPosRotLetter = function (letterNumber, initials) {
+ripe.CSRInitials.prototype.getPosRotLetter = function(letterNumber, initials) {
     // Check if placement is interpolated or in the precise spot
     var transform = {};
     const size = Object.keys(this.initialsPositions).length;
@@ -188,7 +192,7 @@ ripe.CSRInitials.prototype.getPosRotLetter = function (letterNumber, initials) {
     return transform;
 };
 
-ripe.CSRInitials.prototype.createLetter = function (letter) {
+ripe.CSRInitials.prototype.createLetter = function(letter) {
     var textGeometry = new this.library.TextGeometry(letter, {
         font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
 
@@ -206,22 +210,21 @@ ripe.CSRInitials.prototype.createLetter = function (letter) {
     letterMesh.geometry.rotateY(Math.PI / 2);
 
     letterMesh.geometry.center();
-    
+
     return letterMesh;
 };
 
-ripe.CSRInitials.prototype.engraveLetters = function () { };
+ripe.CSRInitials.prototype.engraveLetters = function() {};
 
-ripe.CSRInitials.prototype.disposeResources = async function () {
-    console.log("Disposing Initials Resources.")
+ripe.CSRInitials.prototype.disposeResources = async function() {
+    console.log("Disposing Initials Resources.");
     var count = 0;
 
     if (this.textMeshes.length > 0) {
         for (let i = 0; i < this.textMeshes.length; i++) {
-            await this.assetManager.disposeMesh(this.textMeshes[i])
+            await this.assetManager.disposeMesh(this.textMeshes[i]);
             count++;
         }
-        
     }
 
     console.log("Finished disposing " + count + " letters.");
@@ -239,11 +242,11 @@ ripe.CSRInitials.prototype.disposeResources = async function () {
     this.textMeshes = [];
     this.library = null;
     this.textMeshes = [];
-    
-    console.log("Finished disposing " + count + " initials positions mesh.");
-}
 
-ripe.CSRInitials.prototype._getLetterMaterial = async function () {
+    console.log("Finished disposing " + count + " initials positions mesh.");
+};
+
+ripe.CSRInitials.prototype._getLetterMaterial = async function() {
     var splitProps = this.engraving.split("::");
     var material, type;
 

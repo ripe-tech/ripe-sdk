@@ -26,7 +26,7 @@ if (
  * @param {Object} options The options to be used to configure the
  * configurator instance to be created.
  */
-ripe.ConfiguratorPRC = function (owner, element, options) {
+ripe.ConfiguratorPRC = function(owner, element, options) {
     this.type = this.type || "ConfiguratorPRC";
 
     ripe.Visual.call(this, owner, element, options);
@@ -42,7 +42,7 @@ ripe.ConfiguratorPRC.prototype.constructor = ripe.ConfiguratorPRC;
  * Sets the various values for the Configurator taking into
  * owner's default values.
  */
-ripe.ConfiguratorPRC.prototype.init = function () {
+ripe.ConfiguratorPRC.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
     this.width = this.options.width || 1000;
@@ -112,7 +112,7 @@ ripe.ConfiguratorPRC.prototype.init = function () {
  * it should stop responding to updates so that any necessary
  * cleanup operations can be executed.
  */
-ripe.ConfiguratorPRC.prototype.deinit = async function () {
+ripe.ConfiguratorPRC.prototype.deinit = async function() {
     await this.cancel();
 
     while (this.element.firstChild) {
@@ -144,7 +144,7 @@ ripe.ConfiguratorPRC.prototype.deinit = async function () {
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
  */
-ripe.ConfiguratorPRC.prototype.updateOptions = async function (options, update = true) {
+ripe.ConfiguratorPRC.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
     this.width = options.width === undefined ? this.width : options.width;
@@ -193,7 +193,7 @@ ripe.ConfiguratorPRC.prototype.updateOptions = async function (options, update =
  * - 'preload' - If it's to execute the pre-loading process.
  * - 'force' - If the updating operation should be forced (ignores signature).
  */
-ripe.ConfiguratorPRC.prototype.update = async function (state, options = {}) {
+ripe.ConfiguratorPRC.prototype.update = async function(state, options = {}) {
     // in case the configurator is currently nor ready for an
     // update none is performed and the control flow is returned
     // with the false value (indicating a no-op, nothing was done)
@@ -290,7 +290,7 @@ ripe.ConfiguratorPRC.prototype.update = async function (state, options = {}) {
  *
  * @param {Object} options Set of optional parameters to adjust the Configurator.
  */
-ripe.ConfiguratorPRC.prototype.cancel = async function (options = {}) {
+ripe.ConfiguratorPRC.prototype.cancel = async function(options = {}) {
     if (this._buildSignature() === this.signature || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
     return true;
@@ -303,7 +303,7 @@ ripe.ConfiguratorPRC.prototype.cancel = async function (options = {}) {
  *
  * @param {Number} size The number of pixels to resize to.
  */
-ripe.ConfiguratorPRC.prototype.resize = async function (size) {
+ripe.ConfiguratorPRC.prototype.resize = async function(size) {
     if (this.element === undefined) {
         return;
     }
@@ -367,7 +367,7 @@ ripe.ConfiguratorPRC.prototype.resize = async function (size) {
  * - 'safe' - If requested then the operation is only performed in case the configurator
  * is not in the an equivalent state (default to 'true').
  */
-ripe.ConfiguratorPRC.prototype.changeFrame = async function (frame, options = {}) {
+ripe.ConfiguratorPRC.prototype.changeFrame = async function(frame, options = {}) {
     // Disabled Configurator, changing frame will lead to errors
     if (!this._enabled) return;
 
@@ -631,7 +631,7 @@ ripe.ConfiguratorPRC.prototype.changeFrame = async function (frame, options = {}
  * @param {String} part The part of the model that should be highlighted.
  * @param {Object} options Set of optional parameters to adjust the highlighting.
  */
-ripe.ConfiguratorPRC.prototype.highlight = function (part, options = {}) {
+ripe.ConfiguratorPRC.prototype.highlight = function(part, options = {}) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -679,11 +679,11 @@ ripe.ConfiguratorPRC.prototype.highlight = function (part, options = {}) {
     if (this.frontMaskLoad) frontMask.removeEventListener("load", this.frontMaskLoad);
     if (this.frontMaskError) frontMask.removeEventListener("error", this.frontMaskError);
     frontMask.classList.remove("loaded");
-    this.frontMaskLoad = function () {
+    this.frontMaskLoad = function() {
         this.classList.add("loaded");
         self.trigger("highlighted_part", part);
     };
-    this.frontMaskError = function () {
+    this.frontMaskError = function() {
         this.setAttribute("src", "");
     };
     frontMask.addEventListener("load", this.frontMaskLoad);
@@ -701,7 +701,7 @@ ripe.ConfiguratorPRC.prototype.highlight = function (part, options = {}) {
  * @param {String} part The part to lowlight.
  * @param {Object} options Set of optional parameters to adjust the lowlighting.
  */
-ripe.ConfiguratorPRC.prototype.lowlight = function (options) {
+ripe.ConfiguratorPRC.prototype.lowlight = function(options) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -723,7 +723,7 @@ ripe.ConfiguratorPRC.prototype.lowlight = function (options) {
  * Changes the currently displayed frame in the current view to the
  * previous one according to pre-defined direction.
  */
-ripe.ConfiguratorPRC.prototype.previousFrame = function () {
+ripe.ConfiguratorPRC.prototype.previousFrame = function() {
     const view = this.element.dataset.view;
     const position = parseInt(this.element.dataset.position || 0);
     const viewFrames = this.frames[view];
@@ -737,7 +737,7 @@ ripe.ConfiguratorPRC.prototype.previousFrame = function () {
  * Changes the currently displayed frame in the current view to the
  * next one according to pre-defined direction.
  */
-ripe.ConfiguratorPRC.prototype.nextFrame = function () {
+ripe.ConfiguratorPRC.prototype.nextFrame = function() {
     const view = this.element.dataset.view;
     const position = parseInt(this.element.dataset.position || 0);
     const viewFrames = this.frames[view];
@@ -752,7 +752,7 @@ ripe.ConfiguratorPRC.prototype.nextFrame = function () {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorPRC.prototype.enterFullscreen = async function (options) {
+ripe.ConfiguratorPRC.prototype.enterFullscreen = async function(options) {
     if (this.element === undefined) {
         return;
     }
@@ -766,7 +766,7 @@ ripe.ConfiguratorPRC.prototype.enterFullscreen = async function (options) {
  *
  * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorPRC.prototype.leaveFullscreen = async function (options) {
+ripe.ConfiguratorPRC.prototype.leaveFullscreen = async function(options) {
     if (this.element === undefined) {
         return;
     }
@@ -777,14 +777,14 @@ ripe.ConfiguratorPRC.prototype.leaveFullscreen = async function (options) {
 /**
  * Turns on (enables) the masks on selection/highlight.
  */
-ripe.ConfiguratorPRC.prototype.enableMasks = function () {
+ripe.ConfiguratorPRC.prototype.enableMasks = function() {
     this.useMasks = true;
 };
 
 /**
  * Turns off (disables) the masks on selection/highlight.
  */
-ripe.ConfiguratorPRC.prototype.disableMasks = function () {
+ripe.ConfiguratorPRC.prototype.disableMasks = function() {
     this.useMasks = false;
 };
 
@@ -799,7 +799,7 @@ ripe.ConfiguratorPRC.prototype.disableMasks = function () {
  *
  * @private
  */
-ripe.ConfiguratorPRC.prototype._initLayout = function () {
+ripe.ConfiguratorPRC.prototype._initLayout = function() {
     // clears the elements children
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -860,7 +860,7 @@ ripe.ConfiguratorPRC.prototype._initLayout = function () {
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._initPartsList = async function () {
+ripe.ConfiguratorPRC.prototype._initPartsList = async function() {
     // creates a set of sorted parts to be used on the
     // highlight operation (considers only the default ones)
     this.partsList = [];
@@ -876,7 +876,7 @@ ripe.ConfiguratorPRC.prototype._initPartsList = async function () {
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._populateBuffers = function () {
+ripe.ConfiguratorPRC.prototype._populateBuffers = function() {
     const framesBuffer = this.element.getElementsByClassName("frames-buffer");
     const masksBuffer = this.element.getElementsByClassName("masks-buffer");
     let buffer = null;
@@ -895,7 +895,7 @@ ripe.ConfiguratorPRC.prototype._populateBuffers = function () {
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._populateBuffer = function (buffer) {
+ripe.ConfiguratorPRC.prototype._populateBuffer = function(buffer) {
     while (buffer.firstChild) {
         buffer.removeChild(buffer.firstChild);
     }
@@ -915,7 +915,7 @@ ripe.ConfiguratorPRC.prototype._populateBuffer = function (buffer) {
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._updateConfig = async function (animate) {
+ripe.ConfiguratorPRC.prototype._updateConfig = async function(animate) {
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
@@ -1003,18 +1003,18 @@ ripe.ConfiguratorPRC.prototype._updateConfig = async function (animate) {
     );
 };
 
-ripe.ConfiguratorPRC.prototype.disable = function () {
+ripe.ConfiguratorPRC.prototype.disable = function() {
     this._enabled = false;
 };
 
-ripe.ConfiguratorPRC.prototype.enable = function () {
+ripe.ConfiguratorPRC.prototype.enable = function() {
     this._enabled = true;
 };
 
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._loadFrame = async function (view, position, options = {}) {
+ripe.ConfiguratorPRC.prototype._loadFrame = async function(view, position, options = {}) {
     // triggers the initial frame event that indicates that a
     // new frame is going to be loaded into the img buffers
     this.trigger("pre_frame", {
@@ -1147,7 +1147,7 @@ ripe.ConfiguratorPRC.prototype._loadFrame = async function (view, position, opti
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._loadMask = function (maskImage, view, position, options) {
+ripe.ConfiguratorPRC.prototype._loadMask = function(maskImage, view, position, options) {
     // constructs the URL for the mask and then at the end of the
     // mask loading process runs the final update of the mask canvas
     // operation that will allow new highlight and selection operation
@@ -1187,7 +1187,7 @@ ripe.ConfiguratorPRC.prototype._loadMask = function (maskImage, view, position, 
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._drawMask = function (maskImage) {
+ripe.ConfiguratorPRC.prototype._drawMask = function(maskImage) {
     const mask = this.element.querySelector(".mask");
     const maskContext = mask.getContext("2d");
     maskContext.clearRect(0, 0, mask.width, mask.height);
@@ -1197,7 +1197,7 @@ ripe.ConfiguratorPRC.prototype._drawMask = function (maskImage) {
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._drawFrame = async function (image, animate, duration) {
+ripe.ConfiguratorPRC.prototype._drawFrame = async function(image, animate, duration) {
     const area = this.element.querySelector(".area");
     const back = this.element.querySelector(".back");
 
@@ -1259,7 +1259,7 @@ ripe.ConfiguratorPRC.prototype._drawFrame = async function (image, animate, dura
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._preload = async function (useChain) {
+ripe.ConfiguratorPRC.prototype._preload = async function(useChain) {
     // retrieves the current position of the configurator from its
     // data defaulting to the zero one (reference) in case no position
     // is currently defined in the configurator
@@ -1400,7 +1400,7 @@ ripe.ConfiguratorPRC.prototype._preload = async function (useChain) {
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
+ripe.ConfiguratorPRC.prototype._registerHandlers = function() {
     // captures the current context to be used inside clojures
     const self = this;
 
@@ -1411,7 +1411,7 @@ ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
 
     // binds the mousedown event on the element to prepare
     // it for drag movements
-    this._addElementHandler("mousedown", function (event) {
+    this._addElementHandler("mousedown", function(event) {
         const _element = this;
         _element.dataset.view = _element.dataset.view || "side";
         self.base = parseInt(_element.dataset.position) || 0;
@@ -1424,7 +1424,7 @@ ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
 
     // listens for mouseup events and if it occurs then
     // stops reacting to mouse move events has drag movements
-    this._addElementHandler("mouseup", function (event) {
+    this._addElementHandler("mouseup", function(event) {
         const _element = this;
         self.down = false;
         self.previous = self.percent;
@@ -1434,7 +1434,7 @@ ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
 
     // listens for mouse leave events and if it occurs then
     // stops reacting to mousemove events has drag movements
-    this._addElementHandler("mouseleave", function (event) {
+    this._addElementHandler("mouseleave", function(event) {
         const _element = this;
         self.down = false;
         self.previous = self.percent;
@@ -1444,7 +1444,7 @@ ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
 
     // if a mouse move event is triggered while the mouse is
     // pressed down then updates the position of the drag element
-    this._addElementHandler("mousemove", function (event) {
+    this._addElementHandler("mousemove", function(event) {
         if (!this.classList.contains("ready") || this.classList.contains("no-drag")) {
             return;
         }
@@ -1454,7 +1454,7 @@ ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
         if (down) self._parseDrag();
     });
 
-    area.addEventListener("click", function (event) {
+    area.addEventListener("click", function(event) {
         // verifies if the previous drag operation (if any) has exceed
         // the minimum threshold to be considered drag (click avoided)
         if (Math.abs(self.previous) > self.clickThreshold) {
@@ -1482,7 +1482,7 @@ ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
         event.stopPropagation();
     });
 
-    area.addEventListener("mousemove", function (event) {
+    area.addEventListener("mousemove", function(event) {
         const preloading = self.element.classList.contains("preloading");
         const animating = self.element.classList.contains("animating");
         if (preloading || animating) {
@@ -1511,15 +1511,15 @@ ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
         else self.lowlight();
     });
 
-    area.addEventListener("dragstart", function (event) {
+    area.addEventListener("dragstart", function(event) {
         event.preventDefault();
     });
 
-    area.addEventListener("dragend", function (event) {
+    area.addEventListener("dragend", function(event) {
         event.preventDefault();
     });
 
-    back.addEventListener("click", function (event) {
+    back.addEventListener("click", function(event) {
         // verifies if the previous drag operation (if any) has exceed
         // the minimum threshold to be considered drag (click avoided)
         if (Math.abs(self.previous) > self.clickThreshold) {
@@ -1547,7 +1547,7 @@ ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
         event.stopPropagation();
     });
 
-    back.addEventListener("mousemove", function (event) {
+    back.addEventListener("mousemove", function(event) {
         const preloading = self.element.classList.contains("preloading");
         const animating = self.element.classList.contains("animating");
         if (preloading || animating) {
@@ -1576,11 +1576,11 @@ ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
         else self.lowlight();
     });
 
-    back.addEventListener("dragstart", function (event) {
+    back.addEventListener("dragstart", function(event) {
         event.preventDefault();
     });
 
-    back.addEventListener("dragend", function (event) {
+    back.addEventListener("dragend", function(event) {
         event.preventDefault();
     });
 
@@ -1625,7 +1625,7 @@ ripe.ConfiguratorPRC.prototype._registerHandlers = function () {
 /**
  * @ignore
  */
-ripe.ConfiguratorPRC.prototype._parseDrag = function () {
+ripe.ConfiguratorPRC.prototype._parseDrag = function() {
     // retrieves the last recorded mouse position
     // and the current one and calculates the
     // drag movement made by the user
@@ -1688,7 +1688,7 @@ ripe.ConfiguratorPRC.prototype._parseDrag = function () {
  * @returns {Number} The offset index using as reference the main mask
  * of the current configurator.
  */
-ripe.ConfiguratorPRC.prototype._getCanvasIndex = function (canvas, x, y) {
+ripe.ConfiguratorPRC.prototype._getCanvasIndex = function(canvas, x, y) {
     const canvasRealWidth = canvas.getBoundingClientRect().width;
     const mask = this.element.querySelector(".mask");
     const ratio = mask.width && canvasRealWidth && mask.width / canvasRealWidth;
@@ -1712,7 +1712,7 @@ ripe.ConfiguratorPRC.prototype._getCanvasIndex = function (canvas, x, y) {
  *
  * @returns {String} The unique signature for the configurator state.
  */
-ripe.ConfiguratorPRC.prototype._buildSignature = function () {
+ripe.ConfiguratorPRC.prototype._buildSignature = function() {
     const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
     const width = size || this.element.dataset.width || this.width;

@@ -11,11 +11,11 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.CSRAssetManager = function (configurator, owner, options) {
-    //console.log("Before")
-    ////console.log(renderer.info)
-    //renderer.info.reset();
-    ////console.log(renderer.info)
+ripe.CSRAssetManager = function(configurator, owner, options) {
+    // console.log("Before")
+    /// /console.log(renderer.info)
+    // renderer.info.reset();
+    /// /console.log(renderer.info)
     this.owner = owner;
     this.configurator = configurator;
     this.assetsPath = options.assetsPath;
@@ -45,8 +45,7 @@ ripe.CSRAssetManager = function (configurator, owner, options) {
     this.loadedGltf = undefined;
     this.library = options.library;
 
-
-    let tmpRenderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
+    const tmpRenderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
 
     this.maxAnisotropy = tmpRenderer.capabilities.getMaxAnisotropy();
 
@@ -58,13 +57,13 @@ ripe.CSRAssetManager = function (configurator, owner, options) {
 ripe.CSRAssetManager.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRAssetManager.prototype.constructor = ripe.CSRAssetManager;
 
-ripe.CSRAssetManager.prototype.updateOptions = function (options) {
+ripe.CSRAssetManager.prototype.updateOptions = function(options) {
     // materials
     this.assetsPath = options.assetsPath === undefined ? this.assetsPath : options.assetsPath;
     this.partsMap = options.partsMap === undefined ? this.partsMap : options.partsMap;
 };
 
-ripe.CSRAssetManager.prototype._loadMesh = async function () {
+ripe.CSRAssetManager.prototype._loadMesh = async function() {
     if (this.loadedGltf) return;
 
     var meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/";
@@ -78,15 +77,14 @@ ripe.CSRAssetManager.prototype._loadMesh = async function () {
         self.loadedGltf = gltf;
 
         await self._loadSubMeshes();
-    
+
         await self.setMaterials(self.owner.parts);
-    
+
         self.configurator.initializeLoading();
     });
-    
 };
 
-ripe.CSRAssetManager.prototype._loadSubMeshes = async function () {
+ripe.CSRAssetManager.prototype._loadSubMeshes = async function() {
     const floorGeometry = new this.library.PlaneBufferGeometry(10, 10);
     floorGeometry.rotateX(-Math.PI / 2);
     floorGeometry.center();
@@ -104,14 +102,13 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = async function () {
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
 
     const self = this;
-    await this.loadedGltf.scene.traverse(async function (child) {
-        if (!child.isMesh)
-            return;
+    await this.loadedGltf.scene.traverse(async function(child) {
+        if (!child.isMesh) return;
 
         child.position.set(
             child.position.x - centerX,
             child.position.y,
-            child.position.z - centerZ,
+            child.position.z - centerZ
         );
 
         child.castShadow = true;
@@ -125,7 +122,7 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = async function () {
     });
 };
 
-ripe.CSRAssetManager.prototype.disposeMaterial = async function (material) {
+ripe.CSRAssetManager.prototype.disposeMaterial = async function(material) {
     if (material.map) material.map.dispose();
     if (material.aoMap) material.aoMap.dispose();
     if (material.roughnessMap) material.roughnessMap.dispose();
@@ -137,9 +134,9 @@ ripe.CSRAssetManager.prototype.disposeMaterial = async function (material) {
     if (material.aoMap) material.aoMap.dispose();
 
     material = null;
-}
+};
 
-ripe.CSRAssetManager.prototype.disposeMesh = async function (mesh) {
+ripe.CSRAssetManager.prototype.disposeMesh = async function(mesh) {
     if (mesh.material) await this.disposeMaterial(mesh.material);
     if (!mesh.geometry) return;
     for (const key in mesh.geometry.attributes) {
@@ -148,26 +145,25 @@ ripe.CSRAssetManager.prototype.disposeMesh = async function (mesh) {
     mesh.geometry.setIndex([]);
     mesh.geometry.dispose();
     mesh.geometry = null;
-}
+};
 
-
-ripe.CSRAssetManager.prototype.disposeScene = async function (scene) {
+ripe.CSRAssetManager.prototype.disposeScene = async function(scene) {
     if (scene.environment) scene.environment.dispose();
 
     const self = this;
 
-    await scene.traverse(async function (child) {
+    await scene.traverse(async function(child) {
         if (child.type.includes("Light")) child = null;
-        if (child.isMesh) await self.disposeMesh(mesh);
+        if (child !== null && child.isMesh) await self.disposeMesh(child);
         scene.remove(child);
     });
-}
+};
 
 /**
  * Disposes all the stored resources to avoid memory leaks. Includes meshes,
  * geometries and materials.
  */
-ripe.CSRAssetManager.prototype.disposeResources = async function (scene) {
+ripe.CSRAssetManager.prototype.disposeResources = async function(scene) {
     console.log("Disposing Asset Manager Resources.");
     this.pmremGenerator.dispose();
     this.pmremGenerator = null;
@@ -186,7 +182,7 @@ ripe.CSRAssetManager.prototype.disposeResources = async function (scene) {
         }
     }
 
-    this.meshes = {}
+    this.meshes = {};
     console.log("Finished disposing " + count + " meshes.");
 
     count = 0;
@@ -207,7 +203,7 @@ ripe.CSRAssetManager.prototype.disposeResources = async function (scene) {
     console.log("Finished disposing " + count + " textures.");
 };
 
-ripe.CSRAssetManager.prototype.setMaterials = async function (parts) {
+ripe.CSRAssetManager.prototype.setMaterials = async function(parts) {
     for (var part in parts) {
         if (part === "shadow") continue;
 
@@ -227,22 +223,22 @@ ripe.CSRAssetManager.prototype.setMaterials = async function (parts) {
             }
         }
 
-        //console.log("\nChanging material for part " + part + " to " + color + " " + material)
+        // console.log("\nChanging material for part " + part + " to " + color + " " + material)
     }
-}
+};
 
-ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, color) {
+ripe.CSRAssetManager.prototype._loadMaterial = async function(part, material, color) {
     var materialConfig;
 
     // If specific model doesn't exist, fallback to general parameters
-    if (!this.modelConfig[part][material])
-        materialConfig = this.modelConfig["general"][material][color];
-    else materialConfig = this.modelConfig[part][material][color];
+    if (!this.modelConfig[part][material]) {
+        materialConfig = this.modelConfig.general[material][color];
+    } else materialConfig = this.modelConfig[part][material][color];
 
     var newMaterial;
 
     // follows specular-glossiness workflow
-    if (materialConfig["specularMap"]) {
+    if (materialConfig.specularMap) {
         newMaterial = new this.library.MeshPhongMaterial();
     } else {
         // follows PBR workflow
@@ -264,12 +260,12 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
 
             if (!this.loadedTextures[mapPath]) {
                 var texture = await new Promise((resolve, reject) => {
-                    this.textureLoader.load(mapPath, function (texture) {
+                    this.textureLoader.load(mapPath, function(texture) {
                         resolve(texture);
                     });
                 });
                 // If texture is used for color information, set colorspace.
-                texture.encoding = THREE.sRGBEncoding;
+                texture.encoding = this.library.sRGBEncoding;
                 texture.anisotropy = this.maxAnisotropy;
 
                 // UVs use the convention that (0, 0) corresponds to the upper left corner of a texture.
@@ -288,7 +284,7 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function (part, material, c
     return newMaterial;
 };
 
-ripe.CSRAssetManager.prototype.setupEnvironment = async function (scene, renderer) {
+ripe.CSRAssetManager.prototype.setupEnvironment = async function(scene, renderer) {
     this.pmremGenerator = new this.library.PMREMGenerator(renderer);
     var environmentMapPath = this.assetsPath + "environments/" + this.environment + ".hdr";
 
@@ -304,4 +300,3 @@ ripe.CSRAssetManager.prototype.setupEnvironment = async function (scene, rendere
 
     scene.environment = this.environmentTexture;
 };
-
