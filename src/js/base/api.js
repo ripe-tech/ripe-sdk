@@ -335,8 +335,6 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
             try {
                 if (contentType.startsWith("application/json")) {
                     result = await response.json();
-                } else if (contentType.startsWith("text/plain")) {
-                    result = await response.text();
                 } else {
                     result = await response.blob();
                 }
