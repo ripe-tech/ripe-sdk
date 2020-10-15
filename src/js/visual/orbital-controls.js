@@ -106,6 +106,10 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
     // it for drag movements
     area.addEventListener("mousedown", function(event) {
         const _element = self.element;
+        const animating = self.element.classList.contains("animating");
+        
+        if (animating) return;
+
         _element.dataset.view = _element.dataset.view || "side";
         self.base = parseInt(_element.dataset.position) || 0;
         self.down = true;
@@ -139,6 +143,10 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
         self.percent = 0;
         _element.classList.remove("drag");
 
+        const animating = self.element.classList.contains("animating");
+        
+        if (animating) return;
+
         if (self._previousEvent) self._drift(self._previousEvent);
     });
 
@@ -161,6 +169,10 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
         const down = self.down;
         self.mousePosX = event.pageX;
         self.mousePosY = event.pageY;
+
+        const animating = self.element.classList.contains("animating");
+        
+        if (animating) return;
 
         if (down) {
             self._previousEvent = event;
@@ -238,6 +250,10 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
         "wheel",
         function(event) {
             event.preventDefault();
+
+            const animating = self.element.classList.contains("animating");
+        
+        if (animating) return;
 
             self.cameraDistance = Math.max(
                 Math.min(self.cameraDistance + event.deltaY, self.maxDistance),

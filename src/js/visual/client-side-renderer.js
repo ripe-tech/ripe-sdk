@@ -287,7 +287,7 @@ ripe.CSRenderer.prototype._initializeLights = function () {
 ripe.CSRenderer.prototype._initializeRenderer = function () {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
-    this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true  });
     
     this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
 
@@ -516,10 +516,13 @@ ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undef
     // console.log("Rendering!")
     const cam = camera === undefined ? this.camera : camera;
     
+    
     if (useRenderer)
         this.renderer.render(this.scene, cam);
     else
-        this.composer.render(this.renderer, this.scene, cam) 
+        // Fix post process first
+        //this.composer.render(this.renderer, this.scene, cam) 
+        this.renderer.render(this.scene, cam)
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
