@@ -171,9 +171,11 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
 ripe.CSRenderer.prototype.disposeResources = async function () {
     console.log("Disposing Renderer resources.");
     this.renderer.renderLists.dispose();
-    if (this.composer) this.composer.renderlists.dispose();
+    this.composer.renderTarget1.dispose();
+    this.composer.renderTarget2.dispose();
     this.renderer.dispose();
     this.renderer = null;
+    this.composer = null;
 
     for (let i = 0; i < this.raycastingMeshes.length; i++) {
         await this.assetManager.disposeMesh(this.raycastingMeshes[i]);
@@ -314,7 +316,7 @@ ripe.CSRenderer.prototype.createGUI = function () {
 
     //this.gui = new this.guiLibrary.GUI({ autoPlace: false });
     this.gui = new this.guiLibrary.GUI({ width: 600 });
-    
+
     const area = this.element.querySelector(".area");
 
     //area.appendChild(this.gui.domElement);
@@ -522,8 +524,8 @@ ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undef
         this.renderer.render(this.scene, cam);
     else
         // Fix post process first
-        this.composer.render() 
-        //this.renderer.render(this.scene, cam)
+        this.composer.render()
+    //this.renderer.render(this.scene, cam)
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {

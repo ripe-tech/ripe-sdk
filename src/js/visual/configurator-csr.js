@@ -116,6 +116,10 @@ ripe.ConfiguratorCSR.prototype.init = function() {
     this.assetManager = new ripe.CSRAssetManager(this, this.owner, this.options);
 };
 
+/**
+ * Called only after the GLTF is finished loading by the asset manager, begins
+ * initialization of the renderer and initials assistant.
+ */
 ripe.ConfiguratorCSR.prototype.initializeLoading = function() {
     this.renderer.initialize(this.assetManager);
     this.initials.initialize(this.assetManager);
@@ -149,6 +153,10 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
     ripe.Visual.prototype.deinit.call(this);
 };
 
+/**
+ * Called when deinitializing the Configurator, begins the disposal of 
+ * all the stored resources.
+ */
 ripe.ConfiguratorCSR.prototype.disposeResources = async function() {
     await this.renderer.disposeResources();
     await this.initials.disposeResources();
@@ -161,7 +169,10 @@ ripe.ConfiguratorCSR.prototype.disposeResources = async function() {
  * @param {Object} options Set of optional parameters to adjust the Configurator, such as:
  * - 'sensitivity' - Rotation sensitivity to the user mouse drag action.
  * - 'duration' - The duration in milliseconds that the transition should take.
- * - 'configAnimate' - The configurator animation style: 'simple' (fade in), 'cross' (crossfade) or 'null'.
+ * - 'useMasks' - Usage of masks in the current model, necessary for the part highlighting action.
+ * - 'viewAnimate' - Type of transition when changing views, can be "rotate", "crossfade" or "none"
+ * - 'positionAnimate' - Similar to 'viewAnimate', but applied when the changeFrame only alters 
+ * the position
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
  */
@@ -171,7 +182,6 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = 
     this.renderer.updateOptions(options);
     this.controls.updateOptions(options);
 
-    // this.library = options.library === undefined ? this.library : options.library;
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
     this.format = options.format === undefined ? this.format : options.format;
@@ -206,16 +216,13 @@ ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = 
  *
  * @param {Object} state An object containing the new state of the owner.
  * @param {Object} options Set of optional parameters to adjust the Configurator update, such as:
- * - 'animate' - If it's to animate the update (defaults to 'false').
+ * - 'reason' - The motive that prompted the update.
  * - 'duration' - The duration in milliseconds that the transition should take.
- * - 'callback' - The callback to be called at the end of the update.
- * - 'force' - If the updating operation should be forced (ignores signature).
  */
 ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
-    // in case the configurator is currently nor ready for an
+    // in case the configurator is currently not ready for an
     // update none is performed and the control flow is returned
     // with the false value (indicating a no-op, nothing was done)
-
     if (this.ready === false) {
         this.trigger("not_loaded");
         return false;
@@ -225,10 +232,15 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
         return;
     }
 
+    let duration = options.duration || 500;
+    
+    // crossfade when changing materials 
     if (options.reason && options.reason.includes("set part")) {
-        await this.renderer.crossfade({ duration: 500 }, "material");
+        await this.renderer.crossfade({ duration: duration }, "material");
     }
 
+    // removes the current text meshes from the scene, and adds the newly
+    // generated meshes
     if (options.reason && options.reason === "set initials") {
         this.renderer.updateInitials("remove", this.initials.textMeshes);
         await this.initials.update();
@@ -245,6 +257,9 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
     return true;
 };
 
+/**
+ * Updates the elements dataset position and view when rotating or changing views.
+ */
 ripe.ConfiguratorCSR.prototype.updateViewPosition = function(newPos, newView) {
     this.position = newPos;
     this.view = newView;
@@ -254,8 +269,15 @@ ripe.ConfiguratorCSR.prototype.updateViewPosition = function(newPos, newView) {
 };
 
 /**
- * Function called by the controls when a new rotation has been detected,
- * prompts a new render to update the scene.
+ * Function to perform a rotation, triggered by the controls. Assesses whether a transition 
+ * is necessary, and if so, calls the correct function to handle the transition depending 
+ * on the Configurator's settings.
+ * @param {*} options Set of parameters that guide the rotation such as:
+ * - 'rotationX' - The new horizontal rotation for the camera.
+ * - 'rotationY' - The new vertical rotation for the camera.
+ * - 'distance' - The new camera distance.
+ * @param {*} isAnimated Decides whether it is a simple rotation (such as when dragging), and 
+ * if so, no animation transition is triggered.
  */
 ripe.ConfiguratorCSR.prototype.rotate = async function(options, isAnimated = true) {
     const newPos = this.controls._rotationToPosition(options.rotationX);
@@ -269,11 +291,13 @@ ripe.ConfiguratorCSR.prototype.rotate = async function(options, isAnimated = tru
         return;
     }
 
-    // Change View
+    // checks to see if transition is required
     if (this.view !== newView) {
         if (this.viewAnimate === "crossfade") {
             await this.renderer.crossfade(options, "rotation");
-            this.controls._updateAngles(options.rotationX, options.rotationY);
+            // updates the internal angles of the controls after 
+            // the crossfade finishes
+            this.controls._updateAngles(options);
         } else if (this.viewAnimate === "rotate") {
             this.controls.rotationTransition(options);
         } else if (this.viewAnimate === "none") {
@@ -282,7 +306,7 @@ ripe.ConfiguratorCSR.prototype.rotate = async function(options, isAnimated = tru
     } else if (this.position !== newPos) {
         if (this.positionAnimate === "crossfade") {
             await this.renderer.crossfade(options, "rotation");
-            this.controls._updateAngles(options.rotationX, options.rotationY);
+            this.controls._updateAngles(options);
         } else if (this.positionAnimate === "rotate") {
             this.controls.rotationTransition(options);
         } else if (this.positionAnimate === "none") {
@@ -290,6 +314,7 @@ ripe.ConfiguratorCSR.prototype.rotate = async function(options, isAnimated = tru
         }
     }
 
+    // update configurator view and position variables
     this.updateViewPosition(newPos, newView);
 };
 
@@ -354,19 +379,14 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
     }
 
     await this.update(
-        {},
-        {
-            force: true
-        }
+        {}
     );
 };
 
 /**
  * Resizes the Configurator to the defined maximum size.
- *
- * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorCSR.prototype.enterFullscreen = async function(options) {
+ripe.ConfiguratorCSR.prototype.enterFullscreen = async function() {
     if (this.element === undefined) {
         return;
     }
@@ -377,10 +397,8 @@ ripe.ConfiguratorCSR.prototype.enterFullscreen = async function(options) {
 
 /**
  * Resizes the Configurator to the prior defined size.
- *
- * @param {Object} options Set of optional parameters to adjust the resizing.
  */
-ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function(options) {
+ripe.ConfiguratorCSR.prototype.leaveFullscreen = async function() {
     if (this.element === undefined) {
         return;
     }
@@ -431,14 +449,40 @@ ripe.ConfiguratorCSR.prototype._initLayout = function() {
     this.element.dataset.position = this.position;
 };
 
+/**
+ * Displays a new frame, with an animation from the starting frame
+ * proper animation should be performed.
+ *
+ * This function is meant to be executed using a recursive approach
+ * and each run represents a "tick" of the animation operation.
+ *
+ * @param {Object} frame The new frame to display using the extended and canonical
+ * format for the frame description (eg: side-3).
+ * @param {Object} options Set of optional parameters to adjust the change frame, such as:
+ * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or 'null'
+ * (without any style).
+ * - 'duration' - The duration of the animation in milliseconds (defaults to 'null').
+ * - 'stepDuration' - If defined the total duration of the animation is
+ * calculated using the amount of steps times the number of steps, instead of
+ * using the 'duration' field (defaults to 'null').
+ * - 'revolutionDuration' - If defined the step duration is calculated by dividing
+ * the revolution duration by the number of frames in the view (defaults to 'null').
+ * - 'preventDrag' - If drag actions during an animated change of frames should be
+ * ignored (defaults to 'true').
+ * - 'safe' - If requested then the operation is only performed in case the configurator
+ * is not in the an equivalent state (default to 'true').
+ */
 ripe.ConfiguratorCSR.prototype.changeFrame = async function(frame, options = {}) {
     // Disabled Configurator, changing frame will lead to errors
     if (!this._enabled) return;
+
+    if (this.element.classList.contains("animating")) return;
 
     this.controls.updateRotation(frame, options);
 
     await this.update();
 };
+
 
 /**
  * @ignore
@@ -500,10 +544,5 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
 
     // shows the new product with a crossfade effect
     // and starts responding to updates again
-    this.update(
-        {},
-        {
-            force: true
-        }
-    );
+    this.update({});
 };
