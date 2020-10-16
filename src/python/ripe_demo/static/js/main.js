@@ -346,7 +346,7 @@ window.onload = function () {
                 minDistance: 70,
                 cameraHeight: 12,
                 cameraTarget: { x: 0, y: 9, z: 0.0 },
-                debug: true,
+                //debug: true,
                 // Model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
                 // that is downloaded, or present in a spec file
                 modelConfig: model_data,
@@ -369,12 +369,13 @@ window.onload = function () {
                 crossfadeEasing: "easeInOutQuad",
                 initialsPlacement: "center",
                 introAnimation: "SlideIn",
+                //introAnimation: "ScaleIn",
                 environment: "exterior_building",
                 textSize: 0.5,
                 textHeight: 0.01,
                 shadowBias: -0.0005,
                 canZoom: true,
-                usesPostProcessing: true
+                usesPostProcessing: true,
                 //lockRotation: "horizontal"
             });
 

@@ -15,7 +15,6 @@
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/ripe.css') }}" />
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/ripe.js', compress = 'js') }}"></script>
             <script type="text/javascript" src="{{ url_for('static', filename = 'assets/configs/swear/vyner_hitop.js') }}"></script>
-            
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/build/three.min.js"></script>
             <script src="https://cdn.statically.io/gh/dataarts/dat.gui/master/build/dat.gui.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/FBXLoader.min.js"></script>
@@ -24,6 +23,7 @@
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/CopyShader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/ConvolutionShader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/LuminosityHighPassShader.min.js"></script>
+            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/FXAAShader.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/EffectComposer.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/RenderPass.min.js"></script>
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/UnrealBloomPass.min.js"></script>

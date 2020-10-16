@@ -77,6 +77,10 @@ ripe.CSRenderer = function (owner, element, options) {
     // of the element in the window, needs to be updated on
     // every resize
     window.onresize = () => {
+        if (this.fxaaPass && this.renderer) {
+            this.fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( this.element.clientWidth * this.renderer.getPixelRatio());
+            this.fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( this.element.clientWidth * this.renderer.getPixelRatio());      
+        }
         this.updateSize();
     };
 
@@ -87,6 +91,13 @@ ripe.CSRenderer = function (owner, element, options) {
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRenderer.prototype.constructor = ripe.CSRenderer;
 
+
+/**
+ * Updates configurator current options with the ones provided, called from the Configurator
+ * instance.
+ *
+ * @param {Object} options Set of optional parameters to adjust the renderer.
+ */
 ripe.CSRenderer.prototype.updateOptions = async function (options) {
     this.assetManager.updateOptions(options);
 
@@ -124,12 +135,17 @@ ripe.CSRenderer.prototype.updateOptions = async function (options) {
     this.noMasks = options.noMasks === undefined ? this.noMasks : this.options.noMasks;
 };
 
+/**
+ * Called from the Configurator instance to initialize all aspects related to rendering,
+ * such as creating the scene, adding the loaded meshes, etc.
+ * 
+ * @param {CSRAssetManager} assetManager 
+ */
 ripe.CSRenderer.prototype.initialize = function (assetManager) {
     this.assetManager = assetManager;
     this.scene = new this.library.Scene();
     this.raycaster = new this.library.Raycaster();
 
-    // initialize all ThreeJS components
     this._initializeLights();
     this._initializeCamera();
     this._initializeRenderer();
@@ -142,6 +158,9 @@ ripe.CSRenderer.prototype.initialize = function (assetManager) {
     if (this.debug) this.createGUI();
 };
 
+/**
+ * @ignore
+ */
 ripe.CSRenderer.prototype._registerHandlers = function () {
     const self = this;
     const area = this.element.querySelector(".area");
@@ -168,6 +187,9 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
     });
 };
 
+/**
+ * Funtion
+ */
 ripe.CSRenderer.prototype.disposeResources = async function () {
     console.log("Disposing Renderer resources.");
     this.renderer.renderLists.dispose();
@@ -318,8 +340,14 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
 
     this.composer = new this.library.EffectComposer(this.renderer);
 
-    var renderPass = new this.library.RenderPass(this.scene, this.camera);
+    var renderPass = new this.library.SSAARenderPass(this.scene, this.camera);
     this.composer.addPass(renderPass);
+
+    this.fxaaPass = new this.library.ShaderPass(this.library.FXAAShader);
+
+    this.fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( this.element.clientWidth * this.renderer.getPixelRatio());
+    this.fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( this.element.clientWidth * this.renderer.getPixelRatio());
+    this.composer.addPass(this.fxaaPass)
 };
 
 ripe.CSRenderer.prototype.createGUI = function () {
@@ -327,11 +355,7 @@ ripe.CSRenderer.prototype.createGUI = function () {
     if (this.guiLibrary === null) return;
 
     //this.gui = new this.guiLibrary.GUI({ autoPlace: false });
-    this.gui = new this.guiLibrary.GUI({ width: 600 });
-
-    const area = this.element.querySelector(".area");
-
-    //area.appendChild(this.gui.domElement);
+    this.gui = new this.guiLibrary.GUI({ width: 300 });
 
     this.gui.domElement.id = "gui";
 
@@ -361,11 +385,18 @@ ripe.CSRenderer.prototype.createGUI = function () {
 
     if (this.usesPostProcessing) {
         const updateSAO = (param, value) => {
-            this.saoPass[param] = value;
+            const pass = this.composer.passes.indexOfObject(this.saoPass);
+            this.composer.passes[pass][param] = value;
             this.render();
         };
 
         const folderSAO = this.gui.addFolder("Scalable Ambient Occlusion Pass");
+        folderSAO
+            .add(this.saoPass.params, "saoBias", -1.0, 1.0).step(0.001)
+            .name("Bias")
+            .onChange(function (value) {
+                updateSAO("saoIntensity", value);
+            });
         folderSAO
             .add(this.saoPass.params, "saoIntensity", 0.0, 1.0)
             .name("Intensity")
@@ -406,7 +437,8 @@ ripe.CSRenderer.prototype.createGUI = function () {
         folderSAO.open();
 
         const updateSSAO = (param, value) => {
-            this.ssaoPass[param] = value;
+            const pass = this.composer.passes.indexOfObject(this.ssaoPass);
+            this.composer.passes[pass][param] = value;
             this.render();
         };
 
@@ -434,7 +466,8 @@ ripe.CSRenderer.prototype.createGUI = function () {
         folderSSAO.open();
 
         const updateBloom = (param, value) => {
-            this.bloomPass[param] = value;
+            const pass = this.composer.passes.indexOfObject(this.bloomPass);
+            this.composer.passes[pass][param] = value;
             this.render();
         };
 
@@ -472,16 +505,22 @@ ripe.CSRenderer.prototype._setupPostProcessing = function () {
     this.saoPass.params.saoBias = 0.01;
     this.saoPass.params.saoIntensity = 1;
     this.saoPass.params.saoScale = 5;
-    this.saoPass.params.saoKernelRadius = 20;
-    this.saoPass.params.saoMinResolution = 0;
+    this.saoPass.params.saoKernelRadius = 6;
+    this.saoPass.renderToScreen = true;
+    //this.saoPass.params.saoMinResolution = 0;
 
     this.composer.addPass(this.saoPass);
 
     this.bloomPass = new this.library.UnrealBloomPass(this.element.clientWidth, this.element.clientHeight, 1.5, 0.4, 0.85);
+    this.bloomPass.threshold = 1.5;
+    this.bloomPass.strength = 1;
+    this.bloomPass.radius = 1;
+    this.bloomPass.renderToScreen = true;
+
     this.composer.addPass(this.bloomPass);
 
-    this.ssaoPass = new this.library.SSAOPass(this.scene, this.camera, 620, 620);
-    this.ssaoPass.kernelRadius = 32;
+    this.ssaoPass = new this.library.SSAOPass(this.scene, this.camera, this.element.clientWidth, this.element.clientHeight);
+    this.ssaoPass.kernelRadius = 6;
     this.ssaoPass.renderToScreen = true;
 
     this.composer.addPass(this.ssaoPass);
