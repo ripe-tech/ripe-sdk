@@ -103,8 +103,6 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = async function() {
 
     const self = this;
     await this.loadedGltf.scene.traverse(async function(child) {
-        if (!child.isMesh) return;
-
         child.position.set(
             child.position.x - centerX,
             child.position.y,
@@ -115,8 +113,10 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = async function() {
         child.receiveShadow = true;
 
         if (child.material) {
-            await self.disposeMaterial(child.material);
+            self.disposeMaterial(child.material);
         }
+        
+        if (!child.isMesh) return;
 
         self.meshes[child.name] = child;
     });

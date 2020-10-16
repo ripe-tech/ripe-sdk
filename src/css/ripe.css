@@ -26,6 +26,27 @@ li > div {
     visibility: visible !important; 
     background: black !important;
 }
+
+.dg .c input[type="text"] {
+    height: 100% !important;
+}
+
+.dg .cr.number {
+    margin: 0 !important;
+}
+
+.folder {
+    margin: 0 !important;
+}
+
+li.title {
+    margin-top: 0 !important;
+}
+
+.slider {
+    display: block !important;
+}
+
 #gui > * {
     visibility: visible !important; 
 }

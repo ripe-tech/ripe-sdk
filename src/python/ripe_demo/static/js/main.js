@@ -372,7 +372,7 @@ window.onload = function () {
                 environment: "exterior_building",
                 textSize: 0.5,
                 textHeight: 0.01,
-                shadowBias: -0.01,
+                shadowBias: -0.0005,
                 canZoom: true,
                 usesPostProcessing: true
                 //lockRotation: "horizontal"

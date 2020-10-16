@@ -43,8 +43,8 @@ ripe.CSRenderer = function (owner, element, options) {
     this.crossfadeEasing = options.crossfadeEasing || this.easing;
     this.highlightEasing = options.highlightEasing || this.easing;
     this.partsMap = options.partsMap || {};
-
-    this.shadowBias = options.shadowBias || 0.01;
+    this.shadowBias = options.shadowBias || -0.0001;
+    this.radius = options.radius || 1;
 
     // Initial distance to set camera position
     this.initialDistance = options.cameraDistance;
@@ -177,6 +177,11 @@ ripe.CSRenderer.prototype.disposeResources = async function () {
     this.renderer = null;
     this.composer = null;
 
+    if (this.keyLight.shadow && this.keyLight.shadow.map) this.keyLight.shadow.map.dispose();
+    if (this.fillLight.shadow && this.fillLight.shadow.map) this.fillLight.shadow.map.dispose();
+    if (this.rimLight.shadow && this.rimLight.shadow.map) this.rimLight.shadow.map.dispose();
+
+
     for (let i = 0; i < this.raycastingMeshes.length; i++) {
         await this.assetManager.disposeMesh(this.raycastingMeshes[i]);
     }
@@ -255,35 +260,41 @@ ripe.CSRenderer.prototype._initializeLights = function () {
 
     var mult = this.initialDistance;
 
-    const keyLight = new this.library.PointLight(0xffffff, 2.2, 9 * mult);
-    keyLight.position.set(1 * mult, 1 * mult, 1 * mult);
-    keyLight.castShadow = true;
-    keyLight.shadow.camera.near = 0.000001;
-    keyLight.shadow.camera.far = 200;
-    keyLight.shadow.radius = 2;
-    keyLight.shadow.bias = this.shadowBias;
+    this.keyLight = new this.library.PointLight(0xffffff, 2.2, 9 * mult);
+    this.keyLight.position.set(1 * mult, 1 * mult, 1 * mult);
+    this.keyLight.castShadow = true;
+    this.keyLight.shadow.mapSize.width = 1024;  
+    this.keyLight.shadow.mapSize.height = 1024; 
+    //keyLight.shadow.camera.near = 0.01;
+    //keyLight.shadow.camera.far = 500;
+    this.keyLight.shadow.radius = this.radius;
+    this.keyLight.shadow.bias = this.shadowBias;
 
-    const fillLight = new this.library.PointLight(0xffffff, 1.1, 9 * mult);
-    fillLight.position.set(-1 * mult, 0.5 * mult, 1 * mult);
-    fillLight.castShadow = true;
-    fillLight.shadow.camera.near = 0.000001;
-    fillLight.shadow.camera.far = 200;
-    fillLight.shadow.radius = 2;
-    fillLight.shadow.bias = this.shadowBias;
+    this.fillLight = new this.library.PointLight(0xffffff, 1.1, 9 * mult);
+    this.fillLight.position.set(-1 * mult, 0.5 * mult, 1 * mult);
+    this.fillLight.castShadow = true;
+    this.fillLight.shadow.mapSize.width = 1024;  
+    this.fillLight.shadow.mapSize.height = 1024; 
+    //fillLight.shadow.camera.near = 0.01;
+    //fillLight.shadow.camera.far = 500;
+    this.fillLight.shadow.radius = this.radius;
+    this.fillLight.shadow.bias = this.shadowBias;
 
-    const rimLight = new this.library.PointLight(0xffffff, 3.1, 9 * mult);
-    rimLight.position.set(-0.5 * mult, 0.75 * mult, -1.5 * mult);
-    rimLight.castShadow = true;
-    rimLight.shadow.camera.near = 0.000001;
-    rimLight.shadow.camera.far = 200;
-    rimLight.shadow.radius = 2;
-    rimLight.shadow.bias = this.shadowBias;
+    this.rimLight = new this.library.PointLight(0xffffff, 3.1, 9 * mult);
+    this.rimLight.position.set(-0.5 * mult, 0.75 * mult, -1.5 * mult);
+    this.rimLight.castShadow = true;
+    this.rimLight.shadow.mapSize.width = 1024;  
+    this.rimLight.shadow.mapSize.height = 1024; 
+    //rimLight.shadow.camera.near = 0.01;
+    //rimLight.shadow.camera.far = 500;
+    this.rimLight.shadow.radius = this.radius;
+    this.rimLight.shadow.bias = this.shadowBias;
 
     this.scene.add(ambientLight);
 
-    this.scene.add(keyLight);
-    this.scene.add(fillLight);
-    this.scene.add(rimLight);
+    this.scene.add(this.keyLight);
+    this.scene.add(this.fillLight);
+    this.scene.add(this.rimLight);
 };
 
 ripe.CSRenderer.prototype._initializeRenderer = function () {
@@ -312,6 +323,7 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
 };
 
 ripe.CSRenderer.prototype.createGUI = function () {
+    console.log("Creating GUI");
     if (this.guiLibrary === null) return;
 
     //this.gui = new this.guiLibrary.GUI({ autoPlace: false });
@@ -323,9 +335,28 @@ ripe.CSRenderer.prototype.createGUI = function () {
 
     this.gui.domElement.id = "gui";
 
+    const updateShadows = (param, value) => {
+        this.keyLight.shadow[param] = value;
+        this.rimLight.shadow[param] = value;
+        this.fillLight.shadow[param] = value;
+        this.render();
+    };
+
+    const updateRenderer = (param, value) => {
+        this.renderer[param] = value;
+        this.render();
+    };
+
     const folder = this.gui.addFolder("Render Settings");
-    folder.add(this, "exposure", 0.0, 4.0).name("Exposure").onChange(this.render);
-    folder.add(this, "shadowBias", -1.0, 1.0).name("Shadow Bias").onChange(this.render);
+    folder.add(this.renderer, "toneMappingExposure", 0.0, 4.0).name("Exposure").onChange(function (value) {
+        updateRenderer("toneMappingExposure", value)
+    });
+    folder.add(this.keyLight.shadow, "bias", -0.005, 0.005).step(0.0001).name("Shadow Bias").onChange(function (value) {
+        updateShadows("bias", value);
+    });
+    folder.add(this.keyLight.shadow, "radius", 1, 10).step(1).name("Shadow Radius").onChange(function (value) {
+        updateShadows("radius", value);
+    });
     folder.open();
 
     if (this.usesPostProcessing) {
@@ -422,11 +453,19 @@ ripe.CSRenderer.prototype.createGUI = function () {
                 updateBloom("strength", value);
             });
 
+        folderBloom
+            .add(this.bloomPass, "strength", 0.0, 1.0).step(0.01)
+            .name("Radius")
+            .onChange(function (value) {
+                updateBloom("radius", value);
+            });
+
         folderBloom.open();
     }
 };
 
 ripe.CSRenderer.prototype._setupPostProcessing = function () {
+    console.log("Setting up Post Processing");
     this.saoPass = new this.library.SAOPass(this.scene, this.camera, true, true);
 
     this.saoPass.resolution.set(1024, 1024);
@@ -438,7 +477,7 @@ ripe.CSRenderer.prototype._setupPostProcessing = function () {
 
     this.composer.addPass(this.saoPass);
 
-    this.bloomPass = new this.library.UnrealBloomPass(1, 25, 4, 256);
+    this.bloomPass = new this.library.UnrealBloomPass(this.element.clientWidth, this.element.clientHeight, 1.5, 0.4, 0.85);
     this.composer.addPass(this.bloomPass);
 
     this.ssaoPass = new this.library.SSAOPass(this.scene, this.camera, 620, 620);
@@ -517,15 +556,17 @@ ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
 };
 
 ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
-    // console.log("Rendering!")
+
     const cam = camera === undefined ? this.camera : camera;
 
-    if (useRenderer)
+    if (useRenderer) {
+        //console.log("Rendering with renderer!")
         this.renderer.render(this.scene, cam);
-    else
-        // Fix post process first
+    } else {
+        //console.log("Rendering with composer!")
         this.composer.render()
-    //this.renderer.render(this.scene, cam)
+    }
+
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
