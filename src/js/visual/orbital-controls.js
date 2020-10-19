@@ -170,9 +170,9 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
         self.mousePosX = event.pageX;
         self.mousePosY = event.pageY;
 
-        const animating = self.element.classList.contains("animating");
+        //const animating = self.element.classList.contains("animating");
 
-        if (animating) return;
+        //if (animating) return;
 
         if (down) {
             self._previousEvent = event;

@@ -72,22 +72,10 @@ ripe.CSRenderer = function (owner, element, options) {
 
     this.canZoom = options.canZoom === undefined ? true : options.canZoom;
 
-    // coordinates for raycaster requires the exact positioning
-    // of the element in the window, needs to be updated on
-    // every resize
-    /*
-    window.onresize = () => {
-        if (this.fxaaPass && this.renderer) {
-            this.fxaaPass.material.uniforms['resolution'].value.x = 1 / (this.element.clientWidth * this.renderer.getPixelRatio());
-            this.fxaaPass.material.uniforms['resolution'].value.y = 1 / (this.element.clientWidth * this.renderer.getPixelRatio());
-        }
-        this.updateSize();
-    };
-    */
-
-
     this.previousRotation = new this.library.Vector2(0, 0);
     this.guiLibrary = options.dat === undefined ? null : options.dat;
+
+    this.boundingBox = undefined;
 };
 
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
@@ -630,11 +618,14 @@ ripe.CSRenderer.prototype.updateSize = function () {
 ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
-    const boundingBox = this.element.getBoundingClientRect();
+    const preventRaycasting = this.element.classList.contains("no-raycast");
+    
+    if (animating || dragging || preventRaycasting) return;
 
-    if (animating || dragging) return;
+    if (!this.boundingBox) 
+        this.boundingBox = this.element.getBoundingClientRect();
 
-    const mouse = this._getNormalizedCoordinatesRaycast(boundingBox, mouseEvent);
+    const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
 
     if (this.raycaster && this.scene && this.assetManager) {
         this.raycaster.setFromCamera(mouse, this.camera);
@@ -714,20 +705,22 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue) {
         this.render();
 
         if (pos < 1) requestAnimationFrame(changeHighlightTransition);
+        else this.element.classList.remove("no-raycast");
     };
 
+    this.element.classList.add("no-raycast");
     requestAnimationFrame(changeHighlightTransition);
 };
 
-ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (boundingBox, mouseEvent) {
+ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
     const newX =
-        ((mouseEvent.x - boundingBox.x) / boundingBox.width) * 2 - 1;
+        ((mouseEvent.x - this.boundingBox.x) / this.boundingBox.width) * 2 - 1;
     const newY =
         -(
-            (mouseEvent.y - boundingBox.y + window.scrollY) /
-            boundingBox.height
+            (mouseEvent.y - this.boundingBox.y + window.scrollY) /
+            this.boundingBox.height
         ) *
         2 +
         1;
