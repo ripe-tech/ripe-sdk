@@ -630,12 +630,12 @@ ripe.CSRenderer.prototype.updateSize = function () {
 ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
-    const elementBoundingBox = this.element.getBoundingClientRect();
+    const boundingBox = this.element.getBoundingClientRect();
 
     if (animating || dragging) return;
 
-    const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
-    
+    const mouse = this._getNormalizedCoordinatesRaycast(boundingBox, mouseEvent);
+
     if (this.raycaster && this.scene && this.assetManager) {
         this.raycaster.setFromCamera(mouse, this.camera);
 
@@ -719,15 +719,15 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue) {
     requestAnimationFrame(changeHighlightTransition);
 };
 
-ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
+ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (boundingBox, mouseEvent) {
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
     const newX =
-        ((mouseEvent.x - this.elementBoundingBox.x) / this.elementBoundingBox.width) * 2 - 1;
+        ((mouseEvent.x - boundingBox.x) / boundingBox.width) * 2 - 1;
     const newY =
         -(
-            (mouseEvent.y - this.elementBoundingBox.y + window.scrollY) /
-            this.elementBoundingBox.height
+            (mouseEvent.y - boundingBox.y + window.scrollY) /
+            boundingBox.height
         ) *
         2 +
         1;
@@ -745,8 +745,8 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
         format: this.library.RGBFormat
     };
 
-    var width = this.elementBoundingBox.width;
-    var height = this.elementBoundingBox.height;
+    var width = this.element.getBoundingClientRect().width;
+    var height = this.element.getBoundingClientRect().height;
 
     // Values of far and near camera are so high and so narrow 
     // to place the quad outside of the scene, and only render
