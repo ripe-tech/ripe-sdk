@@ -29,7 +29,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this.owner = owner;
     this.type = this.type || "CSRenderer";
     this.element = element;
-    
+
     this.library = options.library;
     this.cameraTarget = new this.library.Vector3(
         options.cameraTarget.x,
@@ -137,7 +137,7 @@ ripe.CSRenderer.prototype.initialize = function (assetManager) {
     this.raycaster = new this.library.Raycaster();
 
     this._initializeLights();
-    this._initializeCamera();
+    this._initializeCameras();
     this._initializeRenderer();
     this._registerHandlers();
     this._initializeShaders();
@@ -193,6 +193,12 @@ ripe.CSRenderer.prototype.disposeResources = async function () {
     if (this.fillLight.shadow && this.fillLight.shadow.map) this.fillLight.shadow.map.dispose();
     if (this.rimLight.shadow && this.rimLight.shadow.map) this.rimLight.shadow.map.dispose();
 
+    this.previousSceneFBO.texture.dispose();
+    this.previousSceneFBO.dispose();
+    this.nextSceneFBO.texture.dispose();
+    this.nextSceneFBO.dispose();
+    this.currentTarget.texture.dispose();
+    this.currentTarget.dispose();
 
     for (let i = 0; i < this.raycastingMeshes.length; i++) {
         await this.assetManager.disposeMesh(this.raycastingMeshes[i]);
@@ -316,7 +322,10 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
     // notice that the shadow map is enabled
     this.renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true, logarithmicDepthBuffer: true });
 
-    this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
+    var width = this.element.getBoundingClientRect().width;
+    var height = this.element.getBoundingClientRect().height;
+
+    this.renderer.setSize(width, height);
 
     this.renderer.toneMappingExposure = this.exposure;
     this.renderer.toneMapping = this.library.CineonToneMapping;
@@ -329,6 +338,18 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
     this.renderer.setClearColor(0xffffff);
 
     area.appendChild(this.renderer.domElement);
+
+    var renderTargetParams = {
+        minFilter: this.library.LinearFilter,
+        magFilter: this.library.LinearFilter,
+        format: this.library.RGBAFormat
+    };
+
+    this.previousSceneFBO = new this.library.WebGLRenderTarget(width, height, renderTargetParams);
+    this.nextSceneFBO = new this.library.WebGLRenderTarget(width, height, renderTargetParams);
+    this.currentTarget = new this.library.WebGLRenderTarget(width, height, renderTargetParams);
+
+    this.renderer.setRenderTarget(this.currentTarget);
 
     this.composer = new this.library.EffectComposer(this.renderer);
 
@@ -517,7 +538,7 @@ ripe.CSRenderer.prototype._setupPostProcessing = function () {
     this.composer.addPass(this.ssaoPass);
 };
 
-ripe.CSRenderer.prototype._initializeCamera = function () {
+ripe.CSRenderer.prototype._initializeCameras = function () {
     const width = this.element.getBoundingClientRect().width;
     const height = this.element.getBoundingClientRect().height;
 
@@ -534,6 +555,18 @@ ripe.CSRenderer.prototype._initializeCamera = function () {
     }
 
     this.camera.lookAt(this.cameraTarget);
+
+    // Values of far and near camera are so high and so narrow 
+    // to place the quad outside of the scene, and only render
+    // the quad
+    this.crossfadeCamera = new this.library.OrthographicCamera(
+        -width / 2,
+        width / 2,
+        height / 2,
+        -height / 2,
+        -1000,
+        -998
+    );
 };
 
 ripe.CSRenderer.prototype._performAnimation = function (animationName) {
@@ -555,13 +588,13 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
 
     const clock = new this.library.Clock();
     clock.autoStart = false;
-    var delta = 0;
+    var delta = -1;
 
     const doAnimation = () => {
-        if (delta === 0) {
+        if (delta == -1) {
             // Begin action
-            action.reset().play();
-            
+            action.play();
+
             // First render takes longer, done before the clock begins
             this.render();
 
@@ -596,18 +629,11 @@ ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
     }
 };
 
-ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
-    const cam = camera === undefined ? this.camera : camera;
-
-    //console.log("Rendering")
-    if (!this.usesPostProcessing || useRenderer) {
-        //console.log("Rendering with renderer!")
-        this.renderer.render(this.scene, cam);
-    } else {
-        //console.log("Rendering with composer!")
-        this.composer.render()
-    }
-
+ripe.CSRenderer.prototype.render = function () {
+    if (this.usesPostProcessing)
+        this.composer.render();
+    else
+        this.renderer.render(this.scene, this.camera);
 };
 
 ripe.CSRenderer.prototype.updateSize = function () {
@@ -619,10 +645,10 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
     const preventRaycasting = this.element.classList.contains("no-raycast");
-    
+
     if (animating || dragging || preventRaycasting) return;
 
-    if (!this.boundingBox) 
+    if (!this.boundingBox)
         this.boundingBox = this.element.getBoundingClientRect();
 
     const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
@@ -732,41 +758,20 @@ ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEven
 };
 
 ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
-    var renderTargetParameters = {
-        minFilter: this.library.LinearFilter,
-        magFilter: this.library.LinearFilter,
-        format: this.library.RGBFormat
-    };
-
     var width = this.element.getBoundingClientRect().width;
     var height = this.element.getBoundingClientRect().height;
 
-    // Values of far and near camera are so high and so narrow 
-    // to place the quad outside of the scene, and only render
-    // the quad
-    var transitionCamera = new this.library.OrthographicCamera(
-        -width / 2,
-        width / 2,
-        height / 2,
-        -height / 2,
-        -1000,
-        -998
-    );
+    // TODO Instead of using a crossfade-lock, interpolate between the current crossfade
+    // and the next
 
-    var previousSceneFBO = new this.library.WebGLRenderTarget(
-        width,
-        height,
-        renderTargetParameters
-    );
-    var currentSceneFBO = new this.library.WebGLRenderTarget(width, height, renderTargetParameters);
+    //this.composer.renderTarget1 = this.previousSceneFBO;
+    //this.composer.renderTarget2 = this.nextSceneFBO;
 
-    this.composer.renderTarget1 = previousSceneFBO;
-    this.composer.renderTarget2 = currentSceneFBO;
+    let mixRatio = 0.0;
 
-    var mixRatio = 0.0;
+    this.crossfadeShader.uniforms.tDiffuse1.value = this.previousSceneFBO.texture;
+    this.crossfadeShader.uniforms.tDiffuse2.value = this.nextSceneFBO.texture;
 
-    this.crossfadeShader.uniforms.tDiffuse1.value = previousSceneFBO.texture;
-    this.crossfadeShader.uniforms.tDiffuse2.value = currentSceneFBO.texture;
     this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
     var quadGeometry = new this.library.PlaneBufferGeometry(width, height);
@@ -776,11 +781,9 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
     this.scene.add(quad);
 
     // Store current image
-    this.renderer.setRenderTarget(previousSceneFBO);
+    this.renderer.setRenderTarget(this.previousSceneFBO);
     this.renderer.clear();
-    //this.composer.render(this.renderer, previousSceneFBO)
-    this.render(true);
-
+    this.renderer.render(this.scene, this.camera);
 
     var parts = options.parts === undefined ? this.owner.parts : options.parts;
 
@@ -790,23 +793,21 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
         this.rotate(options);
     }
     // Render next image
-    this.renderer.setRenderTarget(currentSceneFBO);
+    this.renderer.setRenderTarget(this.nextSceneFBO);
     this.renderer.clear();
-    //this.composer.render(this.renderer, currentSceneFBO)
-    this.render(true);
-
+    this.renderer.render(this.scene, this.camera);
 
     // Reset renderer
+    //this.renderer.setRenderTarget(null);
     this.renderer.setRenderTarget(null);
     this.renderer.clear();
-
     var pos = 0;
     var duration = options.duration || 500;
 
     var startTime = 0;
     const crossfadeFunction = time => {
         startTime = startTime === 0 ? time : startTime;
-        this.render(true, transitionCamera);
+        this.renderer.render(this.scene, this.crossfadeCamera);
 
         pos = (time - startTime) / duration;
         mixRatio = ripe.easing[this.crossfadeEasing](pos, 0.0, 1.0);
@@ -821,10 +822,6 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
             this.element.classList.remove("no-drag");
             quadGeometry.dispose();
             this.assetManager.disposeMesh(quad);
-            previousSceneFBO.texture.dispose();
-            previousSceneFBO.dispose();
-            currentSceneFBO.texture.dispose();
-            currentSceneFBO.dispose();
             this.render();
         }
     };
@@ -834,6 +831,10 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
     this.element.classList.add("no-drag");
 
     requestAnimationFrame(crossfadeFunction);
+};
+
+ripe.CSRenderer.prototype._setupCrossfade = async function (options = {}, type) {
+
 };
 
 ripe.CSRenderer.prototype.rotate = function (options) {

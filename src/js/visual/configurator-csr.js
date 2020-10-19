@@ -236,6 +236,7 @@ ripe.ConfiguratorCSR.prototype.update = async function (state, options = {}) {
 
     // crossfade when changing materials 
     if (options.reason && options.reason.includes("set part")) {
+        console.log("Attempting to change material!")
         await this.renderer.crossfade({ duration: duration }, "material");
     }
 

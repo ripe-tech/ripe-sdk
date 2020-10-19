@@ -375,7 +375,7 @@ window.onload = function () {
                 textHeight: 0.01,
                 shadowBias: -0.0005,
                 canZoom: true,
-                usesPostProcessing: false,
+                //usesPostProcessing: false,
                 maskOpacity: 0.7,
                 //lockRotation: "horizontal"
             });
