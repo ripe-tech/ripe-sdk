@@ -29,8 +29,7 @@ ripe.CSRenderer = function (owner, element, options) {
     this.owner = owner;
     this.type = this.type || "CSRenderer";
     this.element = element;
-    this.updateElementBoundingBox();
-
+    
     this.library = options.library;
     this.cameraTarget = new this.library.Vector3(
         options.cameraTarget.x,
@@ -76,6 +75,7 @@ ripe.CSRenderer = function (owner, element, options) {
     // coordinates for raycaster requires the exact positioning
     // of the element in the window, needs to be updated on
     // every resize
+    /*
     window.onresize = () => {
         if (this.fxaaPass && this.renderer) {
             this.fxaaPass.material.uniforms['resolution'].value.x = 1 / (this.element.clientWidth * this.renderer.getPixelRatio());
@@ -83,6 +83,7 @@ ripe.CSRenderer = function (owner, element, options) {
         }
         this.updateSize();
     };
+    */
 
 
     this.previousRotation = new this.library.Vector2(0, 0);
@@ -186,8 +187,6 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
 
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
-
-    //this.updateElementBoundingBox();
 };
 
 /**
@@ -626,18 +625,17 @@ ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undef
 ripe.CSRenderer.prototype.updateSize = function () {
     if (this.renderer) this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
     if (this.composer) this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
-
-    this.updateElementBoundingBox();
 };
 
 ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
+    const elementBoundingBox = this.element.getBoundingClientRect();
 
-    if (!this.elementBoundingBox || animating || dragging) return;
+    if (animating || dragging) return;
 
     const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
-
+    
     if (this.raycaster && this.scene && this.assetManager) {
         this.raycaster.setFromCamera(mouse, this.camera);
 
@@ -738,15 +736,6 @@ ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEven
         x: newX,
         y: newY
     };
-};
-
-ripe.CSRenderer.prototype.updateElementBoundingBox = function () {
-    // Raycaster needs accurate positions of the element, needs to be
-    // updated on every window resize event
-    if (this.element) {
-        this.elementBoundingBox = this.element.getBoundingClientRect();
-        console.log(this.elementBoundingBox.top);
-    }
 };
 
 ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
