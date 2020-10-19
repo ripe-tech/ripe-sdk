@@ -78,11 +78,12 @@ ripe.CSRenderer = function (owner, element, options) {
     // every resize
     window.onresize = () => {
         if (this.fxaaPass && this.renderer) {
-            this.fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( this.element.clientWidth * this.renderer.getPixelRatio());
-            this.fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( this.element.clientWidth * this.renderer.getPixelRatio());      
+            this.fxaaPass.material.uniforms['resolution'].value.x = 1 / (this.element.clientWidth * this.renderer.getPixelRatio());
+            this.fxaaPass.material.uniforms['resolution'].value.y = 1 / (this.element.clientWidth * this.renderer.getPixelRatio());
         }
         this.updateSize();
     };
+
 
     this.previousRotation = new this.library.Vector2(0, 0);
     this.guiLibrary = options.dat === undefined ? null : options.dat;
@@ -185,6 +186,8 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
 
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
+
+    //this.updateElementBoundingBox();
 };
 
 /**
@@ -285,8 +288,8 @@ ripe.CSRenderer.prototype._initializeLights = function () {
     this.keyLight = new this.library.PointLight(0xffffff, 2.2, 9 * mult);
     this.keyLight.position.set(1 * mult, 1 * mult, 1 * mult);
     this.keyLight.castShadow = true;
-    this.keyLight.shadow.mapSize.width = 1024;  
-    this.keyLight.shadow.mapSize.height = 1024; 
+    this.keyLight.shadow.mapSize.width = 1024;
+    this.keyLight.shadow.mapSize.height = 1024;
     //keyLight.shadow.camera.near = 0.01;
     //keyLight.shadow.camera.far = 500;
     this.keyLight.shadow.radius = this.radius;
@@ -295,8 +298,8 @@ ripe.CSRenderer.prototype._initializeLights = function () {
     this.fillLight = new this.library.PointLight(0xffffff, 1.1, 9 * mult);
     this.fillLight.position.set(-1 * mult, 0.5 * mult, 1 * mult);
     this.fillLight.castShadow = true;
-    this.fillLight.shadow.mapSize.width = 1024;  
-    this.fillLight.shadow.mapSize.height = 1024; 
+    this.fillLight.shadow.mapSize.width = 1024;
+    this.fillLight.shadow.mapSize.height = 1024;
     //fillLight.shadow.camera.near = 0.01;
     //fillLight.shadow.camera.far = 500;
     this.fillLight.shadow.radius = this.radius;
@@ -305,8 +308,8 @@ ripe.CSRenderer.prototype._initializeLights = function () {
     this.rimLight = new this.library.PointLight(0xffffff, 3.1, 9 * mult);
     this.rimLight.position.set(-0.5 * mult, 0.75 * mult, -1.5 * mult);
     this.rimLight.castShadow = true;
-    this.rimLight.shadow.mapSize.width = 1024;  
-    this.rimLight.shadow.mapSize.height = 1024; 
+    this.rimLight.shadow.mapSize.width = 1024;
+    this.rimLight.shadow.mapSize.height = 1024;
     //rimLight.shadow.camera.near = 0.01;
     //rimLight.shadow.camera.far = 500;
     this.rimLight.shadow.radius = this.radius;
@@ -345,13 +348,12 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
 
     this.fxaaPass = new this.library.ShaderPass(this.library.FXAAShader);
 
-    this.fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( this.element.clientWidth * this.renderer.getPixelRatio());
-    this.fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( this.element.clientWidth * this.renderer.getPixelRatio());
+    this.fxaaPass.material.uniforms['resolution'].value.x = 1 / (this.element.clientWidth * this.renderer.getPixelRatio());
+    this.fxaaPass.material.uniforms['resolution'].value.y = 1 / (this.element.clientWidth * this.renderer.getPixelRatio());
     this.composer.addPass(this.fxaaPass)
 };
 
 ripe.CSRenderer.prototype.createGUI = function () {
-    console.log("Creating GUI");
     if (this.guiLibrary === null) return;
 
     //this.gui = new this.guiLibrary.GUI({ autoPlace: false });
@@ -730,7 +732,10 @@ ripe.CSRenderer.prototype.updateElementBoundingBox = function () {
     // updated on every window resize event
     if (this.element) {
         this.elementBoundingBox = this.element.getBoundingClientRect();
+        console.log("Changing element bounding box to ")
+        console.log(this.elementBoundingBox);
     }
+
 };
 
 ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
@@ -743,13 +748,16 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
     var width = this.elementBoundingBox.width;
     var height = this.elementBoundingBox.height;
 
+    // Values of far and near camera are so high and so narrow 
+    // to place the quad outside of the scene, and only render
+    // the quad
     var transitionCamera = new this.library.OrthographicCamera(
         -width / 2,
         width / 2,
         height / 2,
         -height / 2,
-        -100,
-        100
+        -1000,
+        -998
     );
 
     var previousSceneFBO = new this.library.WebGLRenderTarget(
@@ -770,7 +778,8 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
 
     var quadGeometry = new this.library.PlaneBufferGeometry(width, height);
     var quad = new this.library.Mesh(quadGeometry, this.crossfadeShader);
-    quad.position.z = 1;
+    // set the quad in the range the transition camera can read
+    quad.position.set(0, 0, 999);
     this.scene.add(quad);
 
     // Store current image

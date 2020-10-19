@@ -207,37 +207,6 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
         event.preventDefault();
     });
 
-    // verifies if mutation should be "observed" for this visual
-    // and in such case registers for the observation of any DOM
-    // mutation (eg: attributes) for the configurator element, triggering
-    // a new update operation in case that happens
-    if (this.mutations) {
-        // listens for attribute changes to redraw the configurator
-        // if needed, this makes use of the mutation observer, the
-        // redraw should be done for width and height style and attributes
-        const Observer =
-            (typeof MutationObserver !== "undefined" && MutationObserver) ||
-            (typeof WebKitMutationObserver !== "undefined" && WebKitMutationObserver) || // eslint-disable-line no-undef
-            null;
-        this._observer = Observer
-            ? new Observer(mutations => {
-                for (let index = 0; index < mutations.length; index++) {
-                    const mutation = mutations[index];
-                    if (mutation.type === "style") self.resize();
-                    if (mutation.type === "attributes") self.update();
-                }
-            })
-            : null;
-        if (this._observer) {
-            this._observer.observe(this.element, {
-                attributes: true,
-                subtree: false,
-                characterData: true,
-                attributeFilter: ["style", "data-format", "data-size", "data-width", "data-height"]
-            });
-        }
-    }
-
     // adds handlers for the touch events so that they get
     // parsed to mouse events for the configurator element,
     // taking into account that there may be a touch handler

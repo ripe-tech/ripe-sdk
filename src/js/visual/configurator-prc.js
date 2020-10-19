@@ -153,7 +153,7 @@ ripe.ConfiguratorPRC.prototype.updateOptions = async function(options, update = 
     this.size = options.size === undefined ? this.size : options.size;
     this.mutations = options.mutations === undefined ? this.mutations : options.mutations;
     this.maxSize = options.maxSize === undefined ? this.maxSize : this.maxSize;
-    this.pixelRatio = options.pixelRation === undefined ? this.pixelRatio : options.pixelRatio;
+    this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
     this.verticalThreshold =
         options.verticalThreshold === undefined

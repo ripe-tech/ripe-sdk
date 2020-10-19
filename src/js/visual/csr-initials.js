@@ -83,14 +83,11 @@ ripe.CSRInitials.prototype.update = async function() {
         this.logoMesh.visible = isLogoVisible;
     }
 
-    console.log("Engraving is " + this.engraving);
-    console.log("Initials are " + initials);
-
     // If there are no initials in mesh
     if (!this.initialsPositions) return;
 
     // Check if it is a valid engraving
-    if (this.owner.engraving !== null && !this.owner.engraving.includes("viewport")) {
+    if (this.owner.engraving !== null && this.owner.engraving.includes("viewport")) {
         return;
     }
 
@@ -99,17 +96,22 @@ ripe.CSRInitials.prototype.update = async function() {
         return;
     }
 
-    if (this.initialsType === "emboss") await this.embossLetters(initials);
-    else if (this.initialsType === "engrave") await this.engraveLetters(initials);
+    let newEngraving = this.owner.engraving === null ? this.engraving : this._parseEngraving();
 
-    this.engraving = this.owner.engraving === null ? this.engraving : this.owner.engraving;
+    if (this.initialsType === "emboss") await this.embossLetters(initials, newEngraving);
+    else if (this.initialsType === "engrave") await this.engraveLetters(initials, newEngraving);
 
+    this.engraving = newEngraving;
     this.initialsText = initials;
 };
 
-ripe.CSRInitials.prototype.embossLetters = async function(initials) {
+ripe.CSRInitials.prototype.embossLetters = async function(initials, newEngraving) {
     // avoid creating new materials
-    if (this.letterMaterial === null) this.letterMaterial = await this._getLetterMaterial();
+    let changedMaterial = false;
+    if (this.letterMaterial === null || newEngraving !== this.engraving) {
+        this.letterMaterial = await this._getLetterMaterial(newEngraving);
+        changedMaterial = true;
+    } 
 
     const maxLength = Object.keys(this.initialsPositions).length;
 
@@ -138,6 +140,9 @@ ripe.CSRInitials.prototype.embossLetters = async function(initials) {
             } else {
                 this.textMeshes.push(mesh);
             }
+        } else if (changedMaterial) {
+            this.assetManager.disposeMaterial(this.textMeshes[i - 1].material);
+            this.textMeshes[i - 1].material = this.letterMaterial.clone();
         }
 
         this.textMeshes[i - 1].position.set(
@@ -152,6 +157,30 @@ ripe.CSRInitials.prototype.embossLetters = async function(initials) {
         );
     }
 };
+
+ripe.CSRInitials.prototype._parseEngraving = function () {
+    var splitProps = this.owner.engraving.split("::");
+    var material, type;
+
+    if (splitProps[0] === "style") {
+        material = splitProps[1].split("_")[0];
+        type = splitProps[1].split("_")[1];
+    } else {
+        material = splitProps[0].split("_")[0];
+        type = splitProps[0].split("_")[1];
+    }
+
+    return material + "_" + type;
+}
+
+ripe.CSRInitials.prototype._getLetterMaterial = async function(engraving) {
+    let material = engraving.split("_")[0];
+    let type = engraving.split("_")[1];
+    
+    const letterMaterial = await this.assetManager._loadMaterial("initials", material, type);
+    return letterMaterial;
+};
+
 
 ripe.CSRInitials.prototype.disposeLetter = function(index, willReplace = false) {
     this.textMeshes[index].geometry.dispose();
@@ -214,7 +243,7 @@ ripe.CSRInitials.prototype.createLetter = function(letter) {
     return letterMesh;
 };
 
-ripe.CSRInitials.prototype.engraveLetters = function() {};
+ripe.CSRInitials.prototype.engraveLetters = function(initials, newEngraving) {};
 
 ripe.CSRInitials.prototype.disposeResources = async function() {
     console.log("Disposing Initials Resources.");
@@ -247,18 +276,3 @@ ripe.CSRInitials.prototype.disposeResources = async function() {
     console.log("Finished disposing " + count + " initials positions mesh.");
 };
 
-ripe.CSRInitials.prototype._getLetterMaterial = async function() {
-    var splitProps = this.engraving.split("::");
-    var material, type;
-
-    if (splitProps[0] === "style") {
-        material = splitProps[1].split("_")[0];
-        type = splitProps[1].split("_")[1];
-    } else {
-        material = splitProps[0].split("_")[0];
-        type = splitProps[0].split("_")[1];
-    }
-
-    const letterMaterial = await this.assetManager._loadMaterial("initials", material, type);
-    return letterMaterial;
-};
