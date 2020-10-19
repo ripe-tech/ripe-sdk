@@ -227,10 +227,12 @@ ripe.CSRenderer.prototype._loadAssets = async function () {
 
     if (this.environment) await this.assetManager.setupEnvironment(this.scene, this.renderer);
 
-    this.render();
+    // Check if it has idle animation
+    var hasIdle = this.library.AnimationClip.findByName(this.animations, "Idle");
 
     if (this.introAnimation) this._performAnimation(this.introAnimation);
-    else if (this.animations.length > 0) this._performAnimation("Idle");
+    else if (hasIdle) this._performAnimation("Idle");
+    else this.render();
 };
 
 ripe.CSRenderer.prototype._initializeShaders = function () {
@@ -343,7 +345,7 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
 
     this.composer = new this.library.EffectComposer(this.renderer);
 
-    var renderPass = new this.library.SSAARenderPass(this.scene, this.camera);
+    var renderPass = new this.library.RenderPass(this.scene, this.camera);
     this.composer.addPass(renderPass);
 
     this.fxaaPass = new this.library.ShaderPass(this.library.FXAAShader);
@@ -551,33 +553,44 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     var animation = this.library.AnimationClip.findByName(this.animations, animationName);
     if (!animation) return;
 
+    animation.optimize();
+
     var action;
     this.animations.forEach(clip => {
         if (clip.name === animationName) {
             action = this.mixer.clipAction(clip);
             action.clampWhenFinished = true;
             action.loop = this.library.LoopOnce;
+            action.setEffectiveTimeScale(1);
+
         }
     });
 
-    var previousTime = 0;
+    const clock = new this.library.Clock();
+    clock.autoStart = false;
+    var delta = 0;
 
-    const doAnimation = time => {
-        previousTime = previousTime === 0 ? time : previousTime;
+    const doAnimation = () => {
+        if (delta === 0) {
+            // Begin action
+            action.reset().play();
+            
+            // First render takes longer, done before the clock begins
+            this.render();
 
-        const dt = (time - previousTime) / 1000;
-        this.mixer && this.mixer.update(dt);
+            clock.start();
+        }
 
-        this.mixer.update(dt);
-
-        previousTime = time;
+        delta = clock.getDelta();
+        this.mixer.update(delta);
 
         this.render();
 
+
         if (!action.paused) requestAnimationFrame(doAnimation);
+        else clock.stop();
     };
 
-    action.play();
     requestAnimationFrame(doAnimation);
 };
 
@@ -597,10 +610,10 @@ ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
 };
 
 ripe.CSRenderer.prototype.render = function (useRenderer = false, camera = undefined) {
-
     const cam = camera === undefined ? this.camera : camera;
 
-    if (useRenderer) {
+    //console.log("Rendering")
+    if (!this.usesPostProcessing || useRenderer) {
         //console.log("Rendering with renderer!")
         this.renderer.render(this.scene, cam);
     } else {
@@ -732,10 +745,8 @@ ripe.CSRenderer.prototype.updateElementBoundingBox = function () {
     // updated on every window resize event
     if (this.element) {
         this.elementBoundingBox = this.element.getBoundingClientRect();
-        console.log("Changing element bounding box to ")
-        console.log(this.elementBoundingBox);
+        console.log(this.elementBoundingBox.top);
     }
-
 };
 
 ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
