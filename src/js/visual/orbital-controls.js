@@ -15,34 +15,35 @@ ripe.OrbitalControls = function (configurator, element, options) {
     this.configurator = configurator;
     this.element = element;
 
-    this.maximumHorizontalRot = options.maximumHorizontalRot || 180;
-    this.minimumHorizontalRot = options.minimumHorizontalRot || -180;
-
-    this.maximumVerticalRot = options.maximumVerticalRot || 89;
-    this.minimumVerticalRot = options.minimumVerticalRot || 0;
+    this.maximumHorizontalRot = 180;
+    this.minimumHorizontalRot = -180;
+    this.maximumVerticalRot = 89;
+    this.minimumVerticalRot = 0;
 
     var startingPosition = options.position || 0;
     this._baseHorizontalRot = this._positionToRotation(startingPosition);
     this.currentHorizontalRot = this._baseHorizontalRot;
+
     this._baseVerticalRot = 0;
     this.currentVerticalRot = this._baseVerticalRot;
-    // Types of transition = "cross", "rotation" or "none"
-    this.viewAnimate = options.viewAnimate === undefined ? "rotate" : options.viewAnimate;
-    this.rotationEasing = options.rotationEasing || "easeInOutQuad";
 
-    this.cameraDistance = options.cameraDistance || 20;
-    this._baseCameraDistance = this.cameraDistance;
-    this.maxDistance = options.maxDistance === undefined ? 100000 : options.maxDistance;
-    this.minDistance = options.minDistance === undefined ? 0 : options.minDistance;
+    this.rotationEasing = "easeInOutQuad";
 
-    this.lockRotation = options.lockRotation || "";
+    this.cameraDistance = 100;
+    this._baseCameraDistance = 100;
+    this.maxDistance = 1000;
+    this.minDistance = 0;
 
-    this.mouseDrift = options.mouseDrift || true;
+    this.lockRotation = "";
+
+    this.mouseDrift = true;
     this.canDrift = false;
-    this.driftDuration = options.driftDuration || 0.5;
+    this.driftDuration = 200;
 
     this._previousEvent = null;
-    this.canZoom = options.canZoom === undefined ? true : options.canZoom;
+    this.canZoom = true;
+
+    this._setControlsOptions(options);
 
     this._registerHandlers();
 };
@@ -51,47 +52,68 @@ ripe.OrbitalControls.prototype = ripe.build(ripe.Observable.prototype);
 ripe.OrbitalControls.prototype.constructor = ripe.OrbitalControls;
 
 ripe.OrbitalControls.prototype.updateOptions = async function (options) {
-    this.element = options.element === undefined ? this.element : options.element;
+    this._setControlsOptions(options)
+}
+
+ripe.OrbitalControls.prototype._setControlsOptions = function (options) {
+    console.log(options)
+    if (options.camera) {
+        this.cameraDistance =
+            options.camera.distance === undefined
+            ? this.cameraDistance
+            : options.camera.distance;
+    this._baseCameraDistance = this.cameraDistance;
+    this.maxDistance =
+        options.camera.maxDistance === undefined ? this.maxDistance : options.camera.maxDistance;
+    this.minDistance =
+        options.camera.minDistance === undefined ? this.minDistance : options.camera.minDistance;
+    }
+
+    if (!options.controls) return;
+
+    const controlOptions = options.controls;
 
     this.maximumHorizontalRot =
-        options.maximumHorizontalRot === undefined
+        controlOptions.maximumHorizontalRot === undefined
             ? this.maximumHorizontalRot
-            : options.maximumHorizontalRot;
+            : controlOptions.maximumHorizontalRot;
     this.minimumHorizontalRot =
-        options.minimumHorizontalRot === undefined
+        controlOptions.minimumHorizontalRot === undefined
             ? this.minimumHorizontalRot
-            : options.minimumHorizontalRot;
+            : controlOptions.minimumHorizontalRot;
 
     this.maximumVerticalRot =
-        options.maximumVerticalRot === undefined
+        controlOptions.maximumVerticalRot === undefined
             ? this.maximumVerticalRot
-            : options.maximumVerticalRot;
+            : controlOptions.maximumVerticalRot;
     this.minimumVerticalRot =
-        options.minimumVerticalRot === undefined
+        controlOptions.minimumVerticalRot === undefined
             ? this.minimumVerticalRot
-            : options.minimumVerticalRot;
+            : controlOptions.minimumVerticalRot;
 
-    this.cameraDistance =
-        options.cameraDistance === undefined ? this.cameraDistance : options.cameraDistance;
-    this._baseCameraDistance = this.cameraDistance;
-    this.maxDistance = options.maxDistance === undefined ? this.maxDistance : options.maxDistance;
-    this.minDistance = options.minDistance === undefined ? this.minDistance : options.minDistance;
+    // Types of transition = "cross", "rotation" or "none"
+    this.rotationEasing =
+        controlOptions.rotationEasing === undefined
+            ? this.rotationEasing
+            : controlOptions.rotationEasing;
+
+    this.lockRotation =
+        controlOptions.lockRotation === undefined ? this.lockRotation : controlOptions.lockRotation;
+
+    this.canZoom = controlOptions.canZoom === undefined ? this.canZoom : controlOptions.canZoom;
+
+    this.mouseDrift =
+        controlOptions.mouseDrift === undefined ? this.mouseDrift : controlOptions.mouseDrift;
+
+    this.driftDuration = controlOptions.driftDuration === undefined ? this.driftDuration : controlOptions.driftDuration;
+};
+ripe.OrbitalControls.prototype.updateOptions = async function (options) {
+    this.element = options.element === undefined ? this.element : options.element;
 
     var startingPosition =
         options.position === undefined ? this.element.position : options.position;
     this._baseHorizontalRot = this._positionToRotation(startingPosition);
-    this.currentHorizontalRot = this._baseHorizontalRot;
-    this._baseVerticalRot = 0;
-    this.currentVerticalRot = this._baseVerticalRot;
-    // Types of transition = "cross", "rotation" or "none"
-    this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
-    this.rotationEasing =
-        options.rotationEasing === undefined ? this.rotationEasing : options.rotationEasing;
-
-    this.lockRotation =
-        options.lockRotation === undefined ? this.lockRotation : options.lockRotation;
-
-    this.canZoom = options.canZoom === undefined ? this.canZoom : options.canZoom;
+    this._setControlsOptions(options);
 };
 
 ripe.OrbitalControls.prototype._registerHandlers = function () {
@@ -170,10 +192,6 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
         self.mousePosX = event.pageX;
         self.mousePosY = event.pageY;
 
-        //const animating = self.element.classList.contains("animating");
-
-        //if (animating) return;
-
         if (down) {
             self._previousEvent = event;
             self.canDrift = true;
@@ -246,8 +264,7 @@ ripe.OrbitalControls.prototype.resetCameraDistance = function () {
 };
 
 ripe.OrbitalControls.prototype._updateAngles = function (options = {}) {
-    const newX =
-        options.rotationX === undefined ? this.currentHorizontalRot : options.rotationX;
+    const newX = options.rotationX === undefined ? this.currentHorizontalRot : options.rotationX;
     const newY = options.rotationY === undefined ? this.currentVerticalRot : options.rotationY;
 
     // Apply rotation to model
@@ -419,15 +436,15 @@ ripe.OrbitalControls.prototype._updateRotations = async function (frame, options
 
     if (revolutionDuration) {
         duration = revolutionDuration;
-    
-        let current = this._validatedAngle(this._baseHorizontalRot)
-        let next = this._validatedAngle(nextHorizontalRot)
-        let diff = Math.abs(next - current);
-    
-        // TODO Uncomment this        
-        duration = diff * revolutionDuration / 360;
+
+        const current = this._validatedAngle(this._baseHorizontalRot);
+        const next = this._validatedAngle(nextHorizontalRot);
+        const diff = Math.abs(next - current);
+
+        // TODO Uncomment this
+        duration = (diff * revolutionDuration) / 360;
         duration = 500;
-        //duration = diff * 60 / revolutionDuration;
+        // duration = diff * 60 / revolutionDuration;
     }
 
     // New rotation values
@@ -486,7 +503,6 @@ ripe.OrbitalControls.prototype._drift = function (event) {
         );
 
         if (pos < 1.0) requestAnimationFrame(driftAnimation);
-        else this.isDrifting = false;
     };
 
     this.isDrifting = true;

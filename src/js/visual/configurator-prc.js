@@ -71,7 +71,6 @@ ripe.ConfiguratorPRC.prototype.init = function() {
     this._finalize = null;
     this._observer = null;
     this._ownerBinds = {};
-    this._enabled = true;
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
@@ -174,7 +173,11 @@ ripe.ConfiguratorPRC.prototype.updateOptions = async function(options, update = 
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
 
     if (update) await this.update();
+    console.log("EHGEHEHEHEHEHEH")
 };
+
+
+
 
 /**
  * This function is called (by the owner) whenever its state changes
@@ -202,10 +205,7 @@ ripe.ConfiguratorPRC.prototype.update = async function(state, options = {}) {
         return false;
     }
 
-    if (!this._enabled) {
-        return;
-    }
-
+    
     // allocates space for the possible promise that is going
     // to be responsible for the preloading of the frames, populating
     // the cache buffer for the complete set of frames associated with
@@ -368,9 +368,6 @@ ripe.ConfiguratorPRC.prototype.resize = async function(size) {
  * is not in the an equivalent state (default to 'true').
  */
 ripe.ConfiguratorPRC.prototype.changeFrame = async function(frame, options = {}) {
-    // Disabled Configurator, changing frame will lead to errors
-    if (!this._enabled) return;
-
     // parses the requested frame value according to the pre-defined
     // standard (eg: side-3) and then unpacks it as view and position
     const _frame = ripe.parseFrameKey(frame);
@@ -1001,14 +998,6 @@ ripe.ConfiguratorPRC.prototype._updateConfig = async function(animate) {
             force: true
         }
     );
-};
-
-ripe.ConfiguratorPRC.prototype.disable = function() {
-    this._enabled = false;
-};
-
-ripe.ConfiguratorPRC.prototype.enable = function() {
-    this._enabled = true;
 };
 
 /**

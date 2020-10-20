@@ -335,51 +335,75 @@ window.onload = function () {
                 render: "prc"
             });
 
+            console.log("Before loading CSR");
+
             configuratorCSR = ripe.bindConfigurator(elementCSR, {
                 duration: 250,
                 render: "csr",
                 noMasks: false,
                 view: bestFace(result),
-                cameraFOV: 20,
-                cameraDistance: 105,
-                maxDistance: 125,
-                minDistance: 70,
-                cameraHeight: 12,
-                cameraTarget: { x: 0, y: 9, z: 0.0 },
-                //debug: true,
-                // Model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
-                // that is downloaded, or present in a spec file
-                modelConfig: model_data,
-                assetsPath: "/static/assets/",
-                fontType: "comic_sans",
-                fontWeight: "light",
-                library: THREE,
-                dat: dat,
-                exposure: 1.6,
-                mouseDrift: true,
-                driftDuration: 200,
+
                 // can be "crossfade", "rotate" or "none"
                 viewAnimate: "crossfade",
                 positionAnimate: "rotate",
-                //viewAnimate: "rotate",
-                //positionAnimate: "crossfade",
-                highlightEasing: "easeOutQuad",
-                materialEasing: "easeInOutQuad",
-                rotationEasing: "easeInOutQuad",
-                crossfadeEasing: "easeInOutQuad",
-                initialsPlacement: "center",
-                introAnimation: "SlideIn",
-                //introAnimation: "ScaleIn",
-                environment: "exterior_building",
-                textSize: 0.5,
-                textHeight: 0.01,
-                shadowBias: -0.0005,
-                canZoom: true,
+
+                debug: true,
                 //usesPostProcessing: false,
-                maskOpacity: 0.7,
-                //lockRotation: "horizontal"
+
+                library: THREE,
+                dat: dat,
+                postProcessingLibrary: POSTPROCESSING,
+               
+                assets: {
+                    // Model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
+                    // that is downloaded, or present in a spec file
+                    config: model_data,
+                    path: "/static/assets/"
+                },
+                
+                camera: {
+                    fov: 13,
+                    height: 18,
+                    target: { x: 0, y: 6.5, z: 0.0 },
+                    distance: 150,
+                    maxDistance: 180,
+                    minDistance: 100
+                },
+                
+                controls: {
+                    mouseDrift: true,
+                    driftDuration: 200,
+                    canZoom: true,
+                    lockRotation: "horizontal",
+                    
+                    rotationEasing: "easeInOutQuad"
+                },
+                
+                renderer: {
+                    highlightEasing: "easeOutQuad",
+                    materialEasing: "easeInOutQuad",
+                    crossfadeEasing: "easeInOutQuad",
+                    initialsPlacement: "center",
+                    introAnimation: "SlideIn",
+                    //introAnimation: "ScaleIn",
+                    environment: "exterior_building",
+                    maskOpacity: 0.7
+                },
+                
+                postProcess: {
+                    exposure: 1.6,
+                    shadowBias: -0.0005,
+                    bloom: {
+                        threshold: 0.9,
+                        intensity: 1,
+                        opacity: 0.8
+                    },
+                    antialiasing: {},
+                    ao: {}
+                }
             });
 
+            console.log("Loading? CSR");
             configuratorPRC.bind("loaded", function () {
                 if (configuratorPRC.isFirst) configuratorPRC.isFirst = false;
                 else return;
@@ -444,15 +468,11 @@ window.onload = function () {
         if (currentRenderMode == "prc") {
             elementCSR.style.display = "none";
             elementPRC.style.display = "inline-block";
-            configuratorCSR.disable();
             configuratorPRC.resize();
-            configuratorPRC.enable();
         } else if (currentRenderMode == "csr") {
             elementPRC.style.display = "none";
             elementCSR.style.display = "inline-block";
-            configuratorPRC.disable();
             configuratorCSR.resize();
-            configuratorCSR.enable();
         }
     };
 

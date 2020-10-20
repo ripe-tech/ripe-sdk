@@ -19,25 +19,10 @@
             
             <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/build/three.min.js"></script>
             <script src="https://cdn.statically.io/gh/dataarts/dat.gui/master/build/dat.gui.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/FBXLoader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/GLTFLoader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/loaders/RGBELoader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/CopyShader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/ConvolutionShader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/LuminosityHighPassShader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/FXAAShader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/EffectComposer.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/RenderPass.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/UnrealBloomPass.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/SSAARenderPass.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/TAARenderPass.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/UnpackDepthRGBAShader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/DepthLimitedBlurShader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/SAOShader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/SAOPass.min.js"></script> 
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/math/SimplexNoise.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/shaders/SSAOShader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/examples/js/postprocessing/SSAOPass.min.js"></script>
+            <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/FBXLoader.min.js"></script>
+            <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/GLTFLoader.min.js"></script>
+            <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/RGBELoader.min.js"></script>
+            <script src="https://cdn.statically.io/gh/vanruesc/postprocessing/master/build/postprocessing.min.js"></script>
             
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js', compress = 'js') }}"></script>
             <title>{{ title }}{% block title %}RIPE SDK Demo{% endblock %}</title>

@@ -12,13 +12,9 @@ if (
 }
 
 ripe.CSRAssetManager = function(configurator, owner, options) {
-    // console.log("Before")
-    /// /console.log(renderer.info)
-    // renderer.info.reset();
-    /// /console.log(renderer.info)
     this.owner = owner;
     this.configurator = configurator;
-    this.assetsPath = options.assetsPath;
+    this.assetsPath = options.assets.assetsPath;
     this.texturesPath =
         this.assetsPath +
         "textures/" +
@@ -30,20 +26,16 @@ ripe.CSRAssetManager = function(configurator, owner, options) {
     this.library = options.library;
     this.owner = owner;
 
-    this.assetsPath = options.assetsPath || "";
-    this.environment = options.environment;
+    this.assetsPath = options.assets.path || "";
 
     this.textureLoader = new this.library.TextureLoader();
 
-    this.textSize = options.textSize || 1;
-    this.textHeight = options.textHeight || 0.1;
-    this.modelConfig = options.modelConfig;
+    this.modelConfig = options.assets.config;
 
     this.meshes = {};
     this.loadedTextures = {};
     this.environmentTexture = null;
     this.loadedGltf = undefined;
-    this.library = options.library;
 
     const tmpRenderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
 
@@ -57,10 +49,11 @@ ripe.CSRAssetManager = function(configurator, owner, options) {
 ripe.CSRAssetManager.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRAssetManager.prototype.constructor = ripe.CSRAssetManager;
 
-ripe.CSRAssetManager.prototype.updateOptions = function(options) {
+ripe.CSRAssetManager.prototype.updateOptions = async function(options) {
     // materials
-    this.assetsPath = options.assetsPath === undefined ? this.assetsPath : options.assetsPath;
-    this.partsMap = options.partsMap === undefined ? this.partsMap : options.partsMap;
+    this.assetsPath = options.assets.path === undefined ? this.assetsPath : options.assets.path;
+    this.modelConfig =
+        options.assets.config === undefined ? this.modelConfig : options.assets.config;
 };
 
 ripe.CSRAssetManager.prototype._loadMesh = async function() {
@@ -157,6 +150,8 @@ ripe.CSRAssetManager.prototype.disposeScene = async function(scene) {
         if (child !== null && child.isMesh) await self.disposeMesh(child);
         scene.remove(child);
     });
+
+    scene = null;
 };
 
 /**
@@ -284,9 +279,9 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, material, co
     return newMaterial;
 };
 
-ripe.CSRAssetManager.prototype.setupEnvironment = async function(scene, renderer) {
+ripe.CSRAssetManager.prototype.setupEnvironment = async function(scene, renderer, environment) {
     this.pmremGenerator = new this.library.PMREMGenerator(renderer);
-    var environmentMapPath = this.assetsPath + "environments/" + this.environment + ".hdr";
+    var environmentMapPath = this.assetsPath + "environments/" + environment + ".hdr";
 
     const rgbeLoader = new this.library.RGBELoader();
     const texture = await new Promise((resolve, reject) => {
