@@ -53,17 +53,14 @@ ripe.CSRenderer = function (owner, element, options) {
 
     this.shadowBias = 0;
     this.exposure = 1.5;
+    this.radius = 1;
     this.usesPostProcessing =
         options.usesPostProcessing === undefined ? true : options.usesPostProcessing;
 
-    if (this.usesPostProcessing) {
-        this.postProcessLib = options.postProcessingLibrary;
-        this._setPostProcessOptions(options);
-    }
+    this.postProcessLib = options.postProcessingLibrary;
+    this._setPostProcessOptions(options);
 
     this.partsMap = options.partsMap || {};
-    this.shadowBias = options.shadowBias || -0.0001;
-    this.radius = options.radius || 1;
 
     // raycast
     this.intersectedPart = "";
@@ -144,11 +141,14 @@ ripe.CSRenderer.prototype._setPostProcessOptions = function (options = {}) {
         postProcOptions.exposure === undefined ? this.exposure : postProcOptions.exposure;
     this.shadowBias =
         postProcOptions.shadowBias === undefined ? this.shadowBias : postProcOptions.shadowBias;
+    this.radius =
+        postProcOptions.radius === undefined ? this.radius : postProcOptions.radius;
 
     if (postProcOptions.bloom) this.bloomOptions = postProcOptions.bloom;
-    if (postProcOptions.antialising) this.aaOptions = postProcOptions.antialiasing;
-    if (postProcOptions.ao) this.aoOptions = postProcOptions.ao;
+    if (postProcOptions.antialiasing) this.aaOptions = postProcOptions.antialiasing;
+    if (postProcOptions.ambientOcclusion) this.aoOptions = postProcOptions.ambientOcclusion;
 };
+
 
 /**
  * Updates configurator current options with the ones provided, called from the Configurator
@@ -174,10 +174,6 @@ ripe.CSRenderer.prototype.updateOptions = async function (options) {
             ? this.usesPostProcessing
             : options.usesPostProcessing;
 
-    if (this.usesPostProcessing) {
-        this._setPostProcessOptions(options);
-        if (this.composer) this._setupPostProcessing();
-    }
 };
 
 /**
@@ -247,8 +243,6 @@ ripe.CSRenderer.prototype.disposeResources = async function () {
     console.log("Disposing Renderer resources.");
 
     this.renderer.renderLists.dispose();
-    this.composer.renderTarget1.dispose();
-    this.composer.renderTarget2.dispose();
 
     for (let i = 0; i < this.renderer.info.programs.length; i++) {
         this.renderer.info.programs[i].destroy();
@@ -396,10 +390,11 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
     this.renderer = new this.library.WebGLRenderer({
-        antialias: true,
         alpha: true,
-        logarithmicDepthBuffer: true
+        logarithmicDepthBuffer: true,
+        antialias: true
     });
+
     this.renderer.info.autoReset = false;
 
     var width = this.element.getBoundingClientRect().width;
@@ -481,93 +476,15 @@ ripe.CSRenderer.prototype.createGUI = function () {
 
     if (!this.usesPostProcessing) return;
 
-    if (this.saoPass) {
-        const updateSAO = (param, value) => {
-            const pass = this.composer.passes.indexOfObject(this.saoPass);
-            this.composer.passes[pass][param] = value;
-            this.render();
-        };
-
-        const folderSAO = this.gui.addFolder("Scalable Ambient Occlusion Pass");
-        folderSAO
-            .add(this.saoPass.params, "saoBias", -1.0, 1.0)
-            .step(0.001)
-            .name("Bias")
-            .onChange(function (value) {
-                updateSAO("saoIntensity", value);
-            });
-        folderSAO
-            .add(this.saoPass.params, "saoIntensity", 0.0, 1.0)
-            .name("Intensity")
-            .onChange(function (value) {
-                updateSAO("saoIntensity", value);
-            });
-        folderSAO
-            .add(this.saoPass.params, "saoScale", 0.0, 10.0)
-            .name("Scale")
-            .onChange(function (value) {
-                updateSAO("saoScale", value);
-            });
-        folderSAO
-            .add(this.saoPass.params, "saoKernelRadius", 0.0, 100.0)
-            .name("KernelRadius")
-            .onChange(function (value) {
-                updateSAO("saoKernelRadius", value);
-            });
-        folderSAO
-            .add(this.saoPass.params, "saoBlur")
-            .name("Blur")
-            .onChange(function (value) {
-                updateSAO("saoBlur", value);
-            });
-        folderSAO
-            .add(this.saoPass.params, "saoBlurRadius", 0.0, 200.0)
-            .name("Blur Radius")
-            .onChange(function (value) {
-                updateSAO("saoIntensity", value);
-            });
-        folderSAO
-            .add(this.saoPass.params, "saoBlurStdDev", 0.0, 150.0)
-            .name("Blur StdDev")
-            .onChange(function (value) {
-                updateSAO("saoBlurStdDev", value);
-            });
-
-        folderSAO.open();
+    if (this.aoOptions) {
+        // TODO
     }
 
-    if (this.ssaoPass) {
-        const updateSSAO = (param, value) => {
-            const pass = this.composer.passes.indexOfObject(this.ssaoPass);
-            this.composer.passes[pass][param] = value;
-            this.render();
-        };
-
-        const folderSSAO = this.gui.addFolder("Screen Space Ambient Occlusion Pass");
-
-        folderSSAO
-            .add(this.ssaoPass, "kernelRadius", 0.0, 32.0)
-            .name("Kernel Radius")
-            .onChange(function (value) {
-                updateSSAO("kernelRadius", value);
-            });
-        folderSSAO
-            .add(this.ssaoPass, "minDistance", 0.001, 0.02)
-            .name("Min Distance")
-            .onChange(function (value) {
-                updateSSAO("minDistance", value);
-            });
-        folderSSAO
-            .add(this.ssaoPass, "maxDistance", 0.01, 0.3)
-            .name("Max Distance")
-            .onChange(function (value) {
-                updateSSAO("maxDistance", value);
-            });
-
-        folderSSAO.open();
+    if (this.aaOptions) {
+        // TODO
     }
 
-    if (this.bloomPass) {
+    if (this.bloomOptions) {
         const self = this;
 
         const folderBloom = this.gui.addFolder("Bloom Pass");
@@ -608,13 +525,8 @@ ripe.CSRenderer.prototype.createGUI = function () {
 ripe.CSRenderer.prototype._setupPostProcessing = function () {
     console.log("Setting up Post Processing");
 
-    // const size = this.element.clientWidth;
-
-    // setup bloom pass
     if (this.bloomOptions) this._setupBloomPass();
-
     if (this.aaOptions) this._setupAAPass();
-
     if (this.aoOptions) this._setupAOPass();
 };
 
@@ -640,9 +552,13 @@ ripe.CSRenderer.prototype._setupBloomPass = function () {
     this.composer.addPass(new this.postProcessLib.EffectPass(this.camera, this.bloomPass));
 };
 
-ripe.CSRenderer.prototype._setupAAPass = function () { };
+ripe.CSRenderer.prototype._setupAAPass = function () {
+    // TODO
+};
 
-ripe.CSRenderer.prototype._setupAOPass = function () { };
+ripe.CSRenderer.prototype._setupAOPass = function () {
+    // TODO
+};
 
 ripe.CSRenderer.prototype._initializeCameras = function () {
     const width = this.element.getBoundingClientRect().width;
@@ -693,17 +609,27 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
 
     const clock = new this.library.Clock();
     clock.autoStart = false;
+    // make all variables ready to go
+    
+    clock.start();
+    clock.stop();
+    action.play().stop();
+    
     var delta = -1;
 
     const doAnimation = () => {
         if (delta === -1) {
             // Begin action
-            action.play();
-
+            console.log("1")
             // First render takes longer, done before the clock begins
             this.render();
 
+            console.log("2")
+            
             clock.start();
+            console.log("3")
+            action.play();
+            console.log("4")
         }
 
         delta = clock.getDelta();
@@ -716,6 +642,7 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     };
 
     requestAnimationFrame(doAnimation);
+    
 };
 
 ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {

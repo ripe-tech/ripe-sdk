@@ -335,8 +335,6 @@ window.onload = function () {
                 render: "prc"
             });
 
-            console.log("Before loading CSR");
-
             configuratorCSR = ripe.bindConfigurator(elementCSR, {
                 duration: 250,
                 render: "csr",
@@ -348,7 +346,7 @@ window.onload = function () {
                 positionAnimate: "rotate",
 
                 debug: true,
-                //usesPostProcessing: false,
+                usesPostProcessing: false,
 
                 library: THREE,
                 dat: dat,
@@ -374,7 +372,7 @@ window.onload = function () {
                     mouseDrift: true,
                     driftDuration: 200,
                     canZoom: true,
-                    lockRotation: "horizontal",
+                    //lockRotation: "horizontal",
                     
                     rotationEasing: "easeInOutQuad"
                 },
@@ -398,8 +396,8 @@ window.onload = function () {
                         intensity: 1,
                         opacity: 0.8
                     },
-                    antialiasing: {},
-                    ao: {}
+                    antialiasing: true,
+                    ambientOcclusion: {}
                 }
             });
 

@@ -73,7 +73,7 @@ ripe.CSRAssetManager.prototype._loadMesh = async function() {
 
         await self.setMaterials(self.owner.parts);
 
-        self.configurator.initializeLoading();
+        await self.configurator.initializeLoading();
     });
 };
 

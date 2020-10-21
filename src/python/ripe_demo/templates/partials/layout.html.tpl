@@ -17,12 +17,12 @@
             <script type="text/javascript" src="{{ url_for('static', filename = 'assets/configs/swear/vyner_hitop.js') }}"></script>
             
             
-            <script src="https://cdn.statically.io/gh/veryprofessionaldodo/three.js/dev/build/three.min.js"></script>
+            <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/build/three.js"></script>
             <script src="https://cdn.statically.io/gh/dataarts/dat.gui/master/build/dat.gui.min.js"></script>
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/FBXLoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/GLTFLoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/RGBELoader.min.js"></script>
-            <script src="https://cdn.statically.io/gh/vanruesc/postprocessing/master/build/postprocessing.min.js"></script>
+            <script src="https://cdn.statically.io/gh/vanruesc/postprocessing/master/build/postprocessing.js"></script>
             
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js', compress = 'js') }}"></script>
             <title>{{ title }}{% block title %}RIPE SDK Demo{% endblock %}</title>

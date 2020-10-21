@@ -56,7 +56,6 @@ ripe.OrbitalControls.prototype.updateOptions = async function (options) {
 }
 
 ripe.OrbitalControls.prototype._setControlsOptions = function (options) {
-    console.log(options)
     if (options.camera) {
         this.cameraDistance =
             options.camera.distance === undefined
