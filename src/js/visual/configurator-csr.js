@@ -119,8 +119,8 @@ ripe.ConfiguratorCSR.prototype.init = function() {
  * initialization of the renderer and initials assistant.
  */
 ripe.ConfiguratorCSR.prototype.initializeLoading = function() {
-    this.renderer.initialize(this.assetManager);
     this.initials.initialize(this.assetManager);
+    this.renderer.initialize(this.assetManager);
 };
 
 /**
@@ -177,6 +177,8 @@ ripe.ConfiguratorCSR.prototype.disposeResources = async function() {
 ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
+    console.log("Updating options?")
+    
     this.renderer.updateOptions(options);
     this.controls.updateOptions(options);
     this.assetManager.updateOptions(options);

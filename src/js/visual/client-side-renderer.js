@@ -182,7 +182,7 @@ ripe.CSRenderer.prototype.updateOptions = async function (options) {
  *
  * @param {CSRAssetManager} assetManager
  */
-ripe.CSRenderer.prototype.initialize = function (assetManager) {
+ripe.CSRenderer.prototype.initialize = async function (assetManager) {
     this.assetManager = assetManager;
     this.scene = new this.library.Scene();
     this.raycaster = new this.library.Raycaster();
@@ -192,7 +192,7 @@ ripe.CSRenderer.prototype.initialize = function (assetManager) {
     this._initializeRenderer();
     this._registerHandlers();
     this._initializeShaders();
-    this._loadAssets();
+    await this._loadAssets();
 
     if (this.usesPostProcessing) this._setupPostProcessing();
 
@@ -620,16 +620,11 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     const doAnimation = () => {
         if (delta === -1) {
             // Begin action
-            console.log("1")
             // First render takes longer, done before the clock begins
             this.render();
 
-            console.log("2")
-            
             clock.start();
-            console.log("3")
             action.play();
-            console.log("4")
         }
 
         delta = clock.getDelta();
