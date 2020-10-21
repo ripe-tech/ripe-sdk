@@ -199,8 +199,8 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
     if (this.debug) this.createGUI();
 
     // finished loading everything, begin the rendering processs.
-    var hasIdle = this.library.AnimationClip.findByName(this.animations, "Idle");
-
+    var hasIdle = this._getAnimationByName("Idle") === undefined ? false : true;
+    
     if (this.introAnimation) this._performAnimation(this.introAnimation);
     else if (hasIdle) this._performAnimation("Idle");
     else this.render();
@@ -282,10 +282,10 @@ ripe.CSRenderer.prototype._loadAssets = async function () {
         this.raycastingMeshes.push(this.assetManager.meshes[mesh]);
     }
 
-    this.scene.add(this.assetManager.loadedGltf.scene);
+    this.scene.add(this.assetManager.loadedScene);
 
-    this.mixer = new this.library.AnimationMixer(this.assetManager.loadedGltf.scene);
-    this.animations = this.assetManager.loadedGltf.animations;
+    this.mixer = new this.library.AnimationMixer(this.assetManager.loadedScene);
+    this.animations = this.assetManager.getAnimations();
 
     if (this.environment) {
         await this.assetManager.setupEnvironment(this.scene, this.renderer, this.environment);
@@ -591,30 +591,36 @@ ripe.CSRenderer.prototype._initializeCameras = function () {
     );
 };
 
+ripe.CSRenderer.prototype._getAnimationByName = function (animationName) {
+    for (let i = 0 ; i < this.animations.length; i++) {
+        if (this.animations[i].name.includes(animationName)) {
+            return this.library.AnimationClip.findByName(this.animations, this.animations[i].name);
+        }
+    }
+
+    return undefined;
+}
+
 ripe.CSRenderer.prototype._performAnimation = function (animationName) {
-    var animation = this.library.AnimationClip.findByName(this.animations, animationName);
+    var animation = this._getAnimationByName(animationName);
     if (!animation) return;
 
     animation.optimize();
 
-    var action;
-    this.animations.forEach(clip => {
-        if (clip.name === animationName) {
-            action = this.mixer.clipAction(clip);
-            action.clampWhenFinished = true;
-            action.loop = this.library.LoopOnce;
-            action.setEffectiveTimeScale(1);
-        }
-    });
+    var action = this.mixer.clipAction(animation);
+    action.clampWhenFinished = true;
+    action.loop = this.library.LoopOnce;
+    action.setEffectiveTimeScale(1);
 
     const clock = new this.library.Clock();
     clock.autoStart = false;
-    // make all variables ready to go
     
     clock.start();
     clock.stop();
     action.play().stop();
     
+    console.log(action);
+
     var delta = -1;
 
     const doAnimation = () => {

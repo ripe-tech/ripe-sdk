@@ -345,7 +345,7 @@ window.onload = function () {
                 viewAnimate: "crossfade",
                 positionAnimate: "rotate",
 
-                debug: true,
+                //debug: true,
                 usesPostProcessing: false,
 
                 library: THREE,
@@ -356,7 +356,9 @@ window.onload = function () {
                     // Model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
                     // that is downloaded, or present in a spec file
                     config: model_data,
-                    path: "/static/assets/"
+                    path: "/static/assets/",
+                    // can be "gltf" or "fbx", defaults to "gltf" if no parameter is passed
+                    format: "fbx"
                 },
                 
                 camera: {
@@ -401,7 +403,6 @@ window.onload = function () {
                 }
             });
 
-            console.log("Loading? CSR");
             configuratorPRC.bind("loaded", function () {
                 if (configuratorPRC.isFirst) configuratorPRC.isFirst = false;
                 else return;

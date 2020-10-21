@@ -19,6 +19,8 @@
             
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/build/three.js"></script>
             <script src="https://cdn.statically.io/gh/dataarts/dat.gui/master/build/dat.gui.min.js"></script>
+            <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/OBJLoader.min.js"></script>
+            <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/libs/inflate.min.js"></script>
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/FBXLoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/GLTFLoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/RGBELoader.min.js"></script>

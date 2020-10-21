@@ -72,7 +72,7 @@ ripe.CSRInitials.prototype.initialize = async function (assetManager) {
         }
     };
 
-    this.assetManager.loadedGltf.scene.traverse(traverseScene);
+    this.assetManager.loadedScene.traverse(traverseScene);
 
     await this._initializeFonts(this.fontType, this.fontWeight);
 };
