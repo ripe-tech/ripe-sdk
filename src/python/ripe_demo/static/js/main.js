@@ -345,6 +345,7 @@ window.onload = function () {
                 viewAnimate: "crossfade",
                 positionAnimate: "rotate",
 
+                // debug is used to change post processing settings
                 //debug: true,
                 usesPostProcessing: false,
 
@@ -379,21 +380,22 @@ window.onload = function () {
                 },
                 
                 controls: {
-                    mouseDrift: true,
+                    // drift defaults to true, unless specified to be false
+                    //mouseDrift: false,
                     driftDuration: 200,
                     canZoom: true,
                     //lockRotation: "horizontal",
-                    
                     rotationEasing: "easeInOutQuad"
                 },
                 
                 renderer: {
+                    // all the easing methods default to easeInOutQuad
                     highlightEasing: "easeOutQuad",
                     materialEasing: "easeInOutQuad",
                     crossfadeEasing: "easeInOutQuad",
                     initialsPlacement: "center",
-                    introAnimation: "SlideIn",
-                    //introAnimation: "ScaleIn",
+                    //introAnimation: "SlideIn",
+                    introAnimation: "ScaleIn",
                     environment: "exterior_building",
                     maskOpacity: 0.7
                 },

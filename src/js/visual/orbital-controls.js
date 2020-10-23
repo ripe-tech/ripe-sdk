@@ -251,25 +251,25 @@ ripe.OrbitalControls.prototype._registerHandlers = function () {
 
     // listens to the mouse wheel event to zoom in or out
     area.addEventListener("wheel", function (event) {
-            event.preventDefault();
+        event.preventDefault();
 
-            const animating = self.element.classList.contains("animating");
+        const animating = self.element.classList.contains("animating");
 
-            if (animating) return;
+        if (animating) return;
 
-            self.cameraDistance = Math.max(
-                Math.min(self.cameraDistance + event.deltaY, self.maxDistance),
-                self.minDistance
-            );
-            self.configurator.rotate(
-                {
-                    rotationX: self.currentHorizontalRot,
-                    rotationY: self.currentVerticalRot,
-                    distance: self.cameraDistance
-                },
-                false
-            );
-        },
+        self.cameraDistance = Math.max(
+            Math.min(self.cameraDistance + event.deltaY, self.maxDistance),
+            self.minDistance
+        );
+        self.configurator.rotate(
+            {
+                rotationX: self.currentHorizontalRot,
+                rotationY: self.currentVerticalRot,
+                distance: self.cameraDistance
+            },
+            false
+        );
+    },
         { passive: false }
     );
 };
@@ -511,6 +511,9 @@ ripe.OrbitalControls.prototype._updateRotations = async function (frame, options
  * @param {*} event The mouse event that is used for the drift.
  */
 ripe.OrbitalControls.prototype._drift = function (event) {
+    // if specified that can't drift, return immediately
+    if (!this.mouseDrift) return;
+
     var currentValueX = event.movementX;
     var currentValueY = event.movementY;
 

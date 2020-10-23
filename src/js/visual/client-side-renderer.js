@@ -196,12 +196,17 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
 
     if (this.debug) this.createGUI();
 
+    var hasAnimation = this._getAnimationByName(this.introAnimation) === undefined ? false : true;
     // finished loading everything, begin the rendering processs.
     var hasIdle = this._getAnimationByName("Idle") === undefined ? false : true;
 
-    if (this.introAnimation) this._performAnimation(this.introAnimation);
+    if (this.introAnimation && hasAnimation) this._performAnimation(this.introAnimation);
     else if (hasIdle) this._performAnimation("Idle");
     else this.render();
+
+    // was meant to play an animation, but there was no animation with
+    // that name
+    if (!hasAnimation && this.introAnimation) throw new Error("There was no animation present in the file with the given name (" + (this.introAnimation) + ").");
 };
 
 /**
@@ -641,8 +646,16 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
 
     const doAnimation = () => {
         if (delta === -1) {
-            // first render takes longer, done before the clock begins
-            this.render();
+            // first render takes longer, done before the clock begins,
+            // renders to frame buffer object to prevent from rendering 
+            // to screen
+            this.renderer.setRenderTarget(this.previousSceneFBO);
+            this.renderer.clear();
+            this.renderer.render(this.scene, this.camera);
+            
+            // reset renderer
+            this.renderer.setRenderTarget(null);
+            this.renderer.clear();
 
             clock.start();
             action.play();
