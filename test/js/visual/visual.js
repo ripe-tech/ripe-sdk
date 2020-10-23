@@ -1,7 +1,7 @@
 const assert = require("assert");
 const jsdom = require("jsdom");
-const config = require("./config");
-const base = require("../../src/js/base");
+const config = require("../config");
+const base = require("../../../src/js/base");
 
 describe("Visual", function() {
     this.timeout(config.TEST_TIMEOUT);
