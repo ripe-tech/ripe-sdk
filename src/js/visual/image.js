@@ -64,9 +64,7 @@ ripe.Image.prototype.init = function() {
     this.context =
         this.options.context ||
         this.owner.context ||
-        function() {
-            return [];
-        };
+        [];
     this._observer = null;
     this._url = null;
     this._previousUrl = null;
@@ -86,7 +84,7 @@ ripe.Image.prototype.deinit = async function() {
 
     this._observer = null;
     this.baseInitialsBuilder = null;
-    this.context = null;
+    this.context = [];
 
     ripe.Visual.prototype.deinit.call(this);
 };
@@ -157,7 +155,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
               this.initials,
               this.engraving,
               this.element
-          )(this.context(this.initials, this.engraving, initialsGroup))
+          )(this.context)
         : {};
 
     // verifies if the model currently loaded in the RIPE instance can
@@ -288,10 +286,24 @@ ripe.Image.prototype.setShowInitials = function(showInitials) {
  * @param {Function} builder The new 'initialsBuilder' function
  * to be used by the Image.
  * @param {Object} options An object with options to configure
- * the setting of the 'initialsBuilder'.
+ * the setting of the 'baseInitialsBuilder'.
  */
 ripe.Image.prototype.setBaseInitialsBuilder = function(builder, options) {
     this.baseInitialsBuilder = builder;
+    this.update();
+};
+
+/**
+ * Updates the Image's context attribute that contains an array of
+ * strings corresponding to the image's context.
+ *
+ * @param {Function} context The new 'context' array to be used by
+ * the Image.
+ * @param {Object} options An object with options to configure
+ * the setting of the 'context'.
+ */
+ripe.Image.prototype.setContext = function(context, options) {
+    this.context = context;
     this.update();
 };
 
