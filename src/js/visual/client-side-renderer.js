@@ -241,7 +241,6 @@ ripe.CSRenderer.prototype._registerHandlers = function() {
     });
 
     window.onresize = () => {
-        console.log("Resizing");
         this.boundingBox = this.element.getBoundingClientRect();
     };
 };
