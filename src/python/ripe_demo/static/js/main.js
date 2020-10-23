@@ -358,7 +358,15 @@ window.onload = function () {
                     config: model_data,
                     path: "/static/assets/",
                     // can be "gltf" or "fbx", defaults to "gltf" if no parameter is passed
-                    format: "fbx"
+                    //format: "fbx"
+                },
+
+                initials: {
+                    size: 0.5,
+                    height: 0.1,
+                    type: "comic_sans",
+                    weight: "light",
+                    path: "/static/assets/fonts/"
                 },
                 
                 camera: {

@@ -68,8 +68,6 @@ ripe.CSRenderer = function (owner, element, options) {
 
     this.debug = options.debug || false;
 
-    // update to match best view from bindConfigurator options
-    this.previousRotation = new this.library.Vector2(0, 0);
     this.guiLibrary = options.dat === undefined ? null : options.dat;
 
     this.boundingBox = undefined;
@@ -200,7 +198,7 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
 
     // finished loading everything, begin the rendering processs.
     var hasIdle = this._getAnimationByName("Idle") === undefined ? false : true;
-    
+
     if (this.introAnimation) this._performAnimation(this.introAnimation);
     else if (hasIdle) this._performAnimation("Idle");
     else this.render();
@@ -285,7 +283,6 @@ ripe.CSRenderer.prototype._loadAssets = async function () {
     this.scene.add(this.assetManager.loadedScene);
 
     this.mixer = new this.library.AnimationMixer(this.assetManager.loadedScene);
-    this.animations = this.assetManager.getAnimations();
 
     if (this.environment) {
         await this.assetManager.setupEnvironment(this.scene, this.renderer, this.environment);
@@ -530,6 +527,9 @@ ripe.CSRenderer.prototype._setupPostProcessing = function () {
     if (this.aoOptions) this._setupAOPass();
 };
 
+/**
+ * @ignore
+ */
 ripe.CSRenderer.prototype._setupBloomPass = function () {
     const blendFunction = this.postProcessLib.BlendFunction.SCREEN;
     const kernelSize = this.postProcessLib.KernelSize.MEDIUM;
@@ -552,14 +552,23 @@ ripe.CSRenderer.prototype._setupBloomPass = function () {
     this.composer.addPass(new this.postProcessLib.EffectPass(this.camera, this.bloomPass));
 };
 
+/**
+ * @ignore
+ */
 ripe.CSRenderer.prototype._setupAAPass = function () {
     // TODO
 };
 
+/**
+ * @ignore
+ */
 ripe.CSRenderer.prototype._setupAOPass = function () {
     // TODO
 };
 
+/**
+ * Creates the default camera as well as the camera that will be responsible for handling the crossfades.
+ */
 ripe.CSRenderer.prototype._initializeCameras = function () {
     const width = this.element.getBoundingClientRect().width;
     const height = this.element.getBoundingClientRect().height;
@@ -591,16 +600,24 @@ ripe.CSRenderer.prototype._initializeCameras = function () {
     );
 };
 
+/** 
+ * @ignore
+ */
 ripe.CSRenderer.prototype._getAnimationByName = function (animationName) {
-    for (let i = 0 ; i < this.animations.length; i++) {
-        if (this.animations[i].name.includes(animationName)) {
-            return this.library.AnimationClip.findByName(this.animations, this.animations[i].name);
+    for (let i = 0; i < this.assetManager.animations.length; i++) {
+        if (this.assetManager.animations[i].name.includes(animationName)) {
+            return this.library.AnimationClip.findByName(this.assetManager.animations, this.assetManager.animations[i].name);
         }
     }
 
     return undefined;
 }
 
+/**
+ * Handles everything that is necessary to running an animation from the loaded scene.
+ * 
+ * @param {String} animationName The name of the animation to be executed.
+ */
 ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     var animation = this._getAnimationByName(animationName);
     if (!animation) return;
@@ -614,19 +631,17 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
 
     const clock = new this.library.Clock();
     clock.autoStart = false;
-    
+
+    // initialize variables
     clock.start();
     clock.stop();
     action.play().stop();
-    
-    console.log(action);
 
     var delta = -1;
 
     const doAnimation = () => {
         if (delta === -1) {
-            // Begin action
-            // First render takes longer, done before the clock begins
+            // first render takes longer, done before the clock begins
             this.render();
 
             clock.start();
@@ -643,16 +658,19 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     };
 
     requestAnimationFrame(doAnimation);
-    
 };
 
+/**
+ * Responsible for updating the initials meshes in the scene.
+ * 
+ * @param {String} operation Can be "remove" or "add", to either destroy the meshes from the scene,
+ * or add them
+ * @param {*} meshes The target meshes that will be modified
+ */
 ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
     for (let i = 0; i < meshes.length; i++) {
         if (operation === "remove") {
             this.scene.remove(meshes[i]);
-            meshes[i].geometry.dispose();
-
-            if (meshes[i].material) meshes[i].material.dispose();
         }
 
         if (operation === "add") {
@@ -661,22 +679,35 @@ ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
     }
 };
 
+/**
+ * Chooses the correct renderer depending on whether post processing is used.
+ */
 ripe.CSRenderer.prototype.render = function () {
-    // console.log(this.composer);
     if (this.usesPostProcessing) this.composer.render();
     else this.renderer.render(this.scene, this.camera);
 };
 
+/**
+ * @ignore
+ */
 ripe.CSRenderer.prototype.updateSize = function () {
     if (this.renderer) this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
     if (this.composer) this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
 };
 
+/**
+ * Performs a raycast from the current mouse position to check what objects have been intersected,
+ * and handles the highlight and lowlight operation automatically.
+ * 
+ * @param {*} mouseEvent The new mouse event that is used.
+ */
 ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
     const preventRaycasting = this.element.classList.contains("no-raycast");
 
+    // prevent raycasting can be used to improve performance, as this operation
+    // can be done every frame.
     if (animating || dragging || preventRaycasting) return;
 
     if (!this.boundingBox) this.boundingBox = this.element.getBoundingClientRect();
@@ -700,7 +731,12 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
     }
 };
 
-ripe.CSRenderer.prototype.highlight = function (part, options = {}) {
+/**
+ * The highlight operation for a part.
+ * 
+ * @param {*} part The part that is the target for the highlight. 
+ */
+ripe.CSRenderer.prototype.highlight = function (part) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks && this.noMasks) {
@@ -714,18 +750,22 @@ ripe.CSRenderer.prototype.highlight = function (part, options = {}) {
     this.trigger("highlighted");
 };
 
-ripe.CSRenderer.prototype.lowlight = function (options) {
+/**
+ * The lowlight operation. Uses the current intersected part, and removes it.
+ */
+ripe.CSRenderer.prototype.lowlight = function () {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks && this.noMasks) {
         return;
     }
 
-    // There's no intersection
     if (this.intersectedPart === "") {
         return;
     }
 
+    // adds the no-raycast flag to improve performance
+    this.element.classList.add("no-raycast");
     this.changeHighlight(this.intersectedPart, 1.0);
 
     this.intersectedPart = "";
@@ -735,9 +775,14 @@ ripe.CSRenderer.prototype.lowlight = function (options) {
     this.trigger("lowlighted");
 };
 
+/**
+ * The hightlight transition. 
+ * 
+ * @param {*} part The affected part.
+ * @param {*} endValue The end value for the material color, determined by the
+ * caller.
+ */
 ripe.CSRenderer.prototype.changeHighlight = function (part, endValue) {
-    // console.log("Changing highlight of " + part + " from " + startingValue + " to " + endValue + " in " + duration);
-
     var meshTarget = this.assetManager.meshes[part];
     var startingValue = meshTarget.material.color.r;
 
@@ -760,13 +805,20 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue) {
         this.render();
 
         if (pos < 1) requestAnimationFrame(changeHighlightTransition);
-        else this.element.classList.remove("no-raycast");
+        else if (this.element.classList.contains("no-raycast")) {
+            this.element.classList.remove("no-raycast");
+        }
     };
 
-    this.element.classList.add("no-raycast");
     requestAnimationFrame(changeHighlightTransition);
 };
 
+/**
+ * Maps a mouse event to a coordinate that goes from -1 to 1 in both the X and Y 
+ * axis. 
+ * 
+ * @param {*} mouseEvent The new mouse event to be converted.
+ */
 ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
@@ -780,79 +832,127 @@ ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEven
     };
 };
 
+/**
+ * The crossfade function, that handles rendering the first image, then the image after the change
+ * and seamlessly transitions between the two images. 
+ * 
+ * @param {*} options Specific options for the transition, such as duration and the new materials.
+ * @param {*} type The type of transition, can be "rotation" for changing views or positions,
+ * or "material" when the "setParts" function is called. 
+ */
 ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
     var width = this.element.getBoundingClientRect().width;
     var height = this.element.getBoundingClientRect().height;
 
-    // TODO Instead of using a crossfade-lock, interpolate between the current crossfade
-    // and the next
+    var isCrossfading = this.element.classList.contains("crossfading");
+    if (this.element.classList.contains("crossfading")) console.log("it's already crossfading")
 
     let mixRatio = 0.0;
 
+    var quadGeometry = new this.library.PlaneBufferGeometry(width, height);
+    var quad = new this.library.Mesh(quadGeometry, this.crossfadeShader);
+    // set the quad in the range the crossfade camera can render.
+    quad.position.set(0, 0, 999);
+
+    this.scene.add(quad);
+
+    if (isCrossfading) {
+        // since it is already crossfading, only begin the transition to the next frame
+        // AFTER the materials are loaded
+        if (type == "material")
+            await this.assetManager.setMaterials(parts, false);
+    }
+
+    // render current state
+    this.renderer.setRenderTarget(this.previousSceneFBO);
+    this.renderer.clear();
+
+    if (!isCrossfading)
+        this.renderer.render(this.scene, this.camera);
+
+    // perform the change 
+    if (type === "material") {
+        var parts = options.parts === undefined ? this.owner.parts : options.parts;
+
+        if (!isCrossfading)
+            await this.assetManager.setMaterials(parts);
+        else {
+            // now that the textures are loaded, render the current scene, and only then send the 
+            // stop-crossfade message and render 
+            this.renderer.render(this.scene, this.camera);
+            this.element.classList.add("stop-crossfade");
+
+            // setting materials is now much faster since textures have already been loaded, 
+            // resulting in less visible stutter for the user            
+            await this.assetManager.setMaterials(parts, true);
+        }
+    } else if (type === "rotation") {
+        this.rotate(options);
+    }
+
+    // render the scene after the change
+    this.renderer.setRenderTarget(this.nextSceneFBO);
+    //this.renderer.clear();
+    this.renderer.render(this.scene, this.camera);
+
+    // reset renderer
+    this.renderer.setRenderTarget(null);
+    this.renderer.clear();
+    
     this.crossfadeShader.uniforms.tDiffuse1.value = this.previousSceneFBO.texture;
     this.crossfadeShader.uniforms.tDiffuse2.value = this.nextSceneFBO.texture;
 
     this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
-    var quadGeometry = new this.library.PlaneBufferGeometry(width, height);
-    var quad = new this.library.Mesh(quadGeometry, this.crossfadeShader);
-    // set the quad in the range the transition camera can read
-    quad.position.set(0, 0, 999);
-    this.scene.add(quad);
-
-    // Store current image
-    this.renderer.setRenderTarget(this.previousSceneFBO);
-    this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
-
-    var parts = options.parts === undefined ? this.owner.parts : options.parts;
-
-    if (type === "material") {
-        await this.assetManager.setMaterials(parts);
-    } else if (type === "rotation") {
-        this.rotate(options);
-    }
-    // Render next image
-    this.renderer.setRenderTarget(this.nextSceneFBO);
-    this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
-
-    // Reset renderer
-    // this.renderer.setRenderTarget(null);
-    this.renderer.setRenderTarget(null);
-    this.renderer.clear();
     var pos = 0;
     var duration = options.duration || 500;
 
     var startTime = 0;
+    var continueCrossfade = true;
+
     const crossfadeFunction = time => {
         startTime = startTime === 0 ? time : startTime;
-        this.renderer.render(this.scene, this.crossfadeCamera);
+
+        continueCrossfade = pos < 1 && !this.element.classList.contains("stop-crossfade");
+
+        if (!continueCrossfade) {
+            this.scene.remove(quad);
+            this.element.classList.remove("animating");
+            this.element.classList.remove("no-drag");
+            this.element.classList.remove("crossfading");
+
+            if (this.element.classList.contains("stop-crossfade"))
+                this.element.classList.remove("stop-crossfade");
+
+            quadGeometry.dispose();
+            this.assetManager.disposeMesh(quad);
+            return;
+        }
 
         pos = (time - startTime) / duration;
         mixRatio = ripe.easing[this.crossfadeEasing](pos, 0.0, 1.0);
 
-        // mixRatio += 1.0 / duration;
         this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
-        if (pos < 1) requestAnimationFrame(crossfadeFunction);
-        else {
-            this.scene.remove(quad);
-            this.element.classList.remove("animating");
-            this.element.classList.remove("no-drag");
-            quadGeometry.dispose();
-            this.assetManager.disposeMesh(quad);
-            this.render();
-        }
+        this.renderer.render(this.scene, this.crossfadeCamera);
+
+        requestAnimationFrame(crossfadeFunction);
+
     };
 
-    // Prevents transition from being initiated multiple times
     this.element.classList.add("animating");
     this.element.classList.add("no-drag");
+    this.element.classList.add("crossfading");
 
     requestAnimationFrame(crossfadeFunction);
 };
 
+/**
+ * Applies the rotation to the scene camera, as the rotation values are controlled by the 
+ * Orbital Controls. 
+ * 
+ * @param {*} options The struct containing the new values for rotation and camera distance.
+ */
 ripe.CSRenderer.prototype.rotate = function (options) {
     var maxHeight = options.distance - this.cameraHeight;
 
@@ -863,7 +963,4 @@ ripe.CSRenderer.prototype.rotate = function (options) {
     this.camera.position.z = distance * Math.cos((Math.PI / 180) * options.rotationX);
 
     this.camera.lookAt(this.cameraTarget);
-
-    this.previousRotation.x = options.rotationX;
-    this.previousRotation.y = options.rotationY;
 };

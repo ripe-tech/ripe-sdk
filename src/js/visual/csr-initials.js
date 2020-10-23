@@ -22,7 +22,7 @@ ripe.CSRInitials = function (owner, options) {
     this.textHeight = 0.1;
 
     this.fontsPath = "/static/assets/fonts/";
-    this.fontType = "comic_sans";
+    this.fontType = "arial";
     this.fontWeight = "light";
 
     this.loadedFonts = {};
@@ -33,7 +33,9 @@ ripe.CSRInitials = function (owner, options) {
 
     this.logoMesh = null;
 
-    this.engraving = options.engraving === undefined ? "metal_gold" : options.engraving;
+    this.engraving = "metal_gold";
+
+    this._setInitialsOptions(options);
 };
 
 ripe.CSRInitials.prototype = ripe.build(ripe.Observable.prototype);
@@ -44,13 +46,16 @@ ripe.CSRInitials.prototype._setInitialsOptions = function (options = {}) {
 
     const initialsOptions = options.initials;
 
-    this.textSize = initialsOptions.textSize === undefined ? this.textSize : initialsOptions.textSize;
+    this.textSize = initialsOptions.size === undefined ? this.textSize : initialsOptions.size;
     this.textHeight =
-        initialsOptions.textHeight === undefined ? this.textHeight : initialsOptions.textHeight;
-    this.fontsPath = initialsOptions.path === undefined ? this.fontsPath : initialsOptions
-    this.fontType = initialsOptions.fontType === undefined ? this.fontType : initialsOptions.fontType;
+        initialsOptions.height === undefined ? this.textHeight : initialsOptions.height;
+    this.fontsPath = initialsOptions.path === undefined ? this.fontsPath : initialsOptions.path;
+    this.fontType = initialsOptions.type === undefined ? this.fontType : initialsOptions.type;
     this.fontWeight =
-        initialsOptions.fontWeight === undefined ? this.fontWeight : initialsOptions.fontWeight;
+        initialsOptions.weight === undefined ? this.fontWeight : initialsOptions.weight;
+
+    this.engraving = 
+        options.engraving === undefined ? this.engraving : options.engraving;
 };
 
 ripe.CSRInitials.prototype.updateOptions = async function (options) {
@@ -238,6 +243,10 @@ ripe.CSRInitials.prototype.getPosRotLetter = function (letterNumber, initials) {
 };
 
 ripe.CSRInitials.prototype.createLetter = function (letter) {
+    if (!this.loadedFonts[this.fontType + "_" + this.fontWeight]) {
+        throw new Error("Specified font (" + this.fontWeight + " " + this.fontType + ") is not available.");
+    }
+    
     var textGeometry = new this.library.TextGeometry(letter, {
         font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
 

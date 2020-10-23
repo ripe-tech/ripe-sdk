@@ -173,11 +173,7 @@ ripe.ConfiguratorPRC.prototype.updateOptions = async function(options, update = 
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
 
     if (update) await this.update();
-    console.log("EHGEHEHEHEHEHEH")
 };
-
-
-
 
 /**
  * This function is called (by the owner) whenever its state changes

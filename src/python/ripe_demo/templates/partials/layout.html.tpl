@@ -17,7 +17,7 @@
             <script type="text/javascript" src="{{ url_for('static', filename = 'assets/configs/swear/vyner_hitop.js') }}"></script>
             
             
-            <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/build/three.js"></script>
+            <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/build/three.min.js"></script>
             <script src="https://cdn.statically.io/gh/dataarts/dat.gui/master/build/dat.gui.min.js"></script>
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/OBJLoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/libs/inflate.min.js"></script>

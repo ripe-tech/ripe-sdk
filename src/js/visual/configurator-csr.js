@@ -112,6 +112,7 @@ ripe.ConfiguratorCSR.prototype.init = function() {
     // wait until configurator finished initializing to create the controls and
     // renderer
     this.assetManager = new ripe.CSRAssetManager(this, this.owner, this.options);
+    this.crossfadeQueue = [];
 };
 
 /**
@@ -236,8 +237,11 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
 
     // crossfade when changing materials
     if (options.reason && options.reason.includes("set part")) {
-        await this.renderer.crossfade({ duration: duration }, "material");
+        await this.renderer.crossfade({ duration: duration, parts: this.owner.parts }, "material");
     }
+
+    if (this.element.classList.contains("crossfading")) 
+        return;
 
     // removes the current text meshes from the scene, and adds the newly
     // generated meshes
