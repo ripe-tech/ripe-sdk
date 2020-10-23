@@ -12,6 +12,7 @@ describe("Image", function() {
 
             const profiles = ["style:black", "style:grey"];
             const finalProfiles = image._profilePermutations(profiles, ["report"]);
+
             assert.deepStrictEqual(finalProfiles, [
                 "style:grey",
                 "report",
@@ -44,6 +45,7 @@ describe("Image", function() {
                 "style:black",
                 imageElement
             )(["step::personalization", "step::personalization::main"]);
+
             assert.strictEqual(result.initials, initials);
             assert.deepStrictEqual(result.profile, [
                 "style",
