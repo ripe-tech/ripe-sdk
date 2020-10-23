@@ -146,14 +146,12 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = async function() {
     await this.loadedScene.traverse(async function(child) {
         if (!child.isMesh) return;
 
-        /*
         // place the meshes in the center of the image.
         child.position.set(
             child.position.x - centerX,
             child.position.y,
             child.position.z - centerZ
         );
-        */
 
         child.castShadow = true;
         child.receiveShadow = true;

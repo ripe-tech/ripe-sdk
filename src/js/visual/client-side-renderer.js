@@ -239,6 +239,11 @@ ripe.CSRenderer.prototype._registerHandlers = function() {
 
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
     });
+
+    window.onresize = () => {
+        console.log("Resizing");
+        this.boundingBox = this.element.getBoundingClientRect();
+    };
 };
 
 /**
@@ -890,7 +895,7 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
     this.renderer.setRenderTarget(this.previousSceneFBO);
     this.renderer.clear();
 
-    if (!isCrossfading) this.renderer.render(this.scene, this.camera);
+    if (!isCrossfading || type === "rotation") this.renderer.render(this.scene, this.camera);
 
     // perform the change
     if (type === "material") {
@@ -911,7 +916,7 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
 
     // render the scene after the change
     this.renderer.setRenderTarget(this.nextSceneFBO);
-    // this.renderer.clear();
+    this.renderer.clear();
     this.renderer.render(this.scene, this.camera);
 
     // reset renderer
@@ -935,16 +940,21 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
         continueCrossfade = pos < 1 && !this.element.classList.contains("stop-crossfade");
 
         if (!continueCrossfade) {
+            this.assetManager.disposeMesh(quad);
             this.scene.remove(quad);
             this.element.classList.remove("animating");
             this.element.classList.remove("no-drag");
             this.element.classList.remove("crossfading");
+
+            this.previousSceneFBO.texture.dispose();
+            this.nextSceneFBO.texture.dispose();
 
             if (this.element.classList.contains("stop-crossfade")) {
                 this.element.classList.remove("stop-crossfade");
             }
 
             quadGeometry.dispose();
+
             this.assetManager.disposeMesh(quad);
             return;
         }

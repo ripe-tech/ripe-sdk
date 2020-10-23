@@ -397,8 +397,8 @@ window.onload = function () {
                     materialEasing: "easeInOutQuad",
                     crossfadeEasing: "easeInOutQuad",
                     initialsPlacement: "center",
-                    //introAnimation: "SlideIn",
-                    introAnimation: "ScaleIn",
+                    introAnimation: "SlideIn",
+                    //introAnimation: "ScaleIn",
                     environment: "exterior_building",
                     maskOpacity: 0.7
                 },
