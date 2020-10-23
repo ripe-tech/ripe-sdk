@@ -111,15 +111,6 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     if (update) await this.update();
 };
 
-ripe.Image.prototype.initialsBuilder = function(initials, engraving, element) {
-    const result = this.baseInitialsBuilder(initials, engraving, element);
-
-    return context => ({
-        initials: result.initials,
-        profile: this._profilePermutations(result.profile, context)
-    });
-};
-
 /**
  * This function is called (by the owner) whenever its state changes
  * so that the Image can update itself for the new state.
@@ -353,6 +344,25 @@ ripe.Image.prototype._unregisterHandlers = function() {
     if (this.loadedHandler) this.unbind("loaded", this.loadedHandler);
     if (this.errorHandler) this.unbind("error", this.errorHandler);
     if (this._observer) this._observer.disconnect();
+};
+
+/**
+ * Returns the initials and profiles for the given engraving and context.
+ *
+ * @param {String} initials The value of the initials to compute the computed
+ * initials object.
+ * @param {String} engraving The value of the engraving to compute the computed
+ * initials object.
+ * @param {Element} element The DOM element to be used in the "calculus" of the
+ * final initials object.
+ */
+ripe.Image.prototype.initialsBuilder = function(initials, engraving, element) {
+    const result = this.baseInitialsBuilder(initials, engraving, element);
+
+    return context => ({
+        initials: result.initials,
+        profile: this._profilePermutations(result.profile, context)
+    });
 };
 
 /**
