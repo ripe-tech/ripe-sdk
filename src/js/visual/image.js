@@ -383,9 +383,8 @@ ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":
     // create all the multiple combinations of values and reverses the
     // array so that they are sorted from the more specific (larger)
     // combinations to the less specific ones
-    const combinations = profiles
-        .flatMap(p => profiles.map(p1 => (ripe.equal(p, p1) ? [p] : [p, p1])))
-        .reverse();
+    const flatMap = (f, xs) => xs.reduce((acc, x) => acc.concat(f(x)), []);
+    const combinations = flatMap(p => profiles.map(p1 => (ripe.equal(p, p1) ? [p] : [p, p1])), profiles).reverse();
 
     // iterates over the profiles and append the context
     // to them, resulting in all the profile combinations
@@ -398,6 +397,10 @@ ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":
         // the permutations with both the name::type format and
         // the its reverse
         for (const value of combination) {
+            // ignore null values for profiles, allowing compatibility
+            // with previous implementations
+            if (!value) continue;
+
             // support for string format, offering backward compatibility
             // with existing initials builders
             if (typeof value === "string") profile.push(value);
@@ -419,6 +422,10 @@ ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":
             profile = [];
 
             for (const value of combination) {
+                // ignore null values for profiles, allowing compatibility
+                // with previous implementations
+                if (!value) continue;
+
                 // support for string format, offering backward compatibility
                 // with existing initials builders
                 if (typeof value === "string") profile.push(value);
