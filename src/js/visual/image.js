@@ -394,7 +394,10 @@ ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":
     // array so that they are sorted from the more specific (larger)
     // combinations to the less specific ones
     const flatMap = (f, xs) => xs.reduce((acc, x) => acc.concat(f(x)), []);
-    const combinations = flatMap(p => profiles.map(p1 => (ripe.equal(p, p1) ? [p] : [p, p1])), profiles).reverse();
+    const combinations = flatMap(
+        p => profiles.map(p1 => (ripe.equal(p, p1) ? [p] : [p, p1])),
+        profiles
+    ).reverse();
 
     // iterates over the profiles and append the context
     // to them, resulting in all the profile combinations

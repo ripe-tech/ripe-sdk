@@ -2,8 +2,8 @@ const assert = require("assert");
 const jsdom = require("jsdom");
 const base = require("../../../src/js/base");
 
-describe("Image", function () {
-    describe("#_profilePermutations", function () {
+describe("Image", function() {
+    describe("#_profilePermutations", function() {
         it("should create all the permutations for a specific profiles and context", () => {
             const dom = new jsdom.JSDOM("<img id='image' />");
             const imageElement = dom.window.document.getElementById("image");
