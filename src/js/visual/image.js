@@ -61,10 +61,7 @@ ripe.Image.prototype.init = function() {
         this.options.baseInitialsBuilder ||
         this.owner.baseInitialsBuilder ||
         this._baseInitialsBuilder;
-    this.context =
-        this.options.context ||
-        this.owner.context ||
-        [];
+    this.context = this.options.context || this.owner.context || [];
     this._observer = null;
     this._url = null;
     this._previousUrl = null;
@@ -151,11 +148,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     }
 
     const initialsSpec = this.showInitials
-        ? this.initialsBuilder(
-              this.initials,
-              this.engraving,
-              this.element
-          )(this.context)
+        ? this.initialsBuilder(this.initials, this.engraving, this.element)(this.context)
         : {};
 
     // verifies if the model currently loaded in the RIPE instance can
@@ -390,9 +383,9 @@ ripe.Image.prototype._profilePermutations = function(profiles, context, sep = ":
     // create all the multiple combinations of values and reverses the
     // array so that they are sorted from the more specific (larger)
     // combinations to the less specific ones
-    const combinations = profiles.flatMap(p =>
-        profiles.map(p1 => (ripe.equal(p, p1) ? [p] : [p, p1]))
-    ).reverse();
+    const combinations = profiles
+        .flatMap(p => profiles.map(p1 => (ripe.equal(p, p1) ? [p] : [p, p1])))
+        .reverse();
 
     // iterates over the profiles and append the context
     // to them, resulting in all the profile combinations
