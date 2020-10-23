@@ -352,24 +352,27 @@ window.onload = function () {
                 library: THREE,
                 dat: dat,
                 postProcessingLibrary: POSTPROCESSING,
-               
+
                 assets: {
                     // Model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
                     // that is downloaded, or present in a spec file
                     config: model_data,
-                    path: "/static/assets/",
+                    path: "/static/assets/"
                     // can be "gltf" or "fbx", defaults to "gltf" if no parameter is passed
                     //format: "fbx"
                 },
 
                 initials: {
+                    // TODO extract alignment from build
+                    // can be "left", "right", "center"
+                    align: "right",
                     size: 0.5,
                     height: 0.1,
                     type: "comic_sans",
                     weight: "light",
                     path: "/static/assets/fonts/"
                 },
-                
+
                 camera: {
                     fov: 13,
                     height: 18,
@@ -378,7 +381,7 @@ window.onload = function () {
                     maxDistance: 180,
                     minDistance: 100
                 },
-                
+
                 controls: {
                     // drift defaults to true, unless specified to be false
                     //mouseDrift: false,
@@ -387,7 +390,7 @@ window.onload = function () {
                     //lockRotation: "horizontal",
                     rotationEasing: "easeInOutQuad"
                 },
-                
+
                 renderer: {
                     // all the easing methods default to easeInOutQuad
                     highlightEasing: "easeOutQuad",
@@ -399,7 +402,7 @@ window.onload = function () {
                     environment: "exterior_building",
                     maskOpacity: 0.7
                 },
-                
+
                 postProcess: {
                     exposure: 1.6,
                     shadowBias: -0.0005,

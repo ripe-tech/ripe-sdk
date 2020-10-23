@@ -25,7 +25,7 @@ if (
  * @param {Object} options The options to be used to configure the
  * renderer instance to be created.
  */
-ripe.CSRenderer = function (owner, element, options) {
+ripe.CSRenderer = function(owner, element, options) {
     this.owner = owner;
     this.type = this.type || "CSRenderer";
     this.element = element;
@@ -76,7 +76,7 @@ ripe.CSRenderer = function (owner, element, options) {
 ripe.CSRenderer.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRenderer.prototype.constructor = ripe.CSRenderer;
 
-ripe.CSRenderer.prototype._setCameraOptions = function (options = {}) {
+ripe.CSRenderer.prototype._setCameraOptions = function(options = {}) {
     if (!options.camera) return;
 
     const camOptions = options.camera;
@@ -87,15 +87,15 @@ ripe.CSRenderer.prototype._setCameraOptions = function (options = {}) {
         camOptions.target === undefined
             ? this.cameraTarget
             : new this.library.Vector3(
-                camOptions.target.x,
-                camOptions.target.y,
-                camOptions.target.z
-            );
+                  camOptions.target.x,
+                  camOptions.target.y,
+                  camOptions.target.z
+              );
 
     this.initialDistance = camOptions.distance;
 };
 
-ripe.CSRenderer.prototype._setRenderOptions = function (options = {}) {
+ripe.CSRenderer.prototype._setRenderOptions = function(options = {}) {
     if (!options.renderer) return;
 
     const renderOptions = options.renderer;
@@ -130,7 +130,7 @@ ripe.CSRenderer.prototype._setRenderOptions = function (options = {}) {
             : renderOptions.introAnimation;
 };
 
-ripe.CSRenderer.prototype._setPostProcessOptions = function (options = {}) {
+ripe.CSRenderer.prototype._setPostProcessOptions = function(options = {}) {
     if (!options.postProcess) return;
 
     const postProcOptions = options.postProcess;
@@ -139,14 +139,12 @@ ripe.CSRenderer.prototype._setPostProcessOptions = function (options = {}) {
         postProcOptions.exposure === undefined ? this.exposure : postProcOptions.exposure;
     this.shadowBias =
         postProcOptions.shadowBias === undefined ? this.shadowBias : postProcOptions.shadowBias;
-    this.radius =
-        postProcOptions.radius === undefined ? this.radius : postProcOptions.radius;
+    this.radius = postProcOptions.radius === undefined ? this.radius : postProcOptions.radius;
 
     if (postProcOptions.bloom) this.bloomOptions = postProcOptions.bloom;
     if (postProcOptions.antialiasing) this.aaOptions = postProcOptions.antialiasing;
     if (postProcOptions.ambientOcclusion) this.aoOptions = postProcOptions.ambientOcclusion;
 };
-
 
 /**
  * Updates configurator current options with the ones provided, called from the Configurator
@@ -154,7 +152,7 @@ ripe.CSRenderer.prototype._setPostProcessOptions = function (options = {}) {
  *
  * @param {Object} options Set of optional parameters to adjust the renderer.
  */
-ripe.CSRenderer.prototype.updateOptions = async function (options) {
+ripe.CSRenderer.prototype.updateOptions = async function(options) {
     this.assetManager.updateOptions(options);
 
     this._setCameraOptions(options);
@@ -171,7 +169,6 @@ ripe.CSRenderer.prototype.updateOptions = async function (options) {
         options.usesPostProcessing === undefined
             ? this.usesPostProcessing
             : options.usesPostProcessing;
-
 };
 
 /**
@@ -180,7 +177,7 @@ ripe.CSRenderer.prototype.updateOptions = async function (options) {
  *
  * @param {CSRAssetManager} assetManager
  */
-ripe.CSRenderer.prototype.initialize = async function (assetManager) {
+ripe.CSRenderer.prototype.initialize = async function(assetManager) {
     this.assetManager = assetManager;
     this.scene = new this.library.Scene();
     this.raycaster = new this.library.Raycaster();
@@ -196,9 +193,9 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
 
     if (this.debug) this.createGUI();
 
-    var hasAnimation = this._getAnimationByName(this.introAnimation) === undefined ? false : true;
+    var hasAnimation = this._getAnimationByName(this.introAnimation) !== undefined;
     // finished loading everything, begin the rendering processs.
-    var hasIdle = this._getAnimationByName("Idle") === undefined ? false : true;
+    var hasIdle = this._getAnimationByName("Idle") !== undefined;
 
     if (this.introAnimation && hasAnimation) this._performAnimation(this.introAnimation);
     else if (hasIdle) this._performAnimation("Idle");
@@ -206,17 +203,23 @@ ripe.CSRenderer.prototype.initialize = async function (assetManager) {
 
     // was meant to play an animation, but there was no animation with
     // that name
-    if (!hasAnimation && this.introAnimation) throw new Error("There was no animation present in the file with the given name (" + (this.introAnimation) + ").");
+    if (!hasAnimation && this.introAnimation) {
+        throw new Error(
+            "There was no animation present in the file with the given name (" +
+                this.introAnimation +
+                ")."
+        );
+    }
 };
 
 /**
  * @ignore
  */
-ripe.CSRenderer.prototype._registerHandlers = function () {
+ripe.CSRenderer.prototype._registerHandlers = function() {
     const self = this;
     const area = this.element.querySelector(".area");
 
-    area.addEventListener("mousemove", function (event) {
+    area.addEventListener("mousemove", function(event) {
         event = ripe.fixEvent(event);
 
         // in case the index that was found is the zero one this is a special
@@ -231,7 +234,7 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
         self._attemptRaycast(event, "move");
     });
 
-    area.addEventListener("click", function (event) {
+    area.addEventListener("click", function(event) {
         event = ripe.fixEvent(event);
 
         if (!self.element.classList.contains("drag")) self._attemptRaycast(event, "click");
@@ -242,7 +245,7 @@ ripe.CSRenderer.prototype._registerHandlers = function () {
  * Funtion to dispose all resources created by the renderer, including all the elements
  * belonging to the scene.
  */
-ripe.CSRenderer.prototype.disposeResources = async function () {
+ripe.CSRenderer.prototype.disposeResources = async function() {
     console.log("Disposing Renderer resources.");
 
     this.renderer.renderLists.dispose();
@@ -280,7 +283,7 @@ ripe.CSRenderer.prototype.disposeResources = async function () {
  * After the Asset Manager finished loading the glTF file, begin loading the necessary assets
  * that pertain to rendering, such as loading the environment and the animations.
  */
-ripe.CSRenderer.prototype._loadAssets = async function () {
+ripe.CSRenderer.prototype._loadAssets = async function() {
     for (var mesh in this.assetManager.meshes) {
         this.raycastingMeshes.push(this.assetManager.meshes[mesh]);
     }
@@ -297,7 +300,7 @@ ripe.CSRenderer.prototype._loadAssets = async function () {
 /**
  * Initialize shaders that the renderer will use, such as the crossfade shader for the transition.
  */
-ripe.CSRenderer.prototype._initializeShaders = function () {
+ripe.CSRenderer.prototype._initializeShaders = function() {
     this.crossfadeShader = new this.library.ShaderMaterial({
         uniforms: {
             tDiffuse1: {
@@ -347,7 +350,7 @@ ripe.CSRenderer.prototype._initializeShaders = function () {
  * Initializes the lights, taking into account the possible shadow bias and radius settings
  * passed to the Configurator.
  */
-ripe.CSRenderer.prototype._initializeLights = function () {
+ripe.CSRenderer.prototype._initializeLights = function() {
     const ambientLight = new this.library.HemisphereLight(0xffeeb1, 0x080820, 0.0);
 
     // Lights should be forther away based on the camera distance, useful for dealing
@@ -388,7 +391,7 @@ ripe.CSRenderer.prototype._initializeLights = function () {
 /**
  * Initializes both the WebGL Renderer as well as the Effect Composer if it uses post-processing.
  */
-ripe.CSRenderer.prototype._initializeRenderer = function () {
+ripe.CSRenderer.prototype._initializeRenderer = function() {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
     this.renderer = new this.library.WebGLRenderer({
@@ -434,7 +437,7 @@ ripe.CSRenderer.prototype._initializeRenderer = function () {
  * Creates the debug GUI for the post processing pipeline, with support for dynamic change of the render pass
  *  parameters.
  */
-ripe.CSRenderer.prototype.createGUI = function () {
+ripe.CSRenderer.prototype.createGUI = function() {
     if (this.guiLibrary === null) return;
 
     this.gui = new this.guiLibrary.GUI({ width: 300 });
@@ -457,21 +460,21 @@ ripe.CSRenderer.prototype.createGUI = function () {
     folder
         .add(this.renderer, "toneMappingExposure", 0.0, 4.0)
         .name("Exposure")
-        .onChange(function (value) {
+        .onChange(function(value) {
             updateRenderer("toneMappingExposure", value);
         });
     folder
         .add(this.keyLight.shadow, "bias", -0.005, 0.005)
         .step(0.0001)
         .name("Shadow Bias")
-        .onChange(function (value) {
+        .onChange(function(value) {
             updateShadows("bias", value);
         });
     folder
         .add(this.keyLight.shadow, "radius", 1, 10)
         .step(1)
         .name("Shadow Radius")
-        .onChange(function (value) {
+        .onChange(function(value) {
             updateShadows("radius", value);
         });
     folder.open();
@@ -495,7 +498,7 @@ ripe.CSRenderer.prototype.createGUI = function () {
             .add(this.bloomPass.luminanceMaterial, "threshold", 0.0, 1.0)
             .step(0.01)
             .name("Threshold")
-            .onChange(function (value) {
+            .onChange(function(value) {
                 self.bloomPass.luminanceMaterial.threshold = value;
                 self.render();
             });
@@ -503,7 +506,7 @@ ripe.CSRenderer.prototype.createGUI = function () {
             .add(this.bloomPass, "intensity", 0.0, 3.0)
             .step(0.01)
             .name("Intensity")
-            .onChange(function (value) {
+            .onChange(function(value) {
                 self.bloomPass.intensity = value;
                 self.render();
             });
@@ -512,7 +515,7 @@ ripe.CSRenderer.prototype.createGUI = function () {
             .step(0.01)
             .step(0.01)
             .name("Opacity")
-            .onChange(function (value) {
+            .onChange(function(value) {
                 self.bloomPass.blendMode.opacity.value = value;
                 self.render();
             });
@@ -524,7 +527,7 @@ ripe.CSRenderer.prototype.createGUI = function () {
 /**
  * Creates the render passes and adds them to the effect composer.
  */
-ripe.CSRenderer.prototype._setupPostProcessing = function () {
+ripe.CSRenderer.prototype._setupPostProcessing = function() {
     console.log("Setting up Post Processing");
 
     if (this.bloomOptions) this._setupBloomPass();
@@ -535,7 +538,7 @@ ripe.CSRenderer.prototype._setupPostProcessing = function () {
 /**
  * @ignore
  */
-ripe.CSRenderer.prototype._setupBloomPass = function () {
+ripe.CSRenderer.prototype._setupBloomPass = function() {
     const blendFunction = this.postProcessLib.BlendFunction.SCREEN;
     const kernelSize = this.postProcessLib.KernelSize.MEDIUM;
     const luminanceSmoothing = 0.075;
@@ -545,14 +548,17 @@ ripe.CSRenderer.prototype._setupBloomPass = function () {
         blendFunction: blendFunction,
         kernelSize: kernelSize,
         luminanceSmoothing: luminanceSmoothing,
-        height: bloomHeight,
+        height: bloomHeight
     };
 
     this.bloomPass = new this.postProcessLib.BloomEffect(bloomOptions);
 
-    this.bloomPass.luminanceMaterial.threshold = this.bloomOptions.threshold === undefined ? 0.9 : this.bloomOptions.threshold;
-    this.bloomPass.intensity = this.bloomOptions.intensity === undefined ? 0.5 : this.bloomOptions.intensity;
-    this.bloomPass.blendMode.opacity.value = this.bloomOptions.opacity === undefined ? 0.7 : this.bloomOptions.opacity;
+    this.bloomPass.luminanceMaterial.threshold =
+        this.bloomOptions.threshold === undefined ? 0.9 : this.bloomOptions.threshold;
+    this.bloomPass.intensity =
+        this.bloomOptions.intensity === undefined ? 0.5 : this.bloomOptions.intensity;
+    this.bloomPass.blendMode.opacity.value =
+        this.bloomOptions.opacity === undefined ? 0.7 : this.bloomOptions.opacity;
 
     this.composer.addPass(new this.postProcessLib.EffectPass(this.camera, this.bloomPass));
 };
@@ -560,21 +566,21 @@ ripe.CSRenderer.prototype._setupBloomPass = function () {
 /**
  * @ignore
  */
-ripe.CSRenderer.prototype._setupAAPass = function () {
+ripe.CSRenderer.prototype._setupAAPass = function() {
     // TODO
 };
 
 /**
  * @ignore
  */
-ripe.CSRenderer.prototype._setupAOPass = function () {
+ripe.CSRenderer.prototype._setupAOPass = function() {
     // TODO
 };
 
 /**
  * Creates the default camera as well as the camera that will be responsible for handling the crossfades.
  */
-ripe.CSRenderer.prototype._initializeCameras = function () {
+ripe.CSRenderer.prototype._initializeCameras = function() {
     const width = this.element.getBoundingClientRect().width;
     const height = this.element.getBoundingClientRect().height;
 
@@ -605,25 +611,28 @@ ripe.CSRenderer.prototype._initializeCameras = function () {
     );
 };
 
-/** 
+/**
  * @ignore
  */
-ripe.CSRenderer.prototype._getAnimationByName = function (animationName) {
+ripe.CSRenderer.prototype._getAnimationByName = function(animationName) {
     for (let i = 0; i < this.assetManager.animations.length; i++) {
         if (this.assetManager.animations[i].name.includes(animationName)) {
-            return this.library.AnimationClip.findByName(this.assetManager.animations, this.assetManager.animations[i].name);
+            return this.library.AnimationClip.findByName(
+                this.assetManager.animations,
+                this.assetManager.animations[i].name
+            );
         }
     }
 
     return undefined;
-}
+};
 
 /**
  * Handles everything that is necessary to running an animation from the loaded scene.
- * 
+ *
  * @param {String} animationName The name of the animation to be executed.
  */
-ripe.CSRenderer.prototype._performAnimation = function (animationName) {
+ripe.CSRenderer.prototype._performAnimation = function(animationName) {
     var animation = this._getAnimationByName(animationName);
     if (!animation) return;
 
@@ -647,12 +656,12 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
     const doAnimation = () => {
         if (delta === -1) {
             // first render takes longer, done before the clock begins,
-            // renders to frame buffer object to prevent from rendering 
+            // renders to frame buffer object to prevent from rendering
             // to screen
             this.renderer.setRenderTarget(this.previousSceneFBO);
             this.renderer.clear();
             this.renderer.render(this.scene, this.camera);
-            
+
             // reset renderer
             this.renderer.setRenderTarget(null);
             this.renderer.clear();
@@ -675,12 +684,12 @@ ripe.CSRenderer.prototype._performAnimation = function (animationName) {
 
 /**
  * Responsible for updating the initials meshes in the scene.
- * 
+ *
  * @param {String} operation Can be "remove" or "add", to either destroy the meshes from the scene,
  * or add them
  * @param {*} meshes The target meshes that will be modified
  */
-ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
+ripe.CSRenderer.prototype.updateInitials = function(operation, meshes) {
     for (let i = 0; i < meshes.length; i++) {
         if (operation === "remove") {
             this.scene.remove(meshes[i]);
@@ -695,7 +704,7 @@ ripe.CSRenderer.prototype.updateInitials = function (operation, meshes) {
 /**
  * Chooses the correct renderer depending on whether post processing is used.
  */
-ripe.CSRenderer.prototype.render = function () {
+ripe.CSRenderer.prototype.render = function() {
     if (this.usesPostProcessing) this.composer.render();
     else this.renderer.render(this.scene, this.camera);
 };
@@ -703,7 +712,7 @@ ripe.CSRenderer.prototype.render = function () {
 /**
  * @ignore
  */
-ripe.CSRenderer.prototype.updateSize = function () {
+ripe.CSRenderer.prototype.updateSize = function() {
     if (this.renderer) this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
     if (this.composer) this.composer.setSize(this.element.clientWidth, this.element.clientHeight);
 };
@@ -711,10 +720,10 @@ ripe.CSRenderer.prototype.updateSize = function () {
 /**
  * Performs a raycast from the current mouse position to check what objects have been intersected,
  * and handles the highlight and lowlight operation automatically.
- * 
+ *
  * @param {*} mouseEvent The new mouse event that is used.
  */
-ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
+ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
     const preventRaycasting = this.element.classList.contains("no-raycast");
@@ -746,10 +755,10 @@ ripe.CSRenderer.prototype._attemptRaycast = function (mouseEvent) {
 
 /**
  * The highlight operation for a part.
- * 
- * @param {*} part The part that is the target for the highlight. 
+ *
+ * @param {*} part The part that is the target for the highlight.
  */
-ripe.CSRenderer.prototype.highlight = function (part) {
+ripe.CSRenderer.prototype.highlight = function(part) {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks && this.noMasks) {
@@ -766,7 +775,7 @@ ripe.CSRenderer.prototype.highlight = function (part) {
 /**
  * The lowlight operation. Uses the current intersected part, and removes it.
  */
-ripe.CSRenderer.prototype.lowlight = function () {
+ripe.CSRenderer.prototype.lowlight = function() {
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks && this.noMasks) {
@@ -789,13 +798,13 @@ ripe.CSRenderer.prototype.lowlight = function () {
 };
 
 /**
- * The hightlight transition. 
- * 
+ * The hightlight transition.
+ *
  * @param {*} part The affected part.
  * @param {*} endValue The end value for the material color, determined by the
  * caller.
  */
-ripe.CSRenderer.prototype.changeHighlight = function (part, endValue) {
+ripe.CSRenderer.prototype.changeHighlight = function(part, endValue) {
     var meshTarget = this.assetManager.meshes[part];
     var startingValue = meshTarget.material.color.r;
 
@@ -827,12 +836,12 @@ ripe.CSRenderer.prototype.changeHighlight = function (part, endValue) {
 };
 
 /**
- * Maps a mouse event to a coordinate that goes from -1 to 1 in both the X and Y 
- * axis. 
- * 
+ * Maps a mouse event to a coordinate that goes from -1 to 1 in both the X and Y
+ * axis.
+ *
  * @param {*} mouseEvent The new mouse event to be converted.
  */
-ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEvent) {
+ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent) {
     // Origin of the coordinate system is the center of the element
     // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
     const newX = ((mouseEvent.x - this.boundingBox.x) / this.boundingBox.width) * 2 - 1;
@@ -847,18 +856,18 @@ ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function (mouseEven
 
 /**
  * The crossfade function, that handles rendering the first image, then the image after the change
- * and seamlessly transitions between the two images. 
- * 
+ * and seamlessly transitions between the two images.
+ *
  * @param {*} options Specific options for the transition, such as duration and the new materials.
  * @param {*} type The type of transition, can be "rotation" for changing views or positions,
- * or "material" when the "setParts" function is called. 
+ * or "material" when the "setParts" function is called.
  */
-ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
+ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
     var width = this.element.getBoundingClientRect().width;
     var height = this.element.getBoundingClientRect().height;
 
     var isCrossfading = this.element.classList.contains("crossfading");
-    if (this.element.classList.contains("crossfading")) console.log("it's already crossfading")
+    if (this.element.classList.contains("crossfading")) console.log("it's already crossfading");
 
     let mixRatio = 0.0;
 
@@ -869,34 +878,31 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
 
     this.scene.add(quad);
 
+    var parts = options.parts === undefined ? this.owner.parts : options.parts;
+
     if (isCrossfading) {
         // since it is already crossfading, only begin the transition to the next frame
         // AFTER the materials are loaded
-        if (type == "material")
-            await this.assetManager.setMaterials(parts, false);
+        if (type === "material") await this.assetManager.setMaterials(parts, false);
     }
 
     // render current state
     this.renderer.setRenderTarget(this.previousSceneFBO);
     this.renderer.clear();
 
-    if (!isCrossfading)
-        this.renderer.render(this.scene, this.camera);
+    if (!isCrossfading) this.renderer.render(this.scene, this.camera);
 
-    // perform the change 
+    // perform the change
     if (type === "material") {
-        var parts = options.parts === undefined ? this.owner.parts : options.parts;
-
-        if (!isCrossfading)
-            await this.assetManager.setMaterials(parts);
+        if (!isCrossfading) await this.assetManager.setMaterials(parts);
         else {
-            // now that the textures are loaded, render the current scene, and only then send the 
-            // stop-crossfade message and render 
+            // now that the textures are loaded, render the current scene, and only then send the
+            // stop-crossfade message and render
             this.renderer.render(this.scene, this.camera);
             this.element.classList.add("stop-crossfade");
 
-            // setting materials is now much faster since textures have already been loaded, 
-            // resulting in less visible stutter for the user            
+            // setting materials is now much faster since textures have already been loaded,
+            // resulting in less visible stutter for the user
             await this.assetManager.setMaterials(parts, true);
         }
     } else if (type === "rotation") {
@@ -905,13 +911,13 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
 
     // render the scene after the change
     this.renderer.setRenderTarget(this.nextSceneFBO);
-    //this.renderer.clear();
+    // this.renderer.clear();
     this.renderer.render(this.scene, this.camera);
 
     // reset renderer
     this.renderer.setRenderTarget(null);
     this.renderer.clear();
-    
+
     this.crossfadeShader.uniforms.tDiffuse1.value = this.previousSceneFBO.texture;
     this.crossfadeShader.uniforms.tDiffuse2.value = this.nextSceneFBO.texture;
 
@@ -934,8 +940,9 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
             this.element.classList.remove("no-drag");
             this.element.classList.remove("crossfading");
 
-            if (this.element.classList.contains("stop-crossfade"))
+            if (this.element.classList.contains("stop-crossfade")) {
                 this.element.classList.remove("stop-crossfade");
+            }
 
             quadGeometry.dispose();
             this.assetManager.disposeMesh(quad);
@@ -950,7 +957,6 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
         this.renderer.render(this.scene, this.crossfadeCamera);
 
         requestAnimationFrame(crossfadeFunction);
-
     };
 
     this.element.classList.add("animating");
@@ -961,12 +967,12 @@ ripe.CSRenderer.prototype.crossfade = async function (options = {}, type) {
 };
 
 /**
- * Applies the rotation to the scene camera, as the rotation values are controlled by the 
- * Orbital Controls. 
- * 
+ * Applies the rotation to the scene camera, as the rotation values are controlled by the
+ * Orbital Controls.
+ *
  * @param {*} options The struct containing the new values for rotation and camera distance.
  */
-ripe.CSRenderer.prototype.rotate = function (options) {
+ripe.CSRenderer.prototype.rotate = function(options) {
     var maxHeight = options.distance - this.cameraHeight;
 
     var distance = options.distance * Math.cos((Math.PI / 180) * options.rotationY);

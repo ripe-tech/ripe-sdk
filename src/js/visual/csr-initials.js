@@ -11,6 +11,16 @@ if (
     var ripe = base.ripe;
 }
 
+/**
+ * @class
+ * @classdesc Class that handles all aspects related to client side initials, from the creation of
+ * the meshes themselves, as well as storing the correct positions for the initials. Automatically
+ * uses sane defaults if no options are passed.
+ *
+ * @param {Object} owner  The owner (customizer instance) for
+ * this configurator.
+ * @param {Object} options The options to be used to configure the initials.
+ */
 ripe.CSRInitials = function (owner, options) {
     this.owner = owner;
     this.library = options.library;
@@ -24,6 +34,7 @@ ripe.CSRInitials = function (owner, options) {
     this.fontsPath = "/static/assets/fonts/";
     this.fontType = "arial";
     this.fontWeight = "light";
+    this.align = "center";
 
     this.loadedFonts = {};
     this.letterMaterial = null;
@@ -41,6 +52,9 @@ ripe.CSRInitials = function (owner, options) {
 ripe.CSRInitials.prototype = ripe.build(ripe.Observable.prototype);
 ripe.CSRInitials.prototype.constructor = ripe.CSRInitials;
 
+/**
+ * @ignore
+ */
 ripe.CSRInitials.prototype._setInitialsOptions = function (options = {}) {
     if (!options.initials) return;
 
@@ -54,14 +68,23 @@ ripe.CSRInitials.prototype._setInitialsOptions = function (options = {}) {
     this.fontWeight =
         initialsOptions.weight === undefined ? this.fontWeight : initialsOptions.weight;
 
-    this.engraving = 
-        options.engraving === undefined ? this.engraving : options.engraving;
+    this.engraving = initialsOptions.engraving === undefined ? this.engraving : initialsOptions.engraving;
+    this.align = initialsOptions.align === undefined ? this.align : initialsOptions.align;
 };
 
+/**
+ * @ignore
+ */
 ripe.CSRInitials.prototype.updateOptions = async function (options) {
     this._setInitialsOptions(options);
 };
 
+/**
+ * Traverses the object to find the initials_part locations, and stores them, as well
+ * as initializes the fonts.
+ *
+ * @param {*} assetManager The asset manager that contains all the mesh information.
+ */
 ripe.CSRInitials.prototype.initialize = async function (assetManager) {
     this.assetManager = assetManager;
 
@@ -82,6 +105,12 @@ ripe.CSRInitials.prototype.initialize = async function (assetManager) {
     await this._initializeFonts(this.fontType, this.fontWeight);
 };
 
+/**
+ * Loads the typeface JSON specified by the options.
+ *
+ * @param {*} type The type of font, such as "arial", for example.
+ * @param {*} weight The weight of the font, such as "bold".
+ */
 ripe.CSRInitials.prototype._initializeFonts = async function (type, weight) {
     const loader = new this.library.FontLoader();
     const newFont = await new Promise((resolve, reject) => {
@@ -93,6 +122,9 @@ ripe.CSRInitials.prototype._initializeFonts = async function (type, weight) {
     this.loadedFonts[type + "_" + weight] = newFont;
 };
 
+/**
+ * Updates the initials meshes if it the text or the engraving has changed.
+ */
 ripe.CSRInitials.prototype.update = async function () {
     const initials = this.owner.initials;
 
@@ -105,15 +137,15 @@ ripe.CSRInitials.prototype.update = async function () {
         this.logoMesh.visible = isLogoVisible;
     }
 
-    // If there are no initials in mesh
+    // if there are no initials in mesh
     if (!this.initialsPositions) return;
 
-    // Check if it is a valid engraving
+    // check if it is a valid engraving
     if (this.owner.engraving !== null && this.owner.engraving.includes("viewport")) {
         return;
     }
 
-    // If initials or engraving haven't changed
+    // if initials or engraving haven't changed
     if (initials === this.initialsText && this.owner.engraving === this.engraving) {
         return;
     }
@@ -127,6 +159,13 @@ ripe.CSRInitials.prototype.update = async function () {
     this.initialsText = initials;
 };
 
+/**
+ * Embosses the letters based on their location.
+ *
+ * @param {*} initials The text to be converted to meshes.
+ * @param {*} newEngraving The engraving that will dictate the material properties
+ * of the text meshes.
+ */
 ripe.CSRInitials.prototype.embossLetters = async function (initials, newEngraving) {
     // avoid creating new materials
     let changedMaterial = false;
@@ -137,12 +176,9 @@ ripe.CSRInitials.prototype.embossLetters = async function (initials, newEngravin
 
     const maxLength = Object.keys(this.initialsPositions).length;
 
-    if (initials.length < this.initialsText.length) {
-        var diff = this.initialsText.length - initials.length;
-        while (diff > 0) {
-            this.disposeLetter(this.textMeshes.length - 1);
-            diff--;
-        }
+    // dispose all letters 
+    while (this.textMeshes.length > 0) {
+        this.disposeLetter(0)
     }
 
     // Starts at 1 to line up with initials mesh position
@@ -150,19 +186,11 @@ ripe.CSRInitials.prototype.embossLetters = async function (initials, newEngravin
         const posRot = this.getPosRotLetter(i, initials);
         const letter = initials.charAt(i - 1);
 
-        const canReplaceLetter = i <= this.initialsText.length;
-        const isNewLetter = letter !== this.initialsText.charAt(i - 1);
+        var mesh = this.createLetter(letter);
 
-        if (isNewLetter || !canReplaceLetter) {
-            var mesh = this.createLetter(letter);
+        this.textMeshes.push(mesh);
 
-            if (canReplaceLetter) {
-                this.disposeLetter(i - 1, true);
-                this.textMeshes[i - 1] = mesh;
-            } else {
-                this.textMeshes.push(mesh);
-            }
-        } else if (changedMaterial) {
+        if (changedMaterial) {
             this.assetManager.disposeMaterial(this.textMeshes[i - 1].material);
             this.textMeshes[i - 1].material = this.letterMaterial.clone();
         }
@@ -180,6 +208,9 @@ ripe.CSRInitials.prototype.embossLetters = async function (initials, newEngravin
     }
 };
 
+/**
+ * Extracts the material's type and color from an engraving.
+ */
 ripe.CSRInitials.prototype._parseEngraving = function () {
     var splitProps = this.owner.engraving.split("::");
     var material, type;
@@ -195,6 +226,11 @@ ripe.CSRInitials.prototype._parseEngraving = function () {
     return material + "_" + type;
 };
 
+/**
+ * Handles loading the correct material for the letter. 
+ * 
+ * @param {String} engraving The parsed engraving.
+ */
 ripe.CSRInitials.prototype._getLetterMaterial = async function (engraving) {
     const material = engraving.split("_")[0];
     const type = engraving.split("_")[1];
@@ -203,50 +239,79 @@ ripe.CSRInitials.prototype._getLetterMaterial = async function (engraving) {
     return letterMaterial;
 };
 
-ripe.CSRInitials.prototype.disposeLetter = function (index, willReplace = false) {
+/**
+ * Disposes a single letter by removing their geometry, and not the materials
+ * as these may be necessary for the other letters.
+ * 
+ * @param {*} index The index of the letter to be disposed.
+ */
+ripe.CSRInitials.prototype.disposeLetter = function (index) {
+    // is trying to dispose letter outside of bounds
+    if (index >= this.textMeshes.length) return;
+
     this.textMeshes[index].geometry.dispose();
-    if (!willReplace) this.textMeshes.pop();
+    this.textMeshes.pop();
 };
 
+/**
+ * Gets the appropriate position and rotation for a letter, based on the nearest
+ * initial_part mesh.
+ * 
+ * @param {*} letterNumber The number of the letter to be positioned.
+ * @param {*} initials The text of the initials. 
+ */
 ripe.CSRInitials.prototype.getPosRotLetter = function (letterNumber, initials) {
-    // Check if placement is interpolated or in the precise spot
     var transform = {};
     const size = Object.keys(this.initialsPositions).length;
+
     const center = (size + 1) / 2;
 
-    const posInInitials = center + letterNumber - (initials.length + 1) / 2;
+    var posInInitials = 0;
 
-    if (initials.length % 2 === size % 2) {
+    if (this.align === "left") posInInitials = letterNumber;
+    else if (this.align === "right") posInInitials = size - Math.min(initials.length, size) + letterNumber;
+    else posInInitials = center + letterNumber - (initials.length + 1) / 2;
+
+    // if it aligns perfectly with the mesh position
+    if (this.align !== "center" || (this.align === "center" && initials.length % 2 === size % 2)) {
         transform.position = this.initialsPositions[posInInitials].position;
         transform.rotation = this.initialsPositions[posInInitials].rotation;
-    } else {
-        // Interpolate between the two closest positions
-        const previous = this.initialsPositions[Math.floor(posInInitials)];
-        const next = this.initialsPositions[Math.ceil(posInInitials)];
-
-        var position = new this.library.Vector3(0, 0, 0);
-        var rotation = new this.library.Vector3(0, 0, 0);
-
-        position.x = (previous.position.x + next.position.x) / 2;
-        position.y = (previous.position.y + next.position.y) / 2;
-        position.z = (previous.position.z + next.position.z) / 2;
-
-        rotation.x = (previous.rotation.x + next.rotation.x) / 2;
-        rotation.y = (previous.rotation.y + next.rotation.y) / 2;
-        rotation.z = (previous.rotation.z + next.rotation.z) / 2;
-
-        transform.position = position;
-        transform.rotation = rotation;
+        return transform;
     }
+
+    // doesn't align, interpolate between the two closest positions
+    const previous = this.initialsPositions[Math.floor(posInInitials)];
+    const next = this.initialsPositions[Math.ceil(posInInitials)];
+
+    var position = new this.library.Vector3(0, 0, 0);
+    var rotation = new this.library.Vector3(0, 0, 0);
+
+    position.x = (previous.position.x + next.position.x) / 2;
+    position.y = (previous.position.y + next.position.y) / 2;
+    position.z = (previous.position.z + next.position.z) / 2;
+
+    rotation.x = (previous.rotation.x + next.rotation.x) / 2;
+    rotation.y = (previous.rotation.y + next.rotation.y) / 2;
+    rotation.z = (previous.rotation.z + next.rotation.z) / 2;
+
+    transform.position = position;
+    transform.rotation = rotation;
 
     return transform;
 };
 
+/**
+ * Creates a text mesh, and assigns it the correct material.
+ * 
+ * @param {*} letter The character to be added.
+ */
 ripe.CSRInitials.prototype.createLetter = function (letter) {
     if (!this.loadedFonts[this.fontType + "_" + this.fontWeight]) {
-        throw new Error("Specified font (" + this.fontWeight + " " + this.fontType + ") is not available.");
+        throw new Error(
+            "Specified font (" + this.fontWeight + " " + this.fontType + ") is not available."
+        );
     }
-    
+
     var textGeometry = new this.library.TextGeometry(letter, {
         font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
 
@@ -268,8 +333,14 @@ ripe.CSRInitials.prototype.createLetter = function (letter) {
     return letterMesh;
 };
 
+/**
+ * @ignore
+ */
 ripe.CSRInitials.prototype.engraveLetters = function (initials, newEngraving) { };
 
+/**
+ * Destroys all meshes and materials.
+ */
 ripe.CSRInitials.prototype.disposeResources = async function () {
     console.log("Disposing Initials Resources.");
     var count = 0;

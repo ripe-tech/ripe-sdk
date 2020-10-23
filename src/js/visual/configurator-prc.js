@@ -201,7 +201,6 @@ ripe.ConfiguratorPRC.prototype.update = async function(state, options = {}) {
         return false;
     }
 
-    
     // allocates space for the possible promise that is going
     // to be responsible for the preloading of the frames, populating
     // the cache buffer for the complete set of frames associated with

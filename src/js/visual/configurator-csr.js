@@ -44,7 +44,7 @@ ripe.ConfiguratorCSR.prototype.constructor = ripe.ConfiguratorCSR;
  */
 ripe.ConfiguratorCSR.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
-    
+
     this.width = this.options.width || 1000;
     this.height = this.options.height || 1000;
     this.format = this.options.format || null;
@@ -108,7 +108,7 @@ ripe.ConfiguratorCSR.prototype.init = function() {
     this.renderer = new ripe.CSRenderer(this.owner, this.element, this.options);
     this.controls = new ripe.OrbitalControls(this, this.element, this.options);
     this.initials = new ripe.CSRInitials(this.owner, this.options);
-    
+
     // wait until configurator finished initializing to create the controls and
     // renderer
     this.assetManager = new ripe.CSRAssetManager(this, this.owner, this.options);
@@ -178,12 +178,12 @@ ripe.ConfiguratorCSR.prototype.disposeResources = async function() {
 ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
-    console.log("Updating options?")
-    
+    console.log("Updating options?");
+
     this.renderer.updateOptions(options);
     this.controls.updateOptions(options);
     this.assetManager.updateOptions(options);
-    his.initials.updateOptions(options);
+    this.initials.updateOptions(options);
 
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
@@ -240,8 +240,7 @@ ripe.ConfiguratorCSR.prototype.update = async function(state, options = {}) {
         await this.renderer.crossfade({ duration: duration, parts: this.owner.parts }, "material");
     }
 
-    if (this.element.classList.contains("crossfading")) 
-        return;
+    if (this.element.classList.contains("crossfading")) return;
 
     // removes the current text meshes from the scene, and adds the newly
     // generated meshes
