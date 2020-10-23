@@ -397,21 +397,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
         );
     }
 
-    try {
-        // get initials builder of the build and model, if there is one
-        // defined, later used in the image's initials builder logic
-        const logicScriptText = await this.getLogicP({
-            brand: this.brand,
-            model: this.model,
-            version: this.version,
-            format: "js"
-        });
-        // eslint-disable-next-line no-eval
-        const logicScript = eval(logicScriptText);
-        this.baseInitialsBuilder = logicScript.baseInitialsBuilder;
-    } catch (err) {
-        this.baseInitialsBuilder = null;
-    }
+    if (this.options.useBuildLogic) await this.setBuildLogic();
 
     // creates a "new" choices from the provided configuration for the
     // model that has just been "loaded" and sets it as the new set of
@@ -570,6 +556,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
     this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
+    this.useBuildLogic = this.options.useBuildLogic === undefined ? true : this.options.useBuildLogic;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account
