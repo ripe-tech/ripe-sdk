@@ -168,26 +168,7 @@
             }
         }
     },
-    "initials": {
-        "copper": {
-            "aoMap": "general/ao/main_ao.jpg",
-            "map": "general/metal/copper/diffuse.jpg",
-            "roughness": 0,
-            "metalness": 1
-        },
-        "gold": {
-            "aoMap": "general/ao/main_ao.jpg",
-            "map": "general/metal/gold/diffuse.jpg",
-            "roughness": 0,
-            "metalness": 1
-        },
-        "silver": {
-            "aoMap": "general/ao/main_ao.jpg",
-            "map": "general/metal/silver/diffuse.jpg",
-            "roughness": 0,
-            "metalness": 1
-        }
-    },
+    "initials": {},
     "front": {
         "grain_metallic": {
             "emerald": {
