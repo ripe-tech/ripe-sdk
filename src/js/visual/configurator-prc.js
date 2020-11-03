@@ -1702,7 +1702,7 @@ ripe.ConfiguratorPrc.prototype._buildSignature = function() {
     const width = size || this.element.dataset.width || this.width;
     const height = size || this.element.dataset.height || this.height;
     const backgroundColor = this.element.dataset.background_color || this.backgroundColor;
-    return `${this.owner._getQuery()}&width=${String(width)}&height=${String(
+    return `${this.owner._getQuery({ full: false })}&width=${String(width)}&height=${String(
         height
     )}&format=${String(format)}&background=${String(backgroundColor)}`;
 };
