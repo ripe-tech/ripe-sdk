@@ -610,6 +610,7 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
 
     options.country = options.country || null;
     options.currency = options.currency || null;
+    options.full = options.full === undefined ? false : options.full;
 
     options = this._getQueryOptions(options);
 
@@ -673,6 +674,7 @@ ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     options.parts = options.parts || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
+    options.full = options.full === undefined ? false : options.full;
 
     options = this._getQueryOptions(options);
 
