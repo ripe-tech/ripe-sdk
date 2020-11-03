@@ -767,6 +767,8 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
     // the (set) initials extra operation (notifies listeners)
     await this.trigger("pre_initials_extra", { id: id });
 
+    // "saves" the value of the previous initials extra structure
+    // so that it can be passed latter as part of the event context
     const previous = Object.assign({}, this.initialsExtra);
 
     if (isEmpty) {
