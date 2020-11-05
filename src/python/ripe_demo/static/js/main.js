@@ -365,12 +365,11 @@ window.onload = function () {
                 initials: {
                     // TODO extract alignment from build
                     // can be "left", "right", "center"
-                    align: "right",
+                    align: "center",
                     size: 0.5,
                     height: 0.1,
                     type: "comic_sans",
-                    weight: "light",
-                    path: "/static/assets/fonts/"
+                    weight: "light"
                 },
 
                 camera: {

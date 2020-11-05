@@ -31,7 +31,7 @@ ripe.CSRInitials = function(owner, options) {
     this.textSize = 1;
     this.textHeight = 0.1;
 
-    this.fontsPath = "/static/assets/fonts/";
+    this.fontsPath = options.assets.path + this.owner.brand.toLowerCase() + "/fonts/"
     this.fontType = "arial";
     this.fontWeight = "light";
     this.align = "center";
@@ -63,7 +63,6 @@ ripe.CSRInitials.prototype._setInitialsOptions = function(options = {}) {
     this.textSize = initialsOptions.size === undefined ? this.textSize : initialsOptions.size;
     this.textHeight =
         initialsOptions.height === undefined ? this.textHeight : initialsOptions.height;
-    this.fontsPath = initialsOptions.path === undefined ? this.fontsPath : initialsOptions.path;
     this.fontType = initialsOptions.type === undefined ? this.fontType : initialsOptions.type;
     this.fontWeight =
         initialsOptions.weight === undefined ? this.fontWeight : initialsOptions.weight;

@@ -25,12 +25,11 @@ if (
 ripe.CSRAssetManager = function(configurator, owner, options) {
     this.owner = owner;
     this.configurator = configurator;
-    this.assetsPath = options.assets.assetsPath;
+    this.assetsPath = options.assets.path;
     this.texturesPath =
         this.assetsPath +
-        "textures/" +
         this.owner.brand.toLowerCase() +
-        "/" +
+        "/textures/" +
         this.owner.model.toLowerCase() +
         ".glb";
 
@@ -89,7 +88,7 @@ ripe.CSRAssetManager.prototype._loadScene = async function() {
 ripe.CSRAssetManager.prototype._loadGLTF = async function() {
     if (this.loadedScene) return;
 
-    var meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/";
+    var meshPath = this.assetsPath + this.owner.brand.toLowerCase() + "/models/";
     var meshModelPath = this.owner.model.toLowerCase() + ".glb";
 
     const gltfLoader = new this.library.GLTFLoader();
@@ -112,7 +111,7 @@ ripe.CSRAssetManager.prototype._loadGLTF = async function() {
  * @ignore
  */
 ripe.CSRAssetManager.prototype._loadFBX = async function() {
-    var meshPath = this.assetsPath + "models/" + this.owner.brand.toLowerCase() + "/";
+    var meshPath = this.assetsPath + this.owner.brand.toLowerCase() + "/models/";
     var meshModelPath = this.owner.model.toLowerCase() + ".fbx";
 
     const fbxLoader = new this.library.FBXLoader();
@@ -326,9 +325,8 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
 
     const basePath =
         this.assetsPath +
-        "textures/" +
         this.owner.brand.toLowerCase() +
-        "/" +
+        "/textures/" +
         this.owner.model.toLowerCase() +
         "/";
 
