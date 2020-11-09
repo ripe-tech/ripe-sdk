@@ -621,4 +621,4 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
         method: "GET",
         params: params
     });
-}
+};
