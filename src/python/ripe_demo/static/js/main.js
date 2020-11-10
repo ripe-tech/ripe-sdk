@@ -357,7 +357,7 @@ window.onload = function () {
                     // Model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
                     // that is downloaded, or present in a spec file
                     config: model_data,
-                    path: "/static/assets/"
+                    path: "/static/assets/",
                     // can be "gltf" or "fbx", defaults to "gltf" if no parameter is passed
                     //format: "fbx"
                 },
@@ -396,7 +396,13 @@ window.onload = function () {
                     materialEasing: "easeInOutQuad",
                     crossfadeEasing: "easeInOutQuad",
                     initialsPlacement: "center",
-                    introAnimation: "SlideIn",
+                    introAnimation: "camera_front_pan_1.fbx",
+                    introAnimation: "camera_front_pan_1.glb",
+                    introAnimation: "mesh_slide_in_1.glb",
+                    //introAnimation: "mesh_slide_in_1.fbx",
+                    //introAnimation: "mesh_scale_in_1.glb",
+                    //introAnimation: "mesh_scale_in_1.fbx",
+                    //introAnimation: "SlideIn",
                     //introAnimation: "ScaleIn",
                     environment: "exterior_building",
                     maskOpacity: 0.7

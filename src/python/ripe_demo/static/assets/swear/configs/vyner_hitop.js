@@ -1,4 +1,12 @@
 const model_data = {
+    animations: [
+        "camera_front_pan_1.glb", 
+        "camera_front_pan_1.fbx", 
+        "mesh_scale_in_1.glb", 
+        "mesh_scale_in_1.fbx", 
+        "mesh_slide_in_1.glb",
+        "mesh_slide_in_1.fbx"
+    ],
     general: {
         metal: {
             copper: {
@@ -595,5 +603,5 @@ const model_data = {
                 normalMap: "sole_part/rubber/general/normal.jpg"
             }
         }
-    }
+    },
 };

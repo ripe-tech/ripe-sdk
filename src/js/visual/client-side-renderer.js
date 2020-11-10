@@ -48,7 +48,7 @@ ripe.CSRenderer = function(owner, element, options) {
     this.useMasks = true;
     this.maskOpacity = 0.4;
     this.maskDuration = 150;
-    this.introAnimation = "Idle";
+    this.introAnimation = "";
     this._setRenderOptions(options);
 
     this.shadowBias = 0;
@@ -195,10 +195,8 @@ ripe.CSRenderer.prototype.initialize = async function(assetManager) {
 
     var hasAnimation = this._getAnimationByName(this.introAnimation) !== undefined;
     // finished loading everything, begin the rendering processs.
-    var hasIdle = this._getAnimationByName("Idle") !== undefined;
-
+    
     if (this.introAnimation && hasAnimation) this._performAnimation(this.introAnimation);
-    else if (hasIdle) this._performAnimation("Idle");
     else this.render();
 
     // was meant to play an animation, but there was no animation with
@@ -613,18 +611,23 @@ ripe.CSRenderer.prototype._initializeCameras = function() {
         -1000,
         -998
     );
+
+    this.camera.animations = []
+    // load camera specific animations
+    for (var animation in this.assetManager.animations) {
+        if (animation.includes("camera_")) {
+            this.camera.animations.push(this.assetManager.animations[animation])
+        }
+    }
 };
 
 /**
  * @ignore
  */
 ripe.CSRenderer.prototype._getAnimationByName = function(animationName) {
-    for (let i = 0; i < this.assetManager.animations.length; i++) {
-        if (this.assetManager.animations[i].name.includes(animationName)) {
-            return this.library.AnimationClip.findByName(
-                this.assetManager.animations,
-                this.assetManager.animations[i].name
-            );
+    for (var animation in this.assetManager.animations) {
+        if (animation == animationName) {
+            return this.assetManager.animations[animation]
         }
     }
 
@@ -638,6 +641,7 @@ ripe.CSRenderer.prototype._getAnimationByName = function(animationName) {
  */
 ripe.CSRenderer.prototype._performAnimation = function(animationName) {
     var animation = this._getAnimationByName(animationName);
+
     if (!animation) return;
 
     animation.optimize();
@@ -666,6 +670,7 @@ ripe.CSRenderer.prototype._performAnimation = function(animationName) {
             this.renderer.clear();
             this.renderer.render(this.scene, this.camera);
 
+            console.log(this.camera.position)
             // reset renderer
             this.renderer.setRenderTarget(null);
             this.renderer.clear();
