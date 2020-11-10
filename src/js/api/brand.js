@@ -12,6 +12,79 @@ if (
 }
 
 /**
+ * Returns the URL where the mesh can be retrieved.
+ *
+ * This method is useful to allow external mesh loaders to
+ * take control of the URL based mesh loading process.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the logo, that controls semantics of the logo
+ *  - 'format' - The format of the logo image to be retrieved defaults to png
+ * @returns {String} The URL that can be used to retrieve a brand logo.
+ */
+ripe.Ripe.prototype.getLogoUrl = function(options) {
+    options = this._getLogoOptions(options);
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
+ * Returns the mesh contents for a model.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the mesh, as defined in the model spec
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The model's mesh.
+ */
+ripe.Ripe.prototype.getMesh = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getMeshOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the mesh contents for a model.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the mesh, as defined in the model spec
+ * @returns {XMLHttpRequest} The model's mesh.
+ */
+ripe.Ripe.prototype.getMeshP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getMesh(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the URL where the mesh can be retrieved.
+ *
+ * This method is useful to allow external mesh loaders to
+ * take control of the URL based mesh loading process.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the mesh, as defined in the model spec
+ * @returns {String} The URL that can be used to retrieve the mesh.
+ */
+ripe.Ripe.prototype.getMeshUrl = function(options) {
+    options = this._getMeshOptions(options);
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
  * Returns the configuration information of a specific brand and model.
  * If no model is provided then returns the information of the owner's current model.
  *
@@ -19,8 +92,8 @@ if (
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'version' - The version of the build, defaults to latest
- *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
- *  - 'flag' - A specific flag that may change the provided materials/colors available.
+ *  - 'country' - The country where the model will be provided, some materials/colors might not be available
+ *  - 'flag' - A specific flag that may change the provided materials/colors available
  *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The model's configuration data.
@@ -41,8 +114,8 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'version' - The version of the build, defaults to latest
- *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
- *  - 'flag' - A specific flag that may change the provided materials/colors available.
+ *  - 'country' - The country where the model will be provided, some materials/colors might not be available
+ *  - 'flag' - A specific flag that may change the provided materials/colors available
  *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
  * @returns {Promise} The model's configuration data.
  */
@@ -339,55 +412,49 @@ ripe.Ripe.prototype.onInitialsP = function(options) {
 };
 
 /**
- * Returns the mesh of a model.
- *
- * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'variant' - The variant of the mesh, as defined in the model spec.
- * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The model's mesh.
+ * @ignore
  */
-ripe.Ripe.prototype.getMesh = function(options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    options = this._getMeshOptions(options);
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
- * Returns the mesh of a model.
- *
- * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'variant' - The variant of the mesh, as defined in the model spec.
- * @returns {XMLHttpRequest} The model's mesh.
- */
-ripe.Ripe.prototype.getMeshP = function(options) {
-    return new Promise((resolve, reject) => {
-        this.getMesh(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
+ripe.Ripe.prototype._getLogoOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const format = options.format === undefined ? "png" : options.format;
+    const url = `${this.url}brands/${brand}/logo.${format}`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
     });
 };
 
 /**
- * Returns the URL where the mesh can be retrieved.
- *
- * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'variant' - The variant of the mesh, as defined in the model spec.
- * @returns {String} The URL that can be used to retrieve the mesh.
+ * @ignore
  */
-ripe.Ripe.prototype.getMeshUrl = function(options) {
-    options = this._getMeshOptions(options);
-    return options.url + "?" + this._buildQuery(options.params);
+ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const url = `${this.url}brands/${brand}/models/${model}/mesh`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
 };
 
 /**
@@ -612,28 +679,5 @@ ripe.Ripe.prototype._onInitialsOptions = function(options = {}) {
             engraving: engraving,
             ctx: ctx
         }
-    });
-};
-
-/**
- * @ignore
- */
-ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
-    const brand = options.brand === undefined ? this.brand : options.brand;
-    const model = options.model === undefined ? this.model : options.model;
-    const version = options.version === undefined ? this.version : options.version;
-    const variant = options.variant === undefined ? this.variant : options.variant;
-    const url = `${this.url}brands/${brand}/models/${model}/mesh`;
-    const params = {};
-    if (version !== undefined && version !== null) {
-        params.version = version;
-    }
-    if (variant !== undefined && variant !== null) {
-        params.variant = variant;
-    }
-    return Object.assign(options, {
-        url: url,
-        method: "GET",
-        params: params
     });
 };
