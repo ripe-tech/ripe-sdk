@@ -185,12 +185,24 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     // registers for the initials_extra (set) operation so that the execution may
     // be able to notify the server side logic and change the current state
     // if that's required by the server side
-    this.bind("initials_extra", async function(initialsExtra, params) {
+    this.bind("initials_extra", async function(initialsExtra, params, { previous }) {
         let result = null;
         if (!this.remoteOnInitials) return;
         if (params.noRemote) return;
         const ctxRequest = (this.ctxRequest = (this.ctxRequest || 0) + 1);
         for (const [key, value] of Object.entries(initialsExtra)) {
+            // in case the value of the initials extra group did not
+            // change when compared with the previous version then
+            // there's no need for `onInitials` execution
+            const previousValue =
+                previous && previous[key] ? previous[key] : { initials: "", engraving: null };
+            if (
+                value.initials === previousValue.initials &&
+                value.engraving === previousValue.engraving
+            ) {
+                continue;
+            }
+
             try {
                 result = await this.onInitialsP({
                     group: key,
@@ -755,6 +767,10 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
     // the (set) initials extra operation (notifies listeners)
     await this.trigger("pre_initials_extra", { id: id });
 
+    // "saves" the value of the previous initials extra structure
+    // so that it can be passed latter as part of the event context
+    const previous = Object.assign({}, this.initialsExtra);
+
     if (isEmpty) {
         this.initials = "";
         this.engraving = null;
@@ -783,7 +799,7 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
 
     // triggers the initials extra event notifying any
     // listening object about the changes
-    await this.trigger("initials_extra", initialsExtra, params, { id: id });
+    await this.trigger("initials_extra", initialsExtra, params, { id: id, previous: previous });
 
     // runs the update operation so that all the listening
     // components can properly update their visuals, notice

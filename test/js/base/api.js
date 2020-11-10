@@ -43,6 +43,26 @@ describe("RipeAPI", function() {
                 initials_extra: {}
             });
         });
+
+        it("should be able to convert a one part query to spec", async () => {
+            const remote = ripe.RipeAPI();
+
+            const spec = remote._queryToSpec("brand=dummy&model=dummy&p=piping:leather_dmy:black");
+
+            assert.deepStrictEqual(spec, {
+                brand: "dummy",
+                model: "dummy",
+                parts: {
+                    piping: {
+                        material: "leather_dmy",
+                        color: "black"
+                    }
+                },
+                initials: null,
+                engraving: null,
+                initials_extra: {}
+            });
+        });
     });
 
     describe("#_buildQuery()", function() {

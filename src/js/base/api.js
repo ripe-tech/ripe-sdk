@@ -335,6 +335,8 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
             try {
                 if (contentType.startsWith("application/json")) {
                     result = await response.json();
+                } else if (contentType.startsWith("text/")) {
+                    result = await response.text();
                 } else {
                     result = await response.blob();
                 }
@@ -608,6 +610,7 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
 
     options.country = options.country || null;
     options.currency = options.currency || null;
+    options.full = options.full === undefined ? false : options.full;
 
     options = this._getQueryOptions(options);
 
@@ -671,6 +674,7 @@ ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     options.parts = options.parts || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
+    options.full = options.full === undefined ? false : options.full;
 
     options = this._getQueryOptions(options);
 
@@ -916,8 +920,9 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
     const initials = options.initials || null;
     const engraving = options.engraving || null;
     let initialsExtra = options.initials_extra || [];
-    const tuples = options.p || [];
+    let tuples = options.p || [];
     initialsExtra = this._parseExtraS(initialsExtra);
+    tuples = Array.isArray(tuples) ? tuples : [tuples];
     const parts = this._tuplesToParts(tuples);
     const partsM = this._partsToPartsM(parts);
     const spec = {
