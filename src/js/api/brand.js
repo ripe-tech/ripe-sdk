@@ -339,6 +339,21 @@ ripe.Ripe.prototype.onInitialsP = function(options) {
 };
 
 /**
+ * Returns the URL where the mesh can be retrieved.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the mesh, as defined in the model spec.
+ * @returns {String} The URL that can be used to retrieve the mesh.
+ */
+ripe.Ripe.prototype.getMeshUrl = function(options) {
+    options = this._getMeshOptions(options);
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
  * Returns the mesh of a model.
  *
  * @param {Object} options A map with options, such as:
