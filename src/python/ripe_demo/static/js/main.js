@@ -361,7 +361,7 @@ window.onload = function () {
                     config: model_data,
                     path: "/static/assets/",
                     // can be "gltf" or "fbx", defaults to "gltf" if no parameter is passed
-                    //format: "fbx"
+                    format: "gltf"
                 },
 
                 initials: {
@@ -384,11 +384,12 @@ window.onload = function () {
                 },
 
                 controls: {
-                    // drift defaults to true, unless specified to be false
-                    //mouseDrift: false,
+                    // 'mouseDrift' defaults to true, unless specified to be false
+                    // allows drifting when dragging stops
                     driftDuration: 200,
                     canZoom: true,
-                    //lockRotation: "horizontal",
+                    // 'lockRotation' can be 'horizontal', 'vertical', or be left 
+                    // empty for no axis lock on rotations
                     rotationEasing: "easeInOutQuad"
                 },
 
@@ -398,14 +399,7 @@ window.onload = function () {
                     materialEasing: "easeInOutQuad",
                     crossfadeEasing: "easeInOutQuad",
                     initialsPlacement: "center",
-                    introAnimation: "camera_front_pan_1.fbx",
-                    introAnimation: "camera_front_pan_1.glb",
                     introAnimation: "mesh_slide_in_1.glb",
-                    //introAnimation: "mesh_slide_in_1.fbx",
-                    //introAnimation: "mesh_scale_in_1.glb",
-                    //introAnimation: "mesh_scale_in_1.fbx",
-                    //introAnimation: "SlideIn",
-                    //introAnimation: "ScaleIn",
                     environment: "exterior_building",
                     maskOpacity: 0.7
                 },
