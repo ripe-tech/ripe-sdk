@@ -5,6 +5,29 @@ const ripe = require("../../../src/js");
 describe("BrandAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
+    describe("#getLogoUrl()", function() {
+        it("should gather a simple logo URL", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.getLogoUrl({
+                brand: "dummy"
+            });
+            assert.strictEqual(result, "https://sandbox.platforme.com/api/brands/dummy/logo.png?");
+
+            result = await remote.getLogoUrl({
+                brand: "dummy",
+                variant: "large",
+                format: "jpg"
+            });
+            assert.strictEqual(
+                result,
+                "https://sandbox.platforme.com/api/brands/dummy/logo.jpg?variant=large"
+            );
+        });
+    });
+
     describe("#runLogicP()", function() {
         it("should execute a simple logic", async () => {
             let result = null;
@@ -17,7 +40,7 @@ describe("BrandAPI", function() {
                 method: "minimum_initials"
             });
 
-            assert.strictEqual(await result, "1");
+            assert.strictEqual(result, "1");
 
             result = await remote.runLogicP({
                 brand: "dummy",
@@ -25,7 +48,7 @@ describe("BrandAPI", function() {
                 method: "maximum_initials"
             });
 
-            assert.strictEqual(await result, "4");
+            assert.strictEqual(result, "4");
         });
     });
 
