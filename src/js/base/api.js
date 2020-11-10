@@ -651,6 +651,190 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.initials = initials;
     }
 
+    if (options.profile !== undefined && options.profile !== null) {
+        params.profile = options.profile;
+    }
+
+    if (options.rotation !== undefined && options.rotation !== null) {
+        params.rotation = options.rotation;
+    }
+
+    if (options.flip !== undefined && options.flip !== null) {
+        params.flip = options.flip;
+    }
+
+    if (options.mirror !== undefined && options.mirror !== null) {
+        params.mirror = options.mirror;
+    }
+
+    if (options.bounding_box !== undefined && options.bounding_box !== null) {
+        params.bounding_box = options.bounding_box;
+    }
+
+    if (options.algorithm !== undefined && options.algorithm !== null) {
+        params.algorithm = options.algorithm;
+    }
+
+    if (options.background !== undefined && options.background !== null) {
+        params.background = options.background;
+    }
+
+    if (options.engine !== undefined && options.engine !== null) {
+        params.engine = options.engine;
+    }
+
+    if (options.initials_profile !== undefined && options.initials_profile !== null) {
+        params.initials_profile = options.initials_profile;
+    }
+
+    if (options.initials_profiles !== undefined && options.initials_profiles !== null) {
+        params.initials_profiles = options.initials_profiles;
+    }
+
+    if (options.initials_x !== undefined && options.initials_x !== null) {
+        params.initials_x = options.initials_x;
+    }
+
+    if (options.initials_y !== undefined && options.initials_y !== null) {
+        params.initials_y = options.initials_y;
+    }
+
+    if (options.initials_width !== undefined && options.initials_width !== null) {
+        params.initials_width = options.initials_width;
+    }
+
+    if (options.initials_height !== undefined && options.initials_height !== null) {
+        params.initials_height = options.initials_height;
+    }
+
+    if (options.initials_viewport !== undefined && options.initials_viewport !== null) {
+        params.initials_viewport = options.initials_viewport;
+    }
+
+    if (options.initials_color !== undefined && options.initials_color !== null) {
+        params.initials_color = options.initials_color;
+    }
+
+    if (options.initials_opacity !== undefined && options.initials_opacity !== null) {
+        params.initials_opacity = options.initials_opacity;
+    }
+
+    if (options.initials_align !== undefined && options.initials_align !== null) {
+        params.initials_align = options.initials_align;
+    }
+
+    if (options.initials_vertical !== undefined && options.initials_vertical !== null) {
+        params.initials_vertical = options.initials_vertical;
+    }
+
+    if (options.initials_embossing !== undefined && options.initials_embossing !== null) {
+        params.initials_embossing = options.initials_embossing;
+    }
+
+    if (options.initials_rotation !== undefined && options.initials_rotation !== null) {
+        params.initials_rotation = options.initials_rotation;
+    }
+
+    if (options.initials_z_index !== undefined && options.initials_z_index !== null) {
+        params.initials_z_index = options.initials_z_index;
+    }
+
+    if (options.initials_algorithm !== undefined && options.initials_algorithm !== null) {
+        params.initials_algorithm = options.initials_algorithm;
+    }
+
+    if (options.initials_blend_color !== undefined && options.initials_blend_color !== null) {
+        params.initials_blend_color = options.initials_blend_color;
+    }
+
+    if (options.initials_pattern !== undefined && options.initials_pattern !== null) {
+        params.initials_pattern = options.initials_pattern;
+    }
+
+    if (options.initials_texture !== undefined && options.initials_texture !== null) {
+        params.initials_texture = options.initials_texture;
+    }
+
+    if (options.initials_exclusion !== undefined && options.initials_exclusion !== null) {
+        params.initials_exclusion = options.initials_exclusion;
+    }
+
+    if (options.initials_image_rotation !== undefined && options.initials_image_rotation !== null) {
+        params.initials_image_rotation = options.initials_image_rotation;
+    }
+
+    if (options.initials_image_flip !== undefined && options.initials_image_flip !== null) {
+        params.initials_image_flip = options.initials_image_flip;
+    }
+
+    if (options.initials_image_mirror !== undefined && options.initials_image_mirror !== null) {
+        params.initials_image_mirror = options.initials_image_mirror;
+    }
+
+    if (options.debug !== undefined && options.debug !== null) {
+        params.debug = options.debug;
+    }
+
+    if (options.initials_debug !== undefined && options.initials_debug !== null) {
+        params.initials_debug = options.initials_debug;
+    }
+
+    if (options.font_family !== undefined && options.font_family !== null) {
+        params.font_family = options.font_family;
+    }
+
+    if (options.font_weight !== undefined && options.font_weight !== null) {
+        params.font_weight = options.font_weight;
+    }
+
+    if (options.font_size !== undefined && options.font_size !== null) {
+        params.font_size = options.font_size;
+    }
+
+    if (options.font_spacing !== undefined && options.font_spacing !== null) {
+        params.font_spacing = options.font_spacing;
+    }
+
+    if (options.font_trim !== undefined && options.font_trim !== null) {
+        params.font_trim = options.font_trim;
+    }
+
+    if (options.font_mask !== undefined && options.font_mask !== null) {
+        params.font_mask = options.font_mask;
+    }
+
+    if (options.font_mode !== undefined && options.font_mode !== null) {
+        params.font_mode = options.font_mode;
+    }
+
+    if (options.line_height !== undefined && options.line_height !== null) {
+        params.line_height = options.line_height;
+    }
+
+    if (options.line_breaking !== undefined && options.line_breaking !== null) {
+        params.line_breaking = options.line_breaking;
+    }
+
+    if (options.shadow !== undefined && options.shadow !== null) {
+        params.shadow = options.shadow;
+    }
+
+    if (options.shadow_color !== undefined && options.shadow_color !== null) {
+        params.shadow_color = options.shadow_color;
+    }
+
+    if (options.shadow_offset !== undefined && options.shadow_offset !== null) {
+        params.shadow_offset = options.shadow_offset;
+    }
+
+    if (options.offsets !== undefined && options.offsets !== null) {
+        params.offsets = options.offsets;
+    }
+
+    if (options.curve !== undefined && options.curve !== null) {
+        params.curve = options.curve;
+    }
+
     const url = `${this.url}compose`;
 
     options = Object.assign(options, {
@@ -753,6 +937,7 @@ ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
  */
 ripe.Ripe.prototype._getImageURL = function(options) {
     options = this._getImageOptions(options);
+    console.log("-------options", options);
     return options.url + "?" + this._buildQuery(options.params);
 };
 
