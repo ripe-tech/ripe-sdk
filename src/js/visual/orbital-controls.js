@@ -633,7 +633,7 @@ ripe.OrbitalControls.prototype.rotationTransition = async function(options) {
 
             this._updateAngles();
 
-            // Perform final Rotation to make sure it is perfectly aligned
+            // performs final rotation to make sure it is perfectly aligned
             this.configurator.rotate(
                 {
                     rotationX: this.currentHorizontalRot,
@@ -670,7 +670,8 @@ ripe.OrbitalControls.prototype.rotationTransition = async function(options) {
 
 /**
  * Returns a valid angle to prevent going over 360 or under 0 degrees.
- * @param {*} angle The new angle.
+ *
+ * @param {Number} angle The new angle.
  */
 ripe.OrbitalControls.prototype._validatedAngle = function(angle) {
     if (angle > 360) return angle - 360;
