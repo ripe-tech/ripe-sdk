@@ -109,7 +109,13 @@ ripe.CSRAssetManager.prototype._loadAsset = async function (filename, isAnimatio
     var path = this.assetsPath + this.owner.brand.toLowerCase()
 
     if (isAnimation) path += "/animations/" + this.owner.model.toLowerCase() + "/" + filename;
-    else path += "/models/" + filename;
+    else {
+        path = this.owner.getMeshUrl({
+            'brand': this.owner.brand,
+            'model': this.owner.model,
+            'variant': "$base"
+        });    
+    }
 
     var type = "gltf"
     var loader = null
@@ -119,14 +125,8 @@ ripe.CSRAssetManager.prototype._loadAsset = async function (filename, isAnimatio
     if (type == "gltf") loader = new this.library.GLTFLoader();
     else loader = new this.library.FBXLoader();
 
-    var mesh = this.owner.getMeshP({
-        'brand': this.owner.brand,
-        'model': this.owner.model,
-        'variant': "base"
-    });    
-
     var asset = await new Promise((resolve) => {
-        loader.load(mesh, function (asset) {
+        loader.load(path, function (asset) {
             resolve(asset)
         });
     });
