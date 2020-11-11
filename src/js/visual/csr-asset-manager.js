@@ -111,8 +111,6 @@ ripe.CSRAssetManager.prototype._loadAsset = async function (filename, isAnimatio
     if (isAnimation) path += "/animations/" + this.owner.model.toLowerCase() + "/" + filename;
     else {
         path = this.owner.getMeshUrl({
-            'brand': this.owner.brand,
-            'model': this.owner.model,
             'variant': "$base"
         });    
     }
