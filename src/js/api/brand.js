@@ -18,7 +18,7 @@ if (
  *  - 'brand' - The brand of the model
  *  - 'version' - The version of the build, defaults to latest
  *  - 'variant' - The variant of the logo, that controls semantics of the logo
- *  - 'format' - The format of the logo image to be retrieved defaults to png
+ *  - 'format' - The format of the logo image to be retrieved (defaults to 'png')
  *  - 'size' - The size of the logo image
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The brand's logo.
@@ -38,9 +38,9 @@ ripe.Ripe.prototype.getLogo = function(options, callback) {
  *  - 'brand' - The brand of the model
  *  - 'version' - The version of the build, defaults to latest
  *  - 'variant' - The variant of the logo, that controls semantics of the logo
- *  - 'format' - The format of the logo image to be retrieved defaults to png
+ *  - 'format' - The format of the logo image to be retrieved (defaults to 'png')
  *  - 'size' - The size of the logo image
- * @returns {XMLHttpRequest} The brand's logo.
+ * @returns {Promise} The brand's logo.
  */
 ripe.Ripe.prototype.getLogoP = function(options) {
     return new Promise((resolve, reject) => {
@@ -60,7 +60,7 @@ ripe.Ripe.prototype.getLogoP = function(options) {
  *  - 'brand' - The brand of the model
  *  - 'version' - The version of the build, defaults to latest
  *  - 'variant' - The variant of the logo, that controls semantics of the logo
- *  - 'format' - The format of the logo image to be retrieved defaults to png
+ *  - 'format' - The format of the logo image to be retrieved (defaults to 'png')
  * @returns {String} The URL that can be used to retrieve a brand logo.
  */
 ripe.Ripe.prototype.getLogoUrl = function(options) {
