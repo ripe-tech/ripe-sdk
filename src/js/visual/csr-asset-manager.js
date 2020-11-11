@@ -204,8 +204,6 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function(scene = null) {
         // the mesh name (part) with the sub-mesh
         this.meshes[child.name] = child;
     });
-
-    console.info(this.meshes);
 };
 
 /**
@@ -410,9 +408,9 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
 /**
  * Loads an HDR environment and applies it to the scene.
  *
- * @param {*} scene The scene that will have the new environment.
+ * @param {Mesh} scene The scene that will have the new environment.
  * @param {*} renderer The renderer that will generate the equirectangular maps.
- * @param {*} environment The name of the environment to be loaded.
+ * @param {String} environment The name of the environment to be loaded.
  */
 ripe.CSRAssetManager.prototype.setupEnvironment = async function(scene, renderer, environment) {
     this.pmremGenerator = new this.library.PMREMGenerator(renderer);

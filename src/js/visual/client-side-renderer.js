@@ -62,8 +62,8 @@ ripe.CSRenderer = function(owner, element, options) {
 
     this.partsMap = options.partsMap || {};
 
-    // raycast
-    this.intersectedPart = "";
+    // starts the raycasting related values
+    this.intersectedPart = null;
     this.raycastingMeshes = [];
 
     this.debug = options.debug || false;
@@ -737,10 +737,10 @@ ripe.CSRenderer.prototype.updateSize = function() {
  * objects have been intersected, and handles the highlight and
  * lowlight operation automatically.
  *
- * @param {Event} mouseEvent The mouse event that is going to be used
+ * @param {Event} event The mouse event that is going to be used
  * as the basis for the casting of the ray.
  */
-ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
+ripe.CSRenderer.prototype._attemptRaycast = function(event) {
     // gathers the status for a series of class value of the
     // configurator main DOM element
     const animating = this.element.classList.contains("animating");
@@ -757,18 +757,28 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
     if (!this.scene) return;
     if (!this.assetManager) return;
 
+    // starts the casting operation by attributing a new cast identifier that
+    // is latter going to be used to check if the cast is up-to-date (to avoid
+    // async related issues)
+    const castId = this.castId ? this.castId + 1 : 1;
+    this._castId = castId;
+
     // in case there's no available bounding box set, tries to retrieve a new
     // bounding box from the configurator's DOM element
     if (!this.boundingBox) this.boundingBox = this.element.getBoundingClientRect();
 
     // converts the mouse coordinates into normalized (1 based) coordinates
     // that can be used by the raycaster
-    const mouse = this._convertRaycast(mouseEvent);
+    const coordinates = this._convertRaycast(event);
 
     // runs the raycasting operation trying to "see" if there's at least one match
     // with a "valid" sub meshes representative of a model's part
-    this.raycaster.setFromCamera(mouse, this.camera);
+    this.raycaster.setFromCamera(coordinates, this.camera);
     const intersects = this.raycaster.intersectObjects(this.raycastingMeshes);
+
+    // in case the cast unique identifier is no longer the same it means
+    // that we should ignore it's result (as this is casting is outdated)
+    if (castId !== this._castId) return;
 
     // in case no intersection occurs then a lowlight is performed (click outside scope)
     // and the control flow is immediately returned to caller method
@@ -824,7 +834,9 @@ ripe.CSRenderer.prototype.lowlight = function() {
         return;
     }
 
-    if (this.intersectedPart === "") {
+    // in case there's no intersected part selected then
+    // returns the control flow immediately (nothing to be done)
+    if (this.intersectedPart === null) {
         return;
     }
 
@@ -832,7 +844,8 @@ ripe.CSRenderer.prototype.lowlight = function() {
     this.element.classList.add("no-raycast");
     this.changeHighlight(this.intersectedPart, 1.0);
 
-    this.intersectedPart = "";
+    // unsets the intersected part value
+    this.intersectedPart = null;
 
     // triggers an event indicating that a lowlight operation has been
     // performed on the current configurator
@@ -842,7 +855,7 @@ ripe.CSRenderer.prototype.lowlight = function() {
 /**
  * The highlight transition.
  *
- * @param {*} part The affected part.
+ * @param {String} part The name of the affected part.
  * @param {*} endValue The end value for the material color, determined by the
  * caller.
  */
