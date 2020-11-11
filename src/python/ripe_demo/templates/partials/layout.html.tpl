@@ -11,12 +11,11 @@
             <script type="text/javascript" src="{{ touch('//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js') }}"></script>
             <script type="text/javascript" src="{{ touch('//libs.platforme.com/uxf/js/ux-min.js') }}"></script>
             <script type="text/javascript" src="{{ touch('//libs.platforme.com/layout/js/layout-min.js') }}"></script>
-            
+
             <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/ripe.css') }}" />
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/ripe.js', compress = 'js') }}"></script>
             <script type="text/javascript" src="{{ url_for('static', filename = 'assets/swear/configs/vyner_hitop.js') }}"></script>
-            
-            
+
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/build/three.min.js"></script>
             <script src="https://cdn.statically.io/gh/dataarts/dat.gui/master/build/dat.gui.min.js"></script>
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/OBJLoader.min.js"></script>
@@ -25,7 +24,7 @@
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/GLTFLoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/mrdoob/three.js/dev/examples/js/loaders/RGBELoader.min.js"></script>
             <script src="https://cdn.statically.io/gh/vanruesc/postprocessing/master/build/postprocessing.js"></script>
-            
+
             <script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js', compress = 'js') }}"></script>
             <title>{{ title }}{% block title %}RIPE SDK Demo{% endblock %}</title>
         {% endblock %}

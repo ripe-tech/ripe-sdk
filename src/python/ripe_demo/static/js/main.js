@@ -357,7 +357,7 @@ window.onload = function() {
                 postProcessingLibrary: window.POSTPROCESSING,
 
                 assets: {
-                    // model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
+                    // model data is stored in `vyner_hitop.js` temporarily, is meant to be a JSON
                     // that is downloaded, or present in a spec file
                     config: window.modelData,
 
