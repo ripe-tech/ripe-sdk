@@ -36,6 +36,7 @@ const paths = {
         "src/js/base/ripe.js",
         "src/js/base/logic.js",
         "src/js/base/config.js",
+        "src/js/base/easing.js",
         "src/js/base/utils.js",
         "src/js/base/api.js",
         "src/js/base/auth.js",
