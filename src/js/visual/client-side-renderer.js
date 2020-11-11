@@ -218,6 +218,8 @@ ripe.CSRenderer.prototype._registerHandlers = function() {
     const area = this.element.querySelector(".area");
 
     area.addEventListener("mousemove", function(event) {
+        // fixes the event, by applying a extra level of
+        // compatibility on top of the base event structure
         event = ripe.fixEvent(event);
 
         // in case the index that was found is the zero one this is a special
@@ -734,35 +736,40 @@ ripe.CSRenderer.prototype.updateSize = function() {
  * Performs a raycast from the current mouse position to check what objects have been intersected,
  * and handles the highlight and lowlight operation automatically.
  *
- * @param {*} mouseEvent The new mouse event that is used.
+ * @param {Event} mouseEvent The new mouse event that is used.
  */
 ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
+    // gathers the status for a series of class value of the
+    // configurator main DOM element
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
     const preventRaycasting = this.element.classList.contains("no-raycast");
 
-    // prevent raycasting can be used to improve performance, as this operation
-    // can be done every frame.
+    // prevents raycasting can be used to improve performance, as this operation
+    // can be done every frame
     if (animating || dragging || preventRaycasting) return;
+
+    // runs a series of pre-validation for the execution of the raycasting
+    // if any of them fails returns immediately (not possible to ray cast)
+    if (!this.raycaster) return;
+    if (!this.scene) return;
+    if (!this.assetManager) return;
 
     if (!this.boundingBox) this.boundingBox = this.element.getBoundingClientRect();
 
-    const mouse = this._getNormalizedCoordinatesRaycast(mouseEvent);
+    const mouse = this._convertRaycast(mouseEvent);
+    this.raycaster.setFromCamera(mouse, this.camera);
 
-    if (this.raycaster && this.scene && this.assetManager) {
-        this.raycaster.setFromCamera(mouse, this.camera);
-        const intersects = this.raycaster.intersectObjects(this.raycastingMeshes);
-
-        if (intersects.length > 0) {
-            if (this.intersectedPart !== intersects[0].object.name) {
-                this.lowlight();
-
-                this.intersectedPart = intersects[0].object.name;
-                this.highlight(this.intersectedPart);
-            }
-        } else {
+    const intersects = this.raycaster.intersectObjects(this.raycastingMeshes);
+    if (intersects.length > 0) {
+        if (this.intersectedPart !== intersects[0].object.name) {
             this.lowlight();
+
+            this.intersectedPart = intersects[0].object.name;
+            this.highlight(this.intersectedPart);
         }
+    } else {
+        this.lowlight();
     }
 };
 
@@ -850,21 +857,20 @@ ripe.CSRenderer.prototype.changeHighlight = function(part, endValue) {
 
 /**
  * Maps a mouse event to a coordinate that goes from -1 to 1 in both the X and Y
- * axis.
+ * axis. This value will allows us to work on a normalized "world".
  *
- * @param {*} mouseEvent The new mouse event to be converted.
+ * This method makes use of the bounding box for the normalization process.
+ *
+ * @param {Object} coordinates An object with the x and y non normalized values.
+ * @returns {Object} An object with both the x and the y normalized values.
  */
-ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent) {
-    // Origin of the coordinate system is the center of the element
-    // Coordinates range from -1,-1 (bottom left) to 1,1 (top right)
-    const newX = ((mouseEvent.x - this.boundingBox.x) / this.boundingBox.width) * 2 - 1;
+ripe.CSRenderer.prototype._convertRaycast = function(coordinates) {
+    // the origin of the coordinate system is the center of the element,
+    // coordinates range from -1,-1 (bottom left) to 1,1 (top right)
+    const newX = ((coordinates.x - this.boundingBox.x) / this.boundingBox.width) * 2 - 1;
     const newY =
-        -((mouseEvent.y - this.boundingBox.y + window.scrollY) / this.boundingBox.height) * 2 + 1;
-
-    return {
-        x: newX,
-        y: newY
-    };
+        ((coordinates.y - this.boundingBox.y + window.scrollY) / this.boundingBox.height) * -2 + 1;
+    return { x: newX, y: newY };
 };
 
 /**
