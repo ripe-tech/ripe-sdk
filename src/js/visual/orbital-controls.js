@@ -28,7 +28,7 @@ ripe.OrbitalControls = function(configurator, element, options) {
     this.maximumVerticalRot = 89;
     this.minimumVerticalRot = 0;
 
-    var startingPosition = options.position || 0;
+    const startingPosition = options.position || 0;
     this._baseHorizontalRot = this._positionToRotation(startingPosition);
     this.currentHorizontalRot = this._baseHorizontalRot;
 
@@ -128,7 +128,7 @@ ripe.OrbitalControls.prototype._setControlsOptions = function(options) {
 ripe.OrbitalControls.prototype.updateOptions = async function(options) {
     this.element = options.element === undefined ? this.element : options.element;
 
-    var startingPosition =
+    const startingPosition =
         options.position === undefined ? this.element.position : options.position;
     this._baseHorizontalRot = this._positionToRotation(startingPosition);
     this._setControlsOptions(options);
@@ -399,7 +399,7 @@ ripe.OrbitalControls.prototype.updateRotation = function(frame, options) {
  * continuous rotation.
  */
 ripe.OrbitalControls.prototype._updateDragRotations = function() {
-    var needsUpdate = false;
+    let needsUpdate = false;
 
     // if there is no difference to the previous drag rotation in the X axis
     if (
@@ -411,7 +411,8 @@ ripe.OrbitalControls.prototype._updateDragRotations = function() {
         needsUpdate = true;
     }
 
-    var diff;
+    let diff;
+
     // if there is no difference to the previous drag rotation in the Y axis
     if (
         this._baseVerticalRot - this.mouseDeltaY !== this.currentVerticalRot &&
@@ -520,11 +521,11 @@ ripe.OrbitalControls.prototype._drift = function(event) {
     // if specified that can't drift, return immediately
     if (!this.mouseDrift) return;
 
-    var currentValueX = event.movementX;
-    var currentValueY = event.movementY;
+    let currentValueX = event.movementX;
+    let currentValueY = event.movementY;
 
-    var pos = 0;
-    var startTime = 0;
+    let pos = 0;
+    let startTime = 0;
     const driftAnimation = time => {
         if (!this.isDrifting) return;
 
@@ -592,9 +593,9 @@ ripe.OrbitalControls.prototype.rotationTransition = async function(options) {
 
     const startingCameraDistance = this.cameraDistance;
 
-    var pos = 0;
+    let pos = 0;
+    let startTime = 0;
 
-    var startTime = 0;
     const transition = time => {
         startTime = startTime === 0 ? time : startTime;
         pos = (time - startTime) / options.duration;

@@ -93,7 +93,7 @@ ripe.CSRInitials.prototype.initialize = async function(assetManager) {
             this.logoMesh = child;
         } else if (child.name.includes("initials_part")) {
             // naming is of the type "initials_part_1, where 1 indicates the position
-            var initialPosition = parseInt(child.name.split("_")[2]);
+            const initialPosition = parseInt(child.name.split("_")[2]);
             this.initialsPositions[initialPosition] = child;
             child.visible = false;
             if (child.material) child.material.dispose();
@@ -133,7 +133,7 @@ ripe.CSRInitials.prototype.update = async function() {
         (this.logoMesh && initials === "" && this.initialsText !== "") ||
         (initials !== "" && this.initialsText === "")
     ) {
-        var isLogoVisible = initials === "" && this.initialsText !== "";
+        const isLogoVisible = initials === "" && this.initialsText !== "";
         this.logoMesh.visible = isLogoVisible;
     }
 
@@ -182,11 +182,11 @@ ripe.CSRInitials.prototype.embossLetters = async function(initials, newEngraving
     }
 
     // Starts at 1 to line up with initials mesh position
-    for (var i = 1; i <= Math.min(initials.length, maxLength); i++) {
+    for (let i = 1; i <= Math.min(initials.length, maxLength); i++) {
         const posRot = this.getPosRotLetter(i, initials);
         const letter = initials.charAt(i - 1);
 
-        var mesh = this.createLetter(letter);
+        const mesh = this.createLetter(letter);
 
         this.textMeshes.push(mesh);
 
@@ -212,8 +212,8 @@ ripe.CSRInitials.prototype.embossLetters = async function(initials, newEngraving
  * Extracts the material's type and color from an engraving.
  */
 ripe.CSRInitials.prototype._parseEngraving = function() {
-    var splitProps = this.owner.engraving.split("::");
-    var material, type;
+    const splitProps = this.owner.engraving.split("::");
+    let material, type;
 
     if (splitProps[0] === "style") {
         material = splitProps[1].split("_")[0];
@@ -261,12 +261,12 @@ ripe.CSRInitials.prototype.disposeLetter = function(index) {
  * @param {*} initials The text of the initials.
  */
 ripe.CSRInitials.prototype.getPosRotLetter = function(letterNumber, initials) {
-    var transform = {};
+    const transform = {};
     const size = Object.keys(this.initialsPositions).length;
 
     const center = (size + 1) / 2;
 
-    var posInInitials = 0;
+    let posInInitials = 0;
 
     if (this.align === "left") posInInitials = letterNumber;
     else if (this.align === "right") {
@@ -284,8 +284,8 @@ ripe.CSRInitials.prototype.getPosRotLetter = function(letterNumber, initials) {
     const previous = this.initialsPositions[Math.floor(posInInitials)];
     const next = this.initialsPositions[Math.ceil(posInInitials)];
 
-    var position = new this.library.Vector3(0, 0, 0);
-    var rotation = new this.library.Vector3(0, 0, 0);
+    const position = new this.library.Vector3(0, 0, 0);
+    const rotation = new this.library.Vector3(0, 0, 0);
 
     position.x = (previous.position.x + next.position.x) / 2;
     position.y = (previous.position.y + next.position.y) / 2;
@@ -313,7 +313,7 @@ ripe.CSRInitials.prototype.createLetter = function(letter) {
         );
     }
 
-    var textGeometry = new this.library.TextGeometry(letter, {
+    let textGeometry = new this.library.TextGeometry(letter, {
         font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
 
         size: this.textSize,
@@ -323,7 +323,7 @@ ripe.CSRInitials.prototype.createLetter = function(letter) {
 
     textGeometry = new this.library.BufferGeometry().fromGeometry(textGeometry);
 
-    var letterMesh = new this.library.Mesh(textGeometry, this.letterMaterial);
+    const letterMesh = new this.library.Mesh(textGeometry, this.letterMaterial);
 
     // rotates geometry to negate default text rotation
     letterMesh.geometry.rotateX(-Math.PI / 2);
@@ -344,7 +344,7 @@ ripe.CSRInitials.prototype.engraveLetters = function(initials, newEngraving) {};
  */
 ripe.CSRInitials.prototype.disposeResources = async function() {
     console.log("Disposing Initials Resources.");
-    var count = 0;
+    let count = 0;
 
     if (this.textMeshes.length > 0) {
         for (let i = 0; i < this.textMeshes.length; i++) {
@@ -356,7 +356,7 @@ ripe.CSRInitials.prototype.disposeResources = async function() {
     console.log("Finished disposing " + count + " letters.");
 
     count = 0;
-    for (var mesh in this.initialsPositions) {
+    for (const mesh in this.initialsPositions) {
         await this.assetManager.disposeMesh(this.initialsPositions[mesh]);
         count++;
     }

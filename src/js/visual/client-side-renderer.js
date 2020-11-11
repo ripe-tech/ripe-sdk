@@ -13,7 +13,7 @@ if (
 
 /**
  * @class
- * @classdesc Class that defines the client sider renderer that supports
+ * @classdesc Class that defines the client side renderer that supports
  * the ConfiguratorCSR class. Stores and executes all logic for the
  * rendering, including loading meshes and materials, as well as setting
  * up the scene to be used.
@@ -193,7 +193,7 @@ ripe.CSRenderer.prototype.initialize = async function(assetManager) {
 
     if (this.debug) this.createGUI();
 
-    var hasAnimation = this._getAnimationByName(this.introAnimation) !== undefined;
+    const hasAnimation = this._getAnimationByName(this.introAnimation) !== undefined;
     // finished loading everything, begin the rendering processs.
 
     if (this.introAnimation && hasAnimation) this._performAnimation(this.introAnimation);
@@ -286,7 +286,7 @@ ripe.CSRenderer.prototype.disposeResources = async function() {
  * that pertain to rendering, such as loading the environment and the animations.
  */
 ripe.CSRenderer.prototype._loadAssets = async function() {
-    for (var mesh in this.assetManager.meshes) {
+    for (const mesh in this.assetManager.meshes) {
         this.raycastingMeshes.push(this.assetManager.meshes[mesh]);
     }
 
@@ -355,9 +355,9 @@ ripe.CSRenderer.prototype._initializeShaders = function() {
 ripe.CSRenderer.prototype._initializeLights = function() {
     const ambientLight = new this.library.HemisphereLight(0xffeeb1, 0x080820, 0.0);
 
-    // Lights should be forther away based on the camera distance, useful for dealing
+    // lights should be further away based on the camera distance, useful for dealing
     // with scenes of varying sizes.
-    var mult = this.initialDistance;
+    const mult = this.initialDistance;
 
     this.keyLight = new this.library.PointLight(0xffffff, 2.2, 9 * mult);
     this.keyLight.position.set(1 * mult, 1 * mult, 1 * mult);
@@ -404,8 +404,8 @@ ripe.CSRenderer.prototype._initializeRenderer = function() {
 
     this.renderer.info.autoReset = false;
 
-    var width = this.element.getBoundingClientRect().width;
-    var height = this.element.getBoundingClientRect().height;
+    const width = this.element.getBoundingClientRect().width;
+    const height = this.element.getBoundingClientRect().height;
 
     this.renderer.setSize(width, height);
 
@@ -416,13 +416,13 @@ ripe.CSRenderer.prototype._initializeRenderer = function() {
     this.renderer.shadowMap.type = this.library.PCFSoftShadowMap;
 
     const area = this.element.querySelector(".area");
-    var devicePixelRatio = window.devicePixelRatio || 1;
+    const devicePixelRatio = window.devicePixelRatio || 1;
     this.renderer.setPixelRatio(devicePixelRatio);
     this.renderer.setClearColor(0xffffff);
 
     area.appendChild(this.renderer.domElement);
 
-    var renderTargetParams = {
+    const renderTargetParams = {
         minFilter: this.library.LinearFilter,
         magFilter: this.library.LinearFilter,
         format: this.library.RGBAFormat
@@ -614,7 +614,7 @@ ripe.CSRenderer.prototype._initializeCameras = function() {
 
     this.camera.animations = [];
     // load camera specific animations
-    for (var animation in this.assetManager.animations) {
+    for (const animation in this.assetManager.animations) {
         if (animation.includes("camera_")) {
             this.camera.animations.push(this.assetManager.animations[animation]);
         }
@@ -625,7 +625,7 @@ ripe.CSRenderer.prototype._initializeCameras = function() {
  * @ignore
  */
 ripe.CSRenderer.prototype._getAnimationByName = function(animationName) {
-    for (var animation in this.assetManager.animations) {
+    for (const animation in this.assetManager.animations) {
         if (animation === animationName) {
             return this.assetManager.animations[animation];
         }
@@ -640,13 +640,13 @@ ripe.CSRenderer.prototype._getAnimationByName = function(animationName) {
  * @param {String} animationName The name of the animation to be executed.
  */
 ripe.CSRenderer.prototype._performAnimation = function(animationName) {
-    var animation = this._getAnimationByName(animationName);
+    const animation = this._getAnimationByName(animationName);
 
     if (!animation) return;
 
     animation.optimize();
 
-    var action = this.mixer.clipAction(animation);
+    const action = this.mixer.clipAction(animation);
     action.clampWhenFinished = true;
     action.loop = this.library.LoopOnce;
     action.setEffectiveTimeScale(1);
@@ -659,7 +659,7 @@ ripe.CSRenderer.prototype._performAnimation = function(animationName) {
     clock.stop();
     action.play().stop();
 
-    var delta = -1;
+    let delta = -1;
 
     const doAnimation = () => {
         if (delta === -1) {
@@ -746,7 +746,7 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
 
     if (this.raycaster && this.scene && this.assetManager) {
         this.raycaster.setFromCamera(mouse, this.camera);
-        var intersects = this.raycaster.intersectObjects(this.raycastingMeshes);
+        const intersects = this.raycaster.intersectObjects(this.raycastingMeshes);
 
         if (intersects.length > 0) {
             if (this.intersectedPart !== intersects[0].object.name) {
@@ -806,22 +806,22 @@ ripe.CSRenderer.prototype.lowlight = function() {
 };
 
 /**
- * The hightlight transition.
+ * The highlight transition.
  *
  * @param {*} part The affected part.
  * @param {*} endValue The end value for the material color, determined by the
  * caller.
  */
 ripe.CSRenderer.prototype.changeHighlight = function(part, endValue) {
-    var meshTarget = this.assetManager.meshes[part];
-    var startingValue = meshTarget.material.color.r;
+    const meshTarget = this.assetManager.meshes[part];
+    const startingValue = meshTarget.material.color.r;
 
     if (!meshTarget) return;
 
-    var currentValue = startingValue;
-    var pos = 0;
+    let currentValue = startingValue;
+    let pos = 0;
+    let startTime = 0;
 
-    var startTime = 0;
     const changeHighlightTransition = time => {
         startTime = startTime === 0 ? time : startTime;
 
@@ -871,21 +871,21 @@ ripe.CSRenderer.prototype._getNormalizedCoordinatesRaycast = function(mouseEvent
  * or "material" when the "setParts" function is called.
  */
 ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
-    var width = this.element.getBoundingClientRect().width;
-    var height = this.element.getBoundingClientRect().height;
+    const width = this.element.getBoundingClientRect().width;
+    const height = this.element.getBoundingClientRect().height;
 
-    var isCrossfading = this.element.classList.contains("crossfading");
+    const isCrossfading = this.element.classList.contains("crossfading");
 
     let mixRatio = 0.0;
 
-    var quadGeometry = new this.library.PlaneBufferGeometry(width, height);
-    var quad = new this.library.Mesh(quadGeometry, this.crossfadeShader);
+    const quadGeometry = new this.library.PlaneBufferGeometry(width, height);
+    const quad = new this.library.Mesh(quadGeometry, this.crossfadeShader);
     // set the quad in the range the crossfade camera can render.
     quad.position.set(0, 0, 999);
 
     this.scene.add(quad);
 
-    var parts = options.parts === undefined ? this.owner.parts : options.parts;
+    const parts = options.parts === undefined ? this.owner.parts : options.parts;
 
     if (isCrossfading) {
         // since it is already crossfading, only begin the transition to the next frame
@@ -930,11 +930,11 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
 
     this.crossfadeShader.uniforms.mixRatio.value = mixRatio;
 
-    var pos = 0;
-    var duration = options.duration || 500;
+    const duration = options.duration || 500;
 
-    var startTime = 0;
-    var continueCrossfade = true;
+    let pos = 0;
+    let startTime = 0;
+    let continueCrossfade = true;
 
     const crossfadeFunction = time => {
         startTime = startTime === 0 ? time : startTime;
@@ -985,9 +985,9 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
  * @param {*} options The struct containing the new values for rotation and camera distance.
  */
 ripe.CSRenderer.prototype.rotate = function(options) {
-    var maxHeight = options.distance - this.cameraHeight;
+    const maxHeight = options.distance - this.cameraHeight;
 
-    var distance = options.distance * Math.cos((Math.PI / 180) * options.rotationY);
+    const distance = options.distance * Math.cos((Math.PI / 180) * options.rotationY);
     this.camera.position.x = distance * Math.sin((Math.PI / 180) * -options.rotationX);
     this.camera.position.y =
         this.cameraHeight + maxHeight * Math.sin((Math.PI / 180) * options.rotationY);

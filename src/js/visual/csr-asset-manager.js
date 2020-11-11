@@ -79,7 +79,7 @@ ripe.CSRAssetManager.prototype.updateOptions = async function(options) {
  * Chooses the correct file loader based on the given format.
  */
 ripe.CSRAssetManager.prototype._loadAssets = async function() {
-    var meshPath = this.owner.model.toLowerCase();
+    let meshPath = this.owner.model.toLowerCase();
 
     if (this.format.includes("gltf")) {
         meshPath += ".glb";
@@ -105,24 +105,25 @@ ripe.CSRAssetManager.prototype._loadAssets = async function() {
  * @ignore
  */
 ripe.CSRAssetManager.prototype._loadAsset = async function(filename, isAnimation = false) {
-    var path = this.assetsPath + this.owner.brand.toLowerCase();
+    let path = this.assetsPath + this.owner.brand.toLowerCase();
 
-    if (isAnimation) path += "/animations/" + this.owner.model.toLowerCase() + "/" + filename;
-    else {
+    if (isAnimation) {
+        path += "/animations/" + this.owner.model.toLowerCase() + "/" + filename;
+    } else {
         path = this.owner.getMeshUrl({
             variant: "$base"
         });
     }
 
-    var type = "gltf";
-    var loader = null;
+    let type = "gltf";
+    let loader = null;
 
     if (filename.includes(".fbx")) type = "fbx";
 
     if (type === "gltf") loader = new this.library.GLTFLoader();
     else loader = new this.library.FBXLoader();
 
-    var asset = await new Promise(resolve => {
+    const asset = await new Promise(resolve => {
         loader.load(path, function(asset) {
             resolve(asset);
         });
@@ -146,7 +147,7 @@ ripe.CSRAssetManager.prototype._loadAsset = async function(filename, isAnimation
  * mesh itself.
  */
 ripe.CSRAssetManager.prototype._loadSubMeshes = function() {
-    var box = new this.library.Box3().setFromObject(this.loadedScene);
+    const box = new this.library.Box3().setFromObject(this.loadedScene);
 
     const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
@@ -235,6 +236,7 @@ ripe.CSRAssetManager.prototype.disposeScene = async function(scene) {
  */
 ripe.CSRAssetManager.prototype.disposeResources = async function() {
     console.log("Disposing Asset Manager Resources.");
+
     this.pmremGenerator.dispose();
     this.pmremGenerator = null;
 
@@ -243,10 +245,10 @@ ripe.CSRAssetManager.prototype.disposeResources = async function() {
         this.environmentTexture = null;
     }
 
-    var count = 0;
+    let count = 0;
 
     if (this.meshes) {
-        for (var mesh in this.meshes) {
+        for (const mesh in this.meshes) {
             await this.disposeMesh(this.meshes[mesh]);
             count++;
         }
@@ -258,7 +260,7 @@ ripe.CSRAssetManager.prototype.disposeResources = async function() {
     count = 0;
 
     if (this.loadedTextures) {
-        for (var texture in this.loadedTextures) {
+        for (const texture in this.loadedTextures) {
             this.loadedTextures[texture].dispose();
             this.loadedTextures[texture] = null;
             count++;
@@ -280,12 +282,12 @@ ripe.CSRAssetManager.prototype.disposeResources = async function() {
  * @param {*} autoApplies Decides if applies the materials or just loads all the textures.
  */
 ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies = true) {
-    for (var part in parts) {
+    for (const part in parts) {
         if (part === "shadow") continue;
 
-        var material = parts[part].material;
-        var color = parts[part].color;
-        var newMaterial = await this._loadMaterial(part, material, color);
+        const material = parts[part].material;
+        const color = parts[part].color;
+        const newMaterial = await this._loadMaterial(part, material, color);
 
         if (!autoApplies) {
             // only dispose the materials, not the textures, they need to be loaded
@@ -293,7 +295,7 @@ ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies 
             continue;
         }
 
-        for (var mesh in this.meshes) {
+        for (const mesh in this.meshes) {
             if (mesh.includes(part)) {
                 if (this.meshes[mesh].material) {
                     this.meshes[mesh].material.dispose();
@@ -316,14 +318,14 @@ ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies 
  * @param {*} color The color of the material.
  */
 ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color) {
-    var materialConfig;
+    let materialConfig;
 
     // If specific texture doesn't exist, fallback to general textures
     if (!this.modelConfig[part][type]) {
         materialConfig = this.modelConfig.general[type][color];
     } else materialConfig = this.modelConfig[part][type][color];
 
-    var newMaterial;
+    let newMaterial;
 
     // follows specular-glossiness workflow
     if (materialConfig.specularMap) {
@@ -340,13 +342,13 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
         this.owner.model.toLowerCase() +
         "/";
 
-    for (var prop in materialConfig) {
+    for (const prop in materialConfig) {
         // if it's a map, load and apply the texture
         if (prop.includes("map") || prop.includes("Map")) {
-            var mapPath = basePath + materialConfig[prop];
+            const mapPath = basePath + materialConfig[prop];
 
             if (!this.loadedTextures[mapPath]) {
-                var texture = await new Promise((resolve, reject) => {
+                const texture = await new Promise((resolve, reject) => {
                     this.textureLoader.load(mapPath, function(texture) {
                         resolve(texture);
                     });
@@ -380,7 +382,7 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
  */
 ripe.CSRAssetManager.prototype.setupEnvironment = async function(scene, renderer, environment) {
     this.pmremGenerator = new this.library.PMREMGenerator(renderer);
-    var environmentMapPath =
+    const environmentMapPath =
         this.assetsPath + this.owner.brand + "/environments/" + environment + ".hdr";
 
     const rgbeLoader = new this.library.RGBELoader();
