@@ -345,25 +345,29 @@ ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies 
  * Returns a material, containing all the maps specified in the config. Stores the textures in memory to
  * allow for faster material change.
  *
- * @param {*} part The part that will receive the new material
- * @param {*} type The type of material, such as "python" or "nappa".
- * @param {*} color The color of the material.
+ * @param {String} part The part that will receive the new material
+ * @param {String} type The type of material, such as "python" or "nappa".
+ * @param {String} color The color of the material.
  */
 ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color) {
     let materialConfig;
 
-    // If specific texture doesn't exist, fallback to general textures
+    // if the specific texture doesn't exist, fallbacks to
+    // general textures
     if (!this.modelConfig[part][type]) {
         materialConfig = this.modelConfig.general[type][color];
-    } else materialConfig = this.modelConfig[part][type][color];
+    } else {
+        materialConfig = this.modelConfig[part][type][color];
+    }
 
     let newMaterial;
 
     // follows specular-glossiness workflow
     if (materialConfig.specularMap) {
         newMaterial = new this.library.MeshPhongMaterial();
-    } else {
-        // follows PBR workflow
+    }
+    // otherwise follows PBR workflow
+    else {
         newMaterial = new this.library.MeshStandardMaterial();
     }
 
@@ -375,7 +379,7 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
         "/";
 
     for (const prop in materialConfig) {
-        // if it's a map, load and apply the texture
+        // if it's a map, loads and applies the texture
         if (prop.includes("map") || prop.includes("Map")) {
             const mapPath = basePath + materialConfig[prop];
 
@@ -385,11 +389,13 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
                         resolve(texture);
                     });
                 });
-                // If texture is used for color information, set colorspace.
+
+                // if the texture is used for color information, set colorspace
                 texture.encoding = this.library.sRGBEncoding;
                 texture.anisotropy = this.maxAnisotropy;
 
-                // UVs use the convention that (0, 0) corresponds to the upper left corner of a texture.
+                // UVs use the convention that (0, 0) corresponds to the
+                // upper left corner of a texture
                 texture.flipY = false;
                 this.loadedTextures[mapPath] = texture;
             }
