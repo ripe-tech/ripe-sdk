@@ -28,6 +28,21 @@ describe("BrandAPI", function() {
         });
     });
 
+    describe("#getLogoP()", function() {
+        it("should gather a simple logo image", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.getLogoP({
+                brand: "dummy",
+                size: 50
+            });
+            assert.strictEqual(result.size, 20347);
+            assert.strictEqual(result.type, "image/png");
+        });
+    });
+
     describe("#runLogicP()", function() {
         it("should execute a simple logic", async () => {
             let result = null;
