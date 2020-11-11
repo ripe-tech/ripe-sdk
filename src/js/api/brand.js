@@ -12,6 +12,45 @@ if (
 }
 
 /**
+ * Returns the logo of a brand.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the logo, that controls semantics of the logo
+ *  - 'format' - The format of the logo image to be retrieved defaults to png
+ *  - 'size' - The size of the logo image
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The brand's logo.
+ */
+ripe.Ripe.prototype.getLogo = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getLogoOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the logo of a brand.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the logo, that controls semantics of the logo
+ *  - 'format' - The format of the logo image to be retrieved defaults to png
+ *  - 'size' - The size of the logo image
+ * @returns {XMLHttpRequest} The brand's logo.
+ */
+ripe.Ripe.prototype.getLogoP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getLogo(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns the URL where the mesh can be retrieved.
  *
  * This method is useful to allow external mesh loaders to
