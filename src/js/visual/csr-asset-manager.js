@@ -119,22 +119,24 @@ ripe.CSRAssetManager.prototype._loadAsset = async function (filename, isAnimatio
     if (type == "gltf") loader = new this.library.GLTFLoader();
     else loader = new this.library.FBXLoader();
 
+    var mesh = this.owner.getMeshP({
+        'brand': this.owner.brand,
+        'model': this.owner.model,
+        'variant': "base"
+    });    
+
     var asset = await new Promise((resolve) => {
-        loader.load(path, function (asset) {
+        loader.load(mesh, function (asset) {
             resolve(asset)
         });
     });
 
     if (isAnimation) {
         this.animations[filename] = asset.animations[0];
-
         // if it is a mesh operation
         if (filename.includes("mesh_")) {
             this.loadedScene.animations.push(asset.animations[0])
         }
-
-        console.log("Animation " + filename + " is: ")
-        console.log(asset.animations[0])
     } else {
         if (type == "gltf") this.loadedScene = asset.scene;
         else this.loadedScene = asset;

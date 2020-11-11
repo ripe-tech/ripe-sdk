@@ -670,7 +670,6 @@ ripe.CSRenderer.prototype._performAnimation = function(animationName) {
             this.renderer.clear();
             this.renderer.render(this.scene, this.camera);
 
-            console.log(this.camera.position)
             // reset renderer
             this.renderer.setRenderTarget(null);
             this.renderer.clear();
@@ -876,8 +875,7 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
     var height = this.element.getBoundingClientRect().height;
 
     var isCrossfading = this.element.classList.contains("crossfading");
-    if (this.element.classList.contains("crossfading")) console.log("it's already crossfading");
-
+    
     let mixRatio = 0.0;
 
     var quadGeometry = new this.library.PlaneBufferGeometry(width, height);
