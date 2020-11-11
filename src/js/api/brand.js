@@ -458,7 +458,7 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
 };
 
 /**
- * @see {link https://docs.platforme.com/#product-endpoints-config}
+ * @see {link https://docs.platforme.com/#brand-endpoints-config-and-spec}
  * @ignore
  */
 ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
@@ -489,7 +489,7 @@ ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
 };
 
 /**
- * @see {link https://docs.platforme.com/#product-endpoints-defaults}
+ * @see {link https://docs.platforme.com/#brand-endpoints-defaults}
  * @ignore
  */
 ripe.Ripe.prototype._getDefaultsOptions = function(options = {}) {
