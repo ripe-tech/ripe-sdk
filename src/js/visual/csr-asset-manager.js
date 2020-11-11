@@ -105,6 +105,12 @@ ripe.CSRAssetManager.prototype._loadAssets = async function() {
  * @ignore
  */
 ripe.CSRAssetManager.prototype._loadAsset = async function(filename, isAnimation = false) {
+    const loadersM = {
+        gltf: this.library.GLTFLoader,
+        fbx: this.library.FBXLoader
+    };
+
+    let type = "gltf";
     let path = this.assetsPath + this.owner.brand.toLowerCase();
 
     if (isAnimation) {
@@ -115,18 +121,24 @@ ripe.CSRAssetManager.prototype._loadAsset = async function(filename, isAnimation
         });
     }
 
-    let type = "gltf";
-    let loader = null;
+    // tries to determine the proper type of file that is represented
+    // by the file name in question
+    if (filename.endsWith(".gltf")) type = "gltf";
+    else if (filename.endsWith(".fbx")) type = "fbx";
 
-    if (filename.includes(".fbx")) type = "fbx";
+    // gathers the proper loader class and then creates a new instance
+    // of the loader that is going to be used
+    const loader = new loadersM[type]();
 
-    if (type === "gltf") loader = new this.library.GLTFLoader();
-    else loader = new this.library.FBXLoader();
-
-    const asset = await new Promise(resolve => {
-        loader.load(path, function(asset) {
-            resolve(asset);
-        });
+    // encapsulates the loader logic around a promise and waits
+    // for it to be finalized in success or in error
+    let asset = await new Promise((resolve, reject) => {
+        loader.load(
+            path,
+            asset => resolve(asset),
+            null,
+            err => reject(err)
+        );
     });
 
     if (isAnimation) {
@@ -136,8 +148,15 @@ ripe.CSRAssetManager.prototype._loadAsset = async function(filename, isAnimation
             this.loadedScene.animations.push(asset.animations[0]);
         }
     } else {
-        if (type === "gltf") this.loadedScene = asset.scene;
-        else this.loadedScene = asset;
+        // for the glTF assets a small hack is required so
+        // the asset in question is the scene, this is required
+        // because glTF is a packaging format for multiple assets
+        // and we're only concerted with the scene here
+        if (type === "gltf") asset = asset.scene;
+
+        // updates the loaded scene variable with the assets
+        // that has just been loaded (and resets animations)
+        this.loadedScene = asset;
         this.loadedScene.animations = [];
     }
 };
