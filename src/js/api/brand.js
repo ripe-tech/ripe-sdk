@@ -51,10 +51,7 @@ ripe.Ripe.prototype.getLogoP = function(options) {
 };
 
 /**
- * Returns the URL where the mesh can be retrieved.
- *
- * This method is useful to allow external mesh loaders to
- * take control of the URL based mesh loading process.
+ * Returns the URL where the logo of a brand can be retrieved.
  *
  * @param {Object} options A map with options, such as:
  *  - 'brand' - The brand of the model
