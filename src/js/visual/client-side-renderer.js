@@ -755,28 +755,48 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
     if (!this.scene) return;
     if (!this.assetManager) return;
 
+    // in case there's no available bounding box set, tries to retrieve a new
+    // bounding box from the configurator's DOM element
     if (!this.boundingBox) this.boundingBox = this.element.getBoundingClientRect();
 
+    // converts the mouse coordinates into normalized (1 based) coordinates
+    // that can be used by the raycaster
     const mouse = this._convertRaycast(mouseEvent);
+
+    // runs the raycasting operation trying to "see" if there's at least one match
+    // with a "valid" sub meshes representative of a model's part
     this.raycaster.setFromCamera(mouse, this.camera);
-
     const intersects = this.raycaster.intersectObjects(this.raycastingMeshes);
-    if (intersects.length > 0) {
-        if (this.intersectedPart !== intersects[0].object.name) {
-            this.lowlight();
 
-            this.intersectedPart = intersects[0].object.name;
-            this.highlight(this.intersectedPart);
-        }
-    } else {
+    // in case no intersection occurs then a lowlight is performed (click outside scope)
+    // and the control flow is immediately returned to caller method
+    if (intersects.length === 0) {
         this.lowlight();
+        return;
     }
+
+    // captures the name of the intersected part/sub-mesh and
+    // verifies if it's not the same as the currently highlighted
+    // one, if that's the case no action is taken
+    const intersectedPart = intersects[0].object.name;
+    const isSame = intersectedPart === this.intersectedPart;
+    if (isSame) return;
+
+    // lowlights all of the parts and highlights the one that
+    // has been selected
+    this.lowlight();
+    this.highlight(this.intersectedPart);
+
+    // "saves" the currently selected part so that it can be
+    // latter used to detect duplicated highlighting (performance)
+    this.intersectedPart = intersectedPart;
 };
 
 /**
  * The highlight operation for a part.
  *
- * @param {*} part The part that is the target for the highlight.
+ * @param {String} part The name of the part that is the target
+ * for the highlight.
  */
 ripe.CSRenderer.prototype.highlight = function(part) {
     // verifiers if masks are meant to be used for the current model
