@@ -5,6 +5,21 @@ const ripe = require("../../../src/js");
 describe("BrandAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
+    describe("#getLogoP()", function() {
+        it("should gather a simple logo image", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.getLogoP({
+                brand: "dummy",
+                size: 50
+            });
+            assert.strictEqual(result.size, 20347);
+            assert.strictEqual(result.type, "image/png");
+        });
+    });
+
     describe("#getLogoUrl()", function() {
         it("should gather a simple logo URL", async () => {
             let result = null;
