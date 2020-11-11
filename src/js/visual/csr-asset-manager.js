@@ -79,23 +79,19 @@ ripe.CSRAssetManager.prototype.updateOptions = async function(options) {
  * Chooses the correct file loader based on the given format.
  */
 ripe.CSRAssetManager.prototype._loadAssets = async function() {
-    let meshPath = this.owner.model.toLowerCase();
+    // loads the initial mesh asset to be used as the main mesh
+    // of the scene (should use the RIPE SDK for model URL) and
+    // then loads its sub-meshes
+    const asset = await this._loadAsset();
+    this._loadSubMeshes(asset);
 
-    if (this.format.includes("gltf")) {
-        meshPath += ".glb";
-    } else if (this.format.includes("fbx")) {
-        meshPath += ".fbx";
-    }
-
-    await this._loadAsset(meshPath);
-
-    this._loadSubMeshes();
-
-    // set the materials for the first time
+    // sets the materials for the first time
     await this.setMaterials(this.owner.parts);
 
-    for (let i = 0; i < this.modelConfig.animations.length; i++) {
-        await this._loadAsset(this.modelConfig.animations[i], true);
+    // loads the complete set of animations defined in the
+    // model configuration
+    for (const animation of this.modelConfig.animations) {
+        await this._loadAsset(animation, true);
     }
 
     await this.configurator.initializeLoading();
@@ -104,7 +100,7 @@ ripe.CSRAssetManager.prototype._loadAssets = async function() {
 /**
  * @ignore
  */
-ripe.CSRAssetManager.prototype._loadAsset = async function(filename, isAnimation = false) {
+ripe.CSRAssetManager.prototype._loadAsset = async function(filename = null, isAnimation = false) {
     const loadersM = {
         gltf: this.library.GLTFLoader,
         fbx: this.library.FBXLoader
@@ -123,8 +119,9 @@ ripe.CSRAssetManager.prototype._loadAsset = async function(filename, isAnimation
 
     // tries to determine the proper type of file that is represented
     // by the file name in question
-    if (filename.endsWith(".gltf")) type = "gltf";
-    else if (filename.endsWith(".fbx")) type = "fbx";
+    if (path.endsWith(".gltf")) type = "gltf";
+    else if (path.endsWith(".fbx")) type = "fbx";
+    else type = "gltf";
 
     // gathers the proper loader class and then creates a new instance
     // of the loader that is going to be used
@@ -142,9 +139,14 @@ ripe.CSRAssetManager.prototype._loadAsset = async function(filename, isAnimation
     });
 
     if (isAnimation) {
+        // "gathers" the first animation of the asset as the main,
+        // the one that is going to be store in memory
         this.animations[filename] = asset.animations[0];
-        // if it is a mesh operation
-        if (filename.includes("mesh_")) {
+
+        // if it is a mesh operation it must be added to the set
+        // of animations associated with the currently loaded scene
+        const isMeshOperation = filename.includes("mesh_");
+        if (isMeshOperation) {
             this.loadedScene.animations.push(asset.animations[0]);
         }
     } else {
@@ -159,23 +161,32 @@ ripe.CSRAssetManager.prototype._loadAsset = async function(filename, isAnimation
         this.loadedScene = asset;
         this.loadedScene.animations = [];
     }
+
+    // returns the asset that has been loaded to the caller
+    // method, must be used carefully to avoid memory leaks
+    return asset;
 };
 
 /**
- * Stores the sub-meshes in a key-value pair, where the key is the name of the mesh and the value is the
- * mesh itself.
+ * Stores the sub-meshes in a key-value pair, where the key is the name of the
+ * mesh and the value is the mesh itself.
+ *
+ * @param {Mesh} scene The mesh object that is going to be used in the loading
+ * of the sub-meshes into memory (key-value pair).
  */
-ripe.CSRAssetManager.prototype._loadSubMeshes = function() {
-    const box = new this.library.Box3().setFromObject(this.loadedScene);
+ripe.CSRAssetManager.prototype._loadSubMeshes = function(scene = null) {
+    scene = scene || this.loadedScene;
+
+    const box = new this.library.Box3().setFromObject(scene);
 
     const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
 
-    const self = this;
-    this.loadedScene.traverse(function(child) {
+    scene.traverse(child => {
+        // in case the child element is not a mesh ignores it
         if (!child.isMesh) return;
 
-        // place the meshes in the center of the image.
+        // places the meshes in the center of the image
         child.position.set(
             child.position.x - centerX,
             child.position.y,
@@ -186,11 +197,15 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function() {
         child.receiveShadow = true;
 
         if (child.material) {
-            self.disposeMaterial(child.material);
+            this.disposeMaterial(child.material);
         }
 
-        self.meshes[child.name] = child;
+        // adds the child mesh to the map that associates
+        // the mesh name (part) with the sub-mesh
+        this.meshes[child.name] = child;
     });
+
+    console.info(this.meshes);
 };
 
 /**

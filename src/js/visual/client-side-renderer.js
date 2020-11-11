@@ -782,10 +782,10 @@ ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
     const isSame = intersectedPart === this.intersectedPart;
     if (isSame) return;
 
-    // lowlights all of the parts and highlights the one that
+    // "lowlights" all of the parts and highlights the one that
     // has been selected
     this.lowlight();
-    this.highlight(this.intersectedPart);
+    this.highlight(intersectedPart);
 
     // "saves" the currently selected part so that it can be
     // latter used to detect duplicated highlighting (performance)
