@@ -32,7 +32,7 @@ ripe.CSRenderer = function(owner, element, options) {
 
     this.library = options.library;
 
-    // Set default configurations
+    // sets the default configurations
     this.cameraFOV = 20;
     this.cameraHeight = 0;
     this.cameraTarget = new this.library.Vector3(0, 0, 0);
@@ -40,7 +40,7 @@ ripe.CSRenderer = function(owner, element, options) {
 
     this._setCameraOptions(options);
 
-    // set default render options
+    // sets the default render options
     this.easing = this.materialEasing = this.crossfadeEasing = this.highlightEasing =
         "easeInOutQuad";
     this.environment = "";
@@ -194,18 +194,20 @@ ripe.CSRenderer.prototype.initialize = async function(assetManager) {
     if (this.debug) this.createGui();
 
     const hasAnimation = this._getAnimationByName(this.introAnimation) !== undefined;
-    // finished loading everything, begin the rendering process.
 
-    if (this.introAnimation && hasAnimation) this._performAnimation(this.introAnimation);
-    else this.render();
-
-    // was meant to play an animation, but there was no animation with
-    // that name
+    // in case were meant to execute an animation bt there's none
+    // available raises an exception
     if (!hasAnimation && this.introAnimation) {
         throw new Error(
             `There is no animation present in the file with the given name '${this.introAnimation}'`
         );
     }
+
+    // in case an intro animation is required then performs it
+    // otherwise runs the "typical" render operation
+    const executeAnimation = hasAnimation && this.introAnimation;
+    if (executeAnimation) this._performAnimation(this.introAnimation);
+    else this.render();
 };
 
 /**
@@ -221,7 +223,6 @@ ripe.CSRenderer.prototype._registerHandlers = function() {
         // in case the index that was found is the zero one this is a special
         // position and the associated operation is the removal of the highlight
         // also if the target is being dragged the highlight should be removed
-
         if (self.down === true) {
             self.lowlight();
             return;
@@ -242,8 +243,8 @@ ripe.CSRenderer.prototype._registerHandlers = function() {
 };
 
 /**
- * Funtion to dispose all resources created by the renderer, including all the elements
- * belonging to the scene.
+ * Function to dispose all resources created by the renderer,
+ * including all the elements belonging to the scene.
  */
 ripe.CSRenderer.prototype.disposeResources = async function() {
     console.log("Disposing Renderer resources.");
