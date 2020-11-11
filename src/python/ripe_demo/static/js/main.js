@@ -348,18 +348,22 @@ window.onload = function() {
                 positionAnimate: "rotate",
 
                 // debug is used to change post processing settings
-                // debug: true,
+                debug: false,
+
                 usesPostProcessing: false,
 
-                library: THREE,
-                dat: dat,
-                postProcessingLibrary: POSTPROCESSING,
+                library: window.THREE,
+                dat: window.dat,
+                postProcessingLibrary: window.POSTPROCESSING,
 
                 assets: {
                     // model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
                     // that is downloaded, or present in a spec file
-                    config: model_data,
+                    config: window.modelData,
+
+                    // the relative path with the location of the assets
                     path: "/static/assets/",
+
                     // can be "gltf" or "fbx", defaults to "gltf" if no parameter is passed
                     format: "gltf"
                 },
@@ -397,7 +401,6 @@ window.onload = function() {
                 },
 
                 renderer: {
-                    // all the easing methods default to easeInOutQuad
                     highlightEasing: "easeOutQuad",
                     materialEasing: "easeInOutQuad",
                     crossfadeEasing: "easeInOutQuad",
