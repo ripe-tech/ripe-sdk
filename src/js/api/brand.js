@@ -53,6 +53,9 @@ ripe.Ripe.prototype.getLogoP = function(options) {
 /**
  * Returns the URL where the logo of a brand can be retrieved.
  *
+ * Can be used to allow interactive user agents (browser) to load the
+ * image user their own loading infrastructure.
+ *
  * @param {Object} options A map with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'version' - The version of the build, defaults to latest
