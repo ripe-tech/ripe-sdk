@@ -191,10 +191,10 @@ ripe.CSRenderer.prototype.initialize = async function(assetManager) {
 
     if (this.usesPostProcessing) this._setupPostProcessing();
 
-    if (this.debug) this.createGUI();
+    if (this.debug) this.createGui();
 
     const hasAnimation = this._getAnimationByName(this.introAnimation) !== undefined;
-    // finished loading everything, begin the rendering processs.
+    // finished loading everything, begin the rendering process.
 
     if (this.introAnimation && hasAnimation) this._performAnimation(this.introAnimation);
     else this.render();
@@ -203,9 +203,7 @@ ripe.CSRenderer.prototype.initialize = async function(assetManager) {
     // that name
     if (!hasAnimation && this.introAnimation) {
         throw new Error(
-            "There was no animation present in the file with the given name (" +
-                this.introAnimation +
-                ")."
+            `There is no animation present in the file with the given name '${this.introAnimation}'`
         );
     }
 };
@@ -439,7 +437,7 @@ ripe.CSRenderer.prototype._initializeRenderer = function() {
  * Creates the debug GUI for the post processing pipeline, with support for dynamic change of the render pass
  *  parameters.
  */
-ripe.CSRenderer.prototype.createGUI = function() {
+ripe.CSRenderer.prototype.createGui = function() {
     if (this.guiLibrary === null) return;
 
     this.gui = new this.guiLibrary.GUI({ width: 300 });
