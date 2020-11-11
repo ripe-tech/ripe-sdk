@@ -426,7 +426,7 @@ ripe.ConfiguratorCSR.prototype._initLayout = function() {
     const area = ripe.createElement("div", "area");
     this.element.appendChild(area);
 
-    // set the size of area, frontMask, back and mask
+    // sets the size of area, front mask, back and mask
     this.resize();
 
     // sets the initial view and position

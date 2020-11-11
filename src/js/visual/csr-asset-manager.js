@@ -47,15 +47,20 @@ ripe.CSRAssetManager = function(configurator, owner, options) {
     this.modelConfig = options.assets.config;
 
     this.meshes = {};
+    this.wireframes = {};
     this.loadedTextures = {};
     this.environmentTexture = null;
     this.loadedScene = undefined;
 
-    const tmpRenderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
-
-    this.maxAnisotropy = tmpRenderer.capabilities.getMaxAnisotropy();
-
-    tmpRenderer.dispose();
+    // creates a temporary render to be able to obtain a
+    // series of properties that will be applicable to an
+    // equivalent renderer that is going to be created
+    const renderer = new this.library.WebGLRenderer({ antialias: true, alpha: true });
+    try {
+        this.maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
+    } finally {
+        renderer.dispose();
+    }
 
     this.animations = {};
 
@@ -76,14 +81,22 @@ ripe.CSRAssetManager.prototype.updateOptions = async function(options) {
 };
 
 /**
+ * Loads the complete base set of assets for the scene.
+ *
  * Chooses the correct file loader based on the given format.
+ *
+ * @param options The options to configure the assets loading.
  */
-ripe.CSRAssetManager.prototype._loadAssets = async function() {
+ripe.CSRAssetManager.prototype._loadAssets = async function({
+    subMeshes = true,
+    wireframes = false
+} = {}) {
     // loads the initial mesh asset to be used as the main mesh
     // of the scene (should use the RIPE SDK for model URL) and
     // then loads its sub-meshes
     const asset = await this._loadAsset();
-    this._loadSubMeshes(asset);
+    if (subMeshes) this._loadSubMeshes(asset);
+    if (wireframes) this._loadWireframes(asset);
 
     // sets the materials for the first time
     await this.setMaterials(this.owner.parts);
@@ -177,16 +190,20 @@ ripe.CSRAssetManager.prototype._loadAsset = async function(filename = null, isAn
 ripe.CSRAssetManager.prototype._loadSubMeshes = function(scene = null) {
     scene = scene || this.loadedScene;
 
+    // creates a 3D box from the current scene in question to
+    // be able to calculate the center of the scene
     const box = new this.library.Box3().setFromObject(scene);
-
     const centerX = box.min.x + (box.max.x - box.min.x) / 2.0;
     const centerZ = box.min.z + (box.max.z - box.min.z) / 2.0;
 
+    // iterates over the complete set of element from the scene
+    // to obtain the sub-meshes contained in it and process them
     scene.traverse(child => {
         // in case the child element is not a mesh ignores it
         if (!child.isMesh) return;
 
-        // places the meshes in the center of the image
+        // places the meshes in the center of the scene bounding
+        // box (proper and expected positioning)
         child.position.set(
             child.position.x - centerX,
             child.position.y,
@@ -195,7 +212,11 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function(scene = null) {
 
         child.castShadow = true;
         child.receiveShadow = true;
+        child.visible = true;
 
+        // in case there's a material set in the child
+        // removes it as CSR is going to take care of
+        // handling materials "manually"
         if (child.material) {
             this.disposeMaterial(child.material);
         }
@@ -203,6 +224,20 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function(scene = null) {
         // adds the child mesh to the map that associates
         // the mesh name (part) with the sub-mesh
         this.meshes[child.name] = child;
+    });
+};
+
+ripe.CSRAssetManager.prototype._loadWireframes = function(scene = null, visible = false) {
+    scene = scene || this.loadedScene;
+    scene.traverse(child => {
+        if (!child.isMesh) return;
+
+        const wireframe = this._buildWireframe(child);
+        wireframe.visible = visible;
+
+        scene.add(wireframe);
+
+        this.wireframes[child.name] = wireframe;
     });
 };
 
@@ -223,13 +258,13 @@ ripe.CSRAssetManager.prototype.disposeMaterial = async function(material) {
     if (material.aoMap) material.aoMap.dispose();
 
     material.dispose();
-    material = null;
 };
 
 /**
  * Disposes not only the mesh, but all the attributes, geometries and materials associated
  * with it.
- * @param {*} mesh The mesh to be disposed.
+ *
+ * @param {Mesh} mesh The mesh to be disposed.
  */
 ripe.CSRAssetManager.prototype.disposeMesh = async function(mesh) {
     if (mesh.material) await this.disposeMaterial(mesh.material);
@@ -277,34 +312,23 @@ ripe.CSRAssetManager.prototype.disposeResources = async function() {
         this.environmentTexture = null;
     }
 
-    let count = 0;
-
-    if (this.meshes) {
-        for (const mesh in this.meshes) {
-            await this.disposeMesh(this.meshes[mesh]);
-            count++;
-        }
+    for (const mesh of Object.values(this.meshes)) {
+        await this.disposeMesh(mesh);
     }
 
-    this.meshes = {};
-    console.log("Finished disposing " + count + " meshes.");
+    for (const wireframe of Object.values(this.wireframes)) {
+        await this.disposeMesh(wireframe);
+    }
 
-    count = 0;
-
-    if (this.loadedTextures) {
-        for (const texture in this.loadedTextures) {
-            this.loadedTextures[texture].dispose();
-            this.loadedTextures[texture] = null;
-            count++;
-        }
+    for (const [name, value] of Object.entries(this.loadedTextures)) {
+        value.dispose();
+        this.loadedTextures[name] = null;
     }
 
     this.meshes = {};
     this.loadedTextures = {};
     this.loadedScene = null;
     this.library = null;
-
-    console.log("Finished disposing " + count + " textures.");
 };
 
 /**
@@ -342,8 +366,8 @@ ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies 
 };
 
 /**
- * Returns a material, containing all the maps specified in the config. Stores the textures in memory to
- * allow for faster material change.
+ * Returns a material, containing all the maps specified in the config.
+ * Stores the textures in memory to allow for faster material change.
  *
  * @param {String} part The part that will receive the new material
  * @param {String} type The type of material, such as "python" or "nappa".
@@ -434,4 +458,26 @@ ripe.CSRAssetManager.prototype.setupEnvironment = async function(scene, renderer
     this.environmentTexture = this.pmremGenerator.fromEquirectangular(texture).texture;
 
     scene.environment = this.environmentTexture;
+};
+
+/**
+ * Builds a wireframe mesh from the provided base mesh.
+ *
+ * The wireframe mesh is composed by line segments that create the
+ * border of the multiple polygons of the original mesh.
+ *
+ * @param {Mesh} mesh The mesh from which the wireframe version of the
+ * mesh is going to be built.
+ * @returns {Mesh} The resulting wireframe mesh.
+ */
+ripe.CSRAssetManager.prototype._buildWireframe = function(mesh) {
+    const wireframe = new this.library.WireframeGeometry(mesh.geometry);
+    const line = new this.library.LineSegments(wireframe);
+    line.material.depthTest = false;
+    line.material.opacity = 0.25;
+    line.material.transparent = true;
+    line.position.set(mesh.position.x, mesh.position.y, mesh.position.z);
+    line.scale.set(mesh.scale.y, mesh.scale.y, mesh.scale.z);
+    line.setRotationFromEuler(mesh.rotation);
+    return line;
 };
