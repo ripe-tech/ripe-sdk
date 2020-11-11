@@ -13,22 +13,22 @@ if (
 
 ripe.easing = {};
 
-ripe.easing.linear = function(pos, startValue, endValue) {
+ripe.easing.linear = function(pos, start, end) {
     const t = pos;
-    return (endValue - startValue) * t + startValue;
+    return (end - start) * t + start;
 };
 
-ripe.easing.easeInQuad = function(pos, startValue, endValue) {
+ripe.easing.easeInQuad = function(pos, start, end) {
     const t = pos * (2 - pos);
-    return (endValue - startValue) * t + startValue;
+    return (end - start) * t + start;
 };
 
-ripe.easing.easeOutQuad = function(pos, startValue, endValue) {
+ripe.easing.easeOutQuad = function(pos, start, end) {
     const t = pos * pos;
-    return (endValue - startValue) * t + startValue;
+    return (end - start) * t + start;
 };
 
-ripe.easing.easeInOutQuad = function(pos, startValue, endValue) {
+ripe.easing.easeInOutQuad = function(pos, start, end) {
     const t = pos < 0.5 ? 2 * pos * pos : -1 + (4 - 2 * pos) * pos;
-    return (endValue - startValue) * t + startValue;
+    return (end - start) * t + start;
 };
