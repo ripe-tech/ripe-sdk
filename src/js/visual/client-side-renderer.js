@@ -270,8 +270,8 @@ ripe.CSRenderer.prototype.disposeResources = async function() {
     this.nextSceneFBO.texture.dispose();
     this.nextSceneFBO.dispose();
 
-    for (let i = 0; i < this.raycastingMeshes.length; i++) {
-        await this.assetManager.disposeMesh(this.raycastingMeshes[i]);
+    for (const raycastingMesh of this.raycastingMeshes) {
+        await this.assetManager.disposeMesh(raycastingMesh);
     }
 
     await this.assetManager.disposeScene(this.scene);
@@ -298,7 +298,12 @@ ripe.CSRenderer.prototype._loadAssets = async function() {
 };
 
 /**
- * Initialize shaders that the renderer will use, such as the crossfade shader for the transition.
+ * Initialize shaders that the renderer will use, such as
+ * the crossfade shader for the transition.
+ *
+ * This shaders are defined in GLSL.
+ *
+ * @see https://en.wikipedia.org/wiki/OpenGL_Shading_Language
  */
 ripe.CSRenderer.prototype._initializeShaders = function() {
     this.crossfadeShader = new this.library.ShaderMaterial({
@@ -407,7 +412,7 @@ ripe.CSRenderer.prototype._initializeRenderer = function() {
 
     this.renderer.setSize(width, height);
 
-    // Set renderer params
+    // sets renderer params
     this.renderer.toneMappingExposure = this.exposure;
     this.renderer.toneMapping = this.library.CineonToneMapping;
     this.renderer.shadowMap.enabled = true;
@@ -578,7 +583,8 @@ ripe.CSRenderer.prototype._setupAOPass = function() {
 };
 
 /**
- * Creates the default camera as well as the camera that will be responsible for handling the crossfades.
+ * Creates the default camera as well as the camera that will be responsible
+ * for handling the crossfading.
  */
 ripe.CSRenderer.prototype._initializeCameras = function() {
     const width = this.element.getBoundingClientRect().width;
@@ -886,12 +892,12 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
     const parts = options.parts === undefined ? this.owner.parts : options.parts;
 
     if (isCrossfading) {
-        // since it is already crossfading, only begin the transition to the next frame
+        // since it is already in crossfade, only begin the transition to the next frame
         // AFTER the materials are loaded
         if (type === "material") await this.assetManager.setMaterials(parts, false);
     }
 
-    // render current state
+    // renders current state
     this.renderer.setRenderTarget(this.previousSceneFBO);
     this.renderer.clear();
 

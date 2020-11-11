@@ -359,7 +359,7 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
     area.style.height = size + "px";
     this.currentSize = size;
 
-    // On the resize of the configurator, the renderer needs to update
+    // on the resize of the configurator, the renderer needs to update
     // the bounding box to maintain correct raycasts
     if (this.renderer) {
         this.renderer.updateSize();
