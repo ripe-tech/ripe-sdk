@@ -733,10 +733,12 @@ ripe.CSRenderer.prototype.updateSize = function() {
 };
 
 /**
- * Performs a raycast from the current mouse position to check what objects have been intersected,
- * and handles the highlight and lowlight operation automatically.
+ * Performs a raycast from the current mouse position to check what
+ * objects have been intersected, and handles the highlight and
+ * lowlight operation automatically.
  *
- * @param {Event} mouseEvent The new mouse event that is used.
+ * @param {Event} mouseEvent The mouse event that is going to be used
+ * as the basis for the casting of the ray.
  */
 ripe.CSRenderer.prototype._attemptRaycast = function(mouseEvent) {
     // gathers the status for a series of class value of the
