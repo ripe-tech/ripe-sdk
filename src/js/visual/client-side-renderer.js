@@ -897,8 +897,8 @@ ripe.CSRenderer.prototype._convertRaycast = function(coordinates) {
  * The crossfade function, that handles rendering the first image, then the image after the change
  * and seamlessly transitions between the two images.
  *
- * @param {*} options Specific options for the transition, such as duration and the new materials.
- * @param {*} type The type of transition, can be "rotation" for changing views or positions,
+ * @param {Object} options Specific options for the transition, such as duration and the new materials.
+ * @param {String} type The type of transition, can be "rotation" for changing views or positions,
  * or "material" when the "setParts" function is called.
  */
 ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
@@ -1013,13 +1013,13 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
  * Applies the rotation to the scene camera, as the rotation values are controlled by the
  * Orbital Controls.
  *
- * @param {*} options The struct containing the new values for rotation and camera distance.
+ * @param {Object} options The struct containing the new values for rotation and camera distance.
  */
 ripe.CSRenderer.prototype.rotate = function(options) {
     const maxHeight = options.distance - this.cameraHeight;
 
     const distance = options.distance * Math.cos((Math.PI / 180) * options.rotationY);
-    this.camera.position.x = distance * Math.sin((Math.PI / 180) * -options.rotationX);
+    this.camera.position.x = distance * Math.sin((Math.PI / 180) * options.rotationX * -1);
     this.camera.position.y =
         this.cameraHeight + maxHeight * Math.sin((Math.PI / 180) * options.rotationY);
     this.camera.position.z = distance * Math.cos((Math.PI / 180) * options.rotationX);
