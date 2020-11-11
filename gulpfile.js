@@ -22,7 +22,7 @@ const paths = {
     css: "src/css/**/*.css",
     docs: "src/js/*/**/*.js",
     test: "test/js/**/*.js",
-    demo: "src/python/ripe_demo/**/*.js",
+    demo: "src/python/ripe_demo/static/js/main.js",
     dist: "dist/**/*",
     polyfill: "node_modules/@babel/polyfill/dist/polyfill.js",
     basefiles: [
