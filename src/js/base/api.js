@@ -937,7 +937,6 @@ ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
  */
 ripe.Ripe.prototype._getImageURL = function(options) {
     options = this._getImageOptions(options);
-    console.log("-------options", options);
     return options.url + "?" + this._buildQuery(options.params);
 };
 
