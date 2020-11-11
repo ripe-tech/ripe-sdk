@@ -59,7 +59,6 @@ ripe.Image.prototype.init = function() {
     this.flip = this.options.flip || null;
     this.mirror = this.options.mirror || null;
     this.bounding_box = this.options.bounding_box || null;
-    this.initials = this.options.initials || null;
     this.algorithm = this.options.algorithm || null;
     this.background = this.options.background || null;
     this.engine = this.options.engine || null;
@@ -159,7 +158,6 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.mirror = options.mirror === undefined ? this.mirror : options.mirror;
     this.bounding_box =
         options.bounding_box === undefined ? this.bounding_box : options.bounding_box;
-    this.initials = options.initials === undefined ? this.initials : options.initials;
     this.algorithm = options.algorithm === undefined ? this.algorithm : options.algorithm;
     this.background = options.background === undefined ? this.background : options.background;
     this.engine = options.engine === undefined ? this.engine : options.engine;
