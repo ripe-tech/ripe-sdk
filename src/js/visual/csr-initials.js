@@ -31,7 +31,7 @@ ripe.CSRInitials = function(owner, options) {
     this.textSize = 1;
     this.textHeight = 0.1;
 
-    this.fontsPath = options.assets.path + this.owner.brand.toLowerCase() + "/fonts/"
+    this.fontsPath = options.assets.path + this.owner.brand.toLowerCase() + "/fonts/";
     this.fontType = "arial";
     this.fontWeight = "light";
     this.align = "center";

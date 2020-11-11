@@ -388,7 +388,7 @@ window.onload = function () {
                     // allows drifting when dragging stops
                     driftDuration: 200,
                     canZoom: true,
-                    // 'lockRotation' can be 'horizontal', 'vertical', or be left 
+                    // 'lockRotation' can be 'horizontal', 'vertical', or be left
                     // empty for no axis lock on rotations
                     rotationEasing: "easeInOutQuad"
                 },

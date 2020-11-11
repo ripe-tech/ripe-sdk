@@ -195,7 +195,7 @@ ripe.CSRenderer.prototype.initialize = async function(assetManager) {
 
     var hasAnimation = this._getAnimationByName(this.introAnimation) !== undefined;
     // finished loading everything, begin the rendering processs.
-    
+
     if (this.introAnimation && hasAnimation) this._performAnimation(this.introAnimation);
     else this.render();
 
@@ -612,11 +612,11 @@ ripe.CSRenderer.prototype._initializeCameras = function() {
         -998
     );
 
-    this.camera.animations = []
+    this.camera.animations = [];
     // load camera specific animations
     for (var animation in this.assetManager.animations) {
         if (animation.includes("camera_")) {
-            this.camera.animations.push(this.assetManager.animations[animation])
+            this.camera.animations.push(this.assetManager.animations[animation]);
         }
     }
 };
@@ -626,8 +626,8 @@ ripe.CSRenderer.prototype._initializeCameras = function() {
  */
 ripe.CSRenderer.prototype._getAnimationByName = function(animationName) {
     for (var animation in this.assetManager.animations) {
-        if (animation == animationName) {
-            return this.assetManager.animations[animation]
+        if (animation === animationName) {
+            return this.assetManager.animations[animation];
         }
     }
 
@@ -875,7 +875,7 @@ ripe.CSRenderer.prototype.crossfade = async function(options = {}, type) {
     var height = this.element.getBoundingClientRect().height;
 
     var isCrossfading = this.element.classList.contains("crossfading");
-    
+
     let mixRatio = 0.0;
 
     var quadGeometry = new this.library.PlaneBufferGeometry(width, height);
