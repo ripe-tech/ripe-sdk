@@ -22,6 +22,7 @@ const paths = {
     css: "src/css/**/*.css",
     docs: "src/js/*/**/*.js",
     test: "test/js/**/*.js",
+    demo: "src/python/ripe_demo/**/*.js",
     dist: "dist/**/*",
     polyfill: "node_modules/@babel/polyfill/dist/polyfill.js",
     basefiles: [
@@ -167,7 +168,7 @@ gulp.task("mark", () => {
 
 gulp.task("lint", () => {
     return gulp
-        .src([paths.bscripts, paths.test])
+        .src([paths.bscripts, paths.test, paths.demo])
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError());
@@ -175,7 +176,7 @@ gulp.task("lint", () => {
 
 gulp.task("lint-fix", () => {
     return gulp
-        .src([paths.bscripts, paths.test])
+        .src([paths.bscripts, paths.test, paths.demo])
         .pipe(eslint({ fix: true }))
         .pipe(eslint.format())
         .pipe(gulp.dest(file => file.base))

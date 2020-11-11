@@ -4,13 +4,13 @@
  */
 var FACES = ["side", "top", "front"];
 
-window.onload = function () {
+window.onload = function() {
     var elementCSR = document.getElementById("configuratorCSR");
     var elementPRC = document.getElementById("configuratorPRC");
     var _body = document.querySelector("body");
-    var url = _body.dataset.url || "http://localhost:8080/api/";
+    var url = _body.dataset.url || "https://sandbox.platforme.com/api/";
     var brand = _body.dataset.brand || "swear";
-    var model = _body.dataset.model || "vyner_hitop";
+    var model = _body.dataset.model || "vyner";
     var variant = _body.dataset.variant || "";
     var version = _body.dataset.version || null;
     var format = _body.dataset.format || "lossless";
@@ -42,7 +42,7 @@ window.onload = function () {
         guessUrl: guessUrl
     });
 
-    var randomize = async function () {
+    var randomize = async function() {
         parts = [];
         for (var key in partsMap) {
             var triplets = partsMap[key];
@@ -54,7 +54,7 @@ window.onload = function () {
         await ripe.setParts(parts, true, { partEvents: false });
     };
 
-    var unique = function () {
+    var unique = function() {
         var count = 1;
         for (var key in partsMap) {
             var triplets = partsMap[key];
@@ -63,7 +63,7 @@ window.onload = function () {
         return count;
     };
 
-    var beautify = function (value) {
+    var beautify = function(value) {
         var buffer = [];
         var parts = value.split("_");
         for (var index = 0; index < parts.length; index++) {
@@ -73,7 +73,7 @@ window.onload = function () {
         return buffer.join(" ");
     };
 
-    var bestFace = function (config) {
+    var bestFace = function(config) {
         var faces = config.faces || [];
         var bestFace = null;
         for (var index = 0; index < FACES.length; index++) {
@@ -90,7 +90,7 @@ window.onload = function () {
         return faces.length > 0 ? faces[0] : null;
     };
 
-    var init = function (instance) {
+    var init = function(instance) {
         initBase(instance);
         initHeader(instance);
         initOAuth(instance);
@@ -98,10 +98,10 @@ window.onload = function () {
         initInitials(instance);
     };
 
-    var initBase = function () {
+    var initBase = function() {
         // registers for the key down event on the global document element
         // to listen to some of the key strokes (global operations)
-        document.addEventListener("keydown", async function (event) {
+        document.addEventListener("keydown", async function(event) {
             if (event.ctrlKey && event.keyCode === 90) {
                 await ripe.undo();
             }
@@ -112,19 +112,19 @@ window.onload = function () {
         });
     };
 
-    var initHeader = function () {
+    var initHeader = function() {
         var setMessage = document.getElementById("set-message");
         var getPrice = document.getElementById("get-price");
         var getCombinations = document.getElementById("get-combinations");
 
         setMessage &&
-            setMessage.addEventListener("click", function () {
+            setMessage.addEventListener("click", function() {
                 alert("Not implemented");
             });
 
         getPrice &&
-            getPrice.addEventListener("click", function () {
-                ripe.getPrice(function (value) {
+            getPrice.addEventListener("click", function() {
+                ripe.getPrice(function(value) {
                     if (value) {
                         alert(String(value.total.price_final) + " " + value.total.currency);
                     } else {
@@ -134,8 +134,8 @@ window.onload = function () {
             });
 
         getCombinations &&
-            getCombinations.addEventListener("click", function () {
-                ripe.getCombinations(function (combinations) {
+            getCombinations.addEventListener("click", function() {
+                ripe.getCombinations(function(combinations) {
                     alert(
                         "There are <strong>" +
                             String(combinations.length.formatMoney(0)) +
@@ -146,15 +146,15 @@ window.onload = function () {
                 });
             });
 
-        ripe.bind("error", function (error, description) {
+        ripe.bind("error", function(error, description) {
             alert(error);
         });
 
-        ripe.bind("message", function (name, value) {
+        ripe.bind("message", function(name, value) {
             alert(name + " - " + value);
         });
 
-        ripe.bind("price", function (value) {
+        ripe.bind("price", function(value) {
             var price = document.getElementById("price");
             if (!value || !value.total) {
                 price.innerHTML = "N/A";
@@ -163,7 +163,7 @@ window.onload = function () {
             price.innerHTML = value.total.price_final + " " + value.total.currency;
         });
 
-        ripe.bind("combinations", function (value) {
+        ripe.bind("combinations", function(value) {
             for (var index = 0; index < value.length; index++) {
                 var triplet = value[index];
                 var part = triplet[0];
@@ -175,13 +175,13 @@ window.onload = function () {
         });
     };
 
-    var initOAuth = function () {
+    var initOAuth = function() {
         let oauthLogin = document.getElementById("oauth-login");
         let oauthLogout = document.getElementById("oauth-logout");
         let oauthOperation = document.getElementById("oauth-operation");
 
         oauthLogin &&
-            oauthLogin.addEventListener("click", function () {
+            oauthLogin.addEventListener("click", function() {
                 ripe.oauth({
                     clientId: clientId,
                     clientSecret: clientSecret,
@@ -191,13 +191,13 @@ window.onload = function () {
             });
 
         oauthLogout &&
-            oauthLogout.addEventListener("click", function () {
+            oauthLogout.addEventListener("click", function() {
                 ripe.unauth();
             });
 
         oauthOperation &&
-            oauthOperation.addEventListener("click", function () {
-                ripe.getOrders(function (result) {
+            oauthOperation.addEventListener("click", function() {
+                ripe.getOrders(function(result) {
                     alert("Retrieved " + String(result.length) + " orders");
                 });
             });
@@ -210,13 +210,13 @@ window.onload = function () {
         oauthLogout = oauthLogout || { style: {} };
         oauthOperation = oauthOperation || { style: {} };
 
-        ripe.bind("auth", function () {
+        ripe.bind("auth", function() {
             oauthLogin.style.display = "none";
             oauthLogout.style.display = "block";
             oauthOperation.style.display = "block";
         });
 
-        ripe.bind("unauth", function () {
+        ripe.bind("unauth", function() {
             oauthLogin.style.display = "block";
             oauthLogout.style.display = "none";
             oauthOperation.style.display = "none";
@@ -227,16 +227,16 @@ window.onload = function () {
         oauthOperation.style.display = "none";
     };
 
-    var initConfigurator = function () {
+    var initConfigurator = function() {
         // loads the config of the product to retrieve the
         // complete configuration of the product and be able
         // to define the visible frames and apply restrictions
         var caller = ripe.loadedConfig
-            ? function (callback) {
+            ? function(callback) {
                   callback(ripe.loadedConfig);
               }
             : ripe.getConfig;
-        caller(function (result) {
+        caller(function(result) {
             var frame0 = document.getElementById("frame-0");
             var frame6 = document.getElementById("frame-6");
             var frameTop = document.getElementById("frame-top");
@@ -277,7 +277,7 @@ window.onload = function () {
                 });
             }
 
-            frame0.addEventListener("click", function () {
+            frame0.addEventListener("click", function() {
                 if (result.frames > 9) {
                     configuratorCSR.changeFrame("side-9", {
                         revolutionDuration: 500
@@ -294,7 +294,7 @@ window.onload = function () {
                     });
                 }
             });
-            frame6.addEventListener("click", function () {
+            frame6.addEventListener("click", function() {
                 configuratorCSR.changeFrame("side-6", {
                     revolutionDuration: 500
                 });
@@ -302,7 +302,7 @@ window.onload = function () {
                     revolutionDuration: 500
                 });
             });
-            frameTop.addEventListener("click", function () {
+            frameTop.addEventListener("click", function() {
                 configuratorCSR.changeFrame("top-0", {
                     duration: 250
                 });
@@ -310,7 +310,7 @@ window.onload = function () {
                     duration: 250
                 });
             });
-            frameFront.addEventListener("click", function () {
+            frameFront.addEventListener("click", function() {
                 configuratorPRC.changeFrame("front-0", {
                     duration: 250
                 });
@@ -320,11 +320,11 @@ window.onload = function () {
             });
 
             image &&
-                image.bind("loaded", function () {
+                image.bind("loaded", function() {
                     console.log("frame-0 loaded");
                 });
 
-            setTimeout(function () {
+            setTimeout(function() {
                 if (result.frames > 9) {
                     image && image.setFrame("side-9");
                 }
@@ -348,7 +348,7 @@ window.onload = function () {
                 positionAnimate: "rotate",
 
                 // debug is used to change post processing settings
-                //debug: true,
+                // debug: true,
                 usesPostProcessing: false,
 
                 library: THREE,
@@ -356,7 +356,7 @@ window.onload = function () {
                 postProcessingLibrary: POSTPROCESSING,
 
                 assets: {
-                    // Model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
+                    // model data is stored in vyner_hitop.js temporarily, is meant to be a JSON
                     // that is downloaded, or present in a spec file
                     config: model_data,
                     path: "/static/assets/",
@@ -387,7 +387,10 @@ window.onload = function () {
                     // 'mouseDrift' defaults to true, unless specified to be false
                     // allows drifting when dragging stops
                     driftDuration: 200,
+
+                    // if we're allowed to zoom in as part of the orbital controls
                     canZoom: true,
+
                     // 'lockRotation' can be 'horizontal', 'vertical', or be left
                     // empty for no axis lock on rotations
                     rotationEasing: "easeInOutQuad"
@@ -417,7 +420,7 @@ window.onload = function () {
                 }
             });
 
-            configuratorPRC.bind("loaded", function () {
+            configuratorPRC.bind("loaded", function() {
                 if (configuratorPRC.isFirst) configuratorPRC.isFirst = false;
                 else return;
                 if (result.faces.indexOf("side") !== -1) {
@@ -427,7 +430,7 @@ window.onload = function () {
                 }
             });
 
-            configuratorCSR.bind("loaded", function () {
+            configuratorCSR.bind("loaded", function() {
                 if (configuratorCSR.isFirst) configuratorCSR.isFirst = false;
                 else return;
                 if (result.faces.indexOf("side") !== -1) {
@@ -440,11 +443,9 @@ window.onload = function () {
             var toggleRenderMode = document.getElementById("toggle-render");
 
             toggleRenderMode &&
-                toggleRenderMode.addEventListener("click", function () {
-                    //const area = self.querySelector(".area");
-
-                    if (currentRenderMode == "prc") currentRenderMode = "csr";
-                    else if (currentRenderMode == "csr") currentRenderMode = "prc";
+                toggleRenderMode.addEventListener("click", function() {
+                    if (currentRenderMode === "prc") currentRenderMode = "csr";
+                    else if (currentRenderMode === "csr") currentRenderMode = "prc";
 
                     displayRenderMode();
                 });
@@ -454,7 +455,7 @@ window.onload = function () {
             var setPart = document.getElementById("set-part");
 
             setPart &&
-                setPart.addEventListener("click", function () {
+                setPart.addEventListener("click", function() {
                     randomize();
                 });
 
@@ -470,45 +471,45 @@ window.onload = function () {
             ripe.addPlugin(restrictionsPlugin);
 
             // Added unloading function to avoid memory leaks in ThreeJS
-            window.onunload = function () {
+            window.onunload = function() {
                 ripe.unbindConfigurator(configuratorCSR);
                 ripe.unbindConfigurator(configuratorPRC);
             };
         });
     };
 
-    var displayRenderMode = function () {
-        if (currentRenderMode == "prc") {
+    var displayRenderMode = function() {
+        if (currentRenderMode === "prc") {
             elementCSR.style.display = "none";
             elementPRC.style.display = "inline-block";
             configuratorPRC.resize();
-        } else if (currentRenderMode == "csr") {
+        } else if (currentRenderMode === "csr") {
             elementPRC.style.display = "none";
             elementCSR.style.display = "inline-block";
             configuratorCSR.resize();
         }
     };
 
-    var initInitials = function () {
+    var initInitials = function() {
         ripe.bindImage(document.getElementById("initials"), {
             showInitials: true
         });
 
-        ripe.bind("initials_extra", function (initialsExtra) {
+        ripe.bind("initials_extra", function(initialsExtra) {
             document.getElementById("initials-text").value =
                 initialsExtra.main && initialsExtra.main.initials
                     ? initialsExtra.main.initials
                     : "";
         });
 
-        document.getElementById("initials-text").addEventListener("keyup", function () {
+        document.getElementById("initials-text").addEventListener("keyup", function() {
             var initialsDrop = document.getElementById("initials-drop");
             var initialsDropContainer = initialsDrop.parentElement;
             var initialsInput = initialsDropContainer.getElementsByTagName("input")[0];
             ripe.setInitials(this.value, initialsInput.value);
         });
 
-        document.getElementById("initials-drop").onvalue_change = function () {
+        document.getElementById("initials-drop").onvalue_change = function() {
             var initialsText = document.getElementById("initials-text");
             var initialsDropContainer = this.parentElement;
             var initialsInput = initialsDropContainer.getElementsByTagName("input")[0];
@@ -519,11 +520,11 @@ window.onload = function () {
         // that are available for the current model and build the
         // associated drop down with these values
         var caller = ripe.loadedConfig
-            ? function (callback) {
+            ? function(callback) {
                   callback(ripe.loadedConfig);
               }
             : ripe.getConfig;
-        caller(function (result) {
+        caller(function(result) {
             var initials = result.initials || {};
             var profiles = initials.$profiles || {};
             var profilesKeys = Object.keys(profiles);
@@ -549,7 +550,7 @@ window.onload = function () {
     // it to the ready event (all internal structures loaded according
     // to values from the server side
     ripe.load();
-    ripe.bind("ready", function () {
+    ripe.bind("ready", function() {
         try {
             init(ripe);
         } catch (exception) {
