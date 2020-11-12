@@ -93,7 +93,7 @@ describe("Ripe", function() {
                 },
                 initials: "ABC",
                 engraving: "gold",
-                initialsExtra: {
+                initials_extra: {
                     main: {
                         initials: "ABC",
                         engraving: "gold"
