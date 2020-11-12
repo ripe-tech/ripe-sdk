@@ -58,47 +58,47 @@ ripe.Image.prototype.init = function() {
     this.mutations = this.options.mutations || false;
     this.flip = this.options.flip || null;
     this.mirror = this.options.mirror || null;
-    this.bounding_box = this.options.bounding_box || null;
+    this.boundingBox = this.options.boundingBox || null;
     this.algorithm = this.options.algorithm || null;
     this.background = this.options.background || null;
     this.engine = this.options.engine || null;
-    this.initials_profile = this.options.initials_profile || null;
-    this.initials_profiles = this.options.initials_profiles || null;
-    this.initials_x = this.options.initials_x || null;
-    this.initials_y = this.options.initials_y || null;
-    this.initials_width = this.options.initials_width || null;
-    this.initials_height = this.options.initials_height || null;
-    this.initials_viewport = this.options.initials_viewport || null;
-    this.initials_color = this.options.initials_color || null;
-    this.initials_opacity = this.options.initials_opacity || null;
-    this.initials_align = this.options.initials_align || null;
-    this.initials_vertical = this.options.initials_vertical || null;
-    this.initials_embossing = this.options.initials_embossing || null;
-    this.initials_rotation = this.options.initials_rotation || null;
-    this.initials_z_index = this.options.initials_z_index || null;
-    this.initials_algorithm = this.options.initials_algorithm || null;
-    this.initials_blend_color = this.options.initials_blend_color || null;
-    this.initials_pattern = this.options.initials_pattern || null;
-    this.initials_texture = this.options.initials_texture || null;
-    this.initials_exclusion = this.options.initials_exclusion || null;
-    this.initials_inclusion = this.options.initials_inclusion || null;
-    this.initials_image_rotation = this.options.initials_image_rotation || null;
-    this.initials_image_flip = this.options.initials_image_flip || null;
-    this.initials_image_mirror = this.options.initials_image_mirror || null;
+    this.initialsProfile = this.options.initialsProfile || null;
+    this.initialsProfiles = this.options.initialsProfiles || null;
+    this.initialsX = this.options.initialsX || null;
+    this.initialsY = this.options.initialsY || null;
+    this.initialsWidth = this.options.initialsWidth || null;
+    this.initialsHeight = this.options.initialsHeight || null;
+    this.initialsViewport = this.options.initialsViewport || null;
+    this.initialsColor = this.options.initialsColor || null;
+    this.initialsOpacity = this.options.initialsOpacity || null;
+    this.initialsAlign = this.options.initialsAlign || null;
+    this.initialsVertical = this.options.initialsVertical || null;
+    this.initialsEmbossing = this.options.initialsEmbossing || null;
+    this.initialsRotation = this.options.initialsRotation || null;
+    this.initialsZindex = this.options.initialsZindex || null;
+    this.initialsAlgorithm = this.options.initialsAlgorithm || null;
+    this.initialsBlendColor = this.options.initialsBlendColor || null;
+    this.initialsPattern = this.options.initialsPattern || null;
+    this.initialsTexture = this.options.initialsTexture || null;
+    this.initialsExclusion = this.options.initialsExclusion || null;
+    this.initialsInclusion = this.options.initialsInclusion || null;
+    this.initialsImageRotation = this.options.initialsImageRotation || null;
+    this.initialsImageFlip = this.options.initialsImageFlip || null;
+    this.initialsImageMirror = this.options.initialsImageMirror || null;
     this.debug = this.options.debug || null;
-    this.initials_debug = this.debug ? this.debug : this.options.initials_debug || null;
-    this.font_family = this.options.font_family || null;
-    this.font_weight = this.options.font_weight || null;
-    this.font_size = this.options.font_size || null;
-    this.font_spacing = this.options.font_spacing || null;
-    this.font_trim = this.options.font_trim || null;
-    this.font_mask = this.options.font_mask || null;
-    this.font_mode = this.options.font_mode || null;
-    this.line_height = this.options.line_height || null;
-    this.line_breaking = this.options.line_breaking || null;
+    this.initialsDebug = this.debug ? this.debug : this.options.initialsDebug || null;
+    this.fontFamily = this.options.fontFamily || null;
+    this.fontWeight = this.options.fontWeight || null;
+    this.fontSize = this.options.fontSize || null;
+    this.fontSpacing = this.options.fontSpacing || null;
+    this.fontTrim = this.options.fontTrim || null;
+    this.fontMask = this.options.fontMask || null;
+    this.fontMode = this.options.fontMode || null;
+    this.lineHeight = this.options.lineHeight || null;
+    this.lineBreaking = this.options.lineBreaking || null;
     this.shadow = this.options.shadow || null;
-    this.shadow_color = this.options.shadow_color || null;
-    this.shadow_offset = this.options.shadow_offset || null;
+    this.shadowColor = this.options.shadowColor || null;
+    this.shadowOffset = this.options.shadowOffset || null;
     this.offsets = this.options.offsets || null;
     this.curve = this.options.curve || null;
     this.showInitials = this.options.showInitials || false;
@@ -161,96 +161,96 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.algorithm = options.algorithm === undefined ? this.algorithm : options.algorithm;
     this.background = options.background === undefined ? this.background : options.background;
     this.engine = options.engine === undefined ? this.engine : options.engine;
-    this.initials_profile =
-        options.initials_profile === undefined ? this.initials_profile : options.initials_profile;
-    this.initials_profiles =
-        options.initials_profiles === undefined
-            ? this.initials_profiles
-            : options.initials_profiles;
-    this.initials_x = options.initials_x === undefined ? this.initials_x : options.initials_x;
-    this.initials_y = options.initials_y === undefined ? this.initials_y : options.initials_y;
-    this.initials_width =
-        options.initials_width === undefined ? this.initials_width : options.initials_width;
-    this.initials_height =
-        options.initials_height === undefined ? this.initials_height : options.initials_height;
-    this.initials_viewport =
-        options.initials_viewport === undefined
-            ? this.initials_viewport
-            : options.initials_viewport;
-    this.initials_color =
-        options.initials_color === undefined ? this.initials_color : options.initials_color;
-    this.initials_opacity =
-        options.initials_opacity === undefined ? this.initials_opacity : options.initials_opacity;
-    this.initials_align =
-        options.initials_align === undefined ? this.initials_align : options.initials_align;
-    this.initials_vertical =
-        options.initials_vertical === undefined
-            ? this.initials_vertical
-            : options.initials_vertical;
-    this.initials_embossing =
-        options.initials_embossing === undefined
-            ? this.initials_embossing
-            : options.initials_embossing;
-    this.initials_rotation =
-        options.initials_rotation === undefined
-            ? this.initials_rotation
-            : options.initials_rotation;
-    this.initials_z_index =
-        options.initials_z_index === undefined ? this.initials_z_index : options.initials_z_index;
-    this.initials_algorithm =
-        options.initials_algorithm === undefined
-            ? this.initials_algorithm
-            : options.initials_algorithm;
-    this.initials_blend_color =
-        options.initials_blend_color === undefined
-            ? this.initials_blend_color
-            : options.initials_blend_color;
-    this.initials_pattern =
-        options.initials_pattern === undefined ? this.initials_pattern : options.initials_pattern;
-    this.initials_texture =
-        options.initials_texture === undefined ? this.initials_texture : options.initials_texture;
-    this.initials_exclusion =
-        options.initials_exclusion === undefined
-            ? this.initials_exclusion
-            : options.initials_exclusion;
-    this.initials_inclusion =
-        options.initials_inclusion === undefined
-            ? this.initials_inclusion
-            : options.initials_inclusion;
-    this.initials_image_rotation =
-        options.initials_image_rotation === undefined
-            ? this.initials_image_rotation
-            : options.initials_image_rotation;
-    this.initials_image_flip =
-        options.initials_image_flip === undefined
-            ? this.initials_image_flip
-            : options.initials_image_flip;
-    this.initials_image_mirror =
-        options.initials_image_mirror === undefined
-            ? this.initials_image_mirror
-            : options.initials_image_mirror;
+    this.initialsProfile =
+        options.initialsProfile === undefined ? this.initialsProfile : options.initialsProfile;
+    this.initialsProfiles =
+        options.initialsProfiles === undefined
+            ? this.initialsProfiles
+            : options.initialsProfiles;
+    this.initialsX = options.initialsX === undefined ? this.initialsX : options.initialsX;
+    this.initialsY = options.initialsY === undefined ? this.initialsY : options.initialsY;
+    this.initialsWidth =
+        options.initialsWidth === undefined ? this.initialsWidth : options.initialsWidth;
+    this.initialsHeight =
+        options.initialsHeight === undefined ? this.initialsHeight : options.initialsHeight;
+    this.initialsViewport =
+        options.initialsViewport === undefined
+            ? this.initialsViewport
+            : options.initialsViewport;
+    this.initialsColor =
+        options.initialsColor === undefined ? this.initialsColor : options.initialsColor;
+    this.initialsOpacity =
+        options.initialsOpacity === undefined ? this.initialsOpacity : options.initialsOpacity;
+    this.initialsAlign =
+        options.initialsAlign === undefined ? this.initialsAlign : options.initialsAlign;
+    this.initialsVertical =
+        options.initialsVertical === undefined
+            ? this.initialsVertical
+            : options.initialsVertical;
+    this.initialsEmbossing =
+        options.initialsEmbossing === undefined
+            ? this.initialsEmbossing
+            : options.initialsEmbossing;
+    this.initialsRotation =
+        options.initialsRotation === undefined
+            ? this.initialsRotation
+            : options.initialsRotation;
+    this.initialsZindex =
+        options.initialsZindex === undefined ? this.initialsZindex : options.initialsZindex;
+    this.initialsAlgorithm =
+        options.initialsAlgorithm === undefined
+            ? this.initialsAlgorithm
+            : options.initialsAlgorithm;
+    this.initialsBlendColor =
+        options.initialsBlendColor === undefined
+            ? this.initialsBlendColor
+            : options.initialsBlendColor;
+    this.initialsPattern =
+        options.initialsPattern === undefined ? this.initialsPattern : options.initialsPattern;
+    this.initialsTexture =
+        options.initialsTexture === undefined ? this.initialsTexture : options.initialsTexture;
+    this.initialsExclusion =
+        options.initialsExclusion === undefined
+            ? this.initialsExclusion
+            : options.initialsExclusion;
+    this.initialsInclusion =
+        options.initialsInclusion === undefined
+            ? this.initialsInclusion
+            : options.initialsInclusion;
+    this.initialsImageRotation =
+        options.initialsImageRotation === undefined
+            ? this.initialsImageRotation
+            : options.initialsImageRotation;
+    this.initialsImageFlip =
+        options.initialsImageFlip === undefined
+            ? this.initialsImageFlip
+            : options.initialsImageFlip;
+    this.initialsImageMirror =
+        options.initialsImageMirror === undefined
+            ? this.initialsImageMirror
+            : options.initialsImageMirror;
     this.debug = options.debug === undefined ? this.debug : options.debug;
-    this.initials_debug = this.debug
+    this.initialsDebug = this.debug
         ? this.debug
-        : options.initials_debug === undefined
-        ? this.initials_debug
-        : options.initials_debug;
-    this.font_family = options.font_family === undefined ? this.font_family : options.font_family;
-    this.font_weight = options.font_weight === undefined ? this.font_weight : options.font_weight;
-    this.font_size = options.font_size === undefined ? this.font_size : options.font_size;
-    this.font_spacing =
-        options.font_spacing === undefined ? this.font_spacing : options.font_spacing;
-    this.font_trim = options.font_trim === undefined ? this.font_trim : options.font_trim;
-    this.font_mask = options.font_mask === undefined ? this.font_mask : options.font_mask;
-    this.font_mode = options.font_mode === undefined ? this.font_mode : options.font_mode;
-    this.line_height = options.line_height === undefined ? this.line_height : options.line_height;
-    this.line_breaking =
-        options.line_breaking === undefined ? this.line_breaking : options.line_breaking;
+        : options.initialsDebug === undefined
+        ? this.initialsDebug
+        : options.initialsDebug;
+    this.fontFamily = options.fontFamily === undefined ? this.fontFamily : options.fontFamily;
+    this.fontWeight = options.fontWeight === undefined ? this.fontWeight : options.fontWeight;
+    this.fontSize = options.fontSize === undefined ? this.fontSize : options.fontSize;
+    this.fontSpacing =
+        options.fontSpacing === undefined ? this.fontSpacing : options.fontSpacing;
+    this.fontTrim = options.fontTrim === undefined ? this.fontTrim : options.fontTrim;
+    this.fontMask = options.fontMask === undefined ? this.fontMask : options.fontMask;
+    this.fontMode = options.fontMode === undefined ? this.fontMode : options.fontMode;
+    this.lineHeight = options.lineHeight === undefined ? this.lineHeight : options.lineHeight;
+    this.lineBreaking =
+        options.lineBreaking === undefined ? this.lineBreaking : options.lineBreaking;
     this.shadow = options.shadow === undefined ? this.shadow : options.shadow;
-    this.shadow_color =
-        options.shadow_color === undefined ? this.shadow_color : options.shadow_color;
-    this.shadow_offset =
-        options.shadow_offset === undefined ? this.shadow_offset : options.shadow_offset;
+    this.shadowColor =
+        options.shadowColor === undefined ? this.shadowColor : options.shadowColor;
+    this.shadowOffset =
+        options.shadowOffset === undefined ? this.shadowOffset : options.shadowOffset;
     this.offsets = options.offsets === undefined ? this.offsets : options.offsets;
     this.curve = options.curve === undefined ? this.curve : options.curve;
     this.initialsGroup =
@@ -312,47 +312,47 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         profile: initialsSpec.profile,
         flip: this.flip,
         mirror: this.mirror,
-        bounding_box: this.bounding_box,
+        boundingBox: this.boundingBox,
         algorithm: this.algorithm,
         background: this.background,
         engine: this.engine,
-        initials_profile: this.initials_profile,
-        initials_profiles: this.initials_profiles,
-        initials_x: this.initials_x,
-        initials_y: this.initials_y,
-        initials_width: this.initials_width,
-        initials_height: this.initials_height,
-        initials_viewport: this.initials_viewport,
-        initials_color: this.initials_color,
-        initials_opacity: this.initials_opacity,
-        initials_align: this.initials_align,
-        initials_vertical: this.initials_vertical,
-        initials_embossing: this.initials_embossing,
-        initials_rotation: this.initials_rotation,
-        initials_z_index: this.initials_z_index,
-        initials_algorithm: this.initials_algorithm,
-        initials_blend_color: this.initials_blend_color,
-        initials_pattern: this.initials_pattern,
-        initials_texture: this.initials_texture,
-        initials_exclusion: this.initials_exclusion,
-        initials_inclusion: this.initials_inclusion,
-        initials_image_rotation: this.initials_image_rotation,
-        initials_image_flip: this.initials_image_flip,
-        initials_image_mirror: this.initials_image_mirror,
+        initialsProfile: this.initialsProfile,
+        initialsProfiles: this.initialsProfiles,
+        initialsX: this.initialsX,
+        initialsY: this.initialsY,
+        initialsWidth: this.initialsWidth,
+        initialsHeight: this.initialsHeight,
+        initialsViewport: this.initialsViewport,
+        initialsColor: this.initialsColor,
+        initialsOpacity: this.initialsOpacity,
+        initialsAlign: this.initialsAlign,
+        initialsVertical: this.initialsVertical,
+        initialsEmbossing: this.initialsEmbossing,
+        initialsRotation: this.initialsRotation,
+        initialsZindex: this.initialsZindex,
+        initialsAlgorithm: this.initialsAlgorithm,
+        initialsBlendColor: this.initialsBlendColor,
+        initialsPattern: this.initialsPattern,
+        initialsTexture: this.initialsTexture,
+        initialsExclusion: this.initialsExclusion,
+        initialsInclusion: this.initialsInclusion,
+        initialsImageRotation: this.initialsImageRotation,
+        initialsImageFlip: this.initialsImageFlip,
+        initialsImageMirror: this.initialsImageMirror,
         debug: this.debug,
-        initials_debug: this.initials_debug,
-        font_family: this.font_family,
-        font_weight: this.font_weight,
-        font_size: this.font_size,
-        font_spacing: this.font_spacing,
-        font_trim: this.font_trim,
-        font_mask: this.font_mask,
-        font_mode: this.font_mode,
-        line_height: this.line_height,
-        line_breaking: this.line_breaking,
+        initialsDebug: this.initialsDebug,
+        fontFamily: this.fontFamily,
+        fontWeight: this.fontWeight,
+        fontSize: this.fontSize,
+        fontSpacing: this.fontSpacing,
+        fontTrim: this.fontTrim,
+        fontMask: this.fontMask,
+        fontMode: this.fontMode,
+        lineHeight: this.lineHeight,
+        lineBreaking: this.lineBreaking,
         shadow: this.shadow,
-        shadow_color: this.shadow_color,
-        shadow_offset: this.shadow_offset,
+        shadowColor: this.shadowColor,
+        shadowOffset: this.shadowOffset,
         offsets: this.offsets,
         curve: this.curve
     });
