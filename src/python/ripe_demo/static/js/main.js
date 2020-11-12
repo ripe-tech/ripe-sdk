@@ -9,7 +9,7 @@ window.onload = function() {
     var elementPRC = document.getElementById("configurator-prc");
     var _body = document.querySelector("body");
     // var url = _body.dataset.url || "https://sandbox.platforme.com/api/";
-    var url = _body.dataset.url || "http://localhost:8080/api/";
+    var url = _body.dataset.url || "http://localhost:8181/api/";
     var brand = _body.dataset.brand || "swear";
     // var model = _body.dataset.model || "vyner";
     var model = _body.dataset.model || "vyner_hitop";
@@ -350,7 +350,7 @@ window.onload = function() {
                 positionAnimate: "rotate",
 
                 // debug is used to change post processing settings
-                debug: true,
+                debug: false,
 
                 usesPostProcessing: false,
 
@@ -361,7 +361,7 @@ window.onload = function() {
                 assets: {
                     // model data is stored in `vyner_hitop.js` temporarily, is meant to be a JSON
                     // that is downloaded, or present in a spec file
-                    config: modelData,
+                    config: window.modelData,
 
                     // the relative path with the location of the assets
                     path: "/static/assets/",
