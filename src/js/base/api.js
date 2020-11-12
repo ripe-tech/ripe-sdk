@@ -651,10 +651,6 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.initials = initials;
     }
 
-    if (options.profile !== undefined && options.profile !== null) {
-        params.profile = options.profile;
-    }
-
     if (options.rotation !== undefined && options.rotation !== null) {
         params.rotation = options.rotation;
     }
