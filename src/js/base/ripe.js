@@ -500,6 +500,63 @@ ripe.Ripe.prototype.remote = async function() {
 };
 
 /**
+ * Retrieves the normalized structure that uniquely represents
+ * the current configuration "situation".
+ *
+ * @param {Boolean} safe If the structure should be retrieved
+ * using a safe approach (deep copy).
+ * @returns The normalized map structure that represents the
+ * current configuration "situation".
+ */
+ripe.Ripe.prototype.getStructure = async function(safe = true) {
+    const structure = {};
+    if (this.brand) structure.brand = this.brand;
+    if (this.model) structure.model = this.model;
+    if (this.variant) structure.variant = this.variant;
+    if (this.version) structure.version = this.version;
+    if (this.parts && Object.keys(this.parts).length > 0) {
+        structure.parts = this.parts;
+    }
+    if (this.initials) structure.initials = this.initials;
+    if (this.engraving) structure.engraving = this.engraving;
+    if (this.initialsExtra && Object.keys(this.initialsExtra).length > 0) {
+        structure.initialsExtra = this.initialsExtra;
+    }
+    return safe ? JSON.parse(JSON.stringify(structure)) : structure;
+};
+
+/**
+ * Updates the current internal state of the Ripe instance with the
+ * contents defined by the provided structure (snapshot).
+ *
+ * @param {Object} structure The object structure that represents the configuration
+ * "situation" that is going to be set in the Ripe instance.
+ * @param {Boolean} safe If the operation should be performed using a
+ * safe strategy (deep copy in objects).
+ */
+ripe.Ripe.prototype.setStructure = async function(structure, safe = true) {
+    const options = {};
+    const brand = structure.brand || null;
+    const model = structure.model || null;
+    options.variant = structure.variant || null;
+    options.version = structure.version || null;
+    options.parts =
+        (structure.parts &&
+            (safe ? JSON.parse(JSON.stringify(structure.parts)) : structure.parts)) ||
+        {};
+    options.initials = structure.initials || "";
+    options.engraving = structure.engraving || null;
+    options.initialsExtra =
+        (structure.initialsExtra &&
+            !Object.isEmpty(structure.initialsExtra) &&
+            (safe
+                ? JSON.parse(JSON.stringify(structure.initialsExtra))
+                : structure.initialsExtra)) ||
+        {};
+    await this.config(brand, model, options);
+};
+
+/**
  * Sets Ripe instance options according to the defaulting policy.
  *
  * @param {Object} options An object with the options to configure the Ripe instance, such as:

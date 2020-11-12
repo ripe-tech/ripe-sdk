@@ -5,6 +5,187 @@ const ripe = require("../../../src/js");
 describe("Ripe", function() {
     this.timeout(config.TEST_TIMEOUT);
 
+    describe("#getStructure()", async function() {
+        it("should be able to get a simple structure", async () => {
+            let result;
+
+            const instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
+            await instance.isReady();
+
+            result = await instance.getStructure();
+            assert.deepStrictEqual(result, {
+                brand: "swear",
+                model: "vyner",
+                parts: {
+                    front: {
+                        color: "white",
+                        material: "nappa"
+                    },
+                    hardware: {
+                        color: "silver",
+                        material: "metal"
+                    },
+                    laces: {
+                        color: "white",
+                        material: "nylon"
+                    },
+                    lining: {
+                        color: "white",
+                        material: "calf_lining"
+                    },
+                    logo: {
+                        color: "silver",
+                        material: "metal"
+                    },
+                    shadow: {
+                        color: "default",
+                        material: "default"
+                    },
+                    side: {
+                        color: "white",
+                        material: "nappa"
+                    },
+                    sole: {
+                        color: "white",
+                        material: "rubber"
+                    }
+                }
+            });
+
+            await instance.setInitials("ABC", "gold");
+            result = await instance.getStructure();
+            assert.deepStrictEqual(result, {
+                brand: "swear",
+                model: "vyner",
+                parts: {
+                    front: {
+                        color: "white",
+                        material: "nappa"
+                    },
+                    hardware: {
+                        color: "silver",
+                        material: "metal"
+                    },
+                    laces: {
+                        color: "white",
+                        material: "nylon"
+                    },
+                    lining: {
+                        color: "white",
+                        material: "calf_lining"
+                    },
+                    logo: {
+                        color: "silver",
+                        material: "metal"
+                    },
+                    shadow: {
+                        color: "default",
+                        material: "default"
+                    },
+                    side: {
+                        color: "white",
+                        material: "nappa"
+                    },
+                    sole: {
+                        color: "white",
+                        material: "rubber"
+                    }
+                },
+                initials: "ABC",
+                engraving: "gold",
+                initialsExtra: {
+                    main: {
+                        initials: "ABC",
+                        engraving: "gold"
+                    }
+                }
+            });
+        });
+    });
+
+    describe("#setStructure()", async function() {
+        it("should be able to set a simple structure", async () => {
+            const instance = await new ripe.Ripe({ noBundles: true });
+            await instance.isReady();
+
+            await instance.setStructure({
+                brand: "swear",
+                model: "vyner",
+                parts: {
+                    front: {
+                        color: "white",
+                        material: "nappa"
+                    },
+                    hardware: {
+                        color: "silver",
+                        material: "metal"
+                    },
+                    laces: {
+                        color: "white",
+                        material: "nylon"
+                    },
+                    lining: {
+                        color: "white",
+                        material: "calf_lining"
+                    },
+                    logo: {
+                        color: "silver",
+                        material: "metal"
+                    },
+                    shadow: {
+                        color: "default",
+                        material: "default"
+                    },
+                    side: {
+                        color: "white",
+                        material: "nappa"
+                    },
+                    sole: {
+                        color: "white",
+                        material: "rubber"
+                    }
+                }
+            });
+
+            assert.strictEqual(instance.brand, "swear");
+            assert.strictEqual(instance.model, "vyner");
+            assert.deepStrictEqual(instance.parts, {
+                front: {
+                    color: "white",
+                    material: "nappa"
+                },
+                hardware: {
+                    color: "silver",
+                    material: "metal"
+                },
+                laces: {
+                    color: "white",
+                    material: "nylon"
+                },
+                lining: {
+                    color: "white",
+                    material: "calf_lining"
+                },
+                logo: {
+                    color: "silver",
+                    material: "metal"
+                },
+                shadow: {
+                    color: "default",
+                    material: "default"
+                },
+                side: {
+                    color: "white",
+                    material: "nappa"
+                },
+                sole: {
+                    color: "white",
+                    material: "rubber"
+                }
+            });
+        });
+    });
+
     describe("#setInitials()", async function() {
         it("should be able to set initials", async () => {
             const instance = await new ripe.Ripe({ noBundles: true });
