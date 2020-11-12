@@ -105,7 +105,7 @@ ripe.ConfiguratorCSR.prototype.init = function() {
     this.options.library.Cache.enabled = false;
     this.options.library.Cache.clear();
 
-    this.renderer = new ripe.CSRenderer(this.owner, this.element, this.options);
+    this.renderer = new ripe.CSR(this.owner, this.element, this.options);
     this.controls = new ripe.OrbitalControls(this, this.element, this.options);
     this.initials = new ripe.CSRInitials(this.owner, this.options);
 
