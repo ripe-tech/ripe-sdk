@@ -164,9 +164,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.initialsProfile =
         options.initialsProfile === undefined ? this.initialsProfile : options.initialsProfile;
     this.initialsProfiles =
-        options.initialsProfiles === undefined
-            ? this.initialsProfiles
-            : options.initialsProfiles;
+        options.initialsProfiles === undefined ? this.initialsProfiles : options.initialsProfiles;
     this.initialsX = options.initialsX === undefined ? this.initialsX : options.initialsX;
     this.initialsY = options.initialsY === undefined ? this.initialsY : options.initialsY;
     this.initialsWidth =
@@ -174,9 +172,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.initialsHeight =
         options.initialsHeight === undefined ? this.initialsHeight : options.initialsHeight;
     this.initialsViewport =
-        options.initialsViewport === undefined
-            ? this.initialsViewport
-            : options.initialsViewport;
+        options.initialsViewport === undefined ? this.initialsViewport : options.initialsViewport;
     this.initialsColor =
         options.initialsColor === undefined ? this.initialsColor : options.initialsColor;
     this.initialsOpacity =
@@ -184,17 +180,13 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.initialsAlign =
         options.initialsAlign === undefined ? this.initialsAlign : options.initialsAlign;
     this.initialsVertical =
-        options.initialsVertical === undefined
-            ? this.initialsVertical
-            : options.initialsVertical;
+        options.initialsVertical === undefined ? this.initialsVertical : options.initialsVertical;
     this.initialsEmbossing =
         options.initialsEmbossing === undefined
             ? this.initialsEmbossing
             : options.initialsEmbossing;
     this.initialsRotation =
-        options.initialsRotation === undefined
-            ? this.initialsRotation
-            : options.initialsRotation;
+        options.initialsRotation === undefined ? this.initialsRotation : options.initialsRotation;
     this.initialsZindex =
         options.initialsZindex === undefined ? this.initialsZindex : options.initialsZindex;
     this.initialsAlgorithm =
@@ -238,8 +230,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.fontFamily = options.fontFamily === undefined ? this.fontFamily : options.fontFamily;
     this.fontWeight = options.fontWeight === undefined ? this.fontWeight : options.fontWeight;
     this.fontSize = options.fontSize === undefined ? this.fontSize : options.fontSize;
-    this.fontSpacing =
-        options.fontSpacing === undefined ? this.fontSpacing : options.fontSpacing;
+    this.fontSpacing = options.fontSpacing === undefined ? this.fontSpacing : options.fontSpacing;
     this.fontTrim = options.fontTrim === undefined ? this.fontTrim : options.fontTrim;
     this.fontMask = options.fontMask === undefined ? this.fontMask : options.fontMask;
     this.fontMode = options.fontMode === undefined ? this.fontMode : options.fontMode;
@@ -247,8 +238,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.lineBreaking =
         options.lineBreaking === undefined ? this.lineBreaking : options.lineBreaking;
     this.shadow = options.shadow === undefined ? this.shadow : options.shadow;
-    this.shadowColor =
-        options.shadowColor === undefined ? this.shadowColor : options.shadowColor;
+    this.shadowColor = options.shadowColor === undefined ? this.shadowColor : options.shadowColor;
     this.shadowOffset =
         options.shadowOffset === undefined ? this.shadowOffset : options.shadowOffset;
     this.offsets = options.offsets === undefined ? this.offsets : options.offsets;
