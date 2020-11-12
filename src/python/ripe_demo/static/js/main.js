@@ -350,7 +350,7 @@ window.onload = function() {
                 positionAnimate: "rotate",
 
                 // debug is used to change post processing settings
-                debug: false,
+                debug: true,
 
                 usesPostProcessing: false,
 

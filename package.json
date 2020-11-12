@@ -51,9 +51,12 @@
         "watch": "gulp watch"
     },
     "dependencies": {
+        "dat.gui": "^0.7.7",
         "node-fetch": "^2.6.1",
+        "postprocessing": "^6.18.0",
         "three": "^0.120.1",
-        "xmlhttprequest": "^1.8.0"
+        "xmlhttprequest": "^1.8.0",
+        "zlibjs": "^0.3.1"
     },
     "devDependencies": {
         "@babel/core": "^7.12.3",
@@ -76,6 +79,7 @@
         "gulp-terser": "^1.4.1",
         "gulp-zip": "^5.0.2",
         "jsdom": "^16.4.0",
+        "merge-stream": "^2.0.0",
         "minami": "^1.2.3",
         "mocha": "^8.2.1",
         "mocha-cli": "^1.0.1",
