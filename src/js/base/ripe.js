@@ -45,6 +45,22 @@ ripe.RipeBase = function(brand, model, options = {}) {
 };
 
 /**
+ * Builds a new Ripe instance using the provided normalized configuration
+ * structure as the basis for its configuration.
+ *
+ * @param {Object} structure The normalized configuration structure that is
+ * going to be used in the initialization of the new Ripe instance.
+ * @param {Boolean} safe If the safe object mode creation should be used.
+ * @param {Object} options The extra options to be used in the initialization
+ * process of the Ripe instance.
+ */
+ripe.Ripe.fromStructure = async function(structure, safe = true, options = {}) {
+    const instance = new ripe.Ripe(options);
+    await instance.setStructure(structure, safe);
+    return instance;
+};
+
+/**
  * The initializer of the class, to be called whenever the instance
  * is going to become active.
  *
@@ -239,7 +255,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
         await this.config(brand, model, options);
     } catch (error) {
         // calls the error handler for the current handler to update the
-        // internal items of the RIPE instance
+        // internal items of the Ripe Instance
         this._errorHandler(error);
 
         // returns the control flow immediately as the exception has been
@@ -278,21 +294,21 @@ ripe.Ripe.prototype.deinit = async function() {
  * This method should be called before any significant RIPE operation
  * can be performed on the instance.
  *
- * @returns {Object} The current RIPE instance (for pipelining).
+ * @returns {Object} The current Ripe Instance (for pipelining).
  */
-ripe.Ripe.prototype.load = function() {
-    this.update(undefined, { reason: "load" });
+ripe.Ripe.prototype.load = async function() {
+    await this.update(undefined, { reason: "load" });
     return this;
 };
 
 /**
- * Explicit entry point for the unloading of the RIPE instance.
+ * Explicit entry point for the unloading of the Ripe Instance.
  *
  * Should be called for a clean exit of the instance.
  *
- * @returns {Object} The current RIPE instance (for pipelining).
+ * @returns {Object} The current Ripe Instance (for pipelining).
  */
-ripe.Ripe.prototype.unload = function() {
+ripe.Ripe.prototype.unload = async function() {
     return this;
 };
 
@@ -445,7 +461,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     }
 
     // triggers the config event notifying any listener that the (base)
-    // configuration for this main RIPE instance has changed and waits
+    // configuration for this main Ripe Instance has changed and waits
     // for the listeners to conclude their operations
     await this.trigger("config", this.loadedConfig, options);
 
@@ -675,7 +691,7 @@ ripe.Ripe.prototype.setPart = async function(part, material, color, events = tru
     if (!runUpdate) return;
 
     // propagates the state change in the internal structures to the
-    // children elements of this RIPE instance
+    // children elements of this Ripe Instance
     const promise = this.update(undefined, { reason: "set part" });
 
     // in case the wait update options is valid (by default) then waits
@@ -714,7 +730,7 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
     if (!runUpdate) return;
 
     // propagates the state change in the internal structures to the
-    // children elements of this RIPE instance
+    // children elements of this Ripe Instance
     const promise = this.update(undefined, { reason: "set parts" });
 
     // in case the wait update options is valid (by default) then waits
@@ -1411,11 +1427,11 @@ ripe.Ripe.prototype.canRedo = function() {
 };
 
 /**
- * Returns a promise that is fulfilled once the RIPE instance
+ * Returns a promise that is fulfilled once the Ripe Instance
  * is ready to be used.
  *
  * This can be used to actively wait for the initialization of
- * the RIPE instance under an async environment.
+ * the Ripe Instance under an async environment.
  *
  * @returns {Promise} The promise to be fulfilled once the instance
  * is ready to be used.

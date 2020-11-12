@@ -311,7 +311,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         ? this.initialsBuilder(this.initials, this.engraving, this.element)
         : {};
 
-    // verifies if the model currently loaded in the RIPE instance can
+    // verifies if the model currently loaded in the Ripe Instance can
     // render the frame to be display and if that's not the case "ignores"
     // the current request for update
     if (frame && !this.owner.hasFrame(frame)) {

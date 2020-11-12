@@ -45,7 +45,7 @@ ripe.Ripe.prototype.configGlobalP = function(options) {
 
 /**
  * Resolves the RIPE configuration options (includes DKU) from the provided set
- * of options or in alternative the current RIPE instance state.
+ * of options or in alternative the current Ripe Instance state.
  *
  * @param {Object} options An object of options to configure the request, such as:
  * - 'url' - The base URL.
@@ -62,7 +62,7 @@ ripe.Ripe.prototype.configInfo = function(options, callback) {
 
 /**
  * Resolves the RIPE configuration options (includes DKU)  from the provided set
- * of options or in alternative the current RIPE instance state.
+ * of options or in alternative the current Ripe Instance state.
  *
  * @param {Object} options An object of options to configure the request, such as:
  * - 'url' - The base URL.
