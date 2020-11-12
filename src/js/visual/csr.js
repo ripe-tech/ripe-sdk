@@ -1053,7 +1053,7 @@ Object.defineProperty(ripe.CSR.prototype, "wireframe", {
         return this._wireframe;
     },
     set: function(value) {
-        Object.values(this.assetManager?.meshes || {}).forEach(mesh => {
+        Object.values((this.assetManager && this.assetManager.meshes) || {}).forEach(mesh => {
             mesh.material.wireframe = value;
         });
         this._wireframe = value;
