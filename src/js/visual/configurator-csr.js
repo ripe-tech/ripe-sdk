@@ -153,7 +153,7 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
 };
 
 /**
- * Called when deinitializing the Configurator, begins the disposal of
+ * Called when de-initializing the Configurator, begins the disposal of
  * all the stored resources.
  */
 ripe.ConfiguratorCSR.prototype.disposeResources = async function() {
