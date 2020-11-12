@@ -936,7 +936,7 @@ ripe.CSR.prototype._performAnimation = function(animationName) {
             this.renderer.clear();
             this.renderer.render(this.scene, this.camera);
 
-            // reset renderer
+            // resets the renderer
             this.renderer.setRenderTarget(null);
             this.renderer.clear();
 
