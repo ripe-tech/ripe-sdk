@@ -19,6 +19,7 @@ package-lock.json
 /coverage
 /node_modules
 
+/src/python/ripe_demo/static/assets
 /src/python/ripe_demo/static/js/ripe.js
 /src/python/ripe_demo/static/js/ripe.js.map
 /src/python/ripe_demo/static/css/ripe.css
