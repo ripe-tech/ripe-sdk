@@ -296,8 +296,8 @@ ripe.Ripe.prototype.deinit = async function() {
  *
  * @returns {Object} The current Ripe Instance (for pipelining).
  */
-ripe.Ripe.prototype.load = async function() {
-    await this.update(undefined, { reason: "load" });
+ripe.Ripe.prototype.load = function() {
+    this.update(undefined, { reason: "load" });
     return this;
 };
 
@@ -308,7 +308,28 @@ ripe.Ripe.prototype.load = async function() {
  *
  * @returns {Object} The current Ripe Instance (for pipelining).
  */
-ripe.Ripe.prototype.unload = async function() {
+ripe.Ripe.prototype.unload = function() {
+    return this;
+};
+
+/**
+ * Same as `load` but providing a promise oriented solution
+ * ready to be "awaited".
+ *
+ * @returns {Object} The current Ripe Instance (for pipelining).
+ */
+ripe.Ripe.prototype.loadP = async function() {
+    await this.update(undefined, { reason: "load" });
+    return this;
+};
+
+/**
+ * Same as `unload` but providing a promise oriented solution
+ * ready to be "awaited".
+ *
+ * @returns {Object} The current Ripe Instance (for pipelining).
+ */
+ripe.Ripe.prototype.unloadP = async function() {
     return this;
 };
 
