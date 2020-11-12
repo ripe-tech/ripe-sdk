@@ -189,6 +189,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
 
         if (animating) return;
 
+        self._updateAngles();
         if (self._previousEvent && self.down) self._drift(self._previousEvent);
 
         self.down = false;
@@ -201,7 +202,6 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
         self.previous = self.percent;
         self.percent = 0;
 
-        self._updateAngles();
         self.canDrift = false;
     });
 
