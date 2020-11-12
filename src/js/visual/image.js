@@ -53,8 +53,51 @@ ripe.Image.prototype.init = function() {
     this.size = this.options.size || null;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
-    this.crop = this.options.crop || null;
     this.mutations = this.options.mutations || false;
+    this.rotation = this.options.rotation || null;
+    this.crop = this.options.crop || null;
+    this.flip = this.options.flip || null;
+    this.mirror = this.options.mirror || null;
+    this.boundingBox = this.options.boundingBox || null;
+    this.algorithm = this.options.algorithm || null;
+    this.background = this.options.background || null;
+    this.engine = this.options.engine || null;
+    this.initialsX = this.options.initialsX || null;
+    this.initialsY = this.options.initialsY || null;
+    this.initialsWidth = this.options.initialsWidth || null;
+    this.initialsHeight = this.options.initialsHeight || null;
+    this.initialsViewport = this.options.initialsViewport || null;
+    this.initialsColor = this.options.initialsColor || null;
+    this.initialsOpacity = this.options.initialsOpacity || null;
+    this.initialsAlign = this.options.initialsAlign || null;
+    this.initialsVertical = this.options.initialsVertical || null;
+    this.initialsEmbossing = this.options.initialsEmbossing || null;
+    this.initialsRotation = this.options.initialsRotation || null;
+    this.initialsZindex = this.options.initialsZindex || null;
+    this.initialsAlgorithm = this.options.initialsAlgorithm || null;
+    this.initialsBlendColor = this.options.initialsBlendColor || null;
+    this.initialsPattern = this.options.initialsPattern || null;
+    this.initialsTexture = this.options.initialsTexture || null;
+    this.initialsExclusion = this.options.initialsExclusion || null;
+    this.initialsInclusion = this.options.initialsInclusion || null;
+    this.initialsImageRotation = this.options.initialsImageRotation || null;
+    this.initialsImageFlip = this.options.initialsImageFlip || null;
+    this.initialsImageMirror = this.options.initialsImageMirror || null;
+    this.debug = this.options.debug || null;
+    this.fontFamily = this.options.fontFamily || null;
+    this.fontWeight = this.options.fontWeight || null;
+    this.fontSize = this.options.fontSize || null;
+    this.fontSpacing = this.options.fontSpacing || null;
+    this.fontTrim = this.options.fontTrim || null;
+    this.fontMask = this.options.fontMask || null;
+    this.fontMode = this.options.fontMode || null;
+    this.lineHeight = this.options.lineHeight || null;
+    this.lineBreaking = this.options.lineBreaking || null;
+    this.shadow = this.options.shadow || null;
+    this.shadowColor = this.options.shadowColor || null;
+    this.shadowOffset = this.options.shadowOffset || null;
+    this.offsets = this.options.offsets || null;
+    this.curve = this.options.curve || null;
     this.showInitials = this.options.showInitials || false;
     this.initialsGroup = this.options.initialsGroup || null;
     this.initialsBuilder =
@@ -93,7 +136,7 @@ ripe.Image.prototype.deinit = async function() {
  *
  * @param {Object} options Set of optional parameters to adjust the Image, such as:
  * - 'format' - The format of the image, (eg: png, jpg, svg, etc.).
- * - 'crop' - A Boolean indicating if it is to crop the image composition.
+ * - 'crop' - A Boolean indicating if the resulting image should be cropped.
  * - 'initialsGroup' - The group in which the image initials belongs to.
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
@@ -106,7 +149,87 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.size = options.size === undefined ? this.size : options.size;
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
+    this.rotation = options.rotation === undefined ? this.rotation : options.rotation;
     this.crop = options.crop === undefined ? this.crop : options.crop;
+    this.flip = options.flip === undefined ? this.flip : options.flip;
+    this.mirror = options.mirror === undefined ? this.mirror : options.mirror;
+    this.boundingBox = options.boundingBox === undefined ? this.boundingBox : options.boundingBox;
+    this.algorithm = options.algorithm === undefined ? this.algorithm : options.algorithm;
+    this.background = options.background === undefined ? this.background : options.background;
+    this.engine = options.engine === undefined ? this.engine : options.engine;
+    this.initialsX = options.initialsX === undefined ? this.initialsX : options.initialsX;
+    this.initialsY = options.initialsY === undefined ? this.initialsY : options.initialsY;
+    this.initialsWidth =
+        options.initialsWidth === undefined ? this.initialsWidth : options.initialsWidth;
+    this.initialsHeight =
+        options.initialsHeight === undefined ? this.initialsHeight : options.initialsHeight;
+    this.initialsViewport =
+        options.initialsViewport === undefined ? this.initialsViewport : options.initialsViewport;
+    this.initialsColor =
+        options.initialsColor === undefined ? this.initialsColor : options.initialsColor;
+    this.initialsOpacity =
+        options.initialsOpacity === undefined ? this.initialsOpacity : options.initialsOpacity;
+    this.initialsAlign =
+        options.initialsAlign === undefined ? this.initialsAlign : options.initialsAlign;
+    this.initialsVertical =
+        options.initialsVertical === undefined ? this.initialsVertical : options.initialsVertical;
+    this.initialsEmbossing =
+        options.initialsEmbossing === undefined
+            ? this.initialsEmbossing
+            : options.initialsEmbossing;
+    this.initialsRotation =
+        options.initialsRotation === undefined ? this.initialsRotation : options.initialsRotation;
+    this.initialsZindex =
+        options.initialsZindex === undefined ? this.initialsZindex : options.initialsZindex;
+    this.initialsAlgorithm =
+        options.initialsAlgorithm === undefined
+            ? this.initialsAlgorithm
+            : options.initialsAlgorithm;
+    this.initialsBlendColor =
+        options.initialsBlendColor === undefined
+            ? this.initialsBlendColor
+            : options.initialsBlendColor;
+    this.initialsPattern =
+        options.initialsPattern === undefined ? this.initialsPattern : options.initialsPattern;
+    this.initialsTexture =
+        options.initialsTexture === undefined ? this.initialsTexture : options.initialsTexture;
+    this.initialsExclusion =
+        options.initialsExclusion === undefined
+            ? this.initialsExclusion
+            : options.initialsExclusion;
+    this.initialsInclusion =
+        options.initialsInclusion === undefined
+            ? this.initialsInclusion
+            : options.initialsInclusion;
+    this.initialsImageRotation =
+        options.initialsImageRotation === undefined
+            ? this.initialsImageRotation
+            : options.initialsImageRotation;
+    this.initialsImageFlip =
+        options.initialsImageFlip === undefined
+            ? this.initialsImageFlip
+            : options.initialsImageFlip;
+    this.initialsImageMirror =
+        options.initialsImageMirror === undefined
+            ? this.initialsImageMirror
+            : options.initialsImageMirror;
+    this.debug = options.debug === undefined ? this.debug : options.debug;
+    this.fontFamily = options.fontFamily === undefined ? this.fontFamily : options.fontFamily;
+    this.fontWeight = options.fontWeight === undefined ? this.fontWeight : options.fontWeight;
+    this.fontSize = options.fontSize === undefined ? this.fontSize : options.fontSize;
+    this.fontSpacing = options.fontSpacing === undefined ? this.fontSpacing : options.fontSpacing;
+    this.fontTrim = options.fontTrim === undefined ? this.fontTrim : options.fontTrim;
+    this.fontMask = options.fontMask === undefined ? this.fontMask : options.fontMask;
+    this.fontMode = options.fontMode === undefined ? this.fontMode : options.fontMode;
+    this.lineHeight = options.lineHeight === undefined ? this.lineHeight : options.lineHeight;
+    this.lineBreaking =
+        options.lineBreaking === undefined ? this.lineBreaking : options.lineBreaking;
+    this.shadow = options.shadow === undefined ? this.shadow : options.shadow;
+    this.shadowColor = options.shadowColor === undefined ? this.shadowColor : options.shadowColor;
+    this.shadowOffset =
+        options.shadowOffset === undefined ? this.shadowOffset : options.shadowOffset;
+    this.offsets = options.offsets === undefined ? this.offsets : options.offsets;
+    this.curve = options.curve === undefined ? this.curve : options.curve;
     this.initialsGroup =
         options.initialsGroup === undefined ? this.initialsGroup : options.initialsGroup;
 
@@ -130,6 +253,50 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const height = this.element.dataset.height || this.height;
     const crop = this.element.dataset.crop || this.crop;
     const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
+    const flip = this.element.dataset.flip || this.flip;
+    const mirror = this.element.dataset.mirror || this.mirror;
+    const boundingBox = this.element.dataset.boundingBox || this.boundingBox;
+    const algorithm = this.element.dataset.algorithm || this.algorithm;
+    const background = this.element.dataset.background || this.background;
+    const engine = this.element.dataset.engine || this.engine;
+    const initialsX = this.element.dataset.initialsX || this.initialsX;
+    const initialsY = this.element.dataset.initialsY || this.initialsY;
+    const initialsWidth = this.element.dataset.initialsWidth || this.initialsWidth;
+    const initialsHeight = this.element.dataset.initialsHeight || this.initialsHeight;
+    const initialsViewport = this.element.dataset.initialsViewport || this.initialsViewport;
+    const initialsColor = this.element.dataset.initialsColor || this.initialsColor;
+    const initialsOpacity = this.element.dataset.initialsOpacity || this.initialsOpacity;
+    const initialsAlign = this.element.dataset.initialsAlign || this.initialsAlign;
+    const initialsVertical = this.element.dataset.initialsVertical || this.initialsVertical;
+    const initialsEmbossing = this.element.dataset.initialsEmbossing || this.initialsEmbossing;
+    const initialsRotation = this.element.dataset.initialsRotation || this.initialsRotation;
+    const initialsZindex = this.element.dataset.initialsZindex || this.initialsZindex;
+    const initialsAlgorithm = this.element.dataset.initialsAlgorithm || this.initialsAlgorithm;
+    const initialsBlendColor = this.element.dataset.initialsBlendColor || this.initialsBlendColor;
+    const initialsPattern = this.element.dataset.initialsPattern || this.initialsPattern;
+    const initialsTexture = this.element.dataset.initialsTexture || this.initialsTexture;
+    const initialsExclusion = this.element.dataset.initialsExclusion || this.initialsExclusion;
+    const initialsInclusion = this.element.dataset.initialsInclusion || this.initialsInclusion;
+    const initialsImageRotation =
+        this.element.dataset.initialsImageRotation || this.initialsImageRotation;
+    const initialsImageFlip = this.element.dataset.initialsImageFlip || this.initialsImageFlip;
+    const initialsImageMirror =
+        this.element.dataset.initialsImageMirror || this.initialsImageMirror;
+    const debug = this.element.dataset.debug || this.debug;
+    const fontFamily = this.element.dataset.fontFamily || this.fontFamily;
+    const fontWeight = this.element.dataset.fontWeight || this.fontWeight;
+    const fontSize = this.element.dataset.fontSize || this.fontSize;
+    const fontSpacing = this.element.dataset.fontSpacing || this.fontSpacing;
+    const fontTrim = this.element.dataset.fontTrim || this.fontTrim;
+    const fontMask = this.element.dataset.fontMask || this.fontMask;
+    const fontMode = this.element.dataset.fontMode || this.fontMode;
+    const lineHeight = this.element.dataset.lineHeight || this.lineHeight;
+    const lineBreaking = this.element.dataset.lineBreaking || this.lineBreaking;
+    const shadow = this.element.dataset.shadow || this.shadow;
+    const shadowColor = this.element.dataset.shadowColor || this.shadowColor;
+    const shadowOffset = this.element.dataset.shadowOffset || this.shadowOffset;
+    const offsets = this.element.dataset.offsets || this.offsets;
+    const curve = this.element.dataset.curve || this.curve;
 
     // in case the state is defined tries to gather the appropriate
     // sate options for both initials and engraving taking into
@@ -144,7 +311,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         ? this.initialsBuilder(this.initials, this.engraving, this.element)
         : {};
 
-    // verifies if the model currently loaded in the RIPE instance can
+    // verifies if the model currently loaded in the Ripe Instance can
     // render the frame to be display and if that's not the case "ignores"
     // the current request for update
     if (frame && !this.owner.hasFrame(frame)) {
@@ -160,9 +327,52 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         size: size,
         width: width,
         height: height,
+        rotation: this.rotation,
         crop: crop,
         initials: initialsSpec.initials,
-        profile: initialsSpec.profile
+        profile: initialsSpec.profile,
+        flip: flip,
+        mirror: mirror,
+        boundingBox: boundingBox,
+        algorithm: algorithm,
+        background: background,
+        engine: engine,
+        initialsX: initialsX,
+        initialsY: initialsY,
+        initialsWidth: initialsWidth,
+        initialsHeight: initialsHeight,
+        initialsViewport: initialsViewport,
+        initialsColor: initialsColor,
+        initialsOpacity: initialsOpacity,
+        initialsAlign: initialsAlign,
+        initialsVertical: initialsVertical,
+        initialsEmbossing: initialsEmbossing,
+        initialsRotation: initialsRotation,
+        initialsZindex: initialsZindex,
+        initialsAlgorithm: initialsAlgorithm,
+        initialsBlendColor: initialsBlendColor,
+        initialsPattern: initialsPattern,
+        initialsTexture: initialsTexture,
+        initialsExclusion: initialsExclusion,
+        initialsInclusion: initialsInclusion,
+        initialsImageRotation: initialsImageRotation,
+        initialsImageFlip: initialsImageFlip,
+        initialsImageMirror: initialsImageMirror,
+        debug: debug,
+        fontFamily: fontFamily,
+        fontWeight: fontWeight,
+        fontSize: fontSize,
+        fontSpacing: fontSpacing,
+        fontTrim: fontTrim,
+        fontMask: fontMask,
+        fontMode: fontMode,
+        lineHeight: lineHeight,
+        lineBreaking: lineBreaking,
+        shadow: shadow,
+        shadowColor: shadowColor,
+        shadowOffset: shadowOffset,
+        offsets: offsets,
+        curve: curve
     });
 
     // verifies if the target image URL for the update is already
