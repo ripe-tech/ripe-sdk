@@ -45,6 +45,22 @@ ripe.RipeBase = function(brand, model, options = {}) {
 };
 
 /**
+ * Builds a new Ripe instance using the provided normalized configuration
+ * structure as the basis for its configuration.
+ *
+ * @param {Object} structure The normalized configuration structure that is
+ * going to be used in the initialization of the new Ripe instance.
+ * @param {Boolean} safe If the safe object mode creation should be used.
+ * @param {Object} options The extra options to be used in the initialization
+ * process of the Ripe instance.
+ */
+ripe.Ripe.fromStructure = async function(structure, safe = true, options = {}) {
+    const instance = new ripe.Ripe(options);
+    await instance.setStructure(structure, safe);
+    return instance;
+};
+
+/**
  * The initializer of the class, to be called whenever the instance
  * is going to become active.
  *
@@ -239,7 +255,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
         await this.config(brand, model, options);
     } catch (error) {
         // calls the error handler for the current handler to update the
-        // internal items of the RIPE instance
+        // internal items of the Ripe Instance
         this._errorHandler(error);
 
         // returns the control flow immediately as the exception has been
@@ -278,7 +294,7 @@ ripe.Ripe.prototype.deinit = async function() {
  * This method should be called before any significant RIPE operation
  * can be performed on the instance.
  *
- * @returns {Object} The current RIPE instance (for pipelining).
+ * @returns {Object} The current Ripe Instance (for pipelining).
  */
 ripe.Ripe.prototype.load = function() {
     this.update(undefined, { reason: "load" });
@@ -286,13 +302,34 @@ ripe.Ripe.prototype.load = function() {
 };
 
 /**
- * Explicit entry point for the unloading of the RIPE instance.
+ * Explicit entry point for the unloading of the Ripe Instance.
  *
  * Should be called for a clean exit of the instance.
  *
- * @returns {Object} The current RIPE instance (for pipelining).
+ * @returns {Object} The current Ripe Instance (for pipelining).
  */
 ripe.Ripe.prototype.unload = function() {
+    return this;
+};
+
+/**
+ * Same as `load` but providing a promise oriented solution
+ * ready to be "awaited".
+ *
+ * @returns {Object} The current Ripe Instance (for pipelining).
+ */
+ripe.Ripe.prototype.loadP = async function() {
+    await this.update(undefined, { reason: "load" });
+    return this;
+};
+
+/**
+ * Same as `unload` but providing a promise oriented solution
+ * ready to be "awaited".
+ *
+ * @returns {Object} The current Ripe Instance (for pipelining).
+ */
+ripe.Ripe.prototype.unloadP = async function() {
     return this;
 };
 
@@ -445,7 +482,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     }
 
     // triggers the config event notifying any listener that the (base)
-    // configuration for this main RIPE instance has changed and waits
+    // configuration for this main Ripe Instance has changed and waits
     // for the listeners to conclude their operations
     await this.trigger("config", this.loadedConfig, options);
 
@@ -497,6 +534,63 @@ ripe.Ripe.prototype.remote = async function() {
         this.combinations = await this.getCombinationsP();
         this.trigger("combinations", this.combinations);
     }
+};
+
+/**
+ * Retrieves the normalized structure that uniquely represents
+ * the current configuration "situation".
+ *
+ * @param {Boolean} safe If the structure should be retrieved
+ * using a safe approach (deep copy).
+ * @returns The normalized map structure that represents the
+ * current configuration "situation".
+ */
+ripe.Ripe.prototype.getStructure = async function(safe = true) {
+    const structure = {};
+    if (this.brand) structure.brand = this.brand;
+    if (this.model) structure.model = this.model;
+    if (this.variant) structure.variant = this.variant;
+    if (this.version) structure.version = this.version;
+    if (this.parts && Object.keys(this.parts).length > 0) {
+        structure.parts = this.parts;
+    }
+    if (this.initials) structure.initials = this.initials;
+    if (this.engraving) structure.engraving = this.engraving;
+    if (this.initialsExtra && Object.keys(this.initialsExtra).length > 0) {
+        structure.initials_extra = this.initialsExtra;
+    }
+    return safe ? JSON.parse(JSON.stringify(structure)) : structure;
+};
+
+/**
+ * Updates the current internal state of the Ripe instance with the
+ * contents defined by the provided structure (snapshot).
+ *
+ * @param {Object} structure The object structure that represents the configuration
+ * "situation" that is going to be set in the Ripe instance.
+ * @param {Boolean} safe If the operation should be performed using a
+ * safe strategy (deep copy in objects).
+ */
+ripe.Ripe.prototype.setStructure = async function(structure, safe = true) {
+    const options = {};
+    const brand = structure.brand || null;
+    const model = structure.model || null;
+    options.variant = structure.variant || null;
+    options.version = structure.version || null;
+    options.parts =
+        (structure.parts &&
+            (safe ? JSON.parse(JSON.stringify(structure.parts)) : structure.parts)) ||
+        {};
+    options.initials = structure.initials || "";
+    options.engraving = structure.engraving || null;
+    options.initialsExtra =
+        (structure.initials_extra &&
+            !Object.isEmpty(structure.initials_extra) &&
+            (safe
+                ? JSON.parse(JSON.stringify(structure.initials_extra))
+                : structure.initials_Extra)) ||
+        {};
+    await this.config(brand, model, options);
 };
 
 /**
@@ -618,7 +712,7 @@ ripe.Ripe.prototype.setPart = async function(part, material, color, events = tru
     if (!runUpdate) return;
 
     // propagates the state change in the internal structures to the
-    // children elements of this RIPE instance
+    // children elements of this Ripe Instance
     const promise = this.update(undefined, { reason: "set part" });
 
     // in case the wait update options is valid (by default) then waits
@@ -657,7 +751,7 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
     if (!runUpdate) return;
 
     // propagates the state change in the internal structures to the
-    // children elements of this RIPE instance
+    // children elements of this Ripe Instance
     const promise = this.update(undefined, { reason: "set parts" });
 
     // in case the wait update options is valid (by default) then waits
@@ -1361,11 +1455,11 @@ ripe.Ripe.prototype.canRedo = function() {
 };
 
 /**
- * Returns a promise that is fulfilled once the RIPE instance
+ * Returns a promise that is fulfilled once the Ripe Instance
  * is ready to be used.
  *
  * This can be used to actively wait for the initialization of
- * the RIPE instance under an async environment.
+ * the Ripe Instance under an async environment.
  *
  * @returns {Promise} The promise to be fulfilled once the instance
  * is ready to be used.
