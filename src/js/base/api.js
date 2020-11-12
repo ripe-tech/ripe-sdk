@@ -667,8 +667,8 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.mirror = options.mirror;
     }
 
-    if (options.bounding_box !== undefined && options.bounding_box !== null) {
-        params.bounding_box = options.bounding_box;
+    if (options.Box !== undefined && options.boundingBox !== null) {
+        params.bounding_box = options.boundingBox;
     }
 
     if (options.algorithm !== undefined && options.algorithm !== null) {
@@ -683,148 +683,148 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.engine = options.engine;
     }
 
-    if (options.initials_profile !== undefined && options.initials_profile !== null) {
-        params.initials_profile = options.initials_profile;
+    if (options.initialsProfile !== undefined && options.initialsProfile !== null) {
+        params.initials_profile = options.initialsProfile;
     }
 
-    if (options.initials_profiles !== undefined && options.initials_profiles !== null) {
-        params.initials_profiles = options.initials_profiles;
+    if (options.initialsProfiles !== undefined && options.initialsProfile !== null) {
+        params.initials_profiles = options.initialsProfiles;
     }
 
-    if (options.initials_x !== undefined && options.initials_x !== null) {
-        params.initials_x = options.initials_x;
+    if (options.initialsX !== undefined && options.initialsX !== null) {
+        params.initials_x = options.initialsX;
     }
 
-    if (options.initials_y !== undefined && options.initials_y !== null) {
-        params.initials_y = options.initials_y;
+    if (options.initialsY !== undefined && options.initialsY !== null) {
+        params.initials_y = options.initialsY;
     }
 
-    if (options.initials_width !== undefined && options.initials_width !== null) {
-        params.initials_width = options.initials_width;
+    if (options.initialsWidth !== undefined && options.initialsWidth !== null) {
+        params.initials_width = options.initialsWidth;
     }
 
-    if (options.initials_height !== undefined && options.initials_height !== null) {
-        params.initials_height = options.initials_height;
+    if (options.initialsHeight !== undefined && options.initialsHeight !== null) {
+        params.initials_height = options.initialsHeight;
     }
 
-    if (options.initials_viewport !== undefined && options.initials_viewport !== null) {
-        params.initials_viewport = options.initials_viewport;
+    if (options.initialsViewport !== undefined && options.initialsViewport !== null) {
+        params.initials_viewport = options.initialsViewport;
     }
 
-    if (options.initials_color !== undefined && options.initials_color !== null) {
-        params.initials_color = options.initials_color;
+    if (options.initialsColor !== undefined && options.initialsColor !== null) {
+        params.initials_color = options.initialsColor;
     }
 
-    if (options.initials_opacity !== undefined && options.initials_opacity !== null) {
-        params.initials_opacity = options.initials_opacity;
+    if (options.initialsOpacity !== undefined && options.initialsOpacity !== null) {
+        params.initials_opacity = options.initialsOpacity;
     }
 
-    if (options.initials_align !== undefined && options.initials_align !== null) {
-        params.initials_align = options.initials_align;
+    if (options.initialsAlign !== undefined && options.initialsAlign !== null) {
+        params.initials_align = options.initialsAlign;
     }
 
-    if (options.initials_vertical !== undefined && options.initials_vertical !== null) {
-        params.initials_vertical = options.initials_vertical;
+    if (options.initialsVertical !== undefined && options.initialsVertical !== null) {
+        params.initials_vertical = options.initialsVertical;
     }
 
-    if (options.initials_embossing !== undefined && options.initials_embossing !== null) {
-        params.initials_embossing = options.initials_embossing;
+    if (options.initialsEmbossing !== undefined && options.initialsEmbossing !== null) {
+        params.initials_embossing = options.initialsEmbossing;
     }
 
-    if (options.initials_rotation !== undefined && options.initials_rotation !== null) {
-        params.initials_rotation = options.initials_rotation;
+    if (options.initialsRotation !== undefined && options.initialsRotation !== null) {
+        params.initials_rotation = options.initialsRotation;
     }
 
-    if (options.initials_z_index !== undefined && options.initials_z_index !== null) {
-        params.initials_z_index = options.initials_z_index;
+    if (options.initialsZindex !== undefined && options.initialsZindex !== null) {
+        params.initials_z_index = options.initialsZindex;
     }
 
-    if (options.initials_algorithm !== undefined && options.initials_algorithm !== null) {
-        params.initials_algorithm = options.initials_algorithm;
+    if (options.initialsAlgorithm !== undefined && options.initialsAlgorithm !== null) {
+        params.initials_algorithm = options.initialsAlgorithm;
     }
 
-    if (options.initials_blend_color !== undefined && options.initials_blend_color !== null) {
-        params.initials_blend_color = options.initials_blend_color;
+    if (options.initialsBlendColor !== undefined && options.initialsBlendColor !== null) {
+        params.initials_blend_color = options.initialsBlendColor;
     }
 
-    if (options.initials_pattern !== undefined && options.initials_pattern !== null) {
-        params.initials_pattern = options.initials_pattern;
+    if (options.initialsPattern !== undefined && options.initialsPattern !== null) {
+        params.initials_pattern = options.initialsPattern;
     }
 
-    if (options.initials_texture !== undefined && options.initials_texture !== null) {
-        params.initials_texture = options.initials_texture;
+    if (options.initialsTexture !== undefined && options.initialsTexture !== null) {
+        params.initials_texture = options.initialsTexture;
     }
 
-    if (options.initials_exclusion !== undefined && options.initials_exclusion !== null) {
-        params.initials_exclusion = options.initials_exclusion;
+    if (options.initialsExclusion !== undefined && options.initialsExclusion !== null) {
+        params.initials_exclusion = options.initialsExclusion;
     }
 
-    if (options.initials_image_rotation !== undefined && options.initials_image_rotation !== null) {
-        params.initials_image_rotation = options.initials_image_rotation;
+    if (options.initialsImageRotation !== undefined && options.initialsImageRotation !== null) {
+        params.initials_image_rotation = options.initialsImageRotation;
     }
 
-    if (options.initials_image_flip !== undefined && options.initials_image_flip !== null) {
-        params.initials_image_flip = options.initials_image_flip;
+    if (options.initialsImageFlip !== undefined && options.initialsImageFlip !== null) {
+        params.initials_image_flip = options.initialsImageFlip;
     }
 
-    if (options.initials_image_mirror !== undefined && options.initials_image_mirror !== null) {
-        params.initials_image_mirror = options.initials_image_mirror;
+    if (options.initialsImageMirror !== undefined && options.initialsImageMirror !== null) {
+        params.initials_image_mirror = options.initialsImageMirror;
     }
 
     if (options.debug !== undefined && options.debug !== null) {
         params.debug = options.debug;
     }
 
-    if (options.initials_debug !== undefined && options.initials_debug !== null) {
-        params.initials_debug = options.initials_debug;
+    if (options.initialsDebug !== undefined && options.initialsDebug !== null) {
+        params.initials_debug = options.initialsDebug;
     }
 
-    if (options.font_family !== undefined && options.font_family !== null) {
-        params.font_family = options.font_family;
+    if (options.fontFamily !== undefined && options.fontFamily !== null) {
+        params.font_family = options.fontFamily;
     }
 
-    if (options.font_weight !== undefined && options.font_weight !== null) {
-        params.font_weight = options.font_weight;
+    if (options.fontWeight !== undefined && options.fontWeight !== null) {
+        params.font_weight = options.fontWeight;
     }
 
-    if (options.font_size !== undefined && options.font_size !== null) {
-        params.font_size = options.font_size;
+    if (options.fontSize !== undefined && options.fontSize !== null) {
+        params.font_size = options.fontSize;
     }
 
-    if (options.font_spacing !== undefined && options.font_spacing !== null) {
-        params.font_spacing = options.font_spacing;
+    if (options.fontSpacing !== undefined && options.fontSpacing !== null) {
+        params.font_spacing = options.fontSpacing;
     }
 
-    if (options.font_trim !== undefined && options.font_trim !== null) {
-        params.font_trim = options.font_trim;
+    if (options.fontTrim !== undefined && options.fontTrim !== null) {
+        params.font_trim = options.fontTrim;
     }
 
-    if (options.font_mask !== undefined && options.font_mask !== null) {
-        params.font_mask = options.font_mask;
+    if (options.fontMask !== undefined && options.fontMask !== null) {
+        params.font_mask = options.fontMask;
     }
 
-    if (options.font_mode !== undefined && options.font_mode !== null) {
-        params.font_mode = options.font_mode;
+    if (options.fontMode !== undefined && options.fontMode !== null) {
+        params.font_mode = options.fontMode;
     }
 
-    if (options.line_height !== undefined && options.line_height !== null) {
-        params.line_height = options.line_height;
+    if (options.lineHeight !== undefined && options.lineHeight !== null) {
+        params.line_height = options.lineHeight;
     }
 
-    if (options.line_breaking !== undefined && options.line_breaking !== null) {
-        params.line_breaking = options.line_breaking;
+    if (options.lineBreaking !== undefined && options.lineBreaking !== null) {
+        params.line_breaking = options.lineBreaking;
     }
 
     if (options.shadow !== undefined && options.shadow !== null) {
         params.shadow = options.shadow;
     }
 
-    if (options.shadow_color !== undefined && options.shadow_color !== null) {
-        params.shadow_color = options.shadow_color;
+    if (options.shadowColor !== undefined && options.shadowColor !== null) {
+        params.shadow_color = options.shadowColor;
     }
 
-    if (options.shadow_offset !== undefined && options.shadow_offset !== null) {
-        params.shadow_offset = options.shadow_offset;
+    if (options.shadowOffset !== undefined && options.shadowOffset !== null) {
+        params.shadow_offset = options.shadowOffset;
     }
 
     if (options.offsets !== undefined && options.offsets !== null) {
