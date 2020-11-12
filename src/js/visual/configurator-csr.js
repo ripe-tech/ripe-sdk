@@ -102,17 +102,17 @@ ripe.ConfiguratorCSR.prototype.init = function() {
         if (config) this._updateConfig();
     });
 
+    // disable the library's cache and clears it, effectively
+    // removing some improved performance in favour of determinism
     this.options.library.Cache.enabled = false;
     this.options.library.Cache.clear();
 
+    // creates the instances for the multiple CSR related components
+    // to be used for the CSR interactive experience
     this.renderer = new ripe.CSR(this.owner, this.element, this.options);
-    this.controls = new ripe.OrbitalControls(this, this.element, this.options);
     this.initials = new ripe.CSRInitials(this.owner, this.options);
-
-    // wait until configurator finished initializing to create the controls and
-    // renderer
     this.assetManager = new ripe.CSRAssetManager(this, this.owner, this.options);
-    this.crossfadeQueue = [];
+    this.controls = new ripe.OrbitalControls(this, this.element, this.options);
 };
 
 /**
