@@ -138,6 +138,7 @@ ripe.CSRAssetManager.prototype._loadAsset = async function(filename = null, isAn
 
     // gathers the proper loader class and then creates a new instance
     // of the loader that is going to be used
+    debugger;
     const loader = new loadersM[type]();
 
     // encapsulates the loader logic around a promise and waits
