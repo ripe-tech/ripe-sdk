@@ -23,8 +23,8 @@
         </div>
     {% endif %}
     {% block canvas %}
-        <div id="configurator-prc" class="configurator" data-size="620" data-sensitivity="40" data-position="0" data-view="side"> </div>
-        <div id="configurator-csr" class="configurator" data-size="620" data-sensitivity="40" data-position="0" data-view="side"> </div>
+        <div id="configurator-prc" class="configurator" data-size="620" data-sensitivity="40" data-position="0" data-view="side"></div>
+        <div id="configurator-csr" class="configurator" data-size="620" data-sensitivity="40" data-position="0" data-view="side"></div>
         <div id="images" class="images">
             <img id="frame-0" data-size="200" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
             <img id="frame-6" data-size="200" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
