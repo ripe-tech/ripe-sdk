@@ -17,7 +17,15 @@ const paths = {
     mainjs: "dist/ripe.js",
     mainmap: "dist/ripe.js.map",
     maincss: "src/css/ripe.css",
-    scripts: "src/js/**/*.js",
+    libs: [
+        "node_modules/three/build/three.js"
+        // "node_modules/three/examples/js/loaders/OBJLoader.js",
+        // "node_modules/three/examples/js/libs/inflate.min.js",
+        // "node_modules/three/examples/js/loaders/FBXLoader.js",
+        // "node_modules/three/examples/js/loaders/GLTFLoader.js",
+        // "node_modules/three/examples/js/loaders/RGBELoader.js",
+    ],
+    scripts: ["src/js/**/*.js"],
     bscripts: "src/js/*/**/*.js",
     css: "src/css/**/*.css",
     docs: "src/js/*/**/*.js",
@@ -70,7 +78,7 @@ const paths = {
 
 gulp.task("build-js", () => {
     return gulp
-        .src(paths.scripts)
+        .src(paths.scripts.concat(paths.libs))
         .pipe(replace("__VERSION__", _package.version))
         .pipe(size())
         .pipe(
@@ -107,7 +115,7 @@ gulp.task("build-css", () => {
 
 gulp.task("build-package-js", () => {
     return gulp
-        .src([paths.polyfill].concat(paths.basefiles))
+        .src([paths.polyfill].concat(paths.libs, paths.basefiles))
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))
@@ -123,7 +131,7 @@ gulp.task("build-package-js", () => {
 
 gulp.task("build-package-min", () => {
     return gulp
-        .src([paths.polyfill].concat(paths.basefiles))
+        .src([paths.polyfill].concat(paths.libs, paths.basefiles))
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))
@@ -162,7 +170,7 @@ gulp.task(
 
 gulp.task("mark", () => {
     return gulp
-        .src(paths.scripts)
+        .src(paths.scripts.concat(paths.libs))
         .pipe(replace("__VERSION__", _package.version))
         .pipe(gulp.dest("src/js"));
 });
