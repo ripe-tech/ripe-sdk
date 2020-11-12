@@ -259,6 +259,51 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const height = this.element.dataset.height || this.height;
     const crop = this.element.dataset.crop || this.crop;
     const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
+    const flip = this.element.dataset.flip || this.flip;
+    const mirror = this.element.dataset.mirror || this.mirror;
+    const boundingBox = this.element.dataset.boundingBox || this.boundingBox;
+    const algorithm = this.element.dataset.algorithm || this.algorithm;
+    const background = this.element.dataset.background || this.background;
+    const engine = this.element.dataset.engine || this.engine;
+    const initialsX = this.element.dataset.initialsX || this.initialsX;
+    const initialsY = this.element.dataset.initialsY || this.initialsY;
+    const initialsWidth = this.element.dataset.initialsWidth || this.initialsWidth;
+    const initialsHeight = this.element.dataset.initialsHeight || this.initialsHeight;
+    const initialsViewport = this.element.dataset.initialsViewport || this.initialsViewport;
+    const initialsColor = this.element.dataset.initialsColor || this.initialsColor;
+    const initialsOpacity = this.element.dataset.initialsOpacity || this.initialsOpacity;
+    const initialsAlign = this.element.dataset.initialsAlign || this.initialsAlign;
+    const initialsVertical = this.element.dataset.initialsVertical || this.initialsVertical;
+    const initialsEmbossing = this.element.dataset.initialsEmbossing || this.initialsEmbossing;
+    const initialsRotation = this.element.dataset.initialsRotation || this.initialsRotation;
+    const initialsZindex = this.element.dataset.initialsZindex || this.initialsZindex;
+    const initialsAlgorithm = this.element.dataset.initialsAlgorithm || this.initialsAlgorithm;
+    const initialsBlendColor = this.element.dataset.initialsBlendColor || this.initialsBlendColor;
+    const initialsPattern = this.element.dataset.initialsPattern || this.initialsPattern;
+    const initialsTexture = this.element.dataset.initialsTexture || this.initialsTexture;
+    const initialsExclusion = this.element.dataset.initialsExclusion || this.initialsExclusion;
+    const initialsInclusion = this.element.dataset.initialsInclusion || this.initialsInclusion;
+    const initialsImageRotation =
+        this.element.dataset.initialsImageRotation || this.initialsImageRotation;
+    const initialsImageFlip = this.element.dataset.initialsImageFlip || this.initialsImageFlip;
+    const initialsImageMirror =
+        this.element.dataset.initialsImageMirror || this.initialsImageMirror;
+    const debug = this.element.dataset.debug || this.debug;
+    const initialsDebug = this.element.dataset.initialsDebug || this.initialsDebug;
+    const fontFamily = this.element.dataset.fontFamily || this.fontFamily;
+    const fontWeight = this.element.dataset.fontWeight || this.fontWeight;
+    const fontSize = this.element.dataset.fontSize || this.fontSize;
+    const fontSpacing = this.element.dataset.fontSpacing || this.fontSpacing;
+    const fontTrim = this.element.dataset.fontTrim || this.fontTrim;
+    const fontMask = this.element.dataset.fontMask || this.fontMask;
+    const fontMode = this.element.dataset.fontMode || this.fontMode;
+    const lineHeight = this.element.dataset.lineHeight || this.lineHeight;
+    const lineBreaking = this.element.dataset.lineBreaking || this.lineBreaking;
+    const shadow = this.element.dataset.shadow || this.shadow;
+    const shadowColor = this.element.dataset.shadowColor || this.shadowColor;
+    const shadowOffset = this.element.dataset.shadowOffset || this.shadowOffset;
+    const offsets = this.element.dataset.offsets || this.offsets;
+    const curve = this.element.dataset.curve || this.curve;
 
     // in case the state is defined tries to gather the appropriate
     // sate options for both initials and engraving taking into
@@ -293,49 +338,49 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         crop: crop,
         initials: initialsSpec.initials,
         profile: initialsSpec.profile,
-        flip: this.flip,
-        mirror: this.mirror,
-        boundingBox: this.boundingBox,
-        algorithm: this.algorithm,
-        background: this.background,
-        engine: this.engine,
-        initialsX: this.initialsX,
-        initialsY: this.initialsY,
-        initialsWidth: this.initialsWidth,
-        initialsHeight: this.initialsHeight,
-        initialsViewport: this.initialsViewport,
-        initialsColor: this.initialsColor,
-        initialsOpacity: this.initialsOpacity,
-        initialsAlign: this.initialsAlign,
-        initialsVertical: this.initialsVertical,
-        initialsEmbossing: this.initialsEmbossing,
-        initialsRotation: this.initialsRotation,
-        initialsZindex: this.initialsZindex,
-        initialsAlgorithm: this.initialsAlgorithm,
-        initialsBlendColor: this.initialsBlendColor,
-        initialsPattern: this.initialsPattern,
-        initialsTexture: this.initialsTexture,
-        initialsExclusion: this.initialsExclusion,
-        initialsInclusion: this.initialsInclusion,
-        initialsImageRotation: this.initialsImageRotation,
-        initialsImageFlip: this.initialsImageFlip,
-        initialsImageMirror: this.initialsImageMirror,
-        debug: this.debug,
-        initialsDebug: this.initialsDebug,
-        fontFamily: this.fontFamily,
-        fontWeight: this.fontWeight,
-        fontSize: this.fontSize,
-        fontSpacing: this.fontSpacing,
-        fontTrim: this.fontTrim,
-        fontMask: this.fontMask,
-        fontMode: this.fontMode,
-        lineHeight: this.lineHeight,
-        lineBreaking: this.lineBreaking,
-        shadow: this.shadow,
-        shadowColor: this.shadowColor,
-        shadowOffset: this.shadowOffset,
-        offsets: this.offsets,
-        curve: this.curve
+        flip: flip,
+        mirror: mirror,
+        boundingBox: boundingBox,
+        algorithm: algorithm,
+        background: background,
+        engine: engine,
+        initialsX: initialsX,
+        initialsY: initialsY,
+        initialsWidth: initialsWidth,
+        initialsHeight: initialsHeight,
+        initialsViewport: initialsViewport,
+        initialsColor: initialsColor,
+        initialsOpacity: initialsOpacity,
+        initialsAlign: initialsAlign,
+        initialsVertical: initialsVertical,
+        initialsEmbossing: initialsEmbossing,
+        initialsRotation: initialsRotation,
+        initialsZindex: initialsZindex,
+        initialsAlgorithm: initialsAlgorithm,
+        initialsBlendColor: initialsBlendColor,
+        initialsPattern: initialsPattern,
+        initialsTexture: initialsTexture,
+        initialsExclusion: initialsExclusion,
+        initialsInclusion: initialsInclusion,
+        initialsImageRotation: initialsImageRotation,
+        initialsImageFlip: initialsImageFlip,
+        initialsImageMirror: initialsImageMirror,
+        debug: debug,
+        initialsDebug: initialsDebug,
+        fontFamily: fontFamily,
+        fontWeight: fontWeight,
+        fontSize: fontSize,
+        fontSpacing: fontSpacing,
+        fontTrim: fontTrim,
+        fontMask: fontMask,
+        fontMode: fontMode,
+        lineHeight: lineHeight,
+        lineBreaking: lineBreaking,
+        shadow: shadow,
+        shadowColor: shadowColor,
+        shadowOffset: shadowOffset,
+        offsets: offsets,
+        curve: curve
     });
 
     // verifies if the target image URL for the update is already
