@@ -5,8 +5,8 @@
 var FACES = ["side", "top", "front"];
 
 window.onload = function() {
-    var elementCSR = document.getElementById("configuratorCSR");
-    var elementPRC = document.getElementById("configuratorPRC");
+    var elementCSR = document.getElementById("configurator-csr");
+    var elementPRC = document.getElementById("configurator-prc");
     var _body = document.querySelector("body");
     // var url = _body.dataset.url || "https://sandbox.platforme.com/api/";
     var url = _body.dataset.url || "http://localhost:8181/api/";
@@ -333,15 +333,15 @@ window.onload = function() {
             });
 
             configuratorPRC = ripe.bindConfigurator(elementPRC, {
+                render: "prc",
                 duration: 250,
                 noMasks: false,
-                view: bestFace(result),
-                render: "prc"
+                view: bestFace(result)
             });
 
             configuratorCSR = ripe.bindConfigurator(elementCSR, {
-                duration: 250,
                 render: "csr",
+                duration: 250,
                 noMasks: false,
                 view: bestFace(result),
 
