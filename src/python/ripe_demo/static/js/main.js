@@ -435,6 +435,12 @@ window.onload = function() {
                 }
             });
 
+            // @todo using this hack until the loaded event is not fixed
+            setTimeout(() => {
+                configuratorCSR.wireframe = true;
+            }, 1500);
+
+            // @todo this event is not being triggered!!!!
             configuratorCSR.bind("loaded", function() {
                 if (configuratorCSR.isFirst) configuratorCSR.isFirst = false;
                 else return;

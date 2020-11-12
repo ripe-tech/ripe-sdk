@@ -153,7 +153,7 @@ ripe.ConfiguratorCSR.prototype.deinit = async function() {
 };
 
 /**
- * Called when deinitializing the Configurator, begins the disposal of
+ * Called when de-initializing the Configurator, begins the disposal of
  * all the stored resources.
  */
 ripe.ConfiguratorCSR.prototype.disposeResources = async function() {
@@ -273,11 +273,11 @@ ripe.ConfiguratorCSR.prototype.updateViewPosition = function(newPos, newView) {
  * Function to perform a rotation, triggered by the controls. Assesses whether a transition
  * is necessary, and if so, calls the correct function to handle the transition depending
  * on the Configurator's settings.
- * @param {*} options Set of parameters that guide the rotation such as:
+ * @param {Object} options Set of parameters that guide the rotation such as:
  * - 'rotationX' - The new horizontal rotation for the camera.
  * - 'rotationY' - The new vertical rotation for the camera.
  * - 'distance' - The new camera distance.
- * @param {*} isAnimated Decides whether it is a simple rotation (such as when dragging), and
+ * @param {Boolean} isAnimated Decides whether it is a simple rotation (such as when dragging), and
  * if so, no animation transition is triggered.
  */
 ripe.ConfiguratorCSR.prototype.rotate = async function(options, isAnimated = true) {
@@ -358,7 +358,7 @@ ripe.ConfiguratorCSR.prototype.resize = async function(size) {
     this.currentSize = size;
 
     // on the resize of the configurator, the renderer needs to update
-    // the bounding box to maintain correct raycasts
+    // the bounding box to maintain correct raycasting
     if (this.renderer) {
         this.renderer.updateSize();
     }
@@ -528,3 +528,12 @@ ripe.ConfiguratorCSR.prototype._updateConfig = async function(animate) {
     // and starts responding to updates again
     this.update({});
 };
+
+Object.defineProperty(ripe.ConfiguratorCSR.prototype, "wireframe", {
+    get: function() {
+        return this.renderer.wireframe;
+    },
+    set: function(value) {
+        this.renderer.wireframe = value;
+    }
+});

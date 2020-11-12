@@ -71,6 +71,8 @@ ripe.CSR = function(owner, element, options) {
     this.guiLibrary = options.dat === undefined ? null : options.dat;
 
     this.boundingBox = undefined;
+
+    this._wireframe = false;
 };
 
 ripe.CSR.prototype = ripe.build(ripe.Observable.prototype);
@@ -936,7 +938,7 @@ ripe.CSR.prototype._performAnimation = function(animationName) {
             this.renderer.clear();
             this.renderer.render(this.scene, this.camera);
 
-            // reset renderer
+            // resets the renderer
             this.renderer.setRenderTarget(null);
             this.renderer.clear();
 
@@ -1045,3 +1047,15 @@ ripe.CSR.prototype._convertRaycast = function(coordinates) {
         ((coordinates.y - this.boundingBox.y + window.scrollY) / this.boundingBox.height) * -2 + 1;
     return { x: newX, y: newY };
 };
+
+Object.defineProperty(ripe.CSR.prototype, "wireframe", {
+    get: function() {
+        return this._wireframe;
+    },
+    set: function(value) {
+        Object.values(this.assetManager?.meshes || {}).forEach(mesh => {
+            mesh.material.wireframe = value;
+        });
+        this._wireframe = value;
+    }
+});
