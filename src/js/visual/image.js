@@ -156,8 +156,8 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.crop = options.crop === undefined ? this.crop : options.crop;
     this.flip = options.flip === undefined ? this.flip : options.flip;
     this.mirror = options.mirror === undefined ? this.mirror : options.mirror;
-    this.bounding_box =
-        options.bounding_box === undefined ? this.bounding_box : options.bounding_box;
+    this.boundingBox =
+        options.boundingBox === undefined ? this.boundingBox : options.boundingBox;
     this.algorithm = options.algorithm === undefined ? this.algorithm : options.algorithm;
     this.background = options.background === undefined ? this.background : options.background;
     this.engine = options.engine === undefined ? this.engine : options.engine;
