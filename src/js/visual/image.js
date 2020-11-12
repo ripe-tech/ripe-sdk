@@ -62,8 +62,6 @@ ripe.Image.prototype.init = function() {
     this.algorithm = this.options.algorithm || null;
     this.background = this.options.background || null;
     this.engine = this.options.engine || null;
-    this.initialsProfile = this.options.initialsProfile || null;
-    this.initialsProfiles = this.options.initialsProfiles || null;
     this.initialsX = this.options.initialsX || null;
     this.initialsY = this.options.initialsY || null;
     this.initialsWidth = this.options.initialsWidth || null;
@@ -156,15 +154,10 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.crop = options.crop === undefined ? this.crop : options.crop;
     this.flip = options.flip === undefined ? this.flip : options.flip;
     this.mirror = options.mirror === undefined ? this.mirror : options.mirror;
-    this.boundingBox =
-        options.boundingBox === undefined ? this.boundingBox : options.boundingBox;
+    this.boundingBox = options.boundingBox === undefined ? this.boundingBox : options.boundingBox;
     this.algorithm = options.algorithm === undefined ? this.algorithm : options.algorithm;
     this.background = options.background === undefined ? this.background : options.background;
     this.engine = options.engine === undefined ? this.engine : options.engine;
-    this.initialsProfile =
-        options.initialsProfile === undefined ? this.initialsProfile : options.initialsProfile;
-    this.initialsProfiles =
-        options.initialsProfiles === undefined ? this.initialsProfiles : options.initialsProfiles;
     this.initialsX = options.initialsX === undefined ? this.initialsX : options.initialsX;
     this.initialsY = options.initialsY === undefined ? this.initialsY : options.initialsY;
     this.initialsWidth =
@@ -306,8 +299,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         algorithm: this.algorithm,
         background: this.background,
         engine: this.engine,
-        initialsProfile: this.initialsProfile,
-        initialsProfiles: this.initialsProfiles,
         initialsX: this.initialsX,
         initialsY: this.initialsY,
         initialsWidth: this.initialsWidth,

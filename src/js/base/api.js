@@ -679,14 +679,6 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.engine = options.engine;
     }
 
-    if (options.initialsProfile !== undefined && options.initialsProfile !== null) {
-        params.initials_profile = options.initialsProfile;
-    }
-
-    if (options.initialsProfiles !== undefined && options.initialsProfile !== null) {
-        params.initials_profiles = options.initialsProfiles;
-    }
-
     if (options.initialsX !== undefined && options.initialsX !== null) {
         params.initials_x = options.initialsX;
     }
