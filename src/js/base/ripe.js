@@ -551,7 +551,7 @@ ripe.Ripe.prototype.setStructure = async function(structure, safe = true) {
             !Object.isEmpty(structure.initials_extra) &&
             (safe
                 ? JSON.parse(JSON.stringify(structure.initials_extra))
-                : structure.initialsExtra)) ||
+                : structure.initials_Extra)) ||
         {};
     await this.config(brand, model, options);
 };
