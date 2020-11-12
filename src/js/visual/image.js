@@ -84,7 +84,6 @@ ripe.Image.prototype.init = function() {
     this.initialsImageFlip = this.options.initialsImageFlip || null;
     this.initialsImageMirror = this.options.initialsImageMirror || null;
     this.debug = this.options.debug || null;
-    this.initialsDebug = this.debug ? this.debug : this.options.initialsDebug || null;
     this.fontFamily = this.options.fontFamily || null;
     this.fontWeight = this.options.fontWeight || null;
     this.fontSize = this.options.fontSize || null;
@@ -215,11 +214,6 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
             ? this.initialsImageMirror
             : options.initialsImageMirror;
     this.debug = options.debug === undefined ? this.debug : options.debug;
-    this.initialsDebug = this.debug
-        ? this.debug
-        : options.initialsDebug === undefined
-        ? this.initialsDebug
-        : options.initialsDebug;
     this.fontFamily = options.fontFamily === undefined ? this.fontFamily : options.fontFamily;
     this.fontWeight = options.fontWeight === undefined ? this.fontWeight : options.fontWeight;
     this.fontSize = options.fontSize === undefined ? this.fontSize : options.fontSize;
@@ -289,7 +283,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const initialsImageMirror =
         this.element.dataset.initialsImageMirror || this.initialsImageMirror;
     const debug = this.element.dataset.debug || this.debug;
-    const initialsDebug = this.element.dataset.initialsDebug || this.initialsDebug;
     const fontFamily = this.element.dataset.fontFamily || this.fontFamily;
     const fontWeight = this.element.dataset.fontWeight || this.fontWeight;
     const fontSize = this.element.dataset.fontSize || this.fontSize;
@@ -366,7 +359,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         initialsImageFlip: initialsImageFlip,
         initialsImageMirror: initialsImageMirror,
         debug: debug,
-        initialsDebug: initialsDebug,
         fontFamily: fontFamily,
         fontWeight: fontWeight,
         fontSize: fontSize,

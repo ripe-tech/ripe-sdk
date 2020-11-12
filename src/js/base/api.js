@@ -763,10 +763,6 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.debug = options.debug;
     }
 
-    if (options.initialsDebug !== undefined && options.initialsDebug !== null) {
-        params.initials_debug = options.initialsDebug;
-    }
-
     if (options.fontFamily !== undefined && options.fontFamily !== null) {
         params.font_family = options.fontFamily;
     }
