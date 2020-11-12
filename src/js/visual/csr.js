@@ -148,12 +148,10 @@ ripe.CSR.prototype.initialize = async function(assetManager) {
  * including all the elements belonging to the scene.
  */
 ripe.CSR.prototype.disposeResources = async function() {
-    console.log("Disposing Renderer resources.");
-
     this.renderer.renderLists.dispose();
 
-    for (let i = 0; i < this.renderer.info.programs.length; i++) {
-        this.renderer.info.programs[i].destroy();
+    for (const program of this.renderer.info.programs) {
+        program.destroy();
     }
 
     this.renderer.info.reset();
@@ -177,8 +175,6 @@ ripe.CSR.prototype.disposeResources = async function() {
     }
 
     await this.assetManager.disposeScene(this.scene);
-
-    console.log("Finished Disposing Renderer Resources.");
 };
 
 /**
@@ -794,8 +790,6 @@ ripe.CSR.prototype._initializeRenderer = function() {
  * Creates the render passes and adds them to the effect composer.
  */
 ripe.CSR.prototype._setupPostProcessing = function() {
-    console.log("Setting up Post Processing");
-
     if (this.bloomOptions) this._setupBloomPass();
     if (this.aaOptions) this._setupAAPass();
     if (this.aoOptions) this._setupAOPass();

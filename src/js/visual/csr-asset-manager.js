@@ -302,8 +302,6 @@ ripe.CSRAssetManager.prototype.disposeScene = async function(scene) {
  * geometries and materials.
  */
 ripe.CSRAssetManager.prototype.disposeResources = async function() {
-    console.log("Disposing Asset Manager Resources.");
-
     this.pmremGenerator.dispose();
     this.pmremGenerator = null;
 

@@ -343,22 +343,12 @@ ripe.CSRInitials.prototype.engraveLetters = function(initials, newEngraving) {};
  * Destroys all meshes and materials.
  */
 ripe.CSRInitials.prototype.disposeResources = async function() {
-    console.log("Disposing Initials Resources.");
-    let count = 0;
-
-    if (this.textMeshes.length > 0) {
-        for (let i = 0; i < this.textMeshes.length; i++) {
-            await this.assetManager.disposeMesh(this.textMeshes[i]);
-            count++;
-        }
+    for (const textMesh of this.textMeshes) {
+        await this.assetManager.disposeMesh(textMesh);
     }
 
-    console.log("Finished disposing " + count + " letters.");
-
-    count = 0;
-    for (const mesh in this.initialsPositions) {
-        await this.assetManager.disposeMesh(this.initialsPositions[mesh]);
-        count++;
+    for (const mesh of Object.values(this.initialsPositions)) {
+        await this.assetManager.disposeMesh(mesh);
     }
 
     if (this.letterMaterial) await this.assetManager.disposeMaterial(this.letterMaterial);
@@ -369,6 +359,4 @@ ripe.CSRInitials.prototype.disposeResources = async function() {
     this.textMeshes = [];
     this.library = null;
     this.textMeshes = [];
-
-    console.log("Finished disposing " + count + " initials positions mesh.");
 };

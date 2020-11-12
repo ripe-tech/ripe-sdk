@@ -178,8 +178,6 @@ ripe.ConfiguratorCSR.prototype.disposeResources = async function() {
 ripe.ConfiguratorCSR.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
-    console.log("Updating options?");
-
     this.renderer.updateOptions(options);
     this.controls.updateOptions(options);
     this.assetManager.updateOptions(options);
