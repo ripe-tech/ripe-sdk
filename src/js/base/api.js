@@ -667,7 +667,7 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.mirror = options.mirror;
     }
 
-    if (options.Box !== undefined && options.boundingBox !== null) {
+    if (options.boundingBox !== undefined && options.boundingBox !== null) {
         params.bounding_box = options.boundingBox;
     }
 
