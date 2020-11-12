@@ -53,9 +53,9 @@ ripe.Image.prototype.init = function() {
     this.size = this.options.size || null;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
+    this.mutations = this.options.mutations || false;
     this.rotation = this.options.rotation || null;
     this.crop = this.options.crop || null;
-    this.mutations = this.options.mutations || false;
     this.flip = this.options.flip || null;
     this.mirror = this.options.mirror || null;
     this.boundingBox = this.options.boundingBox || null;
@@ -136,7 +136,7 @@ ripe.Image.prototype.deinit = async function() {
  *
  * @param {Object} options Set of optional parameters to adjust the Image, such as:
  * - 'format' - The format of the image, (eg: png, jpg, svg, etc.).
- * - 'crop' - A Boolean indicating if it is to crop the image composition.
+ * - 'crop' - A Boolean indicating if the resulting image should be cropped.
  * - 'initialsGroup' - The group in which the image initials belongs to.
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
