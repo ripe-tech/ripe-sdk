@@ -316,6 +316,8 @@ ripe.CSR.prototype.highlight = function(part) {
         return;
     }
 
+    // changes the highlight (opacity) value for the part that is going
+    // to be highlighted (uses animation for such operation)
     this.changeHighlight(part, 1 - this.maskOpacity);
 
     // triggers an event indicating that a highlight operation has been
@@ -352,17 +354,21 @@ ripe.CSR.prototype.lowlight = function() {
 };
 
 /**
- * The highlight transition.
+ * Changes the highlight value for a certain part's mesh.
+ *
+ * The changing itself will be animated using a cross-fade animation.
  *
  * @param {String} part The name of the affected part.
  * @param {Number} endValue The end value for the material color, determined by the
  * caller.
  */
 ripe.CSR.prototype.changeHighlight = function(part, endValue) {
-    const meshTarget = this.assetManager.meshes[part];
-    const startingValue = meshTarget.material.color.r;
+    // retrieve the mesh associated with the provided part
+    // in case none is found ignore the operation
+    const mesh = this.assetManager.meshes[part];
+    if (!mesh) return;
 
-    if (!meshTarget) return;
+    const startingValue = mesh.material.color.r;
 
     let currentValue = startingValue;
     let pos = 0;
@@ -371,9 +377,9 @@ ripe.CSR.prototype.changeHighlight = function(part, endValue) {
     const changeHighlightTransition = time => {
         startTime = startTime === 0 ? time : startTime;
 
-        meshTarget.material.color.r = currentValue;
-        meshTarget.material.color.g = currentValue;
-        meshTarget.material.color.b = currentValue;
+        mesh.material.color.r = currentValue;
+        mesh.material.color.g = currentValue;
+        mesh.material.color.b = currentValue;
 
         pos = (time - startTime) / this.maskDuration;
         currentValue = ripe.easing[this.highlightEasing](pos, startingValue, endValue);
@@ -963,11 +969,11 @@ ripe.CSR.prototype._attemptRaycast = function(event) {
     // configurator main DOM element
     const animating = this.element.classList.contains("animating");
     const dragging = this.element.classList.contains("drag");
-    const preventRaycasting = this.element.classList.contains("no-raycast");
+    const noRaycasting = this.element.classList.contains("no-raycast");
 
     // prevents raycasting can be used to improve performance, as this operation
     // can be done every frame
-    if (animating || dragging || preventRaycasting) return;
+    if (animating || dragging || noRaycasting) return;
 
     // runs a series of pre-validation for the execution of the raycasting
     // if any of them fails returns immediately (not possible to ray cast)
