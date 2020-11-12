@@ -520,7 +520,7 @@ ripe.Ripe.prototype.getStructure = async function(safe = true) {
     if (this.initials) structure.initials = this.initials;
     if (this.engraving) structure.engraving = this.engraving;
     if (this.initialsExtra && Object.keys(this.initialsExtra).length > 0) {
-        structure.initialsExtra = this.initialsExtra;
+        structure.initials_extra = this.initialsExtra;
     }
     return safe ? JSON.parse(JSON.stringify(structure)) : structure;
 };
@@ -547,10 +547,10 @@ ripe.Ripe.prototype.setStructure = async function(structure, safe = true) {
     options.initials = structure.initials || "";
     options.engraving = structure.engraving || null;
     options.initialsExtra =
-        (structure.initialsExtra &&
-            !Object.isEmpty(structure.initialsExtra) &&
+        (structure.initials_extra &&
+            !Object.isEmpty(structure.initials_extra) &&
             (safe
-                ? JSON.parse(JSON.stringify(structure.initialsExtra))
+                ? JSON.parse(JSON.stringify(structure.initials_extra))
                 : structure.initialsExtra)) ||
         {};
     await this.config(brand, model, options);
