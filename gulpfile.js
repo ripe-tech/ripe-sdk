@@ -11,6 +11,7 @@ const eslint = require("gulp-eslint");
 const terser = require("gulp-terser");
 const replace = require("gulp-replace");
 const sourcemaps = require("gulp-sourcemaps");
+const mergeStream = require("merge-stream");
 const _package = require("./package.json");
 
 const paths = {
@@ -25,6 +26,17 @@ const paths = {
     demo: "src/python/ripe_demo/static/js/main.js",
     dist: "dist/**/*",
     polyfill: "node_modules/@babel/polyfill/dist/polyfill.js",
+    libs: [
+        "node_modules/zlibjs/bin/inflate.min.js",
+        "node_modules/dat.gui/build/dat.gui.js",
+        "node_modules/three/build/three.js",
+        "node_modules/three/examples/js/loaders/OBJLoader.js",
+        "node_modules/three/examples/js/libs/inflate.min.js",
+        "node_modules/three/examples/js/loaders/FBXLoader.js",
+        "node_modules/three/examples/js/loaders/GLTFLoader.js",
+        "node_modules/three/examples/js/loaders/RGBELoader.js",
+        "node_modules/postprocessing/build/postprocessing.js"
+    ],
     basefiles: [
         "src/js/locales/base.js",
         "src/js/base/base.js",
@@ -70,7 +82,7 @@ const paths = {
 
 gulp.task("build-js", () => {
     return gulp
-        .src(paths.scripts)
+        .src([paths.scripts].concat(paths.libs))
         .pipe(replace("__VERSION__", _package.version))
         .pipe(size())
         .pipe(
@@ -106,7 +118,7 @@ gulp.task("build-css", () => {
 });
 
 gulp.task("build-package-js", () => {
-    return gulp
+    const srcStream = gulp
         .src([paths.polyfill].concat(paths.basefiles))
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
@@ -115,14 +127,19 @@ gulp.task("build-package-js", () => {
             babel({
                 presets: [["@babel/preset-env"]]
             })
-        )
+        );
+    const libStream = gulp
+        .src(paths.libs)
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(sourcemaps.identityMap());
+    return mergeStream(srcStream, libStream)
         .pipe(concat("ripe.js"))
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest("dist"));
 });
 
 gulp.task("build-package-min", () => {
-    return gulp
+    const srcStream = gulp
         .src([paths.polyfill].concat(paths.basefiles))
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
@@ -131,7 +148,12 @@ gulp.task("build-package-min", () => {
             babel({
                 presets: [["@babel/preset-env"]]
             })
-        )
+        );
+    const libStream = gulp
+        .src(paths.libs)
+        .pipe(sourcemaps.init({ loadMaps: true }))
+        .pipe(sourcemaps.identityMap());
+    return mergeStream(srcStream, libStream)
         .pipe(concat("ripe.min.js"))
         .pipe(
             terser({
@@ -162,7 +184,7 @@ gulp.task(
 
 gulp.task("mark", () => {
     return gulp
-        .src(paths.scripts)
+        .src([paths.scripts].concat(paths.libs))
         .pipe(replace("__VERSION__", _package.version))
         .pipe(gulp.dest("src/js"));
 });
