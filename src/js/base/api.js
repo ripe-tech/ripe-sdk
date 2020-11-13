@@ -812,11 +812,11 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
     }
 
     if (options.offsets !== undefined && options.offsets !== null) {
-        params.offsets = options.offsets;
+        params.offsets = JSON.stringify(options.offsets);
     }
 
     if (options.curve !== undefined && options.curve !== null) {
-        params.curve = options.curve;
+        params.curve = JSON.stringify(options.curve);
     }
 
     const url = `${this.url}compose`;
