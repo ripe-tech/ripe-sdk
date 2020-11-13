@@ -18,7 +18,7 @@ const paths = {
     mainjs: "dist/ripe.js",
     mainmap: "dist/ripe.js.map",
     maincss: "src/css/ripe.css",
-    scripts: ["src/js/**/*.js"],
+    scripts: "src/js/**/*.js",
     bscripts: "src/js/*/**/*.js",
     css: "src/css/**/*.css",
     docs: "src/js/*/**/*.js",
@@ -82,7 +82,7 @@ const paths = {
 
 gulp.task("build-js", () => {
     return gulp
-        .src(paths.scripts.concat(paths.libs))
+        .src([paths.scripts].concat(paths.libs))
         .pipe(replace("__VERSION__", _package.version))
         .pipe(size())
         .pipe(
@@ -184,7 +184,7 @@ gulp.task(
 
 gulp.task("mark", () => {
     return gulp
-        .src(paths.scripts.concat(paths.libs))
+        .src([paths.scripts].concat(paths.libs))
         .pipe(replace("__VERSION__", _package.version))
         .pipe(gulp.dest("src/js"));
 });
