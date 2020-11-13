@@ -84,14 +84,19 @@ describe("Visual", function() {
                 fontSize: 50,
                 fontSpacing: 10,
                 fontTrim: true,
-                lineHeight: 30
+                lineHeight: 30,
+                shadow: true,
+                shadowColor: "0000ff",
+                shadowOffset: 20
+                // offsets: {"0": [0,10], "1": [-1, -10]}
+                // curve: [[0.2, 0.2], [0.7, 0.2], [0.2, 0.5], [0.7, 0.5]]
             });
             assert.strictEqual(image._url, null);
 
             image.update();
             assert.strictEqual(
                 image._url,
-                "https://sandbox.platforme.com/api/compose?algorithm=mask_top&background=ff00ff&bounding_box=2000&bounding_box=2000&debug=true&engine=base&flip=true&font_size=50&font_spacing=10&font_trim=true&font_weight=900&initials_algorithm=multiplicative&initials_align=left&initials_blend_color=222222&initials_color=ff0000&initials_height=20&initials_image_flip=true&initials_image_rotation=30&initials_opacity=0.7&initials_rotation=20&initials_vertical=top&initials_viewport=1&initials_viewport=1&initials_viewport=20&initials_viewport=20&initials_width=20&initials_x=2&initials_y=2&initials_z_index=5&line_height=30&mirror=true&rotation=20"
+                "https://sandbox.platforme.com/api/compose?algorithm=mask_top&background=ff00ff&bounding_box=2000&bounding_box=2000&debug=true&engine=base&flip=true&font_size=50&font_spacing=10&font_trim=true&font_weight=900&initials_algorithm=multiplicative&initials_align=left&initials_blend_color=222222&initials_color=ff0000&initials_height=20&initials_image_flip=true&initials_image_rotation=30&initials_opacity=0.7&initials_rotation=20&initials_vertical=top&initials_viewport=1&initials_viewport=1&initials_viewport=20&initials_viewport=20&initials_width=20&initials_x=2&initials_y=2&initials_z_index=5&line_height=30&mirror=true&rotation=20&shadow=true&shadow_color=0000ff&shadow_offset=20"
             );
         });
 
