@@ -337,7 +337,8 @@ ripe.CSRAssetManager.prototype.disposeResources = async function() {
  */
 ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies = true) {
     for (const part in parts) {
-        if (part === "shadow") continue;
+        const partExists = part + "_part" in this.meshes;
+        if (!partExists) continue;
 
         const material = parts[part].material;
         const color = parts[part].color;
@@ -350,7 +351,7 @@ ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies 
         }
 
         for (const mesh in this.meshes) {
-            if (mesh.includes(part)) {
+            if (mesh === part + "_part") {
                 if (this.meshes[mesh].material) {
                     this.meshes[mesh].material.dispose();
                     this.meshes[mesh].material = null;
@@ -376,7 +377,7 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
 
     // if the specific texture doesn't exist, fallbacks to
     // general textures
-    if (!this.modelConfig[part][type]) {
+    if (!this.modelConfig[part] || !this.modelConfig[part][type]) {
         materialConfig = this.modelConfig.general[type][color];
     } else {
         materialConfig = this.modelConfig[part][type][color];

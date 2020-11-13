@@ -179,12 +179,28 @@ ripe.CSR.prototype.disposeResources = async function() {
     await this.assetManager.disposeScene(this.scene);
 };
 
+ripe.CSR.prototype._updateWireframe = function(value) {
+    Object.values((this.assetManager && this.assetManager.meshes) || {}).forEach(mesh => {
+        mesh.material.wireframe = value;
+
+        if (value) {
+            mesh.castShadow = false;
+            mesh.receiveShadow = false;
+        } else {
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+        }
+    });    
+};
+
 /**
  * Creates the debug GUI for the post processing pipeline, with support
  * for dynamic change of the render pass parameters.
  */
 ripe.CSR.prototype.createGui = function() {
     if (this.guiLibrary === null) return;
+
+    const self = this;
 
     this.gui = new this.guiLibrary.GUI({ width: 300 });
 
@@ -222,6 +238,13 @@ ripe.CSR.prototype.createGui = function() {
         .name("Shadow Radius")
         .onChange(function(value) {
             updateShadows("radius", value);
+        });
+    folder
+        .add(this, "_wireframe")
+        .name("Enable Wireframe Mode")
+        .onChange(function(value) {
+            self._updateWireframe(value);
+            self.render();
         });
     folder.open();
 
@@ -451,6 +474,9 @@ ripe.CSR.prototype.crossfade = async function(options = {}, type) {
     } else if (type === "rotation") {
         this.rotate(options);
     }
+
+    // updates the wireframe to match between crossfades
+    this._updateWireframe(this._wireframe);
 
     // renders the scene after the change
     this.renderer.setRenderTarget(this.nextSceneFBO);
@@ -1053,9 +1079,7 @@ Object.defineProperty(ripe.CSR.prototype, "wireframe", {
         return this._wireframe;
     },
     set: function(value) {
-        Object.values(this.assetManager?.meshes || {}).forEach(mesh => {
-            mesh.material.wireframe = value;
-        });
+        this._updateWireframe(value);
         this._wireframe = value;
     }
 });
