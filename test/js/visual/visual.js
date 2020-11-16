@@ -1,5 +1,4 @@
 const assert = require("assert");
-const jsdom = require("jsdom");
 const config = require("../config");
 const base = require("../../../src/js/base");
 
