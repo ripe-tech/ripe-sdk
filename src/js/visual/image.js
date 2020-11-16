@@ -251,6 +251,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const size = this.element.dataset.size || this.size;
     const width = this.element.dataset.width || this.width;
     const height = this.element.dataset.height || this.height;
+    const rotation = this.element.dataset.rotation || this.rotation;
     const crop = this.element.dataset.crop || this.crop;
     const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
     const flip = this.element.dataset.flip || this.flip;
@@ -327,7 +328,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         size: size,
         width: width,
         height: height,
-        rotation: this.rotation,
+        rotation: rotation,
         crop: crop,
         initials: initialsSpec.initials,
         profile: initialsSpec.profile,
