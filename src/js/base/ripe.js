@@ -1742,8 +1742,15 @@ ripe.Ripe.prototype._handleCtx = function(result) {
     if (result.parts === undefined || result.parts === null) return;
     result.parts = result.parts === undefined ? {} : result.parts;
     result.messages = result.messages === undefined ? [] : result.messages;
+    const removedParts = Object.keys(this.parts).filter(
+        part => !Object.keys(result.parts).includes(part)
+    );
+    for (const part of removedParts) {
+        delete this.parts[part];
+    }
     for (const [name, value] of Object.entries(result.parts)) {
-        this.parts[name] = value;
+        if (!value.default) this.parts[name] = value;
+        else this.parts[name] = { material: value.default, color: value.default };
     }
     if (result.initials && !ripe.equal(result.initials, this.initialsExtra)) {
         this.setInitialsExtra(result.initials, true, { noRemote: true });
