@@ -12,6 +12,118 @@ if (
 }
 
 /**
+ * Returns the logo of a brand.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the logo, that controls semantics of the logo
+ *  - 'format' - The format of the logo image to be retrieved (defaults to 'png')
+ *  - 'size' - The size of the logo image
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The brand's logo.
+ */
+ripe.Ripe.prototype.getLogo = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getLogoOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the logo of a brand.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the logo, that controls semantics of the logo
+ *  - 'format' - The format of the logo image to be retrieved (defaults to 'png')
+ *  - 'size' - The size of the logo image
+ * @returns {Promise} The brand's logo.
+ */
+ripe.Ripe.prototype.getLogoP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getLogo(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the URL where the logo of a brand can be retrieved.
+ *
+ * Can be used to allow interactive user agents (browser) to load the
+ * image user their own loading infrastructure.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the logo, that controls semantics of the logo
+ *  - 'format' - The format of the logo image to be retrieved (defaults to 'png')
+ * @returns {String} The URL that can be used to retrieve a brand logo.
+ */
+ripe.Ripe.prototype.getLogoUrl = function(options) {
+    options = this._getLogoOptions(options);
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
+ * Returns the mesh contents for a model.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the mesh, as defined in the model spec
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The model's mesh.
+ */
+ripe.Ripe.prototype.getMesh = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getMeshOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the mesh contents for a model.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the mesh, as defined in the model spec
+ * @returns {XMLHttpRequest} The model's mesh.
+ */
+ripe.Ripe.prototype.getMeshP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getMesh(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the URL where the mesh can be retrieved.
+ *
+ * This method is useful to allow external mesh loaders to
+ * take control of the URL based mesh loading process.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'variant' - The variant of the mesh, as defined in the model spec
+ * @returns {String} The URL that can be used to retrieve the mesh.
+ */
+ripe.Ripe.prototype.getMeshUrl = function(options) {
+    options = this._getMeshOptions(options);
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
  * Returns the configuration information of a specific brand and model.
  * If no model is provided then returns the information of the owner's current model.
  *
@@ -19,9 +131,10 @@ if (
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'version' - The version of the build, defaults to latest
- *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
- *  - 'flag' - A specific flag that may change the provided materials/colors available.
+ *  - 'country' - The country where the model will be provided, some materials/colors might not be available
+ *  - 'flag' - A specific flag that may change the provided materials/colors available
  *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
+ * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The model's configuration data.
  */
 ripe.Ripe.prototype.getConfig = function(options, callback) {
@@ -40,8 +153,8 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'version' - The version of the build, defaults to latest
- *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
- *  - 'flag' - A specific flag that may change the provided materials/colors available.
+ *  - 'country' - The country where the model will be provided, some materials/colors might not be available
+ *  - 'flag' - A specific flag that may change the provided materials/colors available
  *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
  * @returns {Promise} The model's configuration data.
  */
@@ -61,6 +174,7 @@ ripe.Ripe.prototype.getConfigP = function(options) {
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'version' - The version of the build, defaults to latest
+ * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The model's default options.
  */
 ripe.Ripe.prototype.getDefaults = function(options, callback) {
@@ -81,6 +195,7 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'version' - The version of the build, defaults to latest
+ * @param {Function} callback Function with the result of the request.
  * @returns {Object} The model's optional parts.
  */
 ripe.Ripe.prototype.getOptionals = function(options, callback) {
@@ -102,6 +217,7 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
  *  - 'version' - The version of the build, defaults to latest
+ * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The model's total set of combinations.
  */
 ripe.Ripe.prototype.getCombinations = function(options, callback) {
@@ -162,7 +278,7 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The factory information for the provided model.
  */
-ripe.Ripe.prototype.getFactoryP = function(options, callback) {
+ripe.Ripe.prototype.getFactoryP = function(options) {
     return new Promise((resolve, reject) => {
         this.getFactory(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -205,10 +321,9 @@ ripe.Ripe.prototype.runLogic = function(options, callback) {
  *  - 'version' - The version of the build, defaults to latest
  *  - 'method' - The method of the logic module of the model
  *  - 'data' - The arguments to pass to the method
- * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The result of the logic function of the provided model.
  */
-ripe.Ripe.prototype.runLogicP = function(options, callback) {
+ripe.Ripe.prototype.runLogicP = function(options) {
     return new Promise((resolve, reject) => {
         this.runLogic(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -283,10 +398,9 @@ ripe.Ripe.prototype.onConfig = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model
  *  - 'model' - The name of the model
- * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.onConfigP = function(options, callback) {
+ripe.Ripe.prototype.onConfigP = function(options) {
     return new Promise((resolve, reject) => {
         this.onConfig(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -323,10 +437,9 @@ ripe.Ripe.prototype.onPart = function(options, callback) {
  * @param {Object} options An object with options, such as:
  *  - 'name' - The name of the part to be changed
  *  - 'value' - The value (material and color) of the part to be changed
- * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.onPartP = function(options, callback) {
+ripe.Ripe.prototype.onPartP = function(options) {
     return new Promise((resolve, reject) => {
         this.onPart(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
@@ -365,14 +478,59 @@ ripe.Ripe.prototype.onInitials = function(options, callback) {
  *  - 'group' - The name of the group that is going to be changed
  *  - 'value' - The initials value to be changed
  *  - 'engraving' - The engraving value to be changed
- * @param {Function} callback Function with the result of the request.
  * @returns {Promise} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.onInitialsP = function(options, callback) {
+ripe.Ripe.prototype.onInitialsP = function(options) {
     return new Promise((resolve, reject) => {
         this.onInitials(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getLogoOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const format = options.format === undefined ? "png" : options.format;
+    const url = `${this.url}brands/${brand}/logo.${format}`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const url = `${this.url}brands/${brand}/models/${model}/mesh`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
     });
 };
 

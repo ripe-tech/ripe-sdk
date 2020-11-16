@@ -335,6 +335,8 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
             try {
                 if (contentType.startsWith("application/json")) {
                     result = await response.json();
+                } else if (contentType.startsWith("text/")) {
+                    result = await response.text();
                 } else {
                     result = await response.blob();
                 }
@@ -608,6 +610,7 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
 
     options.country = options.country || null;
     options.currency = options.currency || null;
+    options.full = options.full === undefined ? false : options.full;
 
     options = this._getQueryOptions(options);
 
@@ -648,6 +651,174 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.initials = initials;
     }
 
+    if (options.rotation !== undefined && options.rotation !== null) {
+        params.rotation = options.rotation;
+    }
+
+    if (options.flip !== undefined && options.flip !== null) {
+        params.flip = options.flip;
+    }
+
+    if (options.mirror !== undefined && options.mirror !== null) {
+        params.mirror = options.mirror;
+    }
+
+    if (options.boundingBox !== undefined && options.boundingBox !== null) {
+        params.bounding_box = options.boundingBox;
+    }
+
+    if (options.algorithm !== undefined && options.algorithm !== null) {
+        params.algorithm = options.algorithm;
+    }
+
+    if (options.background !== undefined && options.background !== null) {
+        params.background = options.background;
+    }
+
+    if (options.engine !== undefined && options.engine !== null) {
+        params.engine = options.engine;
+    }
+
+    if (options.initialsX !== undefined && options.initialsX !== null) {
+        params.initials_x = options.initialsX;
+    }
+
+    if (options.initialsY !== undefined && options.initialsY !== null) {
+        params.initials_y = options.initialsY;
+    }
+
+    if (options.initialsWidth !== undefined && options.initialsWidth !== null) {
+        params.initials_width = options.initialsWidth;
+    }
+
+    if (options.initialsHeight !== undefined && options.initialsHeight !== null) {
+        params.initials_height = options.initialsHeight;
+    }
+
+    if (options.initialsViewport !== undefined && options.initialsViewport !== null) {
+        params.initials_viewport = options.initialsViewport;
+    }
+
+    if (options.initialsColor !== undefined && options.initialsColor !== null) {
+        params.initials_color = options.initialsColor;
+    }
+
+    if (options.initialsOpacity !== undefined && options.initialsOpacity !== null) {
+        params.initials_opacity = options.initialsOpacity;
+    }
+
+    if (options.initialsAlign !== undefined && options.initialsAlign !== null) {
+        params.initials_align = options.initialsAlign;
+    }
+
+    if (options.initialsVertical !== undefined && options.initialsVertical !== null) {
+        params.initials_vertical = options.initialsVertical;
+    }
+
+    if (options.initialsEmbossing !== undefined && options.initialsEmbossing !== null) {
+        params.initials_embossing = options.initialsEmbossing;
+    }
+
+    if (options.initialsRotation !== undefined && options.initialsRotation !== null) {
+        params.initials_rotation = options.initialsRotation;
+    }
+
+    if (options.initialsZindex !== undefined && options.initialsZindex !== null) {
+        params.initials_z_index = options.initialsZindex;
+    }
+
+    if (options.initialsAlgorithm !== undefined && options.initialsAlgorithm !== null) {
+        params.initials_algorithm = options.initialsAlgorithm;
+    }
+
+    if (options.initialsBlendColor !== undefined && options.initialsBlendColor !== null) {
+        params.initials_blend_color = options.initialsBlendColor;
+    }
+
+    if (options.initialsPattern !== undefined && options.initialsPattern !== null) {
+        params.initials_pattern = options.initialsPattern;
+    }
+
+    if (options.initialsTexture !== undefined && options.initialsTexture !== null) {
+        params.initials_texture = options.initialsTexture;
+    }
+
+    if (options.initialsExclusion !== undefined && options.initialsExclusion !== null) {
+        params.initials_exclusion = options.initialsExclusion;
+    }
+
+    if (options.initialsImageRotation !== undefined && options.initialsImageRotation !== null) {
+        params.initials_image_rotation = options.initialsImageRotation;
+    }
+
+    if (options.initialsImageFlip !== undefined && options.initialsImageFlip !== null) {
+        params.initials_image_flip = options.initialsImageFlip;
+    }
+
+    if (options.initialsImageMirror !== undefined && options.initialsImageMirror !== null) {
+        params.initials_image_mirror = options.initialsImageMirror;
+    }
+
+    if (options.debug !== undefined && options.debug !== null) {
+        params.debug = options.debug;
+    }
+
+    if (options.fontFamily !== undefined && options.fontFamily !== null) {
+        params.font_family = options.fontFamily;
+    }
+
+    if (options.fontWeight !== undefined && options.fontWeight !== null) {
+        params.font_weight = options.fontWeight;
+    }
+
+    if (options.fontSize !== undefined && options.fontSize !== null) {
+        params.font_size = options.fontSize;
+    }
+
+    if (options.fontSpacing !== undefined && options.fontSpacing !== null) {
+        params.font_spacing = options.fontSpacing;
+    }
+
+    if (options.fontTrim !== undefined && options.fontTrim !== null) {
+        params.font_trim = options.fontTrim;
+    }
+
+    if (options.fontMask !== undefined && options.fontMask !== null) {
+        params.font_mask = options.fontMask;
+    }
+
+    if (options.fontMode !== undefined && options.fontMode !== null) {
+        params.font_mode = options.fontMode;
+    }
+
+    if (options.lineHeight !== undefined && options.lineHeight !== null) {
+        params.line_height = options.lineHeight;
+    }
+
+    if (options.lineBreaking !== undefined && options.lineBreaking !== null) {
+        params.line_breaking = options.lineBreaking;
+    }
+
+    if (options.shadow !== undefined && options.shadow !== null) {
+        params.shadow = options.shadow;
+    }
+
+    if (options.shadowColor !== undefined && options.shadowColor !== null) {
+        params.shadow_color = options.shadowColor;
+    }
+
+    if (options.shadowOffset !== undefined && options.shadowOffset !== null) {
+        params.shadow_offset = options.shadowOffset;
+    }
+
+    if (options.offsets !== undefined && options.offsets !== null) {
+        params.offsets = JSON.stringify(options.offsets);
+    }
+
+    if (options.curve !== undefined && options.curve !== null) {
+        params.curve = JSON.stringify(options.curve);
+    }
+
     const url = `${this.url}compose`;
 
     options = Object.assign(options, {
@@ -671,6 +842,7 @@ ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     options.parts = options.parts || {};
     options.country = options.country || null;
     options.currency = options.currency || null;
+    options.full = options.full === undefined ? false : options.full;
 
     options = this._getQueryOptions(options);
 
@@ -916,8 +1088,9 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
     const initials = options.initials || null;
     const engraving = options.engraving || null;
     let initialsExtra = options.initials_extra || [];
-    const tuples = options.p || [];
+    let tuples = options.p || [];
     initialsExtra = this._parseExtraS(initialsExtra);
+    tuples = Array.isArray(tuples) ? tuples : [tuples];
     const parts = this._tuplesToParts(tuples);
     const partsM = this._partsToPartsM(parts);
     const spec = {

@@ -12,6 +12,7 @@ window.onload = function() {
     var model = _body.dataset.model || "vyner";
     var variant = _body.dataset.variant || "";
     var version = _body.dataset.version || null;
+    var format = _body.dataset.format || "lossless";
     var currency = _body.dataset.currency || "USD";
     var country = _body.dataset.country || "US";
     var clientId = _body.dataset.client_id || null;
@@ -28,6 +29,7 @@ window.onload = function() {
         model: model,
         variant: variant,
         version: version,
+        format: format,
         url: url,
         currency: currency,
         country: country,
