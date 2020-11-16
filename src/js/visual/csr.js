@@ -316,8 +316,7 @@ ripe.CSR.prototype.updateInitials = function(operation, meshes) {
  * Chooses the correct renderer depending on whether post processing is used.
  */
 ripe.CSR.prototype.render = function() {
-    if (this.usesPostProcessing) this.composer.render();
-    else this.renderer.render(this.scene, this.camera);
+    this.composer.render();
 };
 
 /**
