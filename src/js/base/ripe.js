@@ -5,10 +5,10 @@ if (
         typeof __webpack_require__ !== "undefined" ||
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var base = require("./base");
     require("./observable");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var ripe = base.ripe;
 }
 
@@ -1807,5 +1807,5 @@ ripe.Ripe.prototype._supportsWebp = function() {
     return element.toDataURL("image/webp").indexOf("data:image/webp") === 0;
 };
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars,no-var
 var Ripe = ripe.Ripe;
