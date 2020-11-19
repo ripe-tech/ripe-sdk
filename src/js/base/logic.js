@@ -5,12 +5,14 @@ if (
         typeof __webpack_require__ !== "undefined" ||
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var base = require("./base");
+    // eslint-disable-next-line no-var
     var locales = require("../locales");
     require("./ripe");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var ripe = base.ripe;
+    // eslint-disable-next-line no-var
     var LOCALES_BASE = locales.LOCALES_BASE;
 }
 

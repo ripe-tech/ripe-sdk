@@ -5,9 +5,9 @@ if (
         typeof __webpack_require__ !== "undefined" ||
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var base = require("../base");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var ripe = base.ripe;
 }
 
@@ -631,7 +631,7 @@ ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
 ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
-    const version = options.version === undefined ? this.model : options.version;
+    const version = options.version === undefined ? this.version : options.version;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
@@ -664,6 +664,7 @@ ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
 ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
@@ -673,6 +674,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const ctx = Object.assign({}, this.ctx || {}, {
         brand: brand,
         model: model,
+        version: version,
         initials: initials,
         parts: parts,
         choices: choices
@@ -695,6 +697,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
 ripe.Ripe.prototype._onInitialsOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
@@ -705,6 +708,7 @@ ripe.Ripe.prototype._onInitialsOptions = function(options = {}) {
     const ctx = Object.assign({}, this.ctx || {}, {
         brand: brand,
         model: model,
+        version: version,
         initials: initials,
         parts: parts,
         choices: choices

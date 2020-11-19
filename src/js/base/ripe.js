@@ -5,10 +5,10 @@ if (
         typeof __webpack_require__ !== "undefined" ||
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var base = require("./base");
     require("./observable");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var ripe = base.ripe;
 }
 
@@ -1738,19 +1738,29 @@ ripe.Ripe.prototype._errorHandler = function(error) {
  * be used in the changing of the internal state.
  */
 ripe.Ripe.prototype._handleCtx = function(result) {
+    // handles some of the pre-conditions for the handling of the
+    // "received context", so that all the required fields for
+    // handling are properly populated before the execution logic
     if (result === undefined || result === null) return;
     if (result.parts === undefined || result.parts === null) return;
-    result.parts = result.parts === undefined ? {} : result.parts;
+
+    // runs the defaulting of the message meaning that a sequence (array)
+    // is always defined for proper logic handling
     result.messages = result.messages === undefined ? [] : result.messages;
-    for (const [name, value] of Object.entries(result.parts)) {
-        this.parts[name] = value;
-    }
+
+    // run the reset operation on the parts object as it's going
+    // to be re-created using the provided context parts definition
+    Object.keys(this.parts).forEach(key => delete this.parts[key]);
+    this.parts = Object.assign(this.parts, result.parts);
+
     if (result.initials && !ripe.equal(result.initials, this.initialsExtra)) {
         this.setInitialsExtra(result.initials, true, { noRemote: true });
     }
+
     if (result.choices && !ripe.equal(result.choices, this.choices)) {
         this.setChoices(result.choices);
     }
+
     for (const [name, value] of result.messages) {
         this.trigger("message", name, value);
     }
@@ -1798,5 +1808,5 @@ ripe.Ripe.prototype._supportsWebp = function() {
     return element.toDataURL("image/webp").indexOf("data:image/webp") === 0;
 };
 
-// eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars,no-var
 var Ripe = ripe.Ripe;

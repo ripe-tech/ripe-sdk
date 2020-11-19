@@ -5,16 +5,16 @@ if (
         typeof __webpack_require__ !== "undefined" ||
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var base = require("./base");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var compat = require("./compat");
     require("./ripe");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var ripe = base.ripe;
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var fetch = compat.fetch;
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
