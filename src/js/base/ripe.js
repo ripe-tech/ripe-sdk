@@ -1738,26 +1738,28 @@ ripe.Ripe.prototype._errorHandler = function(error) {
  * be used in the changing of the internal state.
  */
 ripe.Ripe.prototype._handleCtx = function(result) {
+    // handles some of the pre-conditions for the handling of the
+    // "received context", so that all the required fields for
+    // handling are properly populated before the execution logic
     if (result === undefined || result === null) return;
     if (result.parts === undefined || result.parts === null) return;
-    result.parts = result.parts === undefined ? {} : result.parts;
+
+    // runs the defaulting of the message meaning that a sequence (array)
+    // is always defined for proper logic handling
     result.messages = result.messages === undefined ? [] : result.messages;
-    const removedParts = Object.keys(this.parts).filter(
-        part => !Object.keys(result.parts).includes(part)
-    );
-    for (const part of removedParts) {
-        delete this.parts[part];
-    }
-    for (const [name, value] of Object.entries(result.parts)) {
-        if (!value.default) this.parts[name] = value;
-        else this.parts[name] = { material: value.default, color: value.default };
-    }
+
+    // run the reset operation on the parts object as it's going
+    // to be re-created using the provided context parts definition
+    this.parts = Object.assign({}, result.parts);
+
     if (result.initials && !ripe.equal(result.initials, this.initialsExtra)) {
         this.setInitialsExtra(result.initials, true, { noRemote: true });
     }
+
     if (result.choices && !ripe.equal(result.choices, this.choices)) {
         this.setChoices(result.choices);
     }
+
     for (const [name, value] of result.messages) {
         this.trigger("message", name, value);
     }

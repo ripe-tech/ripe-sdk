@@ -149,7 +149,7 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._solveRestrictions = function(
     // if all the parts are set then a solution has been found
     // and it is returned
     solution = solution || [];
-    if (customization.length === 0) {
+    if (customization.length === 0 && this._isComplete(solution)) {
         return solution;
     }
 
