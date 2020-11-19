@@ -1750,7 +1750,8 @@ ripe.Ripe.prototype._handleCtx = function(result) {
 
     // run the reset operation on the parts object as it's going
     // to be re-created using the provided context parts definition
-    this.parts = Object.assign({}, result.parts);
+    Object.keys(this.parts).forEach(key => delete this.parts[key]);
+    this.parts = Object.assign(this.parts, result.parts);
 
     if (result.initials && !ripe.equal(result.initials, this.initialsExtra)) {
         this.setInitialsExtra(result.initials, true, { noRemote: true });
