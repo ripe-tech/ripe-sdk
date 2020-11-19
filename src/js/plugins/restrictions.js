@@ -99,8 +99,13 @@ ripe.Ripe.plugins.RestrictionsPlugin.prototype._config = function() {
  * @ignore
  */
 ripe.Ripe.plugins.RestrictionsPlugin.prototype._applyRestrictions = function(name, value) {
+    // if there are no restrictions defined (map length is zeo)
+    // then returns the control flow immediately (nothing to be done)
+    if (Object.keys(this.restrictionsMap).length === 0) return;
+
     // creates an array with the customization, by copying the
-    // current parts environment into a separate array
+    // current parts environment into a separate array, this is
+    // a clone of the original customization to be used latter on
     const customization = [];
     const partsOptions = ripe.clone(this.partsOptions);
     for (const partName in this.owner.parts) {
