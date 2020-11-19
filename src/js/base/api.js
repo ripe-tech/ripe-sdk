@@ -747,6 +747,10 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.initials_exclusion = options.initialsExclusion;
     }
 
+    if (options.initialsInclusion !== undefined && options.initialsInclusion !== null) {
+        params.initials_inclusion = options.initialsInclusion;
+    }
+
     if (options.initialsImageRotation !== undefined && options.initialsImageRotation !== null) {
         params.initials_image_rotation = options.initialsImageRotation;
     }
