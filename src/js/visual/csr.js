@@ -68,11 +68,11 @@ ripe.CSR = function(owner, element, options) {
 
     this.debug = options.debug || false;
 
-    this.guiLibrary = options.dat === undefined ? null : options.dat;
-
     this.boundingBox = undefined;
 
     this._wireframe = false;
+
+    this.gui = new ripe.GUI(this, options);
 };
 
 ripe.CSR.prototype = ripe.build(ripe.Observable.prototype);
@@ -123,10 +123,10 @@ ripe.CSR.prototype.initialize = async function(assetManager) {
     // triggers the loading of the remote assets that are going
     // to be used in scene initialization
     await this._loadAssets();
+    
+    if (this.debug) this.gui.setup();
 
     if (this.usesPostProcessing) this._setupPostProcessing();
-
-    if (this.debug) this.createGui();
 
     const hasAnimation = this._getAnimationByName(this.introAnimation) !== undefined;
 
@@ -144,6 +144,7 @@ ripe.CSR.prototype.initialize = async function(assetManager) {
     if (executeAnimation) this._performAnimation(this.introAnimation);
     else this.render();
 };
+
 
 /**
  * Function to dispose all resources created by the renderer,
@@ -179,7 +180,7 @@ ripe.CSR.prototype.disposeResources = async function() {
     await this.assetManager.disposeScene(this.scene);
 };
 
-ripe.CSR.prototype._updateWireframe = function(value) {
+ripe.CSR.prototype.updateWireframe = function(value) {
     Object.values((this.assetManager && this.assetManager.meshes) || {}).forEach(mesh => {
         mesh.material.wireframe = value;
 
@@ -190,109 +191,10 @@ ripe.CSR.prototype._updateWireframe = function(value) {
             mesh.castShadow = true;
             mesh.receiveShadow = true;
         }
-    });    
+    });
+
+    this._wireframe = value;
 };
-
-/**
- * Creates the debug GUI for the post processing pipeline, with support
- * for dynamic change of the render pass parameters.
- */
-ripe.CSR.prototype.createGui = function() {
-    if (this.guiLibrary === null) return;
-
-    const self = this;
-
-    this.gui = new this.guiLibrary.GUI({ width: 300 });
-
-    this.gui.domElement.id = "gui";
-
-    const updateShadows = (param, value) => {
-        this.keyLight.shadow[param] = value;
-        this.rimLight.shadow[param] = value;
-        this.fillLight.shadow[param] = value;
-        this.render();
-    };
-
-    const updateRenderer = (param, value) => {
-        this.renderer[param] = value;
-        this.render();
-    };
-
-    const folder = this.gui.addFolder("Render Settings");
-    folder
-        .add(this.renderer, "toneMappingExposure", 0.0, 4.0)
-        .name("Exposure")
-        .onChange(function(value) {
-            updateRenderer("toneMappingExposure", value);
-        });
-    folder
-        .add(this.keyLight.shadow, "bias", -0.005, 0.005)
-        .step(0.0001)
-        .name("Shadow Bias")
-        .onChange(function(value) {
-            updateShadows("bias", value);
-        });
-    folder
-        .add(this.keyLight.shadow, "radius", 1, 10)
-        .step(1)
-        .name("Shadow Radius")
-        .onChange(function(value) {
-            updateShadows("radius", value);
-        });
-    folder
-        .add(this, "_wireframe")
-        .name("Enable Wireframe Mode")
-        .onChange(function(value) {
-            self._updateWireframe(value);
-            self.render();
-        });
-    folder.open();
-
-    if (!this.usesPostProcessing) return;
-
-    if (this.aoOptions) {
-        // TODO
-    }
-
-    if (this.aaOptions) {
-        // TODO
-    }
-
-    if (this.bloomOptions) {
-        const self = this;
-
-        const folderBloom = this.gui.addFolder("Bloom Pass");
-
-        folderBloom
-            .add(this.bloomPass.luminanceMaterial, "threshold", 0.0, 1.0)
-            .step(0.01)
-            .name("Threshold")
-            .onChange(function(value) {
-                self.bloomPass.luminanceMaterial.threshold = value;
-                self.render();
-            });
-        folderBloom
-            .add(this.bloomPass, "intensity", 0.0, 3.0)
-            .step(0.01)
-            .name("Intensity")
-            .onChange(function(value) {
-                self.bloomPass.intensity = value;
-                self.render();
-            });
-        folderBloom
-            .add(this.bloomPass.blendMode.opacity, "value", 0.0, 1.0)
-            .step(0.01)
-            .step(0.01)
-            .name("Opacity")
-            .onChange(function(value) {
-                self.bloomPass.blendMode.opacity.value = value;
-                self.render();
-            });
-
-        folderBloom.open();
-    }
-};
-
 /**
  * Responsible for updating the initials meshes in the scene.
  *
@@ -475,7 +377,7 @@ ripe.CSR.prototype.crossfade = async function(options = {}, type) {
     }
 
     // updates the wireframe to match between crossfades
-    this._updateWireframe(this._wireframe);
+    this.updateWireframe(this._wireframe);
 
     // renders the scene after the change
     this.renderer.setRenderTarget(this.nextSceneFBO);
@@ -519,6 +421,10 @@ ripe.CSR.prototype.crossfade = async function(options = {}, type) {
             quadGeometry.dispose();
 
             this.assetManager.disposeMesh(quad);
+
+            // renders scene with composer
+            this.render();
+
             return;
         }
 
@@ -632,6 +538,12 @@ ripe.CSR.prototype._setPostProcessOptions = function(options = {}) {
 ripe.CSR.prototype._registerHandlers = function() {
     const self = this;
     const area = this.element.querySelector(".area");
+
+    // listens for mouse leave events and if it occurs then
+    // stops reacting to mousemove events has drag movements
+    area.addEventListener("mouseout", function(event) {
+        self.lowlight();
+    });
 
     area.addEventListener("mousemove", function(event) {
         // fixes the event, by applying a extra level of
@@ -781,9 +693,11 @@ ripe.CSR.prototype._initializeRenderer = function() {
     // creates the renderer using the "default" WebGL approach
     // notice that the shadow map is enabled
     this.renderer = new this.library.WebGLRenderer({
-        alpha: true,
         logarithmicDepthBuffer: true,
-        antialias: true
+        antialias: false,
+	    stencil: false,
+        depth: false,
+        alpha: true
     });
 
     this.renderer.info.autoReset = false;
@@ -823,9 +737,9 @@ ripe.CSR.prototype._initializeRenderer = function() {
  * Creates the render passes and adds them to the effect composer.
  */
 ripe.CSR.prototype._setupPostProcessing = function() {
-    if (this.bloomOptions) this._setupBloomPass();
-    if (this.aaOptions) this._setupAAPass();
-    if (this.aoOptions) this._setupAOPass();
+    this._setupBloomPass();
+    this._setupAAPass();
+    this._setupAOPass();
 };
 
 /**
@@ -844,23 +758,64 @@ ripe.CSR.prototype._setupBloomPass = function() {
         height: bloomHeight
     };
 
-    this.bloomPass = new this.postProcessLib.BloomEffect(bloomOptions);
+    const bloomEffect = new this.postProcessLib.BloomEffect(bloomOptions);
 
-    this.bloomPass.luminanceMaterial.threshold =
+    bloomEffect.luminanceMaterial.threshold =
         this.bloomOptions.threshold === undefined ? 0.9 : this.bloomOptions.threshold;
-    this.bloomPass.intensity =
+    bloomEffect.intensity =
         this.bloomOptions.intensity === undefined ? 0.5 : this.bloomOptions.intensity;
-    this.bloomPass.blendMode.opacity.value =
+    bloomEffect.blendMode.opacity.value =
         this.bloomOptions.opacity === undefined ? 0.7 : this.bloomOptions.opacity;
 
-    this.composer.addPass(new this.postProcessLib.EffectPass(this.camera, this.bloomPass));
+    this.composer.addPass(new this.postProcessLib.EffectPass(this.camera, bloomEffect));
+
+    if (this.debug) this.gui.setupBloom(bloomEffect)
 };
 
 /**
  * @ignore
  */
-ripe.CSR.prototype._setupAAPass = function() {
-    // TODO
+ripe.CSR.prototype._setupAAPass = async function() {
+    const loadingManager = new this.library.LoadingManager();
+    const smaaImageLoader = new this.postProcessLib.SMAAImageLoader(loadingManager);
+
+    const self = this;
+
+    smaaImageLoader.load(([search, area]) => {
+        const aaEffect = new this.postProcessLib.SMAAEffect(
+            search,
+            area,
+            self.postProcessLib.SMAAPreset.HIGH,
+            self.postProcessLib.EdgeDetectionMode.COLOR
+        );
+
+        // the following variables are used in
+        // the debug GUI
+        const edgesTextureEffect = new this.postProcessLib.TextureEffect({
+            blendFunction: self.postProcessLib.BlendFunction.SKIP,
+            texture: aaEffect.renderTargetEdges.texture
+        });
+
+        const weightsTextureEffect = new this.postProcessLib.TextureEffect({
+            blendFunction: self.postProcessLib.BlendFunction.SKIP,
+            texture: aaEffect.renderTargetWeights.texture
+        });
+
+        const effectPass = new this.postProcessLib.EffectPass(
+            self.camera,
+            aaEffect,
+            edgesTextureEffect,
+            weightsTextureEffect
+        );
+
+        self.composer.addPass(effectPass);
+
+        const context = self.renderer.getContext();
+        const samples = Math.max(4, context.getParameter(context.MAX_SAMPLES));
+        self.composer.multisampling = samples;
+
+        if (self.debug) self.gui.setupAA(self.postProcessLib, aaEffect)
+    });
 };
 
 /**
@@ -1078,7 +1033,6 @@ Object.defineProperty(ripe.CSR.prototype, "wireframe", {
         return this._wireframe;
     },
     set: function(value) {
-        this._updateWireframe(value);
-        this._wireframe = value;
+        this.updateWireframe(value);
     }
 });

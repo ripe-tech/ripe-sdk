@@ -386,7 +386,7 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
     let newMaterial;
 
     // follows specular-glossiness workflow
-    if (materialConfig.specularMap) {
+    if (materialConfig.specularMap || materialConfig.specular) {
         newMaterial = new this.library.MeshPhongMaterial();
     }
     // otherwise follows PBR workflow
@@ -426,12 +426,27 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
             newMaterial[prop] = this.loadedTextures[mapPath];
         } else {
             // if it's not a map, it's a property, apply it
-            newMaterial[prop] = materialConfig[prop];
+            if (prop === "color" || prop === "specular") {
+                const color = this.getColorFromProperty(materialConfig[prop]);
+                newMaterial[prop] = color;
+            } else {
+                newMaterial[prop] = materialConfig[prop];
+            }
         }
     }
 
     newMaterial.perPixel = true;
     return newMaterial;
+};
+
+ripe.CSRAssetManager.prototype.getColorFromProperty = function(value) {
+    // checks if it is hex or simple value
+    if (typeof value === "string" && value.includes("#")) {
+        return new this.library.Color(value);
+    } // is simple value
+    else {
+        return new this.library.Color("rgb(" + value + "%," + value + "%," + value + "%)");
+    }
 };
 
 /**
