@@ -326,7 +326,7 @@ Mobile:
 
 * ≥ Android  4.4
 * ≥ iOS's WebKit 9
-
+ 
 ## Documentation
 
 For API reference documentation follow [ripe-sdk-docs.platforme.com](https://ripe-sdk-docs.platforme.com).
