@@ -17,6 +17,15 @@ if (
 }
 
 /**
+ * Gets the current bundle object.
+ *
+ * @returns {Object} The current bundle object.
+ */
+ripe.Ripe.prototype.getBundle = function() {
+    return LOCALES_BASE;
+};
+
+/**
  * Adds a new bundle object to the currently set of registered
  * bundles for the the given locale.
  *
