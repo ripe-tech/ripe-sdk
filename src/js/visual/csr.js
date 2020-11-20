@@ -123,7 +123,7 @@ ripe.CSR.prototype.initialize = async function(assetManager) {
     // triggers the loading of the remote assets that are going
     // to be used in scene initialization
     await this._loadAssets();
-    
+
     if (this.debug) this.gui.setup();
 
     if (this.usesPostProcessing) this._setupPostProcessing();
@@ -144,7 +144,6 @@ ripe.CSR.prototype.initialize = async function(assetManager) {
     if (executeAnimation) this._performAnimation(this.introAnimation);
     else this.render();
 };
-
 
 /**
  * Function to dispose all resources created by the renderer,
@@ -680,7 +679,6 @@ ripe.CSR.prototype._initializeLights = function() {
     this.rimLight.shadow.bias = this.shadowBias;
 
     this.scene.add(ambientLight);
-
     this.scene.add(this.keyLight);
     this.scene.add(this.fillLight);
     this.scene.add(this.rimLight);
@@ -695,7 +693,7 @@ ripe.CSR.prototype._initializeRenderer = function() {
     this.renderer = new this.library.WebGLRenderer({
         logarithmicDepthBuffer: true,
         antialias: false,
-	    stencil: false,
+        stencil: false,
         depth: false,
         alpha: true
     });
@@ -769,7 +767,7 @@ ripe.CSR.prototype._setupBloomPass = function() {
 
     this.composer.addPass(new this.postProcessLib.EffectPass(this.camera, bloomEffect));
 
-    if (this.debug) this.gui.setupBloom(bloomEffect)
+    if (this.debug) this.gui.setupBloom(bloomEffect);
 };
 
 /**
@@ -814,7 +812,7 @@ ripe.CSR.prototype._setupAAPass = async function() {
         const samples = Math.max(4, context.getParameter(context.MAX_SAMPLES));
         self.composer.multisampling = samples;
 
-        if (self.debug) self.gui.setupAA(self.postProcessLib, aaEffect)
+        if (self.debug) self.gui.setupAA(self.postProcessLib, aaEffect);
     });
 };
 

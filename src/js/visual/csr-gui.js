@@ -120,12 +120,11 @@ ripe.GUI.prototype.setupBloom = function(bloomEffect) {
     folderBloom.open();
 };
 
-
-ripe.GUI.prototype.setupAA = function (lib, aaEffect) {
+ripe.GUI.prototype.setupAA = function(lib, aaEffect) {
     const folderAA = this.gui.addFolder("SMAA Pass");
     const edgeDetectionMaterial = aaEffect.edgeDetectionMaterial;
 
-    const self = this; 
+    const self = this;
 
     const SMAAMode = {
         DEFAULT: 0,
@@ -158,17 +157,15 @@ ripe.GUI.prototype.setupAA = function (lib, aaEffect) {
     folderAA.add(params.smaa, "preset", lib.SMAAPreset).onChange(() => {
         aaEffect.applyPreset(Number(params.smaa.preset));
         params.edgeDetection.threshold = Number(edgeDetectionMaterial.defines.EDGE_THRESHOLD);
-        self.csr.render()
+        self.csr.render();
     });
 
     let subfolder = folderAA.addFolder("Edge Detection");
 
-    subfolder
-        .add(params.edgeDetection, "mode", lib.EdgeDetectionMode)
-        .onChange(() => {
-            edgeDetectionMaterial.setEdgeDetectionMode(Number(params.edgeDetection.mode));
-            self.csr.render()
-        });
+    subfolder.add(params.edgeDetection, "mode", lib.EdgeDetectionMode).onChange(() => {
+        edgeDetectionMaterial.setEdgeDetectionMode(Number(params.edgeDetection.mode));
+        self.csr.render();
+    });
 
     subfolder
         .add(params.edgeDetection, "contrast factor")
@@ -179,7 +176,7 @@ ripe.GUI.prototype.setupAA = function (lib, aaEffect) {
             edgeDetectionMaterial.setLocalContrastAdaptationFactor(
                 Number(params.edgeDetection["contrast factor"])
             );
-            self.csr.render()
+            self.csr.render();
         });
 
     subfolder
@@ -189,7 +186,7 @@ ripe.GUI.prototype.setupAA = function (lib, aaEffect) {
         .step(0.0001)
         .onChange(() => {
             edgeDetectionMaterial.setEdgeDetectionThreshold(Number(params.edgeDetection.threshold));
-            self.csr.render()
+            self.csr.render();
         })
         .listen();
 
@@ -197,7 +194,7 @@ ripe.GUI.prototype.setupAA = function (lib, aaEffect) {
 
     subfolder.add(params.predication, "mode", lib.PredicationMode).onChange(() => {
         edgeDetectionMaterial.setPredicationMode(Number(params.predication.mode));
-        self.csr.render()
+        self.csr.render();
     });
 
     subfolder
@@ -207,7 +204,7 @@ ripe.GUI.prototype.setupAA = function (lib, aaEffect) {
         .step(0.0001)
         .onChange(() => {
             edgeDetectionMaterial.setPredicationThreshold(Number(params.predication.threshold));
-            self.csr.render()
+            self.csr.render();
         });
 
     subfolder
@@ -217,7 +214,7 @@ ripe.GUI.prototype.setupAA = function (lib, aaEffect) {
         .step(0.0001)
         .onChange(() => {
             edgeDetectionMaterial.setPredicationStrength(Number(params.predication.strength));
-            self.csr.render()
+            self.csr.render();
         });
 
     subfolder
@@ -227,7 +224,7 @@ ripe.GUI.prototype.setupAA = function (lib, aaEffect) {
         .step(0.01)
         .onChange(() => {
             edgeDetectionMaterial.setPredicationScale(Number(params.predication.scale));
-            self.csr.render()
+            self.csr.render();
         });
 
     folderAA
@@ -237,13 +234,13 @@ ripe.GUI.prototype.setupAA = function (lib, aaEffect) {
         .step(0.01)
         .onChange(() => {
             aaEffect.blendMode.opacity.value = params.smaa.opacity;
-             self.csr.render()
+            self.csr.render();
         });
 
     folderAA.add(params.smaa, "blend mode", lib.BlendFunction).onChange(() => {
         aaEffect.blendMode.setBlendFunction(Number(params.smaa["blend mode"]));
-        self.csr.render()
+        self.csr.render();
     });
 
     folderAA.open();
-}
+};
