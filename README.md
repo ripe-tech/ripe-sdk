@@ -334,7 +334,7 @@ For API reference documentation follow [ripe-sdk-docs.platforme.com](https://rip
 ## License
 
 RIPE SDK is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
- 
+
 ## Build Automation
 
 [![Build Status](https://travis-ci.org/ripe-tech/ripe-sdk.svg?branch=master)](https://travis-ci.org/ripe-tech/ripe-sdk)
