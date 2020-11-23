@@ -56,6 +56,17 @@ ripe.Ripe.prototype.removeBundle = function(bundle, locale = null) {
 };
 
 /**
+ * Retrieves the complete set of locale bundles currently registered
+ * in the global Ripe instance.
+ *
+ * @returns {Object} An object that maps a certain locale string to
+ * an object mapping locale keys to translations.
+ */
+ripe.Ripe.prototype.getBundles = function() {
+    return LOCALES_BASE;
+};
+
+/**
  * Runs a local based localization, meaning that the data source
  * for the locale strings should be already loaded in memory.
  *

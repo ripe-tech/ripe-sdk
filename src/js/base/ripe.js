@@ -1559,8 +1559,8 @@ ripe.Ripe.prototype._guessUrl = async function() {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._initBundles = async function(defaultLocale = "en_us") {
-    const locale = this.locale || defaultLocale;
+ripe.Ripe.prototype._initBundles = async function(locale = null, defaultLocale = "en_us") {
+    locale = locale || this.locale || defaultLocale;
     const globalBundleP = this.localeBundleP(locale, "scales");
     const sizesBundleP = this.localeBundleP(locale, "sizes");
     const [globalBundle, sizesBundle] = await Promise.all([globalBundleP, sizesBundleP]);
