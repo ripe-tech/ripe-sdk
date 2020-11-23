@@ -67,6 +67,18 @@ ripe.Ripe.prototype.getBundles = function() {
 };
 
 /**
+ * Retrieves the locale bundle according to the provided locale.
+ *
+ * @param {String} locale The ISO 639-1 compliant string value that
+ * describes the locale to obtain the global bundle.
+ * @returns {Object} An object that for the provided locale maps a
+ * certain locale string to the translation.
+ */
+ripe.Ripe.prototype.getBundle = function(locale) {
+    return LOCALES_BASE[locale] || {};
+};
+
+/**
  * Runs a local based localization, meaning that the data source
  * for the locale strings should be already loaded in memory.
  *
