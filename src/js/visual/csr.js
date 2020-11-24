@@ -694,7 +694,7 @@ ripe.CSR.prototype._initializeRenderer = function() {
         logarithmicDepthBuffer: true,
         antialias: false,
         stencil: false,
-        depth: false,
+        depth: true,
         alpha: true
     });
 
