@@ -554,6 +554,7 @@ ripe.Ripe.prototype.getStructure = async function(safe = true) {
     if (this.parts && Object.keys(this.parts).length > 0) {
         structure.parts = this.parts;
     }
+    if (this.currency) structure.currency = this.currency;
     if (this.initials) structure.initials = this.initials;
     if (this.engraving) structure.engraving = this.engraving;
     if (this.initialsExtra && Object.keys(this.initialsExtra).length > 0) {
@@ -581,11 +582,12 @@ ripe.Ripe.prototype.setStructure = async function(structure, safe = true) {
         (structure.parts &&
             (safe ? JSON.parse(JSON.stringify(structure.parts)) : structure.parts)) ||
         {};
+    options.currency = structure.currency || null;
     options.initials = structure.initials || "";
     options.engraving = structure.engraving || null;
     options.initialsExtra =
         (structure.initials_extra &&
-            !Object.isEmpty(structure.initials_extra) &&
+            Object.keys(structure.initials_extra).length > 0 &&
             (safe
                 ? JSON.parse(JSON.stringify(structure.initials_extra))
                 : structure.initials_Extra)) ||
