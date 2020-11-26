@@ -585,7 +585,7 @@ ripe.Ripe.prototype.setStructure = async function(structure, safe = true) {
     options.engraving = structure.engraving || null;
     options.initialsExtra =
         (structure.initials_extra &&
-            !Object.isEmpty(structure.initials_extra) &&
+            Object.keys(structure.initials_extra).length > 0 &&
             (safe
                 ? JSON.parse(JSON.stringify(structure.initials_extra))
                 : structure.initials_Extra)) ||
