@@ -56,7 +56,7 @@ ripe.RipeBase = function(brand, model, options = {}) {
  */
 ripe.Ripe.fromStructure = async function(structure, safe = true, options = {}) {
     const instance = new ripe.Ripe(options);
-    await instance.setStructure(structure, safe);
+    await instance.setStructure(structure, safe, options);
     return instance;
 };
 
@@ -572,8 +572,7 @@ ripe.Ripe.prototype.getStructure = async function(safe = true) {
  * @param {Boolean} safe If the operation should be performed using a
  * safe strategy (deep copy in objects).
  */
-ripe.Ripe.prototype.setStructure = async function(structure, safe = true) {
-    const options = {};
+ripe.Ripe.prototype.setStructure = async function(structure, safe = true, options = {}) {
     const brand = structure.brand || null;
     const model = structure.model || null;
     options.variant = structure.variant || null;
@@ -582,7 +581,6 @@ ripe.Ripe.prototype.setStructure = async function(structure, safe = true) {
         (structure.parts &&
             (safe ? JSON.parse(JSON.stringify(structure.parts)) : structure.parts)) ||
         {};
-    options.currency = structure.currency || null;
     options.initials = structure.initials || "";
     options.engraving = structure.engraving || null;
     options.initialsExtra =
