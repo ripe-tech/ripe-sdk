@@ -554,7 +554,6 @@ ripe.Ripe.prototype.getStructure = async function(safe = true) {
     if (this.parts && Object.keys(this.parts).length > 0) {
         structure.parts = this.parts;
     }
-    if (this.currency) structure.currency = this.currency;
     if (this.initials) structure.initials = this.initials;
     if (this.engraving) structure.engraving = this.engraving;
     if (this.initialsExtra && Object.keys(this.initialsExtra).length > 0) {
