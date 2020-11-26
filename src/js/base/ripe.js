@@ -56,7 +56,7 @@ ripe.RipeBase = function(brand, model, options = {}) {
  */
 ripe.Ripe.fromStructure = async function(structure, safe = true, options = {}) {
     const instance = new ripe.Ripe(options);
-    await instance.setStructure(structure, safe, options);
+    await instance.setStructure(structure, safe);
     return instance;
 };
 
@@ -584,7 +584,7 @@ ripe.Ripe.prototype.setStructure = async function(structure, safe = true, option
     options.engraving = structure.engraving || null;
     options.initialsExtra =
         (structure.initials_extra &&
-            !Object.isEmpty(structure.initials_extra) &&
+            Object.keys(structure.initials_extra).length > 0 &&
             (safe
                 ? JSON.parse(JSON.stringify(structure.initials_extra))
                 : structure.initials_Extra)) ||
