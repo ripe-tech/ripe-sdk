@@ -361,7 +361,7 @@ window.onload = function() {
                 assets: {
                     // model data is stored in `vyner_hitop.js` temporarily, is meant to be a JSON
                     // that is downloaded, or present in a spec file
-                    config: modelData,
+                    config: window.modelData,
 
                     // the relative path with the location of the assets
                     path: "/static/assets/",

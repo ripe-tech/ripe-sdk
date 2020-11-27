@@ -414,10 +414,11 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
                 });
 
                 // if the texture is used for color information, set colorspace to sRGB
-                if (prop === "map" || prop.includes("emissive"))
+                if (prop === "map" || prop.includes("emissive")) {
                     texture.encoding = this.library.sRGBEncoding;
-                else 
+                } else {
                     texture.encoding = this.library.LinearEncoding;
+                }
                 texture.anisotropy = this.maxAnisotropy;
 
                 // UVs use the convention that (0, 0) corresponds to the
