@@ -337,7 +337,7 @@ RIPE SDK is currently licensed under the [Apache License, Version 2.0](http://ww
 
 ## Build Automation
 
-[![Build Status](https://travis-ci.org/ripe-tech/ripe-sdk.svg?branch=master)](https://travis-ci.org/ripe-tech/ripe-sdk)
+[![Build Status](https://travis-ci.com/ripe-tech/ripe-sdk.svg?branch=master)](https://travis-ci.com/ripe-tech/ripe-sdk)
 [![Build Status GitHub](https://github.com/ripe-tech/ripe-sdk/workflows/Main%20Workflow/badge.svg)](https://github.com/ripe-tech/ripe-sdk/actions)
 [![npm Status](https://img.shields.io/npm/v/ripe-sdk.svg)](https://www.npmjs.com/package/ripe-sdk)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/)
