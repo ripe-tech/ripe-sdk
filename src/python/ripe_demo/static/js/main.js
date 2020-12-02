@@ -202,13 +202,17 @@ window.onload = function() {
                 });
             });
 
-        if (ripe.isOAuthPending()) {
-            ripe.oauth();
-        }
-
         oauthLogin = oauthLogin || { style: {} };
         oauthLogout = oauthLogout || { style: {} };
         oauthOperation = oauthOperation || { style: {} };
+
+        oauthLogin.style.display = "block";
+        oauthLogout.style.display = "none";
+        oauthOperation.style.display = "none";
+
+        if (ripe.isOAuthPending()) {
+            ripe.oauth();
+        }
 
         ripe.bind("auth", function() {
             oauthLogin.style.display = "none";
@@ -221,10 +225,6 @@ window.onload = function() {
             oauthLogout.style.display = "none";
             oauthOperation.style.display = "none";
         });
-
-        oauthLogin.style.display = "block";
-        oauthLogout.style.display = "none";
-        oauthOperation.style.display = "none";
     };
 
     var initConfigurator = function() {
