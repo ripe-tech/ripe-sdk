@@ -67,6 +67,21 @@ describe("BrandAPI", function() {
         });
     });
 
+    describe("#getLogicP()", function() {
+        it("should return a simple logic script", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.getLogicP({
+                brand: "dummy",
+                model: "cube"
+            });
+
+            assert.strictEqual(result, "<Logic module for (dummy, cube) version unknown>");
+        });
+    });
+
     describe("#_getCombinationsOptions()", function() {
         it("should include use_name as 0 by default", async () => {
             let result = null;
