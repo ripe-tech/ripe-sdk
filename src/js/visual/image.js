@@ -465,9 +465,9 @@ ripe.Image.prototype.cancel = async function(options = {}) {
  *
  * @param {String} size The number of pixels to resize to.
  */
-ripe.Image.prototype.resize = function(size) {
+ripe.Image.prototype.resize = async function(size) {
     this.size = size;
-    this.update();
+    await this.update();
 };
 
 /**
@@ -477,9 +477,9 @@ ripe.Image.prototype.resize = function(size) {
  * @param {Object} options An object with options to configure
  * the setting of the frame.
  */
-ripe.Image.prototype.setFrame = function(frame, options) {
+ripe.Image.prototype.setFrame = async function(frame, options) {
     this.frame = frame;
-    this.update();
+    await this.update();
 };
 
 /**
@@ -488,9 +488,9 @@ ripe.Image.prototype.setFrame = function(frame, options) {
  *
  * @param {String} showInitials If the image should display initials.
  */
-ripe.Image.prototype.setShowInitials = function(showInitials) {
+ripe.Image.prototype.setShowInitials = async function(showInitials) {
     this.showInitials = showInitials;
-    this.update();
+    await this.update();
 };
 
 /**
@@ -501,9 +501,9 @@ ripe.Image.prototype.setShowInitials = function(showInitials) {
  * @param {Object} options An object with options to configure
  * the setting of the 'initialsBuilder'.
  */
-ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
+ripe.Image.prototype.setInitialsBuilder = async function(builder, options) {
     this.initialsBuilder = builder;
-    this.update();
+    await this.update();
 };
 
 /**
