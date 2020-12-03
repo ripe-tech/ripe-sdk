@@ -681,7 +681,7 @@ ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
         params.version = version;
     }
     if (format !== undefined && format !== null) {
-        params.format = "js";
+        params.format = format;
     }
     if (method !== undefined && method !== null) {
         params.method = method;
