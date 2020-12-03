@@ -339,6 +339,8 @@ ripe.Ripe.prototype.runLogicP = function(options) {
  *  - 'model' - The name of the model
  *  - 'version' - The version of the build, defaults to latest
  *  - 'format' - The format of the logic script ("js" or "py")
+ *  - 'method' - The method of the logic module of the model
+ *  - 'args' - The arguments to pass to the method, as an object
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The logic script of the provided model.
  */
@@ -358,6 +360,8 @@ ripe.Ripe.prototype.getLogic = function(options, callback) {
  *  - 'model' - The name of the model
  *  - 'version' - The version of the build, defaults to latest
  *  - 'format' - The format of the logic script ("js" or "py")
+ *  - 'method' - The method of the logic module of the model
+ *  - 'args' - The arguments to pass to the method, as an object
  * @returns {Promise} The logic script of the provided model.
  */
 ripe.Ripe.prototype.getLogicP = function(options) {
@@ -669,6 +673,8 @@ ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
     const format = options.format === undefined ? this.format : options.format;
+    const method = options.method === undefined ? this.method : options.method;
+    const args = options.args === undefined ? null : options.args;
     const url = `${this.url}brands/${brand}/models/${model}/logic`;
     const params = {};
     if (version !== undefined && version !== null) {
@@ -676,6 +682,14 @@ ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
     }
     if (format !== undefined && format !== null) {
         params.format = "js";
+    }
+    if (method !== undefined && method !== null) {
+        params.method = method;
+    }
+    if (args !== undefined && args !== null) {
+        for (const [key, value] of Object.entries(args)) {
+            params[key] = value;
+        }
     }
     return Object.assign(options, {
         url: url,
