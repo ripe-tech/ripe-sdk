@@ -397,24 +397,12 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // image element is created to "cache" the image that is going
     // to be displayed for the current update, this way the typical
     // flickering visual artifact can be avoided
-    if (doubleBuffering && this._url) {
-        const image = document.createElement("img");
-        try {
-            await new Promise((resolve, reject) => {
-                image.addEventListener("load", resolve);
-                image.addEventListener("error", reject);
-                image.src = this._url;
-            });
-        } finally {
-            image.remove();
-        }
-    }
+    if (doubleBuffering && this._url) await this._doubleBuffer(this._url);
 
     // updates the image DOM element with the values of the image
     // including requested size and URL
     if (width) this.element.width = width;
     if (height) this.element.height = height;
-    this.element.src = this._url || "";
 
     // saves the space for the result of the loaded callback that
     // should be a boolean indicating if there's was a visual impact
@@ -428,6 +416,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         result = await new Promise((resolve, reject) => {
             this._loadedCallback = resolve;
             this._errorCallback = reject;
+            this.element.src = this._url || "";
         });
     } finally {
         // unsets both of the callbacks as they are no longer required by
@@ -452,6 +441,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
  * @param {Object} options Set of optional parameters to adjust the Image.
  */
 ripe.Image.prototype.cancel = async function(options = {}) {
+    // in case the image is not under a loading process then
+    // returns the control flow immediately as it's no longer
+    // possible to cancel it
     if (!this._loadedCallback) return false;
 
     // restores the internal URL state of the image back to
@@ -460,6 +452,8 @@ ripe.Image.prototype.cancel = async function(options = {}) {
     this._previousUrl = null;
     this.element.src = this._url || "";
 
+    // calls the loaded callback with the indication that there
+    // was a cancel operation for its load
     this._loadedCallback({ canceled: true });
 
     return true;
@@ -510,6 +504,23 @@ ripe.Image.prototype.setShowInitials = function(showInitials) {
 ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
     this.initialsBuilder = builder;
     this.update();
+};
+
+/**
+ * @ignore
+ */
+ripe.Image.prototype._doubleBuffer = async function(url) {
+    if (typeof window === "undefined" || !window.document) return;
+    const image = document.createElement("img");
+    try {
+        await new Promise((resolve, reject) => {
+            image.addEventListener("load", resolve);
+            image.addEventListener("error", reject);
+            image.src = url;
+        });
+    } finally {
+        image.remove();
+    }
 };
 
 /**
