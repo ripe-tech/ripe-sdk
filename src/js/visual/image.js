@@ -108,6 +108,8 @@ ripe.Image.prototype.init = function() {
                 profile: [engraving]
             };
         };
+    this.doubleBuffering =
+        this.options.doubleBuffering === undefined ? true : this.options.doubleBuffering;
     this._observer = null;
     this._url = null;
     this._previousUrl = null;
@@ -232,6 +234,8 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.curve = options.curve === undefined ? this.curve : options.curve;
     this.initialsGroup =
         options.initialsGroup === undefined ? this.initialsGroup : options.initialsGroup;
+    this.doubleBuffering =
+        options.doubleBuffering === undefined ? this.doubleBuffering : options.doubleBuffering;
 
     if (update) await this.update();
 };
@@ -298,6 +302,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const shadowOffset = this.element.dataset.shadowOffset || this.shadowOffset;
     const offsets = this.element.dataset.offsets || this.offsets;
     const curve = this.element.dataset.curve || this.curve;
+    const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
 
     // in case the state is defined tries to gather the appropriate
     // sate options for both initials and engraving taking into
@@ -387,6 +392,23 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // according to the newly requested one
     this._previousUrl = this._url;
     this._url = url;
+
+    // in case the double buffering mode is active an off-screen
+    // image element is created to "cache" the image that is going
+    // to be displayed for the current update, this way the typical
+    // flickering visual artifact can be avoided
+    if (doubleBuffering && this._url) {
+        const image = document.createElement("img");
+        try {
+            await new Promise((resolve, reject) => {
+                image.addEventListener("load", resolve);
+                image.addEventListener("error", reject);
+                image.src = this._url;
+            });
+        } finally {
+            image.remove();
+        }
+    }
 
     // updates the image DOM element with the values of the image
     // including requested size and URL
