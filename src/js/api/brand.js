@@ -300,10 +300,10 @@ ripe.Ripe.prototype.getFactoryP = function(options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.validateModel = function(options, callback) {
+ripe.Ripe.prototype.getValidateModel = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    options = this._validateModelOptions(options);
+    options = this._getValidateModelOptions(options);
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -321,9 +321,9 @@ ripe.Ripe.prototype.validateModel = function(options, callback) {
  *  - 'size' - The size to be validated
  * @returns {Promise} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.validateModelP = function(options) {
+ripe.Ripe.prototype.getValidateModelP = function(options) {
     return new Promise((resolve, reject) => {
-        this.validateModel(options, (result, isValid, request) => {
+        this.getValidateModel(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -537,7 +537,7 @@ ripe.Ripe.prototype.onInitialsP = function(options) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
+ripe.Ripe.prototype._getValidateModelOptions = function(options = {}) {
     const version = options.version === undefined ? this.version : options.version;
     const variant = options.variant === undefined ? this.variant : options.variant;
     const parts = options.parts === undefined ? this.parts : options.parts;
