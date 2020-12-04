@@ -13,6 +13,12 @@ if (
 }
 
 /**
+ * The version of the RIPE SDK currently in load, should
+ * be in sync with the package information.
+ */
+ripe.VERSION = "1.19.4";
+
+/**
  * Object that contains global (static) information to be used by
  * the RIPE infrastructure (eg global identifier counter).
  */

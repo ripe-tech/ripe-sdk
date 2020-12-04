@@ -59,7 +59,7 @@ ripe.Ripe.plugins.DiagPlugin.prototype.unregister = function(owner) {
 ripe.Ripe.plugins.DiagPlugin.prototype._setHeaders = function(request) {
     // sets the initial version header that correctly identifies
     // the version of the SDK in use
-    request.setRequestHeader("X-Ripe-Sdk-Version", "__VERSION__");
+    request.setRequestHeader("X-Ripe-Sdk-Version", ripe.VERSION);
 
     // creates the array that is going to hold the complete set of
     // plugins registered in the owner
