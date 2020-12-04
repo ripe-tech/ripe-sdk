@@ -287,6 +287,47 @@ ripe.Ripe.prototype.getFactoryP = function(options) {
 };
 
 /**
+ * Returns the logic script of a model in the requested format (javascript or python).
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'format' - The format of the logic script ("js" or "py")
+ *  - 'method' - The method of the logic module of the model
+ *  - 'args' - The arguments to pass to the method, as an object
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The logic script of the provided model.
+ */
+ripe.Ripe.prototype.getLogic = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getLogicOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the logic script of a model in the requested format (javascript or python).
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'format' - The format of the logic script ("js" or "py")
+ *  - 'method' - The method of the logic module of the model
+ *  - 'args' - The arguments to pass to the method, as an object
+ * @returns {Promise} The logic script of the provided model.
+ */
+ripe.Ripe.prototype.getLogicP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getLogic(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns the result of the execution of the given method for the
  * logic script of a model.
  * Does this by running the provided method on the server side under
@@ -326,47 +367,6 @@ ripe.Ripe.prototype.runLogic = function(options, callback) {
 ripe.Ripe.prototype.runLogicP = function(options) {
     return new Promise((resolve, reject) => {
         this.runLogic(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
-    });
-};
-
-/**
- * Returns the logic script of a model in the requested format (javascript or python).
- *
- * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'format' - The format of the logic script ("js" or "py")
- *  - 'method' - The method of the logic module of the model
- *  - 'args' - The arguments to pass to the method, as an object
- * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The logic script of the provided model.
- */
-ripe.Ripe.prototype.getLogic = function(options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    options = this._getLogicOptions(options);
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
- * Returns the logic script of a model in the requested format (javascript or python).
- *
- * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'format' - The format of the logic script ("js" or "py")
- *  - 'method' - The method of the logic module of the model
- *  - 'args' - The arguments to pass to the method, as an object
- * @returns {Promise} The logic script of the provided model.
- */
-ripe.Ripe.prototype.getLogicP = function(options) {
-    return new Promise((resolve, reject) => {
-        this.getLogic(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -646,28 +646,6 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
-    const brand = options.brand === undefined ? this.brand : options.brand;
-    const model = options.model === undefined ? this.model : options.model;
-    const version = options.version === undefined ? this.version : options.version;
-    const method = options.method === undefined ? null : options.method;
-    const data = options.data === undefined ? null : options.data;
-    const url = `${this.url}brands/${brand}/models/${model}/logic/${method}`;
-    const params = {};
-    if (version !== undefined && version !== null) {
-        params.version = version;
-    }
-    return Object.assign(options, {
-        url: url,
-        method: "POST",
-        params: params,
-        dataJ: data
-    });
-};
-
-/**
- * @ignore
- */
 ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
@@ -695,6 +673,28 @@ ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
         url: url,
         method: "GET",
         params: params
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const method = options.method === undefined ? null : options.method;
+    const data = options.data === undefined ? null : options.data;
+    const url = `${this.url}brands/${brand}/models/${model}/logic/${method}`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "POST",
+        params: params,
+        dataJ: data
     });
 };
 

@@ -43,6 +43,23 @@ describe("BrandAPI", function() {
         });
     });
 
+    describe("#getLogicP()", function() {
+        it("should return a simple logic script", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.getLogicP({
+                brand: "dummy",
+                model: "cube",
+                format: "js"
+            });
+
+            assert.strictEqual(result.length > 0, true);
+            assert.strictEqual(result.includes("allowPersonalization: function(ctx) {"), true);
+        });
+    });
+
     describe("#runLogicP()", function() {
         it("should execute a simple logic", async () => {
             let result = null;
@@ -64,21 +81,6 @@ describe("BrandAPI", function() {
             });
 
             assert.strictEqual(result, "4");
-        });
-    });
-
-    describe("#getLogicP()", function() {
-        it("should return a simple logic script", async () => {
-            let result = null;
-
-            const remote = ripe.RipeAPI();
-
-            result = await remote.getLogicP({
-                brand: "dummy",
-                model: "cube"
-            });
-
-            assert.strictEqual(result, "<Logic module for (dummy, cube) version unknown>");
         });
     });
 
