@@ -492,15 +492,16 @@ ripe.Ripe.prototype.onInitialsP = function(options) {
 };
 
 /**
- * Server side callback method to be called for situations where the initials
- * or engraving values were changed.
- * This method allows the change of the current context of execution based on
- * a server side implementation of the 3DB's business logic.
+ * Returns the result of the server side validation of model configurations
+ * considering a given build's brand, model and version.
  *
  * @param {Object} options An object with options, such as:
- *  - 'group' - The name of the group that is going to be changed
- *  - 'value' - The initials value to be changed
- *  - 'engraving' - The engraving value to be changed
+ *  - 'brand' - The name of the brand to be considerd when validating
+ *  - 'model' - The name of the model to be considerd when validating
+ *  - 'version' - The target build version to be considerd when validating
+ *  - 'parts' - The parts to be validated
+ *  - 'engraving' - The engraving value to be validated
+ *  - 'size' - The size to be validated
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -513,7 +514,7 @@ ripe.Ripe.prototype.validateModel = function(options, callback) {
 };
 
 /**
- * Returns the result of the server side validation of certain configurations
+ * Returns the result of the server side validation of model configurations
  * considering a given build's brand, model and version.
  *
  * @param {Object} options An object with options, such as:
