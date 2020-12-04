@@ -665,9 +665,7 @@ ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
         params.method = method;
     }
     if (args !== undefined && args !== null) {
-        for (const [key, value] of Object.entries(args)) {
-            params[key] = value;
-        }
+        Object.assign(params, args);
     }
     return Object.assign(options, {
         url: url,
