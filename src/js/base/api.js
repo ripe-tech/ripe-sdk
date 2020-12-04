@@ -1166,8 +1166,8 @@ ripe.Ripe.prototype._partsToPartsM = function(parts) {
     return partsM;
 };
 
-ripe.Ripe.prototype._partsMToQuery = function(partsM, sort = true) {
-    const queryL = [];
+ripe.Ripe.prototype._partsMToTriplets = function(partsM, sort = true) {
+    const triplets = [];
     const names = Object.keys(partsM);
     if (sort) names.sort();
     for (const name of names) {
@@ -1177,9 +1177,13 @@ ripe.Ripe.prototype._partsMToQuery = function(partsM, sort = true) {
             ripe.escape(part.material, ":"),
             ripe.escape(part.color, ":")
         ];
-        const triplet = `${nameE}:${initialsE}:${engravingE}`;
-        queryL.push(`p=${triplet}`);
+        triplets.push(`${nameE}:${initialsE}:${engravingE}`);
     }
+    return triplets;
+};
+
+ripe.Ripe.prototype._partsMToQuery = function(partsM, sort = true) {
+    const queryL = this._partsMToTriplets(partsM, sort).map(triplet => `p=${triplet}`);
     return queryL.join("&");
 };
 

@@ -492,6 +492,95 @@ ripe.Ripe.prototype.onInitialsP = function(options) {
 };
 
 /**
+ * Server side callback method to be called for situations where the initials
+ * or engraving values were changed.
+ * This method allows the change of the current context of execution based on
+ * a server side implementation of the 3DB's business logic.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'group' - The name of the group that is going to be changed
+ *  - 'value' - The initials value to be changed
+ *  - 'engraving' - The engraving value to be changed
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.validateModel = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._validateModelOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the result of the server side validation of certain configurations
+ * considering a given build's brand, model and version.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The name of the brand to be considerd when validating
+ *  - 'model' - The name of the model to be considerd when validating
+ *  - 'version' - The target build version to be considerd when validating
+ *  - 'parts' - The parts to be validated
+ *  - 'engraving' - The engraving value to be validated
+ *  - 'size' - The size to be validated
+ * @returns {Promise} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.validateModelP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.validateModel(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
+    const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const parts = options.parts === undefined ? this.parts : options.parts;
+    const initials = options.initials === undefined ? this.initials : options.initials;
+    const engraving = options.engraving === undefined ? this.engraving : options.engraving;
+    const initialsExtra =
+        options.initialsExtra === undefined ? this.initialsExtra : options.initials_extra;
+    const gender = options.gender === undefined ? this.gender : options.gender;
+    const size = options.size === undefined ? this.size : options.size;
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const url = `${this.url}brands/${brand}/models/${model}/validate`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
+    }
+    if (parts !== undefined && parts !== null) {
+        params.p = this._partsMToTriplets(parts);
+    }
+    if (initials !== undefined && initials !== null) {
+        params.initials = initials;
+    }
+    if (engraving !== undefined && engraving !== null) {
+        params.engraving = engraving;
+    }
+    if (initialsExtra !== undefined && initialsExtra !== null) {
+        params.initials_extra = this._generateExtraS(initialsExtra);
+    }
+    if (gender !== undefined && gender !== null) {
+        params.gender = gender;
+    }
+    if (size !== undefined && size !== null) {
+        params.size = size;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype._getLogoOptions = function(options = {}) {
