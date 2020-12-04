@@ -287,6 +287,49 @@ ripe.Ripe.prototype.getFactoryP = function(options) {
 };
 
 /**
+ * Returns the result of the server side validation of model configurations
+ * considering a given build's brand, model and version.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The name of the brand to be considerd when validating
+ *  - 'model' - The name of the model to be considerd when validating
+ *  - 'version' - The target build version to be considerd when validating
+ *  - 'parts' - The parts to be validated
+ *  - 'engraving' - The engraving value to be validated
+ *  - 'size' - The size to be validated
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.validateModel = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._validateModelOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the result of the server side validation of model configurations
+ * considering a given build's brand, model and version.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The name of the brand to be considerd when validating
+ *  - 'model' - The name of the model to be considerd when validating
+ *  - 'version' - The target build version to be considerd when validating
+ *  - 'parts' - The parts to be validated
+ *  - 'engraving' - The engraving value to be validated
+ *  - 'size' - The size to be validated
+ * @returns {Promise} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.validateModelP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.validateModel(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns the logic script of a model in the requested format (javascript or python).
  *
  * @param {Object} options An object with options, such as:
@@ -491,48 +534,6 @@ ripe.Ripe.prototype.onInitialsP = function(options) {
     });
 };
 
-/**
- * Returns the result of the server side validation of model configurations
- * considering a given build's brand, model and version.
- *
- * @param {Object} options An object with options, such as:
- *  - 'brand' - The name of the brand to be considerd when validating
- *  - 'model' - The name of the model to be considerd when validating
- *  - 'version' - The target build version to be considerd when validating
- *  - 'parts' - The parts to be validated
- *  - 'engraving' - The engraving value to be validated
- *  - 'size' - The size to be validated
- * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} Resulting information for the callback execution.
- */
-ripe.Ripe.prototype.validateModel = function(options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    options = this._validateModelOptions(options);
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
- * Returns the result of the server side validation of model configurations
- * considering a given build's brand, model and version.
- *
- * @param {Object} options An object with options, such as:
- *  - 'brand' - The name of the brand to be considerd when validating
- *  - 'model' - The name of the model to be considerd when validating
- *  - 'version' - The target build version to be considerd when validating
- *  - 'parts' - The parts to be validated
- *  - 'engraving' - The engraving value to be validated
- *  - 'size' - The size to be validated
- * @returns {Promise} Resulting information for the callback execution.
- */
-ripe.Ripe.prototype.validateModelP = function(options) {
-    return new Promise((resolve, reject) => {
-        this.validateModel(options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
-    });
-};
 /**
  * @ignore
  */
