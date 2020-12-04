@@ -403,6 +403,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // including requested size and URL
     if (width) this.element.width = width;
     if (height) this.element.height = height;
+    this.element.src = this._url || "";
 
     // saves the space for the result of the loaded callback that
     // should be a boolean indicating if there's was a visual impact
@@ -416,7 +417,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         result = await new Promise((resolve, reject) => {
             this._loadedCallback = resolve;
             this._errorCallback = reject;
-            this.element.src = this._url || "";
         });
     } finally {
         // unsets both of the callbacks as they are no longer required by
