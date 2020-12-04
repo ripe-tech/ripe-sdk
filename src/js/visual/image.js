@@ -399,6 +399,10 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // flickering visual artifact can be avoided
     if (doubleBuffering && this._url) await this._doubleBuffer(this._url);
 
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
+    if (!this.element) return;
+
     // updates the image DOM element with the values of the image
     // including requested size and URL
     if (width) this.element.width = width;

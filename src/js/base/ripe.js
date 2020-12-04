@@ -631,6 +631,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.locale = this.options.locale || null;
     this.flag = this.options.flag || null;
     this.format = this.options.format || null;
+    this.formatBase = this.options.format || null;
     this.backgroundColor = this.options.backgroundColor || "";
     this.guess = this.options.guess === undefined ? undefined : this.options.guess;
     this.guessUrl = this.options.guessUrl === undefined ? undefined : this.options.guessUrl;
