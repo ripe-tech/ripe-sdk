@@ -28,6 +28,20 @@ describe("Visual", function() {
             assert.strictEqual(interactable.owner, null);
             assert.strictEqual(instance.children.length, 0);
         });
+    });
+});
+
+describe("Image", function() {
+    this.timeout(config.TEST_TIMEOUT);
+
+    describe("#main", function() {
+        beforeEach(function() {
+            try {
+                require("canvas");
+            } catch (err) {
+                this.skip();
+            }
+        });
 
         it("should instance image and load frame", async () => {
             const dom = new jsdom.JSDOM("<img id='image' />", { resources: "usable" });
