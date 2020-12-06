@@ -188,6 +188,8 @@ ripe.CSRAssetManager.prototype._loadAsset = async function(filename = null, isAn
  * of the sub-meshes into memory (key-value pair).
  */
 ripe.CSRAssetManager.prototype._loadSubMeshes = function(scene = null) {
+    // tests the provided scene to verify if it's valid falling
+    // back to the currently loaded scene otherwise
     scene = scene || this.loadedScene;
 
     // creates a 3D box from the current scene in question to
