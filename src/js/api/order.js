@@ -473,7 +473,7 @@ ripe.Ripe.prototype.getOrderSubscriptionP = function(number, options) {
 };
 
 /**
- * Adds to the email of the user in session to subscriber list of an order.
+ * Adds the email of the user in session to subscriber list of an order.
  *
  * @param {Number} number The number of the order to subscribe.
  * @returns {XMLHttpRequest} The order subscription status.
@@ -492,7 +492,7 @@ ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
 };
 
 /**
- * Adds to the email of the user in session to subscriber list of an order.
+ * Adds the email of the user in session to subscriber list of an order.
  *
  * @param {Number} number The number of the order to subscribe.
  * @returns {Promise} The order subscription status.

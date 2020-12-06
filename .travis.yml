@@ -8,8 +8,8 @@ node_js:
   - "14"
 install:
 - npm install
+- npm install canvas
 script: npm run lint && npm test
-before_deploy: npm run mark && npm run build
 env:
   matrix:
     secure: C4FbYk4/qSSfJO4At5na5tTwpytBz8hgp1lllAfOVLXbjgq/Y1cIjlbVYZ8DHhPlsMksMmROD8DchD+yEFqlvCF3Wy1a9BrW6YLAuRNbA0zq3xm+mdrlP4d7aMrdPlXh056G+gbJ2fcwu9iQ+RFUjfLO0hwyFU9ZzsASyk48/LCur6qOo3b9oR2ktwDy2tbVEZNYa99o091ec6K7BTcnm7NvUjzTwEmEHucdvitBVKVKeh6I3d4Ga41SRVMvnCiUUSbxz/4jEhEBEmbP83BWAl5XsXHFjStxWjBvWla8Bw2sZDZlsEeB8u/dKSkn3K5rE+Ge8FlAbjO/xZvBdG5IC8pMuYJI8Ax5vEUn1AK0BRs8gnzcTBi/f0gKspplthW8WSKngGbFwwatxm4z9ksXf1rrWfh8d/ILDX7DqsN0s/ZRxQ4BOw0sJMIFo+UUmQTmSgHzmJtHBTHM5hd7vMPveG0gtJ2HNDL8KRbn1nHl3doKIEYdkI7h3Dwtjfuv8PXaUFF9z68coTWCcm9ptxvwWo9sUBL5xLzoW30PaBTWT6vIlq9utQyd5dJmRXFKLPhWfPRzHqosBTDMsyjGGTo+lNp6aaBW2mM0t2dKAUKgxYgURAZ3AkBtdQTwObLyzHRBohaJRGvMTYbQ/dvPcbR679sIl48Var5MmY1FpV/0v64=

@@ -7,9 +7,6 @@
             "request": "launch",
             "python": "${command:python.interpreterPath}",
             "program": "${workspaceRoot}/src/python/ripe_demo/main.py",
-            "debugOptions": [
-                "RedirectOutput"
-            ],
             "env": {
                 "PYTHONPATH": "${workspaceRoot}/src/python/ripe_demo:{env.PYTHONPATH}"
             }

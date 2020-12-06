@@ -12,9 +12,9 @@ if (
 }
 
 /**
- * Creates a SKU on RIPE Core.
+ * Creates a SKU on RIPE Core under the defined domain.
  *
- * @param {Number} identifier The SKU identifier.
+ * @param {String} identifier The SKU identifier as a plain string.
  * @param {Object} domain The SKU's domain, within the SKU is going to be defined.
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model.
@@ -47,9 +47,9 @@ ripe.Ripe.prototype.createSku = function(identifier, domain, options, callback) 
 };
 
 /**
- * Creates a SKU on RIPE Core.
+ * Creates a SKU on RIPE Core under the defined domain.
  *
- * @param {Number} identifier The SKU identifier.
+ * @param {String} identifier The SKU identifier as a plain string.
  * @param {Object} domain The SKU's domain, within the SKU is going to be defined.
  * @param {Object} options An object with options, such as:
  *  - 'brand' - The brand of the model.
