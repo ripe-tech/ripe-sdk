@@ -45,14 +45,13 @@ window.onload = function() {
     });
 
     var randomize = async function() {
-        parts = [];
+        var parts = [];
         for (var key in partsMap) {
             var triplets = partsMap[key];
             var index = Math.floor(Math.random() * triplets.length);
             var triplet = triplets[index];
             parts.push(triplet);
         }
-
         await ripe.setParts(parts, true, { partEvents: false });
     };
 
