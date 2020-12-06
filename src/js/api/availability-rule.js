@@ -12,17 +12,17 @@ if (
 }
 
 /**
- * Gets the existing price rules, according to the provided filtering
+ * Gets the existing availability rules, according to the provided filtering
  * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getPriceRules = function(options, callback) {
+ripe.Ripe.prototype.getAvailabilityRules = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}price_rules`;
+    const url = `${this.url}availability_rules`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -33,33 +33,33 @@ ripe.Ripe.prototype.getPriceRules = function(options, callback) {
 };
 
 /**
- * Gets the existing price rules, according to the provided filtering
+ * Gets the existing availability rules, according to the provided filtering
  * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The price rules list.
+ * @returns {Promise} The availability rules list.
  */
-ripe.Ripe.prototype.getPriceRulesP = function(options) {
+ripe.Ripe.prototype.getAvailabilityRulesP = function(options) {
     return new Promise((resolve, reject) => {
-        this.getPriceRules(options, (result, isValid, request) => {
+        this.getAvailabilityRules(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
 
 /**
- * Gets an existing price rule filtered by id and according to the
+ * Gets an existing availability rule filtered by id and according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Price Rule's Id.
+ * @param {Number} id The Availability Rule's Id.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getPriceRule = function(id, options, callback) {
+ripe.Ripe.prototype.getAvailabilityRule = function(id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}price_rules/${id}`;
+    const url = `${this.url}availability_rules/${id}`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -70,108 +70,108 @@ ripe.Ripe.prototype.getPriceRule = function(id, options, callback) {
 };
 
 /**
- * Gets an existing price rule filtered by id and according to the
+ * Gets an existing availability rule filtered by id and according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Price Rule's Id.
+ * @param {Number} id The Availability Rule's Id.
  * @param {Object} options An object of options to configure the request
- * @returns {Promise} The price rules list.
+ * @returns {Promise} The availability rules list.
  */
-ripe.Ripe.prototype.getPriceRuleP = function(id, options) {
+ripe.Ripe.prototype.getAvailabilityRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
-        this.getPriceRule(id, options, (result, isValid, request) => {
+        this.getAvailabilityRule(id, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
 
 /**
- * Creates a Price Rule on RIPE Core.
+ * Creates a Availability Rule on RIPE Core.
  *
- * @param {Object} priceRule The Price Rule object
+ * @param {Object} availabilityRule The Availability Rule object
  * @param {Object} options An object with options
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.createPriceRule = function(priceRule, options, callback) {
+ripe.Ripe.prototype.createAvailabilityRule = function(availabilityRule, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}price_rules`;
+    const url = `${this.url}availability_rules`;
     options = Object.assign(options, {
         url: url,
         method: "POST",
         auth: true,
-        dataJ: priceRule
+        dataJ: availabilityRule
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
 
 /**
- * Creates a Price Rule on RIPE Core.
+ * Creates a Availability Rule on RIPE Core.
  *
- * @param {Object} priceRule The Price Rule object
+ * @param {Object} availabilityRule The Availability Rule object
  * @param {Object} options An object with options
- * @returns {Promise} The price rule's data.
+ * @returns {Promise} The availability rule's data.
  */
-ripe.Ripe.prototype.createPriceRuleP = function(priceRule, options) {
+ripe.Ripe.prototype.createAvailabilityRuleP = function(availabilityRule, options) {
     return new Promise((resolve, reject) => {
-        this.createPriceRule(priceRule, options, (result, isValid, request) => {
+        this.createAvailabilityRule(availabilityRule, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
 
 /**
- * Updates a Price Rule on RIPE Core.
+ * Updates a Availability Rule on RIPE Core.
  *
- * @param {Object} priceRule The Price Rule object
+ * @param {Object} availabilityRule The Availability Rule object
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.updatePriceRule = function(priceRule, options, callback) {
+ripe.Ripe.prototype.updateAvailabilityRule = function(availabilityRule, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}price_rules/${priceRule.id}`;
+    const url = `${this.url}availability_rules/${availabilityRule.id}`;
     options = Object.assign(options, {
         url: url,
         method: "PUT",
         auth: true,
-        dataJ: priceRule
+        dataJ: availabilityRule
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
 
 /**
- * Updates a Price Rule on RIPE Core.
+ * Updates a Availability Rule on RIPE Core.
  *
- * @param {Object} priceRule The Price Rule object
+ * @param {Object} availabilityRule The Availability Rule object
  * @param {Object} options An object of options to configure the request
- * @returns {Promise} The Price Rule's data.
+ * @returns {Promise} The Availability Rule's data.
  */
-ripe.Ripe.prototype.updatePriceRuleP = function(priceRule, options) {
+ripe.Ripe.prototype.updateAvailabilityRuleP = function(availabilityRule, options) {
     return new Promise((resolve, reject) => {
-        this.updatePriceRule(priceRule, options, (result, isValid, request) => {
+        this.updateAvailabilityRule(availabilityRule, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
 
 /**
- * Deletes the existing price rules filtered by id, according to the
+ * Deletes the existing availability rules filtered by id, according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Price Rule's Id.
+ * @param {Number} id The Availability Rule's Id.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.deletePriceRule = function(id, options, callback) {
+ripe.Ripe.prototype.deleteAvailabilityRule = function(id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}price_rules/${id}`;
+    const url = `${this.url}availability_rules/${id}`;
     options = Object.assign(options, {
         url: url,
         method: "DELETE",
@@ -182,16 +182,16 @@ ripe.Ripe.prototype.deletePriceRule = function(id, options, callback) {
 };
 
 /**
- * Deletes the existing price rules filtered by id, according to the
+ * Deletes the existing availability rules filtered by id, according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Price Rule's Id.
+ * @param {Number} id The Availability Rule's Id.
  * @param {Object} options An object of options to configure the request
- * @returns {Promise} The price rules list.
+ * @returns {Promise} The availability rules list.
  */
-ripe.Ripe.prototype.deletePriceRuleP = function(id, options) {
+ripe.Ripe.prototype.deleteAvailabilityRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
-        this.deletePriceRule(id, options, (result, isValid, request) => {
+        this.deleteAvailabilityRule(id, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });

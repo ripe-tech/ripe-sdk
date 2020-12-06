@@ -5,12 +5,14 @@ if (
         typeof __webpack_require__ !== "undefined" ||
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var base = require("./base");
+    // eslint-disable-next-line no-var
     var locales = require("../locales");
     require("./ripe");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var ripe = base.ripe;
+    // eslint-disable-next-line no-var
     var LOCALES_BASE = locales.LOCALES_BASE;
 }
 
@@ -51,6 +53,29 @@ ripe.Ripe.prototype.removeBundle = function(bundle, locale = null) {
     for (const [key, value] of Object.entries(bundle)) {
         _bundle[key] = value;
     }
+};
+
+/**
+ * Retrieves the complete set of locale bundles currently registered
+ * in the global Ripe instance.
+ *
+ * @returns {Object} An object that maps a certain locale string to
+ * an object mapping locale keys to translations.
+ */
+ripe.Ripe.prototype.getBundles = function() {
+    return LOCALES_BASE;
+};
+
+/**
+ * Retrieves the locale bundle according to the provided locale.
+ *
+ * @param {String} locale The ISO 639-1 compliant string value that
+ * describes the locale to obtain the global bundle.
+ * @returns {Object} An object that for the provided locale maps a
+ * certain locale string to the translation.
+ */
+ripe.Ripe.prototype.getBundle = function(locale) {
+    return LOCALES_BASE[locale] || {};
 };
 
 /**

@@ -5,10 +5,10 @@ if (
         typeof __webpack_require__ !== "undefined" ||
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var base = require("../base");
     require("./visual");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var ripe = base.ripe;
 }
 
@@ -108,6 +108,8 @@ ripe.Image.prototype.init = function() {
                 profile: [engraving]
             };
         };
+    this.doubleBuffering =
+        this.options.doubleBuffering === undefined ? true : this.options.doubleBuffering;
     this._observer = null;
     this._url = null;
     this._previousUrl = null;
@@ -232,6 +234,8 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.curve = options.curve === undefined ? this.curve : options.curve;
     this.initialsGroup =
         options.initialsGroup === undefined ? this.initialsGroup : options.initialsGroup;
+    this.doubleBuffering =
+        options.doubleBuffering === undefined ? this.doubleBuffering : options.doubleBuffering;
 
     if (update) await this.update();
 };
@@ -251,6 +255,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const size = this.element.dataset.size || this.size;
     const width = this.element.dataset.width || this.width;
     const height = this.element.dataset.height || this.height;
+    const rotation = this.element.dataset.rotation || this.rotation;
     const crop = this.element.dataset.crop || this.crop;
     const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
     const flip = this.element.dataset.flip || this.flip;
@@ -297,6 +302,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const shadowOffset = this.element.dataset.shadowOffset || this.shadowOffset;
     const offsets = this.element.dataset.offsets || this.offsets;
     const curve = this.element.dataset.curve || this.curve;
+    const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
 
     // in case the state is defined tries to gather the appropriate
     // sate options for both initials and engraving taking into
@@ -327,7 +333,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         size: size,
         width: width,
         height: height,
-        rotation: this.rotation,
+        rotation: rotation,
         crop: crop,
         initials: initialsSpec.initials,
         profile: initialsSpec.profile,
@@ -387,6 +393,16 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     this._previousUrl = this._url;
     this._url = url;
 
+    // in case the double buffering mode is active an off-screen
+    // image element is created to "cache" the image that is going
+    // to be displayed for the current update, this way the typical
+    // flickering visual artifact can be avoided
+    if (doubleBuffering && this._url) await this._doubleBuffer(this._url);
+
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
+    if (!this.element) return;
+
     // updates the image DOM element with the values of the image
     // including requested size and URL
     if (width) this.element.width = width;
@@ -429,6 +445,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
  * @param {Object} options Set of optional parameters to adjust the Image.
  */
 ripe.Image.prototype.cancel = async function(options = {}) {
+    // in case the image is not under a loading process then
+    // returns the control flow immediately as it's no longer
+    // possible to cancel it
     if (!this._loadedCallback) return false;
 
     // restores the internal URL state of the image back to
@@ -437,6 +456,8 @@ ripe.Image.prototype.cancel = async function(options = {}) {
     this._previousUrl = null;
     this.element.src = this._url || "";
 
+    // calls the loaded callback with the indication that there
+    // was a cancel operation for its load
     this._loadedCallback({ canceled: true });
 
     return true;
@@ -448,9 +469,9 @@ ripe.Image.prototype.cancel = async function(options = {}) {
  *
  * @param {String} size The number of pixels to resize to.
  */
-ripe.Image.prototype.resize = function(size) {
+ripe.Image.prototype.resize = async function(size) {
     this.size = size;
-    this.update();
+    await this.update();
 };
 
 /**
@@ -460,9 +481,9 @@ ripe.Image.prototype.resize = function(size) {
  * @param {Object} options An object with options to configure
  * the setting of the frame.
  */
-ripe.Image.prototype.setFrame = function(frame, options) {
+ripe.Image.prototype.setFrame = async function(frame, options) {
     this.frame = frame;
-    this.update();
+    await this.update();
 };
 
 /**
@@ -471,9 +492,9 @@ ripe.Image.prototype.setFrame = function(frame, options) {
  *
  * @param {String} showInitials If the image should display initials.
  */
-ripe.Image.prototype.setShowInitials = function(showInitials) {
+ripe.Image.prototype.setShowInitials = async function(showInitials) {
     this.showInitials = showInitials;
-    this.update();
+    await this.update();
 };
 
 /**
@@ -484,9 +505,26 @@ ripe.Image.prototype.setShowInitials = function(showInitials) {
  * @param {Object} options An object with options to configure
  * the setting of the 'initialsBuilder'.
  */
-ripe.Image.prototype.setInitialsBuilder = function(builder, options) {
+ripe.Image.prototype.setInitialsBuilder = async function(builder, options) {
     this.initialsBuilder = builder;
-    this.update();
+    await this.update();
+};
+
+/**
+ * @ignore
+ */
+ripe.Image.prototype._doubleBuffer = async function(url) {
+    if (typeof window === "undefined" || !window.document) return;
+    const image = document.createElement("img");
+    try {
+        await new Promise((resolve, reject) => {
+            image.addEventListener("load", resolve);
+            image.addEventListener("error", reject);
+            image.src = url;
+        });
+    } finally {
+        image.remove();
+    }
 };
 
 /**

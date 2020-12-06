@@ -5,9 +5,9 @@ if (
         typeof __webpack_require__ !== "undefined" ||
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var base = require("../base");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var ripe = base.ripe;
 }
 
@@ -287,6 +287,47 @@ ripe.Ripe.prototype.getFactoryP = function(options) {
 };
 
 /**
+ * Returns the logic script of a model in the requested format (javascript or python).
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'format' - The format of the logic script ("js" or "py")
+ *  - 'method' - The method of the logic module of the model
+ *  - 'args' - The arguments to pass to the method, as an object
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The logic script of the provided model.
+ */
+ripe.Ripe.prototype.getLogic = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getLogicOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the logic script of a model in the requested format (javascript or python).
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The brand of the model
+ *  - 'model' - The name of the model
+ *  - 'version' - The version of the build, defaults to latest
+ *  - 'format' - The format of the logic script ("js" or "py")
+ *  - 'method' - The method of the logic module of the model
+ *  - 'args' - The arguments to pass to the method, as an object
+ * @returns {Promise} The logic script of the provided model.
+ */
+ripe.Ripe.prototype.getLogicP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getLogic(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns the result of the execution of the given method for the
  * logic script of a model.
  * Does this by running the provided method on the server side under
@@ -497,7 +538,7 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
 };
 
 /**
- * @see {link https://docs.platforme.com/#product-endpoints-config}
+ * @see {link https://docs.platforme.com/#brand-endpoints-config-and-spec}
  * @ignore
  */
 ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
@@ -528,7 +569,7 @@ ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
 };
 
 /**
- * @see {link https://docs.platforme.com/#product-endpoints-defaults}
+ * @see {link https://docs.platforme.com/#brand-endpoints-defaults}
  * @ignore
  */
 ripe.Ripe.prototype._getDefaultsOptions = function(options = {}) {
@@ -605,6 +646,37 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
 /**
  * @ignore
  */
+ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const format = options.format === undefined ? this.format : options.format;
+    const method = options.method === undefined ? this.method : options.method;
+    const args = options.args === undefined ? null : options.args;
+    const url = `${this.url}brands/${brand}/models/${model}/logic`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (format !== undefined && format !== null) {
+        params.format = format;
+    }
+    if (method !== undefined && method !== null) {
+        params.method = method;
+    }
+    if (args !== undefined && args !== null) {
+        Object.assign(params, args);
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
@@ -631,7 +703,7 @@ ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
 ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
-    const version = options.version === undefined ? this.model : options.version;
+    const version = options.version === undefined ? this.version : options.version;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
@@ -664,6 +736,7 @@ ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
 ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
@@ -673,6 +746,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const ctx = Object.assign({}, this.ctx || {}, {
         brand: brand,
         model: model,
+        version: version,
         initials: initials,
         parts: parts,
         choices: choices
@@ -695,6 +769,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
 ripe.Ripe.prototype._onInitialsOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
@@ -705,6 +780,7 @@ ripe.Ripe.prototype._onInitialsOptions = function(options = {}) {
     const ctx = Object.assign({}, this.ctx || {}, {
         brand: brand,
         model: model,
+        version: version,
         initials: initials,
         parts: parts,
         choices: choices

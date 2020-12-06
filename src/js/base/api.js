@@ -5,16 +5,16 @@ if (
         typeof __webpack_require__ !== "undefined" ||
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var base = require("./base");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var compat = require("./compat");
     require("./ripe");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var ripe = base.ripe;
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var fetch = compat.fetch;
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var XMLHttpRequest = compat.XMLHttpRequest;
 }
 
@@ -747,6 +747,10 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.initials_exclusion = options.initialsExclusion;
     }
 
+    if (options.initialsInclusion !== undefined && options.initialsInclusion !== null) {
+        params.initials_inclusion = options.initialsInclusion;
+    }
+
     if (options.initialsImageRotation !== undefined && options.initialsImageRotation !== null) {
         params.initials_image_rotation = options.initialsImageRotation;
     }
@@ -812,11 +816,11 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
     }
 
     if (options.offsets !== undefined && options.offsets !== null) {
-        params.offsets = options.offsets;
+        params.offsets = JSON.stringify(options.offsets);
     }
 
     if (options.curve !== undefined && options.curve !== null) {
-        params.curve = options.curve;
+        params.curve = JSON.stringify(options.curve);
     }
 
     const url = `${this.url}compose`;

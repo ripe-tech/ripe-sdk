@@ -5,9 +5,9 @@ if (
         typeof __webpack_require__ !== "undefined" ||
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var base = require("../base");
-    // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-redeclare,no-var
     var ripe = base.ripe;
 }
 
@@ -473,7 +473,7 @@ ripe.Ripe.prototype.getOrderSubscriptionP = function(number, options) {
 };
 
 /**
- * Adds to the email of the user in session to subscriber list of an order.
+ * Adds the email of the user in session to subscriber list of an order.
  *
  * @param {Number} number The number of the order to subscribe.
  * @returns {XMLHttpRequest} The order subscription status.
@@ -492,7 +492,7 @@ ripe.Ripe.prototype.subscribeOrder = function(number, options, callback) {
 };
 
 /**
- * Adds to the email of the user in session to subscriber list of an order.
+ * Adds the email of the user in session to subscriber list of an order.
  *
  * @param {Number} number The number of the order to subscribe.
  * @returns {Promise} The order subscription status.
