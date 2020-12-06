@@ -48,10 +48,10 @@ ripe.Ripe.prototype.getAvailabilityRulesP = function(options) {
 };
 
 /**
- * Gets an existing availability rule filtered by id and according to the
+ * Gets an existing availability rule filtered by ID and according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Availability Rule's Id.
+ * @param {Number} id The Availability Rule's ID.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -70,10 +70,10 @@ ripe.Ripe.prototype.getAvailabilityRule = function(id, options, callback) {
 };
 
 /**
- * Gets an existing availability rule filtered by id and according to the
+ * Gets an existing availability rule filtered by ID and according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Availability Rule's Id.
+ * @param {Number} id The Availability Rule's ID.
  * @param {Object} options An object of options to configure the request
  * @returns {Promise} The availability rules list.
  */
@@ -160,10 +160,10 @@ ripe.Ripe.prototype.updateAvailabilityRuleP = function(availabilityRule, options
 };
 
 /**
- * Deletes the existing availability rules filtered by id, according to the
+ * Deletes the existing availability rules filtered by ID, according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Availability Rule's Id.
+ * @param {Number} id The Availability Rule's ID.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -182,10 +182,10 @@ ripe.Ripe.prototype.deleteAvailabilityRule = function(id, options, callback) {
 };
 
 /**
- * Deletes the existing availability rules filtered by id, according to the
+ * Deletes the existing availability rules filtered by ID, according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Availability Rule's Id.
+ * @param {Number} id The Availability Rule's ID.
  * @param {Object} options An object of options to configure the request
  * @returns {Promise} The availability rules list.
  */
