@@ -444,10 +444,13 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
 };
 
 ripe.CSRAssetManager.prototype.getColorFromProperty = function(value) {
-    // checks if it is hex or simple value
+    // checks if it is hex or simple value and applies the proper
+    // color string transformation accordingly
     if (typeof value === "string" && value.includes("#")) {
         return new this.library.Color(value);
-    } // is simple value
+    }
+    // otherwise it's a simple value and should be applied to all
+    // of the different color channels equally
     else {
         return new this.library.Color("rgb(" + value + "%," + value + "%," + value + "%)");
     }
@@ -457,7 +460,8 @@ ripe.CSRAssetManager.prototype.getColorFromProperty = function(value) {
  * Loads an HDR environment and applies it to the scene.
  *
  * @param {Mesh} scene The scene that will have the new environment.
- * @param {*} renderer The renderer that will generate the equirectangular maps.
+ * @param {WebGLRenderer} renderer The renderer that will generate the
+ * equirectangular maps.
  * @param {String} environment The name of the environment to be loaded.
  */
 ripe.CSRAssetManager.prototype.setupEnvironment = async function(scene, renderer, environment) {
