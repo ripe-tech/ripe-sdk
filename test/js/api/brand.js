@@ -116,4 +116,34 @@ describe("BrandAPI", function() {
             assert.strictEqual(result.params.use_name, "1");
         });
     });
+
+    describe("#_validateModelOptions()", function() {
+        it("should generate a simple set of options", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            result = remote._validateModelOptions({
+                brand: "dummy",
+                model: "cube",
+                parts: {
+                    upper: {
+                        material: "nappa",
+                        color: "black"
+                    },
+                    bottom: {
+                        material: "suede",
+                        color: "white"
+                    }
+                }
+            });
+
+            assert.strictEqual(
+                result.url,
+                "https://sandbox.platforme.com/api/brands/dummy/models/cube/validate"
+            );
+            assert.deepStrictEqual(result.params, {
+                p: ["bottom:suede:white", "upper:nappa:black"]
+            });
+        });
+    });
 });

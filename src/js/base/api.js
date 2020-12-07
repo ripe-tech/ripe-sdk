@@ -512,19 +512,8 @@ ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
         params.flag = flag;
     }
 
-    params.p = [];
-
-    for (const part in parts) {
-        const value = parts[part];
-        const material = value.material;
-        const color = value.color;
-        if (!material) {
-            continue;
-        }
-        if (!color) {
-            continue;
-        }
-        params.p.push(part + ":" + material + ":" + color);
+    if (parts !== undefined && parts !== null && Object.keys(parts).length > 0) {
+        params.p = this._partsMToTriplets(parts);
     }
 
     if (!options.noEvents) this.trigger("post_query_options", options);
@@ -546,7 +535,7 @@ ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
     const initialsExtra =
         options.initialsExtra === undefined ? this.initialsExtra : options.initialsExtra;
 
-    if (initials !== undefined && initials !== null) {
+    if (initials !== undefined && initials !== null && initials !== "") {
         params.initials = initials;
     }
 
@@ -554,7 +543,11 @@ ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
         params.engraving = engraving;
     }
 
-    if (initialsExtra !== undefined && initialsExtra !== null) {
+    if (
+        initialsExtra !== undefined &&
+        initialsExtra !== null &&
+        Object.keys(initialsExtra).length > 0
+    ) {
         params.initials_extra = this._generateExtraS(initialsExtra);
     }
 
