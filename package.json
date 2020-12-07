@@ -54,7 +54,7 @@
         "dat.gui": "^0.7.7",
         "node-fetch": "^2.6.1",
         "postprocessing": "^6.18.0",
-        "three": "^0.120.1",
+        "three": "^0.123.0",
         "xmlhttprequest": "^1.8.0",
         "zlibjs": "^0.3.1"
     },
