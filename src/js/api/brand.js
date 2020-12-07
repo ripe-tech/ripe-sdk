@@ -533,46 +533,6 @@ ripe.Ripe.prototype.onInitialsP = function(options) {
         });
     });
 };
-
-/**
- * @ignore
- */
-ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
-    const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
-    const initialsOptions = options.initialsOptions === undefined ? true : options.initialsOptions;
-    if (queryOptions) {
-        // obtains the query options taking into account that the brand
-        // and the model are not to be included in the parameters as they
-        // already part of the base URL structure
-        options = this._getQueryOptions(Object.assign({}, options, { brand: null, model: null }));
-    }
-    if (initialsOptions) options = this._getInitialsOptions(options);
-
-    const gender = options.gender === undefined ? this.gender : options.gender;
-    const size = options.size === undefined ? this.size : options.size;
-    const parts = options.parts === undefined ? this.parts : options.parts;
-    const brand = options.brand === undefined ? this.brand : options.brand;
-    const model = options.model === undefined ? this.model : options.model;
-    const url = `${this.url}brands/${brand}/models/${model}/validate`;
-    const params = options.params || {};
-
-    if (gender !== undefined && gender !== null) {
-        params.gender = gender;
-    }
-    if (size !== undefined && size !== null) {
-        params.size = size;
-    }
-    if (parts !== undefined && parts !== null) {
-        params.p = this._partsMToTriplets(parts);
-    }
-
-    return Object.assign(options, {
-        url: url,
-        method: "GET",
-        params: params
-    });
-};
-
 /**
  * @ignore
  */
@@ -722,6 +682,42 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
     return Object.assign(options, {
         url: url,
         method: "GET"
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
+    const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
+    const initialsOptions = options.initialsOptions === undefined ? true : options.initialsOptions;
+    if (queryOptions) {
+        // obtains the query options taking into account that the brand
+        // and the model are not to be included in the parameters as they
+        // already part of the base URL structure
+        options = this._getQueryOptions(Object.assign({}, options, { brand: null, model: null }));
+    }
+    if (initialsOptions) options = this._getInitialsOptions(options);
+    const gender = options.gender === undefined ? this.gender : options.gender;
+    const size = options.size === undefined ? this.size : options.size;
+    const parts = options.parts === undefined ? this.parts : options.parts;
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const url = `${this.url}brands/${brand}/models/${model}/validate`;
+    const params = options.params || {};
+    if (gender !== undefined && gender !== null) {
+        params.gender = gender;
+    }
+    if (size !== undefined && size !== null) {
+        params.size = size;
+    }
+    if (parts !== undefined && parts !== null) {
+        params.p = this._partsMToTriplets(parts);
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
     });
 };
 
