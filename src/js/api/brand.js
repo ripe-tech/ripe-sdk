@@ -538,42 +538,28 @@ ripe.Ripe.prototype.onInitialsP = function(options) {
  * @ignore
  */
 ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
-    const version = options.version === undefined ? this.version : options.version;
-    const variant = options.variant === undefined ? this.variant : options.variant;
-    const parts = options.parts === undefined ? this.parts : options.parts;
-    const initials = options.initials === undefined ? this.initials : options.initials;
-    const engraving = options.engraving === undefined ? this.engraving : options.engraving;
-    const initialsExtra =
-        options.initialsExtra === undefined ? this.initialsExtra : options.initials_extra;
+    const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
+    const initialsOptions = options.initialsOptions === undefined ? true : options.initialsOptions;
+    if (queryOptions) options = this._getQueryOptions(options);
+    if (initialsOptions) options = this._getInitialsOptions(options);
     const gender = options.gender === undefined ? this.gender : options.gender;
     const size = options.size === undefined ? this.size : options.size;
+    const parts = options.parts === undefined ? this.parts : options.parts;
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const url = `${this.url}brands/${brand}/models/${model}/validate`;
-    const params = {};
-    if (version !== undefined && version !== null) {
-        params.version = version;
-    }
-    if (variant !== undefined && variant !== null) {
-        params.variant = variant;
-    }
-    if (parts !== undefined && parts !== null) {
-        params.p = this._partsMToTriplets(parts);
-    }
-    if (initials !== undefined && initials !== null) {
-        params.initials = initials;
-    }
-    if (engraving !== undefined && engraving !== null) {
-        params.engraving = engraving;
-    }
-    if (initialsExtra !== undefined && initialsExtra !== null) {
-        params.initials_extra = this._generateExtraS(initialsExtra);
-    }
+    const params = options.params || {};
+    // delete brand and model as they're in the URL
+    delete params.brand;
+    delete params.model;
     if (gender !== undefined && gender !== null) {
         params.gender = gender;
     }
     if (size !== undefined && size !== null) {
         params.size = size;
+    }
+    if (parts !== undefined && parts !== null) {
+        params.p = this._partsMToTriplets(parts);
     }
     return Object.assign(options, {
         url: url,
