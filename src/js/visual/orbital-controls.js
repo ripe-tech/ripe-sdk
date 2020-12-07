@@ -458,8 +458,8 @@ ripe.OrbitalControls.prototype._updateDragRotations = function() {
  * Called when a changeFrame event is registered, and updates the angles based on the
  * new frame.
  *
- * @param {*} frame The new frame.
- * @param {*} options Options to be used for the change.
+ * @param {String} frame The new frame.
+ * @param {Object} options Options to be used for the change.
  */
 ripe.OrbitalControls.prototype._updateRotations = async function(frame, options) {
     const animating = this.element.classList.contains("animating");
@@ -495,7 +495,7 @@ ripe.OrbitalControls.prototype._updateRotations = async function(frame, options)
         // duration = diff * 60 / revolutionDuration;
     }
 
-    // New rotation values
+    // new rotation values
     let nextVerticalRot = 0;
 
     if (nextView === "top") nextVerticalRot = this.maximumVerticalRot;

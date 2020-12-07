@@ -820,7 +820,6 @@ ripe.CSR.prototype._setupAAPass = async function() {
  * @ignore
  */
 ripe.CSR.prototype._setupAOPass = function() {
-    // TODO
 };
 
 /**
