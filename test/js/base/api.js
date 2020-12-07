@@ -133,6 +133,113 @@ describe("RipeAPI", function() {
         });
     });
 
+    describe("#_partsMToQuery()", function() {
+        it("should convert a simple parts map to a query", async () => {
+            let result = null;
+            const remote = ripe.RipeAPI();
+
+            result = remote._partsMToQuery(
+                {
+                    side: {
+                        material: "nappa",
+                        color: "white"
+                    },
+                    front: {
+                        material: "nappa",
+                        color: "black"
+                    }
+                },
+                true
+            );
+            assert.strictEqual(result, "p=front:nappa:black&p=side:nappa:white");
+
+            result = remote._partsMToQuery(
+                {
+                    logo: {
+                        material: "metal",
+                        color: "silver"
+                    },
+                    sole: {
+                        material: "rubber_wedge",
+                        color: "black"
+                    },
+                    swear_tape: {
+                        material: "rubber_heel",
+                        color: "white"
+                    },
+                    upper: {
+                        material: "mesh",
+                        color: "white"
+                    },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    }
+                },
+                true
+            );
+            assert.strictEqual(
+                result,
+                "p=logo:metal:silver&p=shadow:default:default&p=sole:rubber_wedge:black&p=swear_tape:rubber_heel:white&p=upper:mesh:white"
+            );
+        });
+    });
+
+    describe("#_partsMToTriplets()", function() {
+        it("should convert a simple parts map to a set of triplets", async () => {
+            let result = null;
+            const remote = ripe.RipeAPI();
+
+            result = remote._partsMToTriplets(
+                {
+                    side: {
+                        material: "nappa",
+                        color: "white"
+                    },
+                    front: {
+                        material: "nappa",
+                        color: "black"
+                    }
+                },
+                true
+            );
+            assert.deepStrictEqual(result, ["front:nappa:black", "side:nappa:white"]);
+
+            result = remote._partsMToTriplets(
+                {
+                    logo: {
+                        material: "metal",
+                        color: "silver"
+                    },
+                    sole: {
+                        material: "rubber_wedge",
+                        color: "black"
+                    },
+                    swear_tape: {
+                        material: "rubber_heel",
+                        color: "white"
+                    },
+                    upper: {
+                        material: "mesh",
+                        color: "white"
+                    },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    }
+                },
+                true
+            );
+            assert.deepStrictEqual(result, [
+                "logo:metal:silver",
+                "shadow:default:default",
+                "sole:rubber_wedge:black",
+                "swear_tape:rubber_heel:white",
+                "upper:mesh:white"
+            ]);
+        });
+    });
+
     describe("#_parseExtraS()", function() {
         it("should properly parse an initials extra string", async () => {
             let result = null;
