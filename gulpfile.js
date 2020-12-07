@@ -17,6 +17,7 @@ const paths = {
     mainjs: "dist/ripe.js",
     mainmap: "dist/ripe.js.map",
     maincss: "src/css/ripe.css",
+    mainpython: "src/python/**/main.js",
     scripts: "src/js/**/*.js",
     bscripts: "src/js/*/**/*.js",
     css: "src/css/**/*.css",
@@ -170,7 +171,7 @@ gulp.task("lint", () => {
 
 gulp.task("lint-fix", () => {
     return gulp
-        .src([paths.bscripts, paths.test])
+        .src([paths.bscripts, paths.test, paths.mainpython])
         .pipe(eslint({ fix: true }))
         .pipe(eslint.format())
         .pipe(gulp.dest(file => file.base))
