@@ -533,6 +533,7 @@ ripe.Ripe.prototype.onInitialsP = function(options) {
         });
     });
 };
+
 /**
  * @ignore
  */
