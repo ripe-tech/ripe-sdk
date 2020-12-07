@@ -134,6 +134,10 @@ describe("ConfigAPI", function() {
                         material: "leather_dmy",
                         color: "black"
                     },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    },
                     side: {
                         material: "leather_dmy",
                         color: "black"
@@ -141,10 +145,6 @@ describe("ConfigAPI", function() {
                     top0_bottom: {
                         material: "leather_dmy",
                         color: "black"
-                    },
-                    shadow: {
-                        material: "default",
-                        color: "default"
                     }
                 }
             });
@@ -158,6 +158,10 @@ describe("ConfigAPI", function() {
                         material: "leather_dmy",
                         color: "black"
                     },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    },
                     side: {
                         material: "leather_dmy",
                         color: "black"
@@ -165,10 +169,6 @@ describe("ConfigAPI", function() {
                     top0_bottom: {
                         material: "leather_dmy",
                         color: "black"
-                    },
-                    shadow: {
-                        material: "default",
-                        color: "default"
                     }
                 }
             });
@@ -183,6 +183,10 @@ describe("ConfigAPI", function() {
                         material: "leather_dmy",
                         color: "black"
                     },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    },
                     side: {
                         material: "leather_dmy",
                         color: "black"
@@ -190,10 +194,6 @@ describe("ConfigAPI", function() {
                     top0_bottom: {
                         material: "leather_dmy",
                         color: "black"
-                    },
-                    shadow: {
-                        material: "default",
-                        color: "default"
                     }
                 })
             );
