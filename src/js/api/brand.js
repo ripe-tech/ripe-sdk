@@ -692,6 +692,8 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
 ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
     const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
     const initialsOptions = options.initialsOptions === undefined ? true : options.initialsOptions;
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
     if (queryOptions) {
         // obtains the query options taking into account that the brand
         // and the model are not to be included in the parameters as they
@@ -702,8 +704,6 @@ ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
     const gender = options.gender === undefined ? this.gender : options.gender;
     const size = options.size === undefined ? this.size : options.size;
     const parts = options.parts === undefined ? this.parts : options.parts;
-    const brand = options.brand === undefined ? this.brand : options.brand;
-    const model = options.model === undefined ? this.model : options.model;
     const url = `${this.url}brands/${brand}/models/${model}/validate`;
     const params = options.params || {};
     if (gender !== undefined && gender !== null) {
