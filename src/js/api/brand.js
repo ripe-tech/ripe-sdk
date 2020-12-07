@@ -291,9 +291,9 @@ ripe.Ripe.prototype.getFactoryP = function(options) {
  * considering a given build's brand, model and version.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The name of the brand to be considerd when validating
- *  - 'model' - The name of the model to be considerd when validating
- *  - 'version' - The target build version to be considerd when validating
+ *  - 'brand' - The name of the brand to be considered when validating
+ *  - 'model' - The name of the model to be considered when validating
+ *  - 'version' - The target build version to be considered when validating
  *  - 'parts' - The parts to be validated
  *  - 'engraving' - The engraving value to be validated
  *  - 'size' - The size to be validated
@@ -313,9 +313,9 @@ ripe.Ripe.prototype.validateModel = function(options, callback) {
  * considering a given build's brand, model and version.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The name of the brand to be considerd when validating
- *  - 'model' - The name of the model to be considerd when validating
- *  - 'version' - The target build version to be considerd when validating
+ *  - 'brand' - The name of the brand to be considered when validating
+ *  - 'model' - The name of the model to be considered when validating
+ *  - 'version' - The target build version to be considered when validating
  *  - 'parts' - The parts to be validated
  *  - 'engraving' - The engraving value to be validated
  *  - 'size' - The size to be validated
@@ -540,8 +540,14 @@ ripe.Ripe.prototype.onInitialsP = function(options) {
 ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
     const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
     const initialsOptions = options.initialsOptions === undefined ? true : options.initialsOptions;
-    if (queryOptions) options = this._getQueryOptions(options);
+    if (queryOptions) {
+        // obtains the query options taking into account that the brand
+        // and the model are not to be included in the parameters as they
+        // already part of the base URL structure
+        options = this._getQueryOptions(Object.assign({}, options, { brand: null, model: null }));
+    }
     if (initialsOptions) options = this._getInitialsOptions(options);
+
     const gender = options.gender === undefined ? this.gender : options.gender;
     const size = options.size === undefined ? this.size : options.size;
     const parts = options.parts === undefined ? this.parts : options.parts;
@@ -549,9 +555,7 @@ ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
     const model = options.model === undefined ? this.model : options.model;
     const url = `${this.url}brands/${brand}/models/${model}/validate`;
     const params = options.params || {};
-    // delete brand and model as they're in the URL
-    delete params.brand;
-    delete params.model;
+
     if (gender !== undefined && gender !== null) {
         params.gender = gender;
     }
@@ -561,6 +565,7 @@ ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
     if (parts !== undefined && parts !== null) {
         params.p = this._partsMToTriplets(parts);
     }
+
     return Object.assign(options, {
         url: url,
         method: "GET",
