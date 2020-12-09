@@ -8,7 +8,7 @@ node_js:
   - "14"
 install:
 - npm install
-- npm install canvas
+- npm install canvas --no-save
 script: npm run lint && npm test
 env:
   matrix:
