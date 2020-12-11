@@ -299,6 +299,24 @@ describe("RipeAPI", function() {
             });
 
             assert.deepStrictEqual(result, ["left:pt\\:tp:", "right:tp\\:pt:"]);
+
+            result = remote._generateExtraS({
+                left: { initials: "pt:tp", engraving: null },
+                right: { initials: "", engraving: null }
+            });
+
+            assert.deepStrictEqual(result, ["left:pt\\:tp:"]);
+
+            result = remote._generateExtraS(
+                {
+                    left: { initials: "pt:tp", engraving: null },
+                    right: { initials: "", engraving: null }
+                },
+                true,
+                false
+            );
+
+            assert.deepStrictEqual(result, ["left:pt\\:tp:", "right::"]);
         });
     });
 });
