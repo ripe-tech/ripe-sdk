@@ -1192,13 +1192,14 @@ ripe.Ripe.prototype._parseExtraS = function(extraS) {
     return extra;
 };
 
-ripe.Ripe.prototype._generateExtraS = function(extra, sort = true) {
+ripe.Ripe.prototype._generateExtraS = function(extra, sort = true, minimize = true) {
     const extraS = [];
     const names = Object.keys(extra);
     if (sort) names.sort();
     for (const name of names) {
         const values = extra[name];
         const [initials, engraving] = [values.initials, values.engraving];
+        if (!initials && minimize) continue;
         const [nameE, initialsE, engravingE] = [
             ripe.escape(name, ":"),
             ripe.escape(initials, ":"),
