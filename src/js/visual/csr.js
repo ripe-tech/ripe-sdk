@@ -241,9 +241,16 @@ ripe.CSR.prototype.highlight = function(part) {
         return;
     }
 
+    const material = this.assetManager.meshes[part].material;
+    const r = this.assetManager.partsColors[material.uuid][0] * (1 - this.maskOpacity);
+    const g = this.assetManager.partsColors[material.uuid][1] * (1 - this.maskOpacity);
+    const b = this.assetManager.partsColors[material.uuid][2] * (1 - this.maskOpacity);
+
+    const targetColor = new this.library.Color(r, g, b);
+
     // changes the highlight (opacity) value for the part that is going
     // to be highlighted (uses animation for such operation)
-    this.changeHighlight(part, 1 - this.maskOpacity);
+    this.changeHighlight(part, targetColor);
 
     // triggers an event indicating that a highlight operation has been
     // performed on the current configurator
@@ -268,7 +275,16 @@ ripe.CSR.prototype.lowlight = function() {
 
     // adds the no-raycast flag to improve performance
     this.element.classList.add("no-raycast");
-    this.changeHighlight(this.intersectedPart, 1.0);
+
+    const material = this.assetManager.meshes[this.intersectedPart].material;
+
+    const r = this.assetManager.partsColors[material.uuid][0];
+    const g = this.assetManager.partsColors[material.uuid][1];
+    const b = this.assetManager.partsColors[material.uuid][2];
+
+    const targetColor = new this.library.Color(r, g, b);
+
+    this.changeHighlight(this.intersectedPart, targetColor);
 
     // unsets the intersected part value
     this.intersectedPart = null;
@@ -287,27 +303,35 @@ ripe.CSR.prototype.lowlight = function() {
  * @param {Number} endValue The end value for the material color, determined by the
  * caller.
  */
-ripe.CSR.prototype.changeHighlight = function(part, endValue) {
+ripe.CSR.prototype.changeHighlight = function(part, endColor) {
     // retrieve the mesh associated with the provided part
     // in case none is found ignore the operation
     const mesh = this.assetManager.meshes[part];
     if (!mesh) return;
 
-    const startingValue = mesh.material.color.r;
+    const startR = mesh.material.color.r;
+    const startG = mesh.material.color.g;
+    const startB = mesh.material.color.b;
 
-    let currentValue = startingValue;
+    let currentR = startR;
+    let currentG = startG;
+    let currentB = startB;
+
     let pos = 0;
     let startTime = 0;
 
     const changeHighlightTransition = time => {
         startTime = startTime === 0 ? time : startTime;
 
-        mesh.material.color.r = currentValue;
-        mesh.material.color.g = currentValue;
-        mesh.material.color.b = currentValue;
+        mesh.material.color.r = currentR;
+        mesh.material.color.g = currentG;
+        mesh.material.color.b = currentB;
 
         pos = (time - startTime) / this.maskDuration;
-        currentValue = ripe.easing[this.highlightEasing](pos, startingValue, endValue);
+
+        currentR = ripe.easing[this.highlightEasing](pos, startR, endColor.r);
+        currentG = ripe.easing[this.highlightEasing](pos, startG, endColor.g);
+        currentB = ripe.easing[this.highlightEasing](pos, startB, endColor.b);
 
         this.render();
 
@@ -819,8 +843,7 @@ ripe.CSR.prototype._setupAAPass = async function() {
 /**
  * @ignore
  */
-ripe.CSR.prototype._setupAOPass = function() {
-};
+ripe.CSR.prototype._setupAOPass = function() {};
 
 /**
  * Creates the default camera as well as the camera that will be responsible
@@ -998,9 +1021,16 @@ ripe.CSR.prototype._attemptRaycast = function(event) {
     if (isSame) return;
 
     // "lowlights" all of the parts and highlights the one that
-    // has been selected
-    this.lowlight();
-    this.highlight(intersectedPart);
+    // has been selected, only if the material to be highlighted
+    // is different from the previous one, prevents unnecessary renders
+    if (
+        !this.intersectedPart ||
+        this.assetManager.meshes[intersectedPart].material.uuid !==
+            this.assetManager.meshes[this.intersectedPart].material.uuid
+    ) {
+        this.lowlight();
+        this.highlight(intersectedPart);
+    }
 
     // "saves" the currently selected part so that it can be
     // latter used to detect duplicated highlighting (performance)

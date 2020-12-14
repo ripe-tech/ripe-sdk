@@ -332,6 +332,42 @@ ripe.CSRAssetManager.prototype.disposeResources = async function() {
 };
 
 /**
+ * Iterates through the loaded scene and checks if there is any element of
+ * the scene that matches the part's name.
+ * @param {string} part Name of the part to be analysed.
+ */
+ripe.CSRAssetManager.prototype.getPart = function(part) {
+    const scene = this.loadedScene.children[0].children;
+    // iterate through the children of the scene, and check if the
+    // part is present in the scene structure
+    for (let i = 0; i < scene.length; i++) {
+        if (scene[i].name === part) return scene[i];
+    }
+
+    return null;
+};
+
+/**
+ * Propagates material for all children of given part.
+ * @param {Object} part The parent node.
+ * @param {Material} newMaterial The material that will be used.
+ */
+ripe.CSRAssetManager.prototype.cascadeMaterial = function(part, newMaterial) {
+    console.log("Cascading " + part.name + " with ");
+    console.log(newMaterial);
+    for (let i = 0; i < part.children.length; i++) {
+        if (part.children[i].type === "Object3D") {
+            this.cascadeMaterial(part.children[1]);
+        } else {
+            // No clone material is used, so that all nodes use the
+            // same material, making one change propagate to all
+            // the meshes using the same material.
+            part.children[i].material = newMaterial;
+        }
+    }
+};
+
+/**
  * Responsible for loading and, if specified, applying the materials to the correct meshes.
  *
  * @param {*} parts The parts configuration, that maps the part to a material.
@@ -339,8 +375,8 @@ ripe.CSRAssetManager.prototype.disposeResources = async function() {
  */
 ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies = true) {
     for (const part in parts) {
-        const partExists = part + "_part" in this.meshes;
-        if (!partExists) continue;
+        const scenePart = this.getPart(part);
+        if (scenePart === null) continue;
 
         const material = parts[part].material;
         const color = parts[part].color;
@@ -352,17 +388,38 @@ ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies 
             continue;
         }
 
-        for (const mesh in this.meshes) {
-            if (mesh === part + "_part") {
-                if (this.meshes[mesh].material) {
-                    this.meshes[mesh].material.dispose();
-                    this.meshes[mesh].material = null;
-                }
-                this.meshes[mesh].material = newMaterial.clone();
-                this.disposeMaterial(newMaterial);
-                break;
+        // if it's a mesh, apply material
+        if (scenePart.type === "Mesh") {
+            if (scenePart.material) {
+                scenePart.material.dispose();
+                scenePart.material = null;
             }
+
+            scenePart.material = newMaterial.clone();
+            this.disposeMaterial(newMaterial);
+        } // if it is an empty node, cascade the material to the children
+        else if (scenePart.type === "Object3D") {
+            this.cascadeMaterial(scenePart, newMaterial);
         }
+    }
+
+    // Updates the base colors for all the materials currently being used
+    this._storePartsColors();
+};
+
+/**
+ * Stores the base colors for each material, based on their UUID.
+ *
+ * Used for giving masks their correct values when highlighted or
+ * lowlighted.
+ */
+ripe.CSRAssetManager.prototype._storePartsColors = function() {
+    this.partsColors = {};
+
+    for (const mesh in this.meshes) {
+        const material = this.meshes[mesh].material;
+        // maps the uuid to the base color used
+        this.partsColors[material.uuid] = [material.color.r, material.color.g, material.color.b];
     }
 };
 
@@ -454,7 +511,7 @@ ripe.CSRAssetManager.prototype.getColorFromProperty = function(value) {
     // otherwise it's a simple value and should be applied to all
     // of the different color channels equally
     else {
-        return new this.library.Color("rgb(" + value + "%," + value + "%," + value + "%)");
+        return new this.library.Color(value, value, value);
     }
 };
 
