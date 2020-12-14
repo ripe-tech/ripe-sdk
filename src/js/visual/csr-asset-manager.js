@@ -374,12 +374,15 @@ ripe.CSRAssetManager.prototype.cascadeMaterial = function(part, material) {
 };
 
 /**
- * Responsible for loading and, if specified, applying the materials to the correct meshes.
+ * Responsible for loading and, if specified, applying the materials to
+ * the correct meshes.
  *
- * @param {*} parts The parts configuration, that maps the part to a material.
- * @param {*} autoApplies Decides if applies the materials or just loads all the textures.
+ * @param {Object} parts The parts configuration, that maps the part
+ * to a material.
+ * @param {Boolean} autoApply Decides if applies the materials or just
+ * loads all the textures.
  */
-ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies = true) {
+ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApply = true) {
     for (const part in parts) {
         const scenePart = this.getPart(part);
         if (scenePart === null) continue;
@@ -388,8 +391,11 @@ ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies 
         const color = parts[part].color;
         const newMaterial = await this._loadMaterial(part, material, color);
 
-        if (!autoApplies) {
-            // only dispose the materials, not the textures, they need to be loaded
+        // in case no auto apply is request returns the control flow
+        // to the caller function immediately
+        if (!autoApply) {
+            // only dispose the materials, not the textures, as they
+            // need to be loaded
             newMaterial.dispose();
             continue;
         }
@@ -403,7 +409,8 @@ ripe.CSRAssetManager.prototype.setMaterials = async function(parts, autoApplies 
 
             scenePart.material = newMaterial.clone();
             this.disposeMaterial(newMaterial);
-        } // if it is an empty node, cascade the material to the children
+        }
+        // if it is an empty node, cascade the material to the children
         else if (scenePart.type === "Object3D") {
             this.cascadeMaterial(scenePart, newMaterial);
         }
@@ -493,8 +500,9 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
             }
 
             newMaterial[prop] = this.loadedTextures[mapPath];
-        } else {
-            // if it's not a map, it's a property, apply it
+        }
+        // if it's not a map, it's a property, apply it
+        else {
             if (prop === "color" || prop === "specular") {
                 const color = this.getColorFromProperty(materialConfig[prop]);
                 newMaterial[prop] = color;
