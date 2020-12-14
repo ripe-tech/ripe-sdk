@@ -248,6 +248,10 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
  * @param {Object} options Set of optional parameters to adjust the Image.
  */
 ripe.Image.prototype.update = async function(state, options = {}) {
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
+    if (!this.element) return;
+
     // gathers the complete set of data values from the element if existent
     // defaulting to the instance one in case their are not defined
     const frame = this.element.dataset.frame || this.frame;
@@ -531,6 +535,8 @@ ripe.Image.prototype._doubleBuffer = async function(url) {
  * @ignore
  */
 ripe.Image.prototype._registerHandlers = function() {
+    if (!this.element) return;
+
     // creates and add both the load and the error listeners
     // for the underlying image element to propagate those events
     // into the current observable context (event normalization)
@@ -575,8 +581,8 @@ ripe.Image.prototype._registerHandlers = function() {
  * @ignore
  */
 ripe.Image.prototype._unregisterHandlers = function() {
-    if (this.loadListener) this.element.removeEventListener("load", this.loadListener);
-    if (this.errorListener) this.element.removeEventListener("error", this.errorListener);
+    if (this.loadListener && this.element) this.element.removeEventListener("load", this.loadListener);
+    if (this.errorListener && this.element) this.element.removeEventListener("error", this.errorListener);
     if (this.loadedHandler) this.unbind("loaded", this.loadedHandler);
     if (this.errorHandler) this.unbind("error", this.errorHandler);
     if (this._observer) this._observer.disconnect();

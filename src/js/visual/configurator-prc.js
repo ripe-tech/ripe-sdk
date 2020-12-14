@@ -694,6 +694,8 @@ ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
  * @param {Object} options Set of optional parameters to adjust the lowlighting.
  */
 ripe.ConfiguratorPrc.prototype.lowlight = function(options) {
+    if (!this.element) return;
+
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
     if (!this.useMasks) {
@@ -792,6 +794,8 @@ ripe.ConfiguratorPrc.prototype.disableMasks = function() {
  * @private
  */
 ripe.ConfiguratorPrc.prototype._initLayout = function() {
+    if (!this.element) return;
+
     // clears the elements children
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -869,6 +873,8 @@ ripe.ConfiguratorPrc.prototype._initPartsList = async function() {
  * @ignore
  */
 ripe.ConfiguratorPrc.prototype._populateBuffers = function() {
+    if (!this.element) return;
+
     const framesBuffer = this.element.getElementsByClassName("frames-buffer");
     const masksBuffer = this.element.getElementsByClassName("masks-buffer");
     let buffer = null;
@@ -908,6 +914,8 @@ ripe.ConfiguratorPrc.prototype._populateBuffer = function(buffer) {
  * @ignore
  */
 ripe.ConfiguratorPrc.prototype._updateConfig = async function(animate) {
+    if (!this.element) return;
+
     // sets ready to false to temporarily block
     // update requests while the new config
     // is being loaded
@@ -1182,6 +1190,8 @@ ripe.ConfiguratorPrc.prototype._drawMask = function(maskImage) {
  * @ignore
  */
 ripe.ConfiguratorPrc.prototype._drawFrame = async function(image, animate, duration) {
+    if (!this.element) return;
+
     const area = this.element.querySelector(".area");
     const back = this.element.querySelector(".back");
 
@@ -1295,9 +1305,8 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
 
         const mark = element => {
             const _index = this.index;
-            if (index !== _index) {
-                return;
-            }
+            if (index !== _index) return;
+            if (!this.element) return;
 
             // removes the preloading class from the image element
             // and retrieves all the images still preloading,
