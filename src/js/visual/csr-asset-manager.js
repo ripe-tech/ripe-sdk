@@ -334,35 +334,41 @@ ripe.CSRAssetManager.prototype.disposeResources = async function() {
 /**
  * Iterates through the loaded scene and checks if there is any element of
  * the scene that matches the part's name.
+ *
  * @param {string} part Name of the part to be analysed.
+ * @returns {Mesh} The mesh for the requested name.
  */
 ripe.CSRAssetManager.prototype.getPart = function(part) {
+    // considers the scene to be the children of the first
+    // child of the loaded scene (convention)
     const scene = this.loadedScene.children[0].children;
+
     // iterate through the children of the scene, and check if the
     // part is present in the scene structure
-    for (let i = 0; i < scene.length; i++) {
-        if (scene[i].name === part) return scene[i];
+    for (const mesh of scene) {
+        if (mesh.name === part) return mesh;
     }
 
+    // returns an invalid value as the default return value,
+    // meaning that no valid part mesh was found
     return null;
 };
 
 /**
  * Propagates material for all children of given part.
- * @param {Object} part The parent node.
- * @param {Material} newMaterial The material that will be used.
+ *
+ * @param {Object} part The parent node/mesh.
+ * @param {Material} material The material that will be set.
  */
-ripe.CSRAssetManager.prototype.cascadeMaterial = function(part, newMaterial) {
-    console.log("Cascading " + part.name + " with ");
-    console.log(newMaterial);
-    for (let i = 0; i < part.children.length; i++) {
-        if (part.children[i].type === "Object3D") {
+ripe.CSRAssetManager.prototype.cascadeMaterial = function(part, material) {
+    for (const child of part.children) {
+        if (child.type === "Object3D") {
             this.cascadeMaterial(part.children[1]);
         } else {
-            // No clone material is used, so that all nodes use the
+            // no clone material is used, so that all nodes use the
             // same material, making one change propagate to all
             // the meshes using the same material.
-            part.children[i].material = newMaterial;
+            child.material = material;
         }
     }
 };
