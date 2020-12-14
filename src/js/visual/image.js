@@ -581,8 +581,12 @@ ripe.Image.prototype._registerHandlers = function() {
  * @ignore
  */
 ripe.Image.prototype._unregisterHandlers = function() {
-    if (this.loadListener && this.element) this.element.removeEventListener("load", this.loadListener);
-    if (this.errorListener && this.element) this.element.removeEventListener("error", this.errorListener);
+    if (this.loadListener && this.element) {
+        this.element.removeEventListener("load", this.loadListener);
+    }
+    if (this.errorListener && this.element) {
+        this.element.removeEventListener("error", this.errorListener);
+    }
     if (this.loadedHandler) this.unbind("loaded", this.loadedHandler);
     if (this.errorHandler) this.unbind("error", this.errorHandler);
     if (this._observer) this._observer.disconnect();
