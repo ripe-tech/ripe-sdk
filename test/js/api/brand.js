@@ -82,6 +82,128 @@ describe("BrandAPI", function() {
 
             assert.strictEqual(result, "4");
         });
+
+        it("should execute a complex logic with context", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.runLogicP({
+                brand: "dummy",
+                model: "dummy",
+                method: "on_config",
+                dataJ: {
+                    brand: "dummy",
+                    model: "dummy",
+                    ctx: {
+                        initials: {
+                            main: {
+                                initials: "AA",
+                                engraving: "style:black"
+                            }
+                        }
+                    }
+                }
+            });
+
+            assert.deepStrictEqual(result, {
+                initials: {
+                    main: {
+                        initials: "ST",
+                        engraving: "default"
+                    }
+                }
+            });
+        });
+    });
+
+    describe("#onConfigP()", function() {
+        it("should execute a on_config logic", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.onConfigP({
+                brand: "dummy",
+                model: "dummy",
+                initials: {
+                    main: {
+                        initials: "AA",
+                        engraving: "style:black"
+                    }
+                },
+                parts: {},
+                choices: {}
+            });
+
+            assert.deepStrictEqual(result, {
+                brand: "dummy",
+                model: "dummy",
+                version: null,
+                initials: {
+                    main: {
+                        initials: "ST",
+                        engraving: "default"
+                    }
+                },
+                parts: {},
+                choices: {}
+            });
+        });
+    });
+
+    describe("#onPartP()", function() {
+        it("should execute a on_part logic", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.onPartP({
+                brand: "dummy",
+                model: "dummy",
+                name: "side",
+                value: {
+                    material: "suede_dmy",
+                    color: "blue"
+                },
+                initials: {
+                    main: {
+                        initials: "AA",
+                        engraving: "style:black"
+                    }
+                },
+                parts: {
+                    side: {
+                        material: "suede_dmy",
+                        color: "blue"
+                    }
+                },
+                choices: {}
+            });
+
+            assert.deepStrictEqual(result, {
+                brand: "dummy",
+                model: "dummy",
+                version: null,
+                initials: {
+                    main: {
+                        initials: "DM",
+                        engraving: "default"
+                    }
+                },
+                parts: {
+                    side: {
+                        material: "leather_dmy",
+                        color: "black"
+                    }
+                },
+                choices: {},
+                messages: [
+                    ["config", "Colors forced to black"],
+                    ["config", "Shadow forced to default"]
+                ]
+            });
+        });
     });
 
     describe("#_getCombinationsOptions()", function() {
