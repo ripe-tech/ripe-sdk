@@ -770,6 +770,7 @@ ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
     if (version !== undefined && version !== null) {
         params.version = version;
     }
+    delete options.data;
     return Object.assign(options, {
         url: url,
         method: "POST",
