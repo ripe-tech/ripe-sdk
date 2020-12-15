@@ -764,18 +764,17 @@ ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
     const method = options.method === undefined ? null : options.method;
-    const data = options.data === undefined ? null : options.data;
+    const dataJ = options.dataJ === undefined ? null : options.dataJ;
     const url = `${this.url}brands/${brand}/models/${model}/logic/${method}`;
     const params = {};
     if (version !== undefined && version !== null) {
         params.version = version;
     }
-    delete options.data;
     return Object.assign(options, {
         url: url,
         method: "POST",
         params: params,
-        dataJ: data
+        dataJ: dataJ
     });
 };
 
