@@ -81,12 +81,6 @@ describe("BrandAPI", function() {
             });
 
             assert.strictEqual(result, "4");
-        });
-
-        it("should execute a complex logic with context", async () => {
-            let result = null;
-
-            const remote = ripe.RipeAPI();
 
             result = await remote.runLogicP({
                 brand: "dummy",
