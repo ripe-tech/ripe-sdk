@@ -89,7 +89,7 @@ describe("SizeAPI", function() {
         });
     });
 
-    describe("#nativetoSize()", function() {
+    describe("#nativeToSize()", function() {
         it("should be able to convert sizes", async () => {
             let result = null;
 
@@ -101,7 +101,7 @@ describe("SizeAPI", function() {
         });
     });
 
-    describe("#nativetoSizeB()", function() {
+    describe("#nativeToSizeB()", function() {
         it("should be able to convert sizes in bulk", async () => {
             let result = null;
 
