@@ -81,8 +81,12 @@ describe("BrandAPI", function() {
             });
 
             assert.strictEqual(result, "4");
+        });
 
-            result = await remote.runLogicP({
+        it("should execute a complex logic", async () => {
+            const remote = ripe.RipeAPI();
+
+            const result = await remote.runLogicP({
                 brand: "dummy",
                 model: "dummy",
                 method: "on_config",
@@ -112,7 +116,7 @@ describe("BrandAPI", function() {
     });
 
     describe("#onConfigP()", function() {
-        it("should execute a on_config logic", async () => {
+        it("should execute a complex logic", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI();
@@ -147,7 +151,7 @@ describe("BrandAPI", function() {
     });
 
     describe("#onPartP()", function() {
-        it("should execute a on_part logic", async () => {
+        it("should execute a complex logic", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI();
@@ -201,7 +205,7 @@ describe("BrandAPI", function() {
     });
 
     describe("#_getCombinationsOptions()", function() {
-        it("should include use_name as 0 by default", async () => {
+        it("should include `use_name` as 0 by default", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI();
@@ -221,7 +225,7 @@ describe("BrandAPI", function() {
             assert.strictEqual(result.params.filter, "1");
         });
 
-        it("should include use_name as 1 when explicitly defined", async () => {
+        it("should include `use_name` as 1 when explicitly defined", async () => {
             let result = null;
 
             const remote = ripe.RipeAPI();
