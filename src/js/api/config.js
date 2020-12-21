@@ -248,13 +248,13 @@ ripe.Ripe.prototype.configResolveP = function(productId, options) {
  */
 ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
     const sku = options.sku === undefined ? null : options.sku;
-    const domain = options.domain === undefined ? null : options.domain;
     const dku = options.dku === undefined ? null : options.dku;
-    const guess = options.guess === undefined ? this.guess : options.guess;
+    const domain = options.domain === undefined ? null : options.domain;
     const size = options.size === undefined ? this.size : options.size;
     const gender = options.gender === undefined ? this.gender : options.gender;
     const meta = options.meta === undefined ? this.meta : options.meta;
     const _params = options._params === undefined ? this._params : options._params;
+    const guess = options.guess === undefined ? this.guess : options.guess;
     const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
     const initialsOptions = options.initialsOptions === undefined ? true : options.initialsOptions;
 
@@ -267,14 +267,11 @@ ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
     if (sku !== undefined && sku !== null) {
         params.sku = sku;
     }
-    if (domain !== undefined && domain !== null) {
-        params.domain = domain;
-    }
     if (dku !== undefined && dku !== null) {
         params.dku = dku;
     }
-    if (guess !== undefined && guess !== null) {
-        params.guess = guess ? "1" : "0";
+    if (domain !== undefined && domain !== null) {
+        params.domain = domain;
     }
     if (size !== undefined && size !== null) {
         params.size = size;
@@ -287,6 +284,9 @@ ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
     }
     if (_params !== undefined && _params !== null) {
         params.params = _params;
+    }
+    if (guess !== undefined && guess !== null) {
+        params.guess = guess ? "1" : "0";
     }
 
     const url = `${this.url}config/info`;
