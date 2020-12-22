@@ -624,11 +624,13 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
  * @param {Object} options Set of optional parameters to adjust the highlighting.
  */
 ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
+    if (!this.element) return;
+
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
-    if (!this.useMasks) {
-        return;
-    }
+    if (!this.useMasks) return;
 
     // captures the current context to be used by clojure callbacks
     const self = this;
@@ -694,13 +696,13 @@ ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
  * @param {Object} options Set of optional parameters to adjust the lowlighting.
  */
 ripe.ConfiguratorPrc.prototype.lowlight = function(options) {
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
-    // verifiers if masks are meant to be used for the current model
+    // verifies if masks are meant to be used for the current model
     // and if that's not the case returns immediately
-    if (!this.useMasks) {
-        return;
-    }
+    if (!this.useMasks) return;
 
     // retrieves the reference to the current front mask and removes
     // the highlight associated classes from it and the configurator
@@ -794,9 +796,11 @@ ripe.ConfiguratorPrc.prototype.disableMasks = function() {
  * @private
  */
 ripe.ConfiguratorPrc.prototype._initLayout = function() {
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
-    // clears the elements children
+    // clears the elements children by iterating over them
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
     }
@@ -873,6 +877,8 @@ ripe.ConfiguratorPrc.prototype._initPartsList = async function() {
  * @ignore
  */
 ripe.ConfiguratorPrc.prototype._populateBuffers = function() {
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
     const framesBuffer = this.element.getElementsByClassName("frames-buffer");
@@ -914,6 +920,8 @@ ripe.ConfiguratorPrc.prototype._populateBuffer = function(buffer) {
  * @ignore
  */
 ripe.ConfiguratorPrc.prototype._updateConfig = async function(animate) {
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
     // sets ready to false to temporarily block
@@ -1190,6 +1198,8 @@ ripe.ConfiguratorPrc.prototype._drawMask = function(maskImage) {
  * @ignore
  */
 ripe.ConfiguratorPrc.prototype._drawFrame = async function(image, animate, duration) {
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
     const area = this.element.querySelector(".area");
