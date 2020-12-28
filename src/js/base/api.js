@@ -26,6 +26,7 @@ if (
  */
 ripe.RipeAPI = function(options = {}) {
     options.cached = typeof options.cached === "undefined" ? false : options.cached;
+    options.noBundles = typeof options.noBundles === "undefined" ? true : options.noBundles;
     return new ripe.Ripe(options);
 };
 
