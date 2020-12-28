@@ -63,7 +63,7 @@ ripe.OrbitalControls.prototype.constructor = ripe.OrbitalControls;
 /**
  * Sets the controls parameters based on options struct.
  *
- * @param {*} options The struct containing the parameters that will dictate the
+ * @param {Object} options The struct containing the parameters that will dictate the
  * controls' behaviour.
  */
 ripe.OrbitalControls.prototype._setControlsOptions = function(options) {
@@ -285,7 +285,7 @@ ripe.OrbitalControls.prototype._registerHandlers = function() {
  * Updates the base angles based on either the current angles, or the parameters in the options
  * structure.
  *
- * @param {*} options If specified, update the base and current angles based on the options.
+ * @param {Object} options If specified, update the base and current angles based on the options.
  */
 ripe.OrbitalControls.prototype._updateAngles = function(options = {}) {
     const newX = options.rotationX === undefined ? this.currentHorizontalRot : options.rotationX;
@@ -304,7 +304,8 @@ ripe.OrbitalControls.prototype._updateAngles = function(options = {}) {
  * * Converts a position of the element to a rotation that can be applied to
  * the model or the camera.
  *
- * @param {*} position The position that is used for the conversion.
+ * @param {Number} position The position that is used for the conversion.
+ * @returns {Number} The normalized rotation (degrees) for the given position.
  */
 ripe.OrbitalControls.prototype._positionToRotation = function(position) {
     return (position / 24) * 360;
@@ -313,7 +314,8 @@ ripe.OrbitalControls.prototype._positionToRotation = function(position) {
 /**
  * Converts a rotation to a position.
  *
- * @param {*} rotationX The rotation that is used for the conversion.
+ * @param {Number} rotationX The rotation that is used for the conversion.
+ * @returns {Number} The normalized position for the provided rotation (degrees).
  */
 ripe.OrbitalControls.prototype._rotationToPosition = function(rotationX) {
     return (this._validatedAngle(parseInt(rotationX)) / 360) * 24;
@@ -322,12 +324,12 @@ ripe.OrbitalControls.prototype._rotationToPosition = function(rotationX) {
 /**
  * Maps a vertical rotation to a view.
  *
- * @param {*} rotationY The rotation to be converted.
+ * @param {Number} rotationY The rotation to be converted into a view.
+ * @returns {String} The normalized view value for the given Y rotation.
  */
 ripe.OrbitalControls.prototype._rotationToView = function(rotationY) {
     if (rotationY > 85) return "top";
     if (rotationY < -85) return "bottom";
-
     return "side";
 };
 
@@ -514,7 +516,7 @@ ripe.OrbitalControls.prototype._updateRotations = async function(frame, options)
  * Function to allow drifting if the mouse has acceleration to prevent
  * immediately stopping.
  *
- * @param {*} event The mouse event that is used for the drift.
+ * @param {Event} event The mouse event that is used for the drift.
  */
 ripe.OrbitalControls.prototype._drift = function(event) {
     // if specified that can't drift, return immediately
@@ -575,7 +577,7 @@ ripe.OrbitalControls.prototype._drift = function(event) {
 /**
  * The function to handle a rotation transition between views and/or positions.
  *
- * @param {*} options Options used for the transition.
+ * @param {Object} options Options used for the transition.
  */
 ripe.OrbitalControls.prototype.rotationTransition = async function(options) {
     const position = parseInt(this.element.dataset.position);
@@ -625,8 +627,9 @@ ripe.OrbitalControls.prototype.rotationTransition = async function(options) {
             false
         );
 
-        if (pos < 1) requestAnimationFrame(transition);
-        else {
+        if (pos < 1) {
+            requestAnimationFrame(transition);
+        } else {
             this.currentHorizontalRot = finalXRotation;
             this.currentVerticalRot = finalYRotation;
 

@@ -84,7 +84,7 @@ ripe.CSRInitials.prototype.updateOptions = async function(options) {
  * Traverses the object to find the initials_part locations, and stores them, as well
  * as initializes the fonts.
  *
- * @param {*} assetManager The asset manager that contains all the mesh information.
+ * @param {AssetManager} assetManager The asset manager that contains all the mesh information.
  */
 ripe.CSRInitials.prototype.initialize = async function(assetManager) {
     this.assetManager = assetManager;
@@ -109,8 +109,8 @@ ripe.CSRInitials.prototype.initialize = async function(assetManager) {
 /**
  * Loads the typeface JSON specified by the options.
  *
- * @param {*} type The type of font, such as "arial", for example.
- * @param {*} weight The weight of the font, such as "bold".
+ * @param {String} type The type of font, such as "arial", for example.
+ * @param {String} weight The weight of the font, such as "bold".
  */
 ripe.CSRInitials.prototype._initializeFonts = async function(type, weight) {
     const loader = new this.library.FontLoader();
@@ -163,8 +163,8 @@ ripe.CSRInitials.prototype.update = async function() {
 /**
  * Embosses the letters based on their location.
  *
- * @param {*} initials The text to be converted to meshes.
- * @param {*} newEngraving The engraving that will dictate the material properties
+ * @param {String} initials The text to be converted to meshes.
+ * @param {String} newEngraving The engraving that will dictate the material properties
  * of the text meshes.
  */
 ripe.CSRInitials.prototype.embossLetters = async function(initials, newEngraving) {
@@ -244,7 +244,7 @@ ripe.CSRInitials.prototype._getLetterMaterial = async function(engraving) {
  * Disposes a single letter by removing their geometry, and not the materials
  * as these may be necessary for the other letters.
  *
- * @param {*} index The index of the letter to be disposed.
+ * @param {Number} index The index of the letter to be disposed.
  */
 ripe.CSRInitials.prototype.disposeLetter = function(index) {
     // is trying to dispose letter outside of bounds
@@ -258,10 +258,11 @@ ripe.CSRInitials.prototype.disposeLetter = function(index) {
  * Gets the appropriate position and rotation for a letter, based on the nearest
  * initial_part mesh.
  *
- * @param {*} letterNumber The number of the letter to be positioned.
- * @param {*} initials The text of the initials.
+ * @param {Number} letterOffset The number (offset) of the letter to be positioned.
+ * @param {String} initials The text of the initials.
+ * @return {Object} The object that describes the transform.
  */
-ripe.CSRInitials.prototype.getPosRotLetter = function(letterNumber, initials) {
+ripe.CSRInitials.prototype.getPosRotLetter = function(letterOffset, initials) {
     const transform = {};
     const size = Object.keys(this.initialsPositions).length;
 
@@ -269,10 +270,13 @@ ripe.CSRInitials.prototype.getPosRotLetter = function(letterNumber, initials) {
 
     let posInInitials = 0;
 
-    if (this.align === "left") posInInitials = letterNumber;
-    else if (this.align === "right") {
-        posInInitials = size - Math.min(initials.length, size) + letterNumber;
-    } else posInInitials = center + letterNumber - (initials.length + 1) / 2;
+    if (this.align === "left") {
+        posInInitials = letterOffset;
+    } else if (this.align === "right") {
+        posInInitials = size - Math.min(initials.length, size) + letterOffset;
+    } else {
+        posInInitials = center + letterOffset - (initials.length + 1) / 2;
+    }
 
     // if it aligns perfectly with the mesh position
     if (this.align !== "center" || (this.align === "center" && initials.length % 2 === size % 2)) {
@@ -305,18 +309,22 @@ ripe.CSRInitials.prototype.getPosRotLetter = function(letterNumber, initials) {
 /**
  * Creates a text mesh, and assigns it the correct material.
  *
- * @param {*} letter The character to be added.
+ * @param {String} letter The character to be added.
+ * @returns {Mesh} The generated mesh for the letter
  */
 ripe.CSRInitials.prototype.createLetter = function(letter) {
-    if (!this.loadedFonts[this.fontType + "_" + this.fontWeight]) {
+    // builds the complete font name by joining both the font
+    // (family) type and the weight value for the font
+    const fontName = `${this.fontType}_${this.fontWeight}`;
+
+    if (!this.loadedFonts[fontName]) {
         throw new Error(
             "Specified font (" + this.fontWeight + " " + this.fontType + ") is not available."
         );
     }
 
     let textGeometry = new this.library.TextGeometry(letter, {
-        font: this.loadedFonts[this.fontType + "_" + this.fontWeight],
-
+        font: this.loadedFonts[fontName],
         size: this.textSize,
         height: this.textHeight,
         curveSegments: 10
