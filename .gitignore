@@ -8,6 +8,7 @@ session.shelve*
 .watchmanconfig
 
 dist.zip
+yarn.lock
 package-lock.json
 
 /.vscode/settings.json
