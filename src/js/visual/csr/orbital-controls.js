@@ -421,14 +421,15 @@ ripe.OrbitalControls.prototype._updateDragRotations = function() {
         this._baseVerticalRot - this.mouseDeltaY !== this.currentVerticalRot &&
         this.lockRotation !== "horizontal"
     ) {
-        // If reached bottom, deltaY is inverted
+        // in case the bottom is reached, deltaY is inverted
         if (this.mouseDeltaY * -1 + this._baseVerticalRot <= this.minimumVerticalRot) {
             diff = this.minimumVerticalRot - (this.mouseDeltaY * -1 + this._baseVerticalRot);
             this.currentVerticalRot = this.minimumVerticalRot;
 
             this.referenceY -= diff;
             needsUpdate = true;
-        } // If reached top
+        }
+        // in case the top is reached
         else if (this.mouseDeltaY * -1 + this._baseVerticalRot >= this.maximumVerticalRot) {
             diff = this.maximumVerticalRot - (this.mouseDeltaY * -1 + this._baseVerticalRot);
             this.currentVerticalRot = this.maximumVerticalRot;
