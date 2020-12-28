@@ -24,7 +24,7 @@ window.onload = function() {
     const guessUrl = ["1", "true", "True"].indexOf(_body.dataset.guess_url) !== -1;
 
     let image = null;
-    let currentRenderMode = "csr";
+    let renderMode = "csr";
     let configuratorCSR = null;
     let configuratorPRC = null;
 
@@ -115,9 +115,15 @@ window.onload = function() {
     };
 
     const initHeader = function() {
+        const setPart = document.getElementById("set-part");
         const setMessage = document.getElementById("set-message");
         const getPrice = document.getElementById("get-price");
         const getCombinations = document.getElementById("get-combinations");
+
+        setPart &&
+            setPart.addEventListener("click", function() {
+                randomize();
+            });
 
         setMessage &&
             setMessage.addEventListener("click", function() {
@@ -230,6 +236,10 @@ window.onload = function() {
     };
 
     const initConfigurator = function() {
+        // gathers the reference to the top level elements that are
+        // going to be used for proper event handling registration
+        const toggleRenderMode = document.getElementById("toggle-render");
+
         // loads the config of the product to retrieve the
         // complete configuration of the product and be able
         // to define the visible frames and apply restrictions
@@ -456,24 +466,19 @@ window.onload = function() {
                 ripe.unbindConfigurator(configuratorPRC);
             });
 
-            const toggleRenderMode = document.getElementById("toggle-render");
-
+            // in case the toggle render mode button is found then register
+            // the on click even that is going to be toggling between the
+            // multiple render modes available
             toggleRenderMode &&
                 toggleRenderMode.addEventListener("click", function() {
-                    if (currentRenderMode === "prc") currentRenderMode = "csr";
-                    else if (currentRenderMode === "csr") currentRenderMode = "prc";
-
-                    displayRenderMode();
+                    if (renderMode === "prc") renderMode = "csr";
+                    else if (renderMode === "csr") renderMode = "prc";
+                    updateRenderMode();
                 });
 
-            displayRenderMode();
-
-            const setPart = document.getElementById("set-part");
-
-            setPart &&
-                setPart.addEventListener("click", function() {
-                    randomize();
-                });
+            // updates the render mode visibility according to the currently
+            // set render mode in the global variable
+            updateRenderMode();
 
             // eslint-disable-next-line no-undef
             const syncPlugin = new Ripe.plugins.SyncPlugin(result.sync);
@@ -486,18 +491,6 @@ window.onload = function() {
             ripe.addPlugin(syncPlugin);
             ripe.addPlugin(restrictionsPlugin);
         });
-    };
-
-    const displayRenderMode = function() {
-        if (currentRenderMode === "prc") {
-            elementCSR.style.display = "none";
-            elementPRC.style.display = "inline-block";
-            configuratorPRC.resize();
-        } else if (currentRenderMode === "csr") {
-            elementPRC.style.display = "none";
-            elementCSR.style.display = "inline-block";
-            configuratorCSR.resize();
-        }
     };
 
     const initInitials = function() {
@@ -554,6 +547,22 @@ window.onload = function() {
                 dropdown.dispatchEvent(new Event("enable"));
             }
         });
+    };
+
+    /**
+     * Updates the render mode in usage for the current viewport
+     * according to the currently set render mode (global variable).
+     */
+    const updateRenderMode = function() {
+        if (renderMode === "prc") {
+            elementCSR.style.display = "none";
+            elementPRC.style.display = "inline-block";
+            configuratorPRC.resize();
+        } else if (renderMode === "csr") {
+            elementPRC.style.display = "none";
+            elementCSR.style.display = "inline-block";
+            configuratorCSR.resize();
+        }
     };
 
     // starts the loading process for the RIPE main instance and binds
