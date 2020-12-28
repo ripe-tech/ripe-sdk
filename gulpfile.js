@@ -72,11 +72,11 @@ const paths = {
         "src/js/visual/visual.js",
         "src/js/visual/configurator-prc.js",
         "src/js/visual/configurator-csr.js",
-        "src/js/visual/orbital-controls.js",
-        "src/js/visual/csr.js",
-        "src/js/visual/csr-gui.js",
-        "src/js/visual/csr-asset-manager.js",
-        "src/js/visual/csr-initials.js",
+        "src/js/visual/csr/orbital-controls.js",
+        "src/js/visual/csr/csr-base.js",
+        "src/js/visual/csr/csr-gui.js",
+        "src/js/visual/csr/csr-asset-manager.js",
+        "src/js/visual/csr/csr-initials.js",
         "src/js/visual/configurator.js",
         "src/js/visual/image.js"
     ]
