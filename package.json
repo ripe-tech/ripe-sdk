@@ -50,9 +50,6 @@
         "upgrade": "npx sort-package-json && ncu -u",
         "watch": "gulp watch"
     },
-    "resolutions": {
-        "eslint": "^7.16.0"
-    },
     "dependencies": {
         "node-fetch": "^2.6.1",
         "xmlhttprequest": "^1.8.0"
@@ -69,7 +66,7 @@
         "gulp-cli": "^2.3.0",
         "gulp-concat": "^2.6.1",
         "gulp-count": "^1.0.0",
-        "gulp-eslint": "^6.0.0",
+        "gulp-eslint7": "^0.3.0",
         "gulp-jsdoc3": "^3.0.0",
         "gulp-mocha": "^7.0.2",
         "gulp-replace": "^1.0.0",
