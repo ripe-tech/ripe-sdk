@@ -490,10 +490,8 @@ ripe.OrbitalControls.prototype._updateRotations = async function(frame, options)
         const next = this._validatedAngle(nextHorizontalRot);
         const diff = Math.abs(next - current);
 
-        // TODO Uncomment this
         duration = (diff * revolutionDuration) / 360;
         duration = 500;
-        // duration = diff * 60 / revolutionDuration;
     }
 
     // new rotation values

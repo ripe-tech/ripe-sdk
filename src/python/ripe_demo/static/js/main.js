@@ -345,7 +345,7 @@ window.onload = function() {
                 noMasks: false,
                 view: bestFace(result),
 
-                // can be "crossfade", "rotate" or "none"
+                // can be `crossfade`, `rotate` or `none`
                 viewAnimate: "crossfade",
                 positionAnimate: "rotate",
 
@@ -371,8 +371,6 @@ window.onload = function() {
                 },
 
                 initials: {
-                    // TODO extract alignment from build
-                    // can be "left", "right", "center"
                     align: "center",
                     size: 0.5,
                     height: 0.1,
@@ -451,6 +449,13 @@ window.onload = function() {
                 }
             });
 
+            // registers for the unloading function to avoid memory
+            // leaks both in the CSR and PRC configurators
+            window.addEventListener("unload", function() {
+                ripe.unbindConfigurator(configuratorCSR);
+                ripe.unbindConfigurator(configuratorPRC);
+            });
+
             const toggleRenderMode = document.getElementById("toggle-render");
 
             toggleRenderMode &&
@@ -480,12 +485,6 @@ window.onload = function() {
             // be properly used under this runtime
             ripe.addPlugin(syncPlugin);
             ripe.addPlugin(restrictionsPlugin);
-
-            // Added unloading function to avoid memory leaks in ThreeJS
-            window.onunload = function() {
-                ripe.unbindConfigurator(configuratorCSR);
-                ripe.unbindConfigurator(configuratorPRC);
-            };
         });
     };
 
