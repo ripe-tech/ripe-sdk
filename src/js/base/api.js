@@ -26,6 +26,7 @@ if (
  */
 ripe.RipeAPI = function(options = {}) {
     options.cached = typeof options.cached === "undefined" ? false : options.cached;
+    options.noBundles = typeof options.noBundles === "undefined" ? true : options.noBundles;
     return new ripe.Ripe(options);
 };
 
@@ -512,19 +513,8 @@ ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
         params.flag = flag;
     }
 
-    params.p = [];
-
-    for (const part in parts) {
-        const value = parts[part];
-        const material = value.material;
-        const color = value.color;
-        if (!material) {
-            continue;
-        }
-        if (!color) {
-            continue;
-        }
-        params.p.push(part + ":" + material + ":" + color);
+    if (parts !== undefined && parts !== null && Object.keys(parts).length > 0) {
+        params.p = this._partsMToTriplets(parts);
     }
 
     if (!options.noEvents) this.trigger("post_query_options", options);
@@ -546,7 +536,7 @@ ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
     const initialsExtra =
         options.initialsExtra === undefined ? this.initialsExtra : options.initialsExtra;
 
-    if (initials !== undefined && initials !== null) {
+    if (initials !== undefined && initials !== null && initials !== "") {
         params.initials = initials;
     }
 
@@ -554,7 +544,11 @@ ripe.Ripe.prototype._getInitialsOptions = function(options = {}) {
         params.engraving = engraving;
     }
 
-    if (initialsExtra !== undefined && initialsExtra !== null) {
+    if (
+        initialsExtra !== undefined &&
+        initialsExtra !== null &&
+        Object.keys(initialsExtra).length > 0
+    ) {
         params.initials_extra = this._generateExtraS(initialsExtra);
     }
 
@@ -1167,7 +1161,12 @@ ripe.Ripe.prototype._partsToPartsM = function(parts) {
 };
 
 ripe.Ripe.prototype._partsMToQuery = function(partsM, sort = true) {
-    const queryL = [];
+    const queryL = this._partsMToTriplets(partsM, sort).map(triplet => `p=${triplet}`);
+    return queryL.join("&");
+};
+
+ripe.Ripe.prototype._partsMToTriplets = function(partsM, sort = true) {
+    const triplets = [];
     const names = Object.keys(partsM);
     if (sort) names.sort();
     for (const name of names) {
@@ -1177,10 +1176,9 @@ ripe.Ripe.prototype._partsMToQuery = function(partsM, sort = true) {
             ripe.escape(part.material, ":"),
             ripe.escape(part.color, ":")
         ];
-        const triplet = `${nameE}:${initialsE}:${engravingE}`;
-        queryL.push(`p=${triplet}`);
+        triplets.push(`${nameE}:${initialsE}:${engravingE}`);
     }
-    return queryL.join("&");
+    return triplets;
 };
 
 ripe.Ripe.prototype._parseExtraS = function(extraS) {
@@ -1195,13 +1193,14 @@ ripe.Ripe.prototype._parseExtraS = function(extraS) {
     return extra;
 };
 
-ripe.Ripe.prototype._generateExtraS = function(extra, sort = true) {
+ripe.Ripe.prototype._generateExtraS = function(extra, sort = true, minimize = true) {
     const extraS = [];
     const names = Object.keys(extra);
     if (sort) names.sort();
     for (const name of names) {
         const values = extra[name];
         const [initials, engraving] = [values.initials, values.engraving];
+        if (!initials && minimize) continue;
         const [nameE, initialsE, engravingE] = [
             ripe.escape(name, ":"),
             ripe.escape(initials, ":"),

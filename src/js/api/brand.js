@@ -287,6 +287,49 @@ ripe.Ripe.prototype.getFactoryP = function(options) {
 };
 
 /**
+ * Returns the result of the server side validation of model configurations
+ * considering a given build's brand, model and version.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The name of the brand to be considered when validating
+ *  - 'model' - The name of the model to be considered when validating
+ *  - 'version' - The target build version to be considered when validating
+ *  - 'parts' - The parts to be validated
+ *  - 'engraving' - The engraving value to be validated
+ *  - 'size' - The size to be validated
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.validateModel = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._validateModelOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the result of the server side validation of model configurations
+ * considering a given build's brand, model and version.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The name of the brand to be considered when validating
+ *  - 'model' - The name of the model to be considered when validating
+ *  - 'version' - The target build version to be considered when validating
+ *  - 'parts' - The parts to be validated
+ *  - 'engraving' - The engraving value to be validated
+ *  - 'size' - The size to be validated
+ * @returns {Promise} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.validateModelP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.validateModel(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns the logic script of a model in the requested format (javascript or python).
  *
  * @param {Object} options An object with options, such as:
@@ -646,6 +689,45 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
 /**
  * @ignore
  */
+ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
+    const gender = options.gender === undefined ? this.gender : options.gender;
+    const size = options.size === undefined ? this.size : options.size;
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
+    const initialsOptions = options.initialsOptions === undefined ? true : options.initialsOptions;
+
+    if (queryOptions) {
+        // obtains the query options taking into account that the brand
+        // and the model are not to be included in the parameters as they
+        // already part of the base URL structure
+        options = this._getQueryOptions(Object.assign(options, { brand: null, model: null }));
+    }
+    if (initialsOptions) options = this._getInitialsOptions(options);
+
+    const url = `${this.url}brands/${brand}/models/${model}/validate`;
+
+    // "extracts" the parameters from the options, note that these values
+    // may have been "manipulated" by the partial get options operations
+    const params = options.params || {};
+
+    if (gender !== undefined && gender !== null) {
+        params.gender = gender;
+    }
+    if (size !== undefined && size !== null) {
+        params.size = size;
+    }
+
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
 ripe.Ripe.prototype._getLogicOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
@@ -682,7 +764,7 @@ ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
     const method = options.method === undefined ? null : options.method;
-    const data = options.data === undefined ? null : options.data;
+    const dataJ = options.dataJ === undefined ? null : options.dataJ;
     const url = `${this.url}brands/${brand}/models/${model}/logic/${method}`;
     const params = {};
     if (version !== undefined && version !== null) {
@@ -692,7 +774,7 @@ ripe.Ripe.prototype._runLogicOptions = function(options = {}) {
         url: url,
         method: "POST",
         params: params,
-        dataJ: data
+        dataJ: dataJ
     });
 };
 

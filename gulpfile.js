@@ -7,7 +7,7 @@ const count = require("gulp-count");
 const mocha = require("gulp-mocha");
 const jsdoc = require("gulp-jsdoc3");
 const concat = require("gulp-concat");
-const eslint = require("gulp-eslint");
+const eslint = require("gulp-eslint7");
 const terser = require("gulp-terser");
 const replace = require("gulp-replace");
 const sourcemaps = require("gulp-sourcemaps");
@@ -18,13 +18,14 @@ const paths = {
     mainjs: "dist/ripe.js",
     mainmap: "dist/ripe.js.map",
     maincss: "src/css/ripe.css",
+    mainpython: "src/python/**/main.js",
     scripts: "src/js/**/*.js",
     bscripts: "src/js/*/**/*.js",
     css: "src/css/**/*.css",
     docs: "src/js/*/**/*.js",
     test: "test/js/**/*.js",
-    demo: "src/python/ripe_demo/static/js/main.js",
     dist: "dist/**/*",
+    demo: "src/python/ripe_demo/static/js/main.js",
     polyfill: "node_modules/@babel/polyfill/dist/polyfill.js",
     libs: [
         "node_modules/zlibjs/bin/inflate.min.js",
@@ -200,7 +201,7 @@ gulp.task("lint", () => {
 
 gulp.task("lint-fix", () => {
     return gulp
-        .src([paths.bscripts, paths.test, paths.demo])
+        .src([paths.bscripts, paths.test, paths.demo, paths.mainpython])
         .pipe(eslint({ fix: true }))
         .pipe(eslint.format())
         .pipe(gulp.dest(file => file.base))
