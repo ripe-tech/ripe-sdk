@@ -6,9 +6,10 @@ if (
         (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
 ) {
     // eslint-disable-next-line no-redeclare
-    var base = require("../base");
+    const base = require("../base");
     require("./visual");
     // eslint-disable-next-line no-redeclare
+    // eslint-disable-next-line no-var
     var ripe = base.ripe;
 }
 
