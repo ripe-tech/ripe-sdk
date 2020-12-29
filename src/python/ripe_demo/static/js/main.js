@@ -8,10 +8,10 @@ window.onload = function() {
     const elementCSR = document.getElementById("configurator-csr");
     const elementPRC = document.getElementById("configurator-prc");
     const _body = document.querySelector("body");
-    // const url = _body.dataset.url || "https://sandbox.platforme.com/api/";
+    //const url = _body.dataset.url || "https://sandbox.platforme.com/api/";
     const url = _body.dataset.url || "http://localhost:8181/api/";
     const brand = _body.dataset.brand || "swear";
-    // const model = _body.dataset.model || "vyner";
+    //const model = _body.dataset.model || "vyner";
     const model = _body.dataset.model || "vyner_hitop";
     const variant = _body.dataset.variant || "";
     const version = _body.dataset.version || null;
@@ -42,7 +42,8 @@ window.onload = function() {
         currency: currency,
         country: country,
         guess: guess,
-        guessUrl: guessUrl
+        guessUrl: guessUrl,
+        errorPopup: true
     });
 
     const randomize = async function() {

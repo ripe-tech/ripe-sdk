@@ -113,6 +113,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.updatePromise = null;
     this.cancelPromise = null;
     this.error = null;
+    this.errorPopup = false;
 
     // extends the default options with the ones provided by the
     // developer upon this initializer call
@@ -666,6 +667,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
     this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
+    this.errorPopup = this.options.errorPopup === undefined ? this.errorPopup : this.options.errorPopup;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account
@@ -1734,14 +1736,24 @@ ripe.Ripe.prototype._pushHistory = function() {
  *
  * @param {Error} error The error that is going to be
  * handled.
+ * @param {Boolean} popup If a modal popup should be displayed
+ * as part of the error handling strategy.
  */
-ripe.Ripe.prototype._errorHandler = function(error) {
+ripe.Ripe.prototype._errorHandler = function(error, popup = null) {
+    // runs the defaulting operation on the popup parameter
+    // so that if required a modal popup is shown
+    popup = popup === null ? this.errorPopup : popup;
+
     // sets the error in the current instance and then triggers the
     // error event on the current instance (notification)
     this.ready = this.ready || false;
     this.error = error;
     this.trigger("error", error);
+
+    // prints the error to the standard error output and then
+    // in case a popup is request triggers an alert
     console.error(error.message || error);
+    if (popup) alert(error.message || error);
 };
 
 /**

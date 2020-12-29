@@ -73,7 +73,7 @@ ripe.CSR = function(owner, element, options) {
 
     this._wireframe = false;
 
-    this.gui = new ripe.GUI(this, options);
+    this.gui = new ripe.CSRGui(this, options);
 };
 
 ripe.CSR.prototype = ripe.build(ripe.Observable.prototype);
@@ -400,7 +400,7 @@ ripe.CSR.prototype.crossfade = async function(options = {}, type) {
         this.rotate(options);
     }
 
-    // updates the wireframe to match between crossfades
+    // updates the wireframe to match between cross-fades
     this.updateWireframe(this._wireframe);
 
     // renders the scene after the change
@@ -813,7 +813,7 @@ ripe.CSR.prototype._setupAAPass = async function() {
         );
 
         // the following variables are used in
-        // the debug GUI
+        // the debug GUI (for the CSR)
         const edgesTextureEffect = new this.postProcessLib.TextureEffect({
             blendFunction: self.postProcessLib.BlendFunction.SKIP,
             texture: aaEffect.renderTargetEdges.texture

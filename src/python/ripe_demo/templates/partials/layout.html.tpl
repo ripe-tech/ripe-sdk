@@ -14,7 +14,7 @@
             {% if own.is_devel() %}
                 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/ripe.css') }}" />
                 <script type="text/javascript" src="{{ url_for('static', filename = 'js/ripe.js', compress = 'js') }}"></script>
-                <!-- TODO this is a temporary hack to load configs -->
+                <!-- TODO this is a temporary hack to load configs, this should be dynamically loaded -->
                 <script type="text/javascript" src="{{ url_for('static', filename = 'assets/swear/configs/vyner_hitop.js') }}"></script>
             {% else %}
                 <link rel="stylesheet" type="text/css" href="{{ touch('//sdk.platforme.com/css/ripe.css') }}" />
