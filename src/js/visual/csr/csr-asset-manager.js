@@ -229,6 +229,8 @@ ripe.CSRAssetManager.prototype._loadSubMeshes = function(scene = null) {
         // the mesh name (part) with the sub-mesh
         this.meshes[child.name] = child;
     });
+
+    console.info(`Loaded ${Object.keys(this.meshes).length} meshes`);
 };
 
 ripe.CSRAssetManager.prototype._loadWireframes = function(scene = null, visible = false) {

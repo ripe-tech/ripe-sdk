@@ -363,7 +363,7 @@ window.onload = function() {
                 // debug is used to change post processing settings
                 debug: false,
 
-                usesPostProcessing: true,
+                postProcessing: true,
 
                 library: window.THREE,
                 dat: window.dat,
