@@ -336,13 +336,16 @@ ripe.CSRAssetManager.prototype.disposeResources = async function() {
 };
 
 /**
- * Iterates through the loaded scene and checks if there is any element of
- * the scene that matches the part's name.
+ * Iterates through the loaded scene and checks if there is any
+ * element of the scene that matches the part's name.
  *
- * @param {string} part Name of the part to be analysed.
+ * @param {String} part Name of the part to be analysed.
+ * @param {Array} suffixes The sequence of suffixes that are going
+ * to be tolerated at the end of the mesh name, so that for instance
+ * a mesh name `side_part` is a valid mesh for the `side` part.
  * @returns {Mesh} The mesh for the requested name.
  */
-ripe.CSRAssetManager.prototype.getPart = function(part) {
+ripe.CSRAssetManager.prototype.getPart = function(part, suffixes = ["", "_part"]) {
     // considers the scene to be the children of the first
     // child of the loaded scene (convention)
     const scene = this.loadedScene.children[0].children;
@@ -350,7 +353,10 @@ ripe.CSRAssetManager.prototype.getPart = function(part) {
     // iterate through the children of the scene, and check if the
     // part is present in the scene structure
     for (const mesh of scene) {
-        if (mesh.name === part) return mesh;
+        for (const suffix of suffixes) {
+            const isValid = mesh.name === `${part}${suffix}`;
+            if (isValid) return mesh;
+        }
     }
 
     // returns an invalid value as the default return value,

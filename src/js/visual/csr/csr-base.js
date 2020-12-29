@@ -55,8 +55,7 @@ ripe.CSR = function(owner, element, options) {
     this.shadowBias = 0;
     this.exposure = 1.5;
     this.radius = 1;
-    this.postProcessing =
-        options.postProcessing === undefined ? true : options.postProcessing;
+    this.postProcessing = options.postProcessing === undefined ? true : options.postProcessing;
 
     this.postProcessLib = options.postProcessingLibrary;
     this._setPostProcessOptions(options);
@@ -99,9 +98,7 @@ ripe.CSR.prototype.updateOptions = async function(options) {
             ? this.postProcessLib
             : options.postProcessingLibrary;
     this.postProcessing =
-        options.postProcessing === undefined
-            ? this.postProcessing
-            : options.postProcessing;
+        options.postProcessing === undefined ? this.postProcessing : options.postProcessing;
 };
 
 /**
