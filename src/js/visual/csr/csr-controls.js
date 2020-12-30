@@ -410,7 +410,6 @@ ripe.CSRControls.prototype._updateDragRotations = function() {
         this.lockRotation !== "vertical"
     ) {
         this.currentHorizontalRot = this._baseHorizontalRot - this.mouseDeltaX;
-
         needsUpdate = true;
     }
 
