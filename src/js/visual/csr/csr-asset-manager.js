@@ -32,12 +32,6 @@ ripe.CSRAssetManager = function(configurator, owner, options) {
     this.owner = owner;
     this.configurator = configurator;
     this.assetsPath = options.assets.path;
-    this.texturesPath =
-        this.assetsPath +
-        this.owner.brand.toLowerCase() +
-        "/textures/" +
-        this.owner.model.toLowerCase() +
-        ".glb";
 
     this.library = options.library;
     this.owner = owner;
@@ -50,6 +44,7 @@ ripe.CSRAssetManager = function(configurator, owner, options) {
 
     this.meshes = {};
     this.wireframes = {};
+    this.animations = {};
     this.loadedTextures = {};
     this.environmentTexture = null;
     this.loadedScene = undefined;
@@ -64,8 +59,8 @@ ripe.CSRAssetManager = function(configurator, owner, options) {
         renderer.dispose();
     }
 
-    this.animations = {};
-
+    // triggers the initial loading of the assets, according to the
+    // configuration currently set in the instance
     this._loadAssets();
 };
 
@@ -106,30 +101,44 @@ ripe.CSRAssetManager.prototype._loadAssets = async function({
     // loads the complete set of animations defined in the
     // model configuration
     for (const animation of this.modelConfig.animations) {
-        await this._loadAsset(animation, true);
+        await this._loadAsset(animation, "animation");
     }
 
     await this.configurator.initializeLoading();
 };
 
 /**
- * @ignore
+ * Loads an asset from the remote that source using a series
+ * of conventions to determine the appropriate source path.
+ *
+ * As part of the loading process the current instance internal
+ * are going to be mutated with the newly registers values.
+ *
+ * @param {String} filename The name of the asset that is going
+ * be retrieved and loaded.
+ * @param {String} kind The kind of asset to be loaded (eg `mesh`,
+ * `animation`, `texture`, etc.).
+ * @returns {Object} The asset that has been loaded.
  */
-ripe.CSRAssetManager.prototype._loadAsset = async function(filename = null, isAnimation = false) {
+ripe.CSRAssetManager.prototype._loadAsset = async function(filename = null, kind = "mesh") {
     const loadersM = {
         gltf: this.library.GLTFLoader,
         fbx: this.library.FBXLoader
     };
 
-    let type = "gltf";
-    let path = this.assetsPath + this.owner.brand.toLowerCase();
+    let type = null;
+    let path = null;
 
-    if (isAnimation) {
-        path += "/animations/" + this.owner.model.toLowerCase() + "/" + filename;
-    } else {
-        path = this.owner.getMeshUrl({
-            variant: "$base"
-        });
+    switch (kind) {
+        case "animation":
+            path += `${this.assetsPath}${this.owner.brand}/animations/${this.owner.model}/${filename}`;
+            break;
+
+        case "mesh":
+        default:
+            path = this.owner.getMeshUrl({
+                variant: "$base"
+            });
     }
 
     // tries to determine the proper type of file that is represented
@@ -153,28 +162,34 @@ ripe.CSRAssetManager.prototype._loadAsset = async function(filename = null, isAn
         );
     });
 
-    if (isAnimation) {
-        // "gathers" the first animation of the asset as the main,
-        // the one that is going to be store in memory
-        this.animations[filename] = asset.animations[0];
+    switch (kind) {
+        case "animation":
+            // "gathers" the first animation of the asset as the main,
+            // the one that is going to be store in memory
+            this.animations[filename] = asset.animations[0];
 
-        // if it is a mesh operation it must be added to the set
-        // of animations associated with the currently loaded scene
-        const isMeshOperation = filename.includes("mesh_");
-        if (isMeshOperation) {
-            this.loadedScene.animations.push(asset.animations[0]);
-        }
-    } else {
-        // for the glTF assets a small hack is required so
-        // the asset in question is the scene, this is required
-        // because glTF is a packaging format for multiple assets
-        // and we're only concerted with the scene here
-        if (type === "gltf") asset = asset.scene;
+            // if it is a mesh related animation it must be added to the set
+            // of animations associated with the currently loaded scene
+            if (filename.includes("mesh_")) {
+                this.loadedScene.animations.push(asset.animations[0]);
+            }
 
-        // updates the loaded scene variable with the assets
-        // that has just been loaded (and resets animations)
-        this.loadedScene = asset;
-        this.loadedScene.animations = [];
+            break;
+
+        case "mesh":
+        default:
+            // for the glTF assets a small hack is required so
+            // the asset in question is the scene, this is required
+            // because glTF is a packaging format for multiple assets
+            // and we're only concerted with the scene here
+            if (type === "gltf") asset = asset.scene;
+
+            // updates the loaded scene variable with the assets
+            // that has just been loaded (and resets animations)
+            this.loadedScene = asset;
+            this.loadedScene.animations = [];
+
+            break;
     }
 
     // returns the asset that has been loaded to the caller
@@ -456,6 +471,7 @@ ripe.CSRAssetManager.prototype._storePartsColors = function() {
  */
 ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color) {
     let materialConfig;
+    let newMaterial;
 
     // if the specific texture doesn't exist, fallbacks to
     // general textures
@@ -465,23 +481,19 @@ ripe.CSRAssetManager.prototype._loadMaterial = async function(part, type, color)
         materialConfig = this.modelConfig[part][type][color];
     }
 
-    let newMaterial;
-
     // follows specular-glossiness workflow
     if (materialConfig.specularMap || materialConfig.specular) {
         newMaterial = new this.library.MeshPhongMaterial();
     }
-    // otherwise follows PBR workflow
+    // otherwise follows PBR workflow, considered to be a
+    // standard material with the THREE.js library
     else {
         newMaterial = new this.library.MeshStandardMaterial();
     }
 
-    const basePath =
-        this.assetsPath +
-        this.owner.brand.toLowerCase() +
-        "/textures/" +
-        this.owner.model.toLowerCase() +
-        "/";
+    // builds the base relative path for the loading of textures
+    // using a pre-defined convention for the structure
+    const basePath = `${this.assetsPath}${this.owner.brand}/textures/${this.owner.model}/`;
 
     for (const prop in materialConfig) {
         // if it's a map, loads and applies the texture
@@ -549,8 +561,7 @@ ripe.CSRAssetManager.prototype.getColorFromProperty = function(value) {
  */
 ripe.CSRAssetManager.prototype.setupEnvironment = async function(scene, renderer, environment) {
     this.pmremGenerator = new this.library.PMREMGenerator(renderer);
-    const environmentMapPath =
-        this.assetsPath + this.owner.brand + "/environments/" + environment + ".hdr";
+    const environmentMapPath = `${this.assetsPath}${this.owner.brand}/environments/${environment}.hdr`;
 
     const rgbeLoader = new this.library.RGBELoader();
     const texture = await new Promise((resolve, reject) => {
