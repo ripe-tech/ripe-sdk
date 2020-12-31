@@ -39,9 +39,9 @@ ripe.CSRControls = function(configurator, element, options) {
     this.rotationEasing = "easeInOutQuad";
 
     this.cameraDistance = 100;
-    this._baseCameraDistance = 100;
     this.maxDistance = 1000;
     this.minDistance = 0;
+    this._baseCameraDistance = 100;
 
     this.lockRotation = "";
 
@@ -49,11 +49,10 @@ ripe.CSRControls = function(configurator, element, options) {
     this.canDrift = false;
     this.driftDuration = 200;
 
-    this._previousEvent = null;
     this.canZoom = true;
+    this._previousEvent = null;
 
     this._setControlsOptions(options);
-
     this._registerHandlers();
 };
 
