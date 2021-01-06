@@ -443,12 +443,14 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
         // that others may use it freely (cache mechanism)
         this.loadedConfig = await this.getConfigP();
     } catch (err) {
+        // builds the base message taking into consideration if the
+        // version has been explicity defined
+        let message = `Not possible to get configuration for '${brand}' and '${model}'`;
+        if (this.options.version) message += ` version ${this.options.version}`;
+
         // raises a new error indicating the real cause for the new
         // error being thrown under the current execution logic
-        throw new ripe.OperationalError(
-            `Not possible to get configuration for '${brand}' and '${model}'`,
-            err
-        );
+        throw new ripe.OperationalError(message, err);
     }
 
     // creates a "new" choices from the provided configuration for the
