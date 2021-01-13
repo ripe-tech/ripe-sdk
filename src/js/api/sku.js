@@ -11,7 +11,6 @@ if (
     var ripe = base.ripe;
 }
 
-
 /**
  * Gets the existing SKUs, according to the provided filtering
  * strategy as normalized values.
