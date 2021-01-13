@@ -15,7 +15,7 @@ if (
  * Gets the existing availability rules, according to the provided filtering
  * strategy as normalized values.
  *
- * @param {Object} options An object of options to configure the request
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -51,8 +51,8 @@ ripe.Ripe.prototype.getAvailabilityRulesP = function(options) {
  * Gets an existing availability rule filtered by ID and according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Availability Rule's ID.
- * @param {Object} options An object of options to configure the request
+ * @param {Number} id The availability rule's ID.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -73,9 +73,9 @@ ripe.Ripe.prototype.getAvailabilityRule = function(id, options, callback) {
  * Gets an existing availability rule filtered by ID and according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Availability Rule's ID.
- * @param {Object} options An object of options to configure the request
- * @returns {Promise} The availability rules list.
+ * @param {Number} id The availability rule's ID.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The availability rule requested by ID.
  */
 ripe.Ripe.prototype.getAvailabilityRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
@@ -86,10 +86,10 @@ ripe.Ripe.prototype.getAvailabilityRuleP = function(id, options) {
 };
 
 /**
- * Creates a Availability Rule on RIPE Core.
+ * Creates an availability rule on RIPE Core.
  *
- * @param {Object} availabilityRule The Availability Rule object
- * @param {Object} options An object with options
+ * @param {Object} availabilityRule The availability rule data.
+ * @param {Object} options An object with options.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -108,10 +108,10 @@ ripe.Ripe.prototype.createAvailabilityRule = function(availabilityRule, options,
 };
 
 /**
- * Creates a Availability Rule on RIPE Core.
+ * Creates an availability rule on RIPE Core.
  *
- * @param {Object} availabilityRule The Availability Rule object
- * @param {Object} options An object with options
+ * @param {Object} availabilityRule The availability rule's data.
+ * @param {Object} options An object with options.
  * @returns {Promise} The availability rule's data.
  */
 ripe.Ripe.prototype.createAvailabilityRuleP = function(availabilityRule, options) {
@@ -123,9 +123,9 @@ ripe.Ripe.prototype.createAvailabilityRuleP = function(availabilityRule, options
 };
 
 /**
- * Updates a Availability Rule on RIPE Core.
+ * Updates an availability rule on RIPE Core.
  *
- * @param {Object} availabilityRule The Availability Rule object
+ * @param {Object} availabilityRule The availability rule's data.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
@@ -145,11 +145,11 @@ ripe.Ripe.prototype.updateAvailabilityRule = function(availabilityRule, options,
 };
 
 /**
- * Updates a Availability Rule on RIPE Core.
+ * Updates an availability rule on RIPE Core.
  *
- * @param {Object} availabilityRule The Availability Rule object
- * @param {Object} options An object of options to configure the request
- * @returns {Promise} The Availability Rule's data.
+ * @param {Object} availabilityRule The Availability Rule's data.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The availability rule's data.
  */
 ripe.Ripe.prototype.updateAvailabilityRuleP = function(availabilityRule, options) {
     return new Promise((resolve, reject) => {
@@ -160,10 +160,9 @@ ripe.Ripe.prototype.updateAvailabilityRuleP = function(availabilityRule, options
 };
 
 /**
- * Deletes the existing availability rules filtered by ID, according to the
- * provided filtering strategy as normalized values.
+ * Deletes an existing availability rule.
  *
- * @param {Number} id The Availability Rule's ID.
+ * @param {Number} id The availability rule's ID.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -182,12 +181,11 @@ ripe.Ripe.prototype.deleteAvailabilityRule = function(id, options, callback) {
 };
 
 /**
- * Deletes the existing availability rules filtered by ID, according to the
- * provided filtering strategy as normalized values.
+ * Deletes an existing availability rule.
  *
- * @param {Number} id The Availability Rule's ID.
+ * @param {Number} id The availability rule's ID.
  * @param {Object} options An object of options to configure the request
- * @returns {Promise} The availability rules list.
+ * @returns {Promise} The result of the availability rule's deletion.
  */
 ripe.Ripe.prototype.deleteAvailabilityRuleP = function(id, options) {
     return new Promise((resolve, reject) => {

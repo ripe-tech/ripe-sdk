@@ -15,7 +15,7 @@ if (
  * Gets the existing price rules, according to the provided filtering
  * strategy as normalized values.
  *
- * @param {Object} options An object of options to configure the request
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -48,10 +48,10 @@ ripe.Ripe.prototype.getPriceRulesP = function(options) {
 };
 
 /**
- * Gets an existing price rule filtered by id and according to the
+ * Gets an existing price rule filtered by ID and according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Price Rule's Id.
+ * @param {Number} id The price rule's ID.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -70,12 +70,12 @@ ripe.Ripe.prototype.getPriceRule = function(id, options, callback) {
 };
 
 /**
- * Gets an existing price rule filtered by id and according to the
+ * Gets an existing price rule filtered by ID and according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The Price Rule's Id.
- * @param {Object} options An object of options to configure the request
- * @returns {Promise} The price rules list.
+ * @param {Number} id The price rule's ID.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The price rule requested by ID.
  */
 ripe.Ripe.prototype.getPriceRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
@@ -86,10 +86,10 @@ ripe.Ripe.prototype.getPriceRuleP = function(id, options) {
 };
 
 /**
- * Creates a Price Rule on RIPE Core.
+ * Creates a price rule on RIPE Core.
  *
- * @param {Object} priceRule The Price Rule object
- * @param {Object} options An object with options
+ * @param {Object} priceRule An object with information needed to create a price rule.
+ * @param {Object} options An object with options.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -108,10 +108,10 @@ ripe.Ripe.prototype.createPriceRule = function(priceRule, options, callback) {
 };
 
 /**
- * Creates a Price Rule on RIPE Core.
+ * Creates a price rule on RIPE Core.
  *
- * @param {Object} priceRule The Price Rule object
- * @param {Object} options An object with options
+ * @param {Object} priceRule An object with information needed to create a price rule.
+ * @param {Object} options An object with options.
  * @returns {Promise} The price rule's data.
  */
 ripe.Ripe.prototype.createPriceRuleP = function(priceRule, options) {
@@ -123,9 +123,9 @@ ripe.Ripe.prototype.createPriceRuleP = function(priceRule, options) {
 };
 
 /**
- * Updates a Price Rule on RIPE Core.
+ * Updates a price rule on RIPE Core.
  *
- * @param {Object} priceRule The Price Rule object
+ * @param {Object} priceRule An object with information needed to update a price rule.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
@@ -145,11 +145,11 @@ ripe.Ripe.prototype.updatePriceRule = function(priceRule, options, callback) {
 };
 
 /**
- * Updates a Price Rule on RIPE Core.
+ * Updates a price rule on RIPE Core.
  *
- * @param {Object} priceRule The Price Rule object
- * @param {Object} options An object of options to configure the request
- * @returns {Promise} The Price Rule's data.
+ * @param {Object} priceRule An object with information needed to update a price rule.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The price rule's data.
  */
 ripe.Ripe.prototype.updatePriceRuleP = function(priceRule, options) {
     return new Promise((resolve, reject) => {
@@ -160,10 +160,9 @@ ripe.Ripe.prototype.updatePriceRuleP = function(priceRule, options) {
 };
 
 /**
- * Deletes the existing price rules filtered by id, according to the
- * provided filtering strategy as normalized values.
+ * Deletes an existing price rule.
  *
- * @param {Number} id The Price Rule's Id.
+ * @param {Number} id The price rule's ID.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -182,12 +181,11 @@ ripe.Ripe.prototype.deletePriceRule = function(id, options, callback) {
 };
 
 /**
- * Deletes the existing price rules filtered by id, according to the
- * provided filtering strategy as normalized values.
+ * Deletes an existing price rule.
  *
- * @param {Number} id The Price Rule's Id.
+ * @param {Number} id The price rule's ID.
  * @param {Object} options An object of options to configure the request
- * @returns {Promise} The price rules list.
+ * @returns {Promise} The result of the price rule's deletion.
  */
 ripe.Ripe.prototype.deletePriceRuleP = function(id, options) {
     return new Promise((resolve, reject) => {

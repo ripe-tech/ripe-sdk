@@ -13,7 +13,7 @@ if (
 
 /**
  * Creates a notify info (if required) for the current user, and adds
- * the provided device id to the list of device ids in the notify info.
+ * the provided device ID to the list of device ids in the notify info.
  *
  * @param {String} deviceId The device identifier as a plain string
  * to be used in registration.
@@ -35,7 +35,7 @@ ripe.Ripe.prototype.createDeviceId = function(deviceId, options, callback) {
 
 /**
  * Creates a notify info (if required) for the current user, and adds
- * the provided device id to the list of device ids in the notify info.
+ * the provided device ID to the list of device ids in the notify info.
  *
  * @param {String} deviceId The device identifier as a plain string
  * to be used in registration.
@@ -50,7 +50,7 @@ ripe.Ripe.prototype.createDeviceIdP = function(deviceId, options) {
 };
 
 /**
- * Removes a device id from the the notify info instance associated
+ * Removes a device ID from the the notify info instance associated
  * with the user in session.
  *
  * @param {String} deviceId The device identifier to be removed.
@@ -71,7 +71,7 @@ ripe.Ripe.prototype.removeDeviceId = function(deviceId, options, callback) {
 };
 
 /**
- * Removes a device id from the the notify info instance associated
+ * Removes a device ID from the the notify info instance associated
  * with the user in session.
  *
  * @param {String} deviceId The device identifier to be removed.

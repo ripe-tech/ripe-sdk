@@ -26,7 +26,7 @@ if (
  * @param {Object} bundle The locale strings bundle that is going to be
  * globally registered.
  * @param {String} locale The ISO 639-1 based locale identifier in the
- * underscore based form to be used in registration
+ * underscore based form to be used in registration.
  */
 ripe.Ripe.prototype.addBundle = function(bundle, locale = null) {
     locale = locale === null ? this.locale : locale;
@@ -44,7 +44,7 @@ ripe.Ripe.prototype.addBundle = function(bundle, locale = null) {
  * @param {Object} bundle The locale strings bundle that is going to be
  * globally removed.
  * @param {String} locale The ISO 639-1 based locale identifier in the
- * underscore based form to be used in removal
+ * underscore based form to be used in removal.
  */
 ripe.Ripe.prototype.removeBundle = function(bundle, locale = null) {
     locale = locale === null ? this.locale : locale;

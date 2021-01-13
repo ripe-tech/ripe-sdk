@@ -15,7 +15,7 @@ if (
  * Gets the existing letter rules, according to the provided filtering
  * strategy as normalized values.
  *
- * @param {Object} options An object of options to configure the request
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */

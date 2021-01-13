@@ -24,7 +24,6 @@ if (
  * - 'skip' - The number of the first record to retrieve from the results.
  * - 'limit' - The number of results to retrieve.
  * @param {Function} callback Function with the result of the request.
- * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getCountryGroups = function(options, callback) {
@@ -56,11 +55,10 @@ ripe.Ripe.prototype.getCountryGroupsP = function(options) {
 };
 
 /**
- * Gets a country group by its id.
+ * Gets a country group by its ID.
  *
- * @param {Object} id Id of the intended country group.
+ * @param {Object} id ID of the intended country group.
  * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -78,11 +76,11 @@ ripe.Ripe.prototype.getCountryGroup = function(id, options, callback) {
 };
 
 /**
- * Gets a country group by its id.
+ * Gets a country group by its ID.
  *
- * @param {Object} id Id of the intended country group.
+ * @param {Object} id ID of the intended country group.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The country group result list.
+ * @returns {Promise} The country group requested by ID.
  */
 ripe.Ripe.prototype.getCountryGroupP = function(id, options) {
     return new Promise((resolve, reject) => {
@@ -95,9 +93,9 @@ ripe.Ripe.prototype.getCountryGroupP = function(id, options) {
 /**
  * Creates a new country group.
  *
- * @param {Object} countryGroup An object with information needed to create a country group ex: {name: "Europe 1", currency: "EUR", countries: ["Portugal, Spain, France"]}.
+ * @param {Object} countryGroup An object with information needed to create a country group
+ * ex:{name: "Europe 1", currency: "EUR", countries: ["Portugal, Spain, France"]}.
  * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -118,9 +116,10 @@ ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callbac
 /**
  * Creates a new country group.
  *
- * @param {Object} countryGroup An object with information needed to create a country group ex: {name: "Europe 1", currency: "EUR", countries: ["Portugal, Spain, France"]}.
+ * @param {Object} countryGroup An object with information needed to create a country group
+ * ex: {name: "Europe 1", currency: "EUR", countries: ["Portugal, Spain, France"]}.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The country group result list.
+ * @returns {Promise} The country group's data.
  */
 ripe.Ripe.prototype.createCountryGroupP = function(countryGroup, options) {
     return new Promise((resolve, reject) => {
@@ -133,10 +132,9 @@ ripe.Ripe.prototype.createCountryGroupP = function(countryGroup, options) {
 /**
  * Updates an existing country group.
  *
- * @param {Object} id Id of the country group to be updated.
+ * @param {Object} id ID of the country group to be updated.
  * @param {Object} countryGroup An object with the updated information of the country group.
  * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -157,10 +155,10 @@ ripe.Ripe.prototype.updateCountryGroup = function(id, countryGroup, options, cal
 /**
  * Updates an existing country group.
  *
- * @param {Object} id Id of the country group to be updated.
+ * @param {Object} id ID of the country group to be updated.
  * @param {Object} countryGroup An object with the updated information of the country group.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The country group result list.
+ * @returns {Promise} The country group's data.
  */
 ripe.Ripe.prototype.updateCountryGroupP = function(id, countryGroup, options) {
     return new Promise((resolve, reject) => {
@@ -173,9 +171,8 @@ ripe.Ripe.prototype.updateCountryGroupP = function(id, countryGroup, options) {
 /**
  * Deletes an existing country group.
  *
- * @param {Object} id Id of the country group to be deleted.
+ * @param {Object} id ID of the country group to be deleted.
  * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -195,9 +192,9 @@ ripe.Ripe.prototype.deleteCountryGroup = function(id, options, callback) {
 /**
  * Deletes an existing country group.
  *
- * @param {Object} id Id of the country group to be deleted.
+ * @param {Object} id ID of the country group to be deleted.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The country group result list.
+ * @returns {Promise} The result of the country group's deletion.
  */
 ripe.Ripe.prototype.deleteCountryGroupP = function(id, options) {
     return new Promise((resolve, reject) => {
