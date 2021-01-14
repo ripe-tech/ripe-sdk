@@ -224,8 +224,8 @@ ripe.Ripe.prototype.deleteSku = function(id, options, callback) {
     const url = `${this.url}skus/${id}`;
     options = Object.assign(options, {
         url: url,
-        auth: true,
-        method: "DELETE"
+        method: "DELETE",
+        auth: true
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
