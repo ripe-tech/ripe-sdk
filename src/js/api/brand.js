@@ -15,11 +15,11 @@ if (
  * Returns the logo of a brand.
  *
  * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'variant' - The variant of the logo, that controls semantics of the logo
- *  - 'format' - The format of the logo image to be retrieved (defaults to 'png')
- *  - 'size' - The size of the logo image
+ *  - 'brand' - The brand of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'variant' - The variant of the logo, that controls semantics of the logo.
+ *  - 'format' - The format of the logo image to be retrieved (defaults to 'png').
+ *  - 'size' - The size of the logo image.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The brand's logo.
  */
@@ -35,11 +35,11 @@ ripe.Ripe.prototype.getLogo = function(options, callback) {
  * Returns the logo of a brand.
  *
  * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'variant' - The variant of the logo, that controls semantics of the logo
- *  - 'format' - The format of the logo image to be retrieved (defaults to 'png')
- *  - 'size' - The size of the logo image
+ *  - 'brand' - The brand of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'variant' - The variant of the logo, that controls semantics of the logo.
+ *  - 'format' - The format of the logo image to be retrieved (defaults to 'png').
+ *  - 'size' - The size of the logo image.
  * @returns {Promise} The brand's logo.
  */
 ripe.Ripe.prototype.getLogoP = function(options) {
@@ -57,10 +57,10 @@ ripe.Ripe.prototype.getLogoP = function(options) {
  * image user their own loading infrastructure.
  *
  * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'variant' - The variant of the logo, that controls semantics of the logo
- *  - 'format' - The format of the logo image to be retrieved (defaults to 'png')
+ *  - 'brand' - The brand of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'variant' - The variant of the logo, that controls semantics of the logo.
+ *  - 'format' - The format of the logo image to be retrieved (defaults to 'png').
  * @returns {String} The URL that can be used to retrieve a brand logo.
  */
 ripe.Ripe.prototype.getLogoUrl = function(options) {
@@ -72,10 +72,10 @@ ripe.Ripe.prototype.getLogoUrl = function(options) {
  * Returns the mesh contents for a model.
  *
  * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'variant' - The variant of the mesh, as defined in the model spec
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'variant' - The variant of the mesh, as defined in the model spec.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The model's mesh.
  */
@@ -91,10 +91,10 @@ ripe.Ripe.prototype.getMesh = function(options, callback) {
  * Returns the mesh contents for a model.
  *
  * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'variant' - The variant of the mesh, as defined in the model spec
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'variant' - The variant of the mesh, as defined in the model spec.
  * @returns {XMLHttpRequest} The model's mesh.
  */
 ripe.Ripe.prototype.getMeshP = function(options) {
@@ -112,10 +112,10 @@ ripe.Ripe.prototype.getMeshP = function(options) {
  * take control of the URL based mesh loading process.
  *
  * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'variant' - The variant of the mesh, as defined in the model spec
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'variant' - The variant of the mesh, as defined in the model spec.
  * @returns {String} The URL that can be used to retrieve the mesh.
  */
 ripe.Ripe.prototype.getMeshUrl = function(options) {
@@ -128,12 +128,12 @@ ripe.Ripe.prototype.getMeshUrl = function(options) {
  * If no model is provided then returns the information of the owner's current model.
  *
  * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'country' - The country where the model will be provided, some materials/colors might not be available
- *  - 'flag' - A specific flag that may change the provided materials/colors available
- *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
+ *  - 'flag' - A specific flag that may change the provided materials/colors available.
+ *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true').
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The model's configuration data.
  */
@@ -150,12 +150,12 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
  * If no model is provided then returns the information of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'country' - The country where the model will be provided, some materials/colors might not be available
- *  - 'flag' - A specific flag that may change the provided materials/colors available
- *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true')
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
+ *  - 'flag' - A specific flag that may change the provided materials/colors available.
+ *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true').
  * @returns {Promise} The model's configuration data.
  */
 ripe.Ripe.prototype.getConfigP = function(options) {
@@ -171,9 +171,9 @@ ripe.Ripe.prototype.getConfigP = function(options) {
  * then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The model's default options.
  */
@@ -192,9 +192,9 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
  * If no model is provided then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
  * @param {Function} callback Function with the result of the request.
  * @returns {Object} The model's optional parts.
  */
@@ -214,9 +214,9 @@ ripe.Ripe.prototype.getOptionals = function(options, callback) {
  * If no model is provided then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The model's total set of combinations.
  */
@@ -235,9 +235,9 @@ ripe.Ripe.prototype.getCombinations = function(options, callback) {
  * If no model is provided then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
  * @returns {Promise} The model's total set of combinations.
  */
 ripe.Ripe.prototype.getCombinationsP = function(options) {
@@ -254,8 +254,8 @@ ripe.Ripe.prototype.getCombinationsP = function(options) {
  * If no model is provided then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The factory information for the provided model.
  */
@@ -273,8 +273,8 @@ ripe.Ripe.prototype.getFactory = function(options, callback) {
  * If no model is provided then returns the defaults of the owner's current model.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
  * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The factory information for the provided model.
  */
@@ -291,12 +291,12 @@ ripe.Ripe.prototype.getFactoryP = function(options) {
  * considering a given build's brand, model and version.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The name of the brand to be considered when validating
- *  - 'model' - The name of the model to be considered when validating
- *  - 'version' - The target build version to be considered when validating
- *  - 'parts' - The parts to be validated
- *  - 'engraving' - The engraving value to be validated
- *  - 'size' - The size to be validated
+ *  - 'brand' - The name of the brand to be considered when validating.
+ *  - 'model' - The name of the model to be considered when validating.
+ *  - 'version' - The target build version to be considered when validating.
+ *  - 'parts' - The parts to be validated.
+ *  - 'engraving' - The engraving value to be validated.
+ *  - 'size' - The size to be validated.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -313,12 +313,12 @@ ripe.Ripe.prototype.validateModel = function(options, callback) {
  * considering a given build's brand, model and version.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The name of the brand to be considered when validating
- *  - 'model' - The name of the model to be considered when validating
- *  - 'version' - The target build version to be considered when validating
- *  - 'parts' - The parts to be validated
- *  - 'engraving' - The engraving value to be validated
- *  - 'size' - The size to be validated
+ *  - 'brand' - The name of the brand to be considered when validating.
+ *  - 'model' - The name of the model to be considered when validating.
+ *  - 'version' - The target build version to be considered when validating.
+ *  - 'parts' - The parts to be validated.
+ *  - 'engraving' - The engraving value to be validated.
+ *  - 'size' - The size to be validated.
  * @returns {Promise} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.validateModelP = function(options) {
@@ -333,12 +333,12 @@ ripe.Ripe.prototype.validateModelP = function(options) {
  * Returns the logic script of a model in the requested format (javascript or python).
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'format' - The format of the logic script ("js" or "py")
- *  - 'method' - The method of the logic module of the model
- *  - 'args' - The arguments to pass to the method, as an object
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'format' - The format of the logic script ("js" or "py").
+ *  - 'method' - The method of the logic module of the model.
+ *  - 'args' - The arguments to pass to the method, as an object.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The logic script of the provided model.
  */
@@ -354,12 +354,12 @@ ripe.Ripe.prototype.getLogic = function(options, callback) {
  * Returns the logic script of a model in the requested format (javascript or python).
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'format' - The format of the logic script ("js" or "py")
- *  - 'method' - The method of the logic module of the model
- *  - 'args' - The arguments to pass to the method, as an object
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'format' - The format of the logic script ("js" or "py").
+ *  - 'method' - The method of the logic module of the model.
+ *  - 'args' - The arguments to pass to the method, as an object.
  * @returns {Promise} The logic script of the provided model.
  */
 ripe.Ripe.prototype.getLogicP = function(options) {
@@ -377,11 +377,11 @@ ripe.Ripe.prototype.getLogicP = function(options) {
  * a proper "sandboxed" environment.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'method' - The method of the logic module of the model
- *  - 'data' - The arguments to pass to the method
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'method' - The method of the logic module of the model.
+ *  - 'data' - The arguments to pass to the method.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The result of the logic function of the provided model.
  */
@@ -400,11 +400,11 @@ ripe.Ripe.prototype.runLogic = function(options, callback) {
  * a proper "sandboxed" environment.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
- *  - 'version' - The version of the build, defaults to latest
- *  - 'method' - The method of the logic module of the model
- *  - 'data' - The arguments to pass to the method
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'method' - The method of the logic module of the model.
+ *  - 'data' - The arguments to pass to the method.
  * @returns {Promise} The result of the logic function of the provided model.
  */
 ripe.Ripe.prototype.runLogicP = function(options) {
@@ -422,8 +422,8 @@ ripe.Ripe.prototype.runLogicP = function(options) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -442,8 +442,8 @@ ripe.Ripe.prototype.onConfig = function(options, callback) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'brand' - The brand of the model
- *  - 'model' - The name of the model
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
  * @returns {Promise} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.onConfigP = function(options) {
@@ -461,8 +461,8 @@ ripe.Ripe.prototype.onConfigP = function(options) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'name' - The name of the part to be changed
- *  - 'value' - The value (material and color) of the part to be changed
+ *  - 'name' - The name of the part to be changed.
+ *  - 'value' - The value (material and color) of the part to be changed.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -481,8 +481,8 @@ ripe.Ripe.prototype.onPart = function(options, callback) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'name' - The name of the part to be changed
- *  - 'value' - The value (material and color) of the part to be changed
+ *  - 'name' - The name of the part to be changed.
+ *  - 'value' - The value (material and color) of the part to be changed.
  * @returns {Promise} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.onPartP = function(options) {
@@ -500,9 +500,9 @@ ripe.Ripe.prototype.onPartP = function(options) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'group' - The name of the group that is going to be changed
- *  - 'value' - The initials value to be changed
- *  - 'engraving' - The engraving value to be changed
+ *  - 'group' - The name of the group that is going to be changed.
+ *  - 'value' - The initials value to be changed.
+ *  - 'engraving' - The engraving value to be changed.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -521,9 +521,9 @@ ripe.Ripe.prototype.onInitials = function(options, callback) {
  * a server side implementation of the 3DB's business logic.
  *
  * @param {Object} options An object with options, such as:
- *  - 'group' - The name of the group that is going to be changed
- *  - 'value' - The initials value to be changed
- *  - 'engraving' - The engraving value to be changed
+ *  - 'group' - The name of the group that is going to be changed.
+ *  - 'value' - The initials value to be changed.
+ *  - 'engraving' - The engraving value to be changed.
  * @returns {Promise} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.onInitialsP = function(options) {

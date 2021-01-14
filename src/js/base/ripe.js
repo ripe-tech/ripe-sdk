@@ -701,7 +701,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
  * @param {String} material The material to change to.
  * @param {String} color The color to change to.
  * @param {Boolean} events If the parts events should be triggered (defaults to 'true').
- * @param {Object} options The options to be used in the set part operations (for internal use)..
+ * @param {Object} options The options to be used in the set part operations (for internal use).
  */
 ripe.Ripe.prototype.setPart = async function(part, material, color, events = true, options = {}) {
     const runUpdate = options.runUpdate === undefined ? true : options.runUpdate;
@@ -1783,7 +1783,7 @@ ripe.Ripe.prototype._handleCtx = function(result) {
  * @param {Object} loadedConfig The configuration structure that
  * has just been loaded.
  * @returns {Object} The state object that can be used to control
- * the state of parts, materials and colors;
+ * the state of parts, materials and colors.
  */
 ripe.Ripe.prototype._toChoices = function(loadedConfig) {
     const choices = {};
