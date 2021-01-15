@@ -72,37 +72,39 @@ describe("SkuAPI", function() {
             });
             const createdSku = Object.assign({}, result);
 
-            result = await remote.getSkuP(createdSku.id);
+            try {
+                result = await remote.getSkuP(createdSku.id);
 
-            assert.strictEqual(result.id, createdSku.id);
-            assert.strictEqual(result.identifier, identifier);
-            assert.strictEqual(result.domain, "dummy");
-            assert.strictEqual(result.spec.brand, "dummy");
-            assert.strictEqual(result.spec.model, "dummy");
-            assert.strictEqual(
-                JSON.stringify(result.spec.parts),
-                JSON.stringify({
-                    piping: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    side: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    top0_bottom: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    shadow: {
-                        material: "default",
-                        color: "default"
-                    }
-                })
-            );
-
-            // deletes the newly created SKU
-            result = await remote.deleteSkuP(createdSku.id);
+                assert.strictEqual(result.id, createdSku.id);
+                assert.strictEqual(result.identifier, identifier);
+                assert.strictEqual(result.domain, "dummy");
+                assert.strictEqual(result.spec.brand, "dummy");
+                assert.strictEqual(result.spec.model, "dummy");
+                assert.strictEqual(
+                    JSON.stringify(result.spec.parts),
+                    JSON.stringify({
+                        piping: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        side: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        top0_bottom: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        shadow: {
+                            material: "default",
+                            color: "default"
+                        }
+                    })
+                );
+            } finally {
+                // deletes the newly created SKU
+                result = await remote.deleteSkuP(createdSku.id);
+            }
         });
     });
 
@@ -148,59 +150,61 @@ describe("SkuAPI", function() {
             });
             const createdSku = Object.assign({}, result);
 
-            assert.strictEqual(result.identifier, identifier);
-            assert.strictEqual(result.domain, "dummy");
-            assert.strictEqual(result.spec.brand, "dummy");
-            assert.strictEqual(result.spec.model, "dummy");
-            assert.strictEqual(
-                JSON.stringify(result.spec.parts),
-                JSON.stringify({
-                    piping: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    side: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    top0_bottom: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    shadow: {
-                        material: "default",
-                        color: "default"
-                    }
-                })
-            );
+            try {
+                assert.strictEqual(result.identifier, identifier);
+                assert.strictEqual(result.domain, "dummy");
+                assert.strictEqual(result.spec.brand, "dummy");
+                assert.strictEqual(result.spec.model, "dummy");
+                assert.strictEqual(
+                    JSON.stringify(result.spec.parts),
+                    JSON.stringify({
+                        piping: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        side: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        top0_bottom: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        shadow: {
+                            material: "default",
+                            color: "default"
+                        }
+                    })
+                );
 
-            result = await remote.configInfoP({ params: { sku: identifier, domain: "dummy" } });
-            assert.strictEqual(result.brand, "dummy");
-            assert.strictEqual(result.model, "dummy");
-            assert.strictEqual(
-                JSON.stringify(result.parts),
-                JSON.stringify({
-                    piping: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    side: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    top0_bottom: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    shadow: {
-                        material: "default",
-                        color: "default"
-                    }
-                })
-            );
-
-            // deletes the newly created SKU
-            result = await remote.deleteSkuP(createdSku.id);
+                result = await remote.configInfoP({ params: { sku: identifier, domain: "dummy" } });
+                assert.strictEqual(result.brand, "dummy");
+                assert.strictEqual(result.model, "dummy");
+                assert.strictEqual(
+                    JSON.stringify(result.parts),
+                    JSON.stringify({
+                        piping: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        side: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        top0_bottom: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        shadow: {
+                            material: "default",
+                            color: "default"
+                        }
+                    })
+                );
+            } finally {
+                // deletes the newly created SKU
+                result = await remote.deleteSkuP(createdSku.id);
+            }
         });
     });
 
@@ -247,61 +251,63 @@ describe("SkuAPI", function() {
             });
             const createdSku = Object.assign({}, result);
 
-            assert.strictEqual(createdSku.identifier, identifier);
-            assert.strictEqual(createdSku.domain, "dummy");
-            assert.strictEqual(createdSku.spec.brand, "dummy");
-            assert.strictEqual(createdSku.spec.model, "dummy");
-            assert.strictEqual(
-                JSON.stringify(createdSku.spec.parts),
-                JSON.stringify({
-                    piping: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
+            try {
+                assert.strictEqual(createdSku.identifier, identifier);
+                assert.strictEqual(createdSku.domain, "dummy");
+                assert.strictEqual(createdSku.spec.brand, "dummy");
+                assert.strictEqual(createdSku.spec.model, "dummy");
+                assert.strictEqual(
+                    JSON.stringify(createdSku.spec.parts),
+                    JSON.stringify({
+                        piping: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        side: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        top0_bottom: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        shadow: {
+                            material: "default",
+                            color: "default"
+                        }
+                    })
+                );
+
+                const newParts = {
                     side: {
-                        material: "leather_dmy",
-                        color: "black"
+                        material: "leather_cbe",
+                        color: "red"
                     },
                     top0_bottom: {
-                        material: "leather_dmy",
+                        material: "leather_cbe",
                         color: "black"
                     },
                     shadow: {
                         material: "default",
                         color: "default"
                     }
-                })
-            );
+                };
+                result = await remote.updateSkuP(createdSku.id, identifier, "dummy", {
+                    brand: "dummy",
+                    model: "cube",
+                    parts: newParts
+                });
 
-            const newParts = {
-                side: {
-                    material: "leather_cbe",
-                    color: "red"
-                },
-                top0_bottom: {
-                    material: "leather_cbe",
-                    color: "black"
-                },
-                shadow: {
-                    material: "default",
-                    color: "default"
-                }
-            };
-            result = await remote.updateSkuP(createdSku.id, identifier, "dummy", {
-                brand: "dummy",
-                model: "cube",
-                parts: newParts
-            });
-
-            assert.strictEqual(result.id, createdSku.id);
-            assert.strictEqual(result.identifier, identifier);
-            assert.strictEqual(result.domain, "dummy");
-            assert.strictEqual(result.spec.brand, "dummy");
-            assert.strictEqual(result.spec.model, "cube");
-            assert.strictEqual(JSON.stringify(result.spec.parts), JSON.stringify(newParts));
-
-            // deletes the newly created SKU
-            result = await remote.deleteSkuP(createdSku.id);
+                assert.strictEqual(result.id, createdSku.id);
+                assert.strictEqual(result.identifier, identifier);
+                assert.strictEqual(result.domain, "dummy");
+                assert.strictEqual(result.spec.brand, "dummy");
+                assert.strictEqual(result.spec.model, "cube");
+                assert.strictEqual(JSON.stringify(result.spec.parts), JSON.stringify(newParts));
+            } finally {
+                // deletes the newly created SKU
+                result = await remote.deleteSkuP(createdSku.id);
+            }
         });
     });
 
