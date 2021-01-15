@@ -171,7 +171,7 @@ gulp.task("lint", () => {
 
 gulp.task("lint-fix", () => {
     return gulp
-        .src([paths.bscripts, paths.test, paths.mainpython])
+        .src([paths.bscripts, paths.test])
         .pipe(eslint({ fix: true }))
         .pipe(eslint.format())
         .pipe(gulp.dest(file => file.base))
