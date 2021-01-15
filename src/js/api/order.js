@@ -135,7 +135,14 @@ ripe.Ripe.prototype.deleteOrderP = function(number, options) {
 };
 
 /**
- * @ignore
+ * Searches for orders using the filter string and the options that
+ * are provided.
+ *
+ * @param {String} filterString An unstructured string to be used in the
+ * orders search operation.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.searchOrders = function(filterString, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -156,7 +163,13 @@ ripe.Ripe.prototype.searchOrders = function(filterString, options, callback) {
 };
 
 /**
- * @ignore
+ * Searches for orders using the filter string and the options that
+ * are provided.
+ *
+ * @param {String} filterString An unstructured string to be used in the
+ * orders search operation.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order deletion.
  */
 ripe.Ripe.prototype.searchOrdersP = function(filterString, options) {
     return new Promise((resolve, reject) => {
