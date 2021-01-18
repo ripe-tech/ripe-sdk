@@ -29,85 +29,6 @@ describe("SkuAPI", function() {
         });
     });
 
-    describe("#getSku()", function() {
-        beforeEach(function() {
-            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
-                this.skip();
-            }
-        });
-
-        it("should be able to retrieve information about a SKU", async () => {
-            let result = null;
-
-            const remote = ripe.RipeAPI();
-            const identifier = uuid.v4();
-
-            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
-
-            assert.strictEqual(result.username, config.TEST_USERNAME);
-            assert.notStrictEqual(typeof result.sid, undefined);
-
-            // create SKU to later retrieve
-            result = await remote.createSkuP(identifier, "dummy", {
-                brand: "dummy",
-                model: "dummy",
-                parts: {
-                    piping: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    side: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    top0_bottom: {
-                        material: "leather_dmy",
-                        color: "black"
-                    },
-                    shadow: {
-                        material: "default",
-                        color: "default"
-                    }
-                }
-            });
-            const createdSku = Object.assign({}, result);
-
-            try {
-                result = await remote.getSkuP(createdSku.id);
-
-                assert.strictEqual(result.id, createdSku.id);
-                assert.strictEqual(result.identifier, identifier);
-                assert.strictEqual(result.domain, "dummy");
-                assert.strictEqual(result.spec.brand, "dummy");
-                assert.strictEqual(result.spec.model, "dummy");
-                assert.strictEqual(
-                    JSON.stringify(result.spec.parts),
-                    JSON.stringify({
-                        piping: {
-                            material: "leather_dmy",
-                            color: "black"
-                        },
-                        side: {
-                            material: "leather_dmy",
-                            color: "black"
-                        },
-                        top0_bottom: {
-                            material: "leather_dmy",
-                            color: "black"
-                        },
-                        shadow: {
-                            material: "default",
-                            color: "default"
-                        }
-                    })
-                );
-            } finally {
-                // deletes the newly created SKU
-                result = await remote.deleteSkuP(createdSku.id);
-            }
-        });
-    });
-
     describe("#createSku()", function() {
         beforeEach(function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
@@ -202,7 +123,83 @@ describe("SkuAPI", function() {
                     })
                 );
             } finally {
-                // deletes the newly created SKU
+                result = await remote.deleteSkuP(createdSku.id);
+            }
+        });
+    });
+
+    describe("#getSku()", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+        });
+
+        it("should be able to retrieve information about a SKU", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            const identifier = uuid.v4();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.createSkuP(identifier, "dummy", {
+                brand: "dummy",
+                model: "dummy",
+                parts: {
+                    piping: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    side: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    top0_bottom: {
+                        material: "leather_dmy",
+                        color: "black"
+                    },
+                    shadow: {
+                        material: "default",
+                        color: "default"
+                    }
+                }
+            });
+            const createdSku = Object.assign({}, result);
+
+            try {
+                result = await remote.getSkuP(createdSku.id);
+
+                assert.strictEqual(result.id, createdSku.id);
+                assert.strictEqual(result.identifier, identifier);
+                assert.strictEqual(result.domain, "dummy");
+                assert.strictEqual(result.spec.brand, "dummy");
+                assert.strictEqual(result.spec.model, "dummy");
+                assert.strictEqual(
+                    JSON.stringify(result.spec.parts),
+                    JSON.stringify({
+                        piping: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        side: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        top0_bottom: {
+                            material: "leather_dmy",
+                            color: "black"
+                        },
+                        shadow: {
+                            material: "default",
+                            color: "default"
+                        }
+                    })
+                );
+            } finally {
                 result = await remote.deleteSkuP(createdSku.id);
             }
         });
@@ -226,7 +223,6 @@ describe("SkuAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            // creates SKU to be later updated
             result = await remote.createSkuP(identifier, "dummy", {
                 brand: "dummy",
                 model: "dummy",
@@ -305,7 +301,6 @@ describe("SkuAPI", function() {
                 assert.strictEqual(result.spec.model, "cube");
                 assert.strictEqual(JSON.stringify(result.spec.parts), JSON.stringify(newParts));
             } finally {
-                // deletes the newly created SKU
                 result = await remote.deleteSkuP(createdSku.id);
             }
         });
@@ -329,7 +324,6 @@ describe("SkuAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            // creates SKU to be later deleted
             result = await remote.createSkuP(identifier, "dummy", {
                 brand: "dummy",
                 model: "dummy",

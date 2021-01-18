@@ -55,42 +55,6 @@ ripe.Ripe.prototype.getSkusP = function(options) {
 };
 
 /**
- * Gets a SKU by its ID.
- *
- * @param {Object} id ID of the intended SKU.
- * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
- */
-ripe.Ripe.prototype.getSku = function(id, options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}skus/${id}`;
-    options = Object.assign(options, {
-        url: url,
-        method: "GET",
-        auth: true
-    });
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
- * Gets a SKU by its ID.
- *
- * @param {Object} id ID of the intended SKU.
- * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The SKU request by ID.
- */
-ripe.Ripe.prototype.getSkuP = function(id, options) {
-    return new Promise((resolve, reject) => {
-        this.getSku(id, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
-    });
-};
-
-/**
  * Creates a SKU on RIPE Core under the defined domain.
  *
  * @param {String} identifier The SKU identifier as a plain string.
@@ -150,7 +114,43 @@ ripe.Ripe.prototype.createSkuP = function(identifier, domain, options) {
 };
 
 /**
- * Updates an existing SKU.
+ * Gets a SKU by its ID (not by its identifier).
+ *
+ * @param {Object} id ID of the intended SKU (not the identifier).
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getSku = function(id, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}skus/${id}`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets a SKU by its ID (not by its identifier).
+ *
+ * @param {Object} id ID of the intended SKU (not the identifier).
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The SKU request by ID.
+ */
+ripe.Ripe.prototype.getSkuP = function(id, options) {
+    return new Promise((resolve, reject) => {
+        this.getSku(id, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Updates an existing SKU, according to the provided options.
  *
  * @param {Object} id ID of the SKU to be updated.
  * @param {String} identifier The SKU identifier as a plain string.
@@ -186,7 +186,7 @@ ripe.Ripe.prototype.updateSku = function(id, identifier, domain, options, callba
 };
 
 /**
- * Updates an existing SKU.
+ * Updates an existing SKU, according to the provided options.
  *
  * @param {Object} id ID of the SKU to be updated.
  * @param {String} identifier The SKU identifier as a plain string.
@@ -211,7 +211,7 @@ ripe.Ripe.prototype.updateSkuP = function(id, identifier, domain, options) {
 };
 
 /**
- * Deletes an existing SKU.
+ * Deletes an existing SKU entity.
  *
  * @param {Object} id ID of the SKU to be deleted.
  * @param {Object} options An object of options to configure the request.
@@ -232,7 +232,7 @@ ripe.Ripe.prototype.deleteSku = function(id, options, callback) {
 };
 
 /**
- * Deletes an existing SKU.
+ * Deletes an existing SKU entity.
  *
  * @param {Object} id ID of the SKU to be deleted.
  * @param {Object} options An object of options to configure the request.
