@@ -55,42 +55,6 @@ ripe.Ripe.prototype.getCountryGroupsP = function(options) {
 };
 
 /**
- * Gets a country group by its ID.
- *
- * @param {Object} id ID of the intended country group.
- * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
- */
-ripe.Ripe.prototype.getCountryGroup = function(id, options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}country_groups/${id}`;
-    options = Object.assign(options, {
-        url: url,
-        method: "GET",
-        auth: true
-    });
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
- * Gets a country group by its ID.
- *
- * @param {Object} id ID of the intended country group.
- * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The country group requested by ID.
- */
-ripe.Ripe.prototype.getCountryGroupP = function(id, options) {
-    return new Promise((resolve, reject) => {
-        this.getCountryGroup(id, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
-    });
-};
-
-/**
  * Creates a new country group.
  *
  * @param {Object} countryGroup An object with information needed to create a country group
@@ -124,6 +88,42 @@ ripe.Ripe.prototype.createCountryGroup = function(countryGroup, options, callbac
 ripe.Ripe.prototype.createCountryGroupP = function(countryGroup, options) {
     return new Promise((resolve, reject) => {
         this.createCountryGroup(countryGroup, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Gets a country group by its ID.
+ *
+ * @param {Object} id ID of the intended country group.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getCountryGroup = function(id, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}country_groups/${id}`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets a country group by its ID.
+ *
+ * @param {Object} id ID of the intended country group.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The country group requested by ID.
+ */
+ripe.Ripe.prototype.getCountryGroupP = function(id, options) {
+    return new Promise((resolve, reject) => {
+        this.getCountryGroup(id, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });

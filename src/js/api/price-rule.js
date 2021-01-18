@@ -48,6 +48,43 @@ ripe.Ripe.prototype.getPriceRulesP = function(options) {
 };
 
 /**
+ * Creates a price rule on RIPE Core.
+ *
+ * @param {Object} priceRule An object with information needed to create a price rule.
+ * @param {Object} options An object with options.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.createPriceRule = function(priceRule, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}price_rules`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true,
+        dataJ: priceRule
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Creates a price rule on RIPE Core.
+ *
+ * @param {Object} priceRule An object with information needed to create a price rule.
+ * @param {Object} options An object with options.
+ * @returns {Promise} The price rule's data.
+ */
+ripe.Ripe.prototype.createPriceRuleP = function(priceRule, options) {
+    return new Promise((resolve, reject) => {
+        this.createPriceRule(priceRule, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Gets an existing price rule filtered by ID and according to the
  * provided filtering strategy as normalized values.
  *
@@ -80,43 +117,6 @@ ripe.Ripe.prototype.getPriceRule = function(id, options, callback) {
 ripe.Ripe.prototype.getPriceRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
         this.getPriceRule(id, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
-    });
-};
-
-/**
- * Creates a price rule on RIPE Core.
- *
- * @param {Object} priceRule An object with information needed to create a price rule.
- * @param {Object} options An object with options.
- * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} Resulting information for the callback execution.
- */
-ripe.Ripe.prototype.createPriceRule = function(priceRule, options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}price_rules`;
-    options = Object.assign(options, {
-        url: url,
-        method: "POST",
-        auth: true,
-        dataJ: priceRule
-    });
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-/**
- * Creates a price rule on RIPE Core.
- *
- * @param {Object} priceRule An object with information needed to create a price rule.
- * @param {Object} options An object with options.
- * @returns {Promise} The price rule's data.
- */
-ripe.Ripe.prototype.createPriceRuleP = function(priceRule, options) {
-    return new Promise((resolve, reject) => {
-        this.createPriceRule(priceRule, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
