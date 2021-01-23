@@ -265,7 +265,7 @@ ripe.Ripe.prototype.stateChatCreateLineOrder = function(
 
 ripe.Ripe.prototype.stateChatCreateLineOrderP = function(number, stateId, contents, options) {
     return new Promise((resolve, reject) => {
-        this.stateChatOrder(number, stateId, contents, options, (result, isValid, request) => {
+        this.stateChatCreateLineOrder(number, stateId, contents, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
