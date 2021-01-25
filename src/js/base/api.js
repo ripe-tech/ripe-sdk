@@ -901,6 +901,14 @@ ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
         params.format = options.format;
     }
 
+    if (options.retina !== undefined && options.retina !== null) {
+        params.retina = options.retina ? "1" : "0";
+    }
+
+    if (options.variant !== undefined && options.variant !== null) {
+        params.variant = options.variant;
+    }
+
     const url = `${this.url}swatch`;
 
     options = Object.assign(options, {
