@@ -265,9 +265,15 @@ ripe.Ripe.prototype.stateChatCreateLineOrder = function(
 
 ripe.Ripe.prototype.stateChatCreateLineOrderP = function(number, stateId, contents, options) {
     return new Promise((resolve, reject) => {
-        this.stateChatCreateLineOrder(number, stateId, contents, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
+        this.stateChatCreateLineOrder(
+            number,
+            stateId,
+            contents,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
     });
 };
 
@@ -288,6 +294,34 @@ ripe.Ripe.prototype.stateAttachmentsOrder = function(number, stateId, options, c
 ripe.Ripe.prototype.stateAttachmentsOrderP = function(number, stateId, options) {
     return new Promise((resolve, reject) => {
         this.stateAttachmentsOrder(number, stateId, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
+    number,
+    stateId,
+    file,
+    options,
+    callback
+) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/states/${stateId}/attachments`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true,
+        cached: false
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.stateCreateAttachmentOrderP = function(number, stateId, options) {
+    return new Promise((resolve, reject) => {
+        this.stateCreateAttachmentOrder(number, stateId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
