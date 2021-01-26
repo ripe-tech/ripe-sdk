@@ -321,6 +321,12 @@ describe("RipeAPI", function() {
     });
 
     describe("#_encodeMultipart()", function() {
+        beforeEach(function() {
+            if (typeof TextEncoder === "undefined" || typeof TextDecoder === "undefined") {
+                this.skip();
+            }
+        });
+
         it("should be able to encode simple multipart values", async () => {
             const remote = ripe.RipeAPI();
 
