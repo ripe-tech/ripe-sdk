@@ -314,6 +314,7 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
         url += separator + query;
         contentType = "application/json";
     } else if (dataM !== null) {
+        url += separator + query;
         [contentType, data] = this._encodeMultipart(dataM, contentType, true);
     } else {
         data = query;
@@ -1257,7 +1258,7 @@ ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = fal
                 let data = null;
                 for (const [key, item] of Object.entries(value.items)) {
                     if (key === "data") data = item;
-                    else headerL.append("%s: %s" % (key, item));
+                    else headerL.append(`${key}: ${item}`);
                 }
                 value = data;
                 header = headerL.join("\r\n");
@@ -1268,7 +1269,7 @@ ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = fal
                 if (value.length === 2) [name, contents] = value;
                 else [name, contentTypeD, contents] = value;
                 header = `Content-Disposition: form-data; name="${key}"; filename="${name}"`;
-                if (contentTypeD) header += "\r\nContent-Type: %s" % contentTypeD;
+                if (contentTypeD) header += `\r\nContent-Type: ${contentTypeD}`;
                 value = contents;
             } else {
                 header = `Content-Disposition: form-data; name="${key}"`;
