@@ -134,6 +134,51 @@ ripe.Ripe.prototype.deleteOrderP = function(number, options) {
     });
 };
 
+ripe.Ripe.prototype.attachmentsOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/attachments`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.attachmentsOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.attachmentsOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+ripe.Ripe.prototype.createAttachmentOrder = function(number, file, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/attachments`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataM: {
+            file: file
+        },
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.createAttachmentOrderP = function(number, file, options) {
+    return new Promise((resolve, reject) => {
+        this.createAttachmentOrder(number, file, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
 ripe.Ripe.prototype.logOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
