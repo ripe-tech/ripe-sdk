@@ -360,8 +360,7 @@ ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
         dataM: {
             file: file
         },
-        auth: true,
-        cached: false
+        auth: true
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
