@@ -1252,9 +1252,9 @@ ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = fal
             ) {
                 const headerL = [];
                 let data = null;
-                for (const [key, item] of Object.entries(value.items)) {
+                for (const [key, item] of Object.entries(value)) {
                     if (key === "data") data = item;
-                    else headerL.append(`${key}: ${item}`);
+                    else headerL.push(`${key}: ${item}`);
                 }
                 value = data;
                 header = headerL.join("\r\n");

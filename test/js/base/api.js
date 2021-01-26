@@ -368,6 +368,35 @@ describe("RipeAPI", function() {
                     "--Vq2xNWWHbmWYF644q9bC5T2ALtj5CynryArNQRXGYsfm37vwFKMNsqPBrpPeprFs--\r\n" +
                     "\r\n"
             );
+
+            [contentType, body] = remote._encodeMultipart({
+                file: ["hello.txt", "text/plain", new TextEncoder("utf-8").encode("Hello World")],
+                message: {
+                    data: new TextEncoder("utf-8").encode("Hello Message"),
+                    Header1: "header1-value",
+                    Header2: "header2-value"
+                }
+            });
+
+            assert.strictEqual(
+                contentType,
+                "multipart/form-data; boundary=Vq2xNWWHbmWYF644q9bC5T2ALtj5CynryArNQRXGYsfm37vwFKMNsqPBrpPeprFs"
+            );
+            assert.strictEqual(
+                new TextDecoder("utf-8").decode(body),
+                "--Vq2xNWWHbmWYF644q9bC5T2ALtj5CynryArNQRXGYsfm37vwFKMNsqPBrpPeprFs\r\n" +
+                    'Content-Disposition: form-data; name="file"; filename="hello.txt"\r\n' +
+                    "Content-Type: text/plain\r\n" +
+                    "\r\n" +
+                    "Hello World\r\n" +
+                    "--Vq2xNWWHbmWYF644q9bC5T2ALtj5CynryArNQRXGYsfm37vwFKMNsqPBrpPeprFs\r\n" +
+                    "Header1: header1-value\r\n" +
+                    "Header2: header2-value\r\n" +
+                    "\r\n" +
+                    "Hello Message\r\n" +
+                    "--Vq2xNWWHbmWYF644q9bC5T2ALtj5CynryArNQRXGYsfm37vwFKMNsqPBrpPeprFs--\r\n" +
+                    "\r\n"
+            );
         });
     });
 });
