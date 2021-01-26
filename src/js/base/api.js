@@ -1227,10 +1227,6 @@ ripe.Ripe.prototype._generateExtraS = function(extra, sort = true, minimize = tr
     return extraS;
 };
 
-ripe.Ripe.prototype._createBoundary = function(fields, size = 32, doseq = false) {
-    return "Vq2xNWWHbmWYF644q9bC5T2ALtj5CynryArNQRXGYsfm37vwFKMNsqPBrpPeprFs";
-};
-
 ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = false) {
     mime = mime || "multipart/form-data";
 
@@ -1289,6 +1285,10 @@ ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = fal
     const contentType = `${mime}; boundary=${boundary}`;
 
     return [contentType, body];
+};
+
+ripe.Ripe.prototype._createBoundary = function(fields, size = 32, doseq = false) {
+    return "Vq2xNWWHbmWYF644q9bC5T2ALtj5CynryArNQRXGYsfm37vwFKMNsqPBrpPeprFs";
 };
 
 ripe.Ripe.prototype._joinBuffer = function(bufferArray) {
