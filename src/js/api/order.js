@@ -312,6 +312,9 @@ ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
     options = Object.assign(options, {
         url: url,
         method: "POST",
+        dataM: {
+            file: file
+        },
         auth: true,
         cached: false
     });
@@ -319,11 +322,17 @@ ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.stateCreateAttachmentOrderP = function(number, stateId, options) {
+ripe.Ripe.prototype.stateCreateAttachmentOrderP = function(number, stateId, file, options) {
     return new Promise((resolve, reject) => {
-        this.stateCreateAttachmentOrder(number, stateId, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
+        this.stateCreateAttachmentOrder(
+            number,
+            stateId,
+            file,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
     });
 };
 
