@@ -1310,7 +1310,6 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
 
             // finalizes the promise by resolving it with
             // the parameter that was just received (final result)
-            console.log("configurator _finalize");
             resolve(result);
         };
 
