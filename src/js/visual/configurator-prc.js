@@ -286,7 +286,7 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
  * @param {Object} options Set of optional parameters to adjust the Configurator.
  */
 ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
-    if (this._buildSignature() === this.signature || "") return false;
+    if (this._buildSignature() !== (this.signature || "")) return false;
     if (this._finalize) this._finalize({ canceled: true });
     return true;
 };
@@ -1310,6 +1310,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
 
             // finalizes the promise by resolving it with
             // the parameter that was just received (final result)
+            console.log("configurator _finalize");
             resolve(result);
         };
 
@@ -1340,6 +1341,10 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
         };
 
         const render = async () => {
+            if (!this.owner) {
+                if (this._finalize) this._finalize();
+                return;
+            }
             const _index = this.index;
             if (index !== _index) {
                 return;
@@ -1361,6 +1366,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
 
             // determines if a chain based loading should be used for the
             // pre-loading process of the continuous image resources to be loaded
+            console.log("configurator render");
             const _frame = ripe.parseFrameKey(frame);
             const view = _frame[0];
             const position = _frame[1];
