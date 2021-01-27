@@ -1247,7 +1247,7 @@ ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = fal
 
             if (
                 typeof value === "object" &&
-                !Array.isArray(value) &&
+                !(value instanceof Array) &&
                 value.constructor !== Uint8Array
             ) {
                 const headerL = [];
@@ -1258,7 +1258,7 @@ ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = fal
                 }
                 value = data;
                 header = headerL.join("\r\n");
-            } else if (Array.isArray(value)) {
+            } else if (value instanceof Array) {
                 let name = null;
                 let contents = null;
                 let contentTypeD = null;

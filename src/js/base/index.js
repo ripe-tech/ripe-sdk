@@ -9,6 +9,7 @@ const config = require("./config");
 const mobile = require("./mobile");
 const observable = require("./observable");
 const ripe = require("./ripe");
+const struct = require("./struct");
 const utils = require("./utils");
 
 Object.assign(module.exports, api);
@@ -22,4 +23,5 @@ Object.assign(module.exports, config);
 Object.assign(module.exports, mobile);
 Object.assign(module.exports, observable);
 Object.assign(module.exports, ripe);
+Object.assign(module.exports, struct);
 Object.assign(module.exports, utils);

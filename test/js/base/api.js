@@ -351,7 +351,7 @@ describe("RipeAPI", function() {
             );
 
             [contentType, body] = remote._encodeMultipart({
-                file: ["hello.txt", "text/plain", new TextEncoder("utf-8").encode("Hello World")]
+                file: ripe.ripe.FileTuple.fromString("Hello World", "hello.txt", "text/plain")
             });
 
             assert.strictEqual(
@@ -370,7 +370,7 @@ describe("RipeAPI", function() {
             );
 
             [contentType, body] = remote._encodeMultipart({
-                file: ["hello.txt", "text/plain", new TextEncoder("utf-8").encode("Hello World")],
+                file: ripe.ripe.FileTuple.fromString("Hello World", "hello.txt", "text/plain"),
                 message: {
                     data: new TextEncoder("utf-8").encode("Hello Message"),
                     Header1: "header1-value",
