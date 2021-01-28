@@ -7,36 +7,49 @@ type Part = {
 type Spec = {
     brand: string;
     model: string;
-    parts: Array<Part>;
+    parts: Part[];
     initials: string;
     engraving: string;
-    initialsExtra: object;
+    initialsExtra: InitialsExtra;
     variant?: string;
     version?: string;
     description?: string;
 };
 
-type ProductionOrderOptions = {
+type ImportOrderOptions = {
     brand?: string;
     model?: string;
     variant?: string;
-    parts?: Array<Part>;
+    parts?: Part[];
     initials?: string;
     engraving?: string;
-    initialsExtra?: object;
+    initialsExtra?: InitialsExtra;
     gender?: string;
     size?: number;
     pending?: boolean;
     notify?: boolean;
-    productId?: string;
+    productId?: number;
     currency?: string;
     country?: string;
-    meta?: Array<string>;
+    meta?: string[];
+}
+
+type InitialsExtra = Record<string, {
+    initials: string;
+    engraving?: string;
+}>
+
+type RequestOptions = {
+    url?: string;
+    method?: string;
+    params?: Record<string, unknown>,
+    headers?: Record<string, unknown>,
+    auth?: boolean
 }
 
 export declare class RipeAPI {
     constructor(options?: any);
-    authKeyP(key: string, options?: object): Promise<void>;
-    importOrderP(ffOrderId: string, options?: ProductionOrderOptions, callback?: Function): Promise<void>;
+    authKeyP(key: string, options?: RequestOptions): Promise<void>;
+    importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<void>;
     _queryToSpec(query: string): Spec;
 }
