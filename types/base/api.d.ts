@@ -4,6 +4,11 @@ type Part = {
     color: string;
 }
 
+type InitialsExtra = Record<string, {
+    initials: string;
+    engraving?: string;
+}>
+
 type Spec = {
     brand: string;
     model: string;
@@ -33,11 +38,6 @@ type ImportOrderOptions = {
     country?: string;
     meta?: string[];
 }
-
-type InitialsExtra = Record<string, {
-    initials: string;
-    engraving?: string;
-}>
 
 type RequestOptions = {
     url?: string;
