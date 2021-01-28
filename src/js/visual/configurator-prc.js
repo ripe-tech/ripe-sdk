@@ -220,7 +220,6 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
     const signature = this._buildSignature();
     const changed = signature !== previous;
     const animate = options.animate === undefined ? (changed ? "simple" : false) : options.animate;
-    this.signature = signature;
 
     // if the parts and the position haven't changed
     // since the last frame load then ignores the
@@ -274,6 +273,8 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
         this.trigger("loaded");
     }
 
+    this.signature = signature;
+
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
     return result;
@@ -286,7 +287,7 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
  * @param {Object} options Set of optional parameters to adjust the Configurator.
  */
 ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
-    if (this._buildSignature() !== (this.signature || "")) return false;
+    if (this._buildSignature() === this.signature || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
     return true;
 };
