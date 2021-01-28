@@ -1,1 +1,1 @@
-export * from "./ripe";
+export * from "./api";
