@@ -1,15 +1,17 @@
-type Part = {
+export type Part = {
     name: string;
     material: string;
     color: string;
-}
+    hidden?: boolean;
+    optional?: boolean;
+};
 
-type InitialsExtra = Record<string, {
+export  type InitialsExtra = Record<string, {
     initials: string;
     engraving?: string;
-}>
+}>;
 
-type Spec = {
+export type Spec = {
     brand: string;
     model: string;
     parts: Part[];
@@ -21,7 +23,7 @@ type Spec = {
     description?: string;
 };
 
-type ImportOrderOptions = {
+export type ImportOrderOptions = {
     brand?: string;
     model?: string;
     variant?: string;
@@ -37,15 +39,15 @@ type ImportOrderOptions = {
     currency?: string;
     country?: string;
     meta?: string[];
-}
+};
 
-type RequestOptions = {
+export type RequestOptions = {
     url?: string;
     method?: string;
     params?: Record<string, unknown>,
     headers?: Record<string, unknown>,
     auth?: boolean
-}
+};
 
 export declare class RipeAPI {
     key?: string;
@@ -54,4 +56,4 @@ export declare class RipeAPI {
     authKeyP(key: string, options?: RequestOptions): Promise<void>;
     importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<void>;
     _queryToSpec(query: string): Spec;
-}
+};
