@@ -191,6 +191,8 @@ ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = 
  * - 'callback' - The callback to be called at the end of the update.
  * - 'preload' - If it's to execute the pre-loading process.
  * - 'force' - If the updating operation should be forced (ignores signature).
+ * @returns {Boolean} If an effective operation has been performed by the
+ * update operation.
  */
 ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
     // in case the configurator is currently nor ready for an
@@ -220,6 +222,7 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
     const signature = this._buildSignature();
     const changed = signature !== previous;
     const animate = options.animate === undefined ? (changed ? "simple" : false) : options.animate;
+    this.signature = signature;
 
     // if the parts and the position haven't changed
     // since the last frame load then ignores the
@@ -273,7 +276,10 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
         this.trigger("loaded");
     }
 
-    this.signature = signature;
+    // updates the signature of the loaded set of frames, so that for
+    // instance the cancel operation can be properly controlled avoiding
+    // the usage of extra resources and duplicated (cancel operations)
+    this.signatureLoaded = this.signature;
 
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
@@ -285,9 +291,11 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
  * in the child should be canceled this way a Configurator is not updated.
  *
  * @param {Object} options Set of optional parameters to adjust the Configurator.
+ * @returns {Boolean} If an effective operation has been performed or if
+ * instead no cancel logic was executed.
  */
 ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
-    if (this._buildSignature() === this.signature || "") return false;
+    if (this._buildSignature() === this.signatureLoaded || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
     return true;
 };
