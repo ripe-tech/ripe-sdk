@@ -10,19 +10,19 @@ export type OrderState = {
     brand_t?: string;
     retailer_t?: string;
     vendor_t?: string;
-    name?: string;
+    name: string;
     justification?: string;
     timestamp: number;
     email: string;
-};
+}
 
 export type Attachment = {
-    name?: string;
+    name: string;
     key?: string;
-    kind?: string;
+    kind: string;
     content_type?: string;
     url?: string;
-};
+}
 
 export type ComponentPrice = {
     rule_id: number;
@@ -43,7 +43,7 @@ export type ComponentPrice = {
     base_currency: string;
     exchanged?: boolean;
     cites: boolean;
-};
+}
 
 export type TotalPrice = {
     price_final: number;
@@ -99,7 +99,35 @@ export type OrderDetails = {
     url: string;
     image: string;
     extras: number;
-};
+}
+
+export enum OrderStatus {
+    pending = "pending",
+    created = "created",
+    production = "production",
+    ready = "ready",
+    sent = "sent",
+    received = "received",
+    returned = "returned",
+    canceled = "canceled"
+}
+
+export enum OrderProductionStatus {
+    unset = "unset",
+    waiting = "waiting",
+    cutting = "cutting",
+    sewing = "sewing",
+    assembling = "assembling",
+    produced = "produced",
+    canceled = "canceled"
+}
+
+export enum Gender {
+    male = "male",
+    female = "female",
+    kids = "kids",
+    unknown = "unknown"
+}
 
 export type Order = {
     id: number;
@@ -108,19 +136,19 @@ export type Order = {
     retailer_t?: string;
     vendor_t?: string;
     key?: number;
-    status?: string;
-    status_index?: number;
-    production_status?: string;
+    status: OrderStatus;
+    status_index: OrderProductionStatus;
+    production_status?: OrderProductionStatus;
     production?: string;
-    gender?: string;
+    gender: Gender;
     currency?: string;
     country?: string;
     price?: number;
-    brand?: string;
-    shoe?: string;
+    brand: string;
+    shoe: string;
     variant?: string;
     shoe_query?: string;
-    shoe_url?: string;
+    shoe_url: string;
     image_url?: string;
     minify_hash?: string;
     image_hash?: string;
@@ -131,7 +159,7 @@ export type Order = {
     bottom_o_hash?: string;
     back_hash?: string;
     side_hash?: string;
-    structure?: string;
+    structure: string;
     ff_id?: number;
     ff_shoe_id?: number;
     ff_order_id?: string;
@@ -156,4 +184,4 @@ export type Order = {
     scale?: string;
     size_scaled?: number;
     details?: OrderDetails;
-};
+}
