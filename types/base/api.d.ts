@@ -1,3 +1,5 @@
+import { Order } from "../api";
+
 export type Part = {
     name: string;
     material: string;
@@ -54,6 +56,6 @@ export declare class RipeAPI {
 
     constructor(options?: unknown);
     authKeyP(key: string, options?: RequestOptions): Promise<void>;
-    importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<void>;
+    importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<Order>;
     _queryToSpec(query: string): Spec;
 };
