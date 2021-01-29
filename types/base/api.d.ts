@@ -50,7 +50,7 @@ type RequestOptions = {
 export declare class RipeAPI {
     key?: string;
 
-    constructor(options?: any);
+    constructor(options?: unknown);
     authKeyP(key: string, options?: RequestOptions): Promise<void>;
     importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<void>;
     _queryToSpec(query: string): Spec;
