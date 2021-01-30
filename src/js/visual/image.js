@@ -246,6 +246,8 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
  *
  * @param {Object} state An object containing the new state of the owner.
  * @param {Object} options Set of optional parameters to adjust the Image.
+ * @returns {Boolean} If an effective operation has been performed by the
+ * update operation.
  */
 ripe.Image.prototype.update = async function(state, options = {}) {
     // in case the element is no longer available (possible due to async
@@ -447,6 +449,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
  * in the child should be canceled this way an Image is not updated.
  *
  * @param {Object} options Set of optional parameters to adjust the Image.
+ * @returns {Boolean} If an effective operation has been performed or if
+ * instead no cancel logic was executed.
  */
 ripe.Image.prototype.cancel = async function(options = {}) {
     // in case the image is not under a loading process then
