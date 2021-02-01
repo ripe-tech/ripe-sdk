@@ -1102,6 +1102,7 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
     const engraving = options.engraving || null;
     let initialsExtra = options.initials_extra || [];
     let tuples = options.p || [];
+    initialsExtra = Array.isArray(initialsExtra) ? initialsExtra : [initialsExtra];
     initialsExtra = this._parseExtraS(initialsExtra);
     tuples = Array.isArray(tuples) ? tuples : [tuples];
     const parts = this._tuplesToParts(tuples);
