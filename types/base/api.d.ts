@@ -1,15 +1,22 @@
-type Part = {
+import { Order } from "../api";
+
+export type Part = {
     name: string;
     material: string;
     color: string;
-}
+    hidden?: boolean;
+    optional?: boolean;
+};
 
-type InitialsExtra = Record<string, {
-    initials: string;
-    engraving?: string;
-}>
+export type InitialsExtra = Record<
+    string,
+    {
+        initials: string;
+        engraving?: string;
+    }
+>;
 
-type Spec = {
+export type Spec = {
     brand: string;
     model: string;
     parts: Part[];
@@ -21,7 +28,7 @@ type Spec = {
     description?: string;
 };
 
-type ImportOrderOptions = {
+export type ImportOrderOptions = {
     brand?: string;
     model?: string;
     variant?: string;
@@ -37,21 +44,32 @@ type ImportOrderOptions = {
     currency?: string;
     country?: string;
     meta?: string[];
-}
+};
 
-type RequestOptions = {
+export type RequestOptions = {
     url?: string;
     method?: string;
-    params?: Record<string, unknown>,
-    headers?: Record<string, unknown>,
-    auth?: boolean
-}
+    params?: Record<string, unknown>;
+    headers?: Record<string, unknown>;
+    auth?: boolean;
+};
+
+export type GetRequestOptions = RequestOptions & {
+    params?: {
+        filters?: string[];
+        sort?: string[];
+        skip?: number;
+        limit?: number;
+    };
+};
 
 export declare class RipeAPI {
     key?: string;
 
     constructor(options?: unknown);
     authKeyP(key: string, options?: RequestOptions): Promise<void>;
-    importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<void>;
+    importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<Order>;
+    getOrdersP(options?: GetRequestOptions): Promise<Order[]>;
+    deleteOrderP(number: number, options?: RequestOptions): Promise<void>;
     _queryToSpec(query: string): Spec;
 }
