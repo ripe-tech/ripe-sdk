@@ -63,6 +63,27 @@ describe("RipeAPI", function() {
                 initials_extra: {}
             });
         });
+
+        it("should be able to convert a query to spec with initials extra with one group", async () => {
+            const remote = ripe.RipeAPI();
+
+            const spec = remote._queryToSpec(
+                "brand=dummy&model=dummy&p=piping:leather_dmy:black&initials_extra=main:AA:black:style"
+            );
+            assert.deepStrictEqual(spec, {
+                brand: "dummy",
+                model: "dummy",
+                parts: {
+                    piping: {
+                        material: "leather_dmy",
+                        color: "black"
+                    }
+                },
+                initials: null,
+                engraving: null,
+                initials_extra: { main: { initials: "AA", engraving: "black:style" } }
+            });
+        });
     });
 
     describe("#_buildQuery()", function() {
