@@ -44,7 +44,7 @@ export type Order = {
     notes?: string[];
     prices?: {
         components: Record<string, ComponentPrice>;
-        total: TotalPrice
+        total: TotalPrice;
     };
     states?: OrderState[];
     attachments?: Attachment[];
@@ -58,7 +58,7 @@ export type Order = {
     scale?: string;
     size_scaled?: number;
     details?: OrderDetails;
-}
+};
 
 export enum OrderStatus {
     pending = "pending",
@@ -95,24 +95,27 @@ export type OrderState = {
     justification?: string;
     timestamp: number;
     email: string;
-}
+};
 
 export type OrderDetails = {
     brand: string;
     model: string;
     variant?: string;
     parts: Part[];
-    parts_m: Record<string, {
-        material: string;
-        color: string;
-    }>;
+    parts_m: Record<
+        string,
+        {
+            material: string;
+            color: string;
+        }
+    >;
     gender: string;
     size: number;
     query: string;
     url: string;
     image: string;
     extras: number;
-}
+};
 
 export type ComponentPrice = {
     rule_id: number;
@@ -133,7 +136,7 @@ export type ComponentPrice = {
     base_currency: string;
     exchanged?: boolean;
     cites: boolean;
-}
+};
 
 export type TotalPrice = {
     price_final: number;
@@ -147,7 +150,7 @@ export type TotalPrice = {
     country: string;
     hs_codes: number[];
     hs_code_priority: number;
-    shipping:number;
+    shipping: number;
     notes: string[];
     diag: {
         no_round: {
@@ -170,6 +173,6 @@ export type TotalPrice = {
         base_country: string;
         base_currency: string;
         exchanged: boolean;
-    },
+    };
     cites: boolean;
-}
+};

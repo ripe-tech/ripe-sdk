@@ -6,12 +6,15 @@ export type Part = {
     color: string;
     hidden?: boolean;
     optional?: boolean;
-}
+};
 
-export  type InitialsExtra = Record<string, {
-    initials: string;
-    engraving?: string;
-}>
+export type InitialsExtra = Record<
+    string,
+    {
+        initials: string;
+        engraving?: string;
+    }
+>;
 
 export type Spec = {
     brand: string;
@@ -23,7 +26,7 @@ export type Spec = {
     variant?: string;
     version?: string;
     description?: string;
-}
+};
 
 export type ImportOrderOptions = {
     brand?: string;
@@ -41,15 +44,15 @@ export type ImportOrderOptions = {
     currency?: string;
     country?: string;
     meta?: string[];
-}
+};
 
 export type RequestOptions = {
     url?: string;
     method?: string;
-    params?: Record<string, unknown>,
-    headers?: Record<string, unknown>,
-    auth?: boolean
-}
+    params?: Record<string, unknown>;
+    headers?: Record<string, unknown>;
+    auth?: boolean;
+};
 
 export type GetRequestOptions = RequestOptions & {
     params?: {
@@ -57,8 +60,8 @@ export type GetRequestOptions = RequestOptions & {
         sort?: string[];
         skip?: number;
         limit?: number;
-    }
-}
+    };
+};
 
 export declare class RipeAPI {
     key?: string;
