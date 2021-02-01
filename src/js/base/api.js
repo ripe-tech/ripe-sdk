@@ -1198,6 +1198,7 @@ ripe.Ripe.prototype._partsMToTriplets = function(partsM, sort = true) {
 
 ripe.Ripe.prototype._parseExtraS = function(extraS) {
     const extra = {};
+    if (!Array.isArray(extraS)) extraS = [extraS];
     for (const extraI of extraS) {
         const [name, initials, engraving] = ripe.splitUnescape(extraI, ":", 2);
         extra[name] = {
