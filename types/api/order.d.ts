@@ -58,6 +58,7 @@ export type Order = {
     scale?: string;
     size_scaled?: number;
     details?: OrderDetails;
+    [x: string]: any;
 };
 
 export enum OrderStatus {
@@ -95,6 +96,7 @@ export type OrderState = {
     justification?: string;
     timestamp: number;
     email: string;
+    [x: string]: any;
 };
 
 export type OrderDetails = {
@@ -115,6 +117,7 @@ export type OrderDetails = {
     url: string;
     image: string;
     extras: number;
+    [x: string]: any;
 };
 
 export type ComponentPrice = {
@@ -136,6 +139,7 @@ export type ComponentPrice = {
     base_currency: string;
     exchanged?: boolean;
     cites: boolean;
+    [x: string]: any;
 };
 
 export type TotalPrice = {
@@ -175,4 +179,5 @@ export type TotalPrice = {
         exchanged: boolean;
     };
     cites: boolean;
+    [x: string]: any;
 };

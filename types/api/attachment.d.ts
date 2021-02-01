@@ -4,4 +4,5 @@ export type Attachment = {
     kind: string;
     content_type?: string;
     url?: string;
+    [x: string]: any;
 };
