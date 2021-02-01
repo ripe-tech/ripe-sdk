@@ -51,12 +51,22 @@ export type RequestOptions = {
     auth?: boolean
 }
 
+export type GetRequestOptions = RequestOptions & {
+    params?: {
+        filters?: string[];
+        sort?: string[];
+        skip?: number;
+        limit?: number;
+    }
+}
+
 export declare class RipeAPI {
     key?: string;
 
     constructor(options?: unknown);
     authKeyP(key: string, options?: RequestOptions): Promise<void>;
     importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<Order>;
+    getOrdersP(options?: GetRequestOptions): Promise<Order[]>;
     deleteOrderP(number: number, options?: RequestOptions): Promise<string|null>;
     _queryToSpec(query: string): Spec;
 }
