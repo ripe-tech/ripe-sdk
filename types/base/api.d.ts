@@ -70,6 +70,6 @@ export declare class RipeAPI {
     authKeyP(key: string, options?: RequestOptions): Promise<void>;
     importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<Order>;
     getOrdersP(options?: GetRequestOptions): Promise<Order[]>;
-    deleteOrderP(number: number, options?: RequestOptions): Promise<XMLHttpRequest | null>;
+    deleteOrderP(number: number, options?: RequestOptions): Promise<void>;
     _queryToSpec(query: string): Spec;
 }
