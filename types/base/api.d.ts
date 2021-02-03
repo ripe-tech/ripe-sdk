@@ -1,4 +1,4 @@
-import { Order } from "../api";
+import { Order, Prices } from "../api";
 
 export type Part = {
     name: string;
@@ -46,6 +46,22 @@ export type ImportOrderOptions = {
     meta?: string[];
 };
 
+export type PriceOptions = {
+    brand?: string;
+    model?: string;
+    variant?: string;
+    version?: string;
+    frame?: string;
+    parts?: Part[];
+    engraving?: string;
+    initials?: string;
+    initialsExtra?: InitialsExtra;
+    country?: string;
+    currency?: string;
+    flag?: boolean;
+    full?: boolean;
+};
+
 export type RequestOptions = {
     url?: string;
     method?: string;
@@ -71,5 +87,6 @@ export declare class RipeAPI {
     importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<Order>;
     getOrdersP(options?: GetRequestOptions): Promise<Order[]>;
     deleteOrderP(number: number, options?: RequestOptions): Promise<void>;
+    getPriceP(options?: PriceOptions): Promise<Prices>;
     _queryToSpec(query: string): Spec;
 }

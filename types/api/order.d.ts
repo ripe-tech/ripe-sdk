@@ -42,10 +42,7 @@ export type Order = {
     tracking_url?: string;
     report_url_e?: string;
     notes?: string[];
-    prices?: {
-        components: Record<string, ComponentPrice>;
-        total: TotalPrice;
-    };
+    prices?: Prices;
     states?: OrderState[];
     attachments?: Attachment[];
     account?: string;
@@ -115,6 +112,11 @@ export type OrderDetails = {
     url: string;
     image: string;
     extras: number;
+};
+
+export type Prices = {
+    components: Record<string, ComponentPrice>;
+    total: TotalPrice;
 };
 
 export type ComponentPrice = {
