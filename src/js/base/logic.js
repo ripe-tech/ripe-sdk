@@ -223,3 +223,43 @@ ripe.Ripe.prototype.hasFrame = function(frame) {
 
     return true;
 };
+
+/**
+ * Localizes the given string value taking into account the current
+ * brand and model context so that proper prefixes are taking into
+ * account for proper build locale usage.
+ *
+ * @param {String} value The base string value to be used in the localization.
+ * @param {String} owner The localization owner, which implements:
+ *  - `getLocale(): String`
+ *  - `toLocale(value: String, defaultValue: String, locale: String, fallback = true)`
+ *  - `getSupportedLocales(): Array<String>`
+ *  - `hasLocale(value: String, locale: String)`
+ * @param {Object} options Set of options to control the localization, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The model.
+ *  - 'locale' - The ISO-15897 standard locale definition to be used in the
+ * localization process.
+ *  - 'defaultValue' - The default string value (if any) to be returned in case it's
+ * not possible to localize the provided value.
+ *  - 'fallback' - If the fallback process should be used, meaning that if the
+ * requested locale is not available for the requested model (not part of the
+ * list of available locales) the base locale is going to be used instead
+ * (fallback process).
+ * @returns {String} The final localized string, that takes into account the
+ * current model context.
+ */
+ripe.Ripe.prototype.localeModel = function(
+    value,
+    owner,
+    { brand = null, model = null, locale = null, defaultValue = null, fallback = true } = {}
+) {
+    brand = brand === null ? this.brand : brand;
+    model = model === null ? this.model : model;
+    // locale = locale === null ? this.locale : locale;
+    return ripe.toLocale(value, brand, model, owner, {
+        locale: locale,
+        defaultValue: defaultValue,
+        fallback: fallback
+    });
+};

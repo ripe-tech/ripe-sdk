@@ -166,4 +166,40 @@ describe("Utils", function() {
             assert.deepStrictEqual(result, ["foo\\", "bar"]);
         });
     });
+
+    describe("#toLocale()", function() {
+        it("should make a simple color translation", async () => {
+            const locales = {
+                en_us: { red: "Red" }
+            };
+            const owner = {
+                getLocale: () => "en_us",
+                getSupportedLocales: () => ["en_us"],
+                hasLocale: (value, locale) => locales[locale] && Boolean(locales[locale][value]),
+                toLocale: (value, defaultValue, locale, fallback) => locales[locale][value]
+            };
+            assert.strictEqual("Red", ripe.ripe.toLocale("red", "dummy", "dummy", owner));
+        });
+    });
+
+    describe("#_permutations()", function() {
+        it("should perform level-by-level permutation", async () => {
+            assert.deepStrictEqual(ripe.ripe._permutations("level1"), ["level1"]);
+            assert.deepStrictEqual(ripe.ripe._permutations("level1.level2"), [
+                "level1.level2",
+                "level2"
+            ]);
+            assert.deepStrictEqual(ripe.ripe._permutations("level1.level2.level3"), [
+                "level1.level2.level3",
+                "level2.level3",
+                "level3"
+            ]);
+            assert.deepStrictEqual(ripe.ripe._permutations("level1.level2.level3.level4"), [
+                "level1.level2.level3.level4",
+                "level2.level3.level4",
+                "level3.level4",
+                "level4"
+            ]);
+        });
+    });
 });
