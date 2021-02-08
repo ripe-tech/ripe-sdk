@@ -312,3 +312,94 @@ ripe.splitUnescape = function(value, delimiter = " ", max = -1, escape = "\\", u
     result.push(current.join(""));
     return result;
 };
+
+/**
+ * @ignore
+ */
+ripe.toLocale = function(
+    value,
+    brand,
+    model,
+    owner,
+    {
+        version = null,
+        locale = null,
+        defaultValue = null,
+        prefix = "builds",
+        fallback = true,
+        compatibility = true,
+        hack = null
+    } = {}
+) {
+    const values = Array.isArray(value) ? value : [value];
+    if (values.length === 0) {
+        throw new Error("No values present to be localized");
+    }
+
+    locale = locale || owner.getLocale();
+    const localeB = locale;
+    const language = locale.split("_", 1)[0];
+    if (hack) {
+        value = values[-1].rsplit(".", 1)[-1];
+        return owner.toLocale(value, defaultValue, locale, fallback);
+    }
+
+    const locales = owner.getSupportedLocales();
+    if (locales.includes(localeB)) {
+        locale = localeB;
+    } else if (locales.includes(language)) {
+        locale = language;
+    } else if (locales.some(l => l.startsWith(`${language}_`))) {
+        locale = locales.filter(l => l.startsWith(`${language}_`))[0];
+    } else if (fallback) {
+        locale = locales[0];
+    }
+
+    const prefixes = [`${brand}.${model}`, brand];
+    for (const value of values) {
+        const permutations = ripe._permutations(value);
+        for (const _prefix of prefixes) {
+            for (const _value of permutations) {
+                const valueFqn = `${prefix}.${_prefix}.${_value}`;
+                const hasLocale = owner.hasLocale(valueFqn, locale);
+                if (!hasLocale) {
+                    continue;
+                }
+                const result = owner.toLocale(valueFqn, null, locale, fallback);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+    }
+
+    if (compatibility) {
+        for (const value of values) {
+            const permutations = ripe._permutations(value);
+            for (const _value of permutations) {
+                const hasLocale = owner.hasLocale(_value, locale);
+                if (!hasLocale) {
+                    continue;
+                }
+                const result = owner.toLocale(_value, null, locale, fallback);
+                if (result) {
+                    return result;
+                }
+            }
+        }
+    }
+
+    return defaultValue || values[0];
+};
+
+/**
+ * @ignore
+ */
+ripe._permutations = function(value) {
+    const valueP = value.split(".");
+    const permutations = [];
+    for (let index = 0; index < valueP.length; index++) {
+        permutations.push(valueP.slice(index).join("."));
+    }
+    return permutations;
+};
