@@ -230,14 +230,12 @@ ripe.Ripe.prototype.hasFrame = function(frame) {
  * account for proper build locale usage.
  *
  * @param {String} value The base string value to be used in the localization.
- * @param {String} owner The localization owner, which implements:
- *  - `getLocale(): String`
- *  - `toLocale(value: String, defaultValue: String, locale: String, fallback = true)`
- *  - `getSupportedLocales(): Array<String>`
- *  - `hasLocale(value: String, locale: String)`
+ * @param {Object} owner The localization owner, which should implement the
+ * proper localization provider functions. If not provided the default implementation
+ * which used the local base values is used instead.
  * @param {Object} options Set of options to control the localization, such as:
  *  - 'brand' - The brand of the model.
- *  - 'model' - The model.
+ *  - 'model' - The name of the model.
  *  - 'locale' - The ISO-15897 standard locale definition to be used in the
  * localization process.
  *  - 'defaultValue' - The default string value (if any) to be returned in case it's
@@ -251,12 +249,19 @@ ripe.Ripe.prototype.hasFrame = function(frame) {
  */
 ripe.Ripe.prototype.localeModel = function(
     value,
-    owner,
+    owner = null,
     { brand = null, model = null, locale = null, defaultValue = null, fallback = true } = {}
 ) {
+    owner = owner || {
+        getLocale: () => this.locale,
+        getSupportedLocales: () => Object.keys(LOCALES_BASE),
+        hasLocale: (value, locale) => LOCALES_BASE[locale] && Boolean(LOCALES_BASE[locale][value]),
+        toLocale: (value, defaultValue, locale, fallback) =>
+            this.localeLocal(value, defaultValue, locale, fallback)
+    };
     brand = brand === null ? this.brand : brand;
     model = model === null ? this.model : model;
-    // locale = locale === null ? this.locale : locale;
+    locale = locale === null ? this.locale : locale;
     return ripe.toLocale(value, brand, model, owner, {
         locale: locale,
         defaultValue: defaultValue,
