@@ -111,6 +111,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.updateCounter = 0;
     this.initialsCounter = 0;
     this.updatePromise = null;
+    console.log("init");
     this.cancelPromise = null;
     this.error = null;
 
@@ -1326,7 +1327,7 @@ ripe.Ripe.prototype.update = async function(state = null, options = {}, children
         const result = await this.updatePromise;
         return result;
     } finally {
-        this.updatePromise = null;
+        if (!options.noAwaitLayout) this.updatePromise = null;
     }
 };
 

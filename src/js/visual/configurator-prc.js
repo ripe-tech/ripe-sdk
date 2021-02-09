@@ -270,16 +270,21 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
         // going to be considered the result of the operation
         result = await preloadPromise;
 
-        // after the update operation is finished the loaded event
-        // should be triggered indicating the end of the visual
-        // operations for the current configuration on the configurator
-        this.trigger("loaded");
-    }
+        if (result && !result.canceled) {
+            // after the update operation is finished the loaded event
+            // should be triggered indicating the end of the visual
+            // operations for the current configuration on the configurator
+            this.trigger("loaded");
 
-    // updates the signature of the loaded set of frames, so that for
-    // instance the cancel operation can be properly controlled avoiding
-    // the usage of extra resources and duplicated (cancel operations)
-    this.signatureLoaded = this.signature;
+            // updates the signature of the loaded set of frames, so that for
+            // instance the cancel operation can be properly controlled avoiding
+            // the usage of extra resources and duplicated (cancel operations)
+            this.signatureLoaded = signature;
+        } else {
+            this.signature = null;
+            this.unique = null;
+        }
+    }
 
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
@@ -295,8 +300,15 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
  * instead no cancel logic was executed.
  */
 ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
-    if (this._buildSignature() === this.signatureLoaded || "") return false;
-    if (this._finalize) this._finalize({ canceled: true });
+    const id = this.owner.updateCounter;
+    const newSig = this._buildSignature();
+    if (newSig === this.signatureLoaded || "") return false;
+    if (this._finalize) {
+        console.log("_finalize newSig", this.signature);
+        console.log("_finalize signature", this.signature);
+        console.log("_finalize signatureLoaded", this.signatureLoaded);
+        this._finalize({ canceled: true, id: id });
+    }
     return true;
 };
 
@@ -1007,17 +1019,6 @@ ripe.ConfiguratorPrc.prototype._updateConfig = async function(animate) {
     // be shown and triggers the changed frame event
     const frame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
     this.trigger("changed_frame", frame);
-
-    // shows the new product with a crossfade effect
-    // and starts responding to updates again
-    this.update(
-        {},
-        {
-            preload: true,
-            animate: animate || this.configAnimate,
-            force: true
-        }
-    );
 };
 
 /**
