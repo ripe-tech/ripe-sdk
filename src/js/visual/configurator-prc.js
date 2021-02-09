@@ -269,17 +269,30 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
         // waits for the preload promise as the result of it is
         // going to be considered the result of the operation
         result = await preloadPromise;
+    }
+
+    // verifies if the operation has been successful, it's considered
+    // successful in case there's a result and the result is not marked
+    // with the canceled flag (result of a cancel operation)
+    const success = result && !result.canceled;
+
+    if (success) {
+        // updates the signature of the loaded set of frames, so that for
+        // instance the cancel operation can be properly controlled avoiding
+        // the usage of extra resources and duplicated (cancel operations)
+        this.signatureLoaded = signature;
 
         // after the update operation is finished the loaded event
         // should be triggered indicating the end of the visual
         // operations for the current configuration on the configurator
         this.trigger("loaded");
+    } else {
+        // unsets both the signature and the unique value because the update
+        // operation has been marked as not successful so the visuals have
+        // not been properly updated
+        this.signature = null;
+        this.unique = null;
     }
-
-    // updates the signature of the loaded set of frames, so that for
-    // instance the cancel operation can be properly controlled avoiding
-    // the usage of extra resources and duplicated (cancel operations)
-    this.signatureLoaded = this.signature;
 
     // returns the resulting value indicating if the loading operation
     // as been triggered with success (effective operation)
@@ -1007,17 +1020,6 @@ ripe.ConfiguratorPrc.prototype._updateConfig = async function(animate) {
     // be shown and triggers the changed frame event
     const frame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
     this.trigger("changed_frame", frame);
-
-    // shows the new product with a crossfade effect
-    // and starts responding to updates again
-    this.update(
-        {},
-        {
-            preload: true,
-            animate: animate || this.configAnimate,
-            force: true
-        }
-    );
 };
 
 /**

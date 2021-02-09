@@ -1311,10 +1311,12 @@ ripe.Ripe.prototype.update = async function(state = null, options = {}, children
     // possible by any of the child elements
     await this.cancel(options, children);
 
-    // iterates waiting for all the pending promises for update operations
+    // runs the waiting for all the pending promises for update operations
     // so that we can safely run the new update promise after all the other
-    // previously registered ones are "flushed"
-    while (this.updatePromise) await this.updatePromise;
+    // previously registered ones are "flushed", after te update the promise
+    // reference is forced to null to indicate that no more promises exist
+    if (this.updatePromise) await this.updatePromise;
+    this.updatePromise = null;
 
     // in case the current update operation is no longer the latest one then
     // there's no need to continue with the operation
@@ -1326,7 +1328,9 @@ ripe.Ripe.prototype.update = async function(state = null, options = {}, children
         const result = await this.updatePromise;
         return result;
     } finally {
-        this.updatePromise = null;
+        if (!options.noAwaitLayout) {
+            this.updatePromise = null;
+        }
     }
 };
 
