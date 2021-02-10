@@ -5,6 +5,14 @@ const ripe = require("../../../src/js");
 describe("FileTuple", function() {
     this.timeout(config.TEST_TIMEOUT);
 
+    describe("#constructor()", async function() {
+        it("should be able to behave like an array", () => {
+            const fileTuple = new ripe.ripe.FileTuple();
+            const result = fileTuple instanceof Array;
+            assert.strictEqual(result, true);
+        });
+    });
+
     describe("#fromData()", async function() {
         it("should be able to create a simple file tuple objects", () => {
             const fileTuple = ripe.ripe.FileTuple.fromData(
