@@ -15,7 +15,7 @@ ripe.FileTuple = function(...args) {
     this.push(...args);
 };
 
-ripe.FileTuple.prototype = Array.prototype;
+ripe.FileTuple.prototype = Object.create(Array.prototype);
 ripe.FileTuple.prototype.constructor = ripe.FileTuple;
 
 ripe.FileTuple.fromData = function(data, name = null, mime = null) {
