@@ -8,8 +8,8 @@ describe("FileTuple", function() {
     describe("#constructor()", async function() {
         it("should be able to behave like an array", () => {
             const fileTuple = new ripe.ripe.FileTuple();
-            const result = fileTuple instanceof Array;
-            assert.strictEqual(result, true);
+            assert.notStrictEqual(fileTuple, null);
+            assert.strictEqual(fileTuple instanceof Array, true);
         });
     });
 
