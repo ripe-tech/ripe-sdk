@@ -11,6 +11,11 @@ describe("FileTuple", function() {
             assert.notStrictEqual(fileTuple, null);
             assert.strictEqual(fileTuple instanceof Array, true);
         });
+
+        it("should not override the array class", () => {
+            assert.notStrictEqual(ripe.ripe.FileTuple.prototype.constructor, Array);
+            assert.strictEqual(Array.prototype.constructor, Array);
+        });
     });
 
     describe("#fromData()", async function() {
