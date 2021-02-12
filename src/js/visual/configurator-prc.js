@@ -1328,14 +1328,28 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             resolve(result);
         };
 
+        /**
+         * Callback function to be called whenever a new frame is
+         * pre-loaded (end of step), should be able to trigger the end
+         * of the loading if it represents the last image loading operation.
+         *
+         * @param {DOMElement} element The reference to the element that is
+         * considered to be the configurator.
+         */
         const mark = element => {
+            // in case the current index of operation (unique auto-increment
+            // value) is no longer the current in process then ignores this
+            // marking operation as it's considered outdated
             const _index = this.index;
             if (index !== _index) return;
             if (!this.element) return;
 
             // removes the preloading class from the image element
-            // and retrieves all the images still preloading,
-            element.classList.remove("preloading");
+            // this is considered the default operation
+            else element.classList.remove("preloading");
+
+            // retrieves all the images still preloading from the frames
+            // buffer to determine if this was the final image loading
             const framesBuffer = this.element.querySelector(".frames-buffer");
             const pending = framesBuffer.querySelectorAll("img.preloading") || [];
 
