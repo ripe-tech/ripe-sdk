@@ -1199,6 +1199,10 @@ ripe.ConfiguratorPrc.prototype._loadMask = function(maskImage, view, position, o
  * @ignore
  */
 ripe.ConfiguratorPrc.prototype._drawMask = function(maskImage) {
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
+    if (!this.element) return;
+
     const mask = this.element.querySelector(".mask");
     const maskContext = mask.getContext("2d");
     maskContext.clearRect(0, 0, mask.width, mask.height);
