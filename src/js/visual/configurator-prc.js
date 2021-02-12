@@ -1743,11 +1743,12 @@ ripe.ConfiguratorPrc.prototype._getCanvasIndex = function(canvas, x, y) {
  * @returns {String} The unique signature for the configurator state.
  */
 ripe.ConfiguratorPrc.prototype._buildSignature = function() {
-    const format = this.element.dataset.format || this.format;
-    const size = this.element.dataset.size || this.size;
-    const width = size || this.element.dataset.width || this.width;
-    const height = size || this.element.dataset.height || this.height;
-    const backgroundColor = this.element.dataset.background_color || this.backgroundColor;
+    const dataset = this.element ? this.element.dataset : {};
+    const format = dataset.format || this.format;
+    const size = dataset.size || this.size;
+    const width = size || dataset.width || this.width;
+    const height = size || dataset.height || this.height;
+    const backgroundColor = dataset.background_color || this.backgroundColor;
     return `${this.owner._getQuery({ full: false })}&width=${String(width)}&height=${String(
         height
     )}&format=${String(format)}&background=${String(backgroundColor)}`;
