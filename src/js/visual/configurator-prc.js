@@ -1353,13 +1353,11 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             const framesBuffer = this.element.querySelector(".frames-buffer");
             const pending = framesBuffer.querySelectorAll("img.preloading") || [];
 
-            // if there are images preloading then adds the
-            // preloading class to the target element and
-            // prevents drag movements to avoid flickering
-            // else and if there are no images preloading and no
-            // frames yet to be preloaded then the preload
-            // is considered finished so drag movements are
-            // allowed again and the loaded event is triggered
+            // if there are still images preloading then adds the preloading
+            // class to the target element and prevents drag movements to
+            // avoid flickering else and if there are no images preloading and no
+            // frames yet to be preloaded then the preload is considered finished
+            // so drag movements are allowed again and the loaded event is triggered
             if (pending.length > 0) {
                 this.element.classList.add("preloading");
                 this.element.classList.add("no-drag");
