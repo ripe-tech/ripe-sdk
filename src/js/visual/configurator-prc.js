@@ -71,6 +71,7 @@ ripe.ConfiguratorPrc.prototype.init = function() {
     this._finalize = null;
     this._observer = null;
     this._ownerBinds = {};
+    this.pendingOperations = [];
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
@@ -314,15 +315,27 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
 ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
     if (this._buildSignature() === this.signatureLoaded || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
+
+    // flushes the complete set of operations that were waiting
+    // for the end of the pre-loading operation
+    await this.flushPending();
     return true;
 };
 
-ripe.ConfiguratorPrc.prototype.flushPending = async function(options = {}) {
-    for (const operation in this.pendingOperations) {
+/**
+ * Executes pending operations that were not performed so as
+ * to not conflict with the tasks already being executed.
+ */
+ripe.ConfiguratorPrc.prototype.flushPending = async function() {
+    while (this.pendingOperations.length > 0) {
+        const operation = this.pendingOperations.shift();
         const [name, ...args] = operation;
         switch (name) {
             case "changeFrame":
                 await this.changeFrame(...args);
+                break;
+            default:
+                break;
         }
     }
 };
@@ -442,9 +455,10 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     }
 
     // in case the safe mode is enabled and the current configuration is
-    // still under the preloading situation the change frame is ignored
+    // still under the preloading situation the change frame is saved in
+    // and will be executed after the preloading
     if (safe && this.element.classList.contains("preloading")) {
-        this.pendingOperations.push(["changeFrame", frame, options]);
+        this.pendingOperations = [["changeFrame", frame, options]];
         return;
     }
 
@@ -1358,7 +1372,6 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             const _index = this.index;
             if (index !== _index) return;
             if (!this.element) return;
-
             // removes the preloading class from the image element
             // this is considered the default operation
             else element.classList.remove("preloading");
