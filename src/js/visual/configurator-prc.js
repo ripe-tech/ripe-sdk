@@ -269,6 +269,10 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
         // waits for the preload promise as the result of it is
         // going to be considered the result of the operation
         result = await preloadPromise;
+
+        // flushes the complete set of operations that were waiting
+        // for the end of the pre-loading operation
+        await this.flushPending();
     }
 
     // verifies if the operation has been successful, it's considered
@@ -311,6 +315,16 @@ ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
     if (this._buildSignature() === this.signatureLoaded || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
     return true;
+};
+
+ripe.ConfiguratorPrc.prototype.flushPending = async function(options = {}) {
+    for (const operation in this.pendingOperations) {
+        const [name, ...args] = operation;
+        switch (name) {
+            case "changeFrame":
+                await this.changeFrame(...args);
+        }
+    }
 };
 
 /**
@@ -430,6 +444,7 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     // in case the safe mode is enabled and the current configuration is
     // still under the preloading situation the change frame is ignored
     if (safe && this.element.classList.contains("preloading")) {
+        this.pendingOperations.push(["changeFrame", frame, options]);
         return;
     }
 
