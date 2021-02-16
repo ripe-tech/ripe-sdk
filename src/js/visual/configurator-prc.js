@@ -328,14 +328,13 @@ ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
  */
 ripe.ConfiguratorPrc.prototype.flushPending = async function() {
     while (this.pendingOperations.length > 0) {
-        const operation = this.pendingOperations.shift();
-        const [name, ...args] = operation;
-        switch (name) {
+        const { operation, args } = this.pendingOperations.shift();
+        switch (operation) {
             case "changeFrame":
                 await this.changeFrame(...args);
                 break;
             default:
-                break;
+                throw new Error(`Operation ${operation} is not valid`);
         }
     }
 };
@@ -455,10 +454,10 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     }
 
     // in case the safe mode is enabled and the current configuration is
-    // still under the preloading situation the change frame is saved in
-    // and will be executed after the preloading
+    // still under the preloading situation the change frame is saved and
+    // will be executed after the preloading
     if (safe && this.element.classList.contains("preloading")) {
-        this.pendingOperations = [["changeFrame", frame, options]];
+        this.pendingOperations = [{ operation: "changeFrame", args: [frame, options] }];
         return;
     }
 
