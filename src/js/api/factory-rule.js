@@ -12,17 +12,17 @@ if (
 }
 
 /**
- * Gets the existing letter rules, according to the provided filtering
+ * Gets the existing factory rules, according to the provided filtering
  * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getLetterRules = function(options, callback) {
+ripe.Ripe.prototype.getFactoryRules = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}letter_rules`;
+    const url = `${this.url}factory_rules`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -33,70 +33,70 @@ ripe.Ripe.prototype.getLetterRules = function(options, callback) {
 };
 
 /**
- * Gets the existing letter rules, according to the provided filtering
+ * Gets the existing factory rules, according to the provided filtering
  * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The letter rules result list.
+ * @returns {Promise} The factory rules result list.
  */
-ripe.Ripe.prototype.getLetterRulesP = function(options) {
+ripe.Ripe.prototype.getFactoryRulesP = function(options) {
     return new Promise((resolve, reject) => {
-        this.getLetterRules(options, (result, isValid, request) => {
+        this.getFactoryRules(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
 
 /**
- * Creates a letter rule on RIPE Core.
+ * Creates a factory rule on RIPE Core.
  *
- * @param {Object} letterRule An object with information needed to create a letter rule.
+ * @param {Object} factoryRule An object with information needed to create a factory rule.
  * @param {Object} options An object with options.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.createLetterRule = function(letterRule, options, callback) {
+ripe.Ripe.prototype.createFactoryRule = function(factoryRule, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}letter_rules`;
+    const url = `${this.url}factory_rules`;
     options = Object.assign(options, {
         url: url,
         method: "POST",
         auth: true,
-        dataJ: letterRule
+        dataJ: factoryRule
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
 
 /**
- * Creates a letter rule on RIPE Core.
+ * Creates a factory rule on RIPE Core.
  *
- * @param {Object} letterRule An object with information needed to create a letter rule.
+ * @param {Object} factoryRule An object with information needed to create a factory rule.
  * @param {Object} options An object with options.
- * @returns {Promise} The letter rule's data.
+ * @returns {Promise} The factory rule's data.
  */
-ripe.Ripe.prototype.createLetterRuleP = function(letterRule, options) {
+ripe.Ripe.prototype.createFactoryRuleP = function(factoryRule, options) {
     return new Promise((resolve, reject) => {
-        this.createLetterRule(letterRule, options, (result, isValid, request) => {
+        this.createFactoryRule(factoryRule, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
 
 /**
- * Gets an existing letter rule filtered by ID and according to the
+ * Gets an existing factory rule filtered by ID and according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The letter rule's ID.
+ * @param {Number} id The factory rule's ID.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.getLetterRule = function(id, options, callback) {
+ripe.Ripe.prototype.getFactoryRule = function(id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}letter_rules/${id}`;
+    const url = `${this.url}factory_rules/${id}`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -107,70 +107,70 @@ ripe.Ripe.prototype.getLetterRule = function(id, options, callback) {
 };
 
 /**
- * Gets an existing letter rule filtered by ID and according to the
+ * Gets an existing factory rule filtered by ID and according to the
  * provided filtering strategy as normalized values.
  *
- * @param {Number} id The letter rule's ID.
+ * @param {Number} id The factory rule's ID.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The letter rule requested by ID.
+ * @returns {Promise} The factory rule requested by ID.
  */
-ripe.Ripe.prototype.getLetterRuleP = function(id, options) {
+ripe.Ripe.prototype.getFactoryRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
-        this.getLetterRule(id, options, (result, isValid, request) => {
+        this.getFactoryRule(id, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
 
 /**
- * Updates a letter rule on RIPE Core.
+ * Updates a factory rule on RIPE Core.
  *
- * @param {Object} letterRule An object with information needed to update a letter rule.
+ * @param {Object} factoryRule An object with information needed to update a factory rule.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.updateLetterRule = function(letterRule, options, callback) {
+ripe.Ripe.prototype.updateFactoryRule = function(factoryRule, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}letter_rules/${letterRule.id}`;
+    const url = `${this.url}factory_rules/${factoryRule.id}`;
     options = Object.assign(options, {
         url: url,
         method: "PUT",
         auth: true,
-        dataJ: letterRule
+        dataJ: factoryRule
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
 
 /**
- * Updates a letter rule on RIPE Core.
+ * Updates a factory rule on RIPE Core.
  *
- * @param {Object} letterRule An object with information needed to update a letter rule.
+ * @param {Object} factoryRule An object with information needed to update a factory rule.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The letter rule's data.
+ * @returns {Promise} The factory rule's data.
  */
-ripe.Ripe.prototype.updateLetterRuleP = function(letterRule, options) {
+ripe.Ripe.prototype.updateFactoryRuleP = function(factoryRule, options) {
     return new Promise((resolve, reject) => {
-        this.updateLetterRule(letterRule, options, (result, isValid, request) => {
+        this.updateFactoryRule(factoryRule, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
 
 /**
- * Deletes an existing letter rule.
+ * Deletes an existing factory rule.
  *
- * @param {Number} id The letter rule's ID.
+ * @param {Number} id The factory rule's ID.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.deleteLetterRule = function(id, options, callback) {
+ripe.Ripe.prototype.deleteFactoryRule = function(id, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}letter_rules/${id}`;
+    const url = `${this.url}factory_rules/${id}`;
     options = Object.assign(options, {
         url: url,
         method: "DELETE",
@@ -181,15 +181,15 @@ ripe.Ripe.prototype.deleteLetterRule = function(id, options, callback) {
 };
 
 /**
- * Deletes an existing letter rule.
+ * Deletes an existing factory rule.
  *
- * @param {Number} id The letter rule's ID.
+ * @param {Number} id The factory rule's ID.
  * @param {Object} options An object of options to configure the request
- * @returns {Promise} The result of the letter rule's deletion.
+ * @returns {Promise} The result of the factory rule's deletion.
  */
-ripe.Ripe.prototype.deleteLetterRuleP = function(id, options) {
+ripe.Ripe.prototype.deleteFactoryRuleP = function(id, options) {
     return new Promise((resolve, reject) => {
-        this.deleteLetterRule(id, options, (result, isValid, request) => {
+        this.deleteFactoryRule(id, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
