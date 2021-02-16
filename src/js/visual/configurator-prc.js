@@ -71,6 +71,7 @@ ripe.ConfiguratorPrc.prototype.init = function() {
     this._finalize = null;
     this._observer = null;
     this._ownerBinds = {};
+    this._pending = [];
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
@@ -269,6 +270,10 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
         // waits for the preload promise as the result of it is
         // going to be considered the result of the operation
         result = await preloadPromise;
+
+        // flushes the complete set of operations that were waiting
+        // for the end of the pre-loading operation
+        await this.flushPending();
     }
 
     // verifies if the operation has been successful, it's considered
@@ -362,6 +367,31 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size) {
 };
 
 /**
+ * Executes pending operations that were not performed so as
+ * to not conflict with the tasks already being executed.
+ *
+ * The main reason for collision is the pre-loading operation
+ * being executed (long duration operation).
+ *
+ * @param {Boolean} tail If only the last pending operation should
+ * be flushed, meaning that the others are discarded.
+ */
+ripe.ConfiguratorPrc.prototype.flushPending = async function(tail = false) {
+    const pending = tail && this._pending.length > 0 ? [this._pending[this._pending.length - 1]] : this._pending;
+    this._pending = [];
+    while (pending.length > 0) {
+        const { operation, args } = pending.shift();
+        switch (operation) {
+            case "changeFrame":
+                await this.changeFrame(...args);
+                break;
+            default:
+                break;
+        }
+    }
+};
+
+/**
  * Displays a new frame, with an animation from the starting frame
  * proper animation should be performed.
  *
@@ -428,8 +458,10 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     }
 
     // in case the safe mode is enabled and the current configuration is
-    // still under the preloading situation the change frame is ignored
+    // still under the preloading situation the change frame is saved and
+    // will be executed after the preloading
     if (safe && this.element.classList.contains("preloading")) {
+        this._pending = [{ operation: "changeFrame", args: [frame, options] }];
         return;
     }
 
