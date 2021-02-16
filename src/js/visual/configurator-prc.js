@@ -71,7 +71,7 @@ ripe.ConfiguratorPrc.prototype.init = function() {
     this._finalize = null;
     this._observer = null;
     this._ownerBinds = {};
-    this.pendingOperations = [];
+    this._pending = [];
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
@@ -315,28 +315,7 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
 ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
     if (this._buildSignature() === this.signatureLoaded || "") return false;
     if (this._finalize) this._finalize({ canceled: true });
-
-    // flushes the complete set of operations that were waiting
-    // for the end of the pre-loading operation
-    await this.flushPending();
     return true;
-};
-
-/**
- * Executes pending operations that were not performed so as
- * to not conflict with the tasks already being executed.
- */
-ripe.ConfiguratorPrc.prototype.flushPending = async function() {
-    while (this.pendingOperations.length > 0) {
-        const { operation, args } = this.pendingOperations.shift();
-        switch (operation) {
-            case "changeFrame":
-                await this.changeFrame(...args);
-                break;
-            default:
-                throw new Error(`Operation ${operation} is not valid`);
-        }
-    }
 };
 
 /**
@@ -385,6 +364,31 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size) {
             force: true
         }
     );
+};
+
+/**
+ * Executes pending operations that were not performed so as
+ * to not conflict with the tasks already being executed.
+ *
+ * The main reason for collision is the pre-loading operation
+ * being executed (long duration operation).
+ *
+ * @param {Boolean} tail If only the last pending operation should
+ * be flushed, meaning that the others are discarded.
+ */
+ripe.ConfiguratorPrc.prototype.flushPending = async function(tail = false) {
+    const pending = tail && this._pending.length > 0 ? [this._pending[this._pending.length - 1]] : this._pending;
+    this._pending = [];
+    while (pending.length > 0) {
+        const { operation, args } = pending.shift();
+        switch (operation) {
+            case "changeFrame":
+                await this.changeFrame(...args);
+                break;
+            default:
+                break;
+        }
+    }
 };
 
 /**
@@ -457,7 +461,7 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     // still under the preloading situation the change frame is saved and
     // will be executed after the preloading
     if (safe && this.element.classList.contains("preloading")) {
-        this.pendingOperations = [{ operation: "changeFrame", args: [frame, options] }];
+        this._pending = [{ operation: "changeFrame", args: [frame, options] }];
         return;
     }
 
