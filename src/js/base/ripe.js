@@ -623,6 +623,7 @@ ripe.Ripe.prototype.setStructure = async function(structure, safe = true) {
  *  - 'useCombinations' - If the combinations should be loaded as part of the initial RIPE loading.
  *  - 'usePrice' - If the price should be automatically retrieved whenever there is a customization change.
  *  - 'useDiag' - If the diagnostics module should be used.
+ *  - 'size' - Initial size value of a frame image that is going to be composed.
  */
 ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.options = options;
@@ -668,6 +669,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
     this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
+    this.size = this.options.size || undefined;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account
