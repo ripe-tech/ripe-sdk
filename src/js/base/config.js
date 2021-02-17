@@ -12,22 +12,23 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.Ripe.prototype.hasCustomization = function() {
+ripe.Ripe.prototype.hasTag = function(tag) {
     const tags = this.loadedConfig.tags || [];
-    return !tags.includes("no_customization");
+    return tags.includes(tag);
+};
+
+ripe.Ripe.prototype.hasCustomization = function() {
+    return !this.hasTag("no_customization");
 };
 
 ripe.Ripe.prototype.hasPersonalization = function() {
-    const tags = this.loadedConfig.tags || [];
-    return !tags.includes("no_initials") && !tags.includes("no_personalization");
+    return !this.hasTag("no_initials") && !this.hasTag("no_personalization");
 };
 
 ripe.Ripe.prototype.hasSize = function() {
-    const tags = this.loadedConfig.tags || [];
-    return !tags.includes("no_size");
+    return !this.hasTag("no_size");
 };
 
 ripe.Ripe.prototype.hasInitialsRadius = function() {
-    const tags = this.loadedConfig.tags || [];
-    return !tags.includes("initials_no_radius");
+    return !this.hasTag("initials_no_radius");
 };
