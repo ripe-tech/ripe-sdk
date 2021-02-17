@@ -58,12 +58,7 @@ describe("Config", function() {
 
     describe("#hasInitialsRadius()", function() {
         it("should be able validate initials radius status", async () => {
-            let instance = await new ripe.Ripe("fendi", "8bn321aeuif1dgz", { noBundles: true });
-            await instance.isReady();
-
-            assert.strictEqual(instance.hasInitialsRadius(), false);
-
-            instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
+            const instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
             await instance.isReady();
 
             assert.strictEqual(instance.hasInitialsRadius(), true);
