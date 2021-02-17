@@ -273,7 +273,7 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
 
         // flushes the complete set of operations that were waiting
         // for the end of the pre-loading operation
-        await this.flushPending();
+        await this.flushPending(true);
     }
 
     // verifies if the operation has been successful, it's considered
