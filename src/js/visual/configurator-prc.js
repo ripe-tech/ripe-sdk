@@ -377,7 +377,10 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size) {
  * be flushed, meaning that the others are discarded.
  */
 ripe.ConfiguratorPrc.prototype.flushPending = async function(tail = false) {
-    const pending = tail && this._pending.length > 0 ? [this._pending[this._pending.length - 1]] : this._pending;
+    const pending =
+        tail && this._pending.length > 0
+            ? [this._pending[this._pending.length - 1]]
+            : this._pending;
     this._pending = [];
     while (pending.length > 0) {
         const { operation, args } = pending.shift();
@@ -1375,7 +1378,6 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             const _index = this.index;
             if (index !== _index) return;
             if (!this.element) return;
-
             // removes the preloading class from the image element
             // this is considered the default operation
             else element.classList.remove("preloading");

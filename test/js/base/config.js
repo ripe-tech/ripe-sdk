@@ -5,6 +5,20 @@ const ripe = require("../../../src/js");
 describe("Config", function() {
     this.timeout(config.TEST_TIMEOUT);
 
+    describe("#hasTag()", function() {
+        it("should be able validate simple tags", async () => {
+            let instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
+            await instance.isReady();
+
+            assert.strictEqual(instance.hasTag("no_customization"), false);
+
+            instance = await new ripe.Ripe("swear", "maddox_glitter", { noBundles: true });
+            await instance.isReady();
+
+            assert.strictEqual(instance.hasTag("no_customization"), true);
+        });
+    });
+
     describe("#hasCustomization()", function() {
         it("should be able validate customization status", async () => {
             let instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
