@@ -26,3 +26,8 @@ ripe.Ripe.prototype.hasSize = function() {
     const tags = this.loadedConfig.tags || [];
     return !tags.includes("no_size");
 };
+
+ripe.Ripe.prototype.hasInitialsRadius = function() {
+    const tags = this.loadedConfig.tags || [];
+    return !tags.includes("initials_no_radius");
+};
