@@ -325,7 +325,11 @@ ripe.Ripe.prototype._toLocale = function(
 /**
  * @ignore
  */
-ripe.Ripe.prototype._localeModel = function(value, owner, { brand = null, model = null, locale = null, defaultValue = null, ...options } = {}) {
+ripe.Ripe.prototype._localeModel = function(
+    value,
+    owner,
+    { brand = null, model = null, locale = null, defaultValue = null, ...options } = {}
+) {
     options = Object.assign(
         {
             brand: brand,
@@ -370,7 +374,15 @@ ripe.Ripe.prototype.localeColor = function(
 ripe.Ripe.prototype.localeMaterial = function(
     material,
     owner = null,
-    { brand = null, model = null, part = null, locale = null, defaultValue = null, prefixes = [], suffixes = [] } = {}
+    {
+        brand = null,
+        model = null,
+        part = null,
+        locale = null,
+        defaultValue = null,
+        prefixes = [],
+        suffixes = []
+    } = {}
 ) {
     let value = [];
     value = value.concat(prefixes);
@@ -385,7 +397,18 @@ ripe.Ripe.prototype.localeMaterial = function(
     });
 };
 
-ripe.Ripe.prototype.localePart = function(part, owner = null, { brand = null, model = null, locale = null, defaultValue = null, prefixes = [], suffixes = [] } = {}) {
+ripe.Ripe.prototype.localePart = function(
+    part,
+    owner = null,
+    {
+        brand = null,
+        model = null,
+        locale = null,
+        defaultValue = null,
+        prefixes = [],
+        suffixes = []
+    } = {}
+) {
     let value = [];
     value = value.concat(prefixes);
     part && value.push(`parts.${part}`);
@@ -401,7 +424,15 @@ ripe.Ripe.prototype.localePart = function(part, owner = null, { brand = null, mo
 ripe.Ripe.prototype.localeProperty = function(
     name,
     owner = null,
-    { brand = null, model = null, type = null, locale = null, defaultValue = null, prefixes = [], suffixes = [] } = {}
+    {
+        brand = null,
+        model = null,
+        type = null,
+        locale = null,
+        defaultValue = null,
+        prefixes = [],
+        suffixes = []
+    } = {}
 ) {
     let value = [];
     value = value.concat(prefixes);
