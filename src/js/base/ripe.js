@@ -614,6 +614,7 @@ ripe.Ripe.prototype.setStructure = async function(structure, safe = true) {
  *  - 'locale' - The locale to be used by default when localizing values.
  *  - 'flag' - A specific attribute of the model.
  *  - 'format' - The format of the image that is going to be retrieved in case of image visual and interactive.
+ *  - 'size' - The default size in pixels to be used by children for composition.
  *  - 'backgroundColor' - The background color in RGB format to be used for images.
  *  - 'guess' - If the optimistic guess mode should be used for config resolution (internal).
  *  - 'guessUrl' - If base production URL should be guessed using GeoIP information.
@@ -640,6 +641,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.flag = this.options.flag || null;
     this.format = this.options.format || null;
     this.formatBase = this.options.format || null;
+    this.size = this.options.size || null;
     this.backgroundColor = this.options.backgroundColor || "";
     this.guess = this.options.guess === undefined ? undefined : this.options.guess;
     this.guessUrl = this.options.guessUrl === undefined ? undefined : this.options.guessUrl;
