@@ -669,7 +669,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
     this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
-    this.size = this.options.size || null;
+    this.size = this.options.size || 1000;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account
