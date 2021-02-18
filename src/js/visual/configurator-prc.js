@@ -1378,6 +1378,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             const _index = this.index;
             if (index !== _index) return;
             if (!this.element) return;
+
             // removes the preloading class from the image element
             // this is considered the default operation
             else element.classList.remove("preloading");
