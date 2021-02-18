@@ -268,3 +268,150 @@ ripe.Ripe.prototype.localeModel = function(
         fallback: fallback
     });
 };
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._toLocale = function(
+    value,
+    brand,
+    model,
+    owner,
+    {
+        locale = null,
+        defaultValue = null,
+        prefix = "builds",
+        fallback = false,
+        compatibility = true,
+        hack = false
+    } = {}
+) {
+    const values = Array.isArray(value) ? value : [value];
+    const result = this.localeModel(value, owner, {
+        brand: brand,
+        model: model,
+        locale: locale,
+        defaultValue: defaultValue,
+        prefix: prefix,
+        fallback: fallback,
+        compatibility: compatibility,
+        hack: hack
+    });
+
+    // if the localization was successful returns its result
+    if (result !== defaultValue) return result;
+
+    // if the localization was not successful but a default
+    // was defined, then returns it
+    if (defaultValue !== null) return result;
+
+    // otherwise run the localization process again using
+    // a fallback locale as the base for localization
+    const localeFallback = owner.getLocaleFallback();
+    if (localeFallback !== locale) {
+        return this._toLocale(values, brand, model, {
+            locale: localeFallback,
+            defaultValue: defaultValue,
+            prefix: prefix,
+            fallback: fallback,
+            compatibility: compatibility,
+            hack: hack
+        });
+    }
+
+    return values[0];
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._localeModel = function(value, owner, { brand = null, model = null, locale = null, defaultValue = null, ...options } = {}) {
+    options = Object.assign(
+        {
+            brand: brand,
+            model: model,
+            locale: locale,
+            defaultValue: defaultValue
+        },
+        options
+    );
+    return this._toLocale(value, brand, model, owner, options);
+};
+
+ripe.Ripe.prototype.localeColor = function(
+    color,
+    owner = null,
+    {
+        brand = null,
+        model = null,
+        part = null,
+        material = null,
+        locale = null,
+        defaultValue = null,
+        prefixes = [],
+        suffixes = []
+    } = {}
+) {
+    let value = [];
+    value = value.concat(prefixes);
+    part && material && color && value.push(`colors.${part}.${material}.${color}`);
+    part && color && value.push(`colors.${part}.${color}`);
+    material && color && value.push(`colors.${material}.${color}`);
+    color && value.push(`colors.${color}`);
+    value = value.concat(suffixes);
+    return this.localeModel(value, owner, {
+        brand: brand,
+        model: model,
+        locale: locale,
+        defaultValue: defaultValue
+    });
+};
+
+ripe.Ripe.prototype.localeMaterial = function(
+    material,
+    owner = null,
+    { brand = null, model = null, part = null, locale = null, defaultValue = null, prefixes = [], suffixes = [] } = {}
+) {
+    let value = [];
+    value = value.concat(prefixes);
+    part && material && value.push(`materials.${part}.${material}`);
+    material && value.push(`materials.${material}`);
+    value = value.concat(suffixes);
+    return this.localeModel(value, owner, {
+        brand: brand,
+        model: model,
+        locale: locale,
+        defaultValue: defaultValue
+    });
+};
+
+ripe.Ripe.prototype.localePart = function(part, owner = null, { brand = null, model = null, locale = null, defaultValue = null, prefixes = [], suffixes = [] } = {}) {
+    let value = [];
+    value = value.concat(prefixes);
+    part && value.push(`parts.${part}`);
+    value = value.concat(suffixes);
+    return this.localeModel(value, owner, {
+        brand: brand,
+        model: model,
+        locale: locale,
+        defaultValue: defaultValue
+    });
+};
+
+ripe.Ripe.prototype.localeProperty = function(
+    name,
+    owner = null,
+    { brand = null, model = null, type = null, locale = null, defaultValue = null, prefixes = [], suffixes = [] } = {}
+) {
+    let value = [];
+    value = value.concat(prefixes);
+    name && value.push(`properties.${name}`);
+    type && name && value.push(`properties.${type}.${name}`);
+    value = value.concat(suffixes);
+    return this.localeModel(value, owner, {
+        brand: brand,
+        model: model,
+        locale: locale,
+        defaultValue: defaultValue
+    });
+};
