@@ -878,10 +878,16 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
         this.initials = "";
         this.engraving = null;
         this.initialsExtra = {};
+        this.options.initials = "";
+        this.options.engraving = null;
+        this.options.initialsExtra = {};
     } else {
         this.initials = mainInitials.initials || "";
         this.engraving = mainInitials.engraving || null;
         this.initialsExtra = initialsExtra;
+        this.options.initials = mainInitials.initials || "";
+        this.options.engraving = mainInitials.engraving || null;
+        this.options.initialsExtra = initialsExtra;
     }
 
     for (const [key, value] of Object.entries(this.initialsExtra)) {
