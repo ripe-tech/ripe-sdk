@@ -342,6 +342,29 @@ ripe.Ripe.prototype._localeModel = function(
     return this._toLocale(value, brand, model, owner, options);
 };
 
+/**
+ * Localizes the given color string value.
+ *
+ * @param {String} color The base string value to be used in the localization.
+ * @param {Object} owner The localization owner, which should implement the
+ * proper localization provider functions. If not provided the default implementation
+ * which used the local base values is used instead.
+ * @param {Object} options Set of options to control the localization, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'part' - The name of the part of the model.
+ *  - 'material' - The name of the material of the model.
+ *  - 'locale' - The ISO-15897 standard locale definition to be used in the
+ * localization process.
+ *  - 'defaultValue' - The default string value (if any) to be returned in case it's
+ * not possible to localize the provided value.
+ *  - 'prefixes' - The list of prefixes that are taking into account for proper build
+ * locale usage.
+ *  - 'suffixes' - The list of suffixes that are taking into account for proper build
+ * locale usage.
+ * @returns {String} The final localized string, that takes into account the
+ * current model context.
+ */
 ripe.Ripe.prototype.localeColor = function(
     color,
     owner = null,
@@ -371,6 +394,28 @@ ripe.Ripe.prototype.localeColor = function(
     });
 };
 
+/**
+ * Localizes the given material string value.
+ *
+ * @param {String} color The base string value to be used in the localization.
+ * @param {Object} owner The localization owner, which should implement the
+ * proper localization provider functions. If not provided the default implementation
+ * which used the local base values is used instead.
+ * @param {Object} options Set of options to control the localization, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'part' - The name of the part of the model.
+ *  - 'locale' - The ISO-15897 standard locale definition to be used in the
+ * localization process.
+ *  - 'defaultValue' - The default string value (if any) to be returned in case it's
+ * not possible to localize the provided value.
+ *  - 'prefixes' - The list of prefixes that are taking into account for proper build
+ * locale usage.
+ *  - 'suffixes' - The list of suffixes that are taking into account for proper build
+ * locale usage.
+ * @returns {String} The final localized string, that takes into account the
+ * current model context.
+ */
 ripe.Ripe.prototype.localeMaterial = function(
     material,
     owner = null,
@@ -397,6 +442,27 @@ ripe.Ripe.prototype.localeMaterial = function(
     });
 };
 
+/**
+ * Localizes the given part string value.
+ *
+ * @param {String} color The base string value to be used in the localization.
+ * @param {Object} owner The localization owner, which should implement the
+ * proper localization provider functions. If not provided the default implementation
+ * which used the local base values is used instead.
+ * @param {Object} options Set of options to control the localization, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'locale' - The ISO-15897 standard locale definition to be used in the
+ * localization process.
+ *  - 'defaultValue' - The default string value (if any) to be returned in case it's
+ * not possible to localize the provided value.
+ *  - 'prefixes' - The list of prefixes that are taking into account for proper build
+ * locale usage.
+ *  - 'suffixes' - The list of suffixes that are taking into account for proper build
+ * locale usage.
+ * @returns {String} The final localized string, that takes into account the
+ * current model context.
+ */
 ripe.Ripe.prototype.localePart = function(
     part,
     owner = null,
@@ -421,6 +487,28 @@ ripe.Ripe.prototype.localePart = function(
     });
 };
 
+/**
+ * Localizes the given property string value.
+ *
+ * @param {String} color The base string value to be used in the localization.
+ * @param {Object} owner The localization owner, which should implement the
+ * proper localization provider functions. If not provided the default implementation
+ * which used the local base values is used instead.
+ * @param {Object} options Set of options to control the localization, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'type' - The type of the property.
+ *  - 'locale' - The ISO-15897 standard locale definition to be used in the
+ * localization process.
+ *  - 'defaultValue' - The default string value (if any) to be returned in case it's
+ * not possible to localize the provided value.
+ *  - 'prefixes' - The list of prefixes that are taking into account for proper build
+ * locale usage.
+ *  - 'suffixes' - The list of suffixes that are taking into account for proper build
+ * locale usage.
+ * @returns {String} The final localized string, that takes into account the
+ * current model context.
+ */
 ripe.Ripe.prototype.localeProperty = function(
     name,
     owner = null,
