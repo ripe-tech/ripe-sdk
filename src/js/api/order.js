@@ -881,7 +881,6 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const model = options.model === undefined ? this.model : options.model;
     const variant = options.variant === undefined ? this.variant : options.variant;
     const parts = options.parts === undefined ? this.parts : options.parts;
-    const description = options.description === undefined ? null : options.description;
     const initials = options.initials === undefined ? this.initials : options.initials;
     const engraving = options.engraving === undefined ? this.engraving : options.engraving;
     const initialsExtra =
@@ -901,6 +900,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const currency = options.currency === undefined ? null : options.currency;
     const deliveryTime = options.deliveryTime === undefined ? null : options.deliveryTime;
     const meta = options.meta === undefined ? null : options.meta;
+    const description = options.description === undefined ? null : options.description;
     const notes = options.notes === undefined ? null : options.notes;
     const images = options.images === undefined ? null : options.images;
 
@@ -911,7 +911,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
         parts: parts,
         size: size
     };
-    if (description) contents.description = description;
+
     if (factory) contents.factory = factory;
     if (variant) contents.variant = variant;
     if (productId) contents.product_id = productId;
@@ -924,6 +924,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     }
     if (deliveryTime) contents.delivery_time = deliveryTime;
     if (images) contents.images = images;
+    if (description) contents.description = description;
 
     const params = {
         ff_order_id: ffOrderId,
@@ -933,6 +934,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (country) params.country = country;
     if (price) params.price = price;
     if (currency) params.currency = currency;
+    if (meta) params.meta = meta;
     if (meta) params.meta = meta;
     if (notes) params.notes = notes;
     if (notify) params.notify = notify;
