@@ -875,10 +875,13 @@ ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
  * @see {link https://docs.platforme.com/#order-endpoints-import}
  */
 ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
+    const type = options.type === undefined ? null : options.type;
     const brand = options.brand === undefined ? this.brand : options.brand;
+    const factory = options.factory === undefined ? null : options.factory;
     const model = options.model === undefined ? this.model : options.model;
     const variant = options.variant === undefined ? this.variant : options.variant;
     const parts = options.parts === undefined ? this.parts : options.parts;
+    const description = options.description === undefined ? null : options.description;
     const initials = options.initials === undefined ? this.initials : options.initials;
     const engraving = options.engraving === undefined ? this.engraving : options.engraving;
     const initialsExtra =
@@ -893,34 +896,45 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
         options.product_id === undefined && options.productId === undefined
             ? null
             : options.product_id || options.productId;
-    const currency = options.currency === undefined ? null : options.currency;
     const country = options.country === undefined ? null : options.country;
+    const price = options.price === undefined ? null : options.price;
+    const currency = options.currency === undefined ? null : options.currency;
+    const deliveryTime = options.deliveryTime === undefined ? null : options.deliveryTime;
     const meta = options.meta === undefined ? null : options.meta;
+    const notes = options.notes === undefined ? null : options.notes;
+    const images = options.images === undefined ? null : options.images;
 
     const url = `${this.url}orders/import`;
     const contents = {
         brand: brand,
         model: model,
-        parts: parts,
-        size: size
+        parts: parts
     };
+    if (description) contents.description = description;
+    if (factory) contents.factory = factory;
     if (variant) contents.variant = variant;
     if (productId) contents.product_id = productId;
     if (gender) contents.gender = gender;
+    if (size) contents.size = size;
     if (Object.keys(initialsExtra).length > 0) {
         contents.initials_extra = initialsExtra;
     } else if (initials && engraving) {
         contents.initials = initials;
         contents.engraving = engraving;
     }
+    if (deliveryTime) contents.delivery_time = deliveryTime;
+    if (images) contents.images = images;
 
     const params = {
         ff_order_id: ffOrderId,
         contents: JSON.stringify(contents)
     };
+    if (type) params.type = type;
     if (country) params.country = country;
+    if (price) params.price = price;
     if (currency) params.currency = currency;
     if (meta) params.meta = meta;
+    if (notes) params.notes = notes;
     if (notify) params.notify = notify;
     if (pending) params.pending = pending;
 
