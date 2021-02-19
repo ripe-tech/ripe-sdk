@@ -908,14 +908,14 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const contents = {
         brand: brand,
         model: model,
-        parts: parts
+        parts: parts,
+        size: size
     };
     if (description) contents.description = description;
     if (factory) contents.factory = factory;
     if (variant) contents.variant = variant;
     if (productId) contents.product_id = productId;
     if (gender) contents.gender = gender;
-    if (size) contents.size = size;
     if (Object.keys(initialsExtra).length > 0) {
         contents.initials_extra = initialsExtra;
     } else if (initials && engraving) {
