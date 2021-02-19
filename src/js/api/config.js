@@ -250,8 +250,8 @@ ripe.Ripe.prototype._getConfigInfoOptions = function(options = {}) {
     const sku = options.sku === undefined ? null : options.sku;
     const dku = options.dku === undefined ? null : options.dku;
     const domain = options.domain === undefined ? null : options.domain;
-    const size = options.size === undefined ? this.size : options.size;
-    const gender = options.gender === undefined ? this.gender : options.gender;
+    const size = options.size === undefined ? null : options.size;
+    const gender = options.gender === undefined ? null : options.gender;
     const meta = options.meta === undefined ? this.meta : options.meta;
     const _params = options._params === undefined ? this._params : options._params;
     const guess = options.guess === undefined ? this.guess : options.guess;

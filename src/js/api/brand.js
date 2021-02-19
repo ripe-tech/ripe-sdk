@@ -690,8 +690,8 @@ ripe.Ripe.prototype._getFactoryOptions = function(options = {}) {
  * @ignore
  */
 ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
-    const gender = options.gender === undefined ? this.gender : options.gender;
-    const size = options.size === undefined ? this.size : options.size;
+    const gender = options.gender === undefined ? null : options.gender;
+    const size = options.size === undefined ? null : options.size;
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const queryOptions = options.queryOptions === undefined ? true : options.queryOptions;
