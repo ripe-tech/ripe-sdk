@@ -286,6 +286,28 @@ ripe.Ripe.prototype.stateChatLinesOrderP = function(number, stateId, options) {
     });
 };
 
+ripe.Ripe.prototype.stateChatLinesCountOrder = function(number, stateId, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/states/${stateId}/chat/lines/count`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true,
+        cached: false
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.stateChatLinesCountOrderP = function(number, stateId, options) {
+    return new Promise((resolve, reject) => {
+        this.stateChatLinesCountOrder(number, stateId, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
 ripe.Ripe.prototype.stateChatCreateLineOrder = function(
     number,
     stateId,
