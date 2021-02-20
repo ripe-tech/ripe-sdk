@@ -1800,7 +1800,7 @@ ripe.Ripe.prototype._handleCtx = function(result) {
     this.parts = Object.assign(this.parts, result.parts);
 
     if (result.initials && !ripe.equal(result.initials, this.initialsExtra)) {
-        this.setInitialsExtra(result.initials, true, { noRemote: true });
+        this.setInitialsExtra(result.initials, true, false, { noRemote: true });
     }
 
     if (result.choices && !ripe.equal(result.choices, this.choices)) {
