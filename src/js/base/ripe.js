@@ -779,10 +779,18 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
  * @param {String} engraving The type of engraving to be set.
  * @param {Boolean} events If the events associated with the initials
  * change should be triggered.
+ * @param {Boolean} override If the options value should be override meaning
+ * that further config updates will have this new initials set.
  * @param {Object} params Extra parameters that control the behaviour of
  * the set initials operation.
  */
-ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = true, params = {}) {
+ripe.Ripe.prototype.setInitials = async function(
+    initials,
+    engraving,
+    events = true,
+    override = false,
+    params = {}
+) {
     if (typeof initials === "object") {
         events = engraving === undefined ? true : engraving;
         const result = await this.setInitialsExtra(initials, events);
@@ -814,6 +822,14 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
 
     if (!this.initials && this.engraving) {
         throw new Error("Engraving set without initials");
+    }
+
+    // in case the override flag is set then the options fields
+    // are also update with the new initials values
+    if (override) {
+        this.options.initials = this.initials;
+        this.options.engraving = this.engraving;
+        this.options.initialsExtra = this.initialsExtra;
     }
 
     // in case the events should not be triggered then returns
@@ -853,10 +869,17 @@ ripe.Ripe.prototype.setInitials = async function(initials, engraving, events = t
  * initials and engraving for all the initial groups.
  * @param {Boolean} events If the events associated with the changing of
  * the initials (extra) should be triggered.
+ * @param {Boolean} override If the options value should be override meaning
+ * that further config updates will have this new initials extra set.
  * @param {Object} params Extra parameters that control the behaviour of
  * the set initials operation.
  */
-ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = true, params = {}) {
+ripe.Ripe.prototype.setInitialsExtra = async function(
+    initialsExtra,
+    events = true,
+    override = false,
+    params = {}
+) {
     const groups = Object.keys(initialsExtra);
     const isEmpty = groups.length === 0;
     const mainGroup = groups.includes("main") ? "main" : groups[0];
@@ -880,16 +903,10 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
         this.initials = "";
         this.engraving = null;
         this.initialsExtra = {};
-        this.options.initials = "";
-        this.options.engraving = null;
-        this.options.initialsExtra = {};
     } else {
         this.initials = mainInitials.initials || "";
         this.engraving = mainInitials.engraving || null;
         this.initialsExtra = initialsExtra;
-        this.options.initials = mainInitials.initials || "";
-        this.options.engraving = mainInitials.engraving || null;
-        this.options.initialsExtra = initialsExtra;
     }
 
     for (const [key, value] of Object.entries(this.initialsExtra)) {
@@ -900,6 +917,14 @@ ripe.Ripe.prototype.setInitialsExtra = async function(initialsExtra, events = tr
         if (!value.initials && value.engraving) {
             throw new Error(`Engraving set without initials for group ${key}`);
         }
+    }
+
+    // in case the override flag is set then the options fields
+    // are also update with the new initials values
+    if (override) {
+        this.options.initials = this.initials;
+        this.options.engraving = this.engraving;
+        this.options.initialsExtra = this.initialsExtra;
     }
 
     if (!events) return this;
