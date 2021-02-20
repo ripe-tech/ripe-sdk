@@ -463,7 +463,7 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     // in case the safe mode is enabled and the current configuration is
     // still under the preloading situation the change frame is saved and
     // will be executed after the preloading
-    if (safe && this.element.classList.contains("preloading")) {
+    if (safe && (this.element.classList.contains("preloading") || this.element.classList.contains("preload"))) {
         this._pending = [{ operation: "changeFrame", args: [frame, options] }];
         return;
     }
@@ -1168,6 +1168,8 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
         };
     });
 
+    image.classList.add("preloading");
+
     // sets the src of the image to trigger the request
     // and sets loaded to false to indicate that the
     // image is not yet loading
@@ -1178,6 +1180,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     // waits until the image promise is resolved so that
     // we're sure everything is currently loaded
     await imagePromise;
+    image.classList.remove("preloading");
 
     // triggers the post frame event indicating that the
     // frame has been buffered into the img element with
@@ -1353,6 +1356,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             // there's some kind of preloading happening
             this.element.classList.remove("preloading");
             this.element.classList.remove("no-drag");
+            this.element.classList.remove("preload");
 
             // unsets the finalize clojure from the current instance
             // effectively disallowing further usage of it
@@ -1380,7 +1384,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             if (!this.element) return;
             // removes the preloading class from the image element
             // this is considered the default operation
-            else element.classList.remove("preloading");
+            element.classList.remove("preloading");
 
             // retrieves all the images still preloading from the frames
             // buffer to determine if this was the final image loading
