@@ -463,7 +463,7 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     // in case the safe mode is enabled and the current configuration is
     // still under the preloading situation the change frame is saved and
     // will be executed after the preloading
-    if (safe && (this.element.classList.contains("preloading") || this.element.classList.contains("preload"))) {
+    if (safe && this.element.classList.contains("preloading")) {
         this._pending = [{ operation: "changeFrame", args: [frame, options] }];
         return;
     }
