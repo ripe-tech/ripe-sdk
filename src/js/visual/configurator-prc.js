@@ -434,7 +434,7 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     const view = this.element.dataset.view;
     const position = parseInt(this.element.dataset.position);
 
-    // in case the requested view and positin is the same as the
+    // in case the requested view and position is the same as the
     // one already being shown, ignores the request to change frame
     if (view === nextView && position === nextPosition) {
         this.element.classList.remove("no-drag", "animating");
