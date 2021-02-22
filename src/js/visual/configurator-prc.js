@@ -430,6 +430,17 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
         throw new RangeError("Frame position is not defined");
     }
 
+    // normalizes both the (current) view and position values
+    const view = this.element.dataset.view;
+    const position = parseInt(this.element.dataset.position);
+
+    // in case the requested view and positin is the same as the
+    // one already being shown, ignores the request to change frame
+    if (view === nextView && position === nextPosition) {
+        this.element.classList.remove("no-drag", "animating");
+        return;
+    }
+
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
     let duration = options.duration === undefined ? null : options.duration;
@@ -447,10 +458,6 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     // case no start time is currently defined
     options._start = options._start === undefined ? new Date().getTime() : options._start;
     options._step = options._step === undefined ? 0 : options._step;
-
-    // normalizes both the (current) view and position values
-    const view = this.element.dataset.view;
-    const position = parseInt(this.element.dataset.position);
 
     // tries to retrieve the amount of frames for the target view and
     // validates that the target view exists and that the target position
@@ -472,6 +479,7 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     // then this request is going to be ignored (not possible to change
     // frame when another animation is running)
     if (safe && this.element.classList.contains("animating")) {
+        this._pending.push({ operation: "changeFrame", args: [frame, options] });
         return;
     }
 
@@ -661,6 +669,7 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     // time collect the garbage and return control flow
     if (view === nextView && stepPosition === nextPosition) {
         this.element.classList.remove("no-drag", "animating");
+        await this.flushPending(true);
         return;
     }
 
@@ -1356,7 +1365,6 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             // there's some kind of preloading happening
             this.element.classList.remove("preloading");
             this.element.classList.remove("no-drag");
-            this.element.classList.remove("preload");
 
             // unsets the finalize clojure from the current instance
             // effectively disallowing further usage of it
