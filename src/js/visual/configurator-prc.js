@@ -1151,7 +1151,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
 
         // returns immediately there's nothing remaining to
         // be done as the image is already loaded
-        if (draw && isReady) return;
+        return;
     }
 
     // adds load callback to the image to draw the frame
