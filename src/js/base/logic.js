@@ -268,3 +268,196 @@ ripe.Ripe.prototype.localeModel = function(
         fallback: fallback
     });
 };
+
+/**
+ * Localizes the given part string value.
+ *
+ * @param {String} color The base string value to be used in the localization.
+ * @param {Object} owner The localization owner, which should implement the
+ * proper localization provider functions. If not provided the default implementation
+ * which used the local base values is used instead.
+ * @param {Object} options Set of options to control the localization, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'locale' - The ISO-15897 standard locale definition to be used in the
+ * localization process.
+ *  - 'defaultValue' - The default string value (if any) to be returned in case it's
+ * not possible to localize the provided value.
+ *  - 'prefixes' - The list of prefixes that are taking into account for proper build
+ * locale usage.
+ *  - 'suffixes' - The list of suffixes that are taking into account for proper build
+ * locale usage.
+ * @returns {String} The final localized string, that takes into account the
+ * current model context.
+ */
+ripe.Ripe.prototype.localePart = function(
+    part,
+    owner = null,
+    {
+        brand = null,
+        model = null,
+        locale = null,
+        defaultValue = null,
+        prefixes = [],
+        suffixes = []
+    } = {}
+) {
+    let value = [];
+    value = value.concat(prefixes);
+    part && value.push(`parts.${part}`);
+    value = value.concat(suffixes);
+    return this.localeModel(value, owner, {
+        brand: brand,
+        model: model,
+        locale: locale,
+        defaultValue: defaultValue
+    });
+};
+
+/**
+ * Localizes the given material string value.
+ *
+ * @param {String} color The base string value to be used in the localization.
+ * @param {Object} owner The localization owner, which should implement the
+ * proper localization provider functions. If not provided the default implementation
+ * which used the local base values is used instead.
+ * @param {Object} options Set of options to control the localization, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'part' - The name of the part of the model.
+ *  - 'locale' - The ISO-15897 standard locale definition to be used in the
+ * localization process.
+ *  - 'defaultValue' - The default string value (if any) to be returned in case it's
+ * not possible to localize the provided value.
+ *  - 'prefixes' - The list of prefixes that are taking into account for proper build
+ * locale usage.
+ *  - 'suffixes' - The list of suffixes that are taking into account for proper build
+ * locale usage.
+ * @returns {String} The final localized string, that takes into account the
+ * current model context.
+ */
+ripe.Ripe.prototype.localeMaterial = function(
+    material,
+    owner = null,
+    {
+        brand = null,
+        model = null,
+        part = null,
+        locale = null,
+        defaultValue = null,
+        prefixes = [],
+        suffixes = []
+    } = {}
+) {
+    let value = [];
+    value = value.concat(prefixes);
+    part && material && value.push(`materials.${part}.${material}`);
+    material && value.push(`materials.${material}`);
+    value = value.concat(suffixes);
+    return this.localeModel(value, owner, {
+        brand: brand,
+        model: model,
+        locale: locale,
+        defaultValue: defaultValue
+    });
+};
+
+/**
+ * Localizes the given color string value.
+ *
+ * @param {String} color The base string value to be used in the localization.
+ * @param {Object} owner The localization owner, which should implement the
+ * proper localization provider functions. If not provided the default implementation
+ * which used the local base values is used instead.
+ * @param {Object} options Set of options to control the localization, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'part' - The name of the part of the model.
+ *  - 'material' - The name of the material of the model.
+ *  - 'locale' - The ISO-15897 standard locale definition to be used in the
+ * localization process.
+ *  - 'defaultValue' - The default string value (if any) to be returned in case it's
+ * not possible to localize the provided value.
+ *  - 'prefixes' - The list of prefixes that are taking into account for proper build
+ * locale usage.
+ *  - 'suffixes' - The list of suffixes that are taking into account for proper build
+ * locale usage.
+ * @returns {String} The final localized string, that takes into account the
+ * current model context.
+ */
+ripe.Ripe.prototype.localeColor = function(
+    color,
+    owner = null,
+    {
+        brand = null,
+        model = null,
+        part = null,
+        material = null,
+        locale = null,
+        defaultValue = null,
+        prefixes = [],
+        suffixes = []
+    } = {}
+) {
+    let value = [];
+    value = value.concat(prefixes);
+    part && material && color && value.push(`colors.${part}.${material}.${color}`);
+    part && color && value.push(`colors.${part}.${color}`);
+    material && color && value.push(`colors.${material}.${color}`);
+    color && value.push(`colors.${color}`);
+    value = value.concat(suffixes);
+    return this.localeModel(value, owner, {
+        brand: brand,
+        model: model,
+        locale: locale,
+        defaultValue: defaultValue
+    });
+};
+
+/**
+ * Localizes the given property string value.
+ *
+ * @param {String} color The base string value to be used in the localization.
+ * @param {Object} owner The localization owner, which should implement the
+ * proper localization provider functions. If not provided the default implementation
+ * which used the local base values is used instead.
+ * @param {Object} options Set of options to control the localization, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'type' - The type of the property.
+ *  - 'locale' - The ISO-15897 standard locale definition to be used in the
+ * localization process.
+ *  - 'defaultValue' - The default string value (if any) to be returned in case it's
+ * not possible to localize the provided value.
+ *  - 'prefixes' - The list of prefixes that are taking into account for proper build
+ * locale usage.
+ *  - 'suffixes' - The list of suffixes that are taking into account for proper build
+ * locale usage.
+ * @returns {String} The final localized string, that takes into account the
+ * current model context.
+ */
+ripe.Ripe.prototype.localeProperty = function(
+    name,
+    owner = null,
+    {
+        brand = null,
+        model = null,
+        type = null,
+        locale = null,
+        defaultValue = null,
+        prefixes = [],
+        suffixes = []
+    } = {}
+) {
+    let value = [];
+    value = value.concat(prefixes);
+    name && value.push(`properties.${name}`);
+    type && name && value.push(`properties.${type}.${name}`);
+    value = value.concat(suffixes);
+    return this.localeModel(value, owner, {
+        brand: brand,
+        model: model,
+        locale: locale,
+        defaultValue: defaultValue
+    });
+};
