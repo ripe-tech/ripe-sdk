@@ -270,7 +270,7 @@ ripe.Ripe.prototype.localeModel = function(
 };
 
 /**
- * Localizes the given color string value.
+ * Localizes the given part string value.
  *
  * @param {String} color The base string value to be used in the localization.
  * @param {Object} owner The localization owner, which should implement the
@@ -279,8 +279,6 @@ ripe.Ripe.prototype.localeModel = function(
  * @param {Object} options Set of options to control the localization, such as:
  *  - 'brand' - The brand of the model.
  *  - 'model' - The name of the model.
- *  - 'part' - The name of the part of the model.
- *  - 'material' - The name of the material of the model.
  *  - 'locale' - The ISO-15897 standard locale definition to be used in the
  * localization process.
  *  - 'defaultValue' - The default string value (if any) to be returned in case it's
@@ -292,14 +290,12 @@ ripe.Ripe.prototype.localeModel = function(
  * @returns {String} The final localized string, that takes into account the
  * current model context.
  */
-ripe.Ripe.prototype.localeColor = function(
-    color,
+ripe.Ripe.prototype.localePart = function(
+    part,
     owner = null,
     {
         brand = null,
         model = null,
-        part = null,
-        material = null,
         locale = null,
         defaultValue = null,
         prefixes = [],
@@ -308,10 +304,7 @@ ripe.Ripe.prototype.localeColor = function(
 ) {
     let value = [];
     value = value.concat(prefixes);
-    part && material && color && value.push(`colors.${part}.${material}.${color}`);
-    part && color && value.push(`colors.${part}.${color}`);
-    material && color && value.push(`colors.${material}.${color}`);
-    color && value.push(`colors.${color}`);
+    part && value.push(`parts.${part}`);
     value = value.concat(suffixes);
     return this.localeModel(value, owner, {
         brand: brand,
@@ -370,7 +363,7 @@ ripe.Ripe.prototype.localeMaterial = function(
 };
 
 /**
- * Localizes the given part string value.
+ * Localizes the given color string value.
  *
  * @param {String} color The base string value to be used in the localization.
  * @param {Object} owner The localization owner, which should implement the
@@ -379,6 +372,8 @@ ripe.Ripe.prototype.localeMaterial = function(
  * @param {Object} options Set of options to control the localization, such as:
  *  - 'brand' - The brand of the model.
  *  - 'model' - The name of the model.
+ *  - 'part' - The name of the part of the model.
+ *  - 'material' - The name of the material of the model.
  *  - 'locale' - The ISO-15897 standard locale definition to be used in the
  * localization process.
  *  - 'defaultValue' - The default string value (if any) to be returned in case it's
@@ -390,12 +385,14 @@ ripe.Ripe.prototype.localeMaterial = function(
  * @returns {String} The final localized string, that takes into account the
  * current model context.
  */
-ripe.Ripe.prototype.localePart = function(
-    part,
+ripe.Ripe.prototype.localeColor = function(
+    color,
     owner = null,
     {
         brand = null,
         model = null,
+        part = null,
+        material = null,
         locale = null,
         defaultValue = null,
         prefixes = [],
@@ -404,7 +401,10 @@ ripe.Ripe.prototype.localePart = function(
 ) {
     let value = [];
     value = value.concat(prefixes);
-    part && value.push(`parts.${part}`);
+    part && material && color && value.push(`colors.${part}.${material}.${color}`);
+    part && color && value.push(`colors.${part}.${color}`);
+    material && color && value.push(`colors.${material}.${color}`);
+    color && value.push(`colors.${color}`);
     value = value.concat(suffixes);
     return this.localeModel(value, owner, {
         brand: brand,
