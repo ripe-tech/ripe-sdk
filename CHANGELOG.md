@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [1.25.2] - 2021-02-23
+
+### Added
+
+* Support for validation of SKU in API calls
+* More locale utility methods
+
 ## [1.25.1] - 2021-02-22
 
 ### Changed
