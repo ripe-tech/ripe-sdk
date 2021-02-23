@@ -247,7 +247,7 @@ ripe.Ripe.prototype.deleteSkuP = function(id, options) {
 };
 
 /**
- * Validates a given SKU.
+ * Validates a given SKU according to spec and model rules.
  *
  * @param {Object} id ID of the SKU to be validated.
  * @param {Object} options An object of options to configure the request.
@@ -267,7 +267,7 @@ ripe.Ripe.prototype.validateSku = function(id, options, callback) {
 };
 
 /**
- * Validates a given SKU.
+ * Validates a given SKU according to spec and model rules.
  *
  * @param {Object} id ID of the SKU to be validated.
  * @param {Object} options An object of options to configure the request.
