@@ -1174,10 +1174,12 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     image.src = url;
     image.dataset.src = url;
     image.dataset.loaded = false;
+    image.classList.add("preloading");
 
     // waits until the image promise is resolved so that
     // we're sure everything is currently loaded
     await imagePromise;
+    image.classList.remove("preloading");
 
     // triggers the post frame event indicating that the
     // frame has been buffered into the img element with
