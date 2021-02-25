@@ -460,6 +460,14 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
         throw new RangeError("Frame " + frame + " is not supported");
     }
 
+    // in case the safe mode is enabled and the current configuration has
+    // not yet been preloaded, the change frame is saved and will be executed
+    // after the preloading
+    if (safe && this.element.classList.contains("preloaded")) {
+        this._pending = [{ operation: "changeFrame", args: [frame, options] }];
+        return;
+    }
+
     // in case the safe mode is enabled and the current configuration is
     // still under the preloading situation the change frame is saved and
     // will be executed after the preloading
@@ -645,7 +653,8 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
             {},
             {
                 animate: animate,
-                duration: animate ? duration : 0
+                duration: animate ? duration : 0,
+                preload: false
             }
         );
     } catch (err) {
@@ -1353,6 +1362,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
 
             // removes the pending classes that indicate that
             // there's some kind of preloading happening
+            this.element.classList.remove("preloaded");
             this.element.classList.remove("preloading");
             this.element.classList.remove("no-drag");
 
@@ -1448,6 +1458,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             // effectively allowing selective QoS (Quality of Service)
             setTimeout(async () => {
                 try {
+                    this.element.classList.add("preloaded");
                     await render();
                 } catch (err) {
                     reject(err);
