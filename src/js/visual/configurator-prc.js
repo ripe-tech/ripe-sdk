@@ -460,6 +460,13 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
         throw new RangeError("Frame " + frame + " is not supported");
     }
 
+    // in case the current view and position are already set then returns
+    // the control flow immediately (animation safeguard)
+    if (safe && view === nextView && position === nextPosition) {
+        this.element.classList.remove("no-drag", "animating");
+        return;
+    }
+
     // in case the safe mode is enabled and the current configuration has
     // not yet been preloaded, the change frame is saved and will be executed
     // after the preloading
@@ -480,13 +487,6 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     // then this request is going to be ignored (not possible to change
     // frame when another animation is running)
     if (safe && this.element.classList.contains("animating")) {
-        return;
-    }
-
-    // in case the current view and position are already set then returns
-    // the control flow immediately (animation safeguard)
-    if (safe && this.element.dataset.view === nextView && position === nextPosition) {
-        this.element.classList.remove("no-drag", "animating");
         return;
     }
 
