@@ -88,5 +88,6 @@ export declare class RipeAPI {
     getOrdersP(options?: GetRequestOptions): Promise<Order[]>;
     deleteOrderP(number: number, options?: RequestOptions): Promise<void>;
     getPriceP(options?: PriceOptions): Promise<Prices>;
+    nativeToSizeP(scale: string, value: number, gender: string, options?: RequestOptions): Promise<{value: number}>;
     _queryToSpec(query: string): Spec;
 }
