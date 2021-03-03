@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [1.25.3] - 2021-03-03
+
+### Added
+
+* Added typing for native to size
+
 ## [1.25.2] - 2021-02-23
 
 ### Added
