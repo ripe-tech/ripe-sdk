@@ -84,11 +84,9 @@ export declare class RipeAPI {
 
     constructor(options?: unknown);
     authKeyP(key: string, options?: RequestOptions): Promise<void>;
-
     importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<Order>;
     getOrdersP(options?: GetRequestOptions): Promise<Order[]>;
     deleteOrderP(number: number, options?: RequestOptions): Promise<void>;
-
     getPriceP(options?: PriceOptions): Promise<Prices>;
     nativeToSizeP(
         scale: string,
@@ -96,8 +94,6 @@ export declare class RipeAPI {
         gender: string,
         options?: RequestOptions
     ): Promise<{ value: number }>;
-
     getBuildP(name: string, options?: RequestOptions): Promise<Build>;
-
     _queryToSpec(query: string): Spec;
 }
