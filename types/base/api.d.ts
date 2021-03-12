@@ -1,4 +1,4 @@
-import { Order, Prices } from "../api";
+import { Build, Order, Prices } from "../api";
 
 export type Part = {
     name: string;
@@ -84,10 +84,20 @@ export declare class RipeAPI {
 
     constructor(options?: unknown);
     authKeyP(key: string, options?: RequestOptions): Promise<void>;
+
     importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<Order>;
     getOrdersP(options?: GetRequestOptions): Promise<Order[]>;
     deleteOrderP(number: number, options?: RequestOptions): Promise<void>;
+
     getPriceP(options?: PriceOptions): Promise<Prices>;
-    nativeToSizeP(scale: string, value: number, gender: string, options?: RequestOptions): Promise<{value: number}>;
+    nativeToSizeP(
+        scale: string,
+        value: number,
+        gender: string,
+        options?: RequestOptions
+    ): Promise<{ value: number }>;
+
+    getBuildP(name: string, options?: RequestOptions): Promise<Build>;
+
     _queryToSpec(query: string): Spec;
 }
