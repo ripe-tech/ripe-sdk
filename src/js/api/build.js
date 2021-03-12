@@ -289,7 +289,6 @@ ripe.Ripe.prototype.switchBuildP = function(name, options) {
  * the requested branch.
  *
  * @param {String} name The name of the build artifacts.
- * @param {String} version The version of the build artifacts.
  * @param {Object} options An object of options to configure the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -317,7 +316,6 @@ ripe.Ripe.prototype.getBuildArtifacts = function(name, options, callback) {
  * the requested branch.
  *
  * @param {String} name The name of the brand of the build artifacts.
- * @param {String} version The version of the build artifacts.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The build artifacts (as a promise).
  */
