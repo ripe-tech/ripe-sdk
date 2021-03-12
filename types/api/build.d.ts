@@ -1,0 +1,27 @@
+export type Build = {
+    id: number;
+    name: string;
+    identifier: string;
+    type: string;
+    latest: string;
+    latest_timestamp: number;
+    branches: string[];
+    user?: string;
+    version_b: string;
+    build_s: string;
+    build_fqn: string;
+    size: number;
+    tags_s: string;
+    sources_s: string;
+    size_s: string;
+    is_installed: boolean;
+    is_installed_b: boolean;
+    is_local: boolean;
+    is_latest: boolean;
+    modified_s: string;
+    local?: Record<string, unknown>;
+    status: string;
+    status_f: string;
+    status_l: string;
+    status_b: string;
+};
