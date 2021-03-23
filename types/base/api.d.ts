@@ -94,6 +94,7 @@ export declare class RipeAPI {
         gender: string,
         options?: RequestOptions
     ): Promise<{ value: number }>;
-    getBuildP(name: string, options?: RequestOptions): Promise<Build>;
+    getBuildP(name: string, options?: GetRequestOptions): Promise<Build>;
+    getBuildsP(options?: GetRequestOptions): Promise<Build[]>;
     _queryToSpec(query: string): Spec;
 }
