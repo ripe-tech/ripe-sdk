@@ -19,6 +19,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [1.25.5] - 2021-04-01
+
+### Added
+
+* Added typing for `getBuildsP`
+
+## [1.25.4] - 2021-03-23
+
+### Added
+
+* Added typing for `getBuildP`
+
+### Changed
+
+* Fixed jsdoc by removing unused parameter
+
 ## [1.25.3] - 2021-03-03
 
 ### Added
