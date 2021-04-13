@@ -126,7 +126,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
 
     // in case the guess URL mode is active then a remote call should be
     // performed in order to take decisions on the proper production URL
-    if (this.guessUrl) await this._guessUrl();
+    if (this.guessUrl) await this._guessURL();
 
     // iterates over all the plugins present in the options (meant
     // to be registered) and adds them to the current instance
@@ -1583,7 +1583,7 @@ ripe.Ripe.prototype.normalizeParts = function(parts) {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._guessUrl = async function() {
+ripe.Ripe.prototype._guessURL = async function() {
     const result = await this.geoResolveP();
     const country = result.country ? result.country.iso_code : null;
     switch (country) {
