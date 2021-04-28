@@ -1628,7 +1628,8 @@ ripe.Ripe.prototype._getState = function(safe = true) {
               parts: this.parts,
               initials: this.initials,
               engraving: this.engraving,
-              initialsExtra: this.initialsExtra
+              initialsExtra: this.initialsExtra,
+              variant: this.variant
           };
 };
 
