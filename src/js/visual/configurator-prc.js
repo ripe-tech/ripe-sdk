@@ -72,6 +72,7 @@ ripe.ConfiguratorPrc.prototype.init = function() {
     this._observer = null;
     this._ownerBinds = {};
     this._pending = [];
+    this._frameDraw = null;
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
@@ -248,6 +249,10 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
     const preloaded = this.element.classList.contains("preload");
     const mustPreload = preload !== undefined ? preload : changed || !preloaded;
     if (mustPreload) preloadPromise = this._preload(this.options.useChain);
+
+    // saves the frame that must be drawn so that later
+    // it does not get lost after possibly several updates
+    this._frameDraw = ripe.getFrameKey(view, position);
 
     // runs the load operation for the current frame, taking into
     // account the multiple requirements for such execution
@@ -1160,7 +1165,11 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
         image.onload = async () => {
             image.dataset.loaded = true;
             image.dataset.src = url;
-            if (!draw) {
+
+            // checks if the frame to be drawn was changed since
+            // the beginning of the promise
+            const mustDraw = this._frameDraw === frame || draw;
+            if (!mustDraw) {
                 resolve();
                 return;
             }
