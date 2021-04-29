@@ -1201,6 +1201,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
 
     const pending = framesBuffer.querySelectorAll("img.preloading") || [];
     if (pending.length === 0 && this._finalize) this._finalize();
+
     // triggers the post frame event indicating that the
     // frame has been buffered into the img element with
     // no cache operation activated
