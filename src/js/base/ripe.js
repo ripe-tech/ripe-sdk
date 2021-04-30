@@ -97,6 +97,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.initials = "";
     this.engraving = null;
     this.initialsExtra = {};
+    this.initialsBuilder = null;
     this.ctx = {};
     this.children = this.children || [];
     this.plugins = this.plugins || [];
@@ -467,13 +468,20 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // if the defaults should be loaded
     const parts = loadDefaults ? this.loadedConfig.defaults : this.parts;
 
+    const parallelPromises = [];
+
+    // loads the current build logic, which can contain methods
+    // that might override the default logic
+    if (this.options.useBuildLogic) parallelPromises.push(this.loadBuildLogic());
+
     // updates the parts of the current instance so that the internals of it
     // reflect the newly loaded configuration, notice that we're not going to
     // wait until the update is finished (opportunistic)
-    await this.setParts(parts, true, {
+    parallelPromises.push(this.setParts(parts, true, {
         partEvents: false,
         runUpdate: false
-    });
+    }));
+    await Promise.all(parallelPromises);
 
     // in case both the initials and the engraving value are set in the options
     // runs the updating of the internal state to update the initials
