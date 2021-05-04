@@ -188,6 +188,24 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
 };
 
 /**
+ * Returns the default customization of a specific brand or model. If no model is provided
+ * then returns the defaults of the owner's current model.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ * @returns {Promise} The model's default options.
+ */
+ripe.Ripe.prototype.getDefaultsP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getDefaults(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns the default customization of a specific brand or model.
  * If no model is provided then returns the defaults of the owner's current model.
  *
