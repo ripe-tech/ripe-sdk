@@ -149,14 +149,14 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
  * Returns the configuration information of a specific brand and model.
  * If no model is provided then returns the information of the owner's current model.
  *
- * @param {Object} options An object with options, such as:
+ * @param {Object} options A map with options, such as:
  *  - 'brand' - The brand of the model.
  *  - 'model' - The name of the model.
  *  - 'version' - The version of the build, defaults to latest.
  *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
  *  - 'flag' - A specific flag that may change the provided materials/colors available.
  *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true').
- * @returns {Promise} The model's configuration data.
+ * @returns {XMLHttpRequest} The model's configuration data.
  */
 ripe.Ripe.prototype.getConfigP = function(options) {
     return new Promise((resolve, reject) => {
@@ -184,6 +184,27 @@ ripe.Ripe.prototype.getDefaults = function(options, callback) {
     options = this._build(options);
     return this._cacheURL(options.url, options, function(result, isValid, request) {
         if (callback) callback(isValid ? result.parts : result, isValid, request);
+    });
+};
+
+/**
+ * Returns the configuration information of a specific brand and model.
+ * If no model is provided then returns the information of the owner's current model.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'country' - The country where the model will be provided, some materials/colors might not be available.
+ *  - 'flag' - A specific flag that may change the provided materials/colors available.
+ *  - 'filter' - If the configuration should be filtered by the country and/or flag (defaults to 'true').
+ * @returns {Promise} The model's configuration data.
+ */
+ripe.Ripe.prototype.getDefaultsP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getDefaults(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
     });
 };
 
