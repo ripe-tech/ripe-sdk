@@ -757,8 +757,7 @@ ripe.Image.prototype._buildProfiles = function(engraving, profiles, context, sep
                 else {
                     // add property name and the string composed of its name and type
                     // to the profile
-                    // if (!profiles[value.name]) profiles[value.name] = true;
-                    profile.push(`${value.type}::${value.name}`);
+                    profile.push(value.type ? `${value.type}::${value.name}` : value.name);
                     profileWithName.push(value.name);
                 }
             }
@@ -788,8 +787,7 @@ ripe.Image.prototype._buildProfiles = function(engraving, profiles, context, sep
             else {
                 // add property name and the string composed of its name and type
                 // to the profile
-                // if (!profiles[value.name]) profiles[value.name] = true;
-                profile.push(`${value.type}::${value.name}`);
+                profile.push(value.type ? `${value.type}::${value.name}` : value.name);
                 profileWithName.push(value.name);
             }
         }
