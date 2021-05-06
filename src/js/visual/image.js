@@ -100,14 +100,10 @@ ripe.Image.prototype.init = function() {
     this.curve = this.options.curve || null;
     this.showInitials = this.options.showInitials || false;
     this.initialsGroup = this.options.initialsGroup || null;
+    this.initialsContext = this.options.initialsContext || null;
+    this.getInitialsContext = this.options.getInitialsContext || null;
     this.initialsBuilder =
-        this.options.initialsBuilder ||
-        function(initials, engraving, element) {
-            return {
-                initials: initials || "$empty",
-                profile: [engraving]
-            };
-        };
+        this.options.initialsBuilder || this.owner.initialsBuilder || this._initialsBuilder;
     this.doubleBuffering =
         this.options.doubleBuffering === undefined ? true : this.options.doubleBuffering;
     this._observer = null;
@@ -234,6 +230,12 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.curve = options.curve === undefined ? this.curve : options.curve;
     this.initialsGroup =
         options.initialsGroup === undefined ? this.initialsGroup : options.initialsGroup;
+    this.initialsContext =
+        options.initialsContext === undefined ? this.initialsContext : options.initialsContext;
+    this.getInitialsContext =
+        options.getInitialsContext === undefined
+            ? this.getInitialsContext
+            : options.getInitialsContext;
     this.doubleBuffering =
         options.doubleBuffering === undefined ? this.doubleBuffering : options.doubleBuffering;
 
@@ -264,6 +266,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const rotation = this.element.dataset.rotation || this.rotation;
     const crop = this.element.dataset.crop || this.crop;
     const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
+    const initialsContext = this.element.dataset.initialsContext || this.initialsContext;
+    const getInitialsContext = this.element.dataset.getInitialsContext || this.getInitialsContext;
     const flip = this.element.dataset.flip || this.flip;
     const mirror = this.element.dataset.mirror || this.mirror;
     const boundingBox = this.element.dataset.boundingBox || this.boundingBox;
@@ -319,8 +323,17 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         this.engraving = base.engraving || null;
     }
 
+    // in case the context changes with the group, gets the
+    // context and calls the initials builder
+    const context = getInitialsContext ? getInitialsContext(initialsGroup) : initialsContext;
     const initialsSpec = this.showInitials
-        ? this.initialsBuilder(this.initials, this.engraving, this.element)
+        ? this.initialsBuilder(
+              this.initials,
+              this.engraving,
+              initialsGroup,
+              initialsViewport,
+              context
+          )
         : {};
 
     // verifies if the model currently loaded in the Ripe Instance can
@@ -519,6 +532,41 @@ ripe.Image.prototype.setInitialsBuilder = async function(builder, options) {
 };
 
 /**
+ * Generates all profiles based on the provided engraving string and the
+ * contexts provided.
+ * This is a base implementation which should be overidden if any specific
+ * behaviour is meant to be provided for a specific context (model).
+ *
+ * @param {String} initials The initials string of the personalization.
+ * @param {String} engraving The normalized engraving string that is going
+ * to be used in the profile generation (should comply with the naming
+ * standard).
+ * @param {String} group The initials group that is going to be used to
+ * build the profiles.
+ * @param {String} viewport The viewport that is going to be used to
+ * build the profiles.
+ * @param {Array} context The context list that is used to permutate all
+ * the profiles to apply specific views to the initials image.
+ * @returns {Object} An object containing the initials of the personalization and
+ * the sequence of generated profiles properly ordered from the most
+ * concrete (more specific) to the least concrete (more general).
+ */
+ripe.Image.prototype._initialsBuilder = function(
+    initials,
+    engraving,
+    group = null,
+    viewport = null,
+    context = null
+) {
+    let profiles = this._generateProfiles(group, viewport);
+    profiles = this._buildProfiles(engraving, profiles, context);
+    return {
+        initials: initials,
+        profile: profiles
+    };
+};
+
+/**
  * @ignore
  */
 ripe.Image.prototype._doubleBuffer = async function(url) {
@@ -594,4 +642,163 @@ ripe.Image.prototype._unregisterHandlers = function() {
     if (this.loadedHandler) this.unbind("loaded", this.loadedHandler);
     if (this.errorHandler) this.unbind("error", this.errorHandler);
     if (this._observer) this._observer.disconnect();
+};
+
+/**
+ * Generates a set of extra profiles according to the provided group
+ * and viewport.
+ *
+ * @param {String} group The name of the "initials" group, to which the
+ * profiles are going to be generated.
+ * @param {String} viewport The name of the viewport, to which the
+ * profiles are going to be generated.
+ * @returns {Array} The profiles definition list that was generated from the
+ * provided grop and viewport "input".
+ */
+ripe.Image.prototype._generateProfiles = function(group, viewport) {
+    const values = [];
+    if (group && viewport) {
+        values.push({
+            type: "group_viewport",
+            name: group + ":" + viewport
+        });
+    }
+    if (group) {
+        values.push({
+            type: "group",
+            name: group
+        });
+    }
+    if (viewport) {
+        values.push({
+            type: "viewport",
+            name: group
+        });
+    }
+    return values;
+};
+
+/**
+ * Builds the complete set of profiles to be used in the initials composition
+ * for the provided normalized engraving string and taking into account the
+ * provided context.
+ *
+ * @param {String} engraving The normalized engraving string that is going to
+ * be used in the profile generation (should comply with the naming standard).
+ * @param {Array} profiles The extra sequence containing multiple values to be
+ * added to the parsed engraving ones and be used in the initials generation
+ * of the combination for the profiles generation.
+ * @param {Array} context The context list that be added to the profile complete
+ * name on the profile generation and, in the last stage of the generation, to
+ * the beginning of the final profiles list.
+ * @param {String} sep String that is going to be used as the separator between
+ * the base profile string and the context.
+ * @returns {Array} The sequence of generated profiles properly ordered from the
+ * most concrete (more specific) to the least concrete (more general).
+ */
+ripe.Image.prototype._buildProfiles = function(engraving, profiles, context, sep = ":") {
+    // parses the provided engraving string so that it's possible to iterate
+    // over the multiple structured values of it, then adds these same values
+    // to the base values passed as argument to the method
+    const engravingProfiles = engraving ? this.owner.parseEngraving(engraving).values : [];
+    profiles = [...engravingProfiles, ...profiles];
+
+    // retrieves the ordered set of property types, which will be used to
+    // order the profiles
+    const propertyTypes = this.owner.getProperties().propertyTypes;
+
+    // sorts the property values by the order declared on the model config,
+    // this is critical for proper value usage (in a sequence)
+    profiles = profiles.sort((a, b) => {
+        const typeAIndex = propertyTypes.includes(a.type)
+            ? propertyTypes.indexOf(a.type)
+            : propertyTypes.length;
+
+        const typeBIndex = propertyTypes.includes(b.type)
+            ? propertyTypes.indexOf(b.type)
+            : propertyTypes.length;
+
+        return typeAIndex - typeBIndex;
+    });
+
+    // create all the multiple combinations of values and reverses the
+    // array so that they are sorted from the more specific (larger)
+    // combinations to the less specific ones
+    const flatMap = (f, xs) => xs.reduce((acc, x) => acc.concat(f(x)), []);
+    const combinations = flatMap(
+        p => profiles.map(p1 => (ripe.equal(p, p1) ? [p] : [p, p1])),
+        profiles
+    ).reverse();
+
+    // iterates over the profiles and append the context
+    // to them, resulting in all the profile combinations
+    // for the provided context
+    profiles = {};
+    for (const combination of combinations) {
+        let profile = [];
+        let profileWithName = [];
+
+        // iterates over the context values and construct all
+        // the permutations with the existing combinations, both
+        // normal and with their type and names reversed
+        if (!context) continue;
+        for (const contextValue of context) {
+            profile = [contextValue];
+            profileWithName = [contextValue];
+
+            for (const value of combination) {
+                // ignore null values for profiles, allowing compatibility
+                // with previous implementations
+                if (!value) continue;
+
+                // support for string format, offering backward compatibility
+                // with existing initials builders
+                if (typeof value === "string") profile.push(value);
+                else {
+                    // add property name and the string composed of its name and type
+                    // to the profile
+                    // if (!profiles[value.name]) profiles[value.name] = true;
+                    profile.push(`${value.type}::${value.name}`);
+                    profileWithName.push(value.name);
+                }
+            }
+
+            // add the profile string combination to the profile list, as well as
+            // the context value
+            const profileString = profile.join(sep);
+            const profileStringWithName = profileWithName.join(sep);
+            if (!profiles[profileString]) profiles[profileString] = true;
+            if (!profiles[profileStringWithName]) profiles[profileStringWithName] = true;
+        }
+
+        profile = [];
+        profileWithName = [];
+
+        // iterate over the combination values and creates all
+        // the permutations with both the name::type format and
+        // the its reverse
+        for (const value of combination) {
+            // ignore null values for profiles, allowing compatibility
+            // with previous implementations
+            if (!value) continue;
+
+            // support for string format, offering backward compatibility
+            // with existing initials builders
+            if (typeof value === "string") profile.push(value);
+            else {
+                // add property name and the string composed of its name and type
+                // to the profile
+                // if (!profiles[value.name]) profiles[value.name] = true;
+                profile.push(`${value.type}::${value.name}`);
+                profileWithName.push(value.name);
+            }
+        }
+
+        const profileString = profile.join(sep);
+        const profileStringWithName = profileWithName.join(sep);
+        if (!profiles[profileString]) profiles[profileString] = true;
+        if (!profiles[profileStringWithName]) profiles[profileStringWithName] = true;
+    }
+
+    return [...context, ...Object.keys(profiles)];
 };
