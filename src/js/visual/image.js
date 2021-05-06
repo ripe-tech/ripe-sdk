@@ -721,14 +721,14 @@ ripe.Image.prototype._buildProfiles = function(engraving, profiles, context, sep
         return typeAIndex - typeBIndex;
     });
 
-    // create all the multiple combinations of values and reverses the
-    // array so that they are sorted from the more specific (larger)
-    // combinations to the less specific ones
-    const flatMap = (f, xs) => xs.reduce((acc, x) => acc.concat(f(x)), []);
-    const combinations = flatMap(
-        p => profiles.map(p1 => (ripe.equal(p, p1) ? [p] : [p, p1])),
-        profiles
-    ).reverse();
+    // creates the list to hold the multiple combinations of values
+    // and then iterates over the range of values size to create the
+    // multiple combinations for the current values
+    let combinations = [];
+    for (let i = 0; i < profiles.length; i++) {
+        combinations = [...combinations, ...ripe.combinations(profiles, i + 1)];
+    }
+    combinations.reverse();
 
     // iterates over the profiles and append the context
     // to them, resulting in all the profile combinations
