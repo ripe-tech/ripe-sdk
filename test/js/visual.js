@@ -132,4 +132,128 @@ describe("Image", function() {
             assert.strictEqual(image.callbacks, null);
         });
     });
+
+    describe("#_initialsBuilder", function() {
+        it("should return the initials and profiles of the image", () => {
+            const dom = new jsdom.JSDOM("<img id='image' />");
+            const imageElement = dom.window.document.getElementById("image");
+            const instance = new base.ripe.Ripe("dummy", "cube");
+            const image = instance.bindImage(imageElement);
+
+            let result = image.initialsBuilder("AA", "black:color.rib:position", null, null, [
+                "report"
+            ]);
+
+            assert.strictEqual(result.initials, "AA");
+            assert.deepStrictEqual(result.profile, [
+                "report",
+                "report:color::black:position::rib",
+                "report:black:rib",
+                "color::black:position::rib",
+                "black:rib",
+                "report:position::rib",
+                "report:rib",
+                "position::rib",
+                "rib",
+                "report:color::black",
+                "report:black",
+                "color::black",
+                "black"
+            ]);
+
+            result = image.initialsBuilder("AA", "black", null, null, ["report", "large"]);
+
+            assert.strictEqual(result.initials, "AA");
+            assert.deepStrictEqual(result.profile, [
+                "report",
+                "large",
+                "report:black",
+                "large:black",
+                "black"
+            ]);
+
+            result = image.initialsBuilder("AA", "white", "left", null, ["step::size"]);
+
+            console.log(result);
+
+            assert.strictEqual(result.initials, "AA");
+            assert.deepStrictEqual(result.profile, [
+                "step::size",
+                "step::size:white:group::left",
+                "step::size:white:left",
+                "white:group::left",
+                "white:left",
+                "step::size:group::left",
+                "step::size:left",
+                "group::left",
+                "left",
+                "step::size:white",
+                "white"
+            ]);
+        });
+    });
+
+    describe("#_generateProfiles", function() {
+        it("should return the image profiles related to the group and viewport given", () => {
+            const dom = new jsdom.JSDOM("<img id='image' />");
+            const imageElement = dom.window.document.getElementById("image");
+            const instance = new base.ripe.Ripe("dummy", "cube");
+            const image = instance.bindImage(imageElement);
+
+            let profiles = image._generateProfiles("main");
+            assert.deepStrictEqual(profiles, [
+                {
+                    type: "group",
+                    name: "main"
+                }
+            ]);
+
+            profiles = image._generateProfiles("left", "large");
+            assert.deepStrictEqual(profiles, [
+                {
+                    type: "group_viewport",
+                    name: "left:large"
+                },
+                {
+                    type: "group",
+                    name: "left"
+                },
+                {
+                    type: "viewport",
+                    name: "left"
+                }
+            ]);
+        });
+    });
+
+    describe("#_buildProfiles", function() {
+        it("should return all the profiles for the the engraving 'style:black' and context 'report'", () => {
+            const dom = new jsdom.JSDOM("<img id='image' />");
+            const imageElement = dom.window.document.getElementById("image");
+            const instance = new base.ripe.Ripe("dummy", "cube");
+            const image = instance.bindImage(imageElement);
+
+            instance.loadedConfig = {
+                initials: {
+                    properties: [
+                        {
+                            type: "style",
+                            name: "black"
+                        }
+                    ]
+                }
+            };
+
+            const engraving = "style:black";
+            const profiles = image._buildProfiles(engraving, [], ["report"]);
+
+            assert.deepStrictEqual(profiles, [
+                "report",
+                "report:black::style",
+                "report:style",
+                "black::style",
+                "style"
+            ]);
+        });
+    });
 });
