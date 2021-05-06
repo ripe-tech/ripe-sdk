@@ -477,10 +477,12 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // updates the parts of the current instance so that the internals of it
     // reflect the newly loaded configuration, notice that we're not going to
     // wait until the update is finished (opportunistic)
-    parallelPromises.push(this.setParts(parts, true, {
-        partEvents: false,
-        runUpdate: false
-    }));
+    parallelPromises.push(
+        this.setParts(parts, true, {
+            partEvents: false,
+            runUpdate: false
+        })
+    );
     await Promise.all(parallelPromises);
 
     // in case both the initials and the engraving value are set in the options
