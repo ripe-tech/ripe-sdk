@@ -1546,6 +1546,12 @@ ripe.ConfiguratorPrc.prototype._registerHandlers = function() {
         event.stopPropagation();
     });
 
+    area.addEventListener("mouseleave", function(event) {
+        // in case the mouse leaves the area then the
+        // part highlight must be removed
+        self.lowlight();
+    });
+
     area.addEventListener("mousemove", function(event) {
         const preloading = self.element.classList.contains("preloading");
         const animating = self.element.classList.contains("animating");
@@ -1573,12 +1579,6 @@ ripe.ConfiguratorPrc.prototype._registerHandlers = function() {
         const isVisible = self.hiddenParts.indexOf(part) === -1;
         if (part && isVisible) self.highlight(part);
         else self.lowlight();
-    });
-
-    area.addEventListener("mouseleave", function(event) {
-        // in case the mouse leaves the area then the
-        // part highlight must be removed
-        self.lowlight();
     });
 
     area.addEventListener("dragstart", function(event) {
