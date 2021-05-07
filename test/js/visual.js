@@ -174,8 +174,6 @@ describe("Image", function() {
 
             result = image.initialsBuilder("AA", "white", "left", null, ["step::size"]);
 
-            console.log(result);
-
             assert.strictEqual(result.initials, "AA");
             assert.deepStrictEqual(result.profile, [
                 "step::size",
