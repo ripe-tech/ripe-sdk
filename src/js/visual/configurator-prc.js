@@ -1575,6 +1575,12 @@ ripe.ConfiguratorPrc.prototype._registerHandlers = function() {
         else self.lowlight();
     });
 
+    area.addEventListener("mouseleave", function(event) {
+        // in case the mouse leaves the area then the
+        // part highlight must be removed
+        self.lowlight();
+    });
+
     area.addEventListener("dragstart", function(event) {
         event.preventDefault();
     });
