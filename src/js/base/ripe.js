@@ -472,7 +472,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
 
     // loads the current build logic, which can contain methods
     // that might override the default logic
-    if (this.options.useBuildLogic) parallelPromises.push(this.loadBuildLogic());
+    if (this.useBuildLogic) parallelPromises.push(this.loadBuildLogic());
 
     // updates the parts of the current instance so that the internals of it
     // reflect the newly loaded configuration, notice that we're not going to
@@ -680,6 +680,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
     this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
+    this.useBuildLogic = this.options.useBuildLogic === undefined ? true : this.options.useBuildLogic;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account
