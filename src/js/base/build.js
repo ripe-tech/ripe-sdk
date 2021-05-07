@@ -27,5 +27,6 @@ ripe.Ripe.prototype.loadBuildLogic = async function() {
     });
     // eslint-disable-next-line no-eval
     const logicScript = eval(logicScriptText);
+    if (!logicScript) return;
     this.initialsBuilder = logicScript.initialsBuilder;
 };
