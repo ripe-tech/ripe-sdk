@@ -722,7 +722,8 @@ ripe.Ripe.prototype.setPart = async function(part, material, color, events = tru
 
     // propagates the state change in the internal structures to the
     // children elements of this Ripe Instance
-    const promise = this.update(undefined, { reason: "set part" });
+    const fullOptions = { ...options, ...{ reason: "set part", noAwaitLayout: true } };
+    const promise = this.update(undefined, fullOptions);
 
     // in case the wait update options is valid (by default) then waits
     // until the update promise is fulfilled
@@ -761,7 +762,8 @@ ripe.Ripe.prototype.setParts = async function(update, events = true, options = {
 
     // propagates the state change in the internal structures to the
     // children elements of this Ripe Instance
-    const promise = this.update(undefined, { reason: "set parts" });
+    const fullOptions = { ...options, ...{ reason: "set parts", noAwaitLayout: true } };
+    const promise = this.update(undefined, fullOptions);
 
     // in case the wait update options is valid (by default) then waits
     // until the update promise is fulfilled
