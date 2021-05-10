@@ -93,6 +93,8 @@ if (
         fetch = window.fetch;
     } else if (typeof global !== "undefined" && typeof global.fetch !== "undefined") {
         fetch = global.fetch;
+    } else if (typeof global !== "undefined") {
+        fetch = require("node-fetch").default;
     } else if (
         // eslint-disable-next-line camelcase
         typeof __webpack_require__ === "undefined" &&
