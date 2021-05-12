@@ -6,6 +6,7 @@ on:
 jobs:
   build:
     name: Deploy
+    timeout-minutes: 10
     strategy:
       matrix:
         node-version: [10]
