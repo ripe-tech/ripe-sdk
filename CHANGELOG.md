@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * `getDefaultsP` - the promise based version of `getDefaults`
 * `changePriority` Order API method
+* `tenancyAccountMe` endpoint
 
 ### Changed
 
@@ -18,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* `lowlight` when the mouse leaves the configurator area
 
 ## [1.25.7] - 2021-04-29
 
