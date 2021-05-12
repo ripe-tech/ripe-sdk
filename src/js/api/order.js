@@ -660,7 +660,7 @@ ripe.Ripe.prototype.setPriority = function(number, priority, options, callback) 
         url: url,
         method: "PUT",
         auth: true,
-        dataJ: {
+        params: {
             priority: priority
         }
     });
