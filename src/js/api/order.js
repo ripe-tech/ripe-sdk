@@ -99,6 +99,42 @@ ripe.Ripe.prototype.getOrderP = function(number, options) {
 };
 
 /**
+ * Gets an order transport info.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getTransportOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/transport`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets an order transport info.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order transport info.
+ */
+ripe.Ripe.prototype.getTransportOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.getTransportOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Deletes an order by number.
  *
  * @param {Number} number The number of the order to delete.
