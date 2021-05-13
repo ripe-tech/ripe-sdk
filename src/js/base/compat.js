@@ -93,13 +93,15 @@ if (
         fetch = window.fetch;
     } else if (typeof global !== "undefined" && typeof global.fetch !== "undefined") {
         fetch = global.fetch;
-    } else if (typeof global !== "undefined") {
-        fetch = require("node-fetch").default;
     } else if (
         // eslint-disable-next-line camelcase
         typeof __webpack_require__ === "undefined" &&
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
+        fetch = require("node-fetch").default;
+    } else if (typeof global !== "undefined" && typeof global.__VUE_SSR_CONTEXT__ !== "undefined") {
+        // this is a workaround for Nuxt.js SSR built as standalone,
+        // which does not have global.fetch populated
         fetch = require("node-fetch").default;
     }
 }
