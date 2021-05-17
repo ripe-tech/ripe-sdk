@@ -15,6 +15,7 @@ const priceRule = require("./price-rule");
 const profile = require("./profile");
 const size = require("./size");
 const sku = require("./sku");
+const transportRule = require("./transport-rule");
 
 Object.assign(module.exports, account);
 Object.assign(module.exports, availabilityRule);
@@ -33,3 +34,4 @@ Object.assign(module.exports, priceRule);
 Object.assign(module.exports, profile);
 Object.assign(module.exports, size);
 Object.assign(module.exports, sku);
+Object.assign(module.exports, transportRule);
