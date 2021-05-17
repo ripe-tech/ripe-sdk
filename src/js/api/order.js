@@ -215,6 +215,38 @@ ripe.Ripe.prototype.createAttachmentOrderP = function(number, file, options) {
     });
 };
 
+ripe.Ripe.prototype.attachmentOrder = function(
+    number,
+    attachmentName,
+    options,
+    callback
+) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/attachments/${attachmentName}`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true,
+        cached: false
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.attachmentOrderP = function(number, attachmentName, options) {
+    return new Promise((resolve, reject) => {
+        this.attachmentOrder(
+            number,
+            attachmentName,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
+    });
+};
+
 ripe.Ripe.prototype.logOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
