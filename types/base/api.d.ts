@@ -1,4 +1,4 @@
-import { Build, Order, Prices } from "../api";
+import { Build, Order, Prices, TenancyAccount } from "../api";
 
 export type Part = {
     name: string;
@@ -83,7 +83,9 @@ export declare class RipeAPI {
     key?: string;
 
     constructor(options?: unknown);
+    tenancyAccountMeP(options?: RequestOptions): Promise<TenancyAccount>;
     authKeyP(key: string, options?: RequestOptions): Promise<void>;
+    authPidP(token: string, options?: RequestOptions): Promise<void>;
     importOrderP(ffOrderId: string, options?: ImportOrderOptions): Promise<Order>;
     getOrdersP(options?: GetRequestOptions): Promise<Order[]>;
     deleteOrderP(number: number, options?: RequestOptions): Promise<void>;

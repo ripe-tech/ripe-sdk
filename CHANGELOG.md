@@ -9,14 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* `getDefaultsP` - the promise based version of `getDefaults`
-* `tenancyAccountMe` endpoint
 * Transport Rule API
 * `getTransportOrder` method
 
 ### Changed
 
 *
+
+### Fixed
+
+*
+
+## [1.25.8] - 2021-05-14
+
+### Added
+
+* `getDefaultsP` - the promise based version of `getDefaults`
+* `changePriority` Order API method
+* `tenancyAccountMe` endpoint
 
 ### Fixed
 
