@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * `getDefaultsP` - the promise based version of `getDefaults`
 * `tenancyAccountMe` endpoint
+* Transport Rule API
+* `getTransportOrder` method
 
 ### Changed
 
