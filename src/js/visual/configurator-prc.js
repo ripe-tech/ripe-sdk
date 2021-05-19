@@ -173,7 +173,7 @@ ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = 
         options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
 
-    if (update) await this.update();
+    if (update) await this.owner.update(null, {}, [this]);
 };
 
 /**
@@ -358,12 +358,13 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size) {
     mask.style.width = size + "px";
     mask.style.height = size + "px";
     this.currentSize = size;
-    await this.update(
-        {},
-        {
-            force: true
-        }
-    );
+    await this.owner.update(null, {}, [this]);
+    // await this.update(
+    //     {},
+    //     {
+    //         force: true
+    //     }
+    // );
 };
 
 /**
@@ -458,6 +459,14 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     const viewFrames = this.frames[nextView];
     if (!viewFrames || nextPosition >= viewFrames) {
         throw new RangeError("Frame " + frame + " is not supported");
+    }
+
+    // in case the safe mode is enabled and the current configuration has
+    // not yet been preloaded, the change frame is saved and will be executed
+    // after the preloading
+    if (safe && this.element.classList.contains("preloaded")) {
+        this._pending = [{ operation: "changeFrame", args: [frame, options] }];
+        return;
     }
 
     // in case the safe mode is enabled and the current configuration is
@@ -637,17 +646,19 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     this.trigger("changed_frame", newFrame);
 
     try {
+        console.log("owner update");
+        await this.owner.update(null, {}, [this]);
         // runs the update operation that should sync the visuals of the
         // configurator according to the current internal state (in data)
         // this operation waits for the proper drawing of the image (takes
         // some time and resources to be completed)
-        await this.update(
-            {},
-            {
-                animate: animate,
-                duration: animate ? duration : 0
-            }
-        );
+        // await this.update(
+        //     {},
+        //     {
+        //         animate: animate,
+        //         duration: animate ? duration : 0
+        //     }
+        // );
     } catch (err) {
         // removes the locking classes as the current operation has been
         // finished, effectively re-allowing: dragging and animated operations
@@ -1351,6 +1362,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
 
             // removes the pending classes that indicate that
             // there's some kind of preloading happening
+            this.element.classList.remove("preloaded");
             this.element.classList.remove("preloading");
             this.element.classList.remove("no-drag");
 
@@ -1433,12 +1445,13 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             await render();
         };
 
-        // adds the preloading flag and then prevents mouse drag
-        // movements by setting proper classes
-        this.element.classList.add("preloading");
-        this.element.classList.add("no-drag");
-
         if (work.length > 0) {
+            // adds the preloading flag and then prevents mouse drag
+            // movements by setting proper classes
+            this.element.classList.add("preloaded");
+            this.element.classList.add("preloading");
+            this.element.classList.add("no-drag");
+
             // schedule the timeout operation in order to trigger
             // the pre-loading of the remaining frames, the delay
             // is meant to provide some time buffer to the current
