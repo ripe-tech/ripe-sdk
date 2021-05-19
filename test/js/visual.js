@@ -301,8 +301,6 @@ describe("Image", function() {
             const image = instance.bindImage(imageElement);
 
             const profiles = image._buildProfiles("style:black", [], ["report"]);
-            console.log("profiles last", profiles);
-
             assert.deepStrictEqual(profiles, [
                 "report:black::style",
                 "report:style",
