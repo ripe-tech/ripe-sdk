@@ -138,6 +138,9 @@ describe("Image", function() {
             const dom = new jsdom.JSDOM("<img id='image' />");
             const imageElement = dom.window.document.getElementById("image");
             const instance = new base.ripe.Ripe("dummy", "cube");
+            instance.loadedConfig = {
+                initials: { properties: [] }
+            };
             const image = instance.bindImage(imageElement);
 
             let result = image.initialsBuilder("AA", "black:color.rib:position", null, null, [
@@ -146,7 +149,6 @@ describe("Image", function() {
 
             assert.strictEqual(result.initials, "AA");
             assert.deepStrictEqual(result.profile, [
-                "report",
                 "report:color::black:position::rib",
                 "report:black:rib",
                 "color::black:position::rib",
@@ -158,25 +160,25 @@ describe("Image", function() {
                 "report:color::black",
                 "report:black",
                 "color::black",
-                "black"
+                "black",
+                "report"
             ]);
 
             result = image.initialsBuilder("AA", "black", null, null, ["report", "large"]);
 
             assert.strictEqual(result.initials, "AA");
             assert.deepStrictEqual(result.profile, [
-                "report",
-                "large",
                 "report:black",
                 "large:black",
-                "black"
+                "black",
+                "report",
+                "large"
             ]);
 
             result = image.initialsBuilder("AA", "white", "left", null, ["step::size"]);
 
             assert.strictEqual(result.initials, "AA");
             assert.deepStrictEqual(result.profile, [
-                "step::size",
                 "step::size:white:group::left",
                 "step::size:white:left",
                 "white:group::left",
@@ -186,7 +188,8 @@ describe("Image", function() {
                 "group::left",
                 "left",
                 "step::size:white",
-                "white"
+                "white",
+                "step::size"
             ]);
         });
     });
@@ -196,6 +199,9 @@ describe("Image", function() {
             const dom = new jsdom.JSDOM("<img id='image' />");
             const imageElement = dom.window.document.getElementById("image");
             const instance = new base.ripe.Ripe("dummy", "cube");
+            instance.loadedConfig = {
+                initials: { properties: [] }
+            };
             const image = instance.bindImage(imageElement);
 
             let profiles = image._generateProfiles("main");
@@ -225,7 +231,7 @@ describe("Image", function() {
     });
 
     describe("#_buildProfiles", function() {
-        it("should return all the profiles for the the engraving 'style:black' and context 'report'", () => {
+        it("should return all the profiles for the provided engraving and context", () => {
             const dom = new jsdom.JSDOM("<img id='image' />");
             const imageElement = dom.window.document.getElementById("image");
             const instance = new base.ripe.Ripe("dummy", "cube");
@@ -233,24 +239,76 @@ describe("Image", function() {
 
             instance.loadedConfig = {
                 initials: {
-                    properties: [
-                        {
-                            type: "style",
-                            name: "black"
-                        }
-                    ]
+                    properties: []
                 }
             };
 
-            const engraving = "style:black";
-            const profiles = image._buildProfiles(engraving, [], ["report"]);
+            let profiles = image._buildProfiles("gold:color.expensive:price", [], ["left:small", "left", "small"]);
+            assert.deepStrictEqual(profiles, [
+                "left:small:color::gold:price::expensive",
+                "left:small:gold:expensive",
+                "left:color::gold:price::expensive",
+                "left:gold:expensive",
+                "small:color::gold:price::expensive",
+                "small:gold:expensive",
+                "color::gold:price::expensive",
+                "gold:expensive",
+                "left:small:price::expensive",
+                "left:small:expensive",
+                "left:price::expensive",
+                "left:expensive",
+                "small:price::expensive",
+                "small:expensive",
+                "price::expensive",
+                "expensive",
+                "left:small:color::gold",
+                "left:small:gold",
+                "left:color::gold",
+                "left:gold",
+                "small:color::gold",
+                "small:gold",
+                "color::gold",
+                "gold",
+                "left:small",
+                "left",
+                "small"
+            ]);
+
+            profiles = image._buildProfiles("gold", [], ["left:small", "left", "small"]);
+            assert.deepStrictEqual(profiles, [
+                "left:small:gold",
+                "left:gold",
+                "small:gold",
+                "gold",
+                "left:small",
+                "left",
+                "small"
+            ]);
+
+            profiles = image._buildProfiles("gold", [], []);
+            assert.deepStrictEqual(profiles, ["gold"]);
+        });
+
+        it("should return all the profiles for the engraving 'style:black' and context 'report'", () => {
+            const dom = new jsdom.JSDOM("<img id='image' />");
+            const imageElement = dom.window.document.getElementById("image");
+            const instance = new base.ripe.Ripe("dummy", "cube");
+            instance.loadedConfig = {
+                initials: {
+                    properties: []
+                }
+            };
+            const image = instance.bindImage(imageElement);
+
+            const profiles = image._buildProfiles("style:black", [], ["report"]);
+            console.log("profiles last", profiles);
 
             assert.deepStrictEqual(profiles, [
-                "report",
                 "report:black::style",
                 "report:style",
                 "black::style",
-                "style"
+                "style",
+                "report"
             ]);
         });
     });
