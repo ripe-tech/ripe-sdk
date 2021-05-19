@@ -181,7 +181,7 @@ ripe.Ripe.prototype.parseEngraving = function(engraving, properties = null) {
 ripe.Ripe.prototype.getProperties = function(properties = null) {
     // gathers the complete set of properties for the initials
     // definitions, to be used in the unpack
-    properties = properties || (this.loadedConfig && this.loadedConfig.initials.properties) || [];
+    properties = properties || this.loadedConfig.initials.properties;
 
     let propertyTypes = [];
     const propertyNamesM = {};
