@@ -798,5 +798,5 @@ ripe.Image.prototype._buildProfiles = function(engraving, profiles, context, sep
         if (!profiles[profileStringWithName]) profiles[profileStringWithName] = true;
     }
 
-    return [...context, ...Object.keys(profiles)];
+    return [...Object.keys(profiles), ...context];
 };
