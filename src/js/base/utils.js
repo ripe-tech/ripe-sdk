@@ -395,37 +395,6 @@ ripe.toLocale = function(
 /**
  * @ignore
  */
-ripe.combinations = function(items, size) {
-    function recursive(values, i) {
-        // saves the value in the results
-        // array if the length of it is
-        // equal to the one requested
-        if (values.length === size) {
-            result.push(values);
-            return;
-        }
-
-        // returns if there are no more
-        // elements to combine
-        if (i + 1 > items.length) return;
-
-        // adds value to the combination
-        // value being constructed and
-        // make a recursive call so that
-        // the combination can be made with
-        // the new string and with the element
-        recursive(values.concat(items[i]), i + 1);
-        recursive(values, i + 1);
-    }
-
-    const result = [];
-    recursive([], 0);
-    return result;
-};
-
-/**
- * @ignore
- */
 ripe._permutations = function(value) {
     const valueP = value.split(".");
     const permutations = [];
