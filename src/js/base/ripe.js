@@ -1972,12 +1972,12 @@ ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context, sep 
     // parses the provided engraving string so that it's possible to iterate
     // over the multiple structured values of it, then adds these same values
     // to the base values passed as argument to the method
-    const engravingProfiles = engraving ? this.owner.parseEngraving(engraving).values : [];
+    const engravingProfiles = engraving ? this.parseEngraving(engraving).values : [];
     profiles = [...engravingProfiles, ...profiles];
 
     // retrieves the ordered set of property types, which will be used to
     // order the profiles
-    const propertyTypes = this.owner.getProperties().propertyTypes;
+    const propertyTypes = this.getProperties().propertyTypes;
 
     // sorts the property values by the order declared on the model config,
     // this is critical for proper value usage (in a sequence)
