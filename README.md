@@ -214,7 +214,7 @@ This element supports the following events:
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `ready`         | Triggered upon first loading of the model's internal frame structure (once per model load)                                        |
 | `loaded`        | Triggered when the configurator finishes loading all of the internal frames, and is ready for interaction (once per part setting) |
-| `changed_frame` | Raises whenever there's a rotation in the configurator viewport (viewable frame has changed)                                       |
+| `changed_frame` | Raises whenever there's a rotation in the configurator viewport (viewable frame has changed)                                      |
 
 ```javascript
 var element = document.getElementById("config");
@@ -283,34 +283,35 @@ if (ripe.isOAuthPending()) {
 
 ### Options
 
-| Name               | Type               | Description                                                                                                                                                                        d       |
-| ------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `backgroundColor`  | *string*           | RGB format color value of the background ( no need to pass the "#" signal ). No background by default. Example: "cccccc".                                                                  |
-| `country`          | *string*           | Two letters standard country codes defined in *ISO 3166-1 alpha-2* codes. "US" by default. Example: "PT".                                                                                  |
-| `currency`         | *string*           | Standard currency codes defined in *ISO 4217* codes. "USD" by default. Example: "EUR".                                                                                                     |
-| `frames`           | *array of strings* | All the frames to be used in the customization. Example: ["top", "bottom", "1", "2"].                                                                                                      |
-| `format`           | *string*           | One of the valid image formats: 'lossless', 'lossful', 'jpeg', 'webp', 'sgi' or 'png'. "null" by default.                                                                                   |
-| `maskDuration`     | *number*           | Specifies how many milliseconds the mask animation takes to complete. 150 by default.                                                                                                      |
-| `maskOpacity`      | *number*           | Specifies the opacity value of the the masks used to highlight/select parts. 0.4 by default.                                                                                               |
-| `maxSize`          | *number*           | Maximum value for frame image size. 1000px by default.                                                                                                                                     |
-| `noCombinations`   | *boolean*          | Defines if the combinations are loaded or not. False (loading) by default.                                                                                                                 |
-| `noDefaults`       | *boolean*          | Defines if the defaults are loaded or not. False (loading) by default.                                                                                                                     |
-| `noMasks`          | *boolean*          | Used to negate the `useMasks` option.                                                                                                                                                      |
-| `noPrice`          | *boolean*          | Used to negate the `usePrice` option.                                                                                                                                                      |
-| `parts`            | *JSON Object*      | Defines the product initial parts. Each key is a part's name built with color and material information. Example: `var parts = { "sole": { "material": "nappa", "color": "white" }, ... }`. |
-| `remoteCalls`      | *boolean*          | Activates the remote calls functionality executed by several workflows. True by default.                                                                                                   |
-| `remoteOnConfig`   | *boolean*          | Activates the remote execution of the model's logic on config updates. True by default.                                                                                                    |
-| `remoteOnPart`     | *boolean*          | Activates the remote execution of the model's logic on parts updates. True by default.                                                                                                     |
-| `remoteOnInitials` | *boolean*          | Activates the remote execution of the model's logic on initials updates. True by default.                                                                                                  |
-| `sensitivity`      | *string*           | Defines the degree of sensitivity of the dragging interaction. 40 by default.                                                                                                              |
-| `size`             | *number*           | Initial size value of a frame image that is going to be composed. By default it's 1000px.                                                                                                  |
-| `url`              | *string*           | The base `url` of the server where the product is configured.                                                                                                                              |
-| `variant`          | *string*           | Variant of the customizable product.                                                                                                                                                       |
-| `version`          | *string*           | The version of the build of the customizable product.                                                                                                                                      |
-| `useChain`         | *boolean*          | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default.                                              |
-| `useMasks`         | *boolean*          | Enables masks on selection/highlight. True by default.                                                                                                                                     |
-| `usePrice`         | *boolean*          | Enables the fetch price feature every time a new part is set. True by default.                                                                                                             |
-| `useSync`          | *boolean*          | Enables the part synchronization feature. False by default.                                                                                                                                |
+| Name                      | Type               | Description                                                                                                                                                                                |
+| ------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `backgroundColor`         | *string*           | RGB format color value of the background ( no need to pass the "#" signal ). No background by default. Example: "cccccc".                                                                  |
+| `country`                 | *string*           | Two letters standard country codes defined in *ISO 3166-1 alpha-2* codes. "US" by default. Example: "PT".                                                                                  |
+| `currency`                | *string*           | Standard currency codes defined in *ISO 4217* codes. "USD" by default. Example: "EUR".                                                                                                     |
+| `frames`                  | *array of strings* | All the frames to be used in the customization. Example: ["top", "bottom", "1", "2"].                                                                                                      |
+| `format`                  | *string*           | One of the valid image formats: 'lossless', 'lossful', 'jpeg', 'webp', 'sgi' or 'png'. "null" by default.                                                                                  |
+| `maskDuration`            | *number*           | Specifies how many milliseconds the mask animation takes to complete. 150 by default.                                                                                                      |
+| `maskOpacity`             | *number*           | Specifies the opacity value of the the masks used to highlight/select parts. 0.4 by default.                                                                                               |
+| `maxSize`                 | *number*           | Maximum value for frame image size. 1000px by default.                                                                                                                                     |
+| `noCombinations`          | *boolean*          | Defines if the combinations are loaded or not. False (loading) by default.                                                                                                                 |
+| `noDefaults`              | *boolean*          | Defines if the defaults are loaded or not. False (loading) by default.                                                                                                                     |
+| `noMasks`                 | *boolean*          | Used to negate the `useMasks` option.                                                                                                                                                      |
+| `noPrice`                 | *boolean*          | Used to negate the `usePrice` option.                                                                                                                                                      |
+| `parts`                   | *JSON Object*      | Defines the product initial parts. Each key is a part's name built with color and material information. Example: `var parts = { "sole": { "material": "nappa", "color": "white" }, ... }`. |
+| `remoteCalls`             | *boolean*          | Activates the remote calls functionality executed by several workflows. True by default.                                                                                                   |
+| `remoteOnConfig`          | *boolean*          | Activates the remote execution of the model's logic on config updates. True by default.                                                                                                    |
+| `remoteOnPart`            | *boolean*          | Activates the remote execution of the model's logic on parts updates. True by default.                                                                                                     |
+| `remoteOnInitials`        | *boolean*          | Activates the remote execution of the model's logic on initials updates. True by default.                                                                                                  |
+| `sensitivity`             | *string*           | Defines the degree of sensitivity of the dragging interaction. 40 by default.                                                                                                              |
+| `size`                    | *number*           | Initial size value of a frame image that is going to be composed. By default it's 1000px.                                                                                                  |
+| `url`                     | *string*           | The base `url` of the server where the product is configured.                                                                                                                              |
+| `variant`                 | *string*           | Variant of the customizable product.                                                                                                                                                       |
+| `version`                 | *string*           | The version of the build of the customizable product.                                                                                                                                      |
+| `useChain`                | *boolean*          | Determines if a chain based loading should be used for the pre-loading process of the various image resources to be loaded. False by default.                                              |
+| `useMasks`                | *boolean*          | Enables masks on selection/highlight. True by default.                                                                                                                                     |
+| `usePrice`                | *boolean*          | Enables the fetch price feature every time a new part is set. True by default.                                                                                                             |
+| `useSync`                 | *boolean*          | Enables the part synchronization feature. False by default.                                                                                                                                |
+| `useInitialsBuilderLogic` | *boolean*          | Enables the usage of the client-side initials builder logic defined in the 3DB, instead of the default one. True by default.                                                               |
 
 ## Browser Support
 
