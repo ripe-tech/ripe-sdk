@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Transport Rule API
 * `getTransportOrder` method
 * `attachmentOrder` method
+* `qualityAssureOrder` method
 
 ### Changed
 
