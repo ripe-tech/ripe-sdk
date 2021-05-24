@@ -771,6 +771,49 @@ ripe.Ripe.prototype.setPriorityP = function(number, priority, options) {
         });
     });
 };
+/**
+ * Changes the tracking info of an order.
+ *
+ * @param {Number} number The number of the order to change the tracking info.
+ * @param {String} trackingNumber The new tracking number.
+ * @param {String} trackingUrl The new tracking URL.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.setTracking = function(number, trackingNumber, trackingUrl, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/tracking`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true,
+        params: {
+            tracking_number: trackingNumber,
+            tracking_url: trackingUrl
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Changes the tracking info of an order.
+ *
+ * @param {Number} number The number of the order to change the tracking info.
+ * @param {String} trackingNumber The new tracking number.
+ * @param {String} trackingUrl The new tracking URL.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order tracking info change.
+ */
+ripe.Ripe.prototype.setTrackingP = function(number, trackingNumber, trackingUrl, options) {
+    return new Promise((resolve, reject) => {
+        this.setTracking(number, trackingNumber, trackingUrl, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
 
 /**
  * Imports a production order to RIPE Core.
