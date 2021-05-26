@@ -1431,13 +1431,12 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             await render();
         };
 
-        if (work.length > 0) {
             // adds the preloading flag and then prevents mouse drag
             // movements by setting proper classes
-            this.element.classList.add("preloaded");
             this.element.classList.add("preloading");
             this.element.classList.add("no-drag");
 
+        if (work.length > 0) {
             // schedule the timeout operation in order to trigger
             // the pre-loading of the remaining frames, the delay
             // is meant to provide some time buffer to the current
