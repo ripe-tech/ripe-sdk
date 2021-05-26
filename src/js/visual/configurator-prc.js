@@ -270,10 +270,6 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
         // waits for the preload promise as the result of it is
         // going to be considered the result of the operation
         result = await preloadPromise;
-
-        // flushes the complete set of operations that were waiting
-        // for the end of the pre-loading operation
-        await this.flushPending(true);
     }
 
     // verifies if the operation has been successful, it's considered
@@ -359,12 +355,6 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size) {
     mask.style.height = size + "px";
     this.currentSize = size;
     await this.owner.update(null, {}, [this]);
-    // await this.update(
-    //     {},
-    //     {
-    //         force: true
-    //     }
-    // );
 };
 
 /**
@@ -461,14 +451,6 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
         throw new RangeError("Frame " + frame + " is not supported");
     }
 
-    // in case the safe mode is enabled and the current configuration has
-    // not yet been preloaded, the change frame is saved and will be executed
-    // after the preloading
-    if (safe && this.element.classList.contains("preloaded")) {
-        this._pending = [{ operation: "changeFrame", args: [frame, options] }];
-        return;
-    }
-
     // in case the safe mode is enabled and the current configuration is
     // still under the preloading situation the change frame is saved and
     // will be executed after the preloading
@@ -488,6 +470,10 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     // the control flow immediately (animation safeguard)
     if (safe && this.element.dataset.view === nextView && position === nextPosition) {
         this.element.classList.remove("no-drag", "animating");
+
+        // flushes the complete set of operations that were waiting
+        // for the end of change frame operation
+        await this.flushPending(true);
         return;
     }
 
@@ -646,19 +632,19 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     this.trigger("changed_frame", newFrame);
 
     try {
-        console.log("owner update");
-        await this.owner.update(null, {}, [this]);
         // runs the update operation that should sync the visuals of the
         // configurator according to the current internal state (in data)
         // this operation waits for the proper drawing of the image (takes
         // some time and resources to be completed)
-        // await this.update(
-        //     {},
-        //     {
-        //         animate: animate,
-        //         duration: animate ? duration : 0
-        //     }
-        // );
+        await this.owner.update(
+            null,
+            {
+            animate: animate,
+            duration: animate ? duration : 0,
+            preload: false
+            },
+            [this]
+        );
     } catch (err) {
         // removes the locking classes as the current operation has been
         // finished, effectively re-allowing: dragging and animated operations
