@@ -1348,7 +1348,6 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
 
             // removes the pending classes that indicate that
             // there's some kind of preloading happening
-            this.element.classList.remove("preloaded");
             this.element.classList.remove("preloading");
             this.element.classList.remove("no-drag");
 
@@ -1431,10 +1430,10 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             await render();
         };
 
-            // adds the preloading flag and then prevents mouse drag
-            // movements by setting proper classes
-            this.element.classList.add("preloading");
-            this.element.classList.add("no-drag");
+        // adds the preloading flag and then prevents mouse drag
+        // movements by setting proper classes
+        this.element.classList.add("preloading");
+        this.element.classList.add("no-drag");
 
         if (work.length > 0) {
             // schedule the timeout operation in order to trigger
