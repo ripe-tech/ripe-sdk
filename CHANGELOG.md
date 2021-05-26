@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* `setTracking` method
+* `setTracking` method to the `Order` entity
+* `setMeta` method allowing dynamic set of metadata attributes for the `Order` entity
 
 ### Changed
 
