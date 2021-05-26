@@ -732,12 +732,13 @@ ripe.Ripe.prototype.cancelOrderP = function(number, options) {
 };
 
 /**
- * Changes an entry of an order's meta.
+ * Changes an entry of an order's meta adding the new meta entry
+ * according to the provided value or changing an existing one.
  *
  * @param {Number} number The number of the order to change the meta.
  * @param {String} key The key to set.
  * @param {Object} value The value to set, which might be of any type
- * (string, number, object or list). Providing a `null` value deletes
+ * (string, number, object or list), providing a `null` value deletes
  * the key.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
@@ -761,12 +762,13 @@ ripe.Ripe.prototype.cancelOrderP = function(number, options) {
 };
 
 /**
- * Changes an entry of an order's meta.
+ * Changes an entry of an order's meta adding the new meta entry
+ * according to the provided value or changing an existing one.
  *
  * @param {Number} number The number of the order to change the meta.
  * @param {String} key The key to set.
  * @param {Object} value The value to set, which might be of any type
- * (string, number, object or list). Providing a `null` value deletes
+ * (string, number, object or list), providing a `null` value deletes
  * the key.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The result of the order meta change.
