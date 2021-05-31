@@ -517,7 +517,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // runs the initial update operation, so that all the visuals and children
     // objects are properly updated according to the new configuration
     const updatePromise = this.update(undefined, {
-        noAwaitLayout: true,
+        noAwaitLayout: options.noAwaitLayout === undefined ? true : options.noAwaitLayout,
         reason: "config"
     });
     if (options.safe) await updatePromise;
