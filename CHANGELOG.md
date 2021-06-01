@@ -9,9 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* `setTracking` method to the `Order` entity
-* `setMeta` method allowing dynamic set of metadata attributes for the `Order` entity
-* Method for generating an image URL from a query (`_queryToImageUrl`)
+*
 
 ### Changed
 
@@ -20,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.26.0] - 2021-06-01
+
+### Added
+
+* `setTracking` method to the `Order` entity
+* `setMeta` method allowing dynamic set of metadata attributes for the `Order` entity
+* Method for generating an image URL from a query (`_queryToImageUrl`)
 
 ## [1.25.9] - 2021-05-24
 
