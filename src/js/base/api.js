@@ -1121,6 +1121,11 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
     return spec;
 };
 
+ripe.Ripe.prototype._queryToImageUrl = function(query, options) {
+    const spec = this._queryToSpec(query);
+    return this._getImageURL({ ...spec, ...options });
+};
+
 ripe.Ripe.prototype._specToQuery = function(spec) {
     const queryL = [];
     const brand = spec.brand || null;

@@ -86,6 +86,35 @@ describe("RipeAPI", function() {
         });
     });
 
+    describe("#_queryToImageUrl()", function() {
+        it("should be able to convert a query to a image URL", async () => {
+            const remote = ripe.RipeAPI();
+
+            const url = remote._queryToImageUrl(
+                "brand=dummy&model=dummy&p=piping:leather_dmy:black&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&p=shadow:default:default&p=overlay:default:default"
+            );
+
+            assert.deepStrictEqual(
+                url,
+                "https://sandbox.platforme.com/api/compose?brand=dummy&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack"
+            );
+        });
+
+        it("should be able to convert a query to a image URL with size and format", async () => {
+            const remote = ripe.RipeAPI();
+
+            const url = remote._queryToImageUrl(
+                "brand=dummy&model=dummy&p=piping:leather_dmy:black&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&p=shadow:default:default&p=overlay:default:default",
+                { size: 100, format: "png" }
+            );
+
+            assert.deepStrictEqual(
+                url,
+                "https://sandbox.platforme.com/api/compose?brand=dummy&format=png&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack&size=10"
+            );
+        });
+    });
+
     describe("#_buildQuery()", function() {
         it("should correctly generate a query string from array", async () => {
             let result = null;
