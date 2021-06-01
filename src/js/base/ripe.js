@@ -1934,7 +1934,7 @@ ripe.Ripe.prototype._initialsBuilder = function(
  * @param {String} viewport The name of the viewport, to which the
  * profiles are going to be generated.
  * @returns {Array} The profiles definition list that was generated from the
- * provided grop and viewport "input".
+ * provided group and viewport "input".
  */
 ripe.Ripe.prototype._generateProfiles = function(group, viewport) {
     const values = [];
