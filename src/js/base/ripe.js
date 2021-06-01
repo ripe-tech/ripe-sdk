@@ -468,6 +468,9 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // if the defaults should be loaded
     const parts = loadDefaults ? this.loadedConfig.defaults : this.parts;
 
+    // creates an array that is going to store the multiple promises that
+    // are required for the proper loading of the configuration, both promises
+    // can run in parallel as their loading is independent from each other
     const parallelPromises = [];
 
     // loads initials builder implementation by evaluating the build's logic,
@@ -1867,6 +1870,12 @@ ripe.Ripe.prototype._supportsWebp = function() {
     return element.toDataURL("image/webp").indexOf("data:image/webp") === 0;
 };
 
+/**
+ * Loads the initials builder logic from the remote data source.
+ * This is done by loading a remote Javascript file that should contain
+ * the `initialsBuilder` method should be present in the base object
+ * of such Javascript file.
+ */
 ripe.Ripe.prototype._loadInitialsBuilder = async function() {
     // get initials builder of the build and model, if there is one
     // defined, later used in the image's initials builder logic
@@ -1884,7 +1893,7 @@ ripe.Ripe.prototype._loadInitialsBuilder = async function() {
 /**
  * Generates all profiles based on the provided engraving string and the
  * contexts provided.
- * This is a base implementation which should be overidden if any specific
+ * This is a base implementation which should be overridden if any specific
  * behaviour is meant to be provided for a specific context (model).
  *
  * @param {String} initials The initials string of the personalization.
