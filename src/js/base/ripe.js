@@ -1917,8 +1917,8 @@ ripe.Ripe.prototype._initialsBuilder = function(
     viewport = null,
     context = null
 ) {
-    let profiles = this._generateProfiles(group, viewport);
-    profiles = this._buildProfiles(engraving, profiles, context);
+    let profiles = this.owner._generateProfiles(group, viewport);
+    profiles = this.owner._buildProfiles(engraving, profiles, context);
     return {
         initials: initials,
         profile: profiles
