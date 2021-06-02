@@ -390,7 +390,7 @@ describe("Ripe", function() {
                 },
                 {
                     type: "viewport",
-                    name: "left"
+                    name: "large"
                 }
             ]);
         });
