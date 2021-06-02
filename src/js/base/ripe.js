@@ -1887,7 +1887,9 @@ ripe.Ripe.prototype._loadInitialsBuilder = async function() {
     });
     // eslint-disable-next-line no-eval
     const logicScript = eval(logicScriptText);
-    this.initialsBuilder = logicScript ? logicScript.initialsBuilder : this._initialsBuilder.bind(this);
+    this.initialsBuilder = logicScript
+        ? logicScript.initialsBuilder.bind(this)
+        : this._initialsBuilder.bind(this);
 };
 
 /**
