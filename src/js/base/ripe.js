@@ -97,7 +97,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.initials = "";
     this.engraving = null;
     this.initialsExtra = {};
-    this.initialsBuilder = null;
+    this.initialsBuilder = this._initialsBuilder;
     this.ctx = {};
     this.children = this.children || [];
     this.plugins = this.plugins || [];
