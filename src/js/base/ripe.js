@@ -1953,7 +1953,7 @@ ripe.Ripe.prototype._generateProfiles = function(group, viewport) {
     if (viewport) {
         values.push({
             type: "viewport",
-            name: group
+            name: viewport
         });
     }
     return values;
