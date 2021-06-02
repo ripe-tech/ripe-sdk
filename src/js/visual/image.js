@@ -485,7 +485,7 @@ ripe.Image.prototype.cancel = async function(options = {}) {
 };
 
 /**
- * Resizes the Image's DOM element to 'size' pixels, both the
+ * Resizes the Image's DOM element to `size` pixels, both the
  * width and the height of the image will reflect this value.
  *
  * @param {String} size The number of pixels to resize to.
@@ -508,7 +508,7 @@ ripe.Image.prototype.setFrame = async function(frame, options) {
 };
 
 /**
- * Updates the Image's 'showInitials' flag that indicates
+ * Updates the Image's `showInitials` flag that indicates
  * if the initials should be display in the image.
  *
  * @param {String} showInitials If the image should display initials.
@@ -519,12 +519,12 @@ ripe.Image.prototype.setShowInitials = async function(showInitials) {
 };
 
 /**
- * Updates the Image's 'initialsBuilder' function.
+ * Updates the Image's `initialsBuilder` function.
  *
- * @param {Function} builder The new 'initialsBuilder' function
+ * @param {Function} builder The new `initialsBuilder` function
  * to be used by the Image.
  * @param {Object} options An object with options to configure
- * the setting of the 'initialsBuilder'.
+ * the setting of the `initialsBuilder`.
  */
 ripe.Image.prototype.setInitialsBuilder = async function(builder, options) {
     this.initialsBuilder = builder;
