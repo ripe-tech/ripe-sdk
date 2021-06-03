@@ -97,7 +97,7 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.initials = "";
     this.engraving = null;
     this.initialsExtra = {};
-    this.initialsBuilder = null;
+    this.initialsBuilder = this._initialsBuilder.bind(this);
     this.ctx = {};
     this.children = this.children || [];
     this.plugins = this.plugins || [];
@@ -1887,7 +1887,9 @@ ripe.Ripe.prototype._loadInitialsBuilder = async function() {
     });
     // eslint-disable-next-line no-eval
     const logicScript = eval(logicScriptText);
-    this.initialsBuilder = logicScript ? logicScript.initialsBuilder : this._initialsBuilder;
+    this.initialsBuilder = logicScript
+        ? logicScript.initialsBuilder.bind(this)
+        : this._initialsBuilder.bind(this);
 };
 
 /**
