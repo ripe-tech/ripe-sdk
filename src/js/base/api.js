@@ -301,6 +301,7 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
     let contentType = options.contentType || null;
     const validCodes = options.validCodes || [200];
     const credentials = options.credentials || "omit";
+    const keepAlive = options.keepAlive === undefined ? true : options.keepAlive;
 
     const query = this._buildQuery(params);
     const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
@@ -329,7 +330,8 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
         method: method,
         headers: headers || {},
         body: data,
-        credentials: credentials
+        credentials: credentials,
+        keepAlive: keepAlive
     });
 
     response
