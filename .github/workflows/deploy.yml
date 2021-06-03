@@ -8,6 +8,7 @@ jobs:
     name: Deploy
     timeout-minutes: 10
     strategy:
+      max-parallel: 2
       matrix:
         node-version: [10]
     runs-on: ubuntu-latest
