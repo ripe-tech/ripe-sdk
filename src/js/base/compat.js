@@ -115,6 +115,14 @@ if (typeof global !== "undefined" && global.http && global.http.globalAgent) {
         typeof process !== "undefined" && process.env.MAX_SOCKETS
             ? parseInt(process.env.MAX_SOCKETS)
             : Infinity;
+    global.https.globalAgent.keepAlive = true;
+    global.https.globalAgent.keepAliveMsecs = 120000;
+    global.https.globalAgent.timeout = 60000;
+    global.https.globalAgent.scheduling = "fifo";
+    global.https.globalAgent.maxSockets =
+        typeof process !== "undefined" && process.env.MAX_SOCKETS
+            ? parseInt(process.env.MAX_SOCKETS)
+            : Infinity;
 }
 
 if (typeof module !== "undefined") {
