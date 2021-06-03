@@ -99,17 +99,22 @@ if (
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
         fetch = require("node-fetch").default;
-        if (typeof global !== "undefined" && global.http) {
-            global.http.globalAgent.maxSockets = 4;
-        }
     } else if (typeof global !== "undefined" && typeof global.__VUE_SSR_CONTEXT__ !== "undefined") {
         // this is a workaround for Nuxt.js SSR built as standalone,
         // which does not have global.fetch populated
         fetch = require("node-fetch").default;
-        if (typeof global !== "undefined" && global.http) {
-            global.http.globalAgent.maxSockets = 4;
-        }
     }
+}
+
+if (typeof global !== "undefined" && global.http && global.http.globalAgent) {
+    global.http.globalAgent.keepAlive = true;
+    global.http.globalAgent.keepAliveMsecs = 120000;
+    global.http.globalAgent.timeout = 60000;
+    global.http.globalAgent.scheduling = "fifo";
+    global.http.globalAgent.maxSockets =
+        typeof process !== "undefined" && process.env.MAX_SOCKETS
+            ? parseInt(process.env.MAX_SOCKETS)
+            : Infinity;
 }
 
 if (typeof module !== "undefined") {
