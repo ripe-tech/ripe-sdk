@@ -89,6 +89,8 @@ if (
 ) {
     // eslint-disable-next-line no-var
     var fetch = null;
+    // eslint-disable-next-line no-var
+    var nodeFetch = null;
     if (typeof window !== "undefined" && typeof window.fetch !== "undefined") {
         fetch = window.fetch;
     } else if (typeof global !== "undefined" && typeof global.fetch !== "undefined") {
@@ -99,27 +101,31 @@ if (
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
         fetch = require("node-fetch").default;
+        nodeFetch = fetch;
     } else if (typeof global !== "undefined" && typeof global.__VUE_SSR_CONTEXT__ !== "undefined") {
         // this is a workaround for Nuxt.js SSR built as standalone,
         // which does not have global.fetch populated
         fetch = require("node-fetch").default;
+        nodeFetch = fetch;
     }
 }
 
-if (typeof global !== "undefined" && global.http && global.http.globalAgent) {
-    global.http.globalAgent.keepAlive = true;
-    global.http.globalAgent.keepAliveMsecs = 120000;
-    global.http.globalAgent.timeout = 60000;
-    global.http.globalAgent.scheduling = "fifo";
-    global.http.globalAgent.maxSockets =
+if (nodeFetch) {
+    const http = require("http");
+    const https = require("https");
+    http.globalAgent.keepAlive = true;
+    http.globalAgent.keepAliveMsecs = 120000;
+    http.globalAgent.timeout = 60000;
+    http.globalAgent.scheduling = "fifo";
+    http.globalAgent.maxSockets =
         typeof process !== "undefined" && process.env.MAX_SOCKETS
             ? parseInt(process.env.MAX_SOCKETS)
             : Infinity;
-    global.https.globalAgent.keepAlive = true;
-    global.https.globalAgent.keepAliveMsecs = 120000;
-    global.https.globalAgent.timeout = 60000;
-    global.https.globalAgent.scheduling = "fifo";
-    global.https.globalAgent.maxSockets =
+    https.globalAgent.keepAlive = true;
+    https.globalAgent.keepAliveMsecs = 120000;
+    https.globalAgent.timeout = 60000;
+    https.globalAgent.scheduling = "fifo";
+    https.globalAgent.maxSockets =
         typeof process !== "undefined" && process.env.MAX_SOCKETS
             ? parseInt(process.env.MAX_SOCKETS)
             : Infinity;
