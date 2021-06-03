@@ -113,22 +113,21 @@ if (
 if (nodeFetch) {
     const http = require("http");
     const https = require("https");
+    const process = require("process");
     http.globalAgent.keepAlive = true;
     http.globalAgent.keepAliveMsecs = 120000;
     http.globalAgent.timeout = 60000;
     http.globalAgent.scheduling = "fifo";
-    http.globalAgent.maxSockets =
-        typeof process !== "undefined" && process.env.MAX_SOCKETS
-            ? parseInt(process.env.MAX_SOCKETS)
-            : Infinity;
+    http.globalAgent.maxSockets = process.env.MAX_SOCKETS
+        ? parseInt(process.env.MAX_SOCKETS)
+        : Infinity;
     https.globalAgent.keepAlive = true;
     https.globalAgent.keepAliveMsecs = 120000;
     https.globalAgent.timeout = 60000;
     https.globalAgent.scheduling = "fifo";
-    https.globalAgent.maxSockets =
-        typeof process !== "undefined" && process.env.MAX_SOCKETS
-            ? parseInt(process.env.MAX_SOCKETS)
-            : Infinity;
+    https.globalAgent.maxSockets = process.env.MAX_SOCKETS
+        ? parseInt(process.env.MAX_SOCKETS)
+        : Infinity;
 }
 
 if (typeof module !== "undefined") {
