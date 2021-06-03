@@ -22,3 +22,4 @@ jobs:
           TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
           TEST_KEY: ${{ secrets.TEST_KEY }}
+          MAX_SOCKETS: ${{ secrets.MAX_SOCKETS }}
