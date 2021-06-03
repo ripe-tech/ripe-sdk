@@ -215,12 +215,7 @@ ripe.Ripe.prototype.createAttachmentOrderP = function(number, file, options) {
     });
 };
 
-ripe.Ripe.prototype.attachmentOrder = function(
-    number,
-    attachmentName,
-    options,
-    callback
-) {
+ripe.Ripe.prototype.attachmentOrder = function(number, attachmentName, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/attachments/${attachmentName}`;
@@ -236,14 +231,9 @@ ripe.Ripe.prototype.attachmentOrder = function(
 
 ripe.Ripe.prototype.attachmentOrderP = function(number, attachmentName, options) {
     return new Promise((resolve, reject) => {
-        this.attachmentOrder(
-            number,
-            attachmentName,
-            options,
-            (result, isValid, request) => {
-                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-            }
-        );
+        this.attachmentOrder(number, attachmentName, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
     });
 };
 
@@ -744,7 +734,7 @@ ripe.Ripe.prototype.cancelOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
- ripe.Ripe.prototype.setMeta = function(number, key, value, options, callback) {
+ripe.Ripe.prototype.setMeta = function(number, key, value, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/meta`;
@@ -832,7 +822,13 @@ ripe.Ripe.prototype.setPriorityP = function(number, priority, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.setTracking = function(number, trackingNumber, trackingUrl, options, callback) {
+ripe.Ripe.prototype.setTracking = function(
+    number,
+    trackingNumber,
+    trackingUrl,
+    options,
+    callback
+) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/tracking`;
@@ -860,9 +856,15 @@ ripe.Ripe.prototype.setTracking = function(number, trackingNumber, trackingUrl, 
  */
 ripe.Ripe.prototype.setTrackingP = function(number, trackingNumber, trackingUrl, options) {
     return new Promise((resolve, reject) => {
-        this.setTracking(number, trackingNumber, trackingUrl, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
+        this.setTracking(
+            number,
+            trackingNumber,
+            trackingUrl,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
     });
 };
 

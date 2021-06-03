@@ -405,7 +405,11 @@ describe("Ripe", function() {
                 }
             };
 
-            let profiles = instance._buildProfiles("gold:color.expensive:price", [], ["left:small", "left", "small"]);
+            let profiles = instance._buildProfiles(
+                "gold:color.expensive:price",
+                [],
+                ["left:small", "left", "small"]
+            );
             assert.deepStrictEqual(profiles, [
                 "left:small:color::gold:price::expensive",
                 "left:small:gold:expensive",

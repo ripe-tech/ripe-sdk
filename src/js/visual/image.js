@@ -102,8 +102,7 @@ ripe.Image.prototype.init = function() {
     this.initialsGroup = this.options.initialsGroup || null;
     this.initialsContext = this.options.initialsContext || null;
     this.getInitialsContext = this.options.getInitialsContext || null;
-    this.initialsBuilder =
-        this.options.initialsBuilder || this.owner.initialsBuilder;
+    this.initialsBuilder = this.options.initialsBuilder || this.owner.initialsBuilder;
     this.doubleBuffering =
         this.options.doubleBuffering === undefined ? true : this.options.doubleBuffering;
     this._observer = null;
