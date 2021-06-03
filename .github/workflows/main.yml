@@ -2,6 +2,7 @@ name: Main Workflow
 on: [push]
 jobs:
   build:
+    if: ${{ false }}
     name: Build
     timeout-minutes: 10
     strategy:
