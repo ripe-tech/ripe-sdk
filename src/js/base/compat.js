@@ -99,10 +99,16 @@ if (
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
         fetch = require("node-fetch").default;
+        if (typeof global !== "undefined" && global.http) {
+            global.http.globalAgent.maxSockets = 4;
+        }
     } else if (typeof global !== "undefined" && typeof global.__VUE_SSR_CONTEXT__ !== "undefined") {
         // this is a workaround for Nuxt.js SSR built as standalone,
         // which does not have global.fetch populated
         fetch = require("node-fetch").default;
+        if (typeof global !== "undefined" && global.http) {
+            global.http.globalAgent.maxSockets = 4;
+        }
     }
 }
 
