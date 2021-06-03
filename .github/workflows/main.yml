@@ -33,9 +33,9 @@ jobs:
     steps:
       - uses: joamag/cleanup-hosted@master
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v1
         with:
-          python-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix.node-version }}
       - run: node --version
       - run: npm install
       - run: npm install --only=dev
