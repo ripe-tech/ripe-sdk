@@ -99,6 +99,42 @@ ripe.Ripe.prototype.getOrderP = function(number, options) {
 };
 
 /**
+ * Gets an order transport info.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getTransportOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/transport`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets an order transport info.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order transport info.
+ */
+ripe.Ripe.prototype.getTransportOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.getTransportOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Deletes an order by number.
  *
  * @param {Number} number The number of the order to delete.
@@ -174,6 +210,28 @@ ripe.Ripe.prototype.createAttachmentOrder = function(number, file, options, call
 ripe.Ripe.prototype.createAttachmentOrderP = function(number, file, options) {
     return new Promise((resolve, reject) => {
         this.createAttachmentOrder(number, file, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+ripe.Ripe.prototype.attachmentOrder = function(number, attachmentName, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/attachments/${attachmentName}`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true,
+        cached: false
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.attachmentOrderP = function(number, attachmentName, options) {
+    return new Promise((resolve, reject) => {
+        this.attachmentOrder(number, attachmentName, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -544,6 +602,26 @@ ripe.Ripe.prototype.produceOrderP = function(number, options) {
 };
 
 /**
+ * Sets the order status to 'quality_assure'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.qualityAssureOrder = function(number, options, callback) {
+    return this.setOrderStatus(number, "quality_assure", options, callback);
+};
+
+ripe.Ripe.prototype.qualityAssureOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.qualityAssureOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Sets the order status to 'ready'.
  *
  * @param {Number} number The number of the order to update.
@@ -644,6 +722,56 @@ ripe.Ripe.prototype.cancelOrderP = function(number, options) {
 };
 
 /**
+ * Changes an entry of an order's meta adding the new meta entry
+ * according to the provided value or changing an existing one.
+ *
+ * @param {Number} number The number of the order to change the meta.
+ * @param {String} key The key to set.
+ * @param {Object} value The value to set, which might be of any type
+ * (string, number, object or list), providing a `null` value deletes
+ * the key.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.setMeta = function(number, key, value, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/meta`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true,
+        dataJ: {
+            key: key,
+            value: value
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Changes an entry of an order's meta adding the new meta entry
+ * according to the provided value or changing an existing one.
+ *
+ * @param {Number} number The number of the order to change the meta.
+ * @param {String} key The key to set.
+ * @param {Object} value The value to set, which might be of any type
+ * (string, number, object or list), providing a `null` value deletes
+ * the key.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order meta change.
+ */
+ripe.Ripe.prototype.setMetaP = function(number, key, value, options) {
+    return new Promise((resolve, reject) => {
+        this.setMeta(number, key, value, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Changes the priority of an order.
  *
  * @param {Number} number The number of the order to change the priority.
@@ -681,6 +809,62 @@ ripe.Ripe.prototype.setPriorityP = function(number, priority, options) {
         this.setPriority(number, priority, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
+    });
+};
+
+/**
+ * Changes the tracking info of an order.
+ *
+ * @param {Number} number The number of the order to change the tracking info.
+ * @param {String} trackingNumber The new tracking number.
+ * @param {String} trackingUrl The new tracking URL.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.setTracking = function(
+    number,
+    trackingNumber,
+    trackingUrl,
+    options,
+    callback
+) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/tracking`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true,
+        params: {
+            tracking_number: trackingNumber,
+            tracking_url: trackingUrl
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Changes the tracking info of an order.
+ *
+ * @param {Number} number The number of the order to change the tracking info.
+ * @param {String} trackingNumber The new tracking number.
+ * @param {String} trackingUrl The new tracking URL.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order tracking info change.
+ */
+ripe.Ripe.prototype.setTrackingP = function(number, trackingNumber, trackingUrl, options) {
+    return new Promise((resolve, reject) => {
+        this.setTracking(
+            number,
+            trackingNumber,
+            trackingUrl,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
     });
 };
 

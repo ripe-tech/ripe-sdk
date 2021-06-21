@@ -11,6 +11,9 @@ describe("NotifyInfoAPI", function() {
             if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
                 this.skip();
             }
+            if (config.SKIP_TEST_NOTIFY) {
+                this.skip();
+            }
         });
 
         it("should be able to create a device ID", async () => {
@@ -117,7 +120,7 @@ describe("NotifyInfoAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            assert.doesNotThrow(async () => remote.removeDeviceIdP(deviceId));
+            assert.doesNotThrow(async () => await remote.removeDeviceIdP(deviceId));
         });
     });
 });

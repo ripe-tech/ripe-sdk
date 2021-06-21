@@ -130,23 +130,7 @@ ripe.Ripe.prototype.localeLocal = function(
  * list of (type, name) that respects the order of the properties.
  */
 ripe.Ripe.prototype.parseEngraving = function(engraving, properties = null) {
-    // gathers teh complete set of properties for the initials
-    // definitions, to be used in the unpack
-    properties = properties || this.loadedConfig.initials.properties;
-
-    let propertyTypes = [];
-    const propertyNamesM = {};
-
-    for (const property of properties) {
-        const type = property.type;
-        const name = property.name;
-        propertyNamesM[name] = type;
-        propertyTypes.push(type);
-    }
-
-    propertyTypes = Array.from(new Set(propertyTypes)).sort(
-        (a, b) => propertyTypes.indexOf(a) - propertyTypes.indexOf(b)
-    );
+    const { propertyNamesM, propertyTypes } = this.getProperties(properties);
 
     let values = [];
     const valuesM = {};
@@ -178,6 +162,44 @@ ripe.Ripe.prototype.parseEngraving = function(engraving, properties = null) {
     return {
         values: values,
         valuesM: valuesM
+    };
+};
+
+/**
+ * Gets the loaded config initials properties and returns an object
+ * with all the properties types grouped by name and a sorted array of
+ * all property types.
+ *
+ * @param {Array} properties If provided overrides the default loaded
+ * config initials strategy for the retrieval of properties definition.
+ * @returns {Object} Returns an object with propertyNamesM and
+ * propertyTypes. propertyNamesM is a map with (key = name, value = type)
+ * entries for each property, where "type" is the type of the property
+ * (e.g. style) and "name" is the value for that property (e.g. gold).
+ * propertyTypes is an ordered list of types.
+ */
+ripe.Ripe.prototype.getProperties = function(properties = null) {
+    // gathers the complete set of properties for the initials
+    // definitions, to be used in the unpack
+    properties = properties || this.loadedConfig.initials.properties;
+
+    let propertyTypes = [];
+    const propertyNamesM = {};
+
+    for (const property of properties) {
+        const type = property.type;
+        const name = property.name;
+        propertyNamesM[name] = type;
+        propertyTypes.push(type);
+    }
+
+    propertyTypes = Array.from(new Set(propertyTypes)).sort(
+        (a, b) => propertyTypes.indexOf(a) - propertyTypes.indexOf(b)
+    );
+
+    return {
+        propertyNamesM: propertyNamesM,
+        propertyTypes: propertyTypes
     };
 };
 

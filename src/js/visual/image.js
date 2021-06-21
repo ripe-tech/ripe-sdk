@@ -100,14 +100,9 @@ ripe.Image.prototype.init = function() {
     this.curve = this.options.curve || null;
     this.showInitials = this.options.showInitials || false;
     this.initialsGroup = this.options.initialsGroup || null;
-    this.initialsBuilder =
-        this.options.initialsBuilder ||
-        function(initials, engraving, element) {
-            return {
-                initials: initials || "$empty",
-                profile: [engraving]
-            };
-        };
+    this.initialsContext = this.options.initialsContext || null;
+    this.getInitialsContext = this.options.getInitialsContext || null;
+    this.initialsBuilder = this.options.initialsBuilder || this.owner.initialsBuilder;
     this.doubleBuffering =
         this.options.doubleBuffering === undefined ? true : this.options.doubleBuffering;
     this._observer = null;
@@ -234,6 +229,12 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.curve = options.curve === undefined ? this.curve : options.curve;
     this.initialsGroup =
         options.initialsGroup === undefined ? this.initialsGroup : options.initialsGroup;
+    this.initialsContext =
+        options.initialsContext === undefined ? this.initialsContext : options.initialsContext;
+    this.getInitialsContext =
+        options.getInitialsContext === undefined
+            ? this.getInitialsContext
+            : options.getInitialsContext;
     this.doubleBuffering =
         options.doubleBuffering === undefined ? this.doubleBuffering : options.doubleBuffering;
 
@@ -264,6 +265,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const rotation = this.element.dataset.rotation || this.rotation;
     const crop = this.element.dataset.crop || this.crop;
     const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
+    const initialsContext = this.element.dataset.initialsContext || this.initialsContext;
+    const getInitialsContext = this.element.dataset.getInitialsContext || this.getInitialsContext;
     const flip = this.element.dataset.flip || this.flip;
     const mirror = this.element.dataset.mirror || this.mirror;
     const boundingBox = this.element.dataset.boundingBox || this.boundingBox;
@@ -319,8 +322,17 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         this.engraving = base.engraving || null;
     }
 
+    // in case the context changes with the group, gets the
+    // context and calls the initials builder
+    const context = getInitialsContext ? getInitialsContext(initialsGroup) : initialsContext;
     const initialsSpec = this.showInitials
-        ? this.initialsBuilder(this.initials, this.engraving, this.element)
+        ? this.initialsBuilder(
+              this.initials,
+              this.engraving,
+              initialsGroup,
+              initialsViewport,
+              context
+          )
         : {};
 
     // verifies if the model currently loaded in the Ripe Instance can
@@ -472,7 +484,7 @@ ripe.Image.prototype.cancel = async function(options = {}) {
 };
 
 /**
- * Resizes the Image's DOM element to 'size' pixels, both the
+ * Resizes the Image's DOM element to `size` pixels, both the
  * width and the height of the image will reflect this value.
  *
  * @param {String} size The number of pixels to resize to.
@@ -495,7 +507,7 @@ ripe.Image.prototype.setFrame = async function(frame, options) {
 };
 
 /**
- * Updates the Image's 'showInitials' flag that indicates
+ * Updates the Image's `showInitials` flag that indicates
  * if the initials should be display in the image.
  *
  * @param {String} showInitials If the image should display initials.
@@ -506,12 +518,12 @@ ripe.Image.prototype.setShowInitials = async function(showInitials) {
 };
 
 /**
- * Updates the Image's 'initialsBuilder' function.
+ * Updates the Image's `initialsBuilder` function.
  *
- * @param {Function} builder The new 'initialsBuilder' function
+ * @param {Function} builder The new `initialsBuilder` function
  * to be used by the Image.
  * @param {Object} options An object with options to configure
- * the setting of the 'initialsBuilder'.
+ * the setting of the `initialsBuilder`.
  */
 ripe.Image.prototype.setInitialsBuilder = async function(builder, options) {
     this.initialsBuilder = builder;

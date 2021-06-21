@@ -53,7 +53,7 @@ ripe.Ripe.prototype.accountMeP = function(options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
- ripe.Ripe.prototype.tenancyAccountMe = function(options, callback) {
+ripe.Ripe.prototype.tenancyAccountMe = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}accounts/me/tenancy`;

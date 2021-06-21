@@ -25,6 +25,8 @@ jobs:
           TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
           TEST_KEY: ${{ secrets.TEST_KEY }}
+          MAX_SOCKETS: ${{ secrets.MAX_SOCKETS }}
+          SKIP_TEST_NOTIFY: 1
       - run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           npm publish

@@ -301,6 +301,7 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
     let contentType = options.contentType || null;
     const validCodes = options.validCodes || [200];
     const credentials = options.credentials || "omit";
+    const keepAlive = options.keepAlive === undefined ? true : options.keepAlive;
 
     const query = this._buildQuery(params);
     const isEmpty = ["GET", "DELETE"].indexOf(method) !== -1;
@@ -329,7 +330,8 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
         method: method,
         headers: headers || {},
         body: data,
-        credentials: credentials
+        credentials: credentials,
+        keepAlive: keepAlive
     });
 
     response
@@ -1119,6 +1121,11 @@ ripe.Ripe.prototype._queryToSpec = function(query) {
     if (version) spec.version = version;
     if (description) spec.description = description;
     return spec;
+};
+
+ripe.Ripe.prototype._queryToImageUrl = function(query, options) {
+    const spec = this._queryToSpec(query);
+    return this._getImageURL({ ...spec, ...options });
 };
 
 ripe.Ripe.prototype._specToQuery = function(spec) {

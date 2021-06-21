@@ -2,6 +2,7 @@ name: Main Workflow
 on: [push]
 jobs:
   build:
+    if: ${{ false }}
     name: Build
     timeout-minutes: 10
     strategy:
@@ -22,3 +23,31 @@ jobs:
           TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
           TEST_KEY: ${{ secrets.TEST_KEY }}
+          MAX_SOCKETS: ${{ secrets.MAX_SOCKETS }}
+          SKIP_TEST_NOTIFY: 1
+  build-hosted:
+    name: Build Hosted
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        node-version: [10, 11, 12, 13, 14]
+    runs-on: self-hosted
+    steps:
+      - uses: joamag/cleanup-hosted@master
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: node --version
+      - run: npm install
+      - run: npm install --only=dev
+      - run: npm install canvas --no-save
+      - run: npm run build
+      - run: npm run lint
+      - run: npm test
+        env:
+          TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          TEST_KEY: ${{ secrets.TEST_KEY }}
+          MAX_SOCKETS: ${{ secrets.MAX_SOCKETS }}
+          SKIP_TEST_NOTIFY: 1
