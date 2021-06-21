@@ -215,6 +215,27 @@ ripe.Ripe.prototype.createAttachmentOrderP = function(number, file, options) {
     });
 };
 
+ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/waybill`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.createWaybillOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.createWaybillOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
 ripe.Ripe.prototype.attachmentOrder = function(number, attachmentName, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
