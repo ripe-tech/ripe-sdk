@@ -1181,6 +1181,7 @@ ripe.Ripe.prototype.getChildren = function(type = null) {
  * @returns {Image} The Image instance created.
  */
 ripe.Ripe.prototype.bindImage = function(element, options = {}) {
+    options = Object.assign({}, { format: this.format }, options);
     const image = new ripe.Image(this, element, options);
     return this.bindInteractable(image);
 };
