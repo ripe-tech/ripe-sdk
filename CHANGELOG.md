@@ -13,11 +13,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Import order method propagates shipping info
+*
 
 ### Fixed
 
-* Initials builder initialization when `useInitialsBuilderLogic` was `false`.
+*
+
+## [2.1.0] - 2021-06-22
+
+### Changed
+
+* Import order method propagates shipping info
+* Made image support the best file format by default
+
+### Fixed
+
+* Initials builder initialization when `useInitialsBuilderLogic` was `false`
+
+## [2.0.1] - 2021-06-22
+
+### Fixed
+
+* Small issue fix
 
 ## [2.0.0] - 2021-06-01
 
