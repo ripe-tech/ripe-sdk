@@ -354,7 +354,14 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size) {
     mask.style.width = size + "px";
     mask.style.height = size + "px";
     this.currentSize = size;
-    await this.owner.update(null, {}, [this]);
+
+    await this.owner.update(
+        null,
+        {
+            force: true
+        },
+        [this]
+    );
 };
 
 /**
@@ -632,19 +639,20 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     this.trigger("changed_frame", newFrame);
 
     try {
-        // runs the update operation that should sync the visuals of the
+        // queries the update operation that should sync the visuals of the
         // configurator according to the current internal state (in data)
         // this operation waits for the proper drawing of the image (takes
         // some time and resources to be completed)
-        await this.owner.update(
-            null,
+        await new Promise(resolve => {
+            this.owner.queryUpdate(
+                resolve,
             {
             animate: animate,
-            duration: animate ? duration : 0,
-            preload: false
+                    duration: animate ? duration : 0
             },
             [this]
         );
+        });
     } catch (err) {
         // removes the locking classes as the current operation has been
         // finished, effectively re-allowing: dragging and animated operations

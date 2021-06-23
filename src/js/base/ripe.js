@@ -114,6 +114,8 @@ ripe.Ripe.prototype.init = async function(brand = null, model = null, options = 
     this.updatePromise = null;
     this.cancelPromise = null;
     this.error = null;
+    this.batchUpdate = null;
+    this.batchUpdateTimeout = null;
 
     // extends the default options with the ones provided by the
     // developer upon this initializer call
@@ -1259,6 +1261,40 @@ ripe.Ripe.prototype.selectPart = function(part, options = {}) {
  */
 ripe.Ripe.prototype.deselectPart = function(part, options = {}) {
     this.trigger("deselected_part", part);
+};
+
+/**
+ * Batches similar updates together and executes them as soon as possible.
+ *
+ * This is normally necessary when there are several visual elements
+ * present that need to update their state at the same time. By calling the
+ * update, the first elements to make their request would be discarded, so
+ * this method allows the update requests to be batched together.
+ *
+ * @param {Function} callback A function that will called once the update to
+ * be queried is completed.
+ * @param {Object} options Set of update options that change the way
+ * the update operation is going to be performed.
+ * @param {Array} children The set of children that are going to be affected
+ * by the updated operation.
+ */
+ripe.Ripe.prototype.queryUpdate = function(callback, options = {}, children = []) {
+    if (!this.batchUpdate) {
+        this.batchUpdate = { callbacks: [callback], options: options, children: children };
+    } else {
+        this.batchUpdate = {
+            callbacks: [...this.batchUpdate.callbacks, callback],
+            options: { ...this.batchUpdate.options, ...options },
+            children: [...this.batchUpdate.children, ...children]
+        };
+    }
+
+    if (this.batchUpdateTimeout) return;
+    this.batchUpdateTimeout = setTimeout(async () => {
+        await this.update(null, this.batchUpdate.options, this.batchUpdate.children);
+        this.batchUpdate.callbacks.forEach(r => r());
+        this.batchUpdateTimeout = null;
+    }, 0);
 };
 
 /**
