@@ -646,12 +646,12 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
         await new Promise(resolve => {
             this.owner.queryUpdate(
                 resolve,
-            {
-            animate: animate,
+                {
+                    animate: animate,
                     duration: animate ? duration : 0
-            },
-            [this]
-        );
+                },
+                [this]
+            );
         });
     } catch (err) {
         // removes the locking classes as the current operation has been
