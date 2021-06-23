@@ -646,6 +646,7 @@ ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, op
     options = typeof options === "function" || options === undefined ? {} : options;
     options = Object.assign(options, {
         params: {
+            ...options.params,
             tracking_number: trackingNumber,
             tracking_url: trackingUrl
         }
