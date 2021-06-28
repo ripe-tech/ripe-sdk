@@ -646,7 +646,6 @@ ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, op
     options = typeof options === "function" || options === undefined ? {} : options;
     options = Object.assign(options, {
         params: {
-            ...options.params,
             tracking_number: trackingNumber,
             tracking_url: trackingUrl
         }
@@ -997,6 +996,8 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
         auth: true,
         method: "PUT"
     });
+    options.params = options.params || {};
+    if (options.justification) options.params.justification = options.justification;
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };

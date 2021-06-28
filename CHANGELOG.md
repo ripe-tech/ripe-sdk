@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Mark order as sent propagates optional params
+* Set order status takes relevant params from options and populates request params.
 
 ## [2.1.0] - 2021-06-22
 
