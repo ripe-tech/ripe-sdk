@@ -383,7 +383,7 @@ describe("RipeAPI", function() {
             const remote = ripe.RipeAPI();
 
             [contentType, body] = remote._encodeMultipart({
-                file: new TextEncoder("utf-8").encode("Hello World")
+                file: "Hello World"
             });
 
             assert.strictEqual(
