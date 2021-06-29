@@ -1288,9 +1288,6 @@ ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = fal
         }
     }
 
-    // remove the last newline
-    buffer.pop();
-
     buffer.push(encoder.encode("--" + boundary + "--\r\n"));
     buffer.push(encoder.encode("\r\n"));
     const body = this._joinBuffer(buffer);
