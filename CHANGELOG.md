@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Ability to override `name` and `meta` for attachments
 
 ### Changed
 
@@ -17,7 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Multipart encoding extended to classes that implement `toString`
+* Multipart encoding no longer sends an extra newline separator on the last field
 
 ## [2.1.0] - 2021-06-22
 
