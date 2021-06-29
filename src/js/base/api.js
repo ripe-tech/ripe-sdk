@@ -1277,6 +1277,7 @@ ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = fal
                 value = contents;
             } else {
                 header = `Content-Disposition: form-data; name="${key}"`;
+                value = new TextEncoder().encode(value);
             }
 
             buffer.push(encoder.encode("--" + boundary + "\r\n"));
@@ -1286,6 +1287,9 @@ ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = fal
             buffer.push(encoder.encode("\r\n"));
         }
     }
+
+    // remove the last newline
+    buffer.pop();
 
     buffer.push(encoder.encode("--" + boundary + "--\r\n"));
     buffer.push(encoder.encode("\r\n"));
