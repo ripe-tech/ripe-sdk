@@ -1277,7 +1277,7 @@ ripe.Ripe.prototype._encodeMultipart = function(fields, mime = null, doseq = fal
                 value = contents;
             } else {
                 header = `Content-Disposition: form-data; name="${key}"`;
-                value = new TextEncoder().encode(value);
+                value = encoder.encode(value);
             }
 
             buffer.push(encoder.encode("--" + boundary + "\r\n"));
