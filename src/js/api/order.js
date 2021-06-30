@@ -622,6 +622,26 @@ ripe.Ripe.prototype.qualityAssureOrderP = function(number, options) {
 };
 
 /**
+ * Sets the order status to 'rejected'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.rejectOrder = function(number, options, callback) {
+    return this.setOrderStatus(number, "rejected", options, callback);
+};
+
+ripe.Ripe.prototype.rejectOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.rejectOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Sets the order status to 'ready'.
  *
  * @param {Number} number The number of the order to update.
