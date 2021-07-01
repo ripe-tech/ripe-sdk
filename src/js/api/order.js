@@ -195,12 +195,13 @@ ripe.Ripe.prototype.createAttachmentOrder = function(number, file, options, call
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/attachments`;
+    const dataM = { file: file };
+    if (options.name) dataM.name = options.name;
+    if (options.meta) dataM.meta = JSON.stringify(options.meta);
     options = Object.assign(options, {
         url: url,
         method: "POST",
-        dataM: {
-            file: file
-        },
+        dataM: dataM,
         auth: true
     });
     options = this._build(options);
@@ -456,11 +457,14 @@ ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/states/${stateId}/attachments`;
+    const dataM = { file: file };
+    if (options.name) dataM.name = options.name;
+    if (options.meta) dataM.meta = JSON.stringify(options.meta);
     options = Object.assign(options, {
         url: url,
         method: "POST",
         dataM: {
-            file: file
+            file: dataM
         },
         auth: true
     });
