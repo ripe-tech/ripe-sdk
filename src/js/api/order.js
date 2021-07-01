@@ -622,7 +622,7 @@ ripe.Ripe.prototype.qualityAssureOrderP = function(number, options) {
 };
 
 /**
- * Sets the order status to 'rejected'.
+ * Sets the order status to 'reject'.
  *
  * @param {Number} number The number of the order to update.
  * @param {Object} options An object of options to configure the request.
@@ -630,7 +630,7 @@ ripe.Ripe.prototype.qualityAssureOrderP = function(number, options) {
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.rejectOrder = function(number, options, callback) {
-    return this.setOrderStatus(number, "rejected", options, callback);
+    return this.setOrderStatus(number, "reject", options, callback);
 };
 
 ripe.Ripe.prototype.rejectOrderP = function(number, options) {
