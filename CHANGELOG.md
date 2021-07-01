@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Ability to override `name` and `meta` for attachments - [#282](https://github.com/ripe-tech/ripe-sdk/issues/282)
-* Add `rejectOrderP` and `rejectOrder` methods
+* Add `rejectOrderP` and `rejectOrder` methods - [#219](https://github.com/ripe-tech/ripe-pulse/issues/219)
 
 ### Changed
 
