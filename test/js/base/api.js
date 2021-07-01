@@ -401,6 +401,24 @@ describe("RipeAPI", function() {
             );
 
             [contentType, body] = remote._encodeMultipart({
+                file: new TextEncoder("utf-8").encode("Hello World")
+            });
+
+            assert.strictEqual(
+                contentType,
+                "multipart/form-data; boundary=Vq2xNWWHbmWYF644q9bC5T2ALtj5CynryArNQRXGYsfm37vwFKMNsqPBrpPeprFs"
+            );
+            assert.strictEqual(
+                new TextDecoder("utf-8").decode(body),
+                "--Vq2xNWWHbmWYF644q9bC5T2ALtj5CynryArNQRXGYsfm37vwFKMNsqPBrpPeprFs\r\n" +
+                    'Content-Disposition: form-data; name="file"\r\n' +
+                    "\r\n" +
+                    "Hello World\r\n" +
+                    "--Vq2xNWWHbmWYF644q9bC5T2ALtj5CynryArNQRXGYsfm37vwFKMNsqPBrpPeprFs--\r\n" +
+                    "\r\n"
+            );
+
+            [contentType, body] = remote._encodeMultipart({
                 file: ripe.ripe.FileTuple.fromString("Hello World", "hello.txt", "text/plain")
             });
 
