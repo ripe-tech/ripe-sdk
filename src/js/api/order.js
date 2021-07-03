@@ -195,12 +195,13 @@ ripe.Ripe.prototype.createAttachmentOrder = function(number, file, options, call
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/attachments`;
+    const dataM = { file: file };
+    if (options.name) dataM.name = options.name;
+    if (options.meta) dataM.meta = JSON.stringify(options.meta);
     options = Object.assign(options, {
         url: url,
         method: "POST",
-        dataM: {
-            file: file
-        },
+        dataM: dataM,
         auth: true
     });
     options = this._build(options);
@@ -210,6 +211,27 @@ ripe.Ripe.prototype.createAttachmentOrder = function(number, file, options, call
 ripe.Ripe.prototype.createAttachmentOrderP = function(number, file, options) {
     return new Promise((resolve, reject) => {
         this.createAttachmentOrder(number, file, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/waybill`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.createWaybillOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.createWaybillOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -456,11 +478,14 @@ ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/states/${stateId}/attachments`;
+    const dataM = { file: file };
+    if (options.name) dataM.name = options.name;
+    if (options.meta) dataM.meta = JSON.stringify(options.meta);
     options = Object.assign(options, {
         url: url,
         method: "POST",
         dataM: {
-            file: file
+            file: dataM
         },
         auth: true
     });
@@ -616,6 +641,26 @@ ripe.Ripe.prototype.qualityAssureOrder = function(number, options, callback) {
 ripe.Ripe.prototype.qualityAssureOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.qualityAssureOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the order status to 'reject'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.rejectOrder = function(number, options, callback) {
+    return this.setOrderStatus(number, "reject", options, callback);
+};
+
+ripe.Ripe.prototype.rejectOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.rejectOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
