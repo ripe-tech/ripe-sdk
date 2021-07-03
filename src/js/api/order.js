@@ -195,12 +195,13 @@ ripe.Ripe.prototype.createAttachmentOrder = function(number, file, options, call
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/attachments`;
+    const dataM = { file: file };
+    if (options.name) dataM.name = options.name;
+    if (options.meta) dataM.meta = JSON.stringify(options.meta);
     options = Object.assign(options, {
         url: url,
         method: "POST",
-        dataM: {
-            file: file
-        },
+        dataM: dataM,
         auth: true
     });
     options = this._build(options);
@@ -477,11 +478,14 @@ ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/states/${stateId}/attachments`;
+    const dataM = { file: file };
+    if (options.name) dataM.name = options.name;
+    if (options.meta) dataM.meta = JSON.stringify(options.meta);
     options = Object.assign(options, {
         url: url,
         method: "POST",
         dataM: {
-            file: file
+            file: dataM
         },
         auth: true
     });
@@ -637,6 +641,26 @@ ripe.Ripe.prototype.qualityAssureOrder = function(number, options, callback) {
 ripe.Ripe.prototype.qualityAssureOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.qualityAssureOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the order status to 'reject'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.rejectOrder = function(number, options, callback) {
+    return this.setOrderStatus(number, "reject", options, callback);
+};
+
+ripe.Ripe.prototype.rejectOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.rejectOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -1191,6 +1215,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const deliveryTime = options.deliveryTime === undefined ? null : options.deliveryTime;
     const meta = options.meta === undefined ? null : options.meta;
     const description = options.description === undefined ? null : options.description;
+    const shippingInfo = options.shippingInfo === undefined ? null : options.shippingInfo;
     const notes = options.notes === undefined ? null : options.notes;
     const images = options.images === undefined ? null : options.images;
 
@@ -1215,6 +1240,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (deliveryTime) contents.delivery_time = deliveryTime;
     if (images) contents.images = images;
     if (description) contents.description = description;
+    if (shippingInfo) contents.shipping_info = shippingInfo;
 
     const params = {
         ff_order_id: ffOrderId,
@@ -1224,7 +1250,6 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (country) params.country = country;
     if (price) params.price = price;
     if (currency) params.currency = currency;
-    if (meta) params.meta = meta;
     if (meta) params.meta = meta;
     if (notes) params.notes = notes;
     if (notify) params.notify = notify;

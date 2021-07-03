@@ -16,7 +16,7 @@ if (
  * The version of the RIPE SDK currently in load, should
  * be in sync with the package information.
  */
-ripe.VERSION = "2.0.1";
+ripe.VERSION = "2.1.0";
 
 /**
  * Object that contains global (static) information to be used by
@@ -1181,6 +1181,7 @@ ripe.Ripe.prototype.getChildren = function(type = null) {
  * @returns {Image} The Image instance created.
  */
 ripe.Ripe.prototype.bindImage = function(element, options = {}) {
+    options = Object.assign({}, { format: this.format }, options);
     const image = new ripe.Image(this, element, options);
     return this.bindInteractable(image);
 };

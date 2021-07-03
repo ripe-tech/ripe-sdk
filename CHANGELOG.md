@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added method to issue a create waybill command for a given order
+* Added method to issue a create waybill command for a given order - []()
+* Ability to override `name` and `meta` for attachments - [#282](https://github.com/ripe-tech/ripe-sdk/issues/282)
+* Add `rejectOrderP` and `rejectOrder` methods - [ripe-pulse/#219](https://github.com/ripe-tech/ripe-pulse/issues/219)
 
 ### Changed
 
@@ -17,7 +19,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Initials builder initialization when `useInitialsBuilderLogic` was `false`.
+* Multipart encoding extended to classes that implement `toString`
+* Multipart encoding no longer sends an extra newline separator on the last field
+
+## [2.1.0] - 2021-06-22
+
+### Changed
+
+* Import order method propagates shipping info
+* Made image support the best file format by default
+
+### Fixed
+
+* Initials builder initialization when `useInitialsBuilderLogic` was `false`
+
+## [2.0.1] - 2021-06-22
+
+### Fixed
+
+* Small issue fix
 
 ## [2.0.0] - 2021-06-01
 
