@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Set order status takes relevant params from options and populates request params
 * Multipart encoding extended to classes that implement `toString`
 * Multipart encoding no longer sends an extra newline separator on the last field
 

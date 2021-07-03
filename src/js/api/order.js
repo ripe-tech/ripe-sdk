@@ -1041,6 +1041,8 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
         auth: true,
         method: "PUT"
     });
+    options.params = options.params || {};
+    if (options.justification) options.params.justification = options.justification;
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
