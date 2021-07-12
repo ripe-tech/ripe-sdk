@@ -484,9 +484,7 @@ ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
     options = Object.assign(options, {
         url: url,
         method: "POST",
-        dataM: {
-            file: dataM
-        },
+        dataM: dataM,
         auth: true
     });
     options = this._build(options);
