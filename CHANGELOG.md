@@ -17,9 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [2.2.1] - 2021-06-13
+
+### Fixed
+
 * Addition of attachments to a specific order state (`stateCreateAttachmentOrder`) - [#230](https://github.com/ripe-tech/ripe-pulse/issues/230)
 
-## [2.2.0] - 2021-06-07
+## [2.2.0] - 2021-07-06
 
 ### Added
 
