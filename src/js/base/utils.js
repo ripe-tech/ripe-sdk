@@ -242,9 +242,12 @@ ripe.typeof = function(object) {
  * @ignore
  */
 ripe.escape = function(value, char, escape = "\\") {
-    return value
-        .replace(new RegExp("\\" + escape, "g"), () => escape + escape)
-        .replace(new RegExp("\\" + char, "g"), () => escape + char);
+    if (!Array.isArray(char)) char = [char];
+    value = value.replace(new RegExp("\\" + escape, "g"), () => escape + escape);
+    for (const _char of char) {
+        value = value.replace(new RegExp("\\" + _char, "g"), () => escape + _char);
+    }
+    return value;
 };
 
 /**

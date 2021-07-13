@@ -89,6 +89,9 @@ describe("Utils", function() {
 
             result = ripe.ripe.escape("foo$,bar", ",", "$");
             assert.strictEqual(result, "foo$$$,bar");
+
+            result = ripe.ripe.escape("foo$,bar:", [",", ":"], "$");
+            assert.strictEqual(result, "foo$$$,bar$:");
         });
     });
 
@@ -101,6 +104,9 @@ describe("Utils", function() {
 
             result = ripe.ripe.unescape("foo$$,bar", "$");
             assert.strictEqual(result, "foo$,bar");
+
+            result = ripe.ripe.unescape("foo$$,bar$:", "$");
+            assert.strictEqual(result, "foo$,bar:");
 
             result = ripe.ripe.unescape("$$foo$,bar$$$$", "$");
             assert.strictEqual(result, "$foo,bar$$");
