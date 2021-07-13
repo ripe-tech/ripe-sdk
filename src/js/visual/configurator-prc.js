@@ -173,7 +173,7 @@ ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = 
         options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
 
-    if (update) await this.update();
+    if (update) await this.owner.update(null, {}, [this]);
 };
 
 /**
@@ -270,10 +270,6 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
         // waits for the preload promise as the result of it is
         // going to be considered the result of the operation
         result = await preloadPromise;
-
-        // flushes the complete set of operations that were waiting
-        // for the end of the pre-loading operation
-        await this.flushPending(true);
     }
 
     // verifies if the operation has been successful, it's considered
@@ -358,11 +354,13 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size) {
     mask.style.width = size + "px";
     mask.style.height = size + "px";
     this.currentSize = size;
-    await this.update(
-        {},
+
+    await this.owner.update(
+        null,
         {
             force: true
-        }
+        },
+        [this]
     );
 };
 
@@ -479,6 +477,10 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     // the control flow immediately (animation safeguard)
     if (safe && this.element.dataset.view === nextView && position === nextPosition) {
         this.element.classList.remove("no-drag", "animating");
+
+        // flushes the complete set of operations that were waiting
+        // for the end of change frame operation
+        await this.flushPending(true);
         return;
     }
 
@@ -637,17 +639,20 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
     this.trigger("changed_frame", newFrame);
 
     try {
-        // runs the update operation that should sync the visuals of the
+        // queries the update operation that should sync the visuals of the
         // configurator according to the current internal state (in data)
         // this operation waits for the proper drawing of the image (takes
         // some time and resources to be completed)
-        await this.update(
-            {},
-            {
-                animate: animate,
-                duration: animate ? duration : 0
-            }
-        );
+        await new Promise(resolve => {
+            this.owner.queryUpdate(
+                resolve,
+                {
+                    animate: animate,
+                    duration: animate ? duration : 0
+                },
+                [this]
+            );
+        });
     } catch (err) {
         // removes the locking classes as the current operation has been
         // finished, effectively re-allowing: dragging and animated operations
