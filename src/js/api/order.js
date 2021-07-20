@@ -216,6 +216,28 @@ ripe.Ripe.prototype.createAttachmentOrderP = function(number, file, options) {
     });
 };
 
+ripe.Ripe.prototype.attachmentOrder = function(number, attachmentId, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/attachments/${attachmentId}`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true,
+        cached: false
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.attachmentOrderP = function(number, attachmentId, options) {
+    return new Promise((resolve, reject) => {
+        this.attachmentOrder(number, attachmentId, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
 ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -232,28 +254,6 @@ ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
 ripe.Ripe.prototype.createWaybillOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.createWaybillOrder(number, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
-    });
-};
-
-ripe.Ripe.prototype.attachmentOrder = function(number, attachmentName, options, callback) {
-    callback = typeof options === "function" ? options : callback;
-    options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}orders/${number}/attachments/${attachmentName}`;
-    options = Object.assign(options, {
-        url: url,
-        method: "GET",
-        auth: true,
-        cached: false
-    });
-    options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
-};
-
-ripe.Ripe.prototype.attachmentOrderP = function(number, attachmentName, options) {
-    return new Promise((resolve, reject) => {
-        this.attachmentOrder(number, attachmentName, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -508,13 +508,13 @@ ripe.Ripe.prototype.stateCreateAttachmentOrderP = function(number, stateId, file
 ripe.Ripe.prototype.stateAttachmentOrder = function(
     number,
     stateId,
-    attachmentName,
+    attachmentId,
     options,
     callback
 ) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}orders/${number}/states/${stateId}/attachments/${attachmentName}`;
+    const url = `${this.url}orders/${number}/states/${stateId}/attachments/${attachmentId}`;
     options = Object.assign(options, {
         url: url,
         method: "GET",
@@ -525,12 +525,12 @@ ripe.Ripe.prototype.stateAttachmentOrder = function(
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype.stateAttachmentOrderP = function(number, stateId, attachmentName, options) {
+ripe.Ripe.prototype.stateAttachmentOrderP = function(number, stateId, attachmentId, options) {
     return new Promise((resolve, reject) => {
         this.stateAttachmentOrder(
             number,
             stateId,
-            attachmentName,
+            attachmentId,
             options,
             (result, isValid, request) => {
                 isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
