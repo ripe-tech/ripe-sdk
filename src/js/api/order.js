@@ -240,7 +240,7 @@ ripe.Ripe.prototype.attachmentOrderP = function(number, attachmentId, options) {
 
 ripe.Ripe.prototype.getAttachmentOrderUrl = function(key, options = {}) {
     const params = options.params || {};
-    return `${this.webUrl}attachments/${key}/data` + "?" + this._buildQuery(params);
+    return `${this.webUrl}attachments/${key}/data?${this._buildQuery(params)}`;
 };
 
 ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
