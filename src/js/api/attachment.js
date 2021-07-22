@@ -11,7 +11,6 @@ if (
     var ripe = base.ripe;
 }
 
-
 /**
  * Returns the URL that redirects to where an attachment is hosted.
  *
@@ -19,7 +18,7 @@ if (
  *  - 'key' - The key of the attachment.
  * @returns {String} The URL that can be used to view an attachment.
  */
- ripe.Ripe.prototype.getAttachmentOrderUrl = function(options = {}) {
+ripe.Ripe.prototype.getAttachmentOrderUrl = function(options = {}) {
     options = this._getAttachmentOptions(options);
     return options.url;
 };
@@ -27,7 +26,7 @@ if (
 /**
  * @ignore
  */
- ripe.Ripe.prototype._getAttachmentOptions = function(options = {}) {
+ripe.Ripe.prototype._getAttachmentOptions = function(options = {}) {
     const key = options.key;
     const url = `${this.webUrl}attachments/${key}/data`;
     const params = options.params || {};
