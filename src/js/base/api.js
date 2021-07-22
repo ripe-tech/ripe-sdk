@@ -384,11 +384,21 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
                 });
                 return;
             }
-            if (callback) callback.call(context, result, isValid, response);
+            if (callback) {
+                callback.call(context, result, response, {
+                    isValid: isValid,
+                    isAuthError: isAuthError
+                });
+            }
         })
         .catch(error => {
             response.error = response.error || error;
-            if (callback) callback.call(context, null, false, response);
+            if (callback) {
+                callback.call(context, null, response, {
+                    isValid: false,
+                    isAuthError: false
+                });
+            }
         });
 
     return response;
@@ -463,7 +473,12 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
 
     request.addEventListener("error", function(error) {
         request.error = request.error || error;
-        if (this.callback) this.callback.call(context, null, false, this);
+        if (this.callback) {
+            this.callback.call(context, null, this, {
+                isValid: false,
+                isAuthError: false
+            });
+        }
         if (this.timeoutHandler) {
             clearTimeout(this.timeoutHandler);
             this.timeoutHandler = null;
