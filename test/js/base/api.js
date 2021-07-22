@@ -5,6 +5,27 @@ const ripe = require("../../../src/js");
 describe("RipeAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
+    describe("#_authCallback", function() {
+        it("should be able to retry operations", async () => {
+            const remote = ripe.RipeAPI();
+            const options = {
+                retries: 2,
+                dummy: 3,
+                authCallback: callback => {
+                    options.dummy--;
+                    if (callback) callback();
+                }
+            };
+
+            await new Promise((resolve, reject) => {
+                remote._cacheURL("https://httpbin.org/status/403", options, () => resolve());
+            });
+
+            assert.strictEqual(options.retries, 0);
+            assert.strictEqual(options.dummy, 1);
+        });
+    });
+
     describe("#_queryToSpec()", function() {
         it("should be able to convert a query to spec", async () => {
             const remote = ripe.RipeAPI();

@@ -252,6 +252,11 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     cached = typeof cached === "undefined" ? true : cached;
     cached = cached && !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
 
+    // determines the correct callback to be called once an auth
+    // related problem occurs, defaulting to the base one in case
+    // none is passed via options object
+    const authCallback = options.authCallback || this._authCallback;
+
     // determines if the cache entry should be invalidated before
     // making the request, it should only be invalidate in case the
     // the current request is being done with the cached flag
@@ -285,7 +290,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
         // authentication one and there are retries left then tries
         // the authentication callback and retries the request
         if (isAuthError && retries > 0) {
-            this._authCallback(() => {
+            authCallback(() => {
                 options.retries = retries - 1;
                 this._cacheURL(url, options, callback);
             });
