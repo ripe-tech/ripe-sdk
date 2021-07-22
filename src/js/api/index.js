@@ -1,3 +1,4 @@
+const attachment = require("./attachment");
 const account = require("./account");
 const availabilityRule = require("./availability-rule");
 const brand = require("./brand");
@@ -17,6 +18,7 @@ const size = require("./size");
 const sku = require("./sku");
 const transportRule = require("./transport-rule");
 
+Object.assign(module.exports, attachment);
 Object.assign(module.exports, account);
 Object.assign(module.exports, availabilityRule);
 Object.assign(module.exports, brand);

@@ -238,11 +238,6 @@ ripe.Ripe.prototype.attachmentOrderP = function(number, attachmentId, options) {
     });
 };
 
-ripe.Ripe.prototype.getAttachmentOrderUrl = function(key, options = {}) {
-    const params = options.params || {};
-    return `${this.webUrl}attachments/${key}/data?${this._buildQuery(params)}`;
-};
-
 ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
