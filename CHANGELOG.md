@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Support for multiple character escaping in `escape()`
-* Add method to retrieve the url for an attachment
+* Add method to retrieve the URL for an attachment
 * Support for retry in API requests when receiving authentication related errors (eg: 403)
 
 ### Changed

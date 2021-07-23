@@ -12,27 +12,16 @@ if (
 }
 
 /**
- * Returns the URL that redirects to where an attachment is hosted.
+ * Returns the URL that redirects to where an attachment is hosted,
+ * using the provided secret key as reference.
  *
- * @param {Object} options A map with options, such as:
- *  - 'key' - The key of the attachment.
+ * @param {String} key The secret key to be used in attachment retrieval.
+ * @param {Object} options A map with options for the URL building.
  * @returns {String} The URL that can be used to view an attachment.
  */
-ripe.Ripe.prototype.getAttachmentOrderUrl = function(options = {}) {
-    options = this._getAttachmentOptions(options);
-    return options.url;
-};
-
-/**
- * @ignore
- */
-ripe.Ripe.prototype._getAttachmentOptions = function(options = {}) {
-    const key = options.key;
+ripe.Ripe.prototype.getAttachmentOrderUrl = function(key, options) {
+    options = options === undefined ? {} : options;
     const url = `${this.webUrl}attachments/${key}/data`;
-    const params = options.params || {};
-    return Object.assign(options, {
-        url: url,
-        method: "GET",
-        params: params
-    });
+    options = Object.assign(options, { url: url });
+    return options.url + "?" + this._buildQuery(options.params);
 };
