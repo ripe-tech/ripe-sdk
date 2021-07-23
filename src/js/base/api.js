@@ -1098,6 +1098,8 @@ ripe.Ripe.prototype._buildQuery = function(params) {
     let index;
     const buffer = [];
 
+    params = typeof params === "undefined" ? {} : params;
+
     if (Array.isArray(params)) {
         for (index = 0; index < params.length; index++) {
             const tuple = params[index];
