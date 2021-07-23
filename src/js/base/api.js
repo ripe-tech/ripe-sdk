@@ -140,6 +140,8 @@ ripe.Ripe.prototype.signinP = function(username, password, options) {
 ripe.Ripe.prototype.signinAdmin = function(username, password, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
+    this.username = username;
+    this.password = password;
     const url = `${this.url}signin_admin`;
     options = Object.assign(options, {
         url: url,
@@ -173,6 +175,7 @@ ripe.Ripe.prototype.signinAdminP = function(username, password, options) {
 ripe.Ripe.prototype.signinPid = function(token, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
+    this.pid = token;
     const url = `${this.url}signin_pid`;
     options = Object.assign(options, {
         url: url,
@@ -237,12 +240,22 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     const query = this._buildQuery(options.params || {});
     const fullKey = key + ":" + url + ":" + query;
 
+    // determines the number of retries left for the request operation
+    // this is going to be used in case there's an auth related error
+    let retries = options.retries;
+    retries = typeof retries === "undefined" ? 1 : retries;
+
     // determines if the current request should be cached, obeys
     // some of the basic rules for that behaviour
     let cached = options.cached;
     cached = typeof cached === "undefined" ? this.options.cached : cached;
     cached = typeof cached === "undefined" ? true : cached;
     cached = cached && !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
+
+    // determines the correct callback to be called once an auth
+    // related problem occurs, defaulting to the base one in case
+    // none is passed via options object
+    const authCallback = options.authCallback || this._authCallback;
 
     // determines if the cache entry should be invalidated before
     // making the request, it should only be invalidate in case the
@@ -268,10 +281,29 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
 
     // otherwise runs the "normal" request URL call and
     // sets the result cache key on return
-    return this._requestURL(url, options, (result, isValid, request) => {
-        if (isValid && cached) {
-            this._cache[fullKey] = result;
+    return this._requestURL(url, options, (result, request, flags = {}) => {
+        // unpacks the flags parameters into the components that
+        // are going to be used for processing
+        const { isValid, isAuthError } = flags;
+
+        // in case the error found in the request qualifies as an
+        // authentication one and there are retries left then tries
+        // the authentication callback and retries the request
+        if (isAuthError && retries > 0) {
+            authCallback(() => {
+                options.retries = retries - 1;
+                this._cacheURL(url, options, callback);
+            });
+            return;
         }
+
+        // in case the result of the request is valid and caching
+        // has been request set the cache value for the full key
+        // with the result of the request
+        if (isValid && cached) this._cache[fullKey] = result;
+
+        // in case a callback is set then calls it with the expected
+        // set of parameters (should include the original request object)
         if (callback) callback(result, isValid, request);
     });
 };
@@ -300,6 +332,7 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
     const dataM = options.dataM || null;
     let contentType = options.contentType || null;
     const validCodes = options.validCodes || [200];
+    const authErrorCodes = options.authErrorCodes || [401, 403, 440, 499];
     const credentials = options.credentials || "omit";
     const keepAlive = options.keepAlive === undefined ? true : options.keepAlive;
 
@@ -338,6 +371,7 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
         .then(async response => {
             let result = null;
             const isValid = validCodes.includes(response.status);
+            const isAuthError = authErrorCodes.includes(response.status);
             const contentType = response.headers.get("content-type").toLowerCase();
             try {
                 if (contentType.startsWith("application/json")) {
@@ -349,15 +383,30 @@ ripe.Ripe.prototype._requestURLFetch = function(url, options, callback) {
                 }
             } catch (error) {
                 response.error = response.error || error;
-                callback.call(context, result, isValid, response);
+                callback.call(context, result, response, {
+                    isValid: isValid,
+                    isAuthError: isAuthError
+                });
                 return;
             }
-            if (callback) callback.call(context, result, isValid, response);
+            if (callback) {
+                callback.call(context, result, response, {
+                    isValid: isValid,
+                    isAuthError: isAuthError
+                });
+            }
         })
         .catch(error => {
             response.error = response.error || error;
-            if (callback) callback.call(context, null, false, response);
+            if (callback) {
+                callback.call(context, null, response, {
+                    isValid: false,
+                    isAuthError: false
+                });
+            }
         });
+
+    return response;
 };
 
 /**
@@ -378,6 +427,7 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
     const timeout = options.timeout || 10000;
     const timeoutConnect = options.timeoutConnect || parseInt(timeout / 2);
     const validCodes = options.validCodes || [200];
+    const authErrorCodes = options.authErrorCodes || [401, 403, 440, 499];
     const withCredentials = options.withCredentials || false;
 
     const query = this._buildQuery(params);
@@ -402,17 +452,24 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
     request.timeout = timeoutConnect;
     request.callback = callback;
     request.validCodes = validCodes;
+    request.authErrorCodes = authErrorCodes;
     request.withCredentials = withCredentials;
 
     request.addEventListener("load", function() {
         let result = null;
         const isValid = this.validCodes.includes(this.status);
+        const isAuthError = this.authErrorCodes.includes(this.status);
         try {
             result = JSON.parse(this.responseText);
         } catch (error) {
             result = this.responseText;
         }
-        if (this.callback) this.callback.call(context, result, isValid, this);
+        if (this.callback) {
+            this.callback.call(context, result, this, {
+                isValid: isValid,
+                isAuthError: isAuthError
+            });
+        }
         if (this.timeoutHandler) {
             clearTimeout(this.timeoutHandler);
             this.timeoutHandler = null;
@@ -421,7 +478,12 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
 
     request.addEventListener("error", function(error) {
         request.error = request.error || error;
-        if (this.callback) this.callback.call(context, null, false, this);
+        if (this.callback) {
+            this.callback.call(context, null, this, {
+                isValid: false,
+                isAuthError: false
+            });
+        }
         if (this.timeoutHandler) {
             clearTimeout(this.timeoutHandler);
             this.timeoutHandler = null;
@@ -462,7 +524,27 @@ ripe.Ripe.prototype._requestURLLegacy = function(url, options, callback) {
     } else {
         request.send();
     }
+
     return request;
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._authCallback = function(callback) {
+    if (this.username && this.password) {
+        this.signin(this.username, this.password, undefined, () => {
+            if (callback) callback();
+        });
+        return;
+    }
+    if (this.pid) {
+        this.signinPid(this.pid, undefined, () => {
+            if (callback) callback();
+        });
+        return;
+    }
+    if (callback) callback();
 };
 
 /**
