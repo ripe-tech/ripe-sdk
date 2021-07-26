@@ -55,18 +55,22 @@ ripe.build = function() {
 };
 
 /**
- * Requires a module.
+ * Requires a module using a "hack" based strategy that overcomes
+ * limitation in the react-native import system.
+ *
+ * The hack tries to circumvent static analysis by applying a transform
+ * operation to the string that contains the name of the module.
  *
  * This is an hack to work around metro's (react-native bundler)
  * static analysis, needed until it supports optional imports
  * (https://github.com/react-native-community/discussions-and-proposals/issues/120).
  *
  * @param {String} name The name of the module to require.
- * @returns The requried module.
+ * @returns {Object} The required imported using a "safe" strategy.
  */
-function requireHack(name) {
+const requireHack = function(name) {
     return name.toUpperCase().toLowerCase();
-}
+};
 
 if (
     typeof require !== "undefined" &&
