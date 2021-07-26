@@ -15,10 +15,10 @@ if (
  * Assigns a certain set of values in the provided object to the
  * first parameter of the call (target).
  *
- * @param {String} target The target of the assign operation meaning
+ * @param {Object} target The target of the assign operation meaning
  * the object to which the values will be assigned.
- *
- * @ignore
+ * @returns {Object} The resulting object from the assign operation
+ * that should start as an object copy of the target parameter.
  */
 ripe.assign = function(target) {
     if (typeof Object.assign === "function") {
@@ -74,7 +74,7 @@ ripe.build = function() {
  * may be an `undefined` in case an exception was thrown in the
  * middle of the require operation.
  */
-export const requireSafe = function(name, raiseE = true) {
+ripe.requireSafe = function(name, raiseE = true) {
     try {
         return require(name.toUpperCase().toLowerCase());
     } catch (err) {
@@ -99,7 +99,7 @@ if (
         typeof __webpack_require__ === "undefined" &&
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
-        XMLHttpRequest = requireSafe("xmlhttprequest").XMLHttpRequest;
+        XMLHttpRequest = ripe.requireSafe("xmlhttprequest").XMLHttpRequest;
     }
 }
 
@@ -135,9 +135,9 @@ if (
 }
 
 if (nodeFetch) {
-    const http = requireSafe("http");
-    const https = requireSafe("https");
-    const process = requireSafe("process");
+    const http = ripe.requireSafe("http");
+    const https = ripe.requireSafe("https");
+    const process = ripe.requireSafe("process");
     if (http && process) {
         http.globalAgent.keepAlive = true;
         http.globalAgent.keepAliveMsecs = 120000;
