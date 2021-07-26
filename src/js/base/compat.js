@@ -54,6 +54,24 @@ ripe.build = function() {
     return ripe.assign.apply(this, _arguments);
 };
 
+/**
+ * Requires a module using a "hack" based strategy that overcomes
+ * limitation in the react-native import system.
+ *
+ * The hack tries to circumvent static analysis by applying a transform
+ * operation to the string that contains the name of the module.
+ *
+ * This is an hack to work around metro's (react-native bundler)
+ * static analysis, needed until it supports optional imports
+ * (https://github.com/react-native-community/discussions-and-proposals/issues/120).
+ *
+ * @param {String} name The name of the module to require.
+ * @returns {Object} The required imported using a "safe" strategy.
+ */
+const requireHack = function(name) {
+    return name.toUpperCase().toLowerCase();
+};
+
 if (
     typeof require !== "undefined" &&
     (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") && // eslint-disable-line camelcase
@@ -70,12 +88,7 @@ if (
         typeof __webpack_require__ === "undefined" &&
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
-        // this is an hack to work around metro's (react-native bundler)
-        // static analysis, needed until it supports optional imports
-        // (https://github.com/react-native-community/discussions-and-proposals/issues/120)
-        const mixedModuleName = "Xmlhttprequest";
-        const correctModuleName = mixedModuleName.toLowerCase();
-        XMLHttpRequest = require(correctModuleName).XMLHttpRequest;
+        XMLHttpRequest = requireHack("xmlhttprequest").XMLHttpRequest;
     }
 }
 
@@ -111,9 +124,9 @@ if (
 }
 
 if (nodeFetch) {
-    const http = require("http");
-    const https = require("https");
-    const process = require("process");
+    const http = requireHack("http");
+    const https = requireHack("https");
+    const process = requireHack("process");
     http.globalAgent.keepAlive = true;
     http.globalAgent.keepAliveMsecs = 120000;
     http.globalAgent.timeout = 60000;
