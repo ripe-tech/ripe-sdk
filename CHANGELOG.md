@@ -13,13 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* When doing a configurator resize use the defined `size` option, if defined, otherwise fallsback to the old behavior of using the "binded" element's width
+*
 
 ### Fixed
 
 *
 
-## [2.2.3] - 2021-07-27
+## [2.3.0] - 2021-07-26
+
+### Changed
+
+* When doing a configurator resize use the defined `size` option, if defined, otherwise fallsback to the old behavior of using the "binded" element's width
+
+## [2.2.3] - 2021-07-26
 
 ### Fixed
 
