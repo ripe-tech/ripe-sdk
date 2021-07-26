@@ -55,7 +55,7 @@ ripe.build = function() {
 };
 
 /**
- * Requires a module using a "hack" based strategy that overcomes
+ * Requires a module using a "safe" based strategy that overcomes
  * limitation in the react-native import system.
  *
  * The hack tries to circumvent static analysis by applying a transform
@@ -66,16 +66,18 @@ ripe.build = function() {
  * (https://github.com/react-native-community/discussions-and-proposals/issues/120).
  *
  * @param {String} name The name of the module to require.
- * @param {Boolean} safe If the safe mode should be used to run
+ * @param {Boolean} raiseE If the safe mode should be used to run
  * the `require` based import meaning that if an exception is raised
  * then it's ignored and un `undefined` value is returned.
- * @returns {Object} The required imported using a "safe" strategy.
+ * @returns {Object} The required imported using a "safe" strategy,
+ * may be an `undefined` in case an exception was thrown in the
+ * middle of the require operation.
  */
-const requireHack = function(name, safe = true) {
+export const requireSafe = function(name, raiseE = true) {
     try {
         return require(name.toUpperCase().toLowerCase());
     } catch (err) {
-        if (safe) return undefined;
+        if (raiseE) return undefined;
         throw err;
     }
 };
@@ -96,7 +98,7 @@ if (
         typeof __webpack_require__ === "undefined" &&
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
-        XMLHttpRequest = requireHack("xmlhttprequest").XMLHttpRequest;
+        XMLHttpRequest = requireSafe("xmlhttprequest").XMLHttpRequest;
     }
 }
 
@@ -132,9 +134,9 @@ if (
 }
 
 if (nodeFetch) {
-    const http = requireHack("http");
-    const https = requireHack("https");
-    const process = requireHack("process");
+    const http = requireSafe("http");
+    const https = requireSafe("https");
+    const process = requireSafe("process");
     if (http && process) {
         http.globalAgent.keepAlive = true;
         http.globalAgent.keepAliveMsecs = 120000;
