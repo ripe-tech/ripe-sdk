@@ -66,10 +66,18 @@ ripe.build = function() {
  * (https://github.com/react-native-community/discussions-and-proposals/issues/120).
  *
  * @param {String} name The name of the module to require.
+ * @param {Boolean} safe If the safe mode should be used to run
+ * the `require` based import meaning that if an exception is raised
+ * then it's ignored and un `undefined` value is returned.
  * @returns {Object} The required imported using a "safe" strategy.
  */
-const requireHack = function(name) {
-    return require(name.toUpperCase().toLowerCase());
+const requireHack = function(name, safe = true) {
+    try {
+        return require(name.toUpperCase().toLowerCase());
+    } catch (err) {
+        if (safe) return undefined;
+        throw err;
+    }
 };
 
 if (
@@ -127,20 +135,24 @@ if (nodeFetch) {
     const http = requireHack("http");
     const https = requireHack("https");
     const process = requireHack("process");
-    http.globalAgent.keepAlive = true;
-    http.globalAgent.keepAliveMsecs = 120000;
-    http.globalAgent.timeout = 60000;
-    http.globalAgent.scheduling = "fifo";
-    http.globalAgent.maxSockets = process.env.MAX_SOCKETS
-        ? parseInt(process.env.MAX_SOCKETS)
-        : Infinity;
-    https.globalAgent.keepAlive = true;
-    https.globalAgent.keepAliveMsecs = 120000;
-    https.globalAgent.timeout = 60000;
-    https.globalAgent.scheduling = "fifo";
-    https.globalAgent.maxSockets = process.env.MAX_SOCKETS
-        ? parseInt(process.env.MAX_SOCKETS)
-        : Infinity;
+    if (http && process) {
+        http.globalAgent.keepAlive = true;
+        http.globalAgent.keepAliveMsecs = 120000;
+        http.globalAgent.timeout = 60000;
+        http.globalAgent.scheduling = "fifo";
+        http.globalAgent.maxSockets = process.env.MAX_SOCKETS
+            ? parseInt(process.env.MAX_SOCKETS)
+            : Infinity;
+    }
+    if (https && process) {
+        https.globalAgent.keepAlive = true;
+        https.globalAgent.keepAliveMsecs = 120000;
+        https.globalAgent.timeout = 60000;
+        https.globalAgent.scheduling = "fifo";
+        https.globalAgent.maxSockets = process.env.MAX_SOCKETS
+            ? parseInt(process.env.MAX_SOCKETS)
+            : Infinity;
+    }
 }
 
 if (typeof module !== "undefined") {

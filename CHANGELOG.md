@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-*
+* made `requireHack()` sa safer method allowing auto catching of import errors
 
 ### Fixed
 
