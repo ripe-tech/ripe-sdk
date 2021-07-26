@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* 
+*
 
 ### Changed
 
-* When doing a configurator resize use the defined `size` option, if defined. Otherwise fallsback to the old behavior of using the binded element's width.
+* When doing a configurator resize use the defined `size` option, if defined, otherwise fallsback to the old behavior of using the "binded" element's width
 
 ### Fixed
 
