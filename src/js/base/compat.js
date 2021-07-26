@@ -69,7 +69,7 @@ ripe.build = function() {
  * @returns {Object} The required imported using a "safe" strategy.
  */
 const requireHack = function(name) {
-    return name.toUpperCase().toLowerCase();
+    return require(name.toUpperCase().toLowerCase());
 };
 
 if (
