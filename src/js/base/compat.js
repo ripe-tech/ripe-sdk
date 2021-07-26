@@ -58,8 +58,9 @@ ripe.build = function() {
  * Requires a module using a "safe" based strategy that overcomes
  * limitation in the react-native import system.
  *
- * The hack tries to circumvent static analysis by applying a transform
- * operation to the string that contains the name of the module.
+ * The hack/safe strategy tries to circumvent static analysis
+ * by applying a transform operation to the string that contains
+ * the name of the module.
  *
  * This is an hack to work around metro's (react-native bundler)
  * static analysis, needed until it supports optional imports
