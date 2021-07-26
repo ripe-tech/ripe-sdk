@@ -54,7 +54,6 @@ ripe.build = function() {
     return ripe.assign.apply(this, _arguments);
 };
 
-
 /**
  * Requires a module.
  *
