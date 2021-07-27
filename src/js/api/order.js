@@ -251,14 +251,14 @@ ripe.Ripe.prototype.createNoteOrder = function(number, text, options, callback) 
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/notes`;
-    const dataJ = { text: text };
-    if (options.email) dataJ.email = options.email;
     options = Object.assign(options, {
         url: url,
         method: "POST",
-        dataJ: dataJ,
         auth: true
     });
+    options.params = options.params || {};
+    options.params.text = text;
+    if (options.email) options.params.email = options.email;
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
