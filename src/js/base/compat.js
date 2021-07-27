@@ -74,12 +74,12 @@ ripe.build = function() {
  * may be an `undefined` in case an exception was thrown in the
  * middle of the require operation.
  */
-ripe.requireSafe = function(name, raiseE = true) {
+ripe.requireSafe = function(name, raiseE = false) {
     try {
         return require(name.toUpperCase().toLowerCase());
     } catch (err) {
-        if (raiseE) return undefined;
-        throw err;
+        if (raiseE) throw err;
+        return undefined;
     }
 };
 
