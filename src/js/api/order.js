@@ -238,6 +238,47 @@ ripe.Ripe.prototype.attachmentOrderP = function(number, attachmentId, options) {
     });
 };
 
+/**
+ * Creates a note associated with an order.
+ *
+ * @param {Number} number The number of the associated order.
+ * @param {String} text The note text.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.createNoteOrder = function(number, text, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/notes`;
+    const dataJ = { text: text };
+    if (options.email) dataJ.email = options.email;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataJ: dataJ,
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Creates a note associated with an order.
+ *
+ * @param {Number} number The number of the associated order.
+ * @param {String} text The note text.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The created note.
+ */
+ripe.Ripe.prototype.createNoteOrderP = function(number, text, options) {
+    return new Promise((resolve, reject) => {
+        this.createNoteOrder(number, text, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
 ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
