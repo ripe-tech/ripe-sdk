@@ -259,7 +259,6 @@ ripe.Ripe.prototype.createNoteOrder = function(number, text, options, callback) 
     });
     options.params = options.params || {};
     options.params.text = text;
-    if (options.email) options.params.email = options.email;
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
