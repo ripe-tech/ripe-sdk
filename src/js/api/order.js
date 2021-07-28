@@ -239,10 +239,11 @@ ripe.Ripe.prototype.attachmentOrderP = function(number, attachmentId, options) {
 };
 
 /**
- * Creates a note associated with an order.
+ * Creates a note with the provided text and associates it
+ * with the order with the provided number.
  *
- * @param {Number} number The number of the associated order.
- * @param {String} text The note text.
+ * @param {Number} number The number of the order to associate a note.
+ * @param {String} text The note text, containing the context of the note.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -264,12 +265,13 @@ ripe.Ripe.prototype.createNoteOrder = function(number, text, options, callback) 
 };
 
 /**
- * Creates a note associated with an order.
+ * Creates a note with the provided text and associates it
+ * with the order with the provided number.
  *
- * @param {Number} number The number of the associated order.
- * @param {String} text The note text.
+ * @param {Number} number The number of the order to associate a note.
+ * @param {String} text The note text, containing the context of the note.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The created note.
+ * @returns {Promise} The contents of the note instance that was created.
  */
 ripe.Ripe.prototype.createNoteOrderP = function(number, text, options) {
     return new Promise((resolve, reject) => {
