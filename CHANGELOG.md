@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Removed warnings for node.js `requireSafe()` hack under webpack
 
 ## [2.4.1] - 2021-08-09
 

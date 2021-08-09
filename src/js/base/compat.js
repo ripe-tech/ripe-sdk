@@ -76,7 +76,7 @@ ripe.build = function() {
  */
 ripe.requireSafe = function(name, raiseE = false) {
     try {
-        return require(name.toUpperCase().toLowerCase());
+        return global.require(name.toUpperCase().toLowerCase());
     } catch (err) {
         if (raiseE) throw err;
         return undefined;
