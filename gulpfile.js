@@ -23,6 +23,7 @@ const paths = {
     css: "src/css/**/*.css",
     docs: "src/js/*/**/*.js",
     test: "test/js/**/*.js",
+    testSetup: "test/js/setup.js",
     dist: "dist/**/*",
     polyfill: "node_modules/@babel/polyfill/dist/polyfill.js",
     basefiles: [
@@ -182,7 +183,8 @@ gulp.task("lint-fix", () => {
 gulp.task("test", () => {
     return gulp.src(paths.test).pipe(
         mocha({
-            reporter: "spec"
+            reporter: "spec",
+            require: [paths.testSetup]
         })
     );
 });
