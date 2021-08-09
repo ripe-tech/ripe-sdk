@@ -1989,6 +1989,10 @@ ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context, sep 
     const engravingProfiles = engraving ? this.parseEngraving(engraving).values : [];
     profiles = [...engravingProfiles, ...profiles];
 
+    // converts a possible null context into an empty array, supporting
+    // no context and only using the given profiles
+    context = context || [];
+
     // retrieves the ordered set of property types, which will be used to
     // order the profiles
     const propertyTypes = this.getProperties().propertyTypes;
@@ -2027,7 +2031,6 @@ ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context, sep 
         // iterates over the context values and construct all
         // the permutations with the existing combinations, both
         // normal and with their type and names reversed
-        if (!context) continue;
         for (const contextValue of context) {
             profile = [contextValue];
             profileWithName = [contextValue];
