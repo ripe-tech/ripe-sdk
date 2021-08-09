@@ -727,15 +727,18 @@ ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
         return;
     }
 
+    // in case there's a front mask handler defined for a series
+    // of events then unregister the event listener
     if (this.frontMaskLoad) frontMask.removeEventListener("load", this.frontMaskLoad);
     if (this.frontMaskError) frontMask.removeEventListener("error", this.frontMaskError);
+
     frontMask.classList.remove("loaded");
     this.frontMaskLoad = function() {
         this.classList.add("loaded");
         self.trigger("highlighted_part", part);
     };
     this.frontMaskError = function() {
-        this.setAttribute("src", "");
+        this.removeAttribute("src");
     };
     frontMask.addEventListener("load", this.frontMaskLoad);
     frontMask.addEventListener("error", this.frontMaskError);
