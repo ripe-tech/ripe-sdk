@@ -1982,7 +1982,7 @@ ripe.Ripe.prototype._generateProfiles = function(group, viewport) {
  * @returns {Array} The sequence of generated profiles properly ordered from the
  * most concrete (more specific) to the least concrete (more general).
  */
-ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context, sep = ":") {
+ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context = null, sep = ":") {
     // parses the provided engraving string so that it's possible to iterate
     // over the multiple structured values of it, then adds these same values
     // to the base values passed as argument to the method
