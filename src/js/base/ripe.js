@@ -1982,12 +1982,16 @@ ripe.Ripe.prototype._generateProfiles = function(group, viewport) {
  * @returns {Array} The sequence of generated profiles properly ordered from the
  * most concrete (more specific) to the least concrete (more general).
  */
-ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context, sep = ":") {
+ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context = null, sep = ":") {
     // parses the provided engraving string so that it's possible to iterate
     // over the multiple structured values of it, then adds these same values
     // to the base values passed as argument to the method
     const engravingProfiles = engraving ? this.parseEngraving(engraving).values : [];
     profiles = [...engravingProfiles, ...profiles];
+
+    // converts a possible null context into an empty array, supporting
+    // no context and only using the given profiles
+    context = context || [];
 
     // retrieves the ordered set of property types, which will be used to
     // order the profiles
@@ -2027,7 +2031,6 @@ ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context, sep 
         // iterates over the context values and construct all
         // the permutations with the existing combinations, both
         // normal and with their type and names reversed
-        if (!context) continue;
         for (const contextValue of context) {
             profile = [contextValue];
             profileWithName = [contextValue];

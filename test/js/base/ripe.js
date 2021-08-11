@@ -360,6 +360,17 @@ describe("Ripe", function() {
                 "white",
                 "step::size"
             ]);
+
+            result = instance._initialsBuilder("AA", "black:color.rib:position", null, null, null);
+            assert.strictEqual(result.initials, "AA");
+            assert.deepStrictEqual(result.profile, [
+                "color::black:position::rib",
+                "black:rib",
+                "position::rib",
+                "rib",
+                "color::black",
+                "black"
+            ]);
         });
     });
 
