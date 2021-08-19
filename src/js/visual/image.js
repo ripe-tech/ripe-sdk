@@ -313,6 +313,11 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const curve = this.element.dataset.curve || this.curve;
     const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
 
+    // sets the default values of initials and engraving which may
+    // be overridden if a state was given
+    this.initials = "";
+    this.engraving = null;
+
     // in case the state is defined tries to gather the appropriate
     // sate options for both initials and engraving taking into
     // consideration that groups may exist
