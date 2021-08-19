@@ -2018,10 +2018,10 @@ ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context = nul
     if (profiles.length === 1) {
         combinations = [profiles];
     } else {
-    for (let i = 0; i < profiles.length; i++) {
-        combinations = [...combinations, ...ripe.combinations(profiles, i + 1)];
-    }
-    combinations.reverse();
+        for (let i = 0; i < profiles.length; i++) {
+            combinations = [...combinations, ...ripe.combinations(profiles, i + 1)];
+        }
+        combinations.reverse();
     }
 
     // iterates over the profiles and append the context
