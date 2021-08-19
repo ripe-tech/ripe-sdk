@@ -2015,10 +2015,14 @@ ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context = nul
     // and then iterates over the range of values size to create the
     // multiple combinations for the current values
     let combinations = [];
+    if (profiles.length === 1) {
+        combinations = [profiles];
+    } else {
     for (let i = 0; i < profiles.length; i++) {
         combinations = [...combinations, ...ripe.combinations(profiles, i + 1)];
     }
     combinations.reverse();
+    }
 
     // iterates over the profiles and append the context
     // to them, resulting in all the profile combinations
