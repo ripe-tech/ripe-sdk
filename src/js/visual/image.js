@@ -313,11 +313,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     const curve = this.element.dataset.curve || this.curve;
     const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
 
-    // sets the default values of initials and engraving which may
-    // be overridden if a state was given
-    this.initials = "";
-    this.engraving = null;
-
     // in case the state is defined tries to gather the appropriate
     // sate options for both initials and engraving taking into
     // consideration that groups may exist
@@ -438,6 +433,10 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     let result = true;
 
     try {
+        // cancels the previous request (if exists), allowing the callbacks
+        // to be freed to make a new request
+        this.cancel();
+
         // create a promise waiting for the current image for either load
         // or receive an error, for both situation there should be a proper
         // waiting process in motion
