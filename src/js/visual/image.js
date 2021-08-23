@@ -433,8 +433,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     let result = true;
 
     try {
-        // cancels the previous request (if exists), allowing the callbacks
-        // to be freed to make a new request
+        // cancels the previous request (if exists), firing the proper
+        // callbacks before overriding them in the current request
         this.cancel();
 
         // create a promise waiting for the current image for either load
