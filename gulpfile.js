@@ -33,6 +33,7 @@ const paths = {
         "src/js/base/errors.js",
         "src/js/base/observable.js",
         "src/js/base/interactable.js",
+        "src/js/base/itertools.js",
         "src/js/base/mobile.js",
         "src/js/base/ripe.js",
         "src/js/base/logic.js",
