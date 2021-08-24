@@ -406,6 +406,11 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         return false;
     }
 
+    // cancels the previous request (if exists), firing the proper
+    // callbacks before overriding them in the current request, this
+    // will allow unblocking pending listeners for the previous images
+    await this.cancel();
+
     // saves the previous URL value and then updates the new URL
     // according to the newly requested one
     this._previousUrl = this._url;
@@ -420,11 +425,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // in case the element is no longer available (possible due to async
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
-
-    // cancels the previous request (if exists), firing the proper
-    // callbacks before overriding them in the current request, this
-    // will allow unblocking pending listeners for the previous images
-    await this.cancel();
 
     // updates the image DOM element with the values of the image
     // including requested size and URL
