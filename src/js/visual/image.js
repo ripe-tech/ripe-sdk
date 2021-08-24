@@ -421,6 +421,11 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
+    // cancels the previous request (if exists), firing the proper
+    // callbacks before overriding them in the current request, this
+    // will allow unblocking pending listeners for the previous images
+    await this.cancel();
+
     // updates the image DOM element with the values of the image
     // including requested size and URL
     if (width) this.element.width = width;
@@ -433,10 +438,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     let result = true;
 
     try {
-        // cancels the previous request (if exists), firing the proper
-        // callbacks before overriding them in the current request
-        this.cancel();
-
         // create a promise waiting for the current image for either load
         // or receive an error, for both situation there should be a proper
         // waiting process in motion
@@ -476,13 +477,18 @@ ripe.Image.prototype.cancel = async function(options = {}) {
 
     // restores the internal URL state of the image back to
     // the previous one (and updates the element accordingly)
-    this._url = this._previousUrl;
+    if (this._previousUrl) this._url = this._previousUrl;
     this._previousUrl = null;
     this.element.src = this._url || "";
 
     // calls the loaded callback with the indication that there
     // was a cancel operation for its load
     this._loadedCallback({ canceled: true });
+
+    // unsets both the loaded and the error callbacks so that
+    // they don't get called anymore in the future
+    this._loadedCallback = null;
+    this._errorCallback = null;
 
     return true;
 };
