@@ -222,6 +222,32 @@ ripe.Ripe.prototype.getPriceP = function(options) {
 };
 
 /**
+ * Retrieves the price for a set of customizations.
+ *
+ * @param {Object} options An Object containing customization information that
+ * can be used not only to override the current customization, allowing to set
+ * the brand', 'model', but also to provide the config list to fetch the price
+ * for.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getPrices = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getPricesOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.getPricesP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getPrices(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
@@ -682,6 +708,56 @@ ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
     });
 
     if (!options.noEvents) this.trigger("post_price_options", options);
+
+    return options;
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getPricesOptions = function(options = {}) {
+    options = this._getQueryOptions(options);
+
+    // delete the engraving and the part list from the options,
+    // since they have to be specified for each item in the
+    // config list
+    delete options.engraving;
+    delete options.p;
+
+    Object.keys(options)
+        .filter(options => options[0] === "p")
+        .forEach(option => {
+            const index = parseInt(option.slice(1));
+
+            let parts = options[`parts${index}`];
+            let initials = options[`initials${index}`];
+            let engraving = options[`engraving${index}`];
+            parts = parts === undefined ? this.parts : parts;
+            initials = initials === undefined ? this.initials : initials;
+            initials = initials === "" ? "$empty" : initials;
+            engraving = engraving === undefined ? this.engraving : engraving;
+
+            if (parts !== undefined && parts !== null && Object.keys(parts).length > 0) {
+                params[`p${index}`] = this._partsMToTriplets(parts);
+            }
+            if (engraving !== undefined && engraving !== null) {
+                params[`engraving${index}`] = engraving;
+            }
+
+            if (initials !== undefined && initials !== null) {
+                options.params[`initials${index}`] = initials;
+            }
+        });
+
+    const params = options.params || {};
+    options.params = params;
+
+    const url = `${this.url}config/prices`;
+
+    options = Object.assign(options, {
+        url: url,
+        method: "GET"
+    });
 
     return options;
 };
