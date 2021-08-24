@@ -99,7 +99,9 @@ if (
         typeof __webpack_require__ === "undefined" &&
         (typeof navigator === "undefined" || navigator.product !== "ReactNative")
     ) {
-        XMLHttpRequest = ripe.requireSafe("xmlhttprequest").XMLHttpRequest;
+        // eslint-disable-next-line no-var
+        var xmlhttprequest = ripe.requireSafe("xmlhttprequest");
+        XMLHttpRequest = xmlhttprequest ? xmlhttprequest.XMLHttpRequest : undefined;
     }
 }
 

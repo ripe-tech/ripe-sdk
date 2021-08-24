@@ -118,6 +118,24 @@ describe("Image", function() {
             );
         });
 
+        it("should generate the correct image URL with initials", async () => {
+            const dom = new jsdom.JSDOM("<img id='image' />", { resources: "usable" });
+            const imageElement = dom.window.document.getElementById("image");
+            const instance = new base.ripe.Ripe();
+            await instance.init("myswear", "vyner");
+            const image = instance.bindImage(imageElement, {
+                showInitials: true,
+                initialsContext: ["step::personalization"]
+            });
+            assert.strictEqual(image._url, null);
+            await image.update({ initials: "A" });
+            await image.update({ initials: "B" });
+            assert.strictEqual(
+                image._url,
+                "https://sandbox.platforme.com/api/compose?brand=myswear&initials=B&initials_profile=step%3A%3Apersonalization&model=vyner&p=eyelets%3Ametal%3Asilver&p=front%3Anappa%3Awhite&p=laces%3Anylon%3Awhite&p=lining%3Acalf_lining%3Awhite&p=shadow%3Adefault%3Adefault&p=side%3Anappa%3Awhite&p=sole%3Arubber%3Awhite"
+            );
+        });
+
         it("should deinit image and stop updating", async () => {
             const dom = new jsdom.JSDOM("<img id='image' />", { resources: "usable" });
             const imageElement = dom.window.document.getElementById("image");
