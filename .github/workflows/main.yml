@@ -7,7 +7,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node-version: [10, 11, 12, 13, 14, 15]
+        node-version: [10, 11, 12, 13, 14, 15, 16]
     runs-on: ubuntu-latest
     container: node:${{ matrix.node-version }}
     steps:
@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node-version: [10, 11, 12, 13, 14, 15]
+        node-version: [10, 11, 12, 13, 14, 15, 16]
     runs-on: self-hosted
     steps:
       - uses: joamag/cleanup-hosted@master
