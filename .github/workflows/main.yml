@@ -7,7 +7,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node-version: [10, 11, 12, 13, 14]
+        node-version: [10, 11, 12, 13, 14, 15]
     runs-on: ubuntu-latest
     container: node:${{ matrix.node-version }}
     steps:
