@@ -1448,7 +1448,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             if (promises.length === 0) terminate();
         };
 
-        const terminate = (result = null) => {
+        const terminate = (result = undefined) => {
             // removes the pending classes that indicate that
             // there's some kind of preloading happening
             this.element.classList.remove("preloading");
@@ -1456,7 +1456,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
 
             // terminates the promise by resolving it with
             // the result stored in the current instance
-            resolve(result || this._resolveResult);
+            resolve(result === undefined ? this._resolveResult : result);
         };
 
         /**
