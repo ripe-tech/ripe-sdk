@@ -1375,7 +1375,7 @@ ripe.ConfiguratorPrc.prototype._drawFrame = async function(image, animate, durat
 /**
  * @ignore
  */
-ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
+ripe.ConfiguratorPrc.prototype._preload = async function(useChain = false) {
     // retrieves the current position of the configurator from its
     // data defaulting to the zero one (reference) in case no position
     // is currently defined in the configurator
