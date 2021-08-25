@@ -1428,8 +1428,8 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             // length value to zero (clears array)
             work.length = 0;
 
-            // calls the complete set of cancel operations so
-            // to be able to cancel them in case they've not
+            // calls the complete set of cancel operations on
+            // the image loading process, in case they've not
             // be yet loaded (otherwise no-op is run)
             cancels.forEach(cancel => cancel());
 
