@@ -267,7 +267,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const crop = this.element.dataset.crop || this.crop;
         const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
         const initialsContext = this.element.dataset.initialsContext || this.initialsContext;
-        const getInitialsContext = this.element.dataset.getInitialsContext || this.getInitialsContext;
+        const getInitialsContext =
+            this.element.dataset.getInitialsContext || this.getInitialsContext;
         const flip = this.element.dataset.flip || this.flip;
         const mirror = this.element.dataset.mirror || this.mirror;
         const boundingBox = this.element.dataset.boundingBox || this.boundingBox;
@@ -287,7 +288,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const initialsRotation = this.element.dataset.initialsRotation || this.initialsRotation;
         const initialsZindex = this.element.dataset.initialsZindex || this.initialsZindex;
         const initialsAlgorithm = this.element.dataset.initialsAlgorithm || this.initialsAlgorithm;
-        const initialsBlendColor = this.element.dataset.initialsBlendColor || this.initialsBlendColor;
+        const initialsBlendColor =
+            this.element.dataset.initialsBlendColor || this.initialsBlendColor;
         const initialsPattern = this.element.dataset.initialsPattern || this.initialsPattern;
         const initialsTexture = this.element.dataset.initialsTexture || this.initialsTexture;
         const initialsExclusion = this.element.dataset.initialsExclusion || this.initialsExclusion;
@@ -328,12 +330,12 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const context = getInitialsContext ? getInitialsContext(initialsGroup) : initialsContext;
         const initialsSpec = this.showInitials
             ? this.initialsBuilder(
-                this.initials,
-                this.engraving,
-                initialsGroup,
-                initialsViewport,
-                context
-            )
+                  this.initials,
+                  this.engraving,
+                  initialsGroup,
+                  initialsViewport,
+                  context
+              )
             : {};
 
         // verifies if the model currently loaded in the Ripe Instance can
@@ -465,7 +467,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
 
     this._updatePromise = _update();
     try {
-        const result = await self._updatePromise;
+        const result = await this._updatePromise;
         return result;
     } finally {
         this._updatePromise = null;

@@ -314,7 +314,7 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
 
     this._updatePromise = _update();
     try {
-        const result = await self._updatePromise;
+        const result = await this._updatePromise;
         return result;
     } finally {
         this._updatePromise = null;
