@@ -272,10 +272,6 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
             // waits for the preload promise as the result of it is
             // going to be considered the result of the operation
             result = await preloadPromise;
-
-            // flushes the complete set of operations that were waiting
-            // for the end of the pre-loading operation
-            await this.flushPending(true);
         }
 
         // verifies if the operation has been successful, it's considered
@@ -312,13 +308,24 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
     await this.cancel();
     if (this._updatePromise) await this._updatePromise;
 
+    let result = null;
     this._updatePromise = _update();
     try {
-        const result = await this._updatePromise;
-        return result;
+        result = await this._updatePromise;
     } finally {
         this._updatePromise = null;
     }
+
+    // flushes the complete set of operations that were waiting
+    // for the end of the pre-loading operation, notice that this
+    // operation is only performed in case the result of the operation
+    // execution is positive (finishes in success, avoiding possible
+    // dead-lock "like" collisions)
+    if (result && !result.canceled) await this.flushPending(true);
+
+    // returns the final result of the underlying update execution
+    // to the caller method (may contain the canceled field)
+    return result;
 };
 
 /**
@@ -658,18 +665,38 @@ ripe.ConfiguratorPrc.prototype.changeFrame = async function(frame, options = {})
         // configurator according to the current internal state (in data)
         // this operation waits for the proper drawing of the image (takes
         // some time and resources to be completed)
-        await this.update(
+        const result = await this.update(
             {},
             {
                 animate: animate,
                 duration: animate ? duration : 0
             }
         );
+
+        // in case the update operation has finished, but the result is a
+        // canceled one, then the internal state is stored as if the change
+        // frame operation has succeeded and the proper data is set, so that
+        // from a logical point of view the operation has succeeded
+        if (result && result.canceled) {
+            [this.view, this.position] = [nextView, nextPosition];
+            [this.element.dataset.view, this.element.dataset.position] = [nextView, nextPosition];
+            this.element.classList.remove("no-drag", "animating");
+            const newFrame = ripe.getFrameKey(
+                this.element.dataset.view,
+                this.element.dataset.position
+            );
+            this.trigger("changed_frame", newFrame);
+            return;
+        }
     } catch (err) {
         // removes the locking classes as the current operation has been
-        // finished, effectively re-allowing: dragging and animated operations
-        // and then re-throws the exception caused by update
+        // finished, as sets the position of the element to the last
+        // position of the animation (assumes it has ended)
+        [this.view, this.position] = [nextView, nextPosition];
+        [this.element.dataset.view, this.element.dataset.position] = [nextView, nextPosition];
         this.element.classList.remove("no-drag", "animating");
+        const newFrame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
+        this.trigger("changed_frame", newFrame);
         throw err;
     }
 
@@ -1148,7 +1175,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
 
         // check if the image on the buffer is already loaded
         // nad if that's the case draws the frame
-        const isReady = image.dataset.loaded === "true";
+        const isReady = image.dataset.loaded === "1";
         if (isReady) await this._drawFrame(image, animate, duration);
 
         // triggers the post frame event indicating the end
@@ -1169,8 +1196,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     // when it is available from the "remote" source
     const imagePromise = new Promise((resolve, reject) => {
         image.onload = async () => {
-            image.dataset.loaded = true;
-            image.dataset.src = url;
+            image.dataset.loaded = "1";
             if (!draw) {
                 resolve();
                 return;
@@ -1193,7 +1219,23 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     // image is not yet loading
     image.src = url;
     image.dataset.src = url;
-    image.dataset.loaded = false;
+    image.dataset.loaded = "0";
+
+    // in case the cancel callback function has been provided
+    // via options, then a function must be created allowing
+    // the consumer to cancel the image loading in the middle
+    // of the process, this allows breaking loading processes
+    if (options.cancelCallback) {
+        const cancel = () => {
+            if (image.dataset.loaded === "1") {
+                return;
+            }
+            image.src = "";
+            image.dataset.src = "";
+            image.dataset.canceled = "1";
+        };
+        options.cancelCallback(cancel);
+    }
 
     // waits until the image promise is resolved so that
     // we're sure everything is currently loaded
@@ -1361,6 +1403,23 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
     }
     work.reverse();
 
+    // "saves" space for the sequence of functions that will allow
+    // canceling the loading of the images in the middle of the process
+    // "releasing" the underlying promises
+    const cancels = [];
+
+    // saves space to store the complete set of promises that are
+    // going to be created for the preloading operation of the images,
+    // each image will have its own promise for loading
+    const promises = [];
+
+    // stores the default resolve result that is going to be returned
+    // in the underlying promise for the loading of the image, this value
+    // may be changed by the `finalize()` method call, it's safe to store
+    // this value at the instance level because no two parallel preload
+    // operations may exist (otherwise major problems would arise)
+    this._resolveResult = true;
+
     // waits for the pre loading promise so that at the end of this
     // execution all the work required for loading is processed
     const result = await new Promise((resolve, reject) => {
@@ -1369,18 +1428,35 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             // length value to zero (clears array)
             work.length = 0;
 
-            // removes the pending classes that indicate that
-            // there's some kind of preloading happening
-            this.element.classList.remove("preloading");
-            this.element.classList.remove("no-drag");
+            // calls the complete set of cancel operations so
+            // to be able to cancel them in case they've not
+            // be yet loaded (otherwise no-op is run)
+            cancels.forEach(cancel => cancel());
 
             // unsets the finalize clojure from the current instance
             // effectively disallowing further usage of it
             this._finalize = null;
 
-            // finalizes the promise by resolving it with
-            // the parameter that was just received (final result)
-            resolve(result);
+            // updates the resolve result value with the one received
+            // via parameter, this is going to be used latter on to
+            // update the promise return value accordingly
+            this._resolveResult = result;
+
+            // in case no promises have yet been created for the loading
+            // of the images then calls the terminate immediately to
+            // put an end to the current global promise
+            if (promises.length === 0) terminate();
+        };
+
+        const terminate = (result = null) => {
+            // removes the pending classes that indicate that
+            // there's some kind of preloading happening
+            this.element.classList.remove("preloading");
+            this.element.classList.remove("no-drag");
+
+            // terminates the promise by resolving it with
+            // the result stored in the current instance
+            resolve(result || this._resolveResult);
         };
 
         /**
@@ -1390,6 +1466,8 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
          *
          * @param {DOMElement} element The reference to the element that is
          * considered to be the configurator.
+         * @param {Boolean} canceled If the image loading has been canceled
+         * in the middle of the loading process.
          */
         const mark = element => {
             // in case the current index of operation (unique auto-increment
@@ -1398,9 +1476,10 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
             const _index = this.index;
             if (index !== _index) return;
             if (!this.element) return;
+
             // removes the preloading class from the image element
             // this is considered the default operation
-            else element.classList.remove("preloading");
+            element.classList.remove("preloading");
 
             // retrieves all the images still preloading from the frames
             // buffer to determine if this was the final image loading
@@ -1416,7 +1495,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
                 this.element.classList.add("preloading");
                 this.element.classList.add("no-drag");
             } else if (work.length === 0) {
-                if (this._finalize) this._finalize();
+                terminate();
             }
         };
 
@@ -1432,23 +1511,31 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
                 return;
             }
 
-            // retrieves the next frame to be loaded
-            // and its corresponding image element
-            // and adds the preloading class to it
+            // retrieves the next frame to be loaded and its
+            // corresponding image element and adds the preloading
+            // class to it (indicating that preloading will take place)
             const frame = work.pop();
             const framesBuffer = this.element.querySelector(".frames-buffer");
             const reference = framesBuffer.querySelector(`img[data-frame='${String(frame)}']`);
             reference.classList.add("preloading");
 
-            // determines if a chain based loading should be used for the
-            // pre-loading process of the continuous image resources to be loaded
+            // determines if a chain based loading (sequential vs parallel
+            // loading) should be used for the pre-loading process of the
+            // continuous image resources to be loaded
             const _frame = ripe.parseFrameKey(frame);
             const view = _frame[0];
             const position = _frame[1];
             const promise = this._loadFrame(view, position, {
-                draw: false
+                draw: false,
+                cancelCallback: cancel => {
+                    cancels.push(cancel);
+                }
             });
-            promise.then(() => mark(reference));
+            promises.push(promise);
+            promise.then(
+                () => mark(reference),
+                () => mark(reference, true)
+            );
             if (useChain) await promise;
             await render();
         };
@@ -1472,7 +1559,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
                 }
             }, this.preloadDelay);
         } else {
-            if (this._finalize) this._finalize();
+            this.terminate();
         }
     });
 

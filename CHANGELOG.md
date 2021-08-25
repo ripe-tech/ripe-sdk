@@ -13,11 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-*
+* Improved performance by allowing cancelling image loading for image that are not needed (quick `setFrame` changes)
 
 ### Fixed
 
-*
+* Issue where the `changeFrame` operation was being incorrectly canceled
 
 ## [2.4.2] - 2021-08-14
 
