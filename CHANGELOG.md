@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [2.5.0] - 2021-08-25
+
+### Added
+
 * Added `itertools.js` to gulpfile build files in order to be bundled
 
 ### Changed
