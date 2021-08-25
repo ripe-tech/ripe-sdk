@@ -1449,6 +1449,10 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain) {
         };
 
         const terminate = (result = undefined) => {
+            // unsets the finalize clojure from the current instance
+            // effectively disallowing further usage of it
+            this._finalize = null;
+
             // removes the pending classes that indicate that
             // there's some kind of preloading happening
             this.element.classList.remove("preloading");
