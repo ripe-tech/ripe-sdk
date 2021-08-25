@@ -255,210 +255,221 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
-    // gathers the complete set of data values from the element if existent
-    // defaulting to the instance one in case their are not defined
-    const frame = this.element.dataset.frame || this.frame;
-    const format = this.element.dataset.format || this.format;
-    const size = this.element.dataset.size || this.size;
-    const width = this.element.dataset.width || this.width;
-    const height = this.element.dataset.height || this.height;
-    const rotation = this.element.dataset.rotation || this.rotation;
-    const crop = this.element.dataset.crop || this.crop;
-    const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
-    const initialsContext = this.element.dataset.initialsContext || this.initialsContext;
-    const getInitialsContext = this.element.dataset.getInitialsContext || this.getInitialsContext;
-    const flip = this.element.dataset.flip || this.flip;
-    const mirror = this.element.dataset.mirror || this.mirror;
-    const boundingBox = this.element.dataset.boundingBox || this.boundingBox;
-    const algorithm = this.element.dataset.algorithm || this.algorithm;
-    const background = this.element.dataset.background || this.background;
-    const engine = this.element.dataset.engine || this.engine;
-    const initialsX = this.element.dataset.initialsX || this.initialsX;
-    const initialsY = this.element.dataset.initialsY || this.initialsY;
-    const initialsWidth = this.element.dataset.initialsWidth || this.initialsWidth;
-    const initialsHeight = this.element.dataset.initialsHeight || this.initialsHeight;
-    const initialsViewport = this.element.dataset.initialsViewport || this.initialsViewport;
-    const initialsColor = this.element.dataset.initialsColor || this.initialsColor;
-    const initialsOpacity = this.element.dataset.initialsOpacity || this.initialsOpacity;
-    const initialsAlign = this.element.dataset.initialsAlign || this.initialsAlign;
-    const initialsVertical = this.element.dataset.initialsVertical || this.initialsVertical;
-    const initialsEmbossing = this.element.dataset.initialsEmbossing || this.initialsEmbossing;
-    const initialsRotation = this.element.dataset.initialsRotation || this.initialsRotation;
-    const initialsZindex = this.element.dataset.initialsZindex || this.initialsZindex;
-    const initialsAlgorithm = this.element.dataset.initialsAlgorithm || this.initialsAlgorithm;
-    const initialsBlendColor = this.element.dataset.initialsBlendColor || this.initialsBlendColor;
-    const initialsPattern = this.element.dataset.initialsPattern || this.initialsPattern;
-    const initialsTexture = this.element.dataset.initialsTexture || this.initialsTexture;
-    const initialsExclusion = this.element.dataset.initialsExclusion || this.initialsExclusion;
-    const initialsInclusion = this.element.dataset.initialsInclusion || this.initialsInclusion;
-    const initialsImageRotation =
-        this.element.dataset.initialsImageRotation || this.initialsImageRotation;
-    const initialsImageFlip = this.element.dataset.initialsImageFlip || this.initialsImageFlip;
-    const initialsImageMirror =
-        this.element.dataset.initialsImageMirror || this.initialsImageMirror;
-    const debug = this.element.dataset.debug || this.debug;
-    const fontFamily = this.element.dataset.fontFamily || this.fontFamily;
-    const fontWeight = this.element.dataset.fontWeight || this.fontWeight;
-    const fontSize = this.element.dataset.fontSize || this.fontSize;
-    const fontSpacing = this.element.dataset.fontSpacing || this.fontSpacing;
-    const fontTrim = this.element.dataset.fontTrim || this.fontTrim;
-    const fontMask = this.element.dataset.fontMask || this.fontMask;
-    const fontMode = this.element.dataset.fontMode || this.fontMode;
-    const lineHeight = this.element.dataset.lineHeight || this.lineHeight;
-    const lineBreaking = this.element.dataset.lineBreaking || this.lineBreaking;
-    const shadow = this.element.dataset.shadow || this.shadow;
-    const shadowColor = this.element.dataset.shadowColor || this.shadowColor;
-    const shadowOffset = this.element.dataset.shadowOffset || this.shadowOffset;
-    const offsets = this.element.dataset.offsets || this.offsets;
-    const curve = this.element.dataset.curve || this.curve;
-    const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
+    const _update = async () => {
+        // gathers the complete set of data values from the element if existent
+        // defaulting to the instance one in case their are not defined
+        const frame = this.element.dataset.frame || this.frame;
+        const format = this.element.dataset.format || this.format;
+        const size = this.element.dataset.size || this.size;
+        const width = this.element.dataset.width || this.width;
+        const height = this.element.dataset.height || this.height;
+        const rotation = this.element.dataset.rotation || this.rotation;
+        const crop = this.element.dataset.crop || this.crop;
+        const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
+        const initialsContext = this.element.dataset.initialsContext || this.initialsContext;
+        const getInitialsContext = this.element.dataset.getInitialsContext || this.getInitialsContext;
+        const flip = this.element.dataset.flip || this.flip;
+        const mirror = this.element.dataset.mirror || this.mirror;
+        const boundingBox = this.element.dataset.boundingBox || this.boundingBox;
+        const algorithm = this.element.dataset.algorithm || this.algorithm;
+        const background = this.element.dataset.background || this.background;
+        const engine = this.element.dataset.engine || this.engine;
+        const initialsX = this.element.dataset.initialsX || this.initialsX;
+        const initialsY = this.element.dataset.initialsY || this.initialsY;
+        const initialsWidth = this.element.dataset.initialsWidth || this.initialsWidth;
+        const initialsHeight = this.element.dataset.initialsHeight || this.initialsHeight;
+        const initialsViewport = this.element.dataset.initialsViewport || this.initialsViewport;
+        const initialsColor = this.element.dataset.initialsColor || this.initialsColor;
+        const initialsOpacity = this.element.dataset.initialsOpacity || this.initialsOpacity;
+        const initialsAlign = this.element.dataset.initialsAlign || this.initialsAlign;
+        const initialsVertical = this.element.dataset.initialsVertical || this.initialsVertical;
+        const initialsEmbossing = this.element.dataset.initialsEmbossing || this.initialsEmbossing;
+        const initialsRotation = this.element.dataset.initialsRotation || this.initialsRotation;
+        const initialsZindex = this.element.dataset.initialsZindex || this.initialsZindex;
+        const initialsAlgorithm = this.element.dataset.initialsAlgorithm || this.initialsAlgorithm;
+        const initialsBlendColor = this.element.dataset.initialsBlendColor || this.initialsBlendColor;
+        const initialsPattern = this.element.dataset.initialsPattern || this.initialsPattern;
+        const initialsTexture = this.element.dataset.initialsTexture || this.initialsTexture;
+        const initialsExclusion = this.element.dataset.initialsExclusion || this.initialsExclusion;
+        const initialsInclusion = this.element.dataset.initialsInclusion || this.initialsInclusion;
+        const initialsImageRotation =
+            this.element.dataset.initialsImageRotation || this.initialsImageRotation;
+        const initialsImageFlip = this.element.dataset.initialsImageFlip || this.initialsImageFlip;
+        const initialsImageMirror =
+            this.element.dataset.initialsImageMirror || this.initialsImageMirror;
+        const debug = this.element.dataset.debug || this.debug;
+        const fontFamily = this.element.dataset.fontFamily || this.fontFamily;
+        const fontWeight = this.element.dataset.fontWeight || this.fontWeight;
+        const fontSize = this.element.dataset.fontSize || this.fontSize;
+        const fontSpacing = this.element.dataset.fontSpacing || this.fontSpacing;
+        const fontTrim = this.element.dataset.fontTrim || this.fontTrim;
+        const fontMask = this.element.dataset.fontMask || this.fontMask;
+        const fontMode = this.element.dataset.fontMode || this.fontMode;
+        const lineHeight = this.element.dataset.lineHeight || this.lineHeight;
+        const lineBreaking = this.element.dataset.lineBreaking || this.lineBreaking;
+        const shadow = this.element.dataset.shadow || this.shadow;
+        const shadowColor = this.element.dataset.shadowColor || this.shadowColor;
+        const shadowOffset = this.element.dataset.shadowOffset || this.shadowOffset;
+        const offsets = this.element.dataset.offsets || this.offsets;
+        const curve = this.element.dataset.curve || this.curve;
+        const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
 
-    // in case the state is defined tries to gather the appropriate
-    // sate options for both initials and engraving taking into
-    // consideration that groups may exist
-    if (state !== undefined) {
-        const base = initialsGroup ? state.initialsExtra[initialsGroup] || {} : state;
-        this.initials = base.initials || "";
-        this.engraving = base.engraving || null;
-    }
+        // in case the state is defined tries to gather the appropriate
+        // sate options for both initials and engraving taking into
+        // consideration that groups may exist
+        if (state !== undefined) {
+            const base = initialsGroup ? state.initialsExtra[initialsGroup] || {} : state;
+            this.initials = base.initials || "";
+            this.engraving = base.engraving || null;
+        }
 
-    // in case the context changes with the group, gets the
-    // context and calls the initials builder
-    const context = getInitialsContext ? getInitialsContext(initialsGroup) : initialsContext;
-    const initialsSpec = this.showInitials
-        ? this.initialsBuilder(
-              this.initials,
-              this.engraving,
-              initialsGroup,
-              initialsViewport,
-              context
-          )
-        : {};
+        // in case the context changes with the group, gets the
+        // context and calls the initials builder
+        const context = getInitialsContext ? getInitialsContext(initialsGroup) : initialsContext;
+        const initialsSpec = this.showInitials
+            ? this.initialsBuilder(
+                this.initials,
+                this.engraving,
+                initialsGroup,
+                initialsViewport,
+                context
+            )
+            : {};
 
-    // verifies if the model currently loaded in the Ripe Instance can
-    // render the frame to be display and if that's not the case "ignores"
-    // the current request for update
-    if (frame && !this.owner.hasFrame(frame)) {
-        this.trigger("not_loaded");
-        return false;
-    }
+        // verifies if the model currently loaded in the Ripe Instance can
+        // render the frame to be display and if that's not the case "ignores"
+        // the current request for update
+        if (frame && !this.owner.hasFrame(frame)) {
+            this.trigger("not_loaded");
+            return false;
+        }
 
-    // builds the URL of the image using the frame hacking approach
-    // this should provide us with the new values
-    const url = this.owner._getImageURL({
-        frame: frame,
-        format: format,
-        size: size,
-        width: width,
-        height: height,
-        rotation: rotation,
-        crop: crop,
-        initials: initialsSpec.initials,
-        profile: initialsSpec.profile,
-        flip: flip,
-        mirror: mirror,
-        boundingBox: boundingBox,
-        algorithm: algorithm,
-        background: background,
-        engine: engine,
-        initialsX: initialsX,
-        initialsY: initialsY,
-        initialsWidth: initialsWidth,
-        initialsHeight: initialsHeight,
-        initialsViewport: initialsViewport,
-        initialsColor: initialsColor,
-        initialsOpacity: initialsOpacity,
-        initialsAlign: initialsAlign,
-        initialsVertical: initialsVertical,
-        initialsEmbossing: initialsEmbossing,
-        initialsRotation: initialsRotation,
-        initialsZindex: initialsZindex,
-        initialsAlgorithm: initialsAlgorithm,
-        initialsBlendColor: initialsBlendColor,
-        initialsPattern: initialsPattern,
-        initialsTexture: initialsTexture,
-        initialsExclusion: initialsExclusion,
-        initialsInclusion: initialsInclusion,
-        initialsImageRotation: initialsImageRotation,
-        initialsImageFlip: initialsImageFlip,
-        initialsImageMirror: initialsImageMirror,
-        debug: debug,
-        fontFamily: fontFamily,
-        fontWeight: fontWeight,
-        fontSize: fontSize,
-        fontSpacing: fontSpacing,
-        fontTrim: fontTrim,
-        fontMask: fontMask,
-        fontMode: fontMode,
-        lineHeight: lineHeight,
-        lineBreaking: lineBreaking,
-        shadow: shadow,
-        shadowColor: shadowColor,
-        shadowOffset: shadowOffset,
-        offsets: offsets,
-        curve: curve
-    });
-
-    // verifies if the target image URL for the update is already
-    // set and if that's the case returns (end of loop)
-    if (url === this._url) {
-        this.trigger("not_loaded");
-        return false;
-    }
-
-    // cancels the previous request (if exists), firing the proper
-    // callbacks before overriding them in the current request, this
-    // will allow unblocking pending listeners for the previous images
-    await this.cancel();
-
-    // saves the previous URL value and then updates the new URL
-    // according to the newly requested one
-    this._previousUrl = this._url;
-    this._url = url;
-
-    // in case the double buffering mode is active an off-screen
-    // image element is created to "cache" the image that is going
-    // to be displayed for the current update, this way the typical
-    // flickering visual artifact can be avoided
-    if (doubleBuffering && this._url) await this._doubleBuffer(this._url);
-
-    // in case the element is no longer available (possible due to async
-    // nature of execution) returns the control flow immediately
-    if (!this.element) return;
-
-    // updates the image DOM element with the values of the image
-    // including requested size and URL
-    if (width) this.element.width = width;
-    if (height) this.element.height = height;
-    this.element.src = this._url || "";
-
-    // saves the space for the result of the loaded callback that
-    // should be a boolean indicating if there's was a visual impact
-    // resulting from the loading operation
-    let result = true;
-
-    try {
-        // create a promise waiting for the current image for either load
-        // or receive an error, for both situation there should be a proper
-        // waiting process in motion
-        result = await new Promise((resolve, reject) => {
-            this._loadedCallback = resolve;
-            this._errorCallback = reject;
+        // builds the URL of the image using the frame hacking approach
+        // this should provide us with the new values
+        const url = this.owner._getImageURL({
+            frame: frame,
+            format: format,
+            size: size,
+            width: width,
+            height: height,
+            rotation: rotation,
+            crop: crop,
+            initials: initialsSpec.initials,
+            profile: initialsSpec.profile,
+            flip: flip,
+            mirror: mirror,
+            boundingBox: boundingBox,
+            algorithm: algorithm,
+            background: background,
+            engine: engine,
+            initialsX: initialsX,
+            initialsY: initialsY,
+            initialsWidth: initialsWidth,
+            initialsHeight: initialsHeight,
+            initialsViewport: initialsViewport,
+            initialsColor: initialsColor,
+            initialsOpacity: initialsOpacity,
+            initialsAlign: initialsAlign,
+            initialsVertical: initialsVertical,
+            initialsEmbossing: initialsEmbossing,
+            initialsRotation: initialsRotation,
+            initialsZindex: initialsZindex,
+            initialsAlgorithm: initialsAlgorithm,
+            initialsBlendColor: initialsBlendColor,
+            initialsPattern: initialsPattern,
+            initialsTexture: initialsTexture,
+            initialsExclusion: initialsExclusion,
+            initialsInclusion: initialsInclusion,
+            initialsImageRotation: initialsImageRotation,
+            initialsImageFlip: initialsImageFlip,
+            initialsImageMirror: initialsImageMirror,
+            debug: debug,
+            fontFamily: fontFamily,
+            fontWeight: fontWeight,
+            fontSize: fontSize,
+            fontSpacing: fontSpacing,
+            fontTrim: fontTrim,
+            fontMask: fontMask,
+            fontMode: fontMode,
+            lineHeight: lineHeight,
+            lineBreaking: lineBreaking,
+            shadow: shadow,
+            shadowColor: shadowColor,
+            shadowOffset: shadowOffset,
+            offsets: offsets,
+            curve: curve
         });
+
+        // verifies if the target image URL for the update is already
+        // set and if that's the case returns (end of loop)
+        if (url === this._url) {
+            this.trigger("not_loaded");
+            return false;
+        }
+
+        // saves the previous URL value and then updates the new URL
+        // according to the newly requested one
+        this._previousUrl = this._url;
+        this._url = url;
+
+        // in case the double buffering mode is active an off-screen
+        // image element is created to "cache" the image that is going
+        // to be displayed for the current update, this way the typical
+        // flickering visual artifact can be avoided
+        if (doubleBuffering && this._url) await this._doubleBuffer(this._url);
+
+        // in case the element is no longer available (possible due to async
+        // nature of execution) returns the control flow immediately
+        if (!this.element) return;
+
+        // updates the image DOM element with the values of the image
+        // including requested size and URL
+        if (width) this.element.width = width;
+        if (height) this.element.height = height;
+        this.element.src = this._url || "";
+
+        // saves the space for the result of the loaded callback that
+        // should be a boolean indicating if there's was a visual impact
+        // resulting from the loading operation
+        let result = true;
+
+        try {
+            // create a promise waiting for the current image for either load
+            // or receive an error, for both situation there should be a proper
+            // waiting process in motion
+            result = await new Promise((resolve, reject) => {
+                this._loadedCallback = resolve;
+                this._errorCallback = reject;
+            });
+        } finally {
+            // unsets both of the callbacks as they are no longer required by
+            // the promise's underlying logic
+            this._loadedCallback = null;
+            this._errorCallback = null;
+        }
+
+        // in case there's no value returned by the loaded callback then
+        // the result is considered valid (proper update)
+        if (result === undefined) result = true;
+
+        // returns a value indicating that if the loading operation
+        // as been triggered with success (effective operation)
+        return result;
+    };
+
+    // cancels any pending operation in the configurator and waits
+    // for the update promise to be finished (in case an update is
+    // currently running)
+    await this.cancel();
+    if (this._updatePromise) await this._updatePromise;
+
+    this._updatePromise = _update();
+    try {
+        const result = await self._updatePromise;
+        return result;
     } finally {
-        // unsets both of the callbacks as they are no longer required by
-        // the promise's underlying logic
-        this._loadedCallback = null;
-        this._errorCallback = null;
+        this._updatePromise = null;
     }
-
-    // in case there's no value returned by the loaded callback then
-    // the result is considered valid (proper update)
-    if (result === undefined) result = true;
-
-    // returns a value indicating that if the loading operation
-    // as been triggered with success (effective operation)
-    return result;
 };
 
 /**

@@ -204,104 +204,121 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
         return false;
     }
 
-    // allocates space for the possible promise that is going
-    // to be responsible for the preloading of the frames, populating
-    // the cache buffer for the complete set of frames associated with
-    // the currently loaded model configuration
-    let preloadPromise = null;
+    const _update = async () => {
+        // allocates space for the possible promise that is going
+        // to be responsible for the preloading of the frames, populating
+        // the cache buffer for the complete set of frames associated with
+        // the currently loaded model configuration
+        let preloadPromise = null;
 
-    const view = this.element.dataset.view;
-    const position = this.element.dataset.position;
+        const view = this.element.dataset.view;
+        const position = this.element.dataset.position;
 
-    const force = options.force || false;
-    const duration = options.duration;
-    const preload = options.preload;
+        const force = options.force || false;
+        const duration = options.duration;
+        const preload = options.preload;
 
-    // checks if the parts drawed on the target have
-    // changed and animates the transition if they did
-    let previous = this.signature || "";
-    const signature = this._buildSignature();
-    const changed = signature !== previous;
-    const animate = options.animate === undefined ? (changed ? "simple" : false) : options.animate;
-    this.signature = signature;
+        // checks if the parts drawed on the target have
+        // changed and animates the transition if they did
+        let previous = this.signature || "";
+        const signature = this._buildSignature();
+        const changed = signature !== previous;
+        const animate =
+            options.animate === undefined ? (changed ? "simple" : false) : options.animate;
+        this.signature = signature;
 
-    // if the parts and the position haven't changed
-    // since the last frame load then ignores the
-    // load request and returns immediately
-    previous = this.unique;
-    const unique = `${signature}&view=${String(view)}&position=${String(position)}`;
-    if (previous === unique && !force) {
-        this.trigger("not_loaded");
-        return false;
+        // if the parts and the position haven't changed
+        // since the last frame load then ignores the
+        // load request and returns immediately
+        previous = this.unique;
+        const unique = `${signature}&view=${String(view)}&position=${String(position)}`;
+        if (previous === unique && !force) {
+            this.trigger("not_loaded");
+            return false;
+        }
+        this.unique = unique;
+
+        // removes the highlight support from the matched object as a new
+        // frame is going to be "calculated" and rendered (not same mask)
+        this.lowlight();
+
+        // runs the pre-loading process so that the remaining frames are
+        // loaded for a smother experience when dragging the element,
+        // note that this is only performed in case this is not a single
+        // based update (not just the loading of the current position)
+        // and the current signature has changed
+        const preloaded = this.element.classList.contains("preload");
+        const mustPreload = preload !== undefined ? preload : changed || !preloaded;
+        if (mustPreload) preloadPromise = this._preload(this.options.useChain);
+
+        // runs the load operation for the current frame, taking into
+        // account the multiple requirements for such execution
+        await this._loadFrame(view, position, {
+            draw: true,
+            animate: animate,
+            duration: duration
+        });
+
+        // initializes the result value with the default valid value
+        // indicating that the operation was a success
+        let result = true;
+
+        // in case the preload was requested then waits for the preload
+        // operation of the frames to complete (wait on promise), keep
+        // in mind that if the preload operation was requested this is
+        // a "hard" flush on the underlying images buffer (most of the times
+        // representing a change in the configuration)
+        if (preloadPromise) {
+            // waits for the preload promise as the result of it is
+            // going to be considered the result of the operation
+            result = await preloadPromise;
+
+            // flushes the complete set of operations that were waiting
+            // for the end of the pre-loading operation
+            await this.flushPending(true);
+        }
+
+        // verifies if the operation has been successful, it's considered
+        // successful in case there's a result and the result is not marked
+        // with the canceled flag (result of a cancel operation)
+        const success = result && !result.canceled;
+
+        if (success) {
+            // updates the signature of the loaded set of frames, so that for
+            // instance the cancel operation can be properly controlled avoiding
+            // the usage of extra resources and duplicated (cancel operations)
+            this.signatureLoaded = signature;
+
+            // after the update operation is finished the loaded event
+            // should be triggered indicating the end of the visual
+            // operations for the current configuration on the configurator
+            this.trigger("loaded");
+        } else {
+            // unsets both the signature and the unique value because the update
+            // operation has been marked as not successful so the visuals have
+            // not been properly updated
+            this.signature = null;
+            this.unique = null;
+        }
+
+        // returns the resulting value indicating if the loading operation
+        // as been triggered with success (effective operation)
+        return result;
+    };
+
+    // cancels any pending operation in the configurator and waits
+    // for the update promise to be finished (in case an update is
+    // currently running)
+    await this.cancel();
+    if (this._updatePromise) await this._updatePromise;
+
+    this._updatePromise = _update();
+    try {
+        const result = await self._updatePromise;
+        return result;
+    } finally {
+        this._updatePromise = null;
     }
-    this.unique = unique;
-
-    // removes the highlight support from the matched object as a new
-    // frame is going to be "calculated" and rendered (not same mask)
-    this.lowlight();
-
-    // runs the pre-loading process so that the remaining frames are
-    // loaded for a smother experience when dragging the element,
-    // note that this is only performed in case this is not a single
-    // based update (not just the loading of the current position)
-    // and the current signature has changed
-    const preloaded = this.element.classList.contains("preload");
-    const mustPreload = preload !== undefined ? preload : changed || !preloaded;
-    if (mustPreload) preloadPromise = this._preload(this.options.useChain);
-
-    // runs the load operation for the current frame, taking into
-    // account the multiple requirements for such execution
-    await this._loadFrame(view, position, {
-        draw: true,
-        animate: animate,
-        duration: duration
-    });
-
-    // initializes the result value with the default valid value
-    // indicating that the operation was a success
-    let result = true;
-
-    // in case the preload was requested then waits for the preload
-    // operation of the frames to complete (wait on promise), keep
-    // in mind that if the preload operation was requested this is
-    // a "hard" flush on the underlying images buffer (most of the times
-    // representing a change in the configuration)
-    if (preloadPromise) {
-        // waits for the preload promise as the result of it is
-        // going to be considered the result of the operation
-        result = await preloadPromise;
-
-        // flushes the complete set of operations that were waiting
-        // for the end of the pre-loading operation
-        await this.flushPending(true);
-    }
-
-    // verifies if the operation has been successful, it's considered
-    // successful in case there's a result and the result is not marked
-    // with the canceled flag (result of a cancel operation)
-    const success = result && !result.canceled;
-
-    if (success) {
-        // updates the signature of the loaded set of frames, so that for
-        // instance the cancel operation can be properly controlled avoiding
-        // the usage of extra resources and duplicated (cancel operations)
-        this.signatureLoaded = signature;
-
-        // after the update operation is finished the loaded event
-        // should be triggered indicating the end of the visual
-        // operations for the current configuration on the configurator
-        this.trigger("loaded");
-    } else {
-        // unsets both the signature and the unique value because the update
-        // operation has been marked as not successful so the visuals have
-        // not been properly updated
-        this.signature = null;
-        this.unique = null;
-    }
-
-    // returns the resulting value indicating if the loading operation
-    // as been triggered with success (effective operation)
-    return result;
 };
 
 /**
