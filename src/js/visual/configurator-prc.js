@@ -1566,7 +1566,7 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain = false) {
                 }
             }, this.preloadDelay);
         } else {
-            this.terminate();
+            terminate();
         }
     });
 
