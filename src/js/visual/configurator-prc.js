@@ -1237,9 +1237,22 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
         options.cancelCallback(cancel);
     }
 
-    // waits until the image promise is resolved so that
-    // we're sure everything is currently loaded
-    await imagePromise;
+    try {
+        // waits until the image promise is resolved so that
+        // we're sure everything is currently loaded
+        await imagePromise;
+    } catch (err) {
+        // triggers the post frame operation indicating a no
+        // loading operation and providing the original error
+        this.trigger("post_frame", {
+            view: view,
+            position: position,
+            options: options,
+            result: false,
+            error: err
+        });
+        throw err;
+    }
 
     // triggers the post frame event indicating that the
     // frame has been buffered into the img element with
