@@ -27,7 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Improved performance by allowing cancelling image loading for image that are not needed (quick `setFrame` changes)
+* Improved performance by allowing cancelling image loading for images that are not needed (quick `setFrame` changes)
+* Created structures that prevented concurrent `update()` at a `Visual` class level
 
 ### Fixed
 
