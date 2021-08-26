@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [2.5.1] - 2021-08-26
+
+### Fixed
+
 * Small `terminate()` issue
 * Attribute stability for the canceled preload images
 
