@@ -1382,10 +1382,13 @@ ripe.ConfiguratorPrc.prototype._preload = async function(useChain = false) {
     const view = this.element.dataset.view || "side";
     const position = parseInt(this.element.dataset.position) || 0;
 
+    // updates the internal index state that is going to be
+    // used to control the state of te preload update, discarding
+    // single image load operations in case their outdated
     let index = this.index || 0;
     index++;
-
     this.index = index;
+
     this.element.classList.add("preload");
 
     // adds all the frames available for all the views to the
