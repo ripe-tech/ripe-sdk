@@ -1197,6 +1197,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     const imagePromise = new Promise((resolve, reject) => {
         image.onload = async () => {
             image.dataset.loaded = "1";
+            image.dataset.canceled = "0";
             if (!draw) {
                 resolve();
                 return;
@@ -1220,6 +1221,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     image.src = url;
     image.dataset.src = url;
     image.dataset.loaded = "0";
+    image.dataset.canceled = "0";
 
     // in case the cancel callback function has been provided
     // via options, then a function must be created allowing
@@ -1232,6 +1234,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
             }
             image.src = "";
             image.dataset.src = "";
+            image.dataset.loaded = "0";
             image.dataset.canceled = "1";
         };
         options.cancelCallback(cancel);
