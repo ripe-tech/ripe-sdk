@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* `notify` option to endpoints for changing an order's status, to allow triggering notifications upon a status change
 
 ### Changed
 
