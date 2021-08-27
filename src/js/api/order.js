@@ -1083,7 +1083,7 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
     });
     options.params = options.params || {};
     if (options.justification !== undefined) options.params.justification = options.justification;
-    if (options.notify !== undefined) options.params.notify = options.notify;
+    if (options.notify !== undefined) options.params.notify = options.notify ? "1" : "0";
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
