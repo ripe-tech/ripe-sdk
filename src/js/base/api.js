@@ -718,16 +718,19 @@ ripe.Ripe.prototype._getPriceOptions = function(options = {}) {
 ripe.Ripe.prototype._getPricesOptions = function(options = {}) {
     options = this._getQueryOptions(options);
 
-    // delete the engraving and the part list from the options,
+    const params = options.params || {};
+    options.params = params;
+
+    // delete the engraving and the part list from the params,
     // since they have to be specified for each item in the
     // config list
-    delete options.engraving;
-    delete options.p;
+    delete options.params.engraving;
+    delete options.params.p;
 
     Object.keys(options)
-        .filter(options => options[0] === "p")
+        .filter(option => option.startsWith("parts"))
         .forEach(option => {
-            const index = parseInt(option.slice(1));
+            const index = parseInt(option.slice(5));
 
             let parts = options[`parts${index}`];
             let initials = options[`initials${index}`];
@@ -738,10 +741,10 @@ ripe.Ripe.prototype._getPricesOptions = function(options = {}) {
             engraving = engraving === undefined ? this.engraving : engraving;
 
             if (parts !== undefined && parts !== null && Object.keys(parts).length > 0) {
-                params[`p${index}`] = this._partsMToTriplets(parts);
+                options.params[`p${index}`] = this._partsMToTriplets(parts);
             }
             if (engraving !== undefined && engraving !== null) {
-                params[`engraving${index}`] = engraving;
+                options.params[`engraving${index}`] = engraving;
             }
 
             if (initials !== undefined && initials !== null) {
@@ -749,11 +752,7 @@ ripe.Ripe.prototype._getPricesOptions = function(options = {}) {
             }
         });
 
-    const params = options.params || {};
-    options.params = params;
-
     const url = `${this.url}config/prices`;
-
     options = Object.assign(options, {
         url: url,
         method: "GET"
