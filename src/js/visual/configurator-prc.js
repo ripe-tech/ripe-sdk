@@ -173,6 +173,8 @@ ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = 
         options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
 
+    this.useMasks = this.owner.brand && this.owner.hasTag("no_masks") ? false : this.useMasks;
+
     if (update) await this.update();
 };
 
@@ -1027,6 +1029,8 @@ ripe.ConfiguratorPrc.prototype._updateConfig = async function(animate) {
     // in case the element is no longer available (possible due to async
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
+
+    this.useMasks = this.owner.brand && this.owner.hasTag("no_masks") ? false : this.useMasks;
 
     // sets ready to false to temporarily block
     // update requests while the new config
