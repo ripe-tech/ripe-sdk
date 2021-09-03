@@ -727,30 +727,29 @@ ripe.Ripe.prototype._getPricesOptions = function(options = {}) {
     delete options.params.engraving;
     delete options.params.p;
 
-    Object.keys(options)
-        .filter(option => option.startsWith("parts"))
-        .forEach(option => {
-            const index = parseInt(option.slice(5));
+    let index = 0;
+    options.configs.forEach(config => {
+        let parts = config.parts;
+        let initials = config.initials;
+        let engraving = config.engraving;
+        parts = parts === undefined ? this.parts : parts;
+        initials = initials === undefined ? this.initials : initials;
+        initials = initials === "" ? "$empty" : initials;
+        engraving = engraving === undefined ? this.engraving : engraving;
 
-            let parts = options[`parts${index}`];
-            let initials = options[`initials${index}`];
-            let engraving = options[`engraving${index}`];
-            parts = parts === undefined ? this.parts : parts;
-            initials = initials === undefined ? this.initials : initials;
-            initials = initials === "" ? "$empty" : initials;
-            engraving = engraving === undefined ? this.engraving : engraving;
+        if (parts !== undefined && parts !== null && Object.keys(parts).length > 0) {
+            options.params[`p${index}`] = this._partsMToTriplets(parts);
+        }
+        if (engraving !== undefined && engraving !== null) {
+            options.params[`engraving${index}`] = engraving;
+        }
 
-            if (parts !== undefined && parts !== null && Object.keys(parts).length > 0) {
-                options.params[`p${index}`] = this._partsMToTriplets(parts);
-            }
-            if (engraving !== undefined && engraving !== null) {
-                options.params[`engraving${index}`] = engraving;
-            }
+        if (initials !== undefined && initials !== null) {
+            options.params[`initials${index}`] = initials;
+        }
 
-            if (initials !== undefined && initials !== null) {
-                options.params[`initials${index}`] = initials;
-            }
-        });
+        index++;
+    });
 
     const url = `${this.url}config/prices`;
     options = Object.assign(options, {
