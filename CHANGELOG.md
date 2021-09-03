@@ -20,6 +20,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [2.6.0] - 2021-08-27
+
+### Added
+
+* `notify` option to endpoints for changing an order's status, to allow triggering notifications upon a status change
+
+## [2.5.1] - 2021-08-26
+
+### Fixed
+
+* Small `terminate()` issue
+* Attribute stability for the canceled preload images
+
+## [2.5.0] - 2021-08-25
+
+### Added
+
+* Added `itertools.js` to gulpfile build files in order to be bundled
+
+### Changed
+
+* Improved performance by allowing cancelling image loading for images that are not needed (quick `setFrame` changes)
+* Created structures that prevented concurrent `update()` at a `Visual` class level
+
+### Fixed
+
+* Issue where the `changeFrame` operation was being incorrectly canceled
+
 ## [2.4.2] - 2021-08-14
 
 ### Fixed

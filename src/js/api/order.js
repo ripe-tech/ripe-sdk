@@ -196,8 +196,8 @@ ripe.Ripe.prototype.createAttachmentOrder = function(number, file, options, call
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/attachments`;
     const dataM = { file: file };
-    if (options.name) dataM.name = options.name;
-    if (options.meta) dataM.meta = JSON.stringify(options.meta);
+    if (options.name !== undefined) dataM.name = options.name;
+    if (options.meta !== undefined) dataM.meta = JSON.stringify(options.meta);
     options = Object.assign(options, {
         url: url,
         method: "POST",
@@ -521,8 +521,8 @@ ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/states/${stateId}/attachments`;
     const dataM = { file: file };
-    if (options.name) dataM.name = options.name;
-    if (options.meta) dataM.meta = JSON.stringify(options.meta);
+    if (options.name !== undefined) dataM.name = options.name;
+    if (options.meta !== undefined) dataM.meta = JSON.stringify(options.meta);
     options = Object.assign(options, {
         url: url,
         method: "POST",
@@ -1082,7 +1082,8 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
         method: "PUT"
     });
     options.params = options.params || {};
-    if (options.justification) options.params.justification = options.justification;
+    if (options.justification !== undefined) options.params.justification = options.justification;
+    if (options.notify !== undefined) options.params.notify = options.notify ? "1" : "0";
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
