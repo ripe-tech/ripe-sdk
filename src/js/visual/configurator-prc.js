@@ -173,8 +173,6 @@ ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = 
         options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
 
-    this.useMasks = this.owner.loadedConfig && this.owner.hasTag("no_masks") ? false : this.useMasks;
-
     if (update) await this.update();
 };
 
@@ -731,9 +729,13 @@ ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
+    // if the 'useMasks' options is not set and the model has the "no_masks"
+    // tag, then no masks are meant to be used
+    const useMasks = this.useMasks !== undefined && this.owner.hasTag("no_masks") ? false : this.useMasks;
+
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
-    if (!this.useMasks) return;
+    if (!useMasks) return;
 
     // captures the current context to be used by clojure callbacks
     const self = this;
@@ -805,6 +807,10 @@ ripe.ConfiguratorPrc.prototype.lowlight = function(options) {
     // in case the element is no longer available (possible due to async
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
+
+    // if the 'useMasks' options is not set and the model has the "no_masks"
+    // tag, then no masks are meant to be used
+    const useMasks = this.useMasks !== undefined && this.owner.hasTag("no_masks") ? false : this.useMasks;
 
     // verifies if masks are meant to be used for the current model
     // and if that's not the case returns immediately
@@ -1029,8 +1035,6 @@ ripe.ConfiguratorPrc.prototype._updateConfig = async function(animate) {
     // in case the element is no longer available (possible due to async
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
-
-    this.useMasks = this.owner.loadedConfig && this.owner.hasTag("no_masks") ? false : this.useMasks;
 
     // sets ready to false to temporarily block
     // update requests while the new config
