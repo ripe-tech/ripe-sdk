@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added `itertools.js` to gulpfile build files in order to be bundled
 * Support for `no_masks` tag
 * `getPrices` which consumes `/api/config/prices` for getting prices for several configs in a single batch call
 
