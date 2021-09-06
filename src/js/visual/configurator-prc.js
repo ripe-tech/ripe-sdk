@@ -729,9 +729,14 @@ ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
+    // if the 'useMasks' options is not set and the model has the "no_masks"
+    // tag, then no masks are meant to be used
+    const useMasks =
+        this.useMasks !== undefined && this.owner.hasTag("no_masks") ? false : this.useMasks;
+
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
-    if (!this.useMasks) return;
+    if (!useMasks) return;
 
     // captures the current context to be used by clojure callbacks
     const self = this;
@@ -804,9 +809,14 @@ ripe.ConfiguratorPrc.prototype.lowlight = function(options) {
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
+    // if the 'useMasks' options is not set and the model has the "no_masks"
+    // tag, then no masks are meant to be used
+    const useMasks =
+        this.useMasks !== undefined && this.owner.hasTag("no_masks") ? false : this.useMasks;
+
     // verifies if masks are meant to be used for the current model
     // and if that's not the case returns immediately
-    if (!this.useMasks) return;
+    if (!useMasks) return;
 
     // retrieves the reference to the current front mask and removes
     // the highlight associated classes from it and the configurator
