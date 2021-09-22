@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* `useMasks` calculation on init and usage in order to allow usage of an `undefined` value that defaults to `true`
 
 ## [2.7.0] - 2021-09-13
 

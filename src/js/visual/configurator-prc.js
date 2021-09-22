@@ -60,8 +60,13 @@ ripe.ConfiguratorPrc.prototype.init = function() {
     this.preloadDelay = this.options.preloadDelay || 150;
     this.maskOpacity = this.options.maskOpacity || 0.4;
     this.maskDuration = this.options.maskDuration || 150;
-    this.noMasks = this.options.noMasks === undefined ? true : this.options.noMasks;
-    this.useMasks = this.options.useMasks === undefined ? !this.noMasks : this.options.useMasks;
+    this.noMasks = this.options.noMasks === undefined ? undefined : this.options.noMasks;
+    this.useMasks =
+        this.options.useMasks === undefined
+            ? this.noMasks === undefined
+                ? undefined
+                : !this.noMasks
+            : this.options.useMasks;
     this.view = this.options.view || "side";
     this.position = this.options.position || 0;
     this.configAnimate =
@@ -168,7 +173,12 @@ ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = 
     this.maskDuration =
         options.maskDuration === undefined ? this.maskDuration : options.maskDuration;
     this.noMasks = options.noMasks === undefined ? this.noMasks : options.noMasks;
-    this.useMasks = options.useMasks === undefined ? this.useMasks : options.useMasks;
+    this.useMasks =
+        this.options.useMasks === undefined
+            ? this.noMasks === undefined
+                ? this.noMasks
+                : !this.noMasks
+            : this.options.useMasks;
     this.configAnimate =
         options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
@@ -729,10 +739,11 @@ ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
-    // if the 'useMasks' options is not set and the model has the "no_masks"
-    // tag, then no masks are meant to be used
-    const useMasks =
-        this.useMasks !== undefined && this.owner.hasTag("no_masks") ? false : this.useMasks;
+    // if the 'useMasks' options is not set then it's the
+    // "no_masks" tag that indicates mask presence, otherwise
+    // the usage of masks is controlled by 'useMasks' (defaulting
+    // to 'true')
+    const useMasks = this.useMasks === undefined ? !this.owner.hasTag("no_masks") : this.useMasks;
 
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
@@ -809,10 +820,11 @@ ripe.ConfiguratorPrc.prototype.lowlight = function(options) {
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
-    // if the 'useMasks' options is not set and the model has the "no_masks"
-    // tag, then no masks are meant to be used
-    const useMasks =
-        this.useMasks !== undefined && this.owner.hasTag("no_masks") ? false : this.useMasks;
+    // if the 'useMasks' options is not set then it's the
+    // "no_masks" tag that indicates mask presence, otherwise
+    // the usage of masks is controlled by 'useMasks' (defaulting
+    // to 'true')
+    const useMasks = this.seMasks === undefined ? !this.owner.hasTag("no_masks") : this.useMasks;
 
     // verifies if masks are meant to be used for the current model
     // and if that's not the case returns immediately
