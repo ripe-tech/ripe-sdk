@@ -60,11 +60,11 @@ ripe.ConfiguratorPrc.prototype.init = function() {
     this.preloadDelay = this.options.preloadDelay || 150;
     this.maskOpacity = this.options.maskOpacity || 0.4;
     this.maskDuration = this.options.maskDuration || 150;
-    this.noMasks = this.options.noMasks === undefined ? this.noMasks : this.options.noMasks;
+    this.noMasks = this.options.noMasks === undefined ? undefined : this.options.noMasks;
     this.useMasks =
         this.options.useMasks === undefined
             ? this.noMasks === undefined
-                ? this.noMasks
+                ? undefined
                 : !this.noMasks
             : this.options.useMasks;
     this.view = this.options.view || "side";
@@ -743,12 +743,7 @@ ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
     // "no_masks" tag that indicates mask presence, otherwise
     // the usage of masks is controlled by 'useMasks' (defaulting
     // to 'true')
-    const useMasks =
-        this.useMasks === undefined
-            ? !this.owner.hasTag("no_masks")
-            : this.useMasks === undefined
-            ? true
-            : this.useMasks;
+    const useMasks = this.useMasks === undefined ? !this.owner.hasTag("no_masks") : this.useMasks;
 
     // verifiers if masks are meant to be used for the current model
     // and if that's not the case returns immediately
@@ -829,12 +824,7 @@ ripe.ConfiguratorPrc.prototype.lowlight = function(options) {
     // "no_masks" tag that indicates mask presence, otherwise
     // the usage of masks is controlled by 'useMasks' (defaulting
     // to 'true')
-    const useMasks =
-        this.useMasks === undefined
-            ? !this.owner.hasTag("no_masks")
-            : this.useMasks === undefined
-            ? true
-            : this.useMasks;
+    const useMasks = this.seMasks === undefined ? !this.owner.hasTag("no_masks") : this.useMasks;
 
     // verifies if masks are meant to be used for the current model
     // and if that's not the case returns immediately
