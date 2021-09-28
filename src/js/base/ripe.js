@@ -1195,7 +1195,15 @@ ripe.Ripe.prototype.bindImage = function(element, options = {}) {
  */
 ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
     options = Object.assign({}, { format: this.format }, options);
-    const config = new ripe.Configurator(this, element, options);
+    let config = null;
+    switch (options.type) {
+        case "csr":
+            config = ripe.bindConfiguratorCsr(element, options);
+            break;
+        case "prc":
+        default:
+            config = ripe.bindConfiguratorPrc(element, options);
+    }
     return this.bindInteractable(config);
 };
 
