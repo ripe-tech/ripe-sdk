@@ -1198,11 +1198,11 @@ ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
     let config = null;
     switch (options.type) {
         case "csr":
-            config = ripe.bindConfiguratorCsr(element, options);
+            config = this.bindConfiguratorCsr(element, options);
             break;
         case "prc":
         default:
-            config = ripe.bindConfiguratorPrc(element, options);
+            config = this.bindConfiguratorPrc(element, options);
     }
     return this.bindInteractable(config);
 };
