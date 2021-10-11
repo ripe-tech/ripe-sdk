@@ -1189,6 +1189,41 @@ ripe.Ripe.prototype.unsubscribeOrderP = function(number, options) {
 };
 
 /**
+ * Marks an order as having been touched by the user that
+ * is currently authenticated.
+ *
+ * @param {Number} number The number of the order to touch.
+ * @returns {XMLHttpRequest} The order.
+ */
+ripe.Ripe.prototype.touchOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/touch`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "PUT"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Marks an order as having been touched by the user that
+ * is currently authenticated.
+ *
+ * @param {Number} number The number of the order to touch.
+ * @returns {Promise} The order.
+ */
+ripe.Ripe.prototype.touchOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.touchOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
