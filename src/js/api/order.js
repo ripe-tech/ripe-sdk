@@ -1280,6 +1280,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
             ? this.initialsExtra
             : options.initialsExtra || options.initials_extra;
     const gender = options.gender === undefined ? null : options.gender;
+    const scale = options.scale === undefined ? null : options.scale;
     const size = options.size === undefined ? null : options.size;
     const pending = options.pending === undefined ? null : options.pending;
     const notify = options.notify === undefined ? null : options.notify;
@@ -1309,6 +1310,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (variant) contents.variant = variant;
     if (productId) contents.product_id = productId;
     if (gender) contents.gender = gender;
+    if (scale) contents.scale = scale;
     if (Object.keys(initialsExtra).length > 0) {
         contents.initials_extra = initialsExtra;
     } else if (initials && engraving) {

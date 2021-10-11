@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Order touch endpoint
+* Support for the `Order` touch API endpoint
+* Support for `scale` in import order
 
 ### Changed
 
