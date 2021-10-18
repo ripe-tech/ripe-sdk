@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Fix `price` not being corretly set in `importOrderP()` 
+* Fix `price` not being corretly set in `importOrderP()`
 
 ## [2.7.1] - 2021-09-27
 
