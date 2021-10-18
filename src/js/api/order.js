@@ -1329,7 +1329,6 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     };
     if (type) params.type = type;
     if (country) params.country = country;
-    if (price) params.price = price;
     if (currency) params.currency = currency;
     if (meta) params.meta = meta;
     if (notes) params.notes = notes;
