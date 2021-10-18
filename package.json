@@ -54,6 +54,7 @@
         "watch": "gulp watch"
     },
     "dependencies": {
+        "eslint-plugin-mocha": "^9.0.0",
         "node-fetch": "^2.6.1",
         "xmlhttprequest": "^1.8.0"
     },
