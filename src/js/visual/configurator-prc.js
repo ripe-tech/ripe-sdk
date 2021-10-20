@@ -238,13 +238,8 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
             // if its the first update after a config change
             // uses the configAnimate, else it uses a simple
             // animation if there were changes in the parts
-            animate = previous
-                ? changed
-                    ? "simple"
-                    : false
-                : this.configAnimate === undefined
-                ? "simple"
-                : this.configAnimate;
+            if (previous) animate = changed ? "simple" : false;
+            else animate = this.configAnimate === undefined ? "simple" : this.configAnimate;
         }
         this.signature = signature;
 
