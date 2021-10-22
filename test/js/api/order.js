@@ -174,6 +174,32 @@ describe("OrderAPI", function() {
 
             await remote.deleteOrderP(result.number);
         });
+
+        it("should be able to set the price", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+            const ffOrderId = uuid.v4();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.importOrderP(ffOrderId, {
+                type: "buildless",
+                brand: "dummy",
+                model: "dummy",
+                price: 30
+            });
+            assert.strictEqual(result.ff_order_id, ffOrderId);
+            assert.strictEqual(result.type, "buildless");
+            assert.strictEqual(result.brand, "dummy");
+            assert.strictEqual(result.shoe, "dummy");
+            assert.strictEqual(result.price, 30);
+
+            await remote.deleteOrderP(result.number);
+        });
     });
 
     describe("#preCustomization()", function() {
