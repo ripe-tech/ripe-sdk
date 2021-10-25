@@ -1311,6 +1311,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (productId) contents.product_id = productId;
     if (gender) contents.gender = gender;
     if (scale) contents.scale = scale;
+    if (price) contents.price = price;
     if (Object.keys(initialsExtra).length > 0) {
         contents.initials_extra = initialsExtra;
     } else if (initials && engraving) {
@@ -1328,7 +1329,6 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     };
     if (type) params.type = type;
     if (country) params.country = country;
-    if (price) params.price = price;
     if (currency) params.currency = currency;
     if (meta) params.meta = meta;
     if (notes) params.notes = notes;

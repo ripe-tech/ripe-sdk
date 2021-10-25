@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Support for the `Order` touch API endpoint
 * Support for `scale` in import order
+* Add test `should be able to set the price` in `#importOrder()` tests
 
 ### Changed
 
@@ -18,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Fix `price` not being corretly set in `importOrderP()`
 
 ## [2.7.1] - 2021-09-27
 
