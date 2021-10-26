@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Support for the `Order` touch API endpoint
 * Support for `scale` in import order
 * Add test `should be able to set the price` in `#importOrder()` tests
+* Add `blockOrderP` and `blockOrder` methods to block an order - [#263](https://github.com/ripe-tech/ripe-pulse/issues/263)
 
 ### Changed
 
