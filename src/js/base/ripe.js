@@ -1623,13 +1623,17 @@ ripe.Ripe.prototype._guessURL = async function() {
 /**
  * @ignore
  */
-ripe.Ripe.prototype._initBundles = async function(locale = null, defaultLocale = "en_us") {
-    locale = locale || this.locale || defaultLocale;
-    const globalBundleP = this.localeBundleP(locale, "scales");
-    const sizesBundleP = this.localeBundleP(locale, "sizes");
-    const [globalBundle, sizesBundle] = await Promise.all([globalBundleP, sizesBundleP]);
-    this.addBundle(globalBundle, locale);
-    this.addBundle(sizesBundle, locale);
+ripe.Ripe.prototype._initBundles = async function(locale = this.locale, defaultLocale = "en_us") {
+    const locales = [defaultLocale, locale];
+
+    for (const locale of new Set(locales)) {
+        const globalBundleP = this.localeBundleP(locale, "scales");
+        const sizesBundleP = this.localeBundleP(locale, "sizes");
+        const [globalBundle, sizesBundle] = await Promise.all([globalBundleP, sizesBundleP]);
+        this.addBundle(globalBundle, locale);
+        this.addBundle(sizesBundle, locale);
+    }
+
     this.bundles = true;
     this.trigger("bundles");
 };
