@@ -12,8 +12,17 @@ if (
     var ripe = base.ripe;
 }
 
+/**
+ * Verifies if the provided tag exists in the sequence of
+ * tags that are part of the currently loaded configuration.
+ * 
+ * @param {String} tag The tag to be tested for presence in the 
+ * currently loaded configuration.
+ * @returns {Boolean} If the tag exists in the tags section of the
+ * current configuration.
+ */
 ripe.Ripe.prototype.hasTag = function(tag) {
-    const tags = this.loadedConfig.tags || [];
+    const tags = (this.loadedConfig && this.loadedConfig.tags) || [];
     return tags.includes(tag);
 };
 
