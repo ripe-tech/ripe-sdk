@@ -301,6 +301,27 @@ ripe.Ripe.prototype.createWaybillOrderP = function(number, options) {
     });
 };
 
+ripe.Ripe.prototype.createReturnWaybillOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/return_waybill`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.createReturnWaybillOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.createReturnWaybillOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
 ripe.Ripe.prototype.logOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
