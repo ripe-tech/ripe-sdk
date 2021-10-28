@@ -280,6 +280,14 @@ ripe.Ripe.prototype.createNoteOrderP = function(number, text, options) {
     });
 };
 
+/**
+ * Creates a shipping waybill for the order with the provided number.
+ *
+ * @param {Number} number The number of the order to create the waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -293,6 +301,13 @@ ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Creates a shipping waybill for the order with the provided number.
+ *
+ * @param {Number} number The number of the order to create the waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The contents of the note instance that was created.
+ */
 ripe.Ripe.prototype.createWaybillOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.createWaybillOrder(number, options, (result, isValid, request) => {
@@ -301,6 +316,14 @@ ripe.Ripe.prototype.createWaybillOrderP = function(number, options) {
     });
 };
 
+/**
+ * Creates a shipping return waybill for the order with the provided number.
+ *
+ * @param {Number} number The number of the order to create the return waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.createReturnWaybillOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -314,6 +337,13 @@ ripe.Ripe.prototype.createReturnWaybillOrder = function(number, options, callbac
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Creates a shipping return waybill for the order with the provided number.
+ *
+ * @param {Number} number The number of the order to create the return waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The contents of the note instance that was created.
+ */
 ripe.Ripe.prototype.createReturnWaybillOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.createReturnWaybillOrder(number, options, (result, isValid, request) => {
