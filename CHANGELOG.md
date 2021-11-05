@@ -9,13 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for the `Order` touch API endpoint
-* Support for `scale` in import order
-* Add test `should be able to set the price` in `#importOrder()` tests
+*
 
 ### Changed
 
 *
+
+### Fixed
+
+*
+
+## [2.8.0] - 2021-11-05
+
+### Added
+
+* Support for the `Order` touch API endpoint
+* Support for `scale` in import order
+* Add test `should be able to set the price` in `#importOrder()` tests
 
 ### Fixed
 
