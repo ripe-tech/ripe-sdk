@@ -957,8 +957,8 @@ ripe.Ripe.prototype.setTrackingP = function(number, trackingNumber, trackingUrl,
  * Changes the return tracking info of an order.
  *
  * @param {Number} number The number of the order to change the return tracking info.
- * @param {String} trackingNumber The new return tracking number.
- * @param {String} trackingUrl The new return tracking URL.
+ * @param {String} returnTrackingNumber The new return tracking number.
+ * @param {String} returnTrackingUrl The new return tracking URL.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -990,8 +990,8 @@ ripe.Ripe.prototype.setReturnTracking = function(
  * Changes the return tracking info of an order.
  *
  * @param {Number} number The number of the order to change the return tracking info.
- * @param {String} trackingNumber The new return tracking number.
- * @param {String} trackingUrl The new return tracking URL.
+ * @param {String} returnTrackingNumber The new return tracking number.
+ * @param {String} returnTrackingUrl The new return tracking URL.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The result of the order tracking info change.
  */
