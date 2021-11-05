@@ -995,14 +995,14 @@ ripe.Ripe.prototype.setReturnTracking = function(
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The result of the order tracking info change.
  */
-ripe.Ripe.prototype.setTrackingP = function(
+ripe.Ripe.prototype.setReturnTrackingP = function(
     number,
     returnTrackingNumber,
     returnTrackingUrl,
     options
 ) {
     return new Promise((resolve, reject) => {
-        this.setTracking(
+        this.setReturnTracking(
             number,
             returnTrackingNumber,
             returnTrackingUrl,
