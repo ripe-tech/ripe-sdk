@@ -9,9 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for the `Order` touch API endpoint
-* Support for `scale` in import order
-* Add test `should be able to set the price` in `#importOrder()` tests
 * Support for `size` parameter in `_getMaskURL` request
 
 ### Changed
@@ -20,7 +17,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Fix `price` not being corretly set in `importOrderP()`
+*
+
+## [2.8.0] - 2021-11-05
+
+### Added
+
+* Support for the `Order` touch API endpoint
+* Support for `scale` in import order
+* Add test `should be able to set the price` in `#importOrder()` tests
+
+### Fixed
+
+* Fix `price` not being correctly set in `importOrderP()`
+* Problem relates with invalid `hasTag()`
 
 ## [2.7.1] - 2021-09-27
 
