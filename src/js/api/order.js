@@ -301,6 +301,14 @@ ripe.Ripe.prototype.createWaybillOrderP = function(number, options) {
     });
 };
 
+/**
+ * Manually trigger an order shipping info refresh.
+ *
+ * @param {Number} number The number of the order to refresh the shipping info.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.refreshShippingOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -314,6 +322,13 @@ ripe.Ripe.prototype.refreshShippingOrder = function(number, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Manually trigger an order shipping info refresh.
+ *
+ * @param {Number} number The number of the order to refresh the shipping info.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order requested by number.
+ */
 ripe.Ripe.prototype.refreshShippingOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.refreshShippingOrder(number, options, (result, isValid, request) => {
