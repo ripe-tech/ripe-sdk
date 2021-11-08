@@ -754,7 +754,7 @@ ripe.Ripe.prototype.sendOrderP = function(number, trackingNumber, trackingUrl, o
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
- ripe.Ripe.prototype.blockOrder = function(number, options, callback) {
+ripe.Ripe.prototype.blockOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "block", options, callback);
 };
 
