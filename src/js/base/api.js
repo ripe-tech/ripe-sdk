@@ -1015,6 +1015,9 @@ ripe.Ripe.prototype._getMaskOptions = function(options = {}) {
     if (options.part !== undefined && options.part !== null) {
         params.part = options.part;
     }
+    if (options.size !== undefined && options.size !== null) {
+        params.size = options.size;
+    }
 
     const url = `${this.url}mask`;
 
