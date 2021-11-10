@@ -337,3 +337,24 @@ ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
         });
     });
 };
+
+ripe.Ripe.prototype.attachmentsBulkOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}bulk_orders/${number}/attachments`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.attachmentsBulkOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.attachmentsBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
