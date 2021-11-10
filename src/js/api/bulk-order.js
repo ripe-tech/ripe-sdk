@@ -104,3 +104,236 @@ ripe.Ripe.prototype.getBulkOrderP = function(number, options) {
         });
     });
 };
+
+/**
+ * Sets the bulk order status to the one given.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Number} number The new status of the bulk order.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ ripe.Ripe.prototype.setBulkOrderStatus = function(number, status, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}bulk_orders/${number}/${status}`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "PUT"
+    });
+    options.params = options.params || {};
+    if (options.justification !== undefined) options.params.justification = options.justification;
+    if (options.notify !== undefined) options.params.notify = options.notify ? "1" : "0";
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Sets the bulk order status to 'create'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ ripe.Ripe.prototype.createBulkOrder = function(number, options, callback) {
+    return this.setBulkOrderStatus(number, "create", options, callback);
+};
+
+ripe.Ripe.prototype.createBulkOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.createBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the bulk order status to 'produce'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.produceBulkOrder = function(number, options, callback) {
+    return this.setBulkOrderStatus(number, "produce", options, callback);
+};
+
+ripe.Ripe.prototype.produceBulkOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.produceBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the bulk order status to 'quality_assure'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.qualityAssureBulkOrder = function(number, options, callback) {
+    return this.setBulkOrderStatus(number, "quality_assure", options, callback);
+};
+
+ripe.Ripe.prototype.qualityAssureBulkOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.qualityAssureBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the bulk order status to 'reject'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.rejectBulkOrder = function(number, options, callback) {
+    return this.setBulkOrderStatus(number, "reject", options, callback);
+};
+
+ripe.Ripe.prototype.rejectBulkOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.rejectBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the bulk order status to 'ready'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.readyBulkOrder = function(number, options, callback) {
+    return this.setBulkOrderStatus(number, "ready", options, callback);
+};
+
+ripe.Ripe.prototype.readyBulkOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.readyBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the bulk order status to 'ready'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.sendBulkOrder = function(number, trackingNumber, trackingUrl, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = Object.assign(options, {
+        params: {
+            tracking_number: trackingNumber,
+            tracking_url: trackingUrl
+        }
+    });
+    return this.setBulkOrderStatus(number, "send", options, callback);
+};
+
+ripe.Ripe.prototype.sendBulkOrderP = function(number, trackingNumber, trackingUrl, options) {
+    return new Promise((resolve, reject) => {
+        this.sendBulkOrder(number, trackingNumber, trackingUrl, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the bulk order status to 'blocked'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.blockBulkOrder = function(number, options, callback) {
+    return this.setBulkOrderStatus(number, "block", options, callback);
+};
+
+ripe.Ripe.prototype.blockBulkOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.blockBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the bulk order status to 'receive'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.receiveBulkOrder = function(number, options, callback) {
+    return this.setBulkOrderStatus(number, "receive", options, callback);
+};
+
+ripe.Ripe.prototype.receiveBulkOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.receiveBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the bulk order status to 'return'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.returnBulkOrder = function(number, options, callback) {
+    return this.setBulkOrderStatus(number, "return", options, callback);
+};
+
+ripe.Ripe.prototype.returnBulkOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.returnBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the bulk order status to 'cancel'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.cancelBulkOrder = function(number, options, callback) {
+    return this.setBulkOrderStatus(number, "cancel", options, callback);
+};
+
+ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.cancelBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
