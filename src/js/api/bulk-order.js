@@ -338,6 +338,14 @@ ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
     });
 };
 
+/**
+ * Gets the attachments of all the bulk orders.
+ *
+ * @param {Number} number The number of the bulk order.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.attachmentsBulkOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -354,6 +362,29 @@ ripe.Ripe.prototype.attachmentsBulkOrder = function(number, options, callback) {
 ripe.Ripe.prototype.attachmentsBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.attachmentsBulkOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+ripe.Ripe.prototype.createAttachmentBulkOrder = function(number, files, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}bulk_orders/${number}/attachments`;
+    const dataM = { files: files };
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataJ: dataM,
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.createAttachmentBulkOrderP = function(number, files, options) {
+    return new Promise((resolve, reject) => {
+        this.createAttachmentBulkOrder(number, files, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
