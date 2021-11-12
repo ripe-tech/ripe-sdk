@@ -9,9 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for `size` parameter in `_getMaskURL` request
-* Add `refreshShippingOrder` and `refreshShippingOrderP` - [#260](https://github.com/ripe-tech/ripe-pulse/issues/260)
-* Add `blockOrderP` and `blockOrder` methods to block an order - [#263](https://github.com/ripe-tech/ripe-pulse/issues/263)
+*
 
 ### Changed
 
@@ -20,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.9.0] - 2021-11-12
+
+### Added
+
+* Support for `size` parameter in `_getMaskURL` request
+* Add `refreshShippingOrder` and `refreshShippingOrderP` - [#260](https://github.com/ripe-tech/ripe-pulse/issues/260)
+* Add `blockOrderP` and `blockOrder` methods to block an order - [#263](https://github.com/ripe-tech/ripe-pulse/issues/263)
 
 ## [2.8.0] - 2021-11-05
 
