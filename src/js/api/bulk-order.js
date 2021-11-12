@@ -375,7 +375,7 @@ ripe.Ripe.prototype.createAttachmentBulkOrder = function(number, files, options,
     options = Object.assign(options, {
         url: url,
         method: "POST",
-        dataJ: dataM,
+        dataM: dataM,
         auth: true
     });
     options = this._build(options);
