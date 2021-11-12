@@ -783,6 +783,26 @@ ripe.Ripe.prototype.sendOrderP = function(number, trackingNumber, trackingUrl, o
 };
 
 /**
+ * Sets the order status to 'blocked'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.blockOrder = function(number, options, callback) {
+    return this.setOrderStatus(number, "block", options, callback);
+};
+
+ripe.Ripe.prototype.blockOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.blockOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Sets the order status to 'receive'.
  *
  * @param {Number} number The number of the order to update.
