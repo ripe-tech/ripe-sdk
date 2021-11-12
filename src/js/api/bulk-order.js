@@ -114,7 +114,7 @@ ripe.Ripe.prototype.getBulkOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
- ripe.Ripe.prototype.setBulkOrderStatus = function(number, status, options, callback) {
+ripe.Ripe.prototype.setBulkOrderStatus = function(number, status, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}bulk_orders/${number}/${status}`;
@@ -138,7 +138,7 @@ ripe.Ripe.prototype.getBulkOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
- ripe.Ripe.prototype.createBulkOrder = function(number, options, callback) {
+ripe.Ripe.prototype.createBulkOrder = function(number, options, callback) {
     return this.setBulkOrderStatus(number, "create", options, callback);
 };
 
@@ -238,7 +238,13 @@ ripe.Ripe.prototype.readyBulkOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.sendBulkOrder = function(number, trackingNumber, trackingUrl, options, callback) {
+ripe.Ripe.prototype.sendBulkOrder = function(
+    number,
+    trackingNumber,
+    trackingUrl,
+    options,
+    callback
+) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     options = Object.assign(options, {
@@ -252,9 +258,15 @@ ripe.Ripe.prototype.sendBulkOrder = function(number, trackingNumber, trackingUrl
 
 ripe.Ripe.prototype.sendBulkOrderP = function(number, trackingNumber, trackingUrl, options) {
     return new Promise((resolve, reject) => {
-        this.sendBulkOrder(number, trackingNumber, trackingUrl, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
+        this.sendBulkOrder(
+            number,
+            trackingNumber,
+            trackingUrl,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
     });
 };
 
