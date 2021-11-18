@@ -1010,6 +1010,67 @@ ripe.Ripe.prototype.setTrackingP = function(number, trackingNumber, trackingUrl,
 };
 
 /**
+ * Changes the return tracking info of an order.
+ *
+ * @param {Number} number The number of the order to change the return tracking info.
+ * @param {String} returnTrackingNumber The new return tracking number.
+ * @param {String} returnTrackingUrl The new return tracking URL.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.setReturnTracking = function(
+    number,
+    returnTrackingNumber,
+    returnTrackingUrl,
+    options,
+    callback
+) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/return_tracking`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true,
+        params: {
+            return_tracking_number: returnTrackingNumber,
+            return_tracking_url: returnTrackingUrl
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Changes the return tracking info of an order.
+ *
+ * @param {Number} number The number of the order to change the return tracking info.
+ * @param {String} returnTrackingNumber The new return tracking number.
+ * @param {String} returnTrackingUrl The new return tracking URL.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order tracking info change.
+ */
+ripe.Ripe.prototype.setReturnTrackingP = function(
+    number,
+    returnTrackingNumber,
+    returnTrackingUrl,
+    options
+) {
+    return new Promise((resolve, reject) => {
+        this.setReturnTracking(
+            number,
+            returnTrackingNumber,
+            returnTrackingUrl,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
+    });
+};
+
+/**
  * Imports a production order to RIPE Core.
  *
  * @param {Number} ffOrderId The e-commerce order identifier.
