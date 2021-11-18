@@ -352,6 +352,42 @@ ripe.Ripe.prototype.createReturnWaybillOrderP = function(number, options) {
     });
 };
 
+/**
+ * Manually trigger an order shipping info refresh.
+ *
+ * @param {Number} number The number of the order to refresh the shipping info.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.refreshShippingOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/refresh_shipping`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Manually trigger an order shipping info refresh.
+ *
+ * @param {Number} number The number of the order to refresh the shipping info.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order requested by number.
+ */
+ripe.Ripe.prototype.refreshShippingOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.refreshShippingOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
 ripe.Ripe.prototype.logOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -798,6 +834,26 @@ ripe.Ripe.prototype.sendOrderP = function(number, trackingNumber, trackingUrl, o
 };
 
 /**
+ * Sets the order status to 'blocked'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.blockOrder = function(number, options, callback) {
+    return this.setOrderStatus(number, "block", options, callback);
+};
+
+ripe.Ripe.prototype.blockOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.blockOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Sets the order status to 'receive'.
  *
  * @param {Number} number The number of the order to update.
@@ -996,6 +1052,67 @@ ripe.Ripe.prototype.setTrackingP = function(number, trackingNumber, trackingUrl,
             number,
             trackingNumber,
             trackingUrl,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
+    });
+};
+
+/**
+ * Changes the return tracking info of an order.
+ *
+ * @param {Number} number The number of the order to change the return tracking info.
+ * @param {String} returnTrackingNumber The new return tracking number.
+ * @param {String} returnTrackingUrl The new return tracking URL.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.setReturnTracking = function(
+    number,
+    returnTrackingNumber,
+    returnTrackingUrl,
+    options,
+    callback
+) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/return_tracking`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true,
+        params: {
+            return_tracking_number: returnTrackingNumber,
+            return_tracking_url: returnTrackingUrl
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Changes the return tracking info of an order.
+ *
+ * @param {Number} number The number of the order to change the return tracking info.
+ * @param {String} returnTrackingNumber The new return tracking number.
+ * @param {String} returnTrackingUrl The new return tracking URL.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order tracking info change.
+ */
+ripe.Ripe.prototype.setReturnTrackingP = function(
+    number,
+    returnTrackingNumber,
+    returnTrackingUrl,
+    options
+) {
+    return new Promise((resolve, reject) => {
+        this.setReturnTracking(
+            number,
+            returnTrackingNumber,
+            returnTrackingUrl,
             options,
             (result, isValid, request) => {
                 isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));

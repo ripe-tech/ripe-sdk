@@ -9,9 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for the `Order` touch API endpoint
-* Support for `scale` in import order
-* Add test `should be able to set the price` in `#importOrder()` tests
 * Add `createReturnWaybillOrder` as part of the Order API
 
 ### Changed
@@ -20,7 +17,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Fix `price` not being corretly set in `importOrderP()`
+*
+
+## [2.9.0] - 2021-11-12
+
+### Added
+
+* Support for `size` parameter in `_getMaskURL` request
+* Add `refreshShippingOrder` and `refreshShippingOrderP` - [#260](https://github.com/ripe-tech/ripe-pulse/issues/260)
+* Add `blockOrderP` and `blockOrder` methods to block an order - [#263](https://github.com/ripe-tech/ripe-pulse/issues/263)
+
+## [2.8.0] - 2021-11-05
+
+### Added
+
+* Support for the `Order` touch API endpoint
+* Support for `scale` in import order
+* Add test `should be able to set the price` in `#importOrder()` tests
+
+### Fixed
+
+* Fix `price` not being correctly set in `importOrderP()`
+* Problem relates with invalid `hasTag()`
 
 ## [2.7.1] - 2021-09-27
 
@@ -156,6 +174,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * `setTracking` method to the `Order` entity
+* `setReturnTracking` method to the `Order` entity
 * `setMeta` method allowing dynamic set of metadata attributes for the `Order` entity
 * Method for generating an image URL from a query (`_queryToImageUrl`)
 
