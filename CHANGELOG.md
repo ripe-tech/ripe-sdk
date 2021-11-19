@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Add `localeToNative`, `localeToNativeP`, `localeToNativeB` and `localeToNativeBP` methods to convert locale sizes to native sizes and unit tests - [#4638](https://github.com/ripe-tech/ripe-core/issues/4638)
 
 ### Changed
 
