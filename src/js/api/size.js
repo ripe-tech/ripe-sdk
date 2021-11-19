@@ -42,7 +42,7 @@ ripe.Ripe.prototype.getSizesP = function(options) {
 /**
  * Converts a size value from the native scale to the corresponding value
  * in the specified scale.
- * The available scales, genders and sizes can be obtained with the `getSizes`.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {String} scale The scale which one wants to convert to.
  * @param {Number} value The value which one wants to convert.
