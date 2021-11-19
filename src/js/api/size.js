@@ -352,7 +352,7 @@ ripe.Ripe.prototype.nativeToLocaleBP = function(scales, values, genders, options
 };
 
 /**
- * Converts a locake size value in the specified scale to the corresponding native size.
+ * Converts a locale size value in the specified scale to the corresponding native size.
  * The available scales, genders and sizes can be obtained with the method getSizes.
  *
  * @param {String} scale The scale which one wants to convert from.
