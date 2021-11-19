@@ -151,7 +151,7 @@ describe("SizeAPI", function() {
             assert.strictEqual(result[1].gender, "female");
             assert.strictEqual(result[1].native, 17);
             assert.strictEqual(result[2].scale, "it");
-            assert.strictEqual(result[2].value, "8.5");
+            assert.strictEqual(result[2].value, "38.5");
             assert.strictEqual(result[2].gender, "male");
             assert.strictEqual(result[2].native, 22);
             assert.strictEqual(result[3].scale, "std:clothing");
