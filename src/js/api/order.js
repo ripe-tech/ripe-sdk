@@ -1122,6 +1122,47 @@ ripe.Ripe.prototype.setReturnTrackingP = function(
 };
 
 /**
+ * Changes the proof of delivery info of an order.
+ *
+ * @param {Number} number The number of the order to change the proof of delivery info.
+ * @param {String} proofOfDeliveryUrl The new proof of delivery URL.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.setProofOfDelivery = function(number, proofOfDeliveryUrl, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/proof_of_delivery`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true,
+        params: {
+            proof_of_delivery_url: proofOfDeliveryUrl
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Changes the proof of delivery info of an order.
+ *
+ * @param {Number} number The number of the order to change the proof of delivery info.
+ * @param {String} proofOfDeliveryUrl The new proof of delivery URL.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order proof of delivery info change.
+ */
+ripe.Ripe.prototype.setProofOfDeliveryP = function(number, proofOfDeliveryUrl, options) {
+    return new Promise((resolve, reject) => {
+        this.setProofOfDelivery(number, proofOfDeliveryUrl, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Imports a production order to RIPE Core.
  *
  * @param {Number} ffOrderId The e-commerce order identifier.
