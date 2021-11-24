@@ -20,7 +20,6 @@ if (
  * @returns {Configurator} The Configurator instance created.
  */
 ripe.Ripe.prototype.bindConfiguratorPrc = function(element, options = {}) {
-    options = Object.assign({}, { format: this.format }, options);
     const config = new ripe.ConfiguratorPrc(this, element, options);
     return this.bindInteractable(config);
 };
