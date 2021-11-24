@@ -19,7 +19,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [2.10.0] - 2021-11-19
+
+### Added
+
+* Add `setProofOfDeliveryP` and `setProofOfDelivery` methods to set proof of delivery info of an order - [#34](https://github.com/ripe-tech/peri-shipping/issues/34)
+* Add `createReturnWaybillOrder` as part of the Order API
+
+## [2.9.0] - 2021-11-12
+
+### Added
+
+* Support for `size` parameter in `_getMaskURL` request
+* Add `refreshShippingOrder` and `refreshShippingOrderP` - [#260](https://github.com/ripe-tech/ripe-pulse/issues/260)
+* Add `blockOrderP` and `blockOrder` methods to block an order - [#263](https://github.com/ripe-tech/ripe-pulse/issues/263)
+
+## [2.8.0] - 2021-11-05
+
+### Added
+
+* Support for the `Order` touch API endpoint
+* Support for `scale` in import order
+* Add test `should be able to set the price` in `#importOrder()` tests
+
+### Fixed
+
+* Fix `price` not being correctly set in `importOrderP()`
+* Problem relates with invalid `hasTag()`
+
 ## [2.7.1] - 2021-09-27
+
+### Fixed
 
 * `useMasks` calculation on init and usage in order to allow usage of an `undefined` value that defaults to `true`
 
@@ -151,6 +181,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * `setTracking` method to the `Order` entity
+* `setReturnTracking` method to the `Order` entity
 * `setMeta` method allowing dynamic set of metadata attributes for the `Order` entity
 * Method for generating an image URL from a query (`_queryToImageUrl`)
 

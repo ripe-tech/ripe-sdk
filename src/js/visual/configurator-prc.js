@@ -241,13 +241,19 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
         const duration = options.duration;
         const preload = options.preload;
 
-        // checks if the parts drawed on the target have
+        // checks if the parts drawn on the target have
         // changed and animates the transition if they did
         let previous = this.signature || "";
         const signature = this._buildSignature();
         const changed = signature !== previous;
-        const animate =
-            options.animate === undefined ? (changed ? "simple" : false) : options.animate;
+        let animate = options.animate;
+        if (animate === undefined) {
+            // if its the first update after a config change
+            // uses the config animate, else it uses a simple
+            // animation if there were changes in the parts
+            if (previous) animate = changed ? "simple" : false;
+            else animate = this.configAnimate === undefined ? "simple" : this.configAnimate;
+        }
         this.signature = signature;
 
         // if the parts and the position haven't changed
