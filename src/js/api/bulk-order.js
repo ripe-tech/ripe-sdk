@@ -142,6 +142,14 @@ ripe.Ripe.prototype.createBulkOrder = function(number, options, callback) {
     return this.setBulkOrderStatus(number, "create", options, callback);
 };
 
+/**
+ * Sets the bulk order status to 'create'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The update bulk order.
+ */
 ripe.Ripe.prototype.createBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.createBulkOrder(number, options, (result, isValid, request) => {
@@ -162,6 +170,14 @@ ripe.Ripe.prototype.produceBulkOrder = function(number, options, callback) {
     return this.setBulkOrderStatus(number, "produce", options, callback);
 };
 
+/**
+ * Sets the bulk order status to 'produce'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The update bulk order.
+ */
 ripe.Ripe.prototype.produceBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.produceBulkOrder(number, options, (result, isValid, request) => {
@@ -182,6 +198,14 @@ ripe.Ripe.prototype.qualityAssureBulkOrder = function(number, options, callback)
     return this.setBulkOrderStatus(number, "quality_assure", options, callback);
 };
 
+/**
+ * Sets the bulk order status to 'quality_assure'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The update bulk order.
+ */
 ripe.Ripe.prototype.qualityAssureBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.qualityAssureBulkOrder(number, options, (result, isValid, request) => {
@@ -202,6 +226,14 @@ ripe.Ripe.prototype.rejectBulkOrder = function(number, options, callback) {
     return this.setBulkOrderStatus(number, "reject", options, callback);
 };
 
+/**
+ * Sets the bulk order status to 'reject'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The update bulk order.
+ */
 ripe.Ripe.prototype.rejectBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.rejectBulkOrder(number, options, (result, isValid, request) => {
@@ -222,6 +254,14 @@ ripe.Ripe.prototype.readyBulkOrder = function(number, options, callback) {
     return this.setBulkOrderStatus(number, "ready", options, callback);
 };
 
+/**
+ * Sets the bulk order status to 'ready'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The update bulk order.
+ */
 ripe.Ripe.prototype.readyBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.readyBulkOrder(number, options, (result, isValid, request) => {
@@ -256,6 +296,14 @@ ripe.Ripe.prototype.sendBulkOrder = function(
     return this.setBulkOrderStatus(number, "send", options, callback);
 };
 
+/**
+ * Sets the bulk order status to 'ready'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The update bulk order.
+ */
 ripe.Ripe.prototype.sendBulkOrderP = function(number, trackingNumber, trackingUrl, options) {
     return new Promise((resolve, reject) => {
         this.sendBulkOrder(
@@ -282,6 +330,14 @@ ripe.Ripe.prototype.blockBulkOrder = function(number, options, callback) {
     return this.setBulkOrderStatus(number, "block", options, callback);
 };
 
+/**
+ * Sets the bulk order status to 'blocked'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The update bulk order.
+ */
 ripe.Ripe.prototype.blockBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.blockBulkOrder(number, options, (result, isValid, request) => {
@@ -302,6 +358,14 @@ ripe.Ripe.prototype.receiveBulkOrder = function(number, options, callback) {
     return this.setBulkOrderStatus(number, "receive", options, callback);
 };
 
+/**
+ * Sets the bulk order status to 'receive'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The update bulk order.
+ */
 ripe.Ripe.prototype.receiveBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.receiveBulkOrder(number, options, (result, isValid, request) => {
@@ -322,6 +386,14 @@ ripe.Ripe.prototype.returnBulkOrder = function(number, options, callback) {
     return this.setBulkOrderStatus(number, "return", options, callback);
 };
 
+/**
+ * Sets the bulk order status to 'return'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The update bulk order.
+ */
 ripe.Ripe.prototype.returnBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.returnBulkOrder(number, options, (result, isValid, request) => {
@@ -342,6 +414,14 @@ ripe.Ripe.prototype.cancelBulkOrder = function(number, options, callback) {
     return this.setBulkOrderStatus(number, "cancel", options, callback);
 };
 
+/**
+ * Sets the bulk order status to 'cancel'.
+ *
+ * @param {Number} number The number of the bulk order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The update bulk order.
+ */
 ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.cancelBulkOrder(number, options, (result, isValid, request) => {
@@ -351,7 +431,7 @@ ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
 };
 
 /**
- * Gets the attachments of all the bulk orders.
+ * Returns all the attachments of a bulk order.
  *
  * @param {Number} number The number of the bulk order.
  * @param {Object} options An object of options to configure the request.
@@ -371,6 +451,14 @@ ripe.Ripe.prototype.attachmentsBulkOrder = function(number, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns all the attachments of a bulk order.
+ *
+ * @param {Number} number The number of the bulk order.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The attachments of the bulk order.
+ */
 ripe.Ripe.prototype.attachmentsBulkOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.attachmentsBulkOrder(number, options, (result, isValid, request) => {
@@ -379,6 +467,14 @@ ripe.Ripe.prototype.attachmentsBulkOrderP = function(number, options) {
     });
 };
 
+/**
+ * Adds attachment files to a bulk order.
+ *
+ * @param {Number} number The number of the bulk order.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.createAttachmentBulkOrder = function(number, files, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -394,6 +490,14 @@ ripe.Ripe.prototype.createAttachmentBulkOrder = function(number, files, options,
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Adds attachment files to a bulk order.
+ *
+ * @param {Number} number The number of the bulk order.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The bulk order with the added attachments.
+ */
 ripe.Ripe.prototype.createAttachmentBulkOrderP = function(number, files, options) {
     return new Promise((resolve, reject) => {
         this.createAttachmentBulkOrder(number, files, options, (result, isValid, request) => {
