@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Support for `size` parameter in `_getMaskURL` request
 * Add `blockOrderP` and `blockOrder` methods to block an order - [#263](https://github.com/ripe-tech/ripe-pulse/issues/263)
+* Add `Bulk Order` API methods - [ripe-util-vue/#218](https://github.com/ripe-tech/ripe-util-vue/issues/218)
 
 ### Changed
 
