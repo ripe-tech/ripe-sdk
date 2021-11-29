@@ -15,7 +15,7 @@ describe("BrandAPI", function() {
                 brand: "dummy",
                 size: 50
             });
-            assert.strictEqual(result.size, 20347);
+            assert.strictEqual(result.size, 18381);
             assert.strictEqual(result.type, "image/png");
         });
     });
