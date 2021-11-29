@@ -725,6 +725,14 @@ ripe.Ripe.prototype.createOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "create", options, callback);
 };
 
+/**
+ * Sets the order status to 'create'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.createOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.createOrder(number, options, (result, isValid, request) => {
@@ -745,6 +753,14 @@ ripe.Ripe.prototype.produceOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "produce", options, callback);
 };
 
+/**
+ * Sets the order status to 'produce'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.produceOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.produceOrder(number, options, (result, isValid, request) => {
@@ -765,6 +781,14 @@ ripe.Ripe.prototype.qualityAssureOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "quality_assure", options, callback);
 };
 
+/**
+ * Sets the order status to 'quality_assure'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.qualityAssureOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.qualityAssureOrder(number, options, (result, isValid, request) => {
@@ -785,6 +809,14 @@ ripe.Ripe.prototype.rejectOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "reject", options, callback);
 };
 
+/**
+ * Sets the order status to 'reject'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.rejectOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.rejectOrder(number, options, (result, isValid, request) => {
@@ -805,6 +837,14 @@ ripe.Ripe.prototype.readyOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "ready", options, callback);
 };
 
+/**
+ * Sets the order status to 'ready'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.readyOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.readyOrder(number, options, (result, isValid, request) => {
@@ -813,6 +853,14 @@ ripe.Ripe.prototype.readyOrderP = function(number, options) {
     });
 };
 
+/**
+ * Sets the order status to 'sent'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -825,6 +873,14 @@ ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, op
     return this.setOrderStatus(number, "send", options, callback);
 };
 
+/**
+ * Sets the order status to 'sent'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.sendOrderP = function(number, trackingNumber, trackingUrl, options) {
     return new Promise((resolve, reject) => {
         this.sendOrder(number, trackingNumber, trackingUrl, options, (result, isValid, request) => {
@@ -845,6 +901,14 @@ ripe.Ripe.prototype.blockOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "block", options, callback);
 };
 
+/**
+ * Sets the order status to 'blocked'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.blockOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.blockOrder(number, options, (result, isValid, request) => {
@@ -865,6 +929,14 @@ ripe.Ripe.prototype.receiveOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "receive", options, callback);
 };
 
+/**
+ * Sets the order status to 'receive'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.receiveOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.receiveOrder(number, options, (result, isValid, request) => {
@@ -885,6 +957,14 @@ ripe.Ripe.prototype.returnOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "return", options, callback);
 };
 
+/**
+ * Sets the order status to 'return'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.returnOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.returnOrder(number, options, (result, isValid, request) => {
@@ -905,6 +985,14 @@ ripe.Ripe.prototype.cancelOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "cancel", options, callback);
 };
 
+/**
+ * Sets the order status to 'cancel'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.cancelOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.cancelOrder(number, options, (result, isValid, request) => {
