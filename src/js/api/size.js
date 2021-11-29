@@ -42,7 +42,7 @@ ripe.Ripe.prototype.getSizesP = function(options) {
 /**
  * Converts a size value from the native scale to the corresponding value
  * in the specified scale.
- * The available scales, genders and sizes can be obtained with the getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {String} scale The scale which one wants to convert to.
  * @param {Number} value The value which one wants to convert.
@@ -79,7 +79,7 @@ ripe.Ripe.prototype.sizeToNativeP = function(scale, value, gender, options) {
 /**
  * Converts multiple size values from the native scale to the corresponding
  * values in the specified scales.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {Array} scales A list of scales to convert to.
  * @param {Array} values A list of values to convert.
@@ -123,7 +123,7 @@ ripe.Ripe.prototype.sizeToNativeBP = function(scales, values, genders, options) 
 
 /**
  * Converts a size value in the specified scale to the corresponding native size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {String} scale The scale which one wants to convert from.
  * @param {Number} value The value which one wants to convert.
@@ -159,7 +159,7 @@ ripe.Ripe.prototype.nativeToSizeP = function(scale, value, gender, options) {
 
 /**
  * Converts multiple size values to the corresponding native size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {Array} scales A list of scales to convert from.
  * @param {Array} values A list of values to convert.
@@ -203,7 +203,7 @@ ripe.Ripe.prototype.nativeToSizeBP = function(scales, values, genders, options) 
 
 /**
  * Converts a size value in the specified scale to the corresponding localized size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {String} scale The scale which one wants to convert from.
  * @param {Number} value The value which one wants to convert.
@@ -239,7 +239,7 @@ ripe.Ripe.prototype.sizeToLocaleP = function(scale, value, gender, options) {
 
 /**
  * Converts multiple size values to the corresponding localized size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {Array} scales A list of scales to convert from.
  * @param {Array} values A list of values to convert.
@@ -278,7 +278,7 @@ ripe.Ripe.prototype.sizeToLocaleBP = function(scales, values, genders, options) 
 
 /**
  * Converts a native size value in the specified scale to the corresponding localized size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {String} scale The scale which one wants to convert from.
  * @param {Number} value The value which one wants to convert.
@@ -314,7 +314,7 @@ ripe.Ripe.prototype.nativeToLocaleP = function(scale, value, gender, options) {
 
 /**
  * Converts multiple native size values to the corresponding localized size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {Array} scales A list of scales to convert from.
  * @param {Array} values A list of values to convert.
