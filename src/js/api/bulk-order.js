@@ -59,14 +59,7 @@ ripe.Ripe.prototype.getBulkOrdersP = function(options) {
  * Gets a bulk order by number.
  *
  * @param {Number} number The number of the bulk order to find by.
- * @param {Object} options An object of options to configure the request, such as:
- * - 'filters[]' - List of filters that the query will use to, operators such as
- * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
- * - 'sort' - List of arguments to sort the results by and which direction
- * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
- * while (eg: 'id:descending')] would do it in descending order.
- * - 'skip' - The number of the first record to retrieve from the results.
- * - 'limit' - The number of results to retrieve.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -87,14 +80,7 @@ ripe.Ripe.prototype.getBulkOrder = function(number, options, callback) {
  * Gets a bulk order by number.
  *
  * @param {Number} number The number of the bulk order to find by.
- * @param {Object} options An object of options to configure the request, such as:
- * - 'filters[]' - List of filters that the query will use to, operators such as
- * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
- * - 'sort' - List of arguments to sort the results by and which direction
- * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
- * while (eg: 'id:descending')] would do it in descending order.
- * - 'skip' - The number of the first record to retrieve from the results.
- * - 'limit' - The number of results to retrieve.
+ * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The bulk order requested by number.
  */
 ripe.Ripe.prototype.getBulkOrderP = function(number, options) {
@@ -109,7 +95,7 @@ ripe.Ripe.prototype.getBulkOrderP = function(number, options) {
  * Sets the bulk order status to the one given.
  *
  * @param {Number} number The number of the bulk order to update.
- * @param {Number} number The new status of the bulk order.
+ * @param {String} status The new status of the bulk order.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -271,7 +257,7 @@ ripe.Ripe.prototype.readyBulkOrderP = function(number, options) {
 };
 
 /**
- * Sets the bulk order status to 'ready'.
+ * Sets the bulk order status to 'sent'.
  *
  * @param {Number} number The number of the bulk order to update.
  * @param {Object} options An object of options to configure the request.
@@ -297,7 +283,7 @@ ripe.Ripe.prototype.sendBulkOrder = function(
 };
 
 /**
- * Sets the bulk order status to 'ready'.
+ * Sets the bulk order status to 'sent'.
  *
  * @param {Number} number The number of the bulk order to update.
  * @param {Object} options An object of options to configure the request.
