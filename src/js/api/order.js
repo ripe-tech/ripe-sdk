@@ -813,14 +813,6 @@ ripe.Ripe.prototype.readyOrderP = function(number, options) {
     });
 };
 
-/**
- * Sets the order status to 'sent'.
- *
- * @param {Number} number The number of the order to update.
- * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
- */
 ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
