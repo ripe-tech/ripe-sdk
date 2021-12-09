@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Added `getShipments/getShipmentsP` and `createShipment/createShipmentsP` - [ripe-pulse/#276](https://github.com/ripe-tech/ripe-pulse/issues/276)
 
 ### Changed
 
