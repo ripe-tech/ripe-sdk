@@ -348,6 +348,45 @@ ripe.Ripe.prototype.validateModelP = function(options) {
 };
 
 /**
+ * Returns the length in pixels of text drawn using the profiles
+ * of the model of a brand.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The name of the brand to be considered when validating.
+ *  - 'model' - The name of the model to be considered when validating.
+ *  - 'value' - The text from which the length in pixels will be returned.
+ *  - 'profiles' - The profiles to be used when drawing the text.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.textLength = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getTextLengthOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the length in pixels of text drawn using the profiles
+ * of the model of a brand.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The name of the brand to be considered when validating.
+ *  - 'model' - The name of the model to be considered when validating.
+ *  - 'value' - The text from which the length in pixels will be returned.
+ *  - 'profiles' - The profiles to be used when drawing the text.
+ * @returns {Promise} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.textLengthP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.textLength(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns the logic script of a model in the requested format (javascript or python).
  *
  * @param {Object} options An object with options, such as:
@@ -736,6 +775,31 @@ ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
         params.size = size;
     }
 
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
+ ripe.Ripe.prototype._getTextLengthOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const value = options.value === undefined ? "" : options.value;
+    const url = `${this.url}brands/${brand}/models/${model}/text_length`;
+    const params = {
+        value: value
+    };
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (options.profiles !== undefined && options.profiles !== null) {
+        params.profiles = options.profiles;
+    }
     return Object.assign(options, {
         url: url,
         method: "GET",

@@ -329,12 +329,12 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         // context and calls the initials builder
         const context = getInitialsContext ? getInitialsContext(initialsGroup) : initialsContext;
         const initialsSpec = this.showInitials
-            ? this.initialsBuilder(
-                  this.initials,
-                  this.engraving,
-                  initialsGroup,
-                  initialsViewport,
-                  context
+            ? await this.initialsBuilder(
+                this.initials,
+                this.engraving,
+                initialsGroup,
+                initialsViewport,
+                context
               )
             : {};
 
