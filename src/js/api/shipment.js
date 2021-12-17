@@ -63,18 +63,58 @@ ripe.Ripe.prototype.getShipmentsP = function(options) {
 };
 
 /**
+ * Gets a shipment by number.
+ *
+ * @param {Number} number The number of the shipment to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getShipment = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets an shipment by number.
+ *
+ * @param {Number} number The number of the shipment to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The shipment requested by number.
+ */
+ripe.Ripe.prototype.getShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.getShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Creates a shipment on Ripe Core.
  *
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'order_number' - The order or bulk number associated with this shipment.
- *  - 'attachments' - A list of RIPE Core attachment IDs.
+ *  - 'order' - The order associated with this shipment.
+ *  - 'bulk_order' - The bulk order associated with this shipment.
+ *  - 'courier' - The courier for this shipment.
  *  - 'tracking_number' - The tracking number associated with this shipment.
  *  - 'tracking_url' - The tracking url associated with this shipment.
- *  - 'origin' - The 'ISO 3166-2' country code where the shipment begins.
- *  - 'destination' - The 'ISO 3166-2' country code where the shipment ends.
- *  - 'delivery_date' - The date the shipment began.
  *  - 'shipping_date' - The date the shipment ended.
+ *  - 'delivery_date' - The date the shipment began.
+ *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
+ *  - 'origin_city' - The city where the shipment begins.
+ *  - 'destination_country' - The 'ISO 3166-2' country code where the shipment ends.
+ *  - 'destination_city' - The city where the shipment ends.
+ *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -97,14 +137,18 @@ ripe.Ripe.prototype.createShipment = function(options, callback) {
  *
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'order_number' - The order or bulk number associated with this shipment.
- *  - 'attachments' - A list of RIPE Core attachment IDs.
+ *  - 'order' - The order associated with this shipment.
+ *  - 'bulk_order' - The bulk order associated with this shipment.
+ *  - 'courier' - The courier for this shipment.
  *  - 'tracking_number' - The tracking number associated with this shipment.
  *  - 'tracking_url' - The tracking url associated with this shipment.
- *  - 'origin' - The 'ISO 3166-2' country code where the shipment begins.
- *  - 'destination' - The 'ISO 3166-2' country code where the shipment ends.
- *  - 'delivery_date' - The date the shipment began.
  *  - 'shipping_date' - The date the shipment ended.
+ *  - 'delivery_date' - The date the shipment began.
+ *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
+ *  - 'origin_city' - The city where the shipment begins.
+ *  - 'destination_country' - The 'ISO 3166-2' country code where the shipment ends.
+ *  - 'destination_city' - The city where the shipment ends.
+ *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @returns {Promise} The shipment's data.
  */
 ripe.Ripe.prototype.createShipmentP = function(options, callback) {
@@ -116,9 +160,72 @@ ripe.Ripe.prototype.createShipmentP = function(options, callback) {
 };
 
 /**
- * Deletes a shipment by ID.
+ * Updates a shipment on Ripe Core.
  *
- * @param {Number} id The id of the shipment to delete.
+ * @param {Number} number The number of the shipment to find by.
+ * @param {Object} options An object with options, such as:
+ *  - 'status' - The shipment status.
+ *  - 'order' - The order associated with this shipment.
+ *  - 'bulk_order' - The bulk order associated with this shipment.
+ *  - 'courier' - The courier for this shipment.
+ *  - 'tracking_number' - The tracking number associated with this shipment.
+ *  - 'tracking_url' - The tracking url associated with this shipment.
+ *  - 'shipping_date' - The date the shipment ended.
+ *  - 'delivery_date' - The date the shipment began.
+ *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
+ *  - 'origin_city' - The city where the shipment begins.
+ *  - 'destination_country' - The 'ISO 3166-2' country code where the shipment ends.
+ *  - 'destination_city' - The city where the shipment ends.
+ *  - 'attachments' - A list of RIPE Core attachment IDs.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.updateShipment = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        params: options,
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Updates a shipment on Ripe Core.
+ *
+ * @param {Number} number The number of the shipment to find by.
+ * @param {Object} options An object with options, such as:
+ *  - 'status' - The shipment status.
+ *  - 'order' - The order associated with this shipment.
+ *  - 'bulk_order' - The bulk order associated with this shipment.
+ *  - 'courier' - The courier for this shipment.
+ *  - 'tracking_number' - The tracking number associated with this shipment.
+ *  - 'tracking_url' - The tracking url associated with this shipment.
+ *  - 'shipping_date' - The date the shipment ended.
+ *  - 'delivery_date' - The date the shipment began.
+ *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
+ *  - 'origin_city' - The city where the shipment begins.
+ *  - 'destination_country' - The 'ISO 3166-2' country code where the shipment ends.
+ *  - 'destination_city' - The city where the shipment ends.
+ *  - 'attachments' - A list of RIPE Core attachment IDs.
+ * @returns {Promise} The shipment's data.
+ */
+ripe.Ripe.prototype.updateShipmentP = function(number, options, callback) {
+    return new Promise((resolve, reject) => {
+        this.updateShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Deletes a shipment by number.
+ *
+ * @param {Number} number The number of the shipment to delete.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -137,9 +244,9 @@ ripe.Ripe.prototype.deleteShipment = function(id, options, callback) {
 };
 
 /**
- * Deletes a shipment by ID.
+ * Deletes a shipment by number.
  *
- * @param {Number} id The id of the shipment to delete.
+ * @param {Number} number The number of the shipment to delete.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The result of the shipment deletion.
  */
