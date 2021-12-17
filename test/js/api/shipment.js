@@ -44,21 +44,35 @@ describe("ShipmentAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
+            const now = Date.now();
             result = await remote.createShipmentP({
-                staus: "created",
+                status: "created",
                 brand: "dummy",
                 courier: "ups",
                 tracking_number: "tracking123",
                 tracking_url: "http://platforme.com/tracking/ups/tracking123",
-                shipping_date: Date.now(),
-                delivery_date: Date.now(),
+                shipping_date: now,
+                delivery_date: now,
                 origin_country: "PT",
                 origin_city: "Porto",
                 destination_country: "GB",
                 destination_city: "London"
             });
 
-            console.log(result);
+            assert.strictEqual(result.status, "created");
+            assert.strictEqual(result.brand, "dummy");
+            assert.strictEqual(result.courier, "ups");
+            assert.strictEqual(result.tracking_number, "tracking123");
+            assert.strictEqual(
+                result.tracking_url,
+                "http://platforme.com/tracking/ups/tracking123"
+            );
+            assert.strictEqual(result.shipping_date, now);
+            assert.strictEqual(result.delivery_date, now);
+            assert.strictEqual(result.origin_country, "PT");
+            assert.strictEqual(result.origin_city, "Porto");
+            assert.strictEqual(result.destination_country, "GB");
+            assert.strictEqual(result.destination_city, "London");
 
             await remote.deleteShipmentP(result.number);
         });
