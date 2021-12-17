@@ -77,4 +77,56 @@ describe("ShipmentAPI", function() {
             await remote.deleteShipmentP(result.number);
         });
     });
+
+    describe("#deleteShipment()", function() {
+        beforeEach(function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+        });
+
+        it("should be able to delete a shipment", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            const now = Date.now();
+            const shipment = await remote.createShipmentP({
+                status: "created",
+                brand: "dummy",
+                courier: "ups",
+                tracking_number: "tracking123",
+                tracking_url: "http://platforme.com/tracking/ups/tracking123",
+                shipping_date: now,
+                delivery_date: now,
+                origin_country: "PT",
+                origin_city: "Porto",
+                destination_country: "GB",
+                destination_city: "London"
+            });
+
+            result = await remote.deleteShipmentP(shipment.number);
+
+            assert.strictEqual(result.result, "success");
+            await assert.rejects(
+                async () => await remote.deleteShipmentP(shipment.number),
+                err => {
+                    assert.strictEqual(err.code, 404);
+                    assert.strictEqual(err.status, 404);
+                    assert.strictEqual(err.result.code, 404);
+                    assert.strictEqual(err.result.name, "NotFoundError");
+                    assert.strictEqual(
+                        err.result.message,
+                        `Shipment not found for {'number': ${shipment.number}}`
+                    );
+                    return true;
+                }
+            );
+        });
+    });
 });

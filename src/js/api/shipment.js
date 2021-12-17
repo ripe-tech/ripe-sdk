@@ -63,7 +63,7 @@ ripe.Ripe.prototype.getShipmentsP = function(options) {
 };
 
 /**
- * Create a shipment.
+ * Creates a shipment on Ripe Core.
  *
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
@@ -93,7 +93,7 @@ ripe.Ripe.prototype.createShipment = function(options, callback) {
 };
 
 /**
- * Create a shipment.
+ * Creates a shipment on Ripe Core.
  *
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
