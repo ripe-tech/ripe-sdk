@@ -107,7 +107,7 @@ ripe.Ripe.prototype.getShipmentP = function(number, options) {
  *  - 'bulk_order' - The bulk order associated with this shipment.
  *  - 'courier' - The courier for this shipment.
  *  - 'tracking_number' - The tracking number associated with this shipment.
- *  - 'tracking_url' - The tracking url associated with this shipment.
+ *  - 'tracking_url' - The tracking URL associated with this shipment.
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
  *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
@@ -141,7 +141,7 @@ ripe.Ripe.prototype.createShipment = function(options, callback) {
  *  - 'bulk_order' - The bulk order associated with this shipment.
  *  - 'courier' - The courier for this shipment.
  *  - 'tracking_number' - The tracking number associated with this shipment.
- *  - 'tracking_url' - The tracking url associated with this shipment.
+ *  - 'tracking_url' - The tracking URL associated with this shipment.
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
  *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
@@ -169,7 +169,7 @@ ripe.Ripe.prototype.createShipmentP = function(options, callback) {
  *  - 'bulk_order' - The bulk order associated with this shipment.
  *  - 'courier' - The courier for this shipment.
  *  - 'tracking_number' - The tracking number associated with this shipment.
- *  - 'tracking_url' - The tracking url associated with this shipment.
+ *  - 'tracking_url' - The tracking URL associated with this shipment.
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
  *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
@@ -204,7 +204,7 @@ ripe.Ripe.prototype.updateShipment = function(number, options, callback) {
  *  - 'bulk_order' - The bulk order associated with this shipment.
  *  - 'courier' - The courier for this shipment.
  *  - 'tracking_number' - The tracking number associated with this shipment.
- *  - 'tracking_url' - The tracking url associated with this shipment.
+ *  - 'tracking_url' - The tracking URL associated with this shipment.
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
  *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
