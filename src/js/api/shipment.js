@@ -99,21 +99,46 @@ ripe.Ripe.prototype.getShipmentP = function(number, options) {
 };
 
 /**
- * Creates a shipment on Ripe Core.
+ * Creates a shipment on RIPE Core.
  *
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'order' - The order associated with this shipment.
- *  - 'bulk_order' - The bulk order associated with this shipment.
+ *  - 'order' - The order associated with this shipment, if any.
+ *  - 'bulk_order' - The bulk order associated with this shipment, if any.
+ *  - 'description' - A brief description of this shipment.
+ *  - 'weight' - Weight of the package being shipped.
+ *  - 'weight_units' - Weight units (e.g. "kilograms" or "pounds").
  *  - 'courier' - The courier for this shipment.
+ *  - 'service' - The transportation service used.
+ *  - 'package' - The package used.
  *  - 'tracking_number' - The tracking number associated with this shipment.
  *  - 'tracking_url' - The tracking URL associated with this shipment.
+ *  - 'carbon_neutral' - If this shipment should be carbon neutral.
+ *  - 'access_point_delivery' - If this shipment should be sent to an access point (e.g. "no", "optional" or "mandatory").
+ *  - 'pickup' - Pickup information.
+ *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (millis).
+ *    - 'ready_time' - Opening hours for shipper facility (millis).
+ *    - 'close_time' - Closing hours for shipper facility (millis).
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
- *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
- *  - 'origin_city' - The city where the shipment begins.
- *  - 'destination_country' - The 'ISO 3166-2' country code where the shipment ends.
- *  - 'destination_city' - The city where the shipment ends.
+ *  - 'shipper' - Shipper's information.
+ *    - 'name' - Shipper's contact name.
+ *    - 'phone' - Shipper's contact phone.
+ *    - 'address' - Shipper's address.
+ *        - 'line' - Shipper's address line.
+ *        - 'city' - Shipper's address city.
+ *        - 'postal_code' - Shipper's postal code.
+ *        - 'state_code' - Shipper's state province code.
+ *        - 'country_code' - Shipper's 'ISO 3166-2' country code.
+ *  - 'customer' - Customer's information.
+ *    - 'name' - Customer's contact name.
+ *    - 'phone' - Customer's contact phone.
+ *    - 'address' - Customer's address.
+ *        - 'line' - Customer's address line.
+ *        - 'city' - Customer's address city.
+ *        - 'postal_code' - Customer's postal code.
+ *        - 'state_code' - Customer's state province code.
+ *        - 'country_code' - Customer's 'ISO 3166-2' country code.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -133,21 +158,46 @@ ripe.Ripe.prototype.createShipment = function(options, callback) {
 };
 
 /**
- * Creates a shipment on Ripe Core.
+ * Creates a shipment on RIPE Core.
  *
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'order' - The order associated with this shipment.
- *  - 'bulk_order' - The bulk order associated with this shipment.
+ *  - 'order' - The order associated with this shipment, if any.
+ *  - 'bulk_order' - The bulk order associated with this shipment, if any.
+ *  - 'description' - A brief description of this shipment.
+ *  - 'weight' - Weight of the package being shipped.
+ *  - 'weight_units' - Weight units (e.g. "kilograms" or "pounds").
  *  - 'courier' - The courier for this shipment.
+ *  - 'service' - The transportation service used.
+ *  - 'package' - The package used.
  *  - 'tracking_number' - The tracking number associated with this shipment.
  *  - 'tracking_url' - The tracking URL associated with this shipment.
+ *  - 'carbon_neutral' - If this shipment should be carbon neutral.
+ *  - 'access_point_delivery' - If this shipment should be sent to an access point (e.g. "no", "optional" or "mandatory").
+ *  - 'pickup' - Pickup information.
+ *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (millis).
+ *    - 'ready_time' - Opening hours for shipper facility (millis).
+ *    - 'close_time' - Closing hours for shipper facility (millis).
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
- *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
- *  - 'origin_city' - The city where the shipment begins.
- *  - 'destination_country' - The 'ISO 3166-2' country code where the shipment ends.
- *  - 'destination_city' - The city where the shipment ends.
+ *  - 'shipper' - Shipper's information.
+ *    - 'name' - Shipper's contact name.
+ *    - 'phone' - Shipper's contact phone.
+ *    - 'address' - Shipper's address.
+ *        - 'line' - Shipper's address line.
+ *        - 'city' - Shipper's address city.
+ *        - 'postal_code' - Shipper's postal code.
+ *        - 'state_code' - Shipper's state province code.
+ *        - 'country_code' - Shipper's 'ISO 3166-2' country code.
+ *  - 'customer' - Customer's information.
+ *    - 'name' - Customer's contact name.
+ *    - 'phone' - Customer's contact phone.
+ *    - 'address' - Customer's address.
+ *        - 'line' - Customer's address line.
+ *        - 'city' - Customer's address city.
+ *        - 'postal_code' - Customer's postal code.
+ *        - 'state_code' - Customer's state province code.
+ *        - 'country_code' - Customer's 'ISO 3166-2' country code.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @returns {Promise} The shipment's data.
  */
@@ -165,17 +215,42 @@ ripe.Ripe.prototype.createShipmentP = function(options, callback) {
  * @param {Number} number The number of the shipment to find by.
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'order' - The order associated with this shipment.
- *  - 'bulk_order' - The bulk order associated with this shipment.
+ *  - 'order' - The order associated with this shipment, if any.
+ *  - 'bulk_order' - The bulk order associated with this shipment, if any.
+ *  - 'description' - A brief description of this shipment.
+ *  - 'weight' - Weight of the package being shipped.
+ *  - 'weight_units' - Weight units (e.g. "kilograms" or "pounds").
  *  - 'courier' - The courier for this shipment.
+ *  - 'service' - The transportation service used.
+ *  - 'package' - The package used.
  *  - 'tracking_number' - The tracking number associated with this shipment.
  *  - 'tracking_url' - The tracking URL associated with this shipment.
+ *  - 'carbon_neutral' - If this shipment should be carbon neutral.
+ *  - 'access_point_delivery' - If this shipment should be sent to an access point (e.g. "no", "optional" or "mandatory").
+ *  - 'pickup' - Pickup information.
+ *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (millis).
+ *    - 'ready_time' - Opening hours for shipper facility (millis).
+ *    - 'close_time' - Closing hours for shipper facility (millis).
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
- *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
- *  - 'origin_city' - The city where the shipment begins.
- *  - 'destination_country' - The 'ISO 3166-2' country code where the shipment ends.
- *  - 'destination_city' - The city where the shipment ends.
+ *  - 'shipper' - Shipper's information.
+ *    - 'name' - Shipper's contact name.
+ *    - 'phone' - Shipper's contact phone.
+ *    - 'address' - Shipper's address.
+ *        - 'line' - Shipper's address line.
+ *        - 'city' - Shipper's address city.
+ *        - 'postal_code' - Shipper's postal code.
+ *        - 'state_code' - Shipper's state province code.
+ *        - 'country_code' - Shipper's 'ISO 3166-2' country code.
+ *  - 'customer' - Customer's information.
+ *    - 'name' - Customer's contact name.
+ *    - 'phone' - Customer's contact phone.
+ *    - 'address' - Customer's address.
+ *        - 'line' - Customer's address line.
+ *        - 'city' - Customer's address city.
+ *        - 'postal_code' - Customer's postal code.
+ *        - 'state_code' - Customer's state province code.
+ *        - 'country_code' - Customer's 'ISO 3166-2' country code.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -200,17 +275,42 @@ ripe.Ripe.prototype.updateShipment = function(number, options, callback) {
  * @param {Number} number The number of the shipment to find by.
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'order' - The order associated with this shipment.
- *  - 'bulk_order' - The bulk order associated with this shipment.
+ *  - 'order' - The order associated with this shipment, if any.
+ *  - 'bulk_order' - The bulk order associated with this shipment, if any.
+ *  - 'description' - A brief description of this shipment.
+ *  - 'weight' - Weight of the package being shipped.
+ *  - 'weight_units' - Weight units (e.g. "kilograms" or "pounds").
  *  - 'courier' - The courier for this shipment.
+ *  - 'service' - The transportation service used.
+ *  - 'package' - The package used.
  *  - 'tracking_number' - The tracking number associated with this shipment.
  *  - 'tracking_url' - The tracking URL associated with this shipment.
+ *  - 'carbon_neutral' - If this shipment should be carbon neutral.
+ *  - 'access_point_delivery' - If this shipment should be sent to an access point (e.g. "no", "optional" or "mandatory").
+ *  - 'pickup' - Pickup information.
+ *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (millis).
+ *    - 'ready_time' - Opening hours for shipper facility (millis).
+ *    - 'close_time' - Closing hours for shipper facility (millis).
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
- *  - 'origin_country' - The 'ISO 3166-2' country code where the shipment begins.
- *  - 'origin_city' - The city where the shipment begins.
- *  - 'destination_country' - The 'ISO 3166-2' country code where the shipment ends.
- *  - 'destination_city' - The city where the shipment ends.
+ *  - 'shipper' - Shipper's information.
+ *    - 'name' - Shipper's contact name.
+ *    - 'phone' - Shipper's contact phone.
+ *    - 'address' - Shipper's address.
+ *        - 'line' - Shipper's address line.
+ *        - 'city' - Shipper's address city.
+ *        - 'postal_code' - Shipper's postal code.
+ *        - 'state_code' - Shipper's state province code.
+ *        - 'country_code' - Shipper's 'ISO 3166-2' country code.
+ *  - 'customer' - Customer's information.
+ *    - 'name' - Customer's contact name.
+ *    - 'phone' - Customer's contact phone.
+ *    - 'address' - Customer's address.
+ *        - 'line' - Customer's address line.
+ *        - 'city' - Customer's address city.
+ *        - 'postal_code' - Customer's postal code.
+ *        - 'state_code' - Customer's state province code.
+ *        - 'country_code' - Customer's 'ISO 3166-2' country code.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @returns {Promise} The shipment's data.
  */
