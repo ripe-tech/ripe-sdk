@@ -60,7 +60,7 @@ describe("ConfigAPI", function() {
         it("should include guess as 1 in params when explicitly defined", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._getConfigInfoOptions({
                 guess: true
             });
@@ -72,7 +72,7 @@ describe("ConfigAPI", function() {
         it("should not include guess in params", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._getConfigInfoOptions();
 
             assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
@@ -80,7 +80,7 @@ describe("ConfigAPI", function() {
         });
 
         it("should include sku and domain in params", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const result = remote._getConfigInfoOptions({
                 sku: "314159265359",
                 domain: "pi",
@@ -95,7 +95,7 @@ describe("ConfigAPI", function() {
         });
 
         it("should not include sku and domain in params", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const result = remote._getConfigInfoOptions();
 
             assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
@@ -117,7 +117,7 @@ describe("ConfigAPI", function() {
         it("should resolve SKU", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -211,7 +211,7 @@ describe("ConfigAPI", function() {
         });
 
         it("should not resolve SKU", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             await assert.rejects(
                 async () => {
