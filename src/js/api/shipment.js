@@ -125,20 +125,10 @@ ripe.Ripe.prototype.getShipmentP = function(number, options) {
  *    - 'name' - Shipper's contact name.
  *    - 'phone' - Shipper's contact phone.
  *    - 'address' - Shipper's address.
- *        - 'line' - Shipper's address line.
- *        - 'city' - Shipper's address city.
- *        - 'postal_code' - Shipper's postal code.
- *        - 'state_code' - Shipper's state province code.
- *        - 'country_code' - Shipper's 'ISO 3166-2' country code.
  *  - 'customer' - Customer's information.
  *    - 'name' - Customer's contact name.
  *    - 'phone' - Customer's contact phone.
  *    - 'address' - Customer's address.
- *        - 'line' - Customer's address line.
- *        - 'city' - Customer's address city.
- *        - 'postal_code' - Customer's postal code.
- *        - 'state_code' - Customer's state province code.
- *        - 'country_code' - Customer's 'ISO 3166-2' country code.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -184,20 +174,10 @@ ripe.Ripe.prototype.createShipment = function(options, callback) {
  *    - 'name' - Shipper's contact name.
  *    - 'phone' - Shipper's contact phone.
  *    - 'address' - Shipper's address.
- *        - 'line' - Shipper's address line.
- *        - 'city' - Shipper's address city.
- *        - 'postal_code' - Shipper's postal code.
- *        - 'state_code' - Shipper's state province code.
- *        - 'country_code' - Shipper's 'ISO 3166-2' country code.
  *  - 'customer' - Customer's information.
  *    - 'name' - Customer's contact name.
  *    - 'phone' - Customer's contact phone.
  *    - 'address' - Customer's address.
- *        - 'line' - Customer's address line.
- *        - 'city' - Customer's address city.
- *        - 'postal_code' - Customer's postal code.
- *        - 'state_code' - Customer's state province code.
- *        - 'country_code' - Customer's 'ISO 3166-2' country code.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @returns {Promise} The shipment's data.
  */
@@ -237,20 +217,10 @@ ripe.Ripe.prototype.createShipmentP = function(options, callback) {
  *    - 'name' - Shipper's contact name.
  *    - 'phone' - Shipper's contact phone.
  *    - 'address' - Shipper's address.
- *        - 'line' - Shipper's address line.
- *        - 'city' - Shipper's address city.
- *        - 'postal_code' - Shipper's postal code.
- *        - 'state_code' - Shipper's state province code.
- *        - 'country_code' - Shipper's 'ISO 3166-2' country code.
  *  - 'customer' - Customer's information.
  *    - 'name' - Customer's contact name.
  *    - 'phone' - Customer's contact phone.
  *    - 'address' - Customer's address.
- *        - 'line' - Customer's address line.
- *        - 'city' - Customer's address city.
- *        - 'postal_code' - Customer's postal code.
- *        - 'state_code' - Customer's state province code.
- *        - 'country_code' - Customer's 'ISO 3166-2' country code.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -297,20 +267,10 @@ ripe.Ripe.prototype.updateShipment = function(number, options, callback) {
  *    - 'name' - Shipper's contact name.
  *    - 'phone' - Shipper's contact phone.
  *    - 'address' - Shipper's address.
- *        - 'line' - Shipper's address line.
- *        - 'city' - Shipper's address city.
- *        - 'postal_code' - Shipper's postal code.
- *        - 'state_code' - Shipper's state province code.
- *        - 'country_code' - Shipper's 'ISO 3166-2' country code.
  *  - 'customer' - Customer's information.
  *    - 'name' - Customer's contact name.
  *    - 'phone' - Customer's contact phone.
  *    - 'address' - Customer's address.
- *        - 'line' - Customer's address line.
- *        - 'city' - Customer's address city.
- *        - 'postal_code' - Customer's postal code.
- *        - 'state_code' - Customer's state province code.
- *        - 'country_code' - Customer's 'ISO 3166-2' country code.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @returns {Promise} The shipment's data.
  */
