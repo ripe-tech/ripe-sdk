@@ -7,7 +7,7 @@ describe("RipeAPI", function() {
 
     describe("#_authCallback", function() {
         it("should be able to retry operations", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             let options = {
                 retries: 2,
                 dummy: 3,
@@ -37,7 +37,7 @@ describe("RipeAPI", function() {
         });
 
         it("should not retry operations, if not required", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const options = {
                 retries: 2,
                 dummy: 3,
@@ -56,7 +56,7 @@ describe("RipeAPI", function() {
 
     describe("#_queryToSpec()", function() {
         it("should be able to convert a query to spec", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             const spec = remote._queryToSpec(
                 "brand=dummy&model=dummy&p=piping:leather_dmy:black&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&p=shadow:default:default&p=overlay:default:default"
@@ -94,7 +94,7 @@ describe("RipeAPI", function() {
         });
 
         it("should be able to convert a one part query to spec", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             const spec = remote._queryToSpec("brand=dummy&model=dummy&p=piping:leather_dmy:black");
 
@@ -114,7 +114,7 @@ describe("RipeAPI", function() {
         });
 
         it("should be able to convert a query to spec with initials extra with one group", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             const spec = remote._queryToSpec(
                 "brand=dummy&model=dummy&p=piping:leather_dmy:black&initials_extra=main:AA:black:style"
@@ -137,7 +137,7 @@ describe("RipeAPI", function() {
 
     describe("#_queryToImageUrl()", function() {
         it("should be able to convert a query to a image URL", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             const url = remote._queryToImageUrl(
                 "brand=dummy&model=dummy&p=piping:leather_dmy:black&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&p=shadow:default:default&p=overlay:default:default"
@@ -145,12 +145,12 @@ describe("RipeAPI", function() {
 
             assert.deepStrictEqual(
                 url,
-                "https://sandbox.platforme.com/api/compose?brand=dummy&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack"
+                `${config.TEST_URL}compose?brand=dummy&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack`
             );
         });
 
         it("should be able to convert a query to a image URL with size and format", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             const url = remote._queryToImageUrl(
                 "brand=dummy&model=dummy&p=piping:leather_dmy:black&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&p=shadow:default:default&p=overlay:default:default",
@@ -159,7 +159,7 @@ describe("RipeAPI", function() {
 
             assert.deepStrictEqual(
                 url,
-                "https://sandbox.platforme.com/api/compose?brand=dummy&format=png&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack&size=100"
+                `${config.TEST_URL}compose?brand=dummy&format=png&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack&size=100`
             );
         });
     });
@@ -168,7 +168,7 @@ describe("RipeAPI", function() {
         it("should correctly generate a query string from array", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._buildQuery([["hello", "world"]]);
 
             assert.strictEqual(result, "hello=world");
@@ -177,7 +177,7 @@ describe("RipeAPI", function() {
         it("should correctly generate a query string from object", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._buildQuery({
                 hello: "world"
             });
@@ -188,7 +188,7 @@ describe("RipeAPI", function() {
         it("should correctly generate a query string from a complex array", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._buildQuery([
                 ["hello", "world"],
                 ["hello", "world2"],
@@ -202,7 +202,7 @@ describe("RipeAPI", function() {
         it("should correctly generate a query string from a complex object", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._buildQuery({
                 hello: ["world", "world2"],
                 world: ["hello", "hello2"]
@@ -214,7 +214,7 @@ describe("RipeAPI", function() {
         it("should properly escape characters", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._buildQuery([["olá", "mundo"]]);
 
             assert.strictEqual(result, "ol%C3%A1=mundo");
@@ -225,7 +225,7 @@ describe("RipeAPI", function() {
         it("should properly unescape characters", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._unpackQuery("ol%C3%A1=mundo");
 
             assert.deepStrictEqual(result, { olá: "mundo" });
@@ -235,7 +235,7 @@ describe("RipeAPI", function() {
     describe("#_partsMToQuery()", function() {
         it("should convert a simple parts map to a query", async () => {
             let result = null;
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = remote._partsMToQuery(
                 {
@@ -287,7 +287,7 @@ describe("RipeAPI", function() {
     describe("#_partsMToTriplets()", function() {
         it("should convert a simple parts map to a set of triplets", async () => {
             let result = null;
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = remote._partsMToTriplets(
                 {
@@ -343,7 +343,7 @@ describe("RipeAPI", function() {
         it("should properly parse an initials extra string", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._parseExtraS(["left:pt:gold", "right:tp:silver"]);
 
             assert.deepStrictEqual(result, {
@@ -374,7 +374,7 @@ describe("RipeAPI", function() {
         it("should properly generate an initials extra string", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._generateExtraS({
                 left: { initials: "pt", engraving: "gold" },
                 right: { initials: "tp", engraving: "silver" }
@@ -429,7 +429,7 @@ describe("RipeAPI", function() {
         it("should be able to encode simple multipart values", async () => {
             let contentType, body;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             [contentType, body] = remote._encodeMultipart({
                 file: "Hello World"

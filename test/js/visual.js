@@ -46,7 +46,7 @@ describe("Image", function() {
         it("should instance image and load frame", async () => {
             const dom = new jsdom.JSDOM("<img id='image' />", { resources: "usable" });
             const imageElement = dom.window.document.getElementById("image");
-            const instance = new base.ripe.Ripe();
+            const instance = new base.ripe.Ripe({ url: config.TEST_URL });
             await instance.init("myswear", "vyner");
             const image = instance.bindImage(imageElement, {
                 frame: "side-9"
@@ -67,7 +67,7 @@ describe("Image", function() {
         it("should generate the correct image URL", async () => {
             const dom = new jsdom.JSDOM("<img id='image' />", { resources: "usable" });
             const imageElement = dom.window.document.getElementById("image");
-            const instance = new base.ripe.Ripe();
+            const instance = new base.ripe.Ripe({ url: config.TEST_URL });
             await instance.init("myswear", "vyner");
             const image = instance.bindImage(imageElement, {
                 rotation: 20,
@@ -114,7 +114,7 @@ describe("Image", function() {
             await image.update();
             assert.strictEqual(
                 image._url,
-                "https://sandbox.platforme.com/api/compose?algorithm=mask_top&background=ff00ff&bounding_box=2000&bounding_box=2000&brand=myswear&curve=%5B%5B0.2%2C0.2%5D%2C%5B0.7%2C0.2%5D%2C%5B0.2%2C0.5%5D%2C%5B0.7%2C0.5%5D%5D&debug=true&engine=base&flip=true&font_size=50&font_spacing=10&font_trim=true&font_weight=900&initials_algorithm=multiplicative&initials_align=left&initials_blend_color=222222&initials_color=ff0000&initials_height=20&initials_image_flip=true&initials_image_rotation=30&initials_opacity=0.7&initials_rotation=20&initials_vertical=top&initials_viewport=1&initials_viewport=1&initials_viewport=20&initials_viewport=20&initials_width=20&initials_x=2&initials_y=2&initials_z_index=5&line_height=30&mirror=true&model=vyner&offsets=%7B%220%22%3A%5B0%2C10%5D%2C%221%22%3A%5B-1%2C-10%5D%7D&p=eyelets%3Ametal%3Asilver&p=front%3Anappa%3Awhite&p=laces%3Anylon%3Awhite&p=lining%3Acalf_lining%3Awhite&p=shadow%3Adefault%3Adefault&p=side%3Anappa%3Awhite&p=sole%3Arubber%3Awhite&rotation=20&shadow=true&shadow_color=0000ff&shadow_offset=20"
+                `${config.TEST_URL}compose?algorithm=mask_top&background=ff00ff&bounding_box=2000&bounding_box=2000&brand=myswear&curve=%5B%5B0.2%2C0.2%5D%2C%5B0.7%2C0.2%5D%2C%5B0.2%2C0.5%5D%2C%5B0.7%2C0.5%5D%5D&debug=true&engine=base&flip=true&font_size=50&font_spacing=10&font_trim=true&font_weight=900&initials_algorithm=multiplicative&initials_align=left&initials_blend_color=222222&initials_color=ff0000&initials_height=20&initials_image_flip=true&initials_image_rotation=30&initials_opacity=0.7&initials_rotation=20&initials_vertical=top&initials_viewport=1&initials_viewport=1&initials_viewport=20&initials_viewport=20&initials_width=20&initials_x=2&initials_y=2&initials_z_index=5&line_height=30&mirror=true&model=vyner&offsets=%7B%220%22%3A%5B0%2C10%5D%2C%221%22%3A%5B-1%2C-10%5D%7D&p=eyelets%3Ametal%3Asilver&p=front%3Anappa%3Awhite&p=laces%3Anylon%3Awhite&p=lining%3Acalf_lining%3Awhite&p=shadow%3Adefault%3Adefault&p=side%3Anappa%3Awhite&p=sole%3Arubber%3Awhite&rotation=20&shadow=true&shadow_color=0000ff&shadow_offset=20`
             );
         });
 
@@ -132,7 +132,7 @@ describe("Image", function() {
             await image.update({ initials: "B" });
             assert.strictEqual(
                 image._url,
-                "https://sandbox.platforme.com/api/compose?brand=myswear&initials=B&initials_profile=step%3A%3Apersonalization&model=vyner&p=eyelets%3Ametal%3Asilver&p=front%3Anappa%3Awhite&p=laces%3Anylon%3Awhite&p=lining%3Acalf_lining%3Awhite&p=shadow%3Adefault%3Adefault&p=side%3Anappa%3Awhite&p=sole%3Arubber%3Awhite"
+                `${config.TEST_URL}compose?brand=myswear&initials=B&initials_profile=step%3A%3Apersonalization&model=vyner&p=eyelets%3Ametal%3Asilver&p=front%3Anappa%3Awhite&p=laces%3Anylon%3Awhite&p=lining%3Acalf_lining%3Awhite&p=shadow%3Adefault%3Adefault&p=side%3Anappa%3Awhite&p=sole%3Arubber%3Awhite`
             );
         });
 

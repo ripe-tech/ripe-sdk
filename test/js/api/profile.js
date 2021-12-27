@@ -15,7 +15,7 @@ describe("ProfileAPI", function() {
         it("should be able to retrieve profiles", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -31,7 +31,7 @@ describe("ProfileAPI", function() {
         it("should be able to retrieve an order information", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
