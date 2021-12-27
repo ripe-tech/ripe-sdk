@@ -29,17 +29,14 @@ describe("BrandAPI", function() {
             result = await remote.getLogoUrl({
                 brand: "dummy"
             });
-            assert.strictEqual(result, "https://sandbox.platforme.com/api/brands/dummy/logo.png?");
+            assert.strictEqual(result, `${config.TEST_URL}brands/dummy/logo.png?`);
 
             result = await remote.getLogoUrl({
                 brand: "dummy",
                 variant: "large",
                 format: "jpg"
             });
-            assert.strictEqual(
-                result,
-                "https://sandbox.platforme.com/api/brands/dummy/logo.jpg?variant=large"
-            );
+            assert.strictEqual(result, `${config.TEST_URL}brands/dummy/logo.jpg?variant=large`);
         });
     });
 
@@ -257,10 +254,7 @@ describe("BrandAPI", function() {
                 }
             });
 
-            assert.strictEqual(
-                result.url,
-                "https://sandbox.platforme.com/api/brands/dummy/models/cube/validate"
-            );
+            assert.strictEqual(result.url, `${config.TEST_URL}brands/dummy/models/cube/validate`);
             assert.deepStrictEqual(result.params, {
                 p: ["bottom:suede:white", "upper:nappa:black"]
             });

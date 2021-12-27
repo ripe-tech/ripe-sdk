@@ -145,7 +145,7 @@ describe("RipeAPI", function() {
 
             assert.deepStrictEqual(
                 url,
-                "https://sandbox.platforme.com/api/compose?brand=dummy&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack"
+                `${config.TEST_URL}compose?brand=dummy&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack`
             );
         });
 
@@ -159,7 +159,7 @@ describe("RipeAPI", function() {
 
             assert.deepStrictEqual(
                 url,
-                "https://sandbox.platforme.com/api/compose?brand=dummy&format=png&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack&size=100"
+                `${config.TEST_URL}compose?brand=dummy&format=png&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack&size=100`
             );
         });
     });
