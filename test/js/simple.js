@@ -28,6 +28,9 @@ describe("Ripe", function() {
                 instance.bind("price", function(value) {
                     resolve(value);
                 });
+                instance.bind("price_error", function(err) {
+                    reject(err);
+                });
             });
 
             assert.strictEqual(result.total.price_final > 0.0, true);
