@@ -379,17 +379,6 @@ ripe.Ripe.prototype.localeToNative = function(scale, value, gender, options, cal
     return this._cacheURL(options.url, options, callback);
 };
 
-/**
- * Converts a locale size value in the specified scale to the corresponding native size.
- * The available scales, genders and sizes can be obtained with the method `getSizes`.
- *
- * @param {String} scale The scale which one wants to convert from.
- * @param {Number} value The value which one wants to convert.
- * @param {String} gender The gender of the scale and value to be converted.
- * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
- * @returns {Promise} The locale size converted to native size.
- */
 ripe.Ripe.prototype.localeToNativeP = function(scale, value, gender, options) {
     return new Promise((resolve, reject) => {
         this.localeToNative(scale, value, gender, options, (result, isValid, request) => {
@@ -429,17 +418,6 @@ ripe.Ripe.prototype.localeToNativeB = function(scales, values, genders, options,
     return this._cacheURL(options.url, options, callback);
 };
 
-/**
- * Converts multiple locale size values to the corresponding native size.
- * The available scales, genders and sizes can be obtained with the method `getSizes`.
- *
- * @param {Array} scales A list of scales to convert from.
- * @param {Array} values A list of values to convert.
- * @param {Array} genders A list of genders corresponding to the values.
- * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
- * @returns {Promise} Array withe the locale sizes converted to native sizes.
- */
 ripe.Ripe.prototype.localeToNativeBP = function(scales, values, genders, options) {
     return new Promise((resolve, reject) => {
         this.localeToNativeB(scales, values, genders, options, (result, isValid, request) => {
