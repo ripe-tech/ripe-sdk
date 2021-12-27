@@ -9,7 +9,8 @@ describe("AttachmentAPI", function() {
         it("should be able to generate a simple attachment URL", async () => {
             const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const result = remote.getAttachmentOrderUrl(123123123);
-            assert.strictEqual(result, `${config.TEST_URL}attachments/123123123/data?`);
+            const testBaseUrl = config.TEST_URL.replace("api/", "");
+            assert.strictEqual(result, `${testBaseUrl}attachments/123123123/data?`);
         });
     });
 });
