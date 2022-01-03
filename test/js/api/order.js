@@ -17,7 +17,7 @@ describe("OrderAPI", function() {
         it("should be able to retrieve orders", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -40,7 +40,7 @@ describe("OrderAPI", function() {
         it("should be able to retrieve an order information", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -56,45 +56,33 @@ describe("OrderAPI", function() {
 
     describe("#_getOrderReportURL()", function() {
         it("should be able to generate a simple URL", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const result = remote._getOrderReportURL(1234, "secret-key");
-            assert.strictEqual(
-                result,
-                "https://sandbox.platforme.com/api/orders/1234/report?key=secret-key"
-            );
+            assert.strictEqual(result, `${config.TEST_URL}orders/1234/report?key=secret-key`);
         });
     });
 
     describe("#_getOrderReportURL()", function() {
         it("should be able to generate a simple URL", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const result = remote._getOrderReportURL(1234, "secret-key");
-            assert.strictEqual(
-                result,
-                "https://sandbox.platforme.com/api/orders/1234/report?key=secret-key"
-            );
+            assert.strictEqual(result, `${config.TEST_URL}orders/1234/report?key=secret-key`);
         });
     });
 
     describe("#_getOrderReportPDFURL()", function() {
         it("should be able to generate a simple URL", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const result = remote._getOrderReportPDFURL(1234, "secret-key");
-            assert.strictEqual(
-                result,
-                "https://sandbox.platforme.com/api/orders/1234/report.pdf?key=secret-key"
-            );
+            assert.strictEqual(result, `${config.TEST_URL}orders/1234/report.pdf?key=secret-key`);
         });
     });
 
     describe("#_getOrderReportURL()", function() {
         it("should be able to generate a simple URL", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const result = remote._getOrderReportPNGURL(1234, "secret-key");
-            assert.strictEqual(
-                result,
-                "https://sandbox.platforme.com/api/orders/1234/report.png?key=secret-key"
-            );
+            assert.strictEqual(result, `${config.TEST_URL}orders/1234/report.png?key=secret-key`);
         });
     });
 
@@ -108,7 +96,7 @@ describe("OrderAPI", function() {
         it("should be able to import order", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const ffOrderId = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
@@ -178,7 +166,7 @@ describe("OrderAPI", function() {
         it("should be able to set the price", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const ffOrderId = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
@@ -212,7 +200,7 @@ describe("OrderAPI", function() {
         it("should be able to create a pre-customization", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
             assert.strictEqual(result.username, config.TEST_USERNAME);
@@ -300,7 +288,7 @@ describe("OrderAPI", function() {
         it("should be able to subscribe an unsubscribed order", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
             assert.strictEqual(result.username, config.TEST_USERNAME);
@@ -322,7 +310,7 @@ describe("OrderAPI", function() {
         it("should not throw when subscribing an order that's already subscribed", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
             assert.strictEqual(result.username, config.TEST_USERNAME);
@@ -358,7 +346,7 @@ describe("OrderAPI", function() {
         it("should be able to unsubscribe a subscribed order", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
             assert.strictEqual(result.username, config.TEST_USERNAME);
@@ -380,7 +368,7 @@ describe("OrderAPI", function() {
         it("should not throw when unsubscribing an order that's already unsubscribed", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
             assert.strictEqual(result.username, config.TEST_USERNAME);

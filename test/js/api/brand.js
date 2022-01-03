@@ -9,7 +9,7 @@ describe("BrandAPI", function() {
         it("should gather a simple logo image", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.getLogoP({
                 brand: "dummy",
@@ -24,22 +24,19 @@ describe("BrandAPI", function() {
         it("should gather a simple logo URL", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.getLogoUrl({
                 brand: "dummy"
             });
-            assert.strictEqual(result, "https://sandbox.platforme.com/api/brands/dummy/logo.png?");
+            assert.strictEqual(result, `${config.TEST_URL}brands/dummy/logo.png?`);
 
             result = await remote.getLogoUrl({
                 brand: "dummy",
                 variant: "large",
                 format: "jpg"
             });
-            assert.strictEqual(
-                result,
-                "https://sandbox.platforme.com/api/brands/dummy/logo.jpg?variant=large"
-            );
+            assert.strictEqual(result, `${config.TEST_URL}brands/dummy/logo.jpg?variant=large`);
         });
     });
 
@@ -47,7 +44,7 @@ describe("BrandAPI", function() {
         it("should return a simple logic script", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.getLogicP({
                 brand: "dummy",
@@ -64,7 +61,7 @@ describe("BrandAPI", function() {
         it("should execute a simple logic", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.runLogicP({
                 brand: "dummy",
@@ -84,7 +81,7 @@ describe("BrandAPI", function() {
         });
 
         it("should execute a complex logic", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             const result = await remote.runLogicP({
                 brand: "dummy",
@@ -119,7 +116,7 @@ describe("BrandAPI", function() {
         it("should execute a complex logic", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.onConfigP({
                 brand: "dummy",
@@ -154,7 +151,7 @@ describe("BrandAPI", function() {
         it("should execute a complex logic", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.onPartP({
                 brand: "dummy",
@@ -208,7 +205,7 @@ describe("BrandAPI", function() {
         it("should include `use_name` as 0 by default", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._getCombinationsOptions();
 
             assert.strictEqual(result.params.use_name, "0");
@@ -217,7 +214,7 @@ describe("BrandAPI", function() {
         it("should include filter as 1 when explicitly defined", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._getCombinationsOptions({
                 filter: true
             });
@@ -228,7 +225,7 @@ describe("BrandAPI", function() {
         it("should include `use_name` as 1 when explicitly defined", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._getCombinationsOptions({
                 useName: true
             });
@@ -241,7 +238,7 @@ describe("BrandAPI", function() {
         it("should generate a simple set of options", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._validateModelOptions({
                 brand: "dummy",
                 model: "cube",
@@ -257,10 +254,7 @@ describe("BrandAPI", function() {
                 }
             });
 
-            assert.strictEqual(
-                result.url,
-                "https://sandbox.platforme.com/api/brands/dummy/models/cube/validate"
-            );
+            assert.strictEqual(result.url, `${config.TEST_URL}brands/dummy/models/cube/validate`);
             assert.deepStrictEqual(result.params, {
                 p: ["bottom:suede:white", "upper:nappa:black"]
             });

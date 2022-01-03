@@ -7,7 +7,7 @@ describe("SizeAPI", function() {
 
     describe("#_specToQuery()", function() {
         it("should be able to convert a spec to query", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             const query = remote._specToQuery({
                 brand: "dummy",
@@ -51,7 +51,7 @@ describe("SizeAPI", function() {
         it("should be able to retrieve sizes", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.getSizesP();
 
@@ -64,7 +64,7 @@ describe("SizeAPI", function() {
         it("should be able to convert sizes", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.sizeToNativeP("fr", 42, "female");
 
@@ -78,7 +78,7 @@ describe("SizeAPI", function() {
         it("should be able to convert sizes in bulk", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.sizeToNativeBP(["fr"], [42], ["female"]);
 
@@ -93,7 +93,7 @@ describe("SizeAPI", function() {
         it("should be able to convert sizes", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.nativeToSizeP("fr", 31, "female");
 
@@ -105,7 +105,7 @@ describe("SizeAPI", function() {
         it("should be able to convert sizes in bulk", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.nativeToSizeBP(["fr"], [31], ["female"]);
 
