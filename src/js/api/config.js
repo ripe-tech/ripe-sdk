@@ -233,7 +233,7 @@ ripe.Ripe.prototype.configResolve = function(productId, options, callback) {
  * @param {String} productId The identifier of the product to be resolved.
  * @param {Object} options An object of options to configure the request, such as:
  * - 'url' - The base URL.
- * s {Promise} The model's configuration data.
+ * @returns {Promise} The model's configuration data.
  */
 ripe.Ripe.prototype.configResolveP = function(productId, options) {
     return new Promise((resolve, reject) => {

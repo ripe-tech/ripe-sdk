@@ -170,6 +170,14 @@ ripe.Ripe.prototype.deleteOrderP = function(number, options) {
     });
 };
 
+/**
+ * Returns all the attachments of an order.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.attachmentsOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -183,6 +191,14 @@ ripe.Ripe.prototype.attachmentsOrder = function(number, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns all the attachments of an order.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} An object containing all the attachments of an order.
+ */
 ripe.Ripe.prototype.attachmentsOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.attachmentsOrder(number, options, (result, isValid, request) => {
@@ -191,6 +207,15 @@ ripe.Ripe.prototype.attachmentsOrderP = function(number, options) {
     });
 };
 
+/**
+ * Adds an attachment to an order.
+ *
+ * @param {Number} number The number of the order where the attachment will be added.
+ * @param {Object} file The attachment file to be added to the order.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.createAttachmentOrder = function(number, file, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -208,6 +233,15 @@ ripe.Ripe.prototype.createAttachmentOrder = function(number, file, options, call
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Adds an attachment to an order.
+ *
+ * @param {Number} number The number of the order where the attachment will be added.
+ * @param {Object} file The attachment file to be added to the order.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The attachment added to the order.
+ */
 ripe.Ripe.prototype.createAttachmentOrderP = function(number, file, options) {
     return new Promise((resolve, reject) => {
         this.createAttachmentOrder(number, file, options, (result, isValid, request) => {
@@ -216,6 +250,15 @@ ripe.Ripe.prototype.createAttachmentOrderP = function(number, file, options) {
     });
 };
 
+/**
+ * Returns the attachment of an order requested by ID.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} attachmentId The ID of the attachment of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.attachmentOrder = function(number, attachmentId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -230,6 +273,15 @@ ripe.Ripe.prototype.attachmentOrder = function(number, attachmentId, options, ca
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns the attachment of an order requested by ID.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} attachmentId The ID of the attachment of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The attachment file of an order requested by ID.
+ */
 ripe.Ripe.prototype.attachmentOrderP = function(number, attachmentId, options) {
     return new Promise((resolve, reject) => {
         this.attachmentOrder(number, attachmentId, options, (result, isValid, request) => {
@@ -280,6 +332,14 @@ ripe.Ripe.prototype.createNoteOrderP = function(number, text, options) {
     });
 };
 
+/**
+ * Creates a shipping waybill for the order with the provided number.
+ *
+ * @param {Number} number The number of the order to create the waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -293,6 +353,13 @@ ripe.Ripe.prototype.createWaybillOrder = function(number, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Creates a shipping waybill for the order with the provided number.
+ *
+ * @param {Number} number The number of the order to create the waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The contents of the note instance that was created.
+ */
 ripe.Ripe.prototype.createWaybillOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.createWaybillOrder(number, options, (result, isValid, request) => {
@@ -301,6 +368,86 @@ ripe.Ripe.prototype.createWaybillOrderP = function(number, options) {
     });
 };
 
+/**
+ * Creates a shipping return waybill for the order with the provided number.
+ *
+ * @param {Number} number The number of the order to create the return waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.createReturnWaybillOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/return_waybill`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Creates a shipping return waybill for the order with the provided number.
+ *
+ * @param {Number} number The number of the order to create the return waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The contents of the note instance that was created.
+ */
+ripe.Ripe.prototype.createReturnWaybillOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.createReturnWaybillOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Manually trigger an order shipping info refresh.
+ *
+ * @param {Number} number The number of the order to refresh the shipping info.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.refreshShippingOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/refresh_shipping`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Manually trigger an order shipping info refresh.
+ *
+ * @param {Number} number The number of the order to refresh the shipping info.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order requested by number.
+ */
+ripe.Ripe.prototype.refreshShippingOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.refreshShippingOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns all the states (logs) of an order.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.logOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -314,6 +461,14 @@ ripe.Ripe.prototype.logOrder = function(number, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns all the states of an order.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The states of an order requested by number.
+ */
 ripe.Ripe.prototype.logOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.logOrder(number, options, (result, isValid, request) => {
@@ -322,6 +477,14 @@ ripe.Ripe.prototype.logOrderP = function(number, options) {
     });
 };
 
+/**
+ * Returns all the states of an order.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.statesOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -335,6 +498,14 @@ ripe.Ripe.prototype.statesOrder = function(number, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns all the states of an order.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The states of an order requested by number.
+ */
 ripe.Ripe.prototype.statesOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.statesOrder(number, options, (result, isValid, request) => {
@@ -343,6 +514,15 @@ ripe.Ripe.prototype.statesOrderP = function(number, options) {
     });
 };
 
+/**
+ * Returns the state of an order.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.stateOrder = function(number, stateId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -356,6 +536,15 @@ ripe.Ripe.prototype.stateOrder = function(number, stateId, options, callback) {
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns the state of an order.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The state requested by ID.
+ */
 ripe.Ripe.prototype.stateOrderP = function(number, stateId, options) {
     return new Promise((resolve, reject) => {
         this.stateOrder(number, stateId, options, (result, isValid, request) => {
@@ -364,6 +553,15 @@ ripe.Ripe.prototype.stateOrderP = function(number, stateId, options) {
     });
 };
 
+/**
+ * Returns the chat name and lines of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.stateChatOrder = function(number, stateId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -378,6 +576,15 @@ ripe.Ripe.prototype.stateChatOrder = function(number, stateId, options, callback
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns the chat name and lines of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} An object containing the chat name and lines for a specific state.
+ */
 ripe.Ripe.prototype.stateChatOrderP = function(number, stateId, options) {
     return new Promise((resolve, reject) => {
         this.stateChatOrder(number, stateId, options, (result, isValid, request) => {
@@ -386,6 +593,15 @@ ripe.Ripe.prototype.stateChatOrderP = function(number, stateId, options) {
     });
 };
 
+/**
+ * Returns all the chat lines of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.stateChatLinesOrder = function(number, stateId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -400,6 +616,15 @@ ripe.Ripe.prototype.stateChatLinesOrder = function(number, stateId, options, cal
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns all the chat lines of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} An object containing the chat lines for a specific state.
+ */
 ripe.Ripe.prototype.stateChatLinesOrderP = function(number, stateId, options) {
     return new Promise((resolve, reject) => {
         this.stateChatOrder(number, stateId, options, (result, isValid, request) => {
@@ -408,6 +633,15 @@ ripe.Ripe.prototype.stateChatLinesOrderP = function(number, stateId, options) {
     });
 };
 
+/**
+ * Returns the number of chat lines of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.stateChatLinesCountOrder = function(number, stateId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -422,6 +656,15 @@ ripe.Ripe.prototype.stateChatLinesCountOrder = function(number, stateId, options
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns the number of chat lines of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} An object containing the number of chat lines for a specific state.
+ */
 ripe.Ripe.prototype.stateChatLinesCountOrderP = function(number, stateId, options) {
     return new Promise((resolve, reject) => {
         this.stateChatLinesCountOrder(number, stateId, options, (result, isValid, request) => {
@@ -430,6 +673,16 @@ ripe.Ripe.prototype.stateChatLinesCountOrderP = function(number, stateId, option
     });
 };
 
+/**
+ * Adds a new chat line message to a specific order for a specific state.
+ *
+ * @param {Number} number The number of the order where the chat line message will be added.
+ * @param {Number} stateId The ID of the state of the order where the chat line message will be added.
+ * @param {Object} contents The contents of the chat message.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.stateChatCreateLineOrder = function(
     number,
     stateId,
@@ -452,6 +705,16 @@ ripe.Ripe.prototype.stateChatCreateLineOrder = function(
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Adds a new chat line message to a specific order for a specific state.
+ *
+ * @param {Number} number The number of the order where the chat line message will be added.
+ * @param {Number} stateId The ID of the state of the order where the chat line message will be added.
+ * @param {Object} contents The contents of the chat message.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} An object containing the chat lines for the specific state.
+ */
 ripe.Ripe.prototype.stateChatCreateLineOrderP = function(number, stateId, contents, options) {
     return new Promise((resolve, reject) => {
         this.stateChatCreateLineOrder(
@@ -466,6 +729,15 @@ ripe.Ripe.prototype.stateChatCreateLineOrderP = function(number, stateId, conten
     });
 };
 
+/**
+ * Returns all the attachments of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.stateAttachmentsOrder = function(number, stateId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -480,6 +752,15 @@ ripe.Ripe.prototype.stateAttachmentsOrder = function(number, stateId, options, c
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns all the attachments of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} All the attachments of a specific order and state.
+ */
 ripe.Ripe.prototype.stateAttachmentsOrderP = function(number, stateId, options) {
     return new Promise((resolve, reject) => {
         this.stateAttachmentsOrder(number, stateId, options, (result, isValid, request) => {
@@ -488,6 +769,15 @@ ripe.Ripe.prototype.stateAttachmentsOrderP = function(number, stateId, options) 
     });
 };
 
+/**
+ * Returns the number of attachments of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.stateAttachmentsCountOrder = function(number, stateId, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -502,6 +792,15 @@ ripe.Ripe.prototype.stateAttachmentsCountOrder = function(number, stateId, optio
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Returns the number of attachments of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} An object containing the number of attachments.
+ */
 ripe.Ripe.prototype.stateAttachmentsCountOrderP = function(number, stateId, options) {
     return new Promise((resolve, reject) => {
         this.stateAttachmentsCountOrder(number, stateId, options, (result, isValid, request) => {
@@ -510,6 +809,15 @@ ripe.Ripe.prototype.stateAttachmentsCountOrderP = function(number, stateId, opti
     });
 };
 
+/**
+ * Adds an attachment to an order for a specific state.
+ *
+ * @param {Number} number The number of the order to add the attachment to.
+ * @param {Number} stateId The ID of the state of the order to add the attachment to.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
     number,
     stateId,
@@ -533,6 +841,15 @@ ripe.Ripe.prototype.stateCreateAttachmentOrder = function(
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Adds an attachment to an order for a specific state.
+ *
+ * @param {Number} number The number of the order to add the attachment to.
+ * @param {Number} stateId The ID of the state of the order to add the attachment to.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The attachment added.
+ */
 ripe.Ripe.prototype.stateCreateAttachmentOrderP = function(number, stateId, file, options) {
     return new Promise((resolve, reject) => {
         this.stateCreateAttachmentOrder(
@@ -547,6 +864,16 @@ ripe.Ripe.prototype.stateCreateAttachmentOrderP = function(number, stateId, file
     });
 };
 
+/**
+ * Gets the attachment with a specific ID of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Number} attachmentId The ID of the attachment to find.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.stateAttachmentOrder = function(
     number,
     stateId,
@@ -567,6 +894,16 @@ ripe.Ripe.prototype.stateAttachmentOrder = function(
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Gets the attachment with a specific ID of an order for a specific state.
+ *
+ * @param {Number} number The number of the order to find by.
+ * @param {Number} stateId The ID of the state of the order to find by.
+ * @param {Number} attachmentId The ID of the attachment to find.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The attachment file requested by ID.
+ */
 ripe.Ripe.prototype.stateAttachmentOrderP = function(number, stateId, attachmentId, options) {
     return new Promise((resolve, reject) => {
         this.stateAttachmentOrder(
@@ -638,6 +975,14 @@ ripe.Ripe.prototype.createOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "create", options, callback);
 };
 
+/**
+ * Sets the order status to 'create'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.createOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.createOrder(number, options, (result, isValid, request) => {
@@ -658,6 +1003,14 @@ ripe.Ripe.prototype.produceOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "produce", options, callback);
 };
 
+/**
+ * Sets the order status to 'produce'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.produceOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.produceOrder(number, options, (result, isValid, request) => {
@@ -678,6 +1031,14 @@ ripe.Ripe.prototype.qualityAssureOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "quality_assure", options, callback);
 };
 
+/**
+ * Sets the order status to 'quality_assure'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.qualityAssureOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.qualityAssureOrder(number, options, (result, isValid, request) => {
@@ -698,6 +1059,14 @@ ripe.Ripe.prototype.rejectOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "reject", options, callback);
 };
 
+/**
+ * Sets the order status to 'reject'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.rejectOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.rejectOrder(number, options, (result, isValid, request) => {
@@ -718,6 +1087,14 @@ ripe.Ripe.prototype.readyOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "ready", options, callback);
 };
 
+/**
+ * Sets the order status to 'ready'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.readyOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.readyOrder(number, options, (result, isValid, request) => {
@@ -726,6 +1103,14 @@ ripe.Ripe.prototype.readyOrderP = function(number, options) {
     });
 };
 
+/**
+ * Sets the order status to 'sent'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
@@ -738,9 +1123,45 @@ ripe.Ripe.prototype.sendOrder = function(number, trackingNumber, trackingUrl, op
     return this.setOrderStatus(number, "send", options, callback);
 };
 
+/**
+ * Sets the order status to 'sent'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.sendOrderP = function(number, trackingNumber, trackingUrl, options) {
     return new Promise((resolve, reject) => {
         this.sendOrder(number, trackingNumber, trackingUrl, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the order status to 'blocked'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.blockOrder = function(number, options, callback) {
+    return this.setOrderStatus(number, "block", options, callback);
+};
+
+/**
+ * Sets the order status to 'blocked'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
+ripe.Ripe.prototype.blockOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.blockOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -758,6 +1179,14 @@ ripe.Ripe.prototype.receiveOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "receive", options, callback);
 };
 
+/**
+ * Sets the order status to 'receive'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.receiveOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.receiveOrder(number, options, (result, isValid, request) => {
@@ -778,6 +1207,14 @@ ripe.Ripe.prototype.returnOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "return", options, callback);
 };
 
+/**
+ * Sets the order status to 'return'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.returnOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.returnOrder(number, options, (result, isValid, request) => {
@@ -798,6 +1235,14 @@ ripe.Ripe.prototype.cancelOrder = function(number, options, callback) {
     return this.setOrderStatus(number, "cancel", options, callback);
 };
 
+/**
+ * Sets the order status to 'cancel'.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The order with the updated status.
+ */
 ripe.Ripe.prototype.cancelOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.cancelOrder(number, options, (result, isValid, request) => {
@@ -950,6 +1395,108 @@ ripe.Ripe.prototype.setTrackingP = function(number, trackingNumber, trackingUrl,
                 isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
             }
         );
+    });
+};
+
+/**
+ * Changes the return tracking info of an order.
+ *
+ * @param {Number} number The number of the order to change the return tracking info.
+ * @param {String} returnTrackingNumber The new return tracking number.
+ * @param {String} returnTrackingUrl The new return tracking URL.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.setReturnTracking = function(
+    number,
+    returnTrackingNumber,
+    returnTrackingUrl,
+    options,
+    callback
+) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/return_tracking`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true,
+        params: {
+            return_tracking_number: returnTrackingNumber,
+            return_tracking_url: returnTrackingUrl
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Changes the return tracking info of an order.
+ *
+ * @param {Number} number The number of the order to change the return tracking info.
+ * @param {String} returnTrackingNumber The new return tracking number.
+ * @param {String} returnTrackingUrl The new return tracking URL.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order tracking info change.
+ */
+ripe.Ripe.prototype.setReturnTrackingP = function(
+    number,
+    returnTrackingNumber,
+    returnTrackingUrl,
+    options
+) {
+    return new Promise((resolve, reject) => {
+        this.setReturnTracking(
+            number,
+            returnTrackingNumber,
+            returnTrackingUrl,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
+    });
+};
+
+/**
+ * Changes the proof of delivery info of an order.
+ *
+ * @param {Number} number The number of the order to change the proof of delivery info.
+ * @param {String} proofOfDeliveryUrl The new proof of delivery URL.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.setProofOfDelivery = function(number, proofOfDeliveryUrl, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/proof_of_delivery`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true,
+        params: {
+            proof_of_delivery_url: proofOfDeliveryUrl
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Changes the proof of delivery info of an order.
+ *
+ * @param {Number} number The number of the order to change the proof of delivery info.
+ * @param {String} proofOfDeliveryUrl The new proof of delivery URL.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order proof of delivery info change.
+ */
+ripe.Ripe.prototype.setProofOfDeliveryP = function(number, proofOfDeliveryUrl, options) {
+    return new Promise((resolve, reject) => {
+        this.setProofOfDelivery(number, proofOfDeliveryUrl, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
     });
 };
 

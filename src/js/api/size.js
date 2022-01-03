@@ -42,7 +42,7 @@ ripe.Ripe.prototype.getSizesP = function(options) {
 /**
  * Converts a size value from the native scale to the corresponding value
  * in the specified scale.
- * The available scales, genders and sizes can be obtained with the getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {String} scale The scale which one wants to convert to.
  * @param {Number} value The value which one wants to convert.
@@ -79,7 +79,7 @@ ripe.Ripe.prototype.sizeToNativeP = function(scale, value, gender, options) {
 /**
  * Converts multiple size values from the native scale to the corresponding
  * values in the specified scales.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {Array} scales A list of scales to convert to.
  * @param {Array} values A list of values to convert.
@@ -123,7 +123,7 @@ ripe.Ripe.prototype.sizeToNativeBP = function(scales, values, genders, options) 
 
 /**
  * Converts a size value in the specified scale to the corresponding native size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {String} scale The scale which one wants to convert from.
  * @param {Number} value The value which one wants to convert.
@@ -159,7 +159,7 @@ ripe.Ripe.prototype.nativeToSizeP = function(scale, value, gender, options) {
 
 /**
  * Converts multiple size values to the corresponding native size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {Array} scales A list of scales to convert from.
  * @param {Array} values A list of values to convert.
@@ -203,7 +203,7 @@ ripe.Ripe.prototype.nativeToSizeBP = function(scales, values, genders, options) 
 
 /**
  * Converts a size value in the specified scale to the corresponding localized size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {String} scale The scale which one wants to convert from.
  * @param {Number} value The value which one wants to convert.
@@ -239,7 +239,7 @@ ripe.Ripe.prototype.sizeToLocaleP = function(scale, value, gender, options) {
 
 /**
  * Converts multiple size values to the corresponding localized size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {Array} scales A list of scales to convert from.
  * @param {Array} values A list of values to convert.
@@ -278,7 +278,7 @@ ripe.Ripe.prototype.sizeToLocaleBP = function(scales, values, genders, options) 
 
 /**
  * Converts a native size value in the specified scale to the corresponding localized size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {String} scale The scale which one wants to convert from.
  * @param {Number} value The value which one wants to convert.
@@ -314,7 +314,7 @@ ripe.Ripe.prototype.nativeToLocaleP = function(scale, value, gender, options) {
 
 /**
  * Converts multiple native size values to the corresponding localized size.
- * The available scales, genders and sizes can be obtained with the method getSizes.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *
  * @param {Array} scales A list of scales to convert from.
  * @param {Array} values A list of values to convert.
@@ -346,6 +346,81 @@ ripe.Ripe.prototype.nativeToLocaleB = function(scales, values, genders, options,
 ripe.Ripe.prototype.nativeToLocaleBP = function(scales, values, genders, options) {
     return new Promise((resolve, reject) => {
         this.nativeToLocaleB(scales, values, genders, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Converts a locale size value in the specified scale to the corresponding native size.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
+ *
+ * @param {String} scale The scale which one wants to convert from.
+ * @param {Number} value The value which one wants to convert.
+ * @param {String} gender The gender of the scale and value to be converted.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.localeToNative = function(scale, value, gender, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}sizes/locale_to_native`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scale: scale,
+            value: value,
+            gender: gender
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.localeToNativeP = function(scale, value, gender, options) {
+    return new Promise((resolve, reject) => {
+        this.localeToNative(scale, value, gender, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Converts multiple locale size values to the corresponding native size.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
+ *
+ * @param {Array} scales A list of scales to convert from.
+ * @param {Array} values A list of values to convert.
+ * @param {Array} genders A list of genders corresponding to the values.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.localeToNativeB = function(scales, values, genders, options, callback) {
+    scales = typeof scales === "string" ? [scales] : scales;
+    values = typeof values === "string" ? [values] : values;
+    genders = typeof genders === "string" ? [genders] : genders;
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}sizes/locale_to_native_b`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: {
+            scales: scales,
+            values: values,
+            genders: genders
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.localeToNativeBP = function(scales, values, genders, options) {
+    return new Promise((resolve, reject) => {
+        this.localeToNativeB(scales, values, genders, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
