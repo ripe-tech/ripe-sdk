@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Add `textLengthP` and `textLength` to get the length of the value of the initials
 
 ### Changed
 
-*
+* Made the `initialsBuilder` function `async` to support async calls in external initials builder logic
+* Added `ctx` to `initialsBuilder` call so that there is parity between the Javascript and Python initials builders
 
 ### Fixed
 

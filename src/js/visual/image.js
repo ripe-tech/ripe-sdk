@@ -341,7 +341,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
                 this.engraving,
                 initialsGroup,
                 initialsViewport,
-                context
+                context,
+                ctx
               )
             : {};
 
