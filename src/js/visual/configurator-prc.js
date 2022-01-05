@@ -13,6 +13,18 @@ if (
 }
 
 /**
+ * Binds an PRC Configurator to this Ripe instance.
+ *
+ * @param {Configurator} element The PRC Configurator to be used by the Ripe instance.
+ * @param {Object} options An Object with options to configure the Configurator instance.
+ * @returns {Configurator} The Configurator instance created.
+ */
+ripe.Ripe.prototype.bindConfiguratorPrc = function(element, options = {}) {
+    const config = new ripe.ConfiguratorPrc(this, element, options);
+    return this.bindInteractable(config);
+};
+
+/**
  * @class
  * @classdesc Class that defines an interactive Configurator instance to be
  * used in connection with the main Ripe owner to provide an

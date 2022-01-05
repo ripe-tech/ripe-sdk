@@ -11,6 +11,7 @@ describe("ConfigAPI", function() {
             let result = null;
 
             const remote = ripe.RipeAPI({
+                url: config.TEST_URL,
                 country: "PT"
             });
             result = remote._getConfigOptions({
@@ -18,10 +19,7 @@ describe("ConfigAPI", function() {
                 model: "vyner"
             });
 
-            assert.strictEqual(
-                result.url,
-                "https://sandbox.platforme.com/api/brands/swear/models/vyner/config"
-            );
+            assert.strictEqual(result.url, `${config.TEST_URL}brands/swear/models/vyner/config`);
             assert.strictEqual(result.params.country, "PT");
         });
 
@@ -29,6 +27,7 @@ describe("ConfigAPI", function() {
             let result = null;
 
             const remote = ripe.RipeAPI({
+                url: config.TEST_URL,
                 flag: "retail"
             });
             result = remote._getConfigOptions({
@@ -36,10 +35,7 @@ describe("ConfigAPI", function() {
                 model: "vyner"
             });
 
-            assert.strictEqual(
-                result.url,
-                "https://sandbox.platforme.com/api/brands/swear/models/vyner/config"
-            );
+            assert.strictEqual(result.url, `${config.TEST_URL}brands/swear/models/vyner/config`);
             assert.strictEqual(result.params.flag, "retail");
         });
     });
@@ -49,38 +45,39 @@ describe("ConfigAPI", function() {
             let result = null;
 
             const remote = ripe.RipeAPI({
+                url: config.TEST_URL,
                 guess: false
             });
             result = remote._getConfigInfoOptions();
 
-            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.url, `${config.TEST_URL}config/info`);
             assert.strictEqual(result.params.guess, "0");
         });
 
         it("should include guess as 1 in params when explicitly defined", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._getConfigInfoOptions({
                 guess: true
             });
 
-            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.url, `${config.TEST_URL}config/info`);
             assert.strictEqual(result.params.guess, "1");
         });
 
         it("should not include guess in params", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = remote._getConfigInfoOptions();
 
-            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.url, `${config.TEST_URL}config/info`);
             assert.strictEqual(result.params.guess, undefined);
         });
 
         it("should include sku and domain in params", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const result = remote._getConfigInfoOptions({
                 sku: "314159265359",
                 domain: "pi",
@@ -88,17 +85,17 @@ describe("ConfigAPI", function() {
                 initialsOptions: false
             });
 
-            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.url, `${config.TEST_URL}config/info`);
             assert.strictEqual(result.params.sku, "314159265359");
             assert.strictEqual(result.params.domain, "pi");
             assert.strictEqual(Object.keys(result.params).length, 2);
         });
 
         it("should not include sku and domain in params", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const result = remote._getConfigInfoOptions();
 
-            assert.strictEqual(result.url, "https://sandbox.platforme.com/api/config/info");
+            assert.strictEqual(result.url, `${config.TEST_URL}config/info`);
             assert.strictEqual(result.params.sku, undefined);
             assert.strictEqual(result.params.domain, undefined);
         });
@@ -117,7 +114,7 @@ describe("ConfigAPI", function() {
         it("should resolve SKU", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -211,7 +208,7 @@ describe("ConfigAPI", function() {
         });
 
         it("should not resolve SKU", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             await assert.rejects(
                 async () => {

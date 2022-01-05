@@ -3,7 +3,7 @@ const config = require("../config");
 const ripe = require("../../../src/js");
 
 const buildOrder = async function(ffOrderId = null) {
-    const remote = ripe.RipeAPI();
+    const remote = ripe.RipeAPI({ url: config.TEST_URL });
     await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
     ffOrderId = ffOrderId || uuid.v4();
     const order = await remote.importOrderP(ffOrderId, {
@@ -35,7 +35,7 @@ const buildOrder = async function(ffOrderId = null) {
 };
 
 const destroyOrder = async function(order) {
-    const remote = ripe.RipeAPI();
+    const remote = ripe.RipeAPI({ url: config.TEST_URL });
     await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
     await remote.deleteOrderP(order.number);
 };

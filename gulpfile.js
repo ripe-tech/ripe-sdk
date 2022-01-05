@@ -60,7 +60,6 @@ const paths = {
         "src/js/plugins/sync.js",
         "src/js/visual/visual.js",
         "src/js/visual/configurator-prc.js",
-        "src/js/visual/configurator.js",
         "src/js/visual/image.js"
     ]
 };

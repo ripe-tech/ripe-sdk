@@ -19,7 +19,7 @@ describe("NotifyInfoAPI", function() {
         it("should be able to create a device ID", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const deviceId = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
@@ -39,7 +39,7 @@ describe("NotifyInfoAPI", function() {
         it("should be able to create several device IDs for one user", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const deviceId1 = uuid.v4();
             const deviceId2 = uuid.v4();
             const deviceId3 = uuid.v4();
@@ -70,7 +70,7 @@ describe("NotifyInfoAPI", function() {
         it("should not be possible to create duplicate device IDs", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const deviceId = "duplicate-id";
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
@@ -96,7 +96,7 @@ describe("NotifyInfoAPI", function() {
         it("should be able to remove a device ID", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const deviceId = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
@@ -113,7 +113,7 @@ describe("NotifyInfoAPI", function() {
         it("should not throw when removing a device ID that doesn't exist", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const deviceId = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);

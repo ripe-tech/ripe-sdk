@@ -7,7 +7,7 @@ describe("SizeAPI", function() {
 
     describe("#_specToQuery()", function() {
         it("should be able to convert a spec to query", async () => {
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             const query = remote._specToQuery({
                 brand: "dummy",
@@ -51,7 +51,7 @@ describe("SizeAPI", function() {
         it("should be able to retrieve sizes", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.getSizesP();
 
@@ -64,7 +64,7 @@ describe("SizeAPI", function() {
         it("should be able to convert sizes", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.sizeToNativeP("fr", 42, "female");
 
@@ -78,7 +78,7 @@ describe("SizeAPI", function() {
         it("should be able to convert sizes in bulk", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.sizeToNativeBP(["fr"], [42], ["female"]);
 
@@ -93,7 +93,7 @@ describe("SizeAPI", function() {
         it("should be able to convert sizes", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.nativeToSizeP("fr", 31, "female");
 
@@ -105,12 +105,59 @@ describe("SizeAPI", function() {
         it("should be able to convert sizes in bulk", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.nativeToSizeBP(["fr"], [31], ["female"]);
 
             assert.strictEqual(result.length, 1);
             assert.strictEqual(result[0].value, 42);
+        });
+    });
+
+    describe("#localeToNative()", function() {
+        it("should be able to convert sizes", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.localeToNativeP("std:clothing", "XXL", "female");
+
+            assert.strictEqual(result.scale, "std:clothing");
+            assert.strictEqual(result.value, "XXL");
+            assert.strictEqual(result.gender, "female");
+            assert.strictEqual(result.native, 24);
+        });
+    });
+
+    describe("#localeToNativeB()", function() {
+        it("should be able to convert sizes in bulk", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI();
+
+            result = await remote.localeToNativeBP(
+                ["std:clothing", "bag", "it", "std:clothing"],
+                ["XXL", "One Size", "38.5", "4 Yrs"],
+                ["female", "female", "male", "kids"]
+            );
+
+            assert.strictEqual(result.length, 4);
+            assert.strictEqual(result[0].scale, "std:clothing");
+            assert.strictEqual(result[0].value, "XXL");
+            assert.strictEqual(result[0].gender, "female");
+            assert.strictEqual(result[0].native, 24);
+            assert.strictEqual(result[1].scale, "bag");
+            assert.strictEqual(result[1].value, "One Size");
+            assert.strictEqual(result[1].gender, "female");
+            assert.strictEqual(result[1].native, 17);
+            assert.strictEqual(result[2].scale, "it");
+            assert.strictEqual(result[2].value, "38.5");
+            assert.strictEqual(result[2].gender, "male");
+            assert.strictEqual(result[2].native, 22);
+            assert.strictEqual(result[3].scale, "std:clothing");
+            assert.strictEqual(result[3].value, "4 Yrs");
+            assert.strictEqual(result[3].gender, "kids");
+            assert.strictEqual(result[3].native, 19);
         });
     });
 });

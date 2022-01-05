@@ -15,7 +15,7 @@ describe("Auth", function() {
         it("should be able to authenticate", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -34,7 +34,7 @@ describe("Auth", function() {
         it("should be able to authenticate with key", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authKeyP(config.TEST_KEY);
 

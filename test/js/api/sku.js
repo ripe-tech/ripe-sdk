@@ -16,7 +16,7 @@ describe("SkuAPI", function() {
         it("should be able to list all SKUs", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
@@ -39,7 +39,7 @@ describe("SkuAPI", function() {
         it("should be able to create a SKU", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const identifier = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
@@ -138,7 +138,7 @@ describe("SkuAPI", function() {
         it("should be able to retrieve information about a SKU", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const identifier = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
@@ -215,7 +215,7 @@ describe("SkuAPI", function() {
         it("should be able update information about a SKU", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const identifier = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
@@ -316,7 +316,7 @@ describe("SkuAPI", function() {
         it("should be able to delete a SKU", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const identifier = uuid.v4();
 
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
