@@ -785,7 +785,7 @@ ripe.Ripe.prototype._validateModelOptions = function(options = {}) {
 /**
  * @ignore
  */
- ripe.Ripe.prototype._getTextLengthOptions = function(options = {}) {
+ripe.Ripe.prototype._getTextLengthOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;

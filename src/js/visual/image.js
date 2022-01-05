@@ -334,15 +334,15 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             version: this.owner.version,
             parts: this.owner.parts,
             frame: this.frame
-        }
+        };
         const initialsSpec = this.showInitials
             ? await this.initialsBuilder(
-                this.initials,
-                this.engraving,
-                initialsGroup,
-                initialsViewport,
-                context,
-                ctx
+                  this.initials,
+                  this.engraving,
+                  initialsGroup,
+                  initialsViewport,
+                  context,
+                  ctx
               )
             : {};
 
