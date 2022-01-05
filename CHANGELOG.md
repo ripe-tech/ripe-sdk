@@ -11,10 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Add `localeToNative`, `localeToNativeP`, `localeToNativeB` and `localeToNativeBP` methods to convert locale sizes to native sizes and unit tests - [#4638](https://github.com/ripe-tech/ripe-core/issues/4638)
 * Add `Invoice Rules` API methods - [peri-invoicing/#3](https://github.com/ripe-tech/peri-invoicing/issues/3)
+* Add `textLengthP` and `textLength` to get the length of the value of the initials
 
 ### Changed
 
-*
+* Made the `initialsBuilder` function `async` to support async calls in external initials builder logic
+* Added `ctx` to `initialsBuilder` call so that there is parity between the Javascript and Python initials builders
 
 ### Fixed
 

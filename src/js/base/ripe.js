@@ -1920,12 +1920,13 @@ ripe.Ripe.prototype._loadInitialsBuilder = async function() {
  * the sequence of generated profiles properly ordered from the most
  * concrete (more specific) to the least concrete (more general).
  */
-ripe.Ripe.prototype._initialsBuilder = function(
+ripe.Ripe.prototype._initialsBuilder = async function(
     initials,
     engraving,
     group = null,
     viewport = null,
-    context = null
+    context = null,
+    ctx = {}
 ) {
     let profiles = this._generateProfiles(group, viewport);
     profiles = this._buildProfiles(engraving, profiles, context);
