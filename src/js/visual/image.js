@@ -328,6 +328,13 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         // in case the context changes with the group, gets the
         // context and calls the initials builder
         const context = getInitialsContext ? getInitialsContext(initialsGroup) : initialsContext;
+        const ctx = {
+            brand: this.owner.brand,
+            model: this.owner.model,
+            version: this.owner.version,
+            parts: this.owner.parts,
+            frame: this.frame
+        }
         const initialsSpec = this.showInitials
             ? await this.initialsBuilder(
                 this.initials,

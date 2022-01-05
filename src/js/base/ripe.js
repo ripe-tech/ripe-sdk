@@ -1920,7 +1920,8 @@ ripe.Ripe.prototype._initialsBuilder = async function(
     engraving,
     group = null,
     viewport = null,
-    context = null
+    context = null,
+    ctx = {}
 ) {
     let profiles = this._generateProfiles(group, viewport);
     profiles = this._buildProfiles(engraving, profiles, context);
