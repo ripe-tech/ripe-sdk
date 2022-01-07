@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [2.13.0] - 2021-12-07
+
+### Added
+
+* Add support for rectangle images in the configurator - [#943](https://github.com/ripe-tech/ripe-white/issues/943)
+
 ## [2.12.0] - 2021-12-05
 
 ### Added
