@@ -962,6 +962,10 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.line_breaking = options.lineBreaking;
     }
 
+    if (options.initialsOverflow !== undefined && options.initialsOverflow !== null) {
+        params.initials_overflow = options.initialsOverflow;
+    }
+
     if (options.shadow !== undefined && options.shadow !== null) {
         params.shadow = options.shadow;
     }
@@ -980,6 +984,14 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
 
     if (options.curve !== undefined && options.curve !== null) {
         params.curve = JSON.stringify(options.curve);
+    }
+
+    if (options.curves !== undefined && options.curves !== null) {
+        params.curves = JSON.stringify(options.curves);
+    }
+
+    if (options.logic !== undefined && options.logic !== null) {
+        params.logic = options.logic;
     }
 
     const url = `${this.url}compose`;
