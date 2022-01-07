@@ -377,7 +377,7 @@ ripe.ConfiguratorPrc.prototype.cancel = async function(options = {}) {
  *
  * @param {Number} size The number of pixels to resize to.
  */
-ripe.ConfiguratorPrc.prototype.resize = async function(size) {
+ripe.ConfiguratorPrc.prototype.resize = async function(size, width, height) {
     if (this.element === undefined) {
         return;
     }
@@ -385,10 +385,12 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size) {
     // tries to obtain the best possible size for the configurator
     // defaulting to the client with of the element as fallback
     size = size || this.size || this.element.clientWidth;
+    width = width || this.width || size || this.element.dataset.width;
+    height = height || this.height || size || this.element.dataset.height;
 
     // in case the current size of the configurator ignores the
     // request to avoid usage of unneeded resources
-    if (this.currentSize === size) {
+    if (this.currentSize === size && this.currentWidth === width && this.currentHeight === height) {
         return;
     }
 
@@ -396,25 +398,27 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size) {
     const frontMask = this.element.querySelector(".front-mask");
     const back = this.element.querySelector(".back");
     const mask = this.element.querySelector(".mask");
-    area.width = size * this.pixelRatio;
-    area.height = size * this.pixelRatio;
-    area.style.width = size + "px";
-    area.style.height = size + "px";
-    frontMask.width = size;
-    frontMask.height = size;
-    frontMask.style.width = size + "px";
-    frontMask.style.height = size + "px";
-    frontMask.style.marginLeft = `-${String(size)}px`;
-    back.width = size * this.pixelRatio;
-    back.height = size * this.pixelRatio;
-    back.style.width = size + "px";
-    back.style.height = size + "px";
-    back.style.marginLeft = `-${String(size)}px`;
-    mask.width = size;
-    mask.height = size;
-    mask.style.width = size + "px";
-    mask.style.height = size + "px";
+    area.width = width * this.pixelRatio;
+    area.height = height * this.pixelRatio;
+    area.style.width = width + "px";
+    area.style.height = height + "px";
+    frontMask.width = width;
+    frontMask.height = height;
+    frontMask.style.width = width + "px";
+    frontMask.style.height = height + "px";
+    frontMask.style.marginLeft = `-${String(width)}px`;
+    back.width = width * this.pixelRatio;
+    back.height = height * this.pixelRatio;
+    back.style.width = width + "px";
+    back.style.height = height + "px";
+    back.style.marginLeft = `-${String(width)}px`;
+    mask.width = width;
+    mask.height = height;
+    mask.style.width = width + "px";
+    mask.style.height = height + "px";
     this.currentSize = size;
+    this.currentWidth = width;
+    this.currentHeight = height;
     await this.update(
         {},
         {
@@ -781,8 +785,8 @@ ripe.ConfiguratorPrc.prototype.highlight = function(part, options = {}) {
     const position = this.element.dataset.position;
     const frame = ripe.getFrameKey(view, position);
     const size = this.element.dataset.size || this.size;
-    const width = size || this.element.dataset.width || this.width;
-    const height = size || this.element.dataset.height || this.height;
+    const width = this.element.dataset.width || this.width || size;
+    const height = this.element.dataset.height || this.height || size;
     const maskOpacity = this.element.dataset.mask_opacity || this.maskOpacity;
     const maskDuration = this.element.dataset.mask_duration || this.maskDuration;
 
@@ -1170,8 +1174,8 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
 
     const format = this.element.dataset.format || this.format;
     const size = this.element.dataset.size || this.size;
-    const width = size || this.element.dataset.width || this.width;
-    const height = size || this.element.dataset.height || this.height;
+    const width = this.element.dataset.width || this.width || size;
+    const height = this.element.dataset.height || this.height || size;
     const backgroundColor = this.element.dataset.background_color || this.backgroundColor;
 
     const draw = options.draw === undefined || options.draw;
@@ -1323,8 +1327,8 @@ ripe.ConfiguratorPrc.prototype._loadMask = function(maskImage, view, position, o
     // to be performed according to the new frame value
     const draw = options.draw === undefined || options.draw;
     const size = this.element.dataset.size || this.size;
-    const width = size || this.element.dataset.width || this.width;
-    const height = size || this.element.dataset.height || this.height;
+    const width = this.element.dataset.width || this.width || size;
+    const height = this.element.dataset.height || this.height || size;
     const frame = ripe.getFrameKey(view, position);
     const url = this.owner._getMaskURL({
         frame: frame,
@@ -1961,8 +1965,8 @@ ripe.ConfiguratorPrc.prototype._buildSignature = function() {
     const dataset = this.element ? this.element.dataset : {};
     const format = dataset.format || this.format;
     const size = dataset.size || this.size;
-    const width = size || dataset.width || this.width;
-    const height = size || dataset.height || this.height;
+    const width = dataset.width || this.width || size;
+    const height = dataset.height || this.height || size;
     const backgroundColor = dataset.background_color || this.backgroundColor;
     return `${this.owner._getQuery({ full: false })}&width=${String(width)}&height=${String(
         height
