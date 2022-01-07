@@ -383,7 +383,7 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size, width, height) {
     }
 
     size = size || this.size || this.element.clientWidth;
-    width = width || this.width || size || this.element.dataset.width ;
+    width = width || this.width || size || this.element.dataset.width;
     height = height || this.height || size || this.element.dataset.height;
 
     if (this.currentSize === size && this.currentWidth === width && this.currentHeight === height) {
