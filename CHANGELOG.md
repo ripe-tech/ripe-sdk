@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Add missing params to `_getImageOptions`
-* Support for images not 1:1 in configurator, where the resize operation take into account the width and height instead of size - [ripe-white/#943](https://github.com/ripe-tech/ripe-white/issues/943)
+*
 
 ### Changed
 
@@ -19,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.13.0] - 2022-01-07
+
+### Added
+
+* Add missing params to `_getImageOptions`
+* Support for images not 1:1 in configurator, where the resize operation take into account the width and height instead of size - [ripe-white/#943](https://github.com/ripe-tech/ripe-white/issues/943)
 
 ## [2.12.0] - 2021-12-05
 
