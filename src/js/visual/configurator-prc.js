@@ -385,8 +385,8 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size, width, height) {
     // tries to obtain the best possible size for the configurator
     // defaulting to the client with of the element as fallback
     size = size || this.size || this.element.clientWidth;
-    width = width || this.width || size || this.element.dataset.width;
-    height = height || this.height || size || this.element.dataset.height;
+    width = width || this.element.dataset.width || this.width || size;
+    height = height || this.element.dataset.height || this.height || size;
 
     // in case the current size of the configurator ignores the
     // request to avoid usage of unneeded resources
