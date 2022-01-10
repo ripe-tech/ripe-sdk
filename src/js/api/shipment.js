@@ -103,8 +103,7 @@ ripe.Ripe.prototype.getShipmentP = function(number, options) {
  *
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'order' - The order associated with this shipment, if any.
- *  - 'bulk_order' - The bulk order associated with this shipment, if any.
+ *  - 'orders' - A list of RIPE Core order number.
  *  - 'description' - A brief description of this shipment.
  *  - 'weight' - Weight of the package being shipped.
  *  - 'weight_units' - Weight units (e.g. "kilograms" or "pounds").
@@ -152,8 +151,7 @@ ripe.Ripe.prototype.createShipment = function(options, callback) {
  *
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'order' - The order associated with this shipment, if any.
- *  - 'bulk_order' - The bulk order associated with this shipment, if any.
+ *  - 'orders' - A list of RIPE Core order number.
  *  - 'description' - A brief description of this shipment.
  *  - 'weight' - Weight of the package being shipped.
  *  - 'weight_units' - Weight units (e.g. "kilograms" or "pounds").
@@ -195,8 +193,6 @@ ripe.Ripe.prototype.createShipmentP = function(options, callback) {
  * @param {Number} number The number of the shipment to find by.
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'order' - The order associated with this shipment, if any.
- *  - 'bulk_order' - The bulk order associated with this shipment, if any.
  *  - 'description' - A brief description of this shipment.
  *  - 'weight' - Weight of the package being shipped.
  *  - 'weight_units' - Weight units (e.g. "kilograms" or "pounds").
@@ -245,8 +241,6 @@ ripe.Ripe.prototype.updateShipment = function(number, options, callback) {
  * @param {Number} number The number of the shipment to find by.
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'order' - The order associated with this shipment, if any.
- *  - 'bulk_order' - The bulk order associated with this shipment, if any.
  *  - 'description' - A brief description of this shipment.
  *  - 'weight' - Weight of the package being shipped.
  *  - 'weight_units' - Weight units (e.g. "kilograms" or "pounds").
