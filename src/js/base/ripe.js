@@ -16,7 +16,7 @@ if (
  * The version of the RIPE SDK currently in load, should
  * be in sync with the package information.
  */
-ripe.VERSION = "2.11.0";
+ripe.VERSION = "2.13.0";
 
 /**
  * Object that contains global (static) information to be used by
@@ -1195,8 +1195,13 @@ ripe.Ripe.prototype.bindImage = function(element, options = {}) {
  */
 ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
     options = Object.assign({}, { format: this.format }, options);
-    const config = new ripe.Configurator(this, element, options);
-    return this.bindInteractable(config);
+    switch (options.type) {
+        case "csr":
+            return this.bindConfiguratorCsr(element, options);
+        case "prc":
+        default:
+            return this.bindConfiguratorPrc(element, options);
+    }
 };
 
 /**
@@ -1915,12 +1920,13 @@ ripe.Ripe.prototype._loadInitialsBuilder = async function() {
  * the sequence of generated profiles properly ordered from the most
  * concrete (more specific) to the least concrete (more general).
  */
-ripe.Ripe.prototype._initialsBuilder = function(
+ripe.Ripe.prototype._initialsBuilder = async function(
     initials,
     engraving,
     group = null,
     viewport = null,
-    context = null
+    context = null,
+    ctx = {}
 ) {
     let profiles = this._generateProfiles(group, viewport);
     profiles = this._buildProfiles(engraving, profiles, context);
