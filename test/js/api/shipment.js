@@ -47,7 +47,7 @@ describe("ShipmentAPI", function() {
 
             const shipment = await remote.createShipmentP({
                 status: "sent",
-                order: 2,
+                orders: [4488],
                 courier: "ups",
                 service: "airplane",
                 package: "envelope",
@@ -105,7 +105,7 @@ describe("ShipmentAPI", function() {
             const now = Date.now();
             result = await remote.createShipmentP({
                 status: "sent",
-                order: 2,
+                orders: [4488],
                 description: "A test shipment",
                 weight: 1.5,
                 weight_units: "kilograms",
@@ -148,7 +148,10 @@ describe("ShipmentAPI", function() {
             });
 
             assert.strictEqual(result.status, "created");
-            assert.strictEqual(result.order, 2);
+            assert.strictEqual(result.orders, [4488]);
+            assert.strictEqual(result.order.number, 4488);
+            assert.strictEqual(result.brand, result.order.brand);
+            assert.strictEqual(result.brands, [result.order.brand]);
             assert.strictEqual(result.description, "A test shipment");
             assert.strictEqual(result.weight, 1.5);
             assert.strictEqual(result.weight_units, "kilograms");
@@ -214,7 +217,7 @@ describe("ShipmentAPI", function() {
 
             const shipment = await remote.createShipmentP({
                 status: "sent",
-                order: 2,
+                orders: [4488],
                 courier: "ups",
                 service: "airplane",
                 package: "envelope",
@@ -283,7 +286,7 @@ describe("ShipmentAPI", function() {
 
             const shipment = await remote.createShipmentP({
                 status: "sent",
-                order: 2,
+                orders: [4488],
                 courier: "ups",
                 service: "airplane",
                 package: "envelope",
