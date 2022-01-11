@@ -458,10 +458,8 @@ ripe.Ripe.prototype.importBulkOrder = function(name, brand, orders, options, cal
  * @param {String} name The name for the bulk order.
  * @param {String} brand The brand of the bulk order.
  * @param {Object} orders The list of the order ids for the bulk order.
- * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
-ripe.Ripe.prototype.importBulkOrderP = function(name, brand, orders, options, callback) {
+ripe.Ripe.prototype.importBulkOrderP = function(name, brand, orders, options) {
     return new Promise((resolve, reject) => {
         this.importBulkOrder(name, brand, orders, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
