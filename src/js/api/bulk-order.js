@@ -420,7 +420,7 @@ ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
  * @ignore
  * @see {link https://docs.platforme.com/#order-endpoints-import}
  */
- ripe.Ripe.prototype._importBulkOrder = function(name, brand, orders, options = {}) {
+ripe.Ripe.prototype._importBulkOrder = function(name, brand, orders, options = {}) {
     const url = `${this.url}bulk_orders`;
 
     return Object.assign(options, {
@@ -437,7 +437,7 @@ ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
 
 /**
  * Creates a bulk order on RIPE Core.
- * 
+ *
  * @param {String} name The name for the bulk order.
  * @param {String} brand The brand of the bulk order.
  * @param {Object} orders The list of the order ids for the bulk order.
@@ -445,16 +445,16 @@ ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.importBulkOrder = function(name, brand, orders, options, callback) {
-   callback = typeof options === "function" ? options : callback;
-   options = typeof options === "function" || options === undefined ? {} : options;
-   options = this._importBulkOrder(name, brand, orders, options);
-   options = this._build(options);
-   return this._cacheURL(options.url, options, callback);
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._importBulkOrder(name, brand, orders, options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
 };
 
 /**
  * Creates a bulk order on RIPE Core.
- * 
+ *
  * @param {String} name The name for the bulk order.
  * @param {String} brand The brand of the bulk order.
  * @param {Object} orders The list of the order ids for the bulk order.
@@ -462,11 +462,11 @@ ripe.Ripe.prototype.importBulkOrder = function(name, brand, orders, options, cal
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.importBulkOrderP = function(name, brand, orders, options, callback) {
-   return new Promise((resolve, reject) => {
-       this.importBulkOrder(name, brand, orders, options, (result, isValid, request) => {
-           isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-       });
-   });
+    return new Promise((resolve, reject) => {
+        this.importBulkOrder(name, brand, orders, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
 };
 
 /**
