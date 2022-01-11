@@ -440,7 +440,7 @@ ripe.Ripe.prototype._importBulkOrder = function(name, brand, orders, options = {
  *
  * @param {String} name The name for the bulk order.
  * @param {String} brand The brand of the bulk order.
- * @param {Object} orders The list of the order ids for the bulk order.
+ * @param {Array} orders The list of the order IDs for the bulk order.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
@@ -457,7 +457,7 @@ ripe.Ripe.prototype.importBulkOrder = function(name, brand, orders, options, cal
  *
  * @param {String} name The name for the bulk order.
  * @param {String} brand The brand of the bulk order.
- * @param {Object} orders The list of the order ids for the bulk order.
+ * @param {Array} orders The list of the order IDs for the bulk order.
  * @returns {Promise} The bulk order's data.
  */
 ripe.Ripe.prototype.importBulkOrderP = function(name, brand, orders, options) {
