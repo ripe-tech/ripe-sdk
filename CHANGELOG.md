@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-*
+* Image resize now support width and height - [ripe-white/#943](https://github.com/ripe-tech/ripe-white/issues/943)
 
 ### Fixed
 
