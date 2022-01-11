@@ -422,15 +422,20 @@ ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
  */
 ripe.Ripe.prototype._importBulkOrder = function(name, brand, orders, options = {}) {
     const url = `${this.url}bulk_orders`;
+    const description = options.description === undefined ? null : options.description;
+
+    const dataJ = {
+        name: name,
+        brand: brand,
+        orders: orders
+    };
+
+    if (description) dataJ.description = description;
 
     return Object.assign(options, {
         url: url,
         method: "POST",
-        dataJ: {
-            name: name,
-            brand: brand,
-            orders: orders
-        },
+        dataJ: dataJ,
         auth: true
     });
 };
