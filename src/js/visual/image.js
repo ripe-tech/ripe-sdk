@@ -256,6 +256,10 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     if (!this.element) return;
 
     const _update = async () => {
+        // in case the element is no longer available (possible due to async
+        // nature of execution) returns the control flow immediately
+        if (!this.element) return;
+
         // gathers the complete set of data values from the element if existent
         // defaulting to the instance one in case their are not defined
         const frame = this.element.dataset.frame || this.frame;
@@ -337,12 +341,12 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         };
         const initialsSpec = this.showInitials
             ? await this.initialsBuilder(
-                  this.initials,
-                  this.engraving,
-                  initialsGroup,
-                  initialsViewport,
-                  context,
-                  ctx
+                this.initials,
+                this.engraving,
+                initialsGroup,
+                initialsViewport,
+                context,
+                ctx
               )
             : {};
 
@@ -520,8 +524,10 @@ ripe.Image.prototype.cancel = async function(options = {}) {
  *
  * @param {String} size The number of pixels to resize to.
  */
-ripe.Image.prototype.resize = async function(size) {
+ripe.Image.prototype.resize = async function(size, width, height) {
     this.size = size;
+    this.width = width;
+    this.height = height;
     await this.update();
 };
 
