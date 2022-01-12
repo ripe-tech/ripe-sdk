@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Use pixel ratio in image - [ripe-white/#948](https://github.com/ripe-tech/ripe-white/issues/948)
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.15.0] - 2022-01-12
+
+### Added
+
+* Use pixel ratio in image - [ripe-white/#948](https://github.com/ripe-tech/ripe-white/issues/948)
 
 ## [2.14.0] - 2022-01-12
 
