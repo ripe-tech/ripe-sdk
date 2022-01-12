@@ -53,6 +53,8 @@ ripe.Image.prototype.init = function() {
     this.size = this.options.size || null;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
+    this.pixelRatio =
+        this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
     this.mutations = this.options.mutations || false;
     this.rotation = this.options.rotation || null;
     this.crop = this.options.crop || null;
@@ -146,6 +148,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.size = options.size === undefined ? this.size : options.size;
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
+    this.pixelRatio = options.pixelRation === undefined ? this.pixelRatio : options.pixelRatio;
     this.rotation = options.rotation === undefined ? this.rotation : options.rotation;
     this.crop = options.crop === undefined ? this.crop : options.crop;
     this.flip = options.flip === undefined ? this.flip : options.flip;
@@ -267,6 +270,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const size = this.element.dataset.size || this.size;
         const width = this.element.dataset.width || this.width;
         const height = this.element.dataset.height || this.height;
+        const pixelRatio = this.element.dataset.pixelRatio || this.pixelRatio;
         const rotation = this.element.dataset.rotation || this.rotation;
         const crop = this.element.dataset.crop || this.crop;
         const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
@@ -363,9 +367,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const url = this.owner._getImageURL({
             frame: frame,
             format: format,
-            size: size,
-            width: width,
-            height: height,
+            size: size ? size * pixelRatio : size,
+            width: width ? width * pixelRatio : width,
+            height: height ? height * pixelRatio : height,
             rotation: rotation,
             crop: crop,
             initials: initialsSpec.initials,

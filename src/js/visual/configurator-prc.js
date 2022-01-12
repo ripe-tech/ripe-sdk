@@ -63,8 +63,10 @@ ripe.ConfiguratorPrc.prototype.init = function() {
     this.size = this.options.size || null;
     this.mutations = this.options.mutations || false;
     this.maxSize = this.options.maxSize || 1000;
+    this.usePixelRatio = this.options.usePixelRatio || false;
     this.pixelRatio =
-        this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
+        this.options.pixelRatio ||
+        (this.usePixelRatio ? (typeof window !== "undefined" && window.devicePixelRatio) || 2 : 1);
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.clickThreshold = this.options.clickThreshold || 0.015;
@@ -170,7 +172,7 @@ ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = 
     this.size = options.size === undefined ? this.size : options.size;
     this.mutations = options.mutations === undefined ? this.mutations : options.mutations;
     this.maxSize = options.maxSize === undefined ? this.maxSize : this.maxSize;
-    this.pixelRatio = options.pixelRation === undefined ? this.pixelRatio : options.pixelRatio;
+    this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
     this.verticalThreshold =
         options.verticalThreshold === undefined
