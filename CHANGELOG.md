@@ -9,15 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [2.14.0] - 2022-01-12
+
+### Added
+
 * Method `getDimension` that returns the size of a specific dimension and face - [ripe-white/#948](https://github.com/ripe-tech/ripe-white/issues/948)
 
 ### Changed
 
 * Image resize now support width and height - [ripe-white/#943](https://github.com/ripe-tech/ripe-white/issues/943)
-
-### Fixed
-
-*
 
 ## [2.13.0] - 2022-01-07
 
