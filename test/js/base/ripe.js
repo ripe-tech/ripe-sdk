@@ -305,6 +305,46 @@ describe("Ripe", function() {
         });
     });
 
+    describe("#getDimension", async function() {
+        it("should be able to get the size for a build with no dimensions", async () => {
+            const instance = new ripe.Ripe("dummy", "cube");
+            instance.loadedConfig = {
+                size: [1000, 1000]
+            };
+
+            const dimension = instance.getDimension();
+            assert.deepStrictEqual(dimension, [1000, 1000]);
+        });
+
+        it("should be able to get the size for a given dimension and face", async () => {
+            const instance = new ripe.Ripe("dummy", "cube");
+            instance.loadedConfig = {
+                size: [500, 500],
+                dimensions: {
+                    $base: {
+                        size: [1000, 1000],
+                        format: "png",
+                        faces: {
+                            front: {
+                                size: [2000, 2000],
+                                format: "png"
+                            }
+                        }
+                    }
+                }
+            };
+
+            let dimension = instance.getDimension();
+            assert.deepStrictEqual(dimension, [1000, 1000]);
+
+            dimension = instance.getDimension("$base", "front");
+            assert.deepStrictEqual(dimension, [2000, 2000]);
+
+            dimension = instance.getDimension("small");
+            assert.deepStrictEqual(dimension, [500, 500]);
+        });
+    });
+
     describe("#_initialsBuilder", function() {
         it("should return the initials and profiles of the image", async () => {
             const instance = new ripe.Ripe("dummy", "cube");

@@ -1604,6 +1604,30 @@ ripe.Ripe.prototype.normalizeParts = function(parts) {
 };
 
 /**
+ * Obtains the size in pixels of the image associated with the dimension and
+ * face provided.
+ *
+ * @param {String} dimension The dimension we want to get the dimension of.
+ * @param {String} face The face we want to get the dimension of.
+ * @returns An array containing both the width and the height for a specific
+ * dimension and possibly face according to the dimensions spec.
+ */
+ripe.Ripe.prototype.getDimension = function(dimension = "$base", face = null) {
+    if (!this.loadedConfig) return;
+
+    const dimensions = this.loadedConfig.dimensions;
+    if (!dimensions || Object.keys(dimensions).length === 0) {
+        return this.loadedConfig.size;
+    }
+
+    const dimensionSpec = dimensions[dimension];
+    if (!dimensionSpec) return this.loadedConfig.size;
+    if (!face) return dimensionSpec.size || this.loadedConfig.size;
+
+    return dimensionSpec.faces[face]?.size || this.loadedConfig.size;
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype._guessURL = async function() {
