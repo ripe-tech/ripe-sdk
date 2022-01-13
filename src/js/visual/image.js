@@ -53,8 +53,10 @@ ripe.Image.prototype.init = function() {
     this.size = this.options.size || null;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
+    this.usePixelRatio = this.options.usePixelRatio || false;
     this.pixelRatio =
-        this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
+        this.options.pixelRatio ||
+        (this.usePixelRatio ? (typeof window !== "undefined" && window.devicePixelRatio) || 2 : 1);
     this.mutations = this.options.mutations || false;
     this.rotation = this.options.rotation || null;
     this.crop = this.options.crop || null;
