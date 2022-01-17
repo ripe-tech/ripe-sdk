@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Remove default width and height for configurator-prc
 
 ## [2.15.0] - 2022-01-12
 
