@@ -367,9 +367,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const url = this.owner._getImageURL({
             frame: frame,
             format: format,
-            size: size ? size * pixelRatio : size,
-            width: width ? width * pixelRatio : width,
-            height: height ? height * pixelRatio : height,
+            size: size ? parseInt(size * pixelRatio) : size,
+            width: width ? parseInt(width * pixelRatio) : width,
+            height: height ? parseInt(height * pixelRatio) : height,
             rotation: rotation,
             crop: crop,
             initials: initialsSpec.initials,
