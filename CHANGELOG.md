@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [2.15.1] - 2022-01-17
+
+### Fixed
+
 * Fixed non integer aspect ratio in image
 
 ## [2.15.0] - 2022-01-12
