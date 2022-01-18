@@ -63,10 +63,8 @@ ripe.ConfiguratorPrc.prototype.init = function() {
     this.size = this.options.size || null;
     this.mutations = this.options.mutations || false;
     this.maxSize = this.options.maxSize || 1000;
-    this.usePixelRatio = this.options.usePixelRatio || false;
     this.pixelRatio =
-        this.options.pixelRatio ||
-        (this.usePixelRatio ? (typeof window !== "undefined" && window.devicePixelRatio) || 2 : 1);
+        this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.clickThreshold = this.options.clickThreshold || 0.015;
