@@ -357,7 +357,7 @@ ripe.Ripe.prototype.validateModelP = function(options) {
  *  - 'value' - The text from which the length in pixels will be returned.
  *  - 'profiles' - The profiles to be used when drawing the text.
  * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ * @returns {XMLHttpRequest} The length in pixels of the text value given.
  */
 ripe.Ripe.prototype.textLength = function(options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -381,6 +381,50 @@ ripe.Ripe.prototype.textLength = function(options, callback) {
 ripe.Ripe.prototype.textLengthP = function(options) {
     return new Promise((resolve, reject) => {
         this.textLength(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the lines of the text after line breaking logic is applied,
+ * using the profiles of the model of a brand.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The name of the brand to be considered when validating.
+ *  - 'model' - The name of the model to be considered when validating.
+ *  - 'value' - The text from which will be broken into lines by the
+ * line breaking logic.
+ *  - 'frame' - The frame to be used to get the size of the image.
+ *  - 'profiles' - The profiles to be used when drawing the text.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The lines calculated by applying line break logic
+ * to the given value.
+ */
+ripe.Ripe.prototype.lineBreak = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getLineBreakOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the lines of the text after line breaking logic is applied,
+ * using the profiles of the model of a brand.
+ *
+ * @param {Object} options An object with options, such as:
+ *  - 'brand' - The name of the brand to be considered when validating.
+ *  - 'model' - The name of the model to be considered when validating.
+ *  - 'value' - The text from which will be broken into lines by the
+ * line breaking logic.
+ *  - 'frame' - The frame to be used to get the size of the image.
+ *  - 'profiles' - The profiles to be used when drawing the text.
+ * @returns {Promise} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.lineBreakP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.lineBreak(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -796,6 +840,35 @@ ripe.Ripe.prototype._getTextLengthOptions = function(options = {}) {
     };
     if (version !== undefined && version !== null) {
         params.version = version;
+    }
+    if (options.profiles !== undefined && options.profiles !== null) {
+        params.profiles = options.profiles;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getLineBreakOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const value = options.value === undefined ? "" : options.value;
+    const frame = options.frame === undefined ? undefined : options.frame;
+    const url = `${this.url}brands/${brand}/models/${model}/line_break`;
+    const params = {
+        value: value
+    };
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (frame !== undefined && frame !== null) {
+        params.frame = frame;
     }
     if (options.profiles !== undefined && options.profiles !== null) {
         params.profiles = options.profiles;
