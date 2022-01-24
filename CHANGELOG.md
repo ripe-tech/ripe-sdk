@@ -9,11 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Add `lineBreakP` and `lineBreak` methods to get the lines of text after line breaking logic is applied - [3db/#195](https://github.com/ripe-tech/3db/issues/195)
+*
 
 ### Changed
 
 *
+
+### Fixed
+
+*
+
+## [2.16.0] - 2022-01-24
+
+### Added
+
+* Add `lineBreakP` and `lineBreak` methods to get the lines of text after line breaking logic is applied - [3db/#195](https://github.com/ripe-tech/3db/issues/195)
 
 ### Fixed
 
