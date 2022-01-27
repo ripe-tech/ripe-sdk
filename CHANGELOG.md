@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* `setPickupNumber` and `setPickupNumberP` in the Order API - [#33](https://github.com/ripe-tech/peri-shipping/issues/33)
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.18.0] - 2022-01-27
+
+### Added
+
+* `setPickupNumber` and `setPickupNumberP` in the Order API - [#33](https://github.com/ripe-tech/peri-shipping/issues/33)
 
 ## [2.17.0] - 2022-01-27
 
