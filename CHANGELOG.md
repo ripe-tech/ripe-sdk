@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [2.17.0] - 2022-01-27
+
+### Fixed
+
 * Fixed method name for `signinPidP`
 
 ## [2.16.0] - 2022-01-24
