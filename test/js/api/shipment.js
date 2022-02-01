@@ -1,4 +1,5 @@
 const assert = require("assert");
+const mock = require("./mock");
 const config = require("../config");
 const ripe = require("../../../src/js");
 
@@ -43,9 +44,10 @@ describe("ShipmentAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
+            const order = await mock.buildOrder();
             const shipment = await remote.createShipmentP({
                 status: "sent",
-                orders: [4488],
+                orders: [order.number],
                 courier: "ups",
                 service: "airplane",
                 package: "envelope",
@@ -101,9 +103,10 @@ describe("ShipmentAPI", function() {
             assert.notStrictEqual(typeof result.sid, undefined);
 
             const now = Date.now();
+            const order = await mock.buildOrder();
             result = await remote.createShipmentP({
                 status: "sent",
-                orders: [4488],
+                orders: [order.number],
                 description: "A test shipment",
                 weight: 1.5,
                 weight_units: "kilograms",
@@ -146,8 +149,8 @@ describe("ShipmentAPI", function() {
             });
 
             assert.strictEqual(result.status, "created");
-            assert.strictEqual(result.orders, [4488]);
-            assert.strictEqual(result.order.number, 4488);
+            assert.strictEqual(result.orders, [order.number]);
+            assert.strictEqual(result.order.number, order.number);
             assert.strictEqual(result.brand, result.order.brand);
             assert.strictEqual(result.brands, [result.order.brand]);
             assert.strictEqual(result.description, "A test shipment");
@@ -213,9 +216,10 @@ describe("ShipmentAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
+            const order = await mock.buildOrder();
             const shipment = await remote.createShipmentP({
                 status: "sent",
-                orders: [4488],
+                orders: [order.number],
                 courier: "ups",
                 service: "airplane",
                 package: "envelope",
@@ -281,9 +285,10 @@ describe("ShipmentAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
+            const order = await mock.buildOrder();
             const shipment = await remote.createShipmentP({
                 status: "sent",
-                orders: [4488],
+                orders: [order.number],
                 courier: "ups",
                 service: "airplane",
                 package: "envelope",

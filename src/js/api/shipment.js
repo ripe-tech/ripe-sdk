@@ -103,7 +103,6 @@ ripe.Ripe.prototype.getShipmentP = function(number, options) {
  *
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'orders' - A list of RIPE Core order number.
  *  - 'description' - A brief description of this shipment.
  *  - 'weight' - Weight of the package being shipped.
  *  - 'weight_units' - Weight units (e.g. "kilograms" or "pounds").
@@ -128,6 +127,7 @@ ripe.Ripe.prototype.getShipmentP = function(number, options) {
  *    - 'name' - Customer's contact name.
  *    - 'phone' - Customer's contact phone.
  *    - 'address' - Customer's address.
+ *  - 'orders' - A list of RIPE Core order numbers.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -151,7 +151,6 @@ ripe.Ripe.prototype.createShipment = function(options, callback) {
  *
  * @param {Object} options An object with options, such as:
  *  - 'status' - The shipment status.
- *  - 'orders' - A list of RIPE Core order number.
  *  - 'description' - A brief description of this shipment.
  *  - 'weight' - Weight of the package being shipped.
  *  - 'weight_units' - Weight units (e.g. "kilograms" or "pounds").
@@ -176,6 +175,7 @@ ripe.Ripe.prototype.createShipment = function(options, callback) {
  *    - 'name' - Customer's contact name.
  *    - 'phone' - Customer's contact phone.
  *    - 'address' - Customer's address.
+ *  - 'orders' - A list of RIPE Core order numbers.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @returns {Promise} The shipment's data.
  */
@@ -217,7 +217,7 @@ ripe.Ripe.prototype.createShipmentP = function(options, callback) {
  *    - 'name' - Customer's contact name.
  *    - 'phone' - Customer's contact phone.
  *    - 'address' - Customer's address.
- *  - 'orders' - A list of RIPE Core order IDs.
+ *  - 'orders' - A list of RIPE Core order numbers.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
@@ -266,7 +266,7 @@ ripe.Ripe.prototype.updateShipment = function(number, options, callback) {
  *    - 'name' - Customer's contact name.
  *    - 'phone' - Customer's contact phone.
  *    - 'address' - Customer's address.
- *  - 'orders' - A list of RIPE Core order IDs.
+ *  - 'orders' - A list of RIPE Core order numbers.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
  * @returns {Promise} The shipment's data.
  */
