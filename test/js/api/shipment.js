@@ -15,8 +15,7 @@ describe("ShipmentAPI", function() {
         it("should be able to retrieve shipments", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
-
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
             assert.strictEqual(result.username, config.TEST_USERNAME);
@@ -38,8 +37,7 @@ describe("ShipmentAPI", function() {
         it("should be able to retrieve a shipment", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
-
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
             assert.strictEqual(result.username, config.TEST_USERNAME);
@@ -96,7 +94,7 @@ describe("ShipmentAPI", function() {
         it("should be able to create a shipment", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
             assert.strictEqual(result.username, config.TEST_USERNAME);
@@ -209,7 +207,7 @@ describe("ShipmentAPI", function() {
         it("should be able to update a shipment", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
             assert.strictEqual(result.username, config.TEST_USERNAME);
@@ -277,8 +275,7 @@ describe("ShipmentAPI", function() {
         it("should be able to delete a shipment", async () => {
             let result = null;
 
-            const remote = ripe.RipeAPI();
-
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
             result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
 
             assert.strictEqual(result.username, config.TEST_USERNAME);
