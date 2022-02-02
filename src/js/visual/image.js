@@ -420,7 +420,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             curve: curve
         });
 
-        // if there are message events in initials builder ctx, dispatches them
+        // if there are message events in initials builder ctx, dispatch them
         if (initialsSpec?.ctx?.messages?.length) {
             for (const [topic, content] of initialsSpec.ctx.messages) {
                 this.owner.trigger("message", topic, content);
