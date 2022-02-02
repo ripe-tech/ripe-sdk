@@ -88,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Add `Bulk Order` API methods - [ripe-util-vue/#218](https://github.com/ripe-tech/ripe-util-vue/issues/218)
+* Add initials builder ctx message dispatcher for build's js logic
 
 ## [2.10.0] - 2021-11-19
 

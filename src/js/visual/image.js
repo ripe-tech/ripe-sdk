@@ -356,6 +356,13 @@ ripe.Image.prototype.update = async function(state, options = {}) {
               )
             : {};
 
+        // if there are message events in initials builder ctx, dispatch them
+        if (initialsSpec.ctx && initialsSpec.ctx.messages && initialsSpec.ctx.messages.length) {
+            for (const [topic, content] of initialsSpec.ctx.messages) {
+                this.owner.trigger("message", topic, content);
+            }
+        }
+
         // verifies if the model currently loaded in the Ripe Instance can
         // render the frame to be display and if that's not the case "ignores"
         // the current request for update
