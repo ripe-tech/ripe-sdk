@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [2.19.0] - 2022-02-02
+
+### Added
+
+* Support for trigger of `message` event after `initialsBuilder()` call
+
 ## [2.18.0] - 2022-01-27
 
 ### Added
