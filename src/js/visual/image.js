@@ -420,6 +420,13 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             curve: curve
         });
 
+        // if there are message events in initials builder ctx, dispatches them
+        if (initialsSpec?.ctx?.messages?.length) {
+            for (const [topic, content] of initialsSpec.ctx.messages) {
+                this.owner.trigger("message", topic, content);
+            }
+        }
+
         // verifies if the target image URL for the update is already
         // set and if that's the case returns (end of loop)
         if (url === this._url) {
