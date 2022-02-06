@@ -53,6 +53,10 @@ ripe.Image.prototype.init = function() {
     this.size = this.options.size || null;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
+    this.usePixelRatio = this.options.usePixelRatio || false;
+    this.pixelRatio =
+        this.options.pixelRatio ||
+        (this.usePixelRatio ? (typeof window !== "undefined" && window.devicePixelRatio) || 2 : 1);
     this.mutations = this.options.mutations || false;
     this.rotation = this.options.rotation || null;
     this.crop = this.options.crop || null;
@@ -146,6 +150,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
     this.size = options.size === undefined ? this.size : options.size;
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
+    this.pixelRatio = options.pixelRation === undefined ? this.pixelRatio : options.pixelRatio;
     this.rotation = options.rotation === undefined ? this.rotation : options.rotation;
     this.crop = options.crop === undefined ? this.crop : options.crop;
     this.flip = options.flip === undefined ? this.flip : options.flip;
@@ -256,6 +261,10 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     if (!this.element) return;
 
     const _update = async () => {
+        // in case the element is no longer available (possible due to async
+        // nature of execution) returns the control flow immediately
+        if (!this.element) return;
+
         // gathers the complete set of data values from the element if existent
         // defaulting to the instance one in case their are not defined
         const frame = this.element.dataset.frame || this.frame;
@@ -263,6 +272,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const size = this.element.dataset.size || this.size;
         const width = this.element.dataset.width || this.width;
         const height = this.element.dataset.height || this.height;
+        const pixelRatio = this.element.dataset.pixelRatio || this.pixelRatio;
         const rotation = this.element.dataset.rotation || this.rotation;
         const crop = this.element.dataset.crop || this.crop;
         const initialsGroup = this.element.dataset.initialsGroup || this.initialsGroup;
@@ -346,6 +356,14 @@ ripe.Image.prototype.update = async function(state, options = {}) {
               )
             : {};
 
+        // if there are message events in initials builder ctx, dispatches
+        // them to the proper message handler (to display message to end user)
+        if (initialsSpec.ctx && initialsSpec.ctx.messages && initialsSpec.ctx.messages.length) {
+            for (const [topic, content] of initialsSpec.ctx.messages) {
+                this.owner.trigger("message", topic, content);
+            }
+        }
+
         // verifies if the model currently loaded in the Ripe Instance can
         // render the frame to be display and if that's not the case "ignores"
         // the current request for update
@@ -359,9 +377,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const url = this.owner._getImageURL({
             frame: frame,
             format: format,
-            size: size,
-            width: width,
-            height: height,
+            size: size ? parseInt(size * pixelRatio) : size,
+            width: width ? parseInt(width * pixelRatio) : width,
+            height: height ? parseInt(height * pixelRatio) : height,
             rotation: rotation,
             crop: crop,
             initials: initialsSpec.initials,
@@ -520,8 +538,10 @@ ripe.Image.prototype.cancel = async function(options = {}) {
  *
  * @param {String} size The number of pixels to resize to.
  */
-ripe.Image.prototype.resize = async function(size) {
+ripe.Image.prototype.resize = async function(size, width, height) {
     this.size = size;
+    this.width = width;
+    this.height = height;
     await this.update();
 };
 

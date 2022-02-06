@@ -305,6 +305,46 @@ describe("Ripe", function() {
         });
     });
 
+    describe("#getSize", async function() {
+        it("should be able to get the size for a build with no dimensions", async () => {
+            const instance = new ripe.Ripe("dummy", "cube");
+            instance.loadedConfig = {
+                size: [1000, 1000]
+            };
+
+            const size = instance.getSize();
+            assert.deepStrictEqual(size, [1000, 1000]);
+        });
+
+        it("should be able to get the size for a given dimension and face", async () => {
+            const instance = new ripe.Ripe("dummy", "cube");
+            instance.loadedConfig = {
+                size: [500, 500],
+                dimensions: {
+                    $base: {
+                        size: [1000, 1000],
+                        format: "png",
+                        faces: {
+                            front: {
+                                size: [2000, 2000],
+                                format: "png"
+                            }
+                        }
+                    }
+                }
+            };
+
+            let size = instance.getSize();
+            assert.deepStrictEqual(size, [1000, 1000]);
+
+            size = instance.getSize("$base", "front");
+            assert.deepStrictEqual(size, [2000, 2000]);
+
+            size = instance.getSize("small");
+            assert.deepStrictEqual(size, [500, 500]);
+        });
+    });
+
     describe("#_initialsBuilder", function() {
         it("should return the initials and profiles of the image", async () => {
             const instance = new ripe.Ripe("dummy", "cube");
@@ -312,9 +352,13 @@ describe("Ripe", function() {
                 initials: { properties: [] }
             };
 
-            let result = await instance._initialsBuilder("AA", "black:color.rib:position", null, null, [
-                "report"
-            ]);
+            let result = await instance._initialsBuilder(
+                "AA",
+                "black:color.rib:position",
+                null,
+                null,
+                ["report"]
+            );
 
             assert.strictEqual(result.initials, "AA");
             assert.deepStrictEqual(result.profile, [
@@ -333,7 +377,10 @@ describe("Ripe", function() {
                 "report"
             ]);
 
-            result = await instance._initialsBuilder("AA", "black", null, null, ["report", "large"]);
+            result = await instance._initialsBuilder("AA", "black", null, null, [
+                "report",
+                "large"
+            ]);
 
             assert.strictEqual(result.initials, "AA");
             assert.deepStrictEqual(result.profile, [
@@ -361,7 +408,13 @@ describe("Ripe", function() {
                 "step::size"
             ]);
 
-            result = await instance._initialsBuilder("AA", "black:color.rib:position", null, null, null);
+            result = await instance._initialsBuilder(
+                "AA",
+                "black:color.rib:position",
+                null,
+                null,
+                null
+            );
             assert.strictEqual(result.initials, "AA");
             assert.deepStrictEqual(result.profile, [
                 "color::black:position::rib",

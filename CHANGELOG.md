@@ -19,6 +19,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [2.19.0] - 2022-02-02
+
+### Added
+
+* Support for trigger of `message` event after `initialsBuilder()` call
+
+## [2.18.0] - 2022-01-27
+
+### Added
+
+* `setPickupNumber` and `setPickupNumberP` in the Order API - [#33](https://github.com/ripe-tech/peri-shipping/issues/33)
+
+## [2.17.0] - 2022-01-27
+
+### Fixed
+
+* Fixed method name for `signinPidP`
+
+## [2.16.0] - 2022-01-24
+
+### Added
+
+* Add `lineBreakP` and `lineBreak` methods to get the lines of text after line breaking logic is applied - [3db/#195](https://github.com/ripe-tech/3db/issues/195)
+
+### Fixed
+
+* Remove default width and height for configurator-prc
+
+## [2.15.1] - 2022-01-17
+
+### Fixed
+
+* Fixed non integer aspect ratio in image
+
+## [2.15.0] - 2022-01-12
+
+### Added
+
+* Use pixel ratio in image - [ripe-white/#948](https://github.com/ripe-tech/ripe-white/issues/948)
+
+## [2.14.0] - 2022-01-12
+
+### Added
+
+* Method `getDimension` that returns the size of a specific dimension and face - [ripe-white/#948](https://github.com/ripe-tech/ripe-white/issues/948)
+
+### Changed
+
+* Image resize now support width and height - [ripe-white/#943](https://github.com/ripe-tech/ripe-white/issues/943)
+
 ## [2.13.0] - 2022-01-07
 
 ### Added
@@ -44,6 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Add `Bulk Order` API methods - [ripe-util-vue/#218](https://github.com/ripe-tech/ripe-util-vue/issues/218)
+* Add initials builder ctx message dispatcher for build's js logic
 
 ## [2.10.0] - 2021-11-19
 

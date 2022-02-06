@@ -16,7 +16,7 @@ if (
  * The version of the RIPE SDK currently in load, should
  * be in sync with the package information.
  */
-ripe.VERSION = "2.13.0";
+ripe.VERSION = "2.19.0";
 
 /**
  * Object that contains global (static) information to be used by
@@ -1601,6 +1601,56 @@ ripe.Ripe.prototype.normalizeParts = function(parts) {
     }
 
     return _parts;
+};
+
+/**
+ * Retrieves the dimension of the image associated with the provided name
+ * and for the requested face.
+ * The returned dimension structure should contain information about: size,
+ * format and other meta-information.
+ *
+ * @param {String} name The name of the dimension we want to get information about.
+ * @param {String} face The face we want to get the dimension of.
+ * @returns {Object} An object containing the dimension information for the
+ * requested name and face.
+ */
+ripe.Ripe.prototype.getDimension = function(name = "$base", face = null) {
+    if (!this.loadedConfig) return null;
+
+    const dimensions = this.loadedConfig.dimensions;
+    if (!dimensions || Object.keys(dimensions).length === 0) {
+        return null;
+    }
+
+    const dimensionSpec = dimensions[name];
+    if (!dimensionSpec || Object.keys(dimensionSpec).length === 0) {
+        return null;
+    }
+
+    if (!face) return dimensionSpec;
+
+    return dimensionSpec.faces[face] ? dimensionSpec.faces[face] : dimensionSpec;
+};
+
+/**
+ * Obtains a tuple (array) containing the best possible size for the
+ * provided dimension and face.
+ * Uses the dimension retrieval process to obtain that size, defaulting
+ * to the base configuration `size` attribute in case no specific
+ * dimension value is available.
+ *
+ * @param {String} dimension The name of the dimension we want to get
+ * information about.
+ * @param {String} face The face we want to get the dimension of.
+ * @returns {Array} An array containing both the width and the height
+ * of the image for the given dimension and face.
+ */
+ripe.Ripe.prototype.getSize = function(dimension = "$base", face = null) {
+    if (!this.loadedConfig) return null;
+    const dimensionSpec = this.getDimension(dimension, face);
+    if (!dimensionSpec) return this.loadedConfig.size;
+    if (!dimensionSpec.size) return this.loadedConfig.size;
+    return dimensionSpec.size;
 };
 
 /**

@@ -57,8 +57,8 @@ ripe.ConfiguratorPrc.prototype.constructor = ripe.ConfiguratorPrc;
 ripe.ConfiguratorPrc.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
-    this.width = this.options.width || 1000;
-    this.height = this.options.height || 1000;
+    this.width = this.options.width || null;
+    this.height = this.options.height || null;
     this.format = this.options.format || null;
     this.size = this.options.size || null;
     this.mutations = this.options.mutations || false;
@@ -170,7 +170,7 @@ ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = 
     this.size = options.size === undefined ? this.size : options.size;
     this.mutations = options.mutations === undefined ? this.mutations : options.mutations;
     this.maxSize = options.maxSize === undefined ? this.maxSize : this.maxSize;
-    this.pixelRatio = options.pixelRation === undefined ? this.pixelRatio : options.pixelRatio;
+    this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
     this.verticalThreshold =
         options.verticalThreshold === undefined
@@ -385,8 +385,8 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size, width, height) {
     // tries to obtain the best possible size for the configurator
     // defaulting to the client with of the element as fallback
     size = size || this.size || this.element.clientWidth;
-    width = width || this.width || size || this.element.dataset.width;
-    height = height || this.height || size || this.element.dataset.height;
+    width = width || this.element.dataset.width || this.width || size;
+    height = height || this.element.dataset.height || this.height || size;
 
     // in case the current size of the configurator ignores the
     // request to avoid usage of unneeded resources

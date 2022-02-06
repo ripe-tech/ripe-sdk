@@ -1460,6 +1460,61 @@ ripe.Ripe.prototype.setReturnTrackingP = function(
 };
 
 /**
+ * Changes the pickup reference number of an order.
+ *
+ * @param {Number} number The number of the order to change the pickup reference number.
+ * @param {String} pickupNumber The new pickup reference number.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ ripe.Ripe.prototype.setPickup = function(
+    number,
+    pickupNumber,
+    options,
+    callback
+) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/pickup_number`;
+    options = Object.assign(options, {
+        url: url,
+        method: "PUT",
+        auth: true,
+        params: {
+            pickup_number: pickupNumber
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Changes the pickup reference number of an order.
+ *
+ * @param {Number} number The number of the order to change the pickup reference number.
+ * @param {String} pickupNumber The new pickup reference number.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order tracking info change.
+ */
+ ripe.Ripe.prototype.setPickupP = function(
+    number,
+    pickupNumber,
+    options
+) {
+    return new Promise((resolve, reject) => {
+        this.setPickup(
+            number,
+            pickupNumber,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
+    });
+};
+
+/**
  * Changes the proof of delivery info of an order.
  *
  * @param {Number} number The number of the order to change the proof of delivery info.
