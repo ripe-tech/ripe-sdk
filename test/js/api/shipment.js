@@ -22,44 +22,9 @@ describe("ShipmentAPI", function() {
             assert.strictEqual(result.username, config.TEST_USERNAME);
             assert.notStrictEqual(typeof result.sid, undefined);
 
-            const order = await mock.buildOrder();
-            const payload = {
-                status: "sent",
-                orders: [order.number],
-                courier: "ups",
-                service: "airplane",
-                package: "envelope",
-                tracking_number: "tracking123",
-                tracking_url: "http://platforme.com/tracking/ups/tracking123",
-                shipping_date: Date.now(),
-                delivery_date: Date.now(),
-                shipper: {
-                    name: "Name",
-                    phone: "919999999",
-                    address: {
-                        line: "Address Line",
-                        city: "City",
-                        postal_code: "4475852",
-                        country_code: "PT"
-                    }
-                },
-                customer: {
-                    name: "Name",
-                    email: "email@email.com",
-                    address: {
-                        line: "Address Line",
-                        city: "City",
-                        postal_code: "4475852",
-                        state_code: "NY",
-                        country_code: "US"
-                    }
-                }
-            };
-            for (let i = 0; i < 3; i++) await remote.createShipmentP(payload);
-
             result = await remote.getShipmentsP();
 
-            assert.strictEqual(result.length, 3);
+            assert.strictEqual(result.length, 0);
         });
     });
 
