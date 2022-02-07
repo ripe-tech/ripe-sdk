@@ -101,7 +101,7 @@ ripe.Ripe.prototype.getShipmentP = function(number, options) {
 /**
  * Creates a shipment on RIPE Core.
  *
- * @param {Object} options An object with options, such as:
+ * @param {Object} shipment The shipment object, with options such as:
  *  - 'status' - The shipment status.
  *  - 'description' - A brief description of this shipment.
  *  - 'weight' - Weight of the package being shipped.
@@ -129,18 +129,19 @@ ripe.Ripe.prototype.getShipmentP = function(number, options) {
  *    - 'address' - Customer's address.
  *  - 'orders' - A list of RIPE Core order numbers.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.createShipment = function(options, callback) {
+ripe.Ripe.prototype.createShipment = function(shipment, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}shipments`;
     options = Object.assign(options, {
         url: url,
         method: "POST",
-        params: options,
-        auth: true
+        auth: true,
+        dataJ: shipment
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
@@ -149,7 +150,7 @@ ripe.Ripe.prototype.createShipment = function(options, callback) {
 /**
  * Creates a shipment on RIPE Core.
  *
- * @param {Object} options An object with options, such as:
+ * @param {Object} shipment The shipment object, with options such as:
  *  - 'status' - The shipment status.
  *  - 'description' - A brief description of this shipment.
  *  - 'weight' - Weight of the package being shipped.
@@ -177,21 +178,22 @@ ripe.Ripe.prototype.createShipment = function(options, callback) {
  *    - 'address' - Customer's address.
  *  - 'orders' - A list of RIPE Core order numbers.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
+ * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The shipment's data.
  */
-ripe.Ripe.prototype.createShipmentP = function(options, callback) {
+ripe.Ripe.prototype.createShipmentP = function(shipment, options) {
     return new Promise((resolve, reject) => {
-        this.createShipment(options, (result, isValid, request) => {
+        this.createShipment(shipment, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
 };
 
 /**
- * Updates a shipment on Ripe Core.
+ * Updates a shipment on RIPE Core.
  *
- * @param {Number} number The number of the shipment to find by.
- * @param {Object} options An object with options, such as:
+ * @param {Object} shipment The shipment to update, with options such as:
+ *  - 'number' - The existing shipment number.
  *  - 'status' - The shipment status.
  *  - 'description' - A brief description of this shipment.
  *  - 'weight' - Weight of the package being shipped.
@@ -219,28 +221,29 @@ ripe.Ripe.prototype.createShipmentP = function(options, callback) {
  *    - 'address' - Customer's address.
  *  - 'orders' - A list of RIPE Core order numbers.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.updateShipment = function(number, options, callback) {
+ripe.Ripe.prototype.updateShipment = function(shipment, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}shipments/${number}`;
+    const url = `${this.url}shipments/${shipment.number}`;
     options = Object.assign(options, {
         url: url,
         method: "PUT",
-        params: options,
-        auth: true
+        auth: true,
+        dataJ: shipment
     });
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
 
 /**
- * Updates a shipment on Ripe Core.
+ * Updates a shipment on RIPE Core.
  *
- * @param {Number} number The number of the shipment to find by.
- * @param {Object} options An object with options, such as:
+ * @param {Object} shipment The shipment to update, with options such as:
+ *  - 'number' - The existing shipment number.
  *  - 'status' - The shipment status.
  *  - 'description' - A brief description of this shipment.
  *  - 'weight' - Weight of the package being shipped.
@@ -268,11 +271,12 @@ ripe.Ripe.prototype.updateShipment = function(number, options, callback) {
  *    - 'address' - Customer's address.
  *  - 'orders' - A list of RIPE Core order numbers.
  *  - 'attachments' - A list of RIPE Core attachment IDs.
+ * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The shipment's data.
  */
-ripe.Ripe.prototype.updateShipmentP = function(number, options, callback) {
+ripe.Ripe.prototype.updateShipmentP = function(shipment, options) {
     return new Promise((resolve, reject) => {
-        this.updateShipment(number, options, (result, isValid, request) => {
+        this.updateShipment(shipment, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });

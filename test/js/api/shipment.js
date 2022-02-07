@@ -24,7 +24,7 @@ describe("ShipmentAPI", function() {
 
             result = await remote.getShipmentsP();
 
-            assert.strictEqual(result.length, 0);
+            assert.ok(Array.isArray(result));
         });
     });
 
@@ -82,7 +82,7 @@ describe("ShipmentAPI", function() {
 
             await remote.deleteShipmentP(result.number);
 
-            assert.strictEqual(result, shipment);
+            assert.deepStrictEqual(result, shipment);
         });
     });
 
@@ -105,7 +105,7 @@ describe("ShipmentAPI", function() {
             const now = Date.now();
             const order = await mock.buildOrder();
             result = await remote.createShipmentP({
-                status: "sent",
+                status: "created",
                 orders: [order.number],
                 description: "A test shipment",
                 weight: 1.5,
@@ -149,10 +149,10 @@ describe("ShipmentAPI", function() {
             });
 
             assert.strictEqual(result.status, "created");
-            assert.strictEqual(result.orders, [order.number]);
+            assert.deepStrictEqual(result.orders, [order.number]);
             assert.strictEqual(result.order.number, order.number);
             assert.strictEqual(result.brand, result.order.brand);
-            assert.strictEqual(result.brands, [result.order.brand]);
+            assert.deepStrictEqual(result.brands, [result.order.brand]);
             assert.strictEqual(result.description, "A test shipment");
             assert.strictEqual(result.weight, 1.5);
             assert.strictEqual(result.weight_units, "kilograms");
@@ -166,14 +166,14 @@ describe("ShipmentAPI", function() {
             );
             assert.strictEqual(result.carbon_neutral, true);
             assert.strictEqual(result.access_point_delivery, "optional");
-            assert.strictEqual(result.pickup, {
+            assert.deepStrictEqual(result.pickup, {
                 offset: 1000,
                 ready_time: 32400000,
                 close_time: 64800000
             });
             assert.strictEqual(result.shipping_date, now);
             assert.strictEqual(result.delivery_date, now);
-            assert.strictEqual(result.shipper, {
+            assert.deepStrictEqual(result.shipper, {
                 name: "Name",
                 phone: "919999999",
                 address: {
@@ -183,7 +183,7 @@ describe("ShipmentAPI", function() {
                     country_code: "PT"
                 }
             });
-            assert.strictEqual(result.customer, {
+            assert.deepStrictEqual(result.customer, {
                 name: "Name",
                 email: "email@email.com",
                 address: {
@@ -194,7 +194,7 @@ describe("ShipmentAPI", function() {
                     country_code: "US"
                 }
             });
-            assert.strictEqual(result.attachments, [1, 2, 3]);
+            assert.deepStrictEqual(result.attachments, [1, 2, 3]);
 
             await remote.deleteShipmentP(result.number);
         });
