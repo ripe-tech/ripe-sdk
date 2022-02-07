@@ -84,7 +84,7 @@ ripe.Ripe.prototype.getShipment = function(number, options, callback) {
 };
 
 /**
- * Gets an shipment by number.
+ * Gets a shipment by number.
  *
  * @param {Number} number The number of the shipment to find by.
  * @param {Object} options An object of options to configure the request.
@@ -114,9 +114,9 @@ ripe.Ripe.prototype.getShipmentP = function(number, options) {
  *  - 'carbon_neutral' - If this shipment should be carbon neutral.
  *  - 'access_point_delivery' - If this shipment should be sent to an access point (e.g. "no", "optional" or "mandatory").
  *  - 'pickup' - Pickup information.
- *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (millis).
- *    - 'ready_time' - Opening hours for shipper facility (millis).
- *    - 'close_time' - Closing hours for shipper facility (millis).
+ *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (milliseconds).
+ *    - 'ready_time' - Opening hours for shipper facility (milliseconds).
+ *    - 'close_time' - Closing hours for shipper facility (milliseconds).
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
  *  - 'shipper' - Shipper's information.
@@ -163,9 +163,9 @@ ripe.Ripe.prototype.createShipment = function(shipment, options, callback) {
  *  - 'carbon_neutral' - If this shipment should be carbon neutral.
  *  - 'access_point_delivery' - If this shipment should be sent to an access point (e.g. "no", "optional" or "mandatory").
  *  - 'pickup' - Pickup information.
- *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (millis).
- *    - 'ready_time' - Opening hours for shipper facility (millis).
- *    - 'close_time' - Closing hours for shipper facility (millis).
+ *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (milliseconds).
+ *    - 'ready_time' - Opening hours for shipper facility (milliseconds).
+ *    - 'close_time' - Closing hours for shipper facility (milliseconds).
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
  *  - 'shipper' - Shipper's information.
@@ -206,9 +206,9 @@ ripe.Ripe.prototype.createShipmentP = function(shipment, options) {
  *  - 'carbon_neutral' - If this shipment should be carbon neutral.
  *  - 'access_point_delivery' - If this shipment should be sent to an access point (e.g. "no", "optional" or "mandatory").
  *  - 'pickup' - Pickup information.
- *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (millis).
- *    - 'ready_time' - Opening hours for shipper facility (millis).
- *    - 'close_time' - Closing hours for shipper facility (millis).
+ *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (milliseconds).
+ *    - 'ready_time' - Opening hours for shipper facility (milliseconds).
+ *    - 'close_time' - Closing hours for shipper facility (milliseconds).
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
  *  - 'shipper' - Shipper's information.
@@ -256,9 +256,9 @@ ripe.Ripe.prototype.updateShipment = function(shipment, options, callback) {
  *  - 'carbon_neutral' - If this shipment should be carbon neutral.
  *  - 'access_point_delivery' - If this shipment should be sent to an access point (e.g. "no", "optional" or "mandatory").
  *  - 'pickup' - Pickup information.
- *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (millis).
- *    - 'ready_time' - Opening hours for shipper facility (millis).
- *    - 'close_time' - Closing hours for shipper facility (millis).
+ *    - 'offset' - Time offset for pickup scheduling relative to shipment creation (milliseconds).
+ *    - 'ready_time' - Opening hours for shipper facility (milliseconds).
+ *    - 'close_time' - Closing hours for shipper facility (milliseconds).
  *  - 'shipping_date' - The date the shipment ended.
  *  - 'delivery_date' - The date the shipment began.
  *  - 'shipper' - Shipper's information.
@@ -290,10 +290,10 @@ ripe.Ripe.prototype.updateShipmentP = function(shipment, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.deleteShipment = function(id, options, callback) {
+ripe.Ripe.prototype.deleteShipment = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}shipments/${id}`;
+    const url = `${this.url}shipments/${number}`;
     options = Object.assign(options, {
         url: url,
         method: "DELETE",
@@ -310,9 +310,9 @@ ripe.Ripe.prototype.deleteShipment = function(id, options, callback) {
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The result of the shipment deletion.
  */
-ripe.Ripe.prototype.deleteShipmentP = function(id, options) {
+ripe.Ripe.prototype.deleteShipmentP = function(number, options) {
     return new Promise((resolve, reject) => {
-        this.deleteShipment(id, options, (result, isValid, request) => {
+        this.deleteShipment(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
