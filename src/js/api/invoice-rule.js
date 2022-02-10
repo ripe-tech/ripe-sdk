@@ -194,3 +194,54 @@ ripe.Ripe.prototype.deleteInvoiceRuleP = function(id, options) {
         });
     });
 };
+
+/**
+ * Gets an existing invoice rule filtered by brand, model and country.
+ *
+ * @param {String} brand The invoice rule's brand.
+ * @param {String} model The invoice rule's model.
+ * @param {String} country The invoice rule's country.
+ * @param {Object} options An object of options to configure the request
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.resolveInvoiceRule = function(brand, model, country, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}invoice_rules/resolve`;
+    const params = {};
+    if (brand !== undefined && brand !== null) {
+        params.brand = brand;
+    }
+    if (model !== undefined && model !== null) {
+        params.model = model;
+    }
+    if (country !== undefined && country !== null) {
+        params.country = country;
+    }
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params,
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets an existing invoice rule filtered by brand, model and country.
+ *
+ * @param {String} brand The invoice rule's brand.
+ * @param {String} model The invoice rule's model.
+ * @param {String} country The invoice rule's country.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The invoice rule requested by brand, model and country.
+ */
+ripe.Ripe.prototype.resolveInvoiceRuleP = function(brand, model, country, options) {
+    return new Promise((resolve, reject) => {
+        this.resolveInvoiceRule(brand, model, country, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
