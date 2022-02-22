@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Added configurator configuration variable `useDefaultSize` that forces the configurator to use images with the default dimensions of the current face
 
 ### Changed
 
@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Use pixelRatio in configurator applied to the image but do not allow getting images bigger than the default dimensions for the current face
 
 ## [2.20.0] - 2022-02-02
 
