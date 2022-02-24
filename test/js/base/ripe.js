@@ -312,9 +312,13 @@ describe("Ripe", function() {
                 initials: { properties: [] }
             };
 
-            let result = await instance._initialsBuilder("AA", "black:color.rib:position", null, null, [
-                "report"
-            ]);
+            let result = await instance._initialsBuilder(
+                "AA",
+                "black:color.rib:position",
+                null,
+                null,
+                ["report"]
+            );
 
             assert.strictEqual(result.initials, "AA");
             assert.deepStrictEqual(result.profile, [
@@ -333,7 +337,10 @@ describe("Ripe", function() {
                 "report"
             ]);
 
-            result = await instance._initialsBuilder("AA", "black", null, null, ["report", "large"]);
+            result = await instance._initialsBuilder("AA", "black", null, null, [
+                "report",
+                "large"
+            ]);
 
             assert.strictEqual(result.initials, "AA");
             assert.deepStrictEqual(result.profile, [
@@ -361,7 +368,13 @@ describe("Ripe", function() {
                 "step::size"
             ]);
 
-            result = await instance._initialsBuilder("AA", "black:color.rib:position", null, null, null);
+            result = await instance._initialsBuilder(
+                "AA",
+                "black:color.rib:position",
+                null,
+                null,
+                null
+            );
             assert.strictEqual(result.initials, "AA");
             assert.deepStrictEqual(result.profile, [
                 "color::black:position::rib",

@@ -417,30 +417,6 @@ ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
 };
 
 /**
- * @ignore
- * @see {link https://docs.platforme.com/#order-endpoints-import}
- */
-ripe.Ripe.prototype._importBulkOrder = function(name, brand, orders, options = {}) {
-    const url = `${this.url}bulk_orders`;
-    const description = options.description === undefined ? null : options.description;
-
-    const dataJ = {
-        name: name,
-        brand: brand,
-        orders: orders
-    };
-
-    if (description) dataJ.description = description;
-
-    return Object.assign(options, {
-        url: url,
-        method: "POST",
-        dataJ: dataJ,
-        auth: true
-    });
-};
-
-/**
  * Creates a bulk order on RIPE Core.
  *
  * @param {String} name The name for the bulk order.
@@ -546,5 +522,26 @@ ripe.Ripe.prototype.createAttachmentBulkOrderP = function(number, files, options
         this.createAttachmentBulkOrder(number, files, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
+    });
+};
+
+/**
+ * @ignore
+ * @see {link https://docs.platforme.com/#order-endpoints-import}
+ */
+ripe.Ripe.prototype._importBulkOrder = function(name, brand, orders, options = {}) {
+    const url = `${this.url}bulk_orders`;
+    const description = options.description === undefined ? null : options.description;
+    const dataJ = {
+        name: name,
+        brand: brand,
+        orders: orders
+    };
+    if (description) dataJ.description = description;
+    return Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataJ: dataJ,
+        auth: true
     });
 };
