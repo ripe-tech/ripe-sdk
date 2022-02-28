@@ -9,16 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Add create order bulk methods - [ripe-pulse/#281](https://github.com/ripe-tech/ripe-pulse/issues/281)
 * Add debouncer `initialsDebounce` defaulting to 275 for `setInitials` and `setInitialsExtra` methods - [#357](https://github.com/ripe-tech/ripe-sdk/issues/357)
 
 ### Changed
 
-* Make `brand` for `importBulkOrder` optional - [ripe-pulse/#281](https://github.com/ripe-tech/ripe-pulse/issues/281)
+*
 
 ### Fixed
 
 *
+
+## [2.21.0] - 2022-02-28
+
+### Added
+
+* Add create order bulk methods - [ripe-pulse/#281](https://github.com/ripe-tech/ripe-pulse/issues/281)
+
+### Changed
+
+* Make `brand` for `importBulkOrder` optional - [ripe-pulse/#281](https://github.com/ripe-tech/ripe-pulse/issues/281)
 
 ## [2.20.0] - 2022-02-02
 
