@@ -498,7 +498,9 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // in case the initials extra are defined then runs the setting of the initials
     // extra on the current instance (without update events)
     if (options.initialsExtra) {
-        const setInitialsExtraPromise = this.setInitialsExtra(options.initialsExtra, false);
+        const setInitialsExtraPromise = this.setInitialsExtra(options.initialsExtra, false, false, {
+            immediate: true
+        });
         if (options.safe) await setInitialsExtraPromise;
     }
 
@@ -688,7 +690,8 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
         this.options.useInitialsBuilderLogic === undefined
             ? true
             : this.options.useInitialsBuilderLogic;
-    this.initialsDebounce = this.options.initialsDebounce === undefined ? 275 : this.options.initialsDebounce;
+    this.initialsDebounce =
+        this.options.initialsDebounce === undefined ? 275 : this.options.initialsDebounce;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account
@@ -811,13 +814,13 @@ ripe.Ripe.prototype.setInitials = async function(
     params = {}
 ) {
     if (!params.immediate && this.initialsDebounce) {
-        this._setInitialsExtraDebounced(initials, engraving, events, override, params);
+        this._setInitialsDebounced(initials, engraving, events, override, params);
         return;
     }
 
     if (typeof initials === "object") {
         events = engraving === undefined ? true : engraving;
-        const result = await this.setInitialsExtra(initials, events);
+        const result = await this.setInitialsExtra(initials, events, override, params);
         return result;
     }
 
@@ -888,18 +891,17 @@ ripe.Ripe.prototype.setInitials = async function(
 /**
  * @ignore
  */
-ripe.Ripe.prototype._setInitialsDebounced = async function(
+ripe.Ripe.prototype._setInitialsDebounced = function(
     initials,
     engraving,
     events = true,
     override = false,
     params = {}
 ) {
-    if (this.setInitialsExtraTimeout) clearTimeout(this.setInitialsExtraTimeout);
-    this.setInitialsExtraTimeout = setTimeout(() => {
-        const args = arguments;
-        args[4] = { ...args[4], immediate: true };
-        this.setInitialsExtra(...args);
+    if (this.setInitialsTimeout) clearTimeout(this.setInitialsTimeout);
+    this.setInitialsTimeout = setTimeout(() => {
+        const extraParams = { ...params, immediate: true };
+        this.setInitials(initials, engraving, events, override, extraParams);
     }, this.initialsDebounce);
 };
 
@@ -1004,17 +1006,16 @@ ripe.Ripe.prototype.setInitialsExtra = async function(
 /**
  * @ignore
  */
-ripe.Ripe.prototype._setInitialsExtraDebounced = async function(
+ripe.Ripe.prototype._setInitialsExtraDebounced = function(
     initialsExtra,
     events = true,
     override = false,
     params = {}
 ) {
-    if (this.setInitialsExtraTimeout) clearTimeout(this.setInitialsExtraTimeout);
-    this.setInitialsExtraTimeout = setTimeout(() => {
-        const args = arguments;
-        args[3] = { ...args[3], immediate: true };
-        this.setInitialsExtra(...args);
+    if (this.setInitialsTimeout) clearTimeout(this.setInitialsTimeout);
+    this.setInitialsTimeout = setTimeout(() => {
+        const extraParams = { ...params, immediate: true };
+        this.setInitialsExtra(initialsExtra, events, override, extraParams);
     }, this.initialsDebounce);
 };
 
@@ -1341,12 +1342,6 @@ ripe.Ripe.prototype.update = async function(state = null, options = {}, children
         return false;
     }
 
-    // in case the reasonf to update is setting the initials
-    // and there's an option for the debounce time, use debouncer method instead
-    if (options.reason?.includes("set initials") && this.initialsDebounce && !options.immediate) {
-        this._updateDebounce(state, options, children);
-    }
-
     // tries to retrieve the state of the configuration for which an update
     // operation is going to be requested
     state = state || this._getState();
@@ -1443,17 +1438,6 @@ ripe.Ripe.prototype.update = async function(state = null, options = {}, children
     }
 };
 
-/**
- * @ignore
- */
-ripe.Ripe.prototype._updateDebounce = async function(state = null, options = {}, children = null) {
-    if (this.updateTimeout) clearTimeout(this.updateTimeout);
-    this.updateTimeout = setTimeout(() => {
-        const extraOptions = { ...options, immediate: true };
-        this.update(state, extraOptions, children);
-    }, this.initialsDebounce);
-};
-
 ripe.Ripe.prototype.cancel = async function(options = {}, children = null) {
     // defaults the children variable to the current set of registered
     // children, as expected by specification
@@ -1494,7 +1478,6 @@ ripe.Ripe.prototype.cancel = async function(options = {}, children = null) {
     };
 
     try {
-        console.log("trying to cancel", options.reason);
         this.cancelPromise = _cancel();
         const result = await this.cancelPromise;
         return result;
