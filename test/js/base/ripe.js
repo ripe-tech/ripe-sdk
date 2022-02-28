@@ -9,7 +9,10 @@ describe("Ripe", function() {
         it("should be able to get a simple structure", async () => {
             let result;
 
-            const instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
+            const instance = await new ripe.Ripe("swear", "vyner", {
+                noBundles: true,
+                initialsDebounce: 0
+            });
             await instance.isReady();
 
             result = await instance.getStructure();
@@ -188,7 +191,7 @@ describe("Ripe", function() {
 
     describe("#setInitials()", async function() {
         it("should be able to set initials", async () => {
-            const instance = await new ripe.Ripe({ noBundles: true });
+            const instance = await new ripe.Ripe({ noBundles: true, initialsDebounce: 0 });
             await instance.isReady();
 
             assert.strictEqual(instance.initials, "");
