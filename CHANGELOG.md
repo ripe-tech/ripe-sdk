@@ -9,15 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [2.21.0] - 2022-02-28
+
+### Added
+
 * Add create order bulk methods - [ripe-pulse/#281](https://github.com/ripe-tech/ripe-pulse/issues/281)
 
 ### Changed
 
 * Make `brand` for `importBulkOrder` optional - [ripe-pulse/#281](https://github.com/ripe-tech/ripe-pulse/issues/281)
-
-### Fixed
-
-*
 
 ## [2.20.0] - 2022-02-02
 
