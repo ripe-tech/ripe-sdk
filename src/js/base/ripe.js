@@ -889,23 +889,6 @@ ripe.Ripe.prototype.setInitials = async function(
 };
 
 /**
- * @ignore
- */
-ripe.Ripe.prototype._setInitialsDebounced = function(
-    initials,
-    engraving,
-    events = true,
-    override = false,
-    params = {}
-) {
-    if (this.setInitialsTimeout) clearTimeout(this.setInitialsTimeout);
-    this.setInitialsTimeout = setTimeout(() => {
-        const extraParams = { ...params, immediate: true };
-        this.setInitials(initials, engraving, events, override, extraParams);
-    }, this.initialsDebounce);
-};
-
-/**
  * Changes the initials of the model using an object as the input which
  * allows setting the initials for multiple groups at the same time.
  *
@@ -1001,22 +984,6 @@ ripe.Ripe.prototype.setInitialsExtra = async function(
 
     // returns the current instance (good for pipelining)
     return this;
-};
-
-/**
- * @ignore
- */
-ripe.Ripe.prototype._setInitialsExtraDebounced = function(
-    initialsExtra,
-    events = true,
-    override = false,
-    params = {}
-) {
-    if (this.setInitialsTimeout) clearTimeout(this.setInitialsTimeout);
-    this.setInitialsTimeout = setTimeout(() => {
-        const extraParams = { ...params, immediate: true };
-        this.setInitialsExtra(initialsExtra, events, override, extraParams);
-    }, this.initialsDebounce);
 };
 
 /**
@@ -1849,6 +1816,39 @@ ripe.Ripe.prototype._setParts = async function(update, events = true) {
         const part = update[index];
         await this._setPart(part[0], part[1], part[2], events);
     }
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._setInitialsDebounced = function(
+    initials,
+    engraving,
+    events = true,
+    override = false,
+    params = {}
+) {
+    if (this.setInitialsTimeout) clearTimeout(this.setInitialsTimeout);
+    this.setInitialsTimeout = setTimeout(() => {
+        const extraParams = { ...params, immediate: true };
+        this.setInitials(initials, engraving, events, override, extraParams);
+    }, this.initialsDebounce);
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._setInitialsExtraDebounced = function(
+    initialsExtra,
+    events = true,
+    override = false,
+    params = {}
+) {
+    if (this.setInitialsTimeout) clearTimeout(this.setInitialsTimeout);
+    this.setInitialsTimeout = setTimeout(() => {
+        const extraParams = { ...params, immediate: true };
+        this.setInitialsExtra(initialsExtra, events, override, extraParams);
+    }, this.initialsDebounce);
 };
 
 /**
