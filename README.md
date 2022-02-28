@@ -312,6 +312,7 @@ if (ripe.isOAuthPending()) {
 | `usePrice`                | *boolean*          | Enables the fetch price feature every time a new part is set. True by default.                                                                                                             |
 | `useSync`                 | *boolean*          | Enables the part synchronization feature. False by default.                                                                                                                                |
 | `useInitialsBuilderLogic` | *boolean*          | Enables the usage of the client-side initials builder logic defined in the 3DB, instead of the default one. True by default.                                                               |
+| `initialsDebounce`        | *number*           | The debounce time to consider for every initials set request in ms (0 to not debounce). 275 by default.                                                                                    |
 
 ## Browser Support
 
