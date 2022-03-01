@@ -358,10 +358,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
               )
             : {};
 
-        if (this.cancelFlag) {
-            console.log("this.cancelFlag is true, returning...");
-            return;
-        }
+        if (this.cancelFlag) return;
 
         // if there are message events in initials builder ctx, dispatches
         // them to the proper message handler (to display message to end user)
@@ -377,11 +374,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         if (frame && !this.owner.hasFrame(frame)) {
             this.trigger("not_loaded");
             return false;
-        }
-
-        if (this.cancelFlag) {
-            console.log("this.cancelFlag is true, returning...");
-            return;
         }
 
         // builds the URL of the image using the frame hacking approach
@@ -451,8 +443,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         // according to the newly requested one
         this._previousUrl = this._url;
         this._url = url;
-
-        if (this.cancelFlag) return;
 
         // in case the double buffering mode is active an off-screen
         // image element is created to "cache" the image that is going
