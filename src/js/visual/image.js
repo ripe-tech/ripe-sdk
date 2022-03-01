@@ -376,6 +376,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             return false;
         }
 
+        if (this._cancellingUpdates) return;
+
         // builds the URL of the image using the frame hacking approach
         // this should provide us with the new values
         const url = this.owner._getImageURL({
