@@ -358,7 +358,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
               )
             : {};
 
-        if (this.cancelFlag) return;
+        if (this._cancellingUpdates) return;
 
         // if there are message events in initials builder ctx, dispatches
         // them to the proper message handler (to display message to end user)
@@ -493,7 +493,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // for the update promise to be finished (in case an update is
     // currently running)
     await this.cancel();
-    this.cancelFlag = false;
+    this._cancellingUpdates = false;
     if (this._updatePromise) await this._updatePromise;
 
     this._updatePromise = _update();
@@ -514,7 +514,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
  * instead no cancel logic was executed.
  */
 ripe.Image.prototype.cancel = async function(options = {}) {
-    this.cancelFlag = true;
+    this._cancellingUpdates = true;
     // in case the image is not under a loading process then
     // returns the control flow immediately as it's no longer
     // possible to cancel it
