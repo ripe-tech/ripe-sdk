@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added support for `invoicingInfo` field - [ripe-utile-vue/#247](https://github.com/ripe-tech/ripe-util-vue/issues/247)
+* Added support for `invoicingInfo` field in `importOrder` - [ripe-util-vue/#247](https://github.com/ripe-tech/ripe-util-vue/issues/247)
 
 ### Changed
 
