@@ -334,7 +334,6 @@ ripe.ConfiguratorPrc.prototype.update = async function(state, options = {}) {
     // for the update promise to be finished (in case an update is
     // currently running)
     await this.cancel();
-
     if (this._updatePromise) await this._updatePromise;
 
     let result = null;
