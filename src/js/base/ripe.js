@@ -1366,6 +1366,7 @@ ripe.Ripe.prototype.update = async function(state = null, options = {}, children
     // without any possible visual changes and consuming the least resources
     // possible by any of the child elements
     await this.cancel(options, children);
+    this.cancelFlag = false;
 
     // runs the waiting for all the pending promises for update operations
     // so that we can safely run the new update promise after all the other
