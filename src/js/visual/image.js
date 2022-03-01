@@ -343,6 +343,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             model: this.owner.model,
             version: this.owner.version,
             parts: this.owner.parts,
+            locale: this.owner.locale,
+            country: this.owner.country,
             frame: this.frame
         };
         const initialsSpec = this.showInitials
