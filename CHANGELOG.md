@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-*
+* Improve update cancellation strategy by adding a `_cancellingUpdates` flag to cancel previous ongoing update requests - [#363](https://github.com/ripe-tech/ripe-sdk/pull/363)
 
 ### Fixed
 
