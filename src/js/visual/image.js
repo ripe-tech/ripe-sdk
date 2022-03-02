@@ -517,7 +517,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
  */
 ripe.Image.prototype.cancel = async function(options = {}) {
     this._cancellingUpdates = true;
-    // in case the image is not under a loading process then
+
+    // in case the image is not under a loading  then
     // returns the control flow immediately as it's no longer
     // possible to cancel it
     if (!this._loadedCallback) return false;
