@@ -358,6 +358,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
               )
             : {};
 
+        // in case there's an unfulfilled call to cancel all ongoing
+        // update requests return the control flow immediately
         if (this._cancellingUpdates) return;
 
         // if there are message events in initials builder ctx, dispatches
@@ -376,6 +378,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             return false;
         }
 
+        // in case there's an unfulfilled call to cancel all ongoing
+        // update requests return the control flow immediately
         if (this._cancellingUpdates) return;
 
         // builds the URL of the image using the frame hacking approach
