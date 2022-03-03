@@ -348,19 +348,17 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             frame: this.frame
         };
 
-        const _initialsBuilderPromise = (...args) => {
-            if (this.initialsBuilder.constructor.name === "Function") {
-                return this.initialsBuilder(...args);
-            }
-
-            return new Promise(resolve => {
-                this.bind("cancel", resolve);
-                this.initialsBuilder(...args).then(result => {
-                    this.unbind("cancel", resolve);
-                    resolve(result);
-                });
-            });
-        };
+        const _initialsBuilderPromise =
+            this.initialsBuilder.constructor.name === "AsyncFunction"
+                ? (...args) =>
+                      new Promise(resolve => {
+                          this.bind("cancel", resolve);
+                          this.initialsBuilder(...args).then(result => {
+                              this.unbind("cancel", resolve);
+                              resolve(result);
+                          });
+                      })
+                : this.initialsBuilder;
 
         const initialsSpec = this.showInitials
             ? await _initialsBuilderPromise(
