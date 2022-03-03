@@ -349,7 +349,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         };
 
         const _initialsBuilderPromise = (...args) => {
-            if (this.initialsBuilder?.constructor?.name === "Function"){
+            if (this.initialsBuilder?.constructor?.name === "Function") {
                 return this.initialsBuilder(...args);
             }
 
