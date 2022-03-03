@@ -81,6 +81,7 @@ describe("ShipmentAPI", function() {
             result = await remote.getShipmentP(shipment.number);
 
             await remote.deleteShipmentP(result.number);
+            await remote.deleteOrderP(order.number);
 
             assert.deepStrictEqual(result, shipment);
         });
@@ -197,6 +198,7 @@ describe("ShipmentAPI", function() {
             assert.deepStrictEqual(result.attachments, [1, 2, 3]);
 
             await remote.deleteShipmentP(result.number);
+            await remote.deleteOrderP(order.number);
         });
     });
 
@@ -266,6 +268,7 @@ describe("ShipmentAPI", function() {
             assert.strictEqual(result.shipper.name, "Updated Name");
 
             await remote.deleteShipmentP(result.number);
+            await remote.deleteOrderP(order.number);
         });
     });
 
@@ -336,6 +339,8 @@ describe("ShipmentAPI", function() {
                     return true;
                 }
             );
+
+            await remote.deleteOrderP(order.number);
         });
     });
 });

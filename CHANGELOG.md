@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Added support for `invoicingInfo` field in `importOrder` - [ripe-util-vue/#247](https://github.com/ripe-tech/ripe-util-vue/issues/247)
 * Added configurator configuration variable `useDefaultSize` that forces the configurator to use images with the default dimensions of the current face
 
 ### Changed
@@ -18,6 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Use pixelRatio in configurator applied to the image but do not allow getting images bigger than the default dimensions for the current face
+
+## [2.21.0] - 2022-02-28
+
+### Added
+
+* Add create order bulk methods - [ripe-pulse/#281](https://github.com/ripe-tech/ripe-pulse/issues/281)
+
+### Changed
+
+* Make `brand` for `importBulkOrder` optional - [ripe-pulse/#281](https://github.com/ripe-tech/ripe-pulse/issues/281)
 
 ## [2.20.0] - 2022-02-02
 
@@ -230,6 +241,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Ability to override `name` and `meta` for attachments - [#282](https://github.com/ripe-tech/ripe-sdk/issues/282)
 * Added method to issue a create waybill command for a given order - [ripe-pulse/211](https://github.com/ripe-tech/ripe-pulse/issues/211)
 * Add `rejectOrderP` and `rejectOrder` methods - [ripe-pulse/#219](https://github.com/ripe-tech/ripe-pulse/issues/219)
+* Passing `locale` and `country` arguments in `ctx` when doing initials builder to allow localized sanitization of initials - [build-static/#2075](https://github.com/ripe-tech/builds-static/issues/2075) 
 
 ### Fixed
 

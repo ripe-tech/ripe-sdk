@@ -417,6 +417,39 @@ ripe.Ripe.prototype.cancelBulkOrderP = function(number, options) {
 };
 
 /**
+ * Creates a bulk order on RIPE Core.
+ *
+ * @param {String} name The name for the bulk order.
+ * @param {Array} orders The list of the order IDs for the bulk order.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
+ */
+ripe.Ripe.prototype.importBulkOrder = function(name, orders, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._importBulkOrder(name, orders, options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Creates a bulk order on RIPE Core.
+ *
+ * @param {String} name The name for the bulk order.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Array} orders The list of the order IDs for the bulk order.
+ * @returns {Promise} The bulk order's data.
+ */
+ripe.Ripe.prototype.importBulkOrderP = function(name, orders, options) {
+    return new Promise((resolve, reject) => {
+        this.importBulkOrder(name, orders, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns all the attachments of a bulk order.
  *
  * @param {Number} number The number of the bulk order.
@@ -489,5 +522,28 @@ ripe.Ripe.prototype.createAttachmentBulkOrderP = function(number, files, options
         this.createAttachmentBulkOrder(number, files, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
+    });
+};
+
+/**
+ * @ignore
+ * @see {link https://docs.platforme.com/#order-endpoints-import}
+ */
+ripe.Ripe.prototype._importBulkOrder = function(name, orders, options = {}) {
+    const url = `${this.url}bulk_orders`;
+    const brand = options.brand === undefined ? null : options.brand;
+    const description = options.description === undefined ? null : options.description;
+    const dataJ = {
+        name: name,
+        brand: brand,
+        orders: orders
+    };
+    if (brand) dataJ.brand = brand;
+    if (description) dataJ.description = description;
+    return Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataJ: dataJ,
+        auth: true
     });
 };

@@ -1,6 +1,6 @@
 {
     "name": "ripe-sdk",
-    "version": "2.20.0",
+    "version": "2.21.0",
     "description": "The public SDK for RIPE Core",
     "keywords": [
         "js",
@@ -47,7 +47,7 @@
         "lint": "gulp lint",
         "lint-fix": "gulp lint-fix",
         "mark": "gulp mark",
-        "prettier": "prettier \"./*.{js,ts,json}\" \"./{src,test,types}/**/*.{js,ts,json}\" --write",
+        "prettier": "prettier \"./*.{js,ts,json}\" \"./src/js/**/*.{js,ts,json}\" \"./{test,types}/**/*.{js,ts,json}\" --write",
         "pretty": "npm run prettier && npm run lint-fix",
         "test": "gulp test",
         "upgrade": "npx sort-package-json && ncu -u",
@@ -58,9 +58,9 @@
         "xmlhttprequest": "^1.8.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.14.3",
+        "@babel/core": "^7.17.5",
         "@babel/polyfill": "^7.12.1",
-        "@babel/preset-env": "^7.14.4",
+        "@babel/preset-env": "^7.16.11",
         "eslint": "^7.27.0",
         "eslint-config-hive": "^0.5.3",
         "eslint-plugin-mocha": "^9.0.0",
@@ -70,22 +70,22 @@
         "gulp-cli": "^2.3.0",
         "gulp-concat": "^2.6.1",
         "gulp-count": "^1.0.0",
-        "gulp-eslint7": "^0.3.1",
+        "gulp-eslint7": "^0.3.2",
         "gulp-jsdoc3": "^3.0.0",
         "gulp-mocha": "^8.0.0",
         "gulp-replace": "^1.1.3",
-        "gulp-size": "^4.0.0",
+        "gulp-size": "^4.0.1",
         "gulp-sourcemaps": "^3.0.0",
-        "gulp-terser": "^2.0.1",
+        "gulp-terser": "^2.1.0",
         "gulp-zip": "^5.1.0",
         "jsdom": "^16.6.0",
         "minami": "^1.2.3",
         "mocha": "^8.4.0",
         "mocha-cli": "^1.0.1",
-        "npm-check-updates": "^11.6.0",
-        "prettier": "^2.3.0",
+        "npm-check-updates": "^12.4.0",
+        "prettier": "^2.5.1",
         "prettier-config-hive": "^0.1.7",
-        "sort-package-json": "^1.50.0",
+        "sort-package-json": "^1.54.0",
         "uuid": "^8.3.2"
     }
 }
