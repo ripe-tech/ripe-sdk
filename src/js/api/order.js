@@ -1883,6 +1883,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const meta = options.meta === undefined ? null : options.meta;
     const description = options.description === undefined ? null : options.description;
     const shippingInfo = options.shippingInfo === undefined ? null : options.shippingInfo;
+    const invoicingInfo = options.invoicingInfo === undefined ? null : options.invoicingInfo;
     const notes = options.notes === undefined ? null : options.notes;
     const images = options.images === undefined ? null : options.images;
 
@@ -1910,6 +1911,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (images) contents.images = images;
     if (description) contents.description = description;
     if (shippingInfo) contents.shipping_info = shippingInfo;
+    if (invoicingInfo) contents.invoicing_info = invoicingInfo;
 
     const params = {
         ff_order_id: ffOrderId,
