@@ -347,8 +347,18 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             country: this.owner.country,
             frame: this.frame
         };
+
+        const _initialsBuilderPromise = (...args) =>
+            new Promise(resolve => {
+                this.bind("cancel", resolve);
+                this.initialsBuilder(...args).then(result => {
+                    this.unbind("cancel", resolve);
+                    resolve(result);
+                });
+            });
+
         const initialsSpec = this.showInitials
-            ? await this.initialsBuilder(
+            ? await _initialsBuilderPromise(
                   this.initials,
                   this.engraving,
                   initialsGroup,
@@ -358,9 +368,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
               )
             : {};
 
-        // in case there's an unfulfilled call to cancel all ongoing
-        // update requests return the control flow immediately
-        if (this._cancellingUpdates) return;
+        // in case the initials builder promise was cancelled
+        // early then return the control flow immediately
+        if (!initialsSpec) return;
 
         // if there are message events in initials builder ctx, dispatches
         // them to the proper message handler (to display message to end user)
@@ -377,10 +387,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             this.trigger("not_loaded");
             return false;
         }
-
-        // in case there's an unfulfilled call to cancel all ongoing
-        // update requests return the control flow immediately
-        if (this._cancellingUpdates) return;
 
         // builds the URL of the image using the frame hacking approach
         // this should provide us with the new values
@@ -499,7 +505,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // for the update promise to be finished (in case an update is
     // currently running)
     await this.cancel();
-    this._cancellingUpdates = false;
     if (this._updatePromise) await this._updatePromise;
 
     this._updatePromise = _update();
@@ -520,8 +525,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
  * instead no cancel logic was executed.
  */
 ripe.Image.prototype.cancel = async function(options = {}) {
-    this._cancellingUpdates = true;
-
+    // notifies cancel event to listeners so that
+    // if possible they can resolve promises early
+    await this.trigger("cancel");
     // in case the image is not under a loading  then
     // returns the control flow immediately as it's no longer
     // possible to cancel it
