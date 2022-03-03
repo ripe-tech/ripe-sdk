@@ -348,6 +348,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             frame: this.frame
         };
 
+        // in case initialsBuilder is async then use a cancelable promise
+        // otherwise use the native initialsBuilder
         const _initialsBuilderPromise =
             this.initialsBuilder.constructor.name === "AsyncFunction"
                 ? (...args) =>
