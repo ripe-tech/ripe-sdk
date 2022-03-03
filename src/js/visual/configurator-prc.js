@@ -1186,7 +1186,9 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     const backgroundColor = this.element.dataset.background_color || this.backgroundColor;
 
     // if enabled, uses the width and height of the frame of the
-    // model size instead of the size of the container
+    // model size instead of the size of the container, this should
+    // provide a legacy compatibility layer as this is considered
+    // to be the historic default behaviour of the configurator
     if (this.useDefaultSize) {
         size = this.frameSize[0];
         width = this.frameSize[0];
@@ -1215,13 +1217,15 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     // frame, this should imply some level of cache usage
     this._loadMask(maskImage, view, position, options);
 
-    // apply pixel ratio to image dimensions
+    // apply pixel ratio to image dimensions so that the image obtained
+    // reflects the target pixel density
     size = size ? parseInt(size * this.pixelRatio) : size;
     width = width ? parseInt(width * this.pixelRatio) : width;
     height = height ? parseInt(height * this.pixelRatio) : height;
 
     // does not allow requesting an image with dimensions bigger than
-    // the dimensions defined by the build for the current face
+    // the dimensions defined by the build for the current face, only
+    // applies this logic in case the frame size is available
     if (this.frameSize) {
         size = size ? Math.min(size, this.frameSize[0]) : size;
         width = width ? Math.min(width, this.frameSize[0]) : width;
