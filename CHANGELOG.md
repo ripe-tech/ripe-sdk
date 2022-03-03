@@ -9,12 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added support for `invoicingInfo` field in `importOrder` - [ripe-util-vue/#247](https://github.com/ripe-tech/ripe-util-vue/issues/247)
-* Added configurator configuration variable `useDefaultSize` that forces the configurator to use images with the default dimensions of the current face
+*
 
 ### Changed
 
 *
+
+### Fixed
+
+*
+
+## [2.22.0] - 2022-03-03
+
+### Added
+
+* Added support for `invoicingInfo` field in `importOrder` - [ripe-util-vue/#247](https://github.com/ripe-tech/ripe-util-vue/issues/247)
+* Added configurator configuration variable `useDefaultSize` that forces the configurator to use images with the default dimensions of the current face
 
 ### Fixed
 
