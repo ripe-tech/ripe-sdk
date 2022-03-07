@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added methods for waybill deletion (void) - [ripe-util-vue/#301](https://github.com/ripe-tech/ripe-util-vue/issues/301)
-* Methods to unset order tracking info - [ripe-pulse/#301](https://github.com/ripe-tech/ripe-core/issues/301)
+*
 
 ### Changed
 
@@ -19,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.23.0] - 2022-03-07
+
+### Added
+
+* Added methods for waybill deletion (void) - [ripe-util-vue/#301](https://github.com/ripe-tech/ripe-util-vue/issues/301)
+* Methods to unset order tracking info - [ripe-pulse/#301](https://github.com/ripe-tech/ripe-core/issues/301)
 
 ## [2.22.0] - 2022-03-03
 
