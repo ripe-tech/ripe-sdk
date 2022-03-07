@@ -1532,6 +1532,78 @@ ripe.Ripe.prototype.setReturnTrackingP = function(
 };
 
 /**
+ * Unsets the tracking info of an order.
+ *
+ * @param {Number} number The number of the order to unset the tracking info.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.unsetTracking = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/tracking`;
+    options = Object.assign(options, {
+        url: url,
+        method: "DELETE",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Unsets the tracking info of an order.
+ *
+ * @param {Number} number The number of the order to unset the tracking info.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order tracking info change.
+ */
+ripe.Ripe.prototype.unsetTrackingP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.unsetTracking(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Unsets the return tracking info of an order.
+ *
+ * @param {Number} number The number of the order to unset the return tracking info.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.unsetReturnTracking = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/return_tracking`;
+    options = Object.assign(options, {
+        url: url,
+        method: "DELETE",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Unsets the return tracking info of an order.
+ *
+ * @param {Number} number The number of the order to unset the return tracking info.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order tracking info change.
+ */
+ripe.Ripe.prototype.unsetReturnTrackingP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.unsetReturnTracking(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Changes the pickup reference number of an order.
  *
  * @param {Number} number The number of the order to change the pickup reference number.
