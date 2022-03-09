@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Added methods `getSkusCsvP` and `getSkusCsv` that return a CSV document containing SKUs - [ripe-white/#979](https://github.com/ripe-tech/ripe-white/issues/979)
+* Added methods `countSkusP` and `countSkus` that returns the number of SKUs - [ripe-white/#979](https://github.com/ripe-tech/ripe-white/issues/979)
 
 ### Changed
 
