@@ -79,7 +79,6 @@ ripe.Ripe.prototype.getSkusP = function(options) {
         auth: true
     });
     options = this._build(options);
-    console.log("OPTIONS", options);
     return this._cacheURL(options.url, options, callback);
 };
 
