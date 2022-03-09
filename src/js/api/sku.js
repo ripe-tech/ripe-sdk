@@ -59,8 +59,7 @@ ripe.Ripe.prototype.getSkusP = function(options) {
  * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request, such as:
- * - 'filters[]' - List of filters that the query will use to, operators such as
- * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
+ * - 'filters[]' - List of filters that the query will use.
  * - 'sort' - List of arguments to sort the results by and which direction
  * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
  * while (eg: 'id:descending')] would do it in descending order.
@@ -329,8 +328,7 @@ ripe.Ripe.prototype.validateSkuP = function(id, options) {
  * strategy as normalized values.
  *
  * @param {Object} options An object of options to configure the request, such as:
- * - 'filters[]' - List of filters that the query will use to, operators such as
- * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
+ * - 'filters[]' - List of filters that the query will use.
  * - 'sort' - List of arguments to sort the results by and which direction
  * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
  * while (eg: 'id:descending')] would do it in descending order.
