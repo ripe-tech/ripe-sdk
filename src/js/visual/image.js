@@ -354,9 +354,12 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             this.initialsBuilder.constructor.name === "AsyncFunction"
                 ? (...args) =>
                       new Promise(resolve => {
-                          this.bind("cancel", resolve);
+                          const _cancelBind = this.bind("cancel", () => {
+                              this.unbind("cancel", _cancelBind);
+                              resolve();
+                          });
                           this.initialsBuilder(...args).then(result => {
-                              this.unbind("cancel", resolve);
+                              this.unbind("cancel", _cancelBind);
                               resolve(result);
                           });
                       })
