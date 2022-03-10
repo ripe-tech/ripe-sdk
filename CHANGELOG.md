@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added support for `invoicingInfo` field in `importOrder` - [ripe-util-vue/#247](https://github.com/ripe-tech/ripe-util-vue/issues/247)
+* Added methods `getSkusCsvP` and `getSkusCsv` that return a CSV document containing SKUs - [ripe-white/#979](https://github.com/ripe-tech/ripe-white/issues/979)
+* Added methods `countSkusP` and `countSkus` that returns the number of SKUs - [ripe-white/#979](https://github.com/ripe-tech/ripe-white/issues/979)
 
 ### Changed
 
@@ -18,6 +19,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.23.0] - 2022-03-07
+
+### Added
+
+* Added methods for waybill deletion (void) - [ripe-util-vue/#301](https://github.com/ripe-tech/ripe-util-vue/issues/301)
+* Methods to unset order tracking info - [ripe-pulse/#301](https://github.com/ripe-tech/ripe-core/issues/301)
+
+## [2.22.0] - 2022-03-03
+
+### Added
+
+* Added support for `invoicingInfo` field in `importOrder` - [ripe-util-vue/#247](https://github.com/ripe-tech/ripe-util-vue/issues/247)
+* Added configurator configuration variable `useDefaultSize` that forces the configurator to use images with the default dimensions of the current face
+
+### Fixed
+
+* Use pixelRatio in configurator applied to the image but do not allow getting images bigger than the default dimensions for the current face
 
 ## [2.21.0] - 2022-02-28
 

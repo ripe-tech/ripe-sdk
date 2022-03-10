@@ -79,6 +79,7 @@ ripe.ConfiguratorPrc.prototype.init = function() {
                 ? undefined
                 : !this.noMasks
             : this.options.useMasks;
+    this.useDefaultSize = this.options.useDefaultSize || true;
     this.view = this.options.view || "side";
     this.position = this.options.position || 0;
     this.configAnimate =
@@ -89,6 +90,7 @@ ripe.ConfiguratorPrc.prototype.init = function() {
     this._observer = null;
     this._ownerBinds = {};
     this._pending = [];
+    this.frameSize = null;
 
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
@@ -191,6 +193,8 @@ ripe.ConfiguratorPrc.prototype.updateOptions = async function(options, update = 
                 ? this.noMasks
                 : !this.noMasks
             : this.options.useMasks;
+    this.useDefaultSize =
+        options.useDefaultSize === undefined ? this.useDefaultSize : options.useDefaultSize;
     this.configAnimate =
         options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
     this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
@@ -1111,6 +1115,9 @@ ripe.ConfiguratorPrc.prototype._updateConfig = async function(animate) {
         position = 0;
     }
 
+    // gets the dimensions of the current frame being shown
+    this.frameSize = await this.owner.getSize("$base", view);
+
     // checks the last viewed frames of each view
     // and deletes the ones not supported
     const lastFrameViews = Object.keys(this._lastFrame);
@@ -1173,10 +1180,20 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     const frame = ripe.getFrameKey(view, position);
 
     const format = this.element.dataset.format || this.format;
-    const size = this.element.dataset.size || this.size;
-    const width = this.element.dataset.width || this.width || size;
-    const height = this.element.dataset.height || this.height || size;
+    let size = this.element.dataset.size || this.size;
+    let width = this.element.dataset.width || this.width || size;
+    let height = this.element.dataset.height || this.height || size;
     const backgroundColor = this.element.dataset.background_color || this.backgroundColor;
+
+    // if enabled, uses the width and height of the frame of the
+    // model size instead of the size of the container, this should
+    // provide a legacy compatibility layer as this is considered
+    // to be the historic default behaviour of the configurator
+    if (this.useDefaultSize) {
+        size = this.frameSize[0];
+        width = this.frameSize[0];
+        height = this.frameSize[1];
+    }
 
     const draw = options.draw === undefined || options.draw;
     const animate = options.animate;
@@ -1199,6 +1216,21 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     // triggers the async loading of the "master" mask for the current
     // frame, this should imply some level of cache usage
     this._loadMask(maskImage, view, position, options);
+
+    // apply pixel ratio to image dimensions so that the image obtained
+    // reflects the target pixel density
+    size = size ? parseInt(size * this.pixelRatio) : size;
+    width = width ? parseInt(width * this.pixelRatio) : width;
+    height = height ? parseInt(height * this.pixelRatio) : height;
+
+    // does not allow requesting an image with dimensions bigger than
+    // the dimensions defined by the build for the current face, only
+    // applies this logic in case the frame size is available
+    if (this.frameSize) {
+        size = size ? Math.min(size, this.frameSize[0]) : size;
+        width = width ? Math.min(width, this.frameSize[0]) : width;
+        height = height ? Math.min(width, this.frameSize[1]) : height;
+    }
 
     // builds the URL that will be set on the image, notice that both
     // the full URL mode is avoided so that no extra parameters are

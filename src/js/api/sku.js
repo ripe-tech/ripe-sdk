@@ -55,6 +55,48 @@ ripe.Ripe.prototype.getSkusP = function(options) {
 };
 
 /**
+ * Gets the existing SKUs in a CSV file, according to the provided filtering
+ * strategy as normalized values.
+ *
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'filters[]' - List of filters that the query will use.
+ * - 'sort' - List of arguments to sort the results by and which direction
+ * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
+ * while (eg: 'id:descending')] would do it in descending order.
+ * - 'skip' - The number of the first record to retrieve from the results.
+ * - 'limit' - The number of results to retrieve.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ ripe.Ripe.prototype.getSkusCsv = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}skus.csv`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets the existing SKUs in a CSV file, according to the provided filtering
+ * strategy as normalized values.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} A CSV file containing the SKUs result list.
+ */
+ripe.Ripe.prototype.getSkusCsvP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getSkusCsv(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Creates a SKU on RIPE Core under the defined domain.
  *
  * @param {String} identifier The SKU identifier as a plain string.
@@ -276,6 +318,48 @@ ripe.Ripe.prototype.validateSku = function(id, options, callback) {
 ripe.Ripe.prototype.validateSkuP = function(id, options) {
     return new Promise((resolve, reject) => {
         this.validateSku(id, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Counts the existing SKUs, according to the provided filtering
+ * strategy as normalized values.
+ *
+ * @param {Object} options An object of options to configure the request, such as:
+ * - 'filters[]' - List of filters that the query will use.
+ * - 'sort' - List of arguments to sort the results by and which direction
+ * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
+ * while (eg: 'id:descending')] would do it in descending order.
+ * - 'skip' - The number of the first record to retrieve from the results.
+ * - 'limit' - The number of results to retrieve.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ ripe.Ripe.prototype.countSkus = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}skus/count`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Counts the existing SKUs, according to the provided filtering
+ * strategy as normalized values.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The SKUs result count.
+ */
+ripe.Ripe.prototype.countSkusP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.countSkus(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
