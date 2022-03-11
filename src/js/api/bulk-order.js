@@ -535,7 +535,6 @@ ripe.Ripe.prototype._importBulkOrder = function(name, orders, options = {}) {
     const description = options.description === undefined ? null : options.description;
     const dataJ = {
         name: name,
-        brand: brand,
         orders: orders
     };
     if (brand) dataJ.brand = brand;
