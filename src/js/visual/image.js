@@ -348,22 +348,30 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             frame: this.frame
         };
 
-        // in case initialsBuilder is async then use a cancelable promise
-        // otherwise use the native initialsBuilder
-        const _initialsBuilderPromise =
-            this.initialsBuilder.constructor.name === "AsyncFunction"
-                ? (...args) =>
-                      new Promise(resolve => {
-                          const _cancelBind = this.bind("cancel", () => {
-                              this.unbind("cancel", _cancelBind);
-                              resolve();
-                          });
-                          this.initialsBuilder(...args).then(result => {
-                              this.unbind("cancel", _cancelBind);
-                              resolve(result);
-                          });
-                      })
-                : this.initialsBuilder;
+        // encapsulates the initials builder around a promise that for
+        // promised (async) based function allows early cancellation using
+        // the associated cancel event, for non async function simply
+        // ignores the cancel event and executes the method normally,
+        // this strategy allows huge performance gains for quick image
+        // specification changes (eg: rapid initials typing)
+        const _initialsBuilderPromise = (...args) => {
+            return new Promise(resolve => {
+                const cancelBind = this.bind("cancel", () => {
+                    this.unbind("cancel", cancelBind);
+                    resolve();
+                });
+                const promise = this.initialsBuilder(...args);
+                if (promise && promise.then) {
+                    promise.then(result => {
+                        this.unbind("cancel", cancelBind);
+                        resolve(result);
+                    });
+                } else {
+                    this.unbind("cancel", cancelBind);
+                    resolve(result);
+                }
+            });
+        };
 
         const initialsSpec = this.showInitials
             ? await _initialsBuilderPromise(
