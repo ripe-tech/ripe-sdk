@@ -536,6 +536,7 @@ ripe.Image.prototype.cancel = async function(options = {}) {
     // notifies cancel event to listeners so that
     // if possible they can resolve promises early
     await this.trigger("cancel");
+
     // in case the image is not under a loading  then
     // returns the control flow immediately as it's no longer
     // possible to cancel it
