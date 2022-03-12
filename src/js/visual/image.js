@@ -367,6 +367,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
                         resolve(result);
                     });
                 } else {
+                    const result = promise;
                     this.unbind("cancel", cancelBind);
                     resolve(result);
                 }
