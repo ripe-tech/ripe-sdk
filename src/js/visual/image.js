@@ -347,8 +347,35 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             country: this.owner.country,
             frame: this.frame
         };
+
+        // encapsulates the initials builder around a promise that for
+        // promised (async) based function allows early cancellation using
+        // the associated cancel event, for non async function simply
+        // ignores the cancel event and executes the method normally,
+        // this strategy allows huge performance gains for quick image
+        // specification changes (eg: rapid initials typing)
+        const _initialsBuilderPromise = (...args) => {
+            return new Promise(resolve => {
+                const cancelBind = this.bind("cancel", () => {
+                    this.unbind("cancel", cancelBind);
+                    resolve();
+                });
+                const promise = this.initialsBuilder(...args);
+                if (promise && promise.then) {
+                    promise.then(result => {
+                        this.unbind("cancel", cancelBind);
+                        resolve(result);
+                    });
+                } else {
+                    const result = promise;
+                    this.unbind("cancel", cancelBind);
+                    resolve(result);
+                }
+            });
+        };
+
         const initialsSpec = this.showInitials
-            ? await this.initialsBuilder(
+            ? await _initialsBuilderPromise(
                   this.initials,
                   this.engraving,
                   initialsGroup,
@@ -357,6 +384,10 @@ ripe.Image.prototype.update = async function(state, options = {}) {
                   ctx
               )
             : {};
+
+        // in case the initials builder promise was cancelled
+        // early then return the control flow immediately
+        if (!initialsSpec) return;
 
         // if there are message events in initials builder ctx, dispatches
         // them to the proper message handler (to display message to end user)
@@ -511,7 +542,11 @@ ripe.Image.prototype.update = async function(state, options = {}) {
  * instead no cancel logic was executed.
  */
 ripe.Image.prototype.cancel = async function(options = {}) {
-    // in case the image is not under a loading process then
+    // notifies cancel event to listeners so that
+    // if possible they can resolve promises early
+    await this.trigger("cancel");
+
+    // in case the image is not under a loading  then
     // returns the control flow immediately as it's no longer
     // possible to cancel it
     if (!this._loadedCallback) return false;
