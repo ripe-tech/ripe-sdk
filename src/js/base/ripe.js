@@ -1631,7 +1631,7 @@ ripe.Ripe.prototype._guessURL = async function() {
 ripe.Ripe.prototype._initBundles = async function(locale = this.locale, defaultLocale = "en_us") {
     const locales = [defaultLocale, locale];
 
-    // build tuples of locales and respective bundle promises
+    // builds tuples of locales and respective bundle promises
     const localeBundleTuples = [];
     for (const locale of new Set(locales)) {
         localeBundleTuples.push(
@@ -1639,7 +1639,8 @@ ripe.Ripe.prototype._initBundles = async function(locale = this.locale, defaultL
             [locale, this.localeBundleP(locale, "sizes")]
         );
     }
-    // deconstruct the tuple to respective locales and bundle promises
+
+    // deconstructs the tuple to respective locales and bundle promises
     // then fetch all bundles in parallel
     const [bundlesLocales, bundlesPromises] = localeBundleTuples.reduce(
         (array, [locale, bundlePromise]) => [
@@ -1649,7 +1650,8 @@ ripe.Ripe.prototype._initBundles = async function(locale = this.locale, defaultL
         [[], []]
     );
     const bundles = await Promise.all(bundlesPromises);
-    // add the fetched bundles
+
+    // adds the fetched bundles to the bundle registry
     bundles.forEach((bundle, index) => {
         const locale = bundlesLocales[index];
         this.addBundle(bundle, locale);
