@@ -1679,11 +1679,15 @@ ripe.Ripe.prototype._guessURL = async function() {
  * @ignore
  */
 ripe.Ripe.prototype._initBundles = async function(locale = this.locale, defaultLocale = "en_us") {
-    const locales = [defaultLocale, locale];
+    // initializes the sequence of locales that are going to be loaded
+    // taking into consideration if a default locale is explicitly defined
+    // and then converts the array into a set to avoid duplicates
+    const locales = defaultLocale ? [defaultLocale, locale] : [locale];
+    const localesSet = Array.from(new Set(locales));
 
     // builds tuples of locales and respective bundle promises
     const localeBundleTuples = [];
-    for (const locale of new Set(locales)) {
+    for (const locale of localesSet) {
         localeBundleTuples.push(
             [locale, this.localeBundleP(locale, "scales")],
             [locale, this.localeBundleP(locale, "sizes")]
@@ -1708,7 +1712,12 @@ ripe.Ripe.prototype._initBundles = async function(locale = this.locale, defaultL
     });
 
     this.bundles = true;
-    this.trigger("bundles");
+    this.trigger("bundles", localesSet, bundles);
+
+    return {
+        locales: localesSet,
+        bundles: bundles
+    };
 };
 
 /**
