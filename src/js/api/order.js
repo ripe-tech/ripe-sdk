@@ -538,12 +538,47 @@ ripe.Ripe.prototype.logOrder = function(number, options, callback) {
  *
  * @param {Number} number The number of the order to find by.
  * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The states of an order requested by number.
  */
 ripe.Ripe.prototype.logOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.logOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the chat of an order.
+ *
+ * @param {Number} number The number of the order to get the chat from.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.chatOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/chat`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the chat of an order.
+ *
+ * @param {Number} number The number of the order to get the chat from.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order's chat.
+ */
+ripe.Ripe.prototype.chatOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.chatOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
