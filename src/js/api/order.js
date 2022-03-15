@@ -592,7 +592,7 @@ ripe.Ripe.prototype.chatOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
- ripe.Ripe.prototype.chatLinesOrder = function(number, options, callback) {
+ripe.Ripe.prototype.chatLinesOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/chat/lines`;
@@ -628,7 +628,7 @@ ripe.Ripe.prototype.chatLinesOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
- ripe.Ripe.prototype.chatLinesCountOrder = function(number, options, callback) {
+ripe.Ripe.prototype.chatLinesCountOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/chat/lines/count`;
@@ -651,6 +651,47 @@ ripe.Ripe.prototype.chatLinesOrderP = function(number, options) {
 ripe.Ripe.prototype.chatLinesCountOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.chatLinesCountOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Adds a new chat line message to a specific order.
+ *
+ * @param {Number} number The number of the order where the chat line message will be added.
+ * @param {Object} contents The contents of the chat message.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.chatCreateLineOrder = function(number, contents, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/chat/lines`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        params: {
+            contents: contents
+        },
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Adds a new chat line message to a specific order.
+ *
+ * @param {Number} number The number of the order where the chat line message will be added.
+ * @param {Object} contents The contents of the chat message.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} An object containing the chat lines for the specific order.
+ */
+ripe.Ripe.prototype.chatCreateLineOrderP = function(number, contents, options) {
+    return new Promise((resolve, reject) => {
+        this.chatCreateLineOrder(number, contents, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -682,7 +723,6 @@ ripe.Ripe.prototype.statesOrder = function(number, options, callback) {
  *
  * @param {Number} number The number of the order to find by.
  * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The states of an order requested by number.
  */
 ripe.Ripe.prototype.statesOrderP = function(number, options) {
