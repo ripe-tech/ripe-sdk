@@ -585,6 +585,42 @@ ripe.Ripe.prototype.chatOrderP = function(number, options) {
 };
 
 /**
+ * Returns the chat lines of an order.
+ *
+ * @param {Number} number The number of the order to get the chat lines from.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ ripe.Ripe.prototype.chatLinesOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/chat/lines`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the chat lines of an order.
+ *
+ * @param {Number} number The number of the order to get the chat lines from.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order chat's lines.
+ */
+ripe.Ripe.prototype.chatLinesOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.chatLinesOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns all the states of an order.
  *
  * @param {Number} number The number of the order to find by.
