@@ -196,7 +196,6 @@ ripe.Ripe.prototype.attachmentsOrder = function(number, options, callback) {
  *
  * @param {Number} number The number of the order to find by.
  * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
  * @returns {Promise} An object containing all the attachments of an order.
  */
 ripe.Ripe.prototype.attachmentsOrderP = function(number, options) {
