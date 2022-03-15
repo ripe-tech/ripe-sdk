@@ -621,6 +621,42 @@ ripe.Ripe.prototype.chatLinesOrderP = function(number, options) {
 };
 
 /**
+ * Returns the number of chat lines of an order.
+ *
+ * @param {Number} number The number of the order to get the number of chat lines from.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ ripe.Ripe.prototype.chatLinesCountOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/chat/lines/count`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the number of chat lines of an order.
+ *
+ * @param {Number} number The number of the order to get the number of chat lines from.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The number of order chat's lines.
+ */
+ripe.Ripe.prototype.chatLinesCountOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.chatLinesCountOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns all the states of an order.
  *
  * @param {Number} number The number of the order to find by.
