@@ -194,3 +194,87 @@ ripe.Ripe.prototype.deleteTransportRuleP = function(id, options) {
         });
     });
 };
+
+/**
+ * Gets an existing transport rule filtered by brand, model and country.
+ *
+ * @param {String} brand The transport rule's brand.
+ * @param {String} model The transport rule's model.
+ * @param {String} country The transport rule's country.
+ * @param {String} factory The transport rule's factory.
+ * @param {Number} size The transport rule's size.
+ * @param {Object} options An object of options to configure the request
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.resolveTransportRule = function(
+    brand,
+    model,
+    country,
+    factory,
+    size,
+    options,
+    callback
+) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}transport_rules/resolve`;
+    const params = {};
+    if (brand !== undefined && brand !== null) {
+        params.brand = brand;
+    }
+    if (model !== undefined && model !== null) {
+        params.model = model;
+    }
+    if (country !== undefined && country !== null) {
+        params.country = country;
+    }
+    if (factory !== undefined && factory !== null) {
+        params.factory = factory;
+    }
+    if (size !== undefined && size !== null) {
+        params.size = size;
+    }
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params,
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Gets an existing transport rule filtered by brand, model and country.
+ *
+ * @param {String} brand The transport rule's brand.
+ * @param {String} model The transport rule's model.
+ * @param {String} country The transport rule's country.
+ * @param {String} factory The transport rule's factory.
+ * @param {Number} size The transport rule's size.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The transport rule requested by brand, model and country.
+ */
+ripe.Ripe.prototype.resolveTransportRuleP = function(
+    brand,
+    model,
+    country,
+    factory,
+    size,
+    options
+) {
+    return new Promise((resolve, reject) => {
+        this.resolveTransportRule(
+            brand,
+            model,
+            country,
+            factory,
+            size,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
+    });
+};
