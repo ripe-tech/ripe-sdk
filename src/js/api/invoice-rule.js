@@ -196,16 +196,17 @@ ripe.Ripe.prototype.deleteInvoiceRuleP = function(id, options) {
 };
 
 /**
- * Gets an existing invoice rule filtered by brand, model and country.
+ * Gets an existing invoice rule filtered by brand, model, country and size.
  *
  * @param {String} brand The invoice rule's brand.
  * @param {String} model The invoice rule's model.
  * @param {String} country The invoice rule's country.
+ * @param {Number} size The invoice rule's size.
  * @param {Object} options An object of options to configure the request
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.resolveInvoiceRule = function(brand, model, country, options, callback) {
+ripe.Ripe.prototype.resolveInvoiceRule = function(brand, model, country, size, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}invoice_rules/resolve`;
@@ -218,6 +219,9 @@ ripe.Ripe.prototype.resolveInvoiceRule = function(brand, model, country, options
     }
     if (country !== undefined && country !== null) {
         params.country = country;
+    }
+    if (size !== undefined && size !== null) {
+        params.size = size;
     }
     options = Object.assign(options, {
         url: url,
@@ -235,13 +239,21 @@ ripe.Ripe.prototype.resolveInvoiceRule = function(brand, model, country, options
  * @param {String} brand The invoice rule's brand.
  * @param {String} model The invoice rule's model.
  * @param {String} country The invoice rule's country.
+ * @param {Number} size The invoice rule's size.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The invoice rule requested by brand, model and country.
  */
-ripe.Ripe.prototype.resolveInvoiceRuleP = function(brand, model, country, options) {
+ripe.Ripe.prototype.resolveInvoiceRuleP = function(brand, model, country, size, options) {
     return new Promise((resolve, reject) => {
-        this.resolveInvoiceRule(brand, model, country, options, (result, isValid, request) => {
-            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-        });
+        this.resolveInvoiceRule(
+            brand,
+            model,
+            country,
+            size,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
     });
 };
