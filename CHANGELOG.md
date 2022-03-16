@@ -259,7 +259,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Support for multiple character escaping in `escape()`
 * Add method to retrieve the URL for an attachment
 * Support for retry in API requests when receiving authentication related errors (eg: 403)
-* Add size argument to resolveInvoiceRule - [ripe-core/#4703](https://github.com/ripe-tech/ripe-core/issues/4703)
+* Add size argument to `resolveInvoiceRule` - [ripe-core/#4703](https://github.com/ripe-tech/ripe-core/issues/4703)
 
 ## [2.2.1] - 2021-06-13
 
