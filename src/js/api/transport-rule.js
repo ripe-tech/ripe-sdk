@@ -196,7 +196,7 @@ ripe.Ripe.prototype.deleteTransportRuleP = function(id, options) {
 };
 
 /**
- * Gets an existing transport rule filtered by brand, model and country.
+ * Gets an existing transport rule filtered by brand, model, country, factory and size.
  *
  * @param {String} brand The transport rule's brand.
  * @param {String} model The transport rule's model.
