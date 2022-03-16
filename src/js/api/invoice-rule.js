@@ -196,7 +196,7 @@ ripe.Ripe.prototype.deleteInvoiceRuleP = function(id, options) {
 };
 
 /**
- * Gets an existing invoice rule filtered by brand, model and country.
+ * Gets an existing invoice rule filtered by brand, model, country and size.
  *
  * @param {String} brand The invoice rule's brand.
  * @param {String} model The invoice rule's model.
