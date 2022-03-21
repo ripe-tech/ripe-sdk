@@ -248,6 +248,74 @@ ripe.Ripe.prototype.getPricesP = function(options) {
 };
 
 /**
+ * Returns the video of a model's customization.
+ *
+ * @param {Object} options An object containing the information required
+ * to get a video for a model, more specifically `brand`, `model`, `name`
+ * of the video and `p` containing the model's customization.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getVideo = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getVideoOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the video of a model's customization.
+ *
+ * @param {Object} options An object containing the information required
+ * to get a video for a model, more specifically `brand`, `model`, `name`
+ * of the video and `p` containing the model's customization.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The URL path to the video.
+ */
+ripe.Ripe.prototype.getVideoP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getVideo(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the video thumbnail image of a model's customization.
+ *
+ * @param {Object} options An object containing the information required
+ * to get a video for a model, more specifically `brand`, `model`, `name`
+ * of the video and `p` containing the model's customization.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.getVideoThumbnail = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getVideoThumbnailOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the video thumbnail image of a model's customization.
+ *
+ * @param {Object} options An object containing the information required
+ * to get a video for a model, more specifically `brand`, `model`, `name`
+ * of the video and `p` containing the model's customization.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The URL path to the video thumbnail image.
+ */
+ripe.Ripe.prototype.getVideoThumbnailP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getVideoThumbnail(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
@@ -762,6 +830,52 @@ ripe.Ripe.prototype._getPricesOptions = function(options = {}) {
 
 /**
  * @ignore
+ */
+ripe.Ripe.prototype._getVideoOptions = function(options = {}) {
+    options = this._getQueryOptions(options);
+
+    const params = options.params || {};
+    options.params = params;
+
+    const name = options.name === undefined ? undefined : options.name;
+    if (name !== undefined && name !== null) {
+        options.params.name = name;
+    }
+
+    const url = `${this.url}video`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET"
+    });
+
+    return options;
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getVideoThumbnailOptions = function(options = {}) {
+    options = this._getQueryOptions(options);
+
+    const params = options.params || {};
+    options.params = params;
+
+    const name = options.name === undefined ? undefined : options.name;
+    if (name !== undefined && name !== null) {
+        options.params.name = name;
+    }
+
+    const url = `${this.url}video/thumbnail`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET"
+    });
+
+    return options;
+};
+
+/**
+ * @ignore
  * @see {link http://docs.platforme.com/#render-endpoints-compose}
  */
 ripe.Ripe.prototype._getImageOptions = function(options = {}) {
@@ -1107,6 +1221,34 @@ ripe.Ripe.prototype._getSwatchOptions = function(options = {}) {
  */
 ripe.Ripe.prototype._getImageURL = function(options) {
     options = this._getImageOptions(options);
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
+ * Returns the URL for a video based on the given name and the provided
+ * customization.
+ *
+ * @param {Object} options An object containing the information required
+ * to get a video for a model, more specifically `brand`, `model`, `name`
+ * of the video and `p` containing the model's customization.
+ * @returns {String} The URL to the video.
+ */
+ripe.Ripe.prototype._getVideoURL = function(options) {
+    options = this._getVideoOptions(options);
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
+ * Returns the URL for the thumbnail image of a video based on the given
+ * name and the provided customization.
+ *
+ * @param {Object} options An object containing the information required
+ * to get a video for a model, more specifically `brand`, `model`, `name`
+ * of the video and `p` containing the model's customization.
+ * @returns {String} The URL to the video thumbnail image.
+ */
+ripe.Ripe.prototype._getVideoThumbnailURL = function(options) {
+    options = this._getVideoThumbnailOptions(options);
     return options.url + "?" + this._buildQuery(options.params);
 };
 
