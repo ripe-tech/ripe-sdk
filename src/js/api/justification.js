@@ -24,7 +24,6 @@ if (
  * - 'skip' - The number of the first record to retrieve from the results.
  * - 'limit' - The number of results to retrieve.
  * @param {Function} callback Function with the result of the request.
- * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
 ripe.Ripe.prototype.getJustifications = function(options, callback) {
@@ -107,6 +106,21 @@ ripe.Ripe.prototype.getJustificationsByContextP = function(context, options) {
     });
 };
 
+/**
+ * Gets the existing justifications, according to the provided filtering
+ * strategy as normalized values.
+ *
+ * Attempts to resolve context, code and full code based on what is given.
+ * Adds those parameters to the filters given.
+ *
+ * If the 'other' code is used, it returns the adhoc text message without
+ * requesting a justification from RIPE Core.
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @param {String} other The 'other' prefix code.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
 ripe.Ripe.prototype._getJustifications = function(options, callback, other = "other;") {
     // resolve context, code and full code based on available
     // information, using smarter filters
@@ -135,6 +149,13 @@ ripe.Ripe.prototype._getJustifications = function(options, callback, other = "ot
     return this._cacheURL(options.url, options, callback);
 };
 
+/**
+ * Attempts to resolve context, code and full code based on what is given.
+ * A full code is equivalent to 'context:code'.
+ *
+ * @param {Object} options An object of options that may include context, code or a full code.
+ * @returns {Object} The params to be added as filters like context, code and full code.
+ */
 ripe.Ripe.prototype._resolveJustificationParams = function(options) {
     const params = {};
     if (options.codeFull) {
