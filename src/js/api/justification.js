@@ -110,11 +110,12 @@ ripe.Ripe.prototype.getJustificationsByContextP = function(context, options) {
  * Gets the existing justifications, according to the provided filtering
  * strategy as normalized values.
  *
- * Attempts to resolve context, code and full code based on what is given.
- * Adds those parameters to the filters given.
+ * Attempts to resolve context, code and full code and adds those
+ * parameters to the filters provided.
  *
- * If the 'other' code is used, it returns the adhoc text message without
- * requesting a justification from RIPE Core.
+ * If the 'other' keyword is contained in the provided `codeFull`, it means
+ * that no RIPE Core justification was used and the custom text provided is
+ * the text that is returned.
  *
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
