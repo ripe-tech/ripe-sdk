@@ -285,8 +285,8 @@ ripe.Ripe.prototype.getVideoP = function(options) {
  * Returns the video thumbnail image of a model's customization.
  *
  * @param {Object} options An object containing the information required
- * to get a video for a model, more specifically `brand`, `model`, `name`
- * of the video and `p` containing the model's customization.
+ * to get the thumbnail of a video for a model, more specifically `brand`,
+ * `model`, `name` of the video and `p` containing the model's customization.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -829,7 +829,13 @@ ripe.Ripe.prototype._getPricesOptions = function(options = {}) {
 };
 
 /**
- * @ignore
+ * Returns the required options for requesting a video of a model's
+ * customization.
+ *
+ * @param {Object} options An object containing the information required
+ * to get a video for a model, more specifically `brand`, `model`, `name`
+ * of the video and `p` containing the model's customization.
+ * @returns {Object} The options for requesting a video.
  */
 ripe.Ripe.prototype._getVideoOptions = function(options = {}) {
     options = this._getQueryOptions(options);
@@ -852,7 +858,13 @@ ripe.Ripe.prototype._getVideoOptions = function(options = {}) {
 };
 
 /**
- * @ignore
+ * Returns the required options for requesting a thumbnail image of a
+ * model's customization.
+ *
+ * @param {Object} options An object containing the information required
+ * to get the thumbnail of a video for a model, more specifically `brand`,
+ * `model`, `name` of the video and `p` containing the model's customization.
+ * @returns {Object} The options for requesting a thumbnail image of a video.
  */
 ripe.Ripe.prototype._getVideoThumbnailOptions = function(options = {}) {
     options = this._getQueryOptions(options);
