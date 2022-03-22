@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Always loading default bundle locales for scales and sizes
+* Better `getJustifications` resolving logic for context, code and full code allowing better searching - [ripe-pulse/#317](https://github.com/ripe-tech/ripe-pulse/issues/317)
 
 ### Fixed
 
