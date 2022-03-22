@@ -110,31 +110,32 @@ ripe.Ripe.prototype.getJustificationsByContextP = function(context, options) {
 ripe.Ripe.prototype._getJustifications = function(options, callback, other = "other;") {
     // resolve context, code and full code based on available
     // information, using smarter filters
-    const filters = this._resolveJustificationFilters(options);
+    const params = this._resolveJustificationParams(options);
 
     // exits if the 'other' context is used which works
     // as an escape hatch and does not need to be looked up
-    if (filters.codeFull && filters.codeFull.includes(other)) {
-        const index = filters.codeFull.indexOf(other);
-        return {
+    if (params.codeFull && params.codeFull.includes(other)) {
+        const index = params.codeFull.indexOf(other);
+        const justification = {
             context: "other",
-            code_full: filters.codeFull,
-            text: filters.codeFull.slice(index + other.length)
+            code_full: params.codeFull,
+            text: params.codeFull.slice(index + other.length)
         };
+        return callback([justification], true, null);
     }
 
     // builds the appropriate filters for context, code
     // and full code, used to fetch the justification
     options.params = options.params !== undefined ? options.params : {};
     options.params.filters = options.params.filters !== undefined ? options.params.filters : [];
-    if (filters.context) options.params.filters.push(`context:likei:${filters.context}`);
-    if (filters.code) options.params.filters.push(`code:likei:${filters.code}`);
-    if (filters.codeFull) options.params.filters.push(`code_full:likei:${filters.codeFull}`);
+    if (params.context) options.params.filters.push(`context:likei:${params.context}`);
+    if (params.code) options.params.filters.push(`code:likei:${params.code}`);
+    if (params.codeFull) options.params.filters.push(`code_full:likei:${params.codeFull}`);
 
     return this._cacheURL(options.url, options, callback);
 };
 
-ripe.Ripe.prototype._resolveJustificationFilters = function(options) {
+ripe.Ripe.prototype._resolveJustificationParams = function(options) {
     const params = {};
     if (options.codeFull) {
         const [context, code] = options.codeFull.split(":");
