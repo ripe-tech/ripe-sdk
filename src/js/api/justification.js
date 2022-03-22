@@ -37,7 +37,7 @@ ripe.Ripe.prototype.getJustifications = function(options, callback) {
         auth: true
     });
     options = this._build(options);
-    return this._cacheURL(options.url, options, callback);
+    return this._getJustifications(options, callback);
 };
 
 /**
@@ -59,6 +59,7 @@ ripe.Ripe.prototype.getJustificationsP = function(options) {
  * Gets the existing justifications filtered by context, according to the
  * provided filtering strategy as normalized values.
  *
+ * @param {String} context The justification context to filter for.
  * @param {Object} options An object of options to configure the request, such as:
  * - 'filters[]' - List of filters that the query will use to, operators such as
  * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
@@ -87,6 +88,7 @@ ripe.Ripe.prototype.getJustificationsByContext = function(context, options, call
  * Gets the existing justifications filtered by context, according to the
  * provided filtering strategy as normalized values.
  *
+ * @param {String} context The justification context to filter for.
  * @param {Object} options An object of options to configure the request, such as:
  * - 'filters[]' - List of filters that the query will use to, operators such as
  * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
@@ -103,4 +105,47 @@ ripe.Ripe.prototype.getJustificationsByContextP = function(context, options) {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
+};
+
+ripe.Ripe.prototype._getJustifications = function(options, callback, other = "other;") {
+    // resolve context, code and full code based on available
+    // information, using smarter filters
+    const filters = this._resolveJustificationFilters(options);
+
+    // exits if the 'other' context is used which works
+    // as an escape hatch and does not need to be looked up
+    if (filters.codeFull && filters.codeFull.includes(other)) {
+        const index = filters.codeFull.indexOf(other);
+        return {
+            context: "other",
+            code_full: filters.codeFull,
+            text: filters.codeFull.slice(index + other.length)
+        };
+    }
+
+    // builds the appropriate filters for context, code
+    // and full code, used to fetch the justification
+    options.params = options.params !== undefined ? options.params : {};
+    options.params.filters = options.params.filters !== undefined ? options.params.filters : [];
+    if (filters.context) options.params.filters.push(`context:likei:${filters.context}`);
+    if (filters.code) options.params.filters.push(`code:likei:${filters.code}`);
+    if (filters.codeFull) options.params.filters.push(`code_full:likei:${filters.codeFull}`);
+
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype._resolveJustificationFilters = function(options) {
+    const params = {};
+    if (options.codeFull) {
+        const [context, code] = options.codeFull.split(":");
+        params.codeFull = options.codeFull;
+        params.context = context;
+        params.code = code;
+    } else if (options.context && options.code) {
+        const codeFull = `${options.context}:${options.code}`;
+        params.codeFull = codeFull;
+        params.context = options.context;
+        params.code = options.code;
+    }
+    return params;
 };
