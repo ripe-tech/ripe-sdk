@@ -586,6 +586,11 @@ ripe.Ripe.prototype.chatOrderP = function(number, options) {
 /**
  * Returns the general chat lines of an order, unrelated to any state.
  *
+ * If the option `states` is set to true, it returns the general chat
+ * lines merged with each state's information summarized (e.g. number of
+ * messages for that state and authors) taking into account the ordering
+ * of events, meaning state updates can appear between chat lines.
+ *
  * @param {Number} number The number of the order to get the chat lines from.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
@@ -606,6 +611,11 @@ ripe.Ripe.prototype.chatLinesOrder = function(number, options, callback) {
 
 /**
  * Returns the general chat lines of an order, unrelated to any state.
+ *
+ * If the option `states` is set to true, it returns the general chat
+ * lines merged with each state's information summarized (e.g. number of
+ * messages for that state and authors) taking into account the ordering
+ * of events, meaning state updates can appear between chat lines.
  *
  * @param {Number} number The number of the order to get the chat lines from.
  * @param {Object} options An object of options to configure the request.
