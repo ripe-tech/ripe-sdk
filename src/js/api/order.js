@@ -548,7 +548,7 @@ ripe.Ripe.prototype.logOrderP = function(number, options) {
 };
 
 /**
- * Returns the chat of an order.
+ * Returns the general chat of an order, unrelated to any state.
  *
  * @param {Number} number The number of the order to get the chat from.
  * @param {Object} options An object of options to configure the request.
@@ -569,7 +569,7 @@ ripe.Ripe.prototype.chatOrder = function(number, options, callback) {
 };
 
 /**
- * Returns the chat of an order.
+ * Returns the general chat of an order, unrelated to any state.
  *
  * @param {Number} number The number of the order to get the chat from.
  * @param {Object} options An object of options to configure the request.
@@ -584,7 +584,7 @@ ripe.Ripe.prototype.chatOrderP = function(number, options) {
 };
 
 /**
- * Returns the chat lines of an order.
+ * Returns the general chat lines of an order, unrelated to any state.
  *
  * @param {Number} number The number of the order to get the chat lines from.
  * @param {Object} options An object of options to configure the request.
@@ -605,7 +605,7 @@ ripe.Ripe.prototype.chatLinesOrder = function(number, options, callback) {
 };
 
 /**
- * Returns the chat lines of an order.
+ * Returns the general chat lines of an order, unrelated to any state.
  *
  * @param {Number} number The number of the order to get the chat lines from.
  * @param {Object} options An object of options to configure the request.
@@ -620,7 +620,7 @@ ripe.Ripe.prototype.chatLinesOrderP = function(number, options) {
 };
 
 /**
- * Returns the number of chat lines of an order.
+ * Returns the number of general chat lines of an order, unrelated to any state.
  *
  * @param {Number} number The number of the order to get the number of chat lines from.
  * @param {Object} options An object of options to configure the request.
@@ -641,7 +641,7 @@ ripe.Ripe.prototype.chatLinesCountOrder = function(number, options, callback) {
 };
 
 /**
- * Returns the number of chat lines of an order.
+ * Returns the number of general chat lines of an order, unrelated to any state.
  *
  * @param {Number} number The number of the order to get the number of chat lines from.
  * @param {Object} options An object of options to configure the request.
@@ -656,7 +656,7 @@ ripe.Ripe.prototype.chatLinesCountOrderP = function(number, options) {
 };
 
 /**
- * Adds a new chat line message to a specific order.
+ * Adds a new general chat line message to a specific order.
  *
  * @param {Number} number The number of the order where the chat line message will be added.
  * @param {Object} contents The contents of the chat message.
@@ -681,7 +681,7 @@ ripe.Ripe.prototype.chatCreateLineOrder = function(number, contents, options, ca
 };
 
 /**
- * Adds a new chat line message to a specific order.
+ * Adds a new general chat line message to a specific order.
  *
  * @param {Number} number The number of the order where the chat line message will be added.
  * @param {Object} contents The contents of the chat message.
