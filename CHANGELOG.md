@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* General order chat methods - [ripe-core/#4702](https://github.com/ripe-tech/ripe-core/issues/4702)
 
 ### Changed
 
