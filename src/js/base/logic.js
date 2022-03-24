@@ -251,7 +251,7 @@ ripe.Ripe.prototype.hasFrame = function(frame) {
  * provided video name available in spec.
  *
  * Notice that this call does not assure that a video showing is possible
- * it only determines that according to model's spec it should be
+ * it only determines if according to the model's spec it should be
  * possible to get such a video.
  *
  * @param {String} frame The name of the video to determine if it is
