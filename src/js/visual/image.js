@@ -328,7 +328,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const curve = this.element.dataset.curve || this.curve;
         const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
         const remoteInitialsBuilderLogic =
-            this.element.dataset.remoteInitialsBuilderLogic || this.remoteInitialsBuilderLogic;
+            this.element.dataset.remoteInitialsBuilderLogic ||
+            this.remoteInitialsBuilderLogic ||
+            undefined;
 
         // in case the state is defined tries to gather the appropriate
         // sate options for both initials and engraving taking into
