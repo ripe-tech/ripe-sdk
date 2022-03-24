@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [2.25.0] - 2022-03-24
+
+### Added
+
 * Add methods `getVideoP` and `getVideoThumbnailP` that return the video and video thumbnail for a given model and its customization - [ripe-white/#996](https://github.com/ripe-tech/ripe-white/issues/996)
 * Add methods `_getVideoURL` and `_getVideoThumbnailURL` that return the URL of a video and video thumbnail, respectively, for a given model and its customization - [ripe-white/#996](https://github.com/ripe-tech/ripe-white/issues/996)
 * General order chat methods - [ripe-core/#4702](https://github.com/ripe-tech/ripe-core/issues/4702)
@@ -19,10 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Always loading default bundle locales for scales and sizes
-
-### Fixed
-
-*
 
 ## [2.24.0] - 2022-03-14
 
