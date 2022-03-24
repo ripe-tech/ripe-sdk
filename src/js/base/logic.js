@@ -264,7 +264,9 @@ ripe.Ripe.prototype.hasVideo = function(name) {
     if (!name) return true;
 
     if (!this.loadedConfig.videos_m) return false;
-    return Boolean(this.loadedConfig.videos_m[name]);
+    if (!this.loadedConfig.videos_m[name]) return false;
+
+    return true;
 };
 
 /**
