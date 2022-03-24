@@ -109,6 +109,14 @@ ripe.Image.prototype.init = function() {
     this.initialsBuilder = this.options.initialsBuilder || this.owner.initialsBuilder;
     this.doubleBuffering =
         this.options.doubleBuffering === undefined ? true : this.options.doubleBuffering;
+    this.imageUrlProvider =
+        this.options.imageUrlProvider === undefined
+            ? (...args) => this.owner._getImageURL(...args)
+            : this.options.imageUrlProvider;
+    this.frameValidator =
+        this.options.frameValidator === undefined
+            ? (...args) => this.owner.hasFrame(...args)
+            : this.options.frameValidator;
     this._observer = null;
     this._url = null;
     this._previousUrl = null;
@@ -242,6 +250,10 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
             : options.getInitialsContext;
     this.doubleBuffering =
         options.doubleBuffering === undefined ? this.doubleBuffering : options.doubleBuffering;
+    this.imageUrlProvider =
+        options.imageUrlProvider === undefined ? this.imageUrlProvider : options.imageUrlProvider;
+    this.frameValidator =
+        options.frameValidator === undefined ? this.frameValidator : options.frameValidator;
 
     if (update) await this.update();
 };
@@ -400,15 +412,16 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         // verifies if the model currently loaded in the Ripe Instance can
         // render the frame to be display and if that's not the case "ignores"
         // the current request for update
-        if (frame && !this.owner.hasFrame(frame)) {
+        if (frame && !this.frameValidator(frame)) {
             this.trigger("not_loaded");
             return false;
         }
 
         // builds the URL of the image using the frame hacking approach
         // this should provide us with the new values
-        const url = this.owner._getImageURL({
+        const url = this.imageUrlProvider({
             frame: frame,
+            name: frame,
             format: format,
             size: size ? parseInt(size * pixelRatio) : size,
             width: width ? parseInt(width * pixelRatio) : width,

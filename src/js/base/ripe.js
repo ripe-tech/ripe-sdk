@@ -1187,6 +1187,27 @@ ripe.Ripe.prototype.bindImage = function(element, options = {}) {
 };
 
 /**
+ * Binds a video thumbnail Image to this Ripe instance.
+ *
+ * @param {Image} element The Image to be used by the Ripe instance.
+ * @param {Object} options An Object with options to configure the Image instance.
+ * @returns {Image} The Image instance created.
+ */
+ripe.Ripe.prototype.bindVideoThumbnail = function(element, options = {}) {
+    options = Object.assign(
+        {},
+        {
+            imageUrlProvider: this._getVideoThumbnailURL.bind(this),
+            frameValidator: this.hasVideo.bind(this),
+            doubleBuffering: false
+        },
+        options
+    );
+    const image = new ripe.Image(this, element, options);
+    return this.bindInteractable(image);
+};
+
+/**
  * Binds an Configurator to this Ripe instance.
  *
  * @param {Configurator} element The Configurator to be used by the Ripe instance.
