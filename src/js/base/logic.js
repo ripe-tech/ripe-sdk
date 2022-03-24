@@ -247,6 +247,26 @@ ripe.Ripe.prototype.hasFrame = function(frame) {
 };
 
 /**
+ * Determines if the model currently loaded (in case there's one) has the
+ * provided video name available in spec.
+ *
+ * Notice that this call does not assure that a video showing is possible
+ * it only determines that according to model's spec it should be
+ * possible to get such a video.
+ *
+ * @param {String} frame The name of the video to determine if it is
+ * possible to show that video.
+ * @returns {Boolean} If it's possible to show the video for the
+ * currently loaded model.
+ */
+ripe.Ripe.prototype.hasVideo = function(name) {
+    if (!this.loadedConfig) return true;
+    if (!name) return true;
+
+    return Boolean(this.loadedConfig.videos_m[name]);
+};
+
+/**
  * Localizes the given string value taking into account the current
  * brand and model context so that proper prefixes are taking into
  * account for proper build locale usage.
