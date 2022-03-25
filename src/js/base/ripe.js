@@ -1649,6 +1649,7 @@ ripe.Ripe.prototype.getDimension = function(name = "$base", face = null) {
     }
 
     if (!face) return dimensionSpec;
+    if (!dimensionSpec.faces) return dimensionSpec;
 
     return dimensionSpec.faces[face] ? dimensionSpec.faces[face] : dimensionSpec;
 };
