@@ -623,8 +623,8 @@ ripe.Image.prototype.setShowInitials = async function(showInitials) {
  *
  * @param {String} showInitials If the image should display initials.
  */
-ripe.Image.prototype.setRemoteInitialsLogic = async function(remoteInitialsLogic) {
-    this.remoteInitialsLogic = remoteInitialsLogic;
+ripe.Image.prototype.setRemoteInitialsBuilderLogic = async function(remoteInitialsBuilderLogic) {
+    this.remoteInitialsBuilderLogic = remoteInitialsBuilderLogic;
     await this.update();
 };
 
