@@ -691,6 +691,10 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
         this.options.remoteInitialsBuilderLogic === undefined
             ? false
             : this.options.remoteInitialsBuilderLogic;
+    this.noAwaitLayout =
+        this.options.noAwaitLayout === undefined
+            ? false
+            : this.options.noAwaitLayout;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account
@@ -1396,7 +1400,7 @@ ripe.Ripe.prototype.update = async function(state = null, options = {}, children
     // so that we can safely run the new update promise after all the other
     // previously registered ones are "flushed", after te update the promise
     // reference is forced to null to indicate that no more promises exist
-    if (this.updatePromise && !this.remoteInitialsBuilderLogic) await this.updatePromise;
+    if (this.updatePromise && !this.noAwaitLayout) await this.updatePromise;
     this.updatePromise = null;
 
     // in case the current update operation is no longer the latest one then
@@ -1405,7 +1409,7 @@ ripe.Ripe.prototype.update = async function(state = null, options = {}, children
 
     try {
         this.updatePromise = _update();
-        if (options.noAwaitLayout || this.remoteInitialsBuilderLogic) return true;
+        if (options.noAwaitLayout || this.noAwaitLayout) return true;
         const result = await this.updatePromise;
         return result;
     } finally {

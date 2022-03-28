@@ -105,6 +105,8 @@ ripe.Image.prototype.init = function() {
     this.showInitials = this.options.showInitials || false;
     this.remoteInitialsBuilderLogic =
         this.options.remoteInitialsBuilderLogic || this.owner.remoteInitialsBuilderLogic || false;
+    this.noAwaitLayout =
+        this.options.noAwaitLayout || this.owner.noAwaitLayout || false;
     this.initialsGroup = this.options.initialsGroup || null;
     this.initialsContext = this.options.initialsContext || null;
     this.getInitialsContext = this.options.getInitialsContext || null;
@@ -547,7 +549,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // for the update promise to be finished (in case an update is
     // currently running)
     await this.cancel();
-    if (this._updatePromise && !this.remoteInitialsBuilderLogic) await this._updatePromise;
+    if (this._updatePromise && !this.noAwaitLayout) await this._updatePromise;
 
     this._updatePromise = _update();
     try {
@@ -638,6 +640,17 @@ ripe.Image.prototype.setShowInitials = async function(showInitials) {
  */
 ripe.Image.prototype.setRemoteInitialsBuilderLogic = async function(remoteInitialsBuilderLogic) {
     this.remoteInitialsBuilderLogic = remoteInitialsBuilderLogic;
+    await this.update();
+};
+
+/**
+ * Updates the Image's `noAwaitLayout` flag that indicates if the
+ * current update should wait the completion of the previous one.
+ *
+ * @param {String} showInitials If the image should display initials.
+ */
+ripe.Image.prototype.setNoAwaitLayout = async function(noAwaitLayout) {
+    this.noAwaitLayout = noAwaitLayout;
     await this.update();
 };
 
