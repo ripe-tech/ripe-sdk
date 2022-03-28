@@ -94,7 +94,7 @@ describe("OrderAPI", function() {
             });
             assert.strictEqual(
                 result,
-                `${config.TEST_URL}orders/1234/image?key=secret-key&size=100&format=png`
+                `${config.TEST_URL}orders/1234/image?format=png&key=secret-key&size=100`
             );
         });
     });
