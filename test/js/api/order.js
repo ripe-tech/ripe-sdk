@@ -92,7 +92,6 @@ describe("OrderAPI", function() {
             const result = remote._getOrderReportPNGURL(1234, "secret-key", {
                 params: { size: 100, format: "png" }
             });
-            
             assert.strictEqual(
                 result,
                 `${config.TEST_URL}orders/1234/image?key=secret-key&size=100&format=png`
