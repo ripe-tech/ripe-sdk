@@ -89,7 +89,7 @@ describe("OrderAPI", function() {
     describe("#_getOrderImageURL()", function() {
         it("should be able to generate the order image URL", async () => {
             const remote = ripe.RipeAPI({ url: config.TEST_URL });
-            const result = remote._getOrderReportPNGURL(1234, "secret-key", {
+            const result = remote._getOrderImageURL(1234, "secret-key", {
                 params: { size: 100, format: "png" }
             });
             assert.strictEqual(
