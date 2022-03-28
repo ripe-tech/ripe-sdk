@@ -57,32 +57,39 @@ describe("OrderAPI", function() {
     describe("#_getOrderReportURL()", function() {
         it("should be able to generate a simple URL", async () => {
             const remote = ripe.RipeAPI({ url: config.TEST_URL });
-            const result = remote._getOrderReportURL(1234, "secret-key");
-            assert.strictEqual(result, `${config.TEST_URL}orders/1234/report?key=secret-key`);
-        });
-    });
-
-    describe("#_getOrderReportURL()", function() {
-        it("should be able to generate a simple URL", async () => {
-            const remote = ripe.RipeAPI({ url: config.TEST_URL });
-            const result = remote._getOrderReportURL(1234, "secret-key");
-            assert.strictEqual(result, `${config.TEST_URL}orders/1234/report?key=secret-key`);
+            const result = remote._getOrderReportURL(1234, "secret-key", {
+                large: true
+            });
+            assert.strictEqual(
+                result,
+                `${config.TEST_URL}orders/1234/report?key=secret-key&large=true`
+            );
         });
     });
 
     describe("#_getOrderReportPDFURL()", function() {
         it("should be able to generate a simple URL", async () => {
             const remote = ripe.RipeAPI({ url: config.TEST_URL });
-            const result = remote._getOrderReportPDFURL(1234, "secret-key");
-            assert.strictEqual(result, `${config.TEST_URL}orders/1234/report.pdf?key=secret-key`);
+            const result = remote._getOrderReportPDFURL(1234, "secret-key", {
+                params: { simple: true }
+            });
+            assert.strictEqual(
+                result,
+                `${config.TEST_URL}orders/1234/report.pdf?key=secret-key&simple=true`
+            );
         });
     });
 
-    describe("#_getOrderReportURL()", function() {
+    describe("#_getOrderReportPNGURL()", function() {
         it("should be able to generate a simple URL", async () => {
             const remote = ripe.RipeAPI({ url: config.TEST_URL });
-            const result = remote._getOrderReportPNGURL(1234, "secret-key");
-            assert.strictEqual(result, `${config.TEST_URL}orders/1234/report.png?key=secret-key`);
+            const result = remote._getOrderReportPNGURL(1234, "secret-key", {
+                params: { simple: true }
+            });
+            assert.strictEqual(
+                result,
+                `${config.TEST_URL}orders/1234/report.png?key=secret-key&simple=true`
+            );
         });
     });
 
