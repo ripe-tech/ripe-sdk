@@ -633,8 +633,8 @@ ripe.Image.prototype.setShowInitials = async function(showInitials) {
 };
 
 /**
- * Updates the Image's `showInitials` flag that indicates
- * if the initials should be display in the image.
+ * Updates the Image's `setRemoteInitialsBuilderLogic` flag that indicates
+ * if the initials builder logic should only run on the server side.
  *
  * @param {String} showInitials If the image should display initials.
  */
