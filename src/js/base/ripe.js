@@ -692,9 +692,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
             ? false
             : this.options.remoteInitialsBuilderLogic;
     this.noAwaitLayout =
-        this.options.noAwaitLayout === undefined
-            ? false
-            : this.options.noAwaitLayout;
+        this.options.noAwaitLayout === undefined ? false : this.options.noAwaitLayout;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account

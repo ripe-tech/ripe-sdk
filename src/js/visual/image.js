@@ -105,8 +105,7 @@ ripe.Image.prototype.init = function() {
     this.showInitials = this.options.showInitials || false;
     this.remoteInitialsBuilderLogic =
         this.options.remoteInitialsBuilderLogic || this.owner.remoteInitialsBuilderLogic || false;
-    this.noAwaitLayout =
-        this.options.noAwaitLayout || this.owner.noAwaitLayout || false;
+    this.noAwaitLayout = this.options.noAwaitLayout || this.owner.noAwaitLayout || false;
     this.initialsGroup = this.options.initialsGroup || null;
     this.initialsContext = this.options.initialsContext || null;
     this.getInitialsContext = this.options.getInitialsContext || null;
