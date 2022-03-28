@@ -58,7 +58,7 @@ describe("OrderAPI", function() {
         it("should be able to generate a simple URL", async () => {
             const remote = ripe.RipeAPI({ url: config.TEST_URL });
             const result = remote._getOrderReportURL(1234, "secret-key", {
-                large: true
+                params: { large: true }
             });
             assert.strictEqual(
                 result,
