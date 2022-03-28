@@ -9,17 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+* Support no `faces` in a dimension from spec in ´getDimension`
+
+## [2.25.0] - 2022-03-24
+
+### Added
+
 * Add methods `getVideoP` and `getVideoThumbnailP` that return the video and video thumbnail for a given model and its customization - [ripe-white/#996](https://github.com/ripe-tech/ripe-white/issues/996)
 * Add methods `_getVideoURL` and `_getVideoThumbnailURL` that return the URL of a video and video thumbnail, respectively, for a given model and its customization - [ripe-white/#996](https://github.com/ripe-tech/ripe-white/issues/996)
 * General order chat methods - [ripe-core/#4702](https://github.com/ripe-tech/ripe-core/issues/4702)
+* Support for external image URL providers and frame validators for image - [ripe-white/#996](https://github.com/ripe-tech/ripe-white/issues/996)
+* Validator function `hasVideo` that verifies if a video exists in the build spec - [ripe-white/#996](https://github.com/ripe-tech/ripe-white/issues/996)
+* New image bind method `bindVideoThumbnail` specific for binding to an image tag the video thumbnail image - [ripe-white/#996](https://github.com/ripe-tech/ripe-white/issues/996)
 
 ### Changed
 
 * Always loading default bundle locales for scales and sizes
-
-### Fixed
-
-*
 
 ## [2.24.0] - 2022-03-14
 
