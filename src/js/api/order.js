@@ -2153,7 +2153,7 @@ ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
 /**
  * @ignore
  */
- ripe.Ripe.prototype._getOrderImageURL = function(number, key, options) {
+ripe.Ripe.prototype._getOrderImageURL = function(number, key, options) {
     options = options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/image`;
     const params = options.params || {};
