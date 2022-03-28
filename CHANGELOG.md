@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Added `remoteInitialsBuilderLogic` option to specify if the initials builder logic should run on server-side.  
+* Added `noAwaitLayout` option - current updates don't wait for the previous ones to be complete.
 
 ### Changed
 
