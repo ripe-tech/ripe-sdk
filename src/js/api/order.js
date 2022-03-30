@@ -2152,6 +2152,21 @@ ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
 
 /**
  * @ignore
+ */
+ripe.Ripe.prototype._getOrderImageURL = function(number, key, options) {
+    options = options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/image`;
+    const params = options.params || {};
+    params.key = key;
+    options = Object.assign(options, {
+        url: url,
+        params: params
+    });
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
+ * @ignore
  * @see {link https://docs.platforme.com/#order-endpoints-import}
  */
 ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {

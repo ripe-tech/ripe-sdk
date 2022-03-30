@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Support for external image URL providers and frame validators for image - [ripe-white/#996](https://github.com/ripe-tech/ripe-white/issues/996)
 * Validator function `hasVideo` that verifies if a video exists in the build spec - [ripe-white/#996](https://github.com/ripe-tech/ripe-white/issues/996)
 * New image bind method `bindVideoThumbnail` specific for binding to an image tag the video thumbnail image - [ripe-white/#996](https://github.com/ripe-tech/ripe-white/issues/996)
+* Add method `_getOrderImageURL` - [#380](https://github.com/ripe-tech/ripe-sdk/issues/380)
 
 ### Changed
 
