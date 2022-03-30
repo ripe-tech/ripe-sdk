@@ -196,7 +196,6 @@ ripe.Ripe.prototype.attachmentsOrder = function(number, options, callback) {
  *
  * @param {Number} number The number of the order to find by.
  * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
  * @returns {Promise} An object containing all the attachments of an order.
  */
 ripe.Ripe.prototype.attachmentsOrderP = function(number, options) {
@@ -538,12 +537,170 @@ ripe.Ripe.prototype.logOrder = function(number, options, callback) {
  *
  * @param {Number} number The number of the order to find by.
  * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The states of an order requested by number.
  */
 ripe.Ripe.prototype.logOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
         this.logOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the general chat of an order, unrelated to any state.
+ *
+ * @param {Number} number The number of the order to get the chat from.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.chatOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/chat`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the general chat of an order, unrelated to any state.
+ *
+ * @param {Number} number The number of the order to get the chat from.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order's chat.
+ */
+ripe.Ripe.prototype.chatOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.chatOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the general chat lines of an order, unrelated to any state.
+ *
+ * If the option `states` is set to true, it returns the general chat
+ * lines merged with each state's information summarized (e.g. number of
+ * messages for that state and authors) taking into account the ordering
+ * of events, meaning state updates can appear between chat lines.
+ *
+ * @param {Number} number The number of the order to get the chat lines from.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.chatLinesOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/chat/lines`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the general chat lines of an order, unrelated to any state.
+ *
+ * If the option `states` is set to true, it returns the general chat
+ * lines merged with each state's information summarized (e.g. number of
+ * messages for that state and authors) taking into account the ordering
+ * of events, meaning state updates can appear between chat lines.
+ *
+ * @param {Number} number The number of the order to get the chat lines from.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order chat's lines.
+ */
+ripe.Ripe.prototype.chatLinesOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.chatLinesOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the number of general chat lines of an order, unrelated to any state.
+ *
+ * @param {Number} number The number of the order to get the number of chat lines from.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.chatLinesCountOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/chat/lines/count`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the number of general chat lines of an order, unrelated to any state.
+ *
+ * @param {Number} number The number of the order to get the number of chat lines from.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The number of order chat's lines.
+ */
+ripe.Ripe.prototype.chatLinesCountOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.chatLinesCountOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Adds a new general chat line message to a specific order.
+ *
+ * @param {Number} number The number of the order where the chat line message will be added.
+ * @param {Object} contents The contents of the chat message.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.chatCreateLineOrder = function(number, contents, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/chat/lines`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        params: {
+            contents: contents
+        },
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Adds a new general chat line message to a specific order.
+ *
+ * @param {Number} number The number of the order where the chat line message will be added.
+ * @param {Object} contents The contents of the chat message.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} An object containing the chat lines for the specific order.
+ */
+ripe.Ripe.prototype.chatCreateLineOrderP = function(number, contents, options) {
+    return new Promise((resolve, reject) => {
+        this.chatCreateLineOrder(number, contents, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -575,7 +732,6 @@ ripe.Ripe.prototype.statesOrder = function(number, options, callback) {
  *
  * @param {Number} number The number of the order to find by.
  * @param {Object} options An object of options to configure the request.
- * @param {Function} callback Function with the result of the request.
  * @returns {Promise} The states of an order requested by number.
  */
 ripe.Ripe.prototype.statesOrderP = function(number, options) {
@@ -1961,9 +2117,11 @@ ripe.Ripe.prototype.touchOrderP = function(number, options) {
 ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
     options = options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/report`;
+    const params = options.params || {};
+    params.key = key;
     options = Object.assign(options, {
         url: url,
-        params: { key: key }
+        params: params
     });
     return options.url + "?" + this._buildQuery(options.params);
 };
@@ -1974,9 +2132,11 @@ ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
 ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
     options = options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/report.pdf`;
+    const params = options.params || {};
+    params.key = key;
     options = Object.assign(options, {
         url: url,
-        params: { key: key }
+        params: params
     });
     return options.url + "?" + this._buildQuery(options.params);
 };
@@ -1987,9 +2147,26 @@ ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
 ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
     options = options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/report.png`;
+    const params = options.params || {};
+    params.key = key;
     options = Object.assign(options, {
         url: url,
-        params: { key: key }
+        params: params
+    });
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getOrderImageURL = function(number, key, options) {
+    options = options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/image`;
+    const params = options.params || {};
+    params.key = key;
+    options = Object.assign(options, {
+        url: url,
+        params: params
     });
     return options.url + "?" + this._buildQuery(options.params);
 };
