@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [2.25.1] - 2022-03-31
+
+### Fixed
+
 * Support no `faces` in a dimension from spec in ´getDimension`
 * Fix `_getOrderReportURL`, `_getOrderReportPDFURL`, `_getOrderReportPNGURL` logic and tests - [#381](https://github.com/ripe-tech/ripe-sdk/pull/381)
 
