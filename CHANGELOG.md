@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Added method `resolveJustification` to find the matching justificaton given context and code or full code - [ripe-pulse/#317](https://github.com/ripe-tech/ripe-pulse/issues/317)
 
 ### Changed
 
