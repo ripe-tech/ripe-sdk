@@ -58,14 +58,7 @@ ripe.Ripe.prototype.getJustificationsP = function(options) {
  * Gets the matching justification based on context and code or on
  * a full code, if it exists.
  *
- * @param {Object} options An object of options to configure the request, such as:
- * - 'filters[]' - List of filters that the query will use to, operators such as
- * ('in', 'not_in', 'like', 'contains'), for instance (eg: 'id:eq:42') would filter by the id that equals to 42.
- * - 'sort' - List of arguments to sort the results by and which direction
- * to sort them in (eg: 'id:ascending') would sort by the id attribute in ascending order,
- * while (eg: 'id:descending')] would do it in descending order.
- * - 'skip' - The number of the first record to retrieve from the results.
- * - 'limit' - The number of results to retrieve.
+ * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
@@ -87,7 +80,7 @@ ripe.Ripe.prototype.resolveJustification = function(options, callback) {
  * a full code, if it exists.
  *
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The justification.
+ * @returns {Promise} The justification that better matches the provided parameters.
  */
 ripe.Ripe.prototype.resolveJustificationP = function(options) {
     return new Promise((resolve, reject) => {
