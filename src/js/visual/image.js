@@ -120,7 +120,7 @@ ripe.Image.prototype.init = function() {
         this.options.frameValidator === undefined
             ? (...args) => this.owner.hasFrame(...args)
             : this.options.frameValidator;
-    this.options = this.options.options || this.owner.options || [];
+    this.options = this.options.options || this.owner.options || null;
     this._observer = null;
     this._url = null;
     this._previousUrl = null;
