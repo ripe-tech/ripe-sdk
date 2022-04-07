@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added method `resolveJustification` to find the matching justificaton given context and code or full code - [ripe-pulse/#317](https://github.com/ripe-tech/ripe-pulse/issues/317)
-* Added `remoteInitialsBuilderLogic` option to specify if the initials builder logic should run on server-side.  
+* Added method `resolveJustification` to find the matching justification given context and code or full code - [ripe-pulse/#317](https://github.com/ripe-tech/ripe-pulse/issues/317)
+* Added `composeLogic` option to specify if the (initials builder) logic should run on server-side.  
 * Added `noAwaitLayout` option so that current updates don't wait for the previous ones to be complete.
 * Added new compose `options` to allow passing composition options such as dpi and quality.
 
@@ -301,7 +301,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Ability to override `name` and `meta` for attachments - [#282](https://github.com/ripe-tech/ripe-sdk/issues/282)
 * Added method to issue a create waybill command for a given order - [ripe-pulse/211](https://github.com/ripe-tech/ripe-pulse/issues/211)
 * Add `rejectOrderP` and `rejectOrder` methods - [ripe-pulse/#219](https://github.com/ripe-tech/ripe-pulse/issues/219)
-* Passing `locale` and `country` arguments in `ctx` when doing initials builder to allow localized sanitization of initials - [build-static/#2075](https://github.com/ripe-tech/builds-static/issues/2075) 
+* Passing `locale` and `country` arguments in `ctx` when doing initials builder to allow localized sanitization of initials - [build-static/#2075](https://github.com/ripe-tech/builds-static/issues/2075)
 
 ### Fixed
 
