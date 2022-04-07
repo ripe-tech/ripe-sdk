@@ -120,6 +120,7 @@ ripe.Image.prototype.init = function() {
         this.options.frameValidator === undefined
             ? (...args) => this.owner.hasFrame(...args)
             : this.options.frameValidator;
+    this.options = this.options.options || this.owner.options || [];
     this._observer = null;
     this._url = null;
     this._previousUrl = null;
@@ -340,6 +341,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const offsets = this.element.dataset.offsets || this.offsets;
         const curve = this.element.dataset.curve || this.curve;
         const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
+        const options = this.element.dataset.options || this.options;
         const remoteInitialsBuilderLogic =
             this.element.dataset.remoteInitialsBuilderLogic ||
             this.remoteInitialsBuilderLogic ||
@@ -484,7 +486,8 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             shadowOffset: shadowOffset,
             offsets: offsets,
             logic: remoteInitialsBuilderLogic,
-            curve: curve
+            curve: curve,
+            options: options
         });
 
         // verifies if the target image URL for the update is already
