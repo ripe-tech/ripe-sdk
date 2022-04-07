@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added method `resolveJustification` to find the matching justificaton given context and code or full code - [ripe-pulse/#317](https://github.com/ripe-tech/ripe-pulse/issues/317)
 * Added `remoteInitialsBuilderLogic` option to specify if the initials builder logic should run on server-side.  
 * Added `noAwaitLayout` option so that current updates don't wait for the previous ones to be complete.
+* Added new compose `options` to allow passing composition options such as dpi and quality.
 
 ### Changed
 
