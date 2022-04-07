@@ -2117,9 +2117,11 @@ ripe.Ripe.prototype.touchOrderP = function(number, options) {
 ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
     options = options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/report`;
+    const params = options.params || {};
+    params.key = key;
     options = Object.assign(options, {
         url: url,
-        params: { key: key }
+        params: params
     });
     return options.url + "?" + this._buildQuery(options.params);
 };
@@ -2130,9 +2132,11 @@ ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
 ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
     options = options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/report.pdf`;
+    const params = options.params || {};
+    params.key = key;
     options = Object.assign(options, {
         url: url,
-        params: { key: key }
+        params: params
     });
     return options.url + "?" + this._buildQuery(options.params);
 };
@@ -2143,9 +2147,26 @@ ripe.Ripe.prototype._getOrderReportPDFURL = function(number, key, options) {
 ripe.Ripe.prototype._getOrderReportPNGURL = function(number, key, options) {
     options = options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/report.png`;
+    const params = options.params || {};
+    params.key = key;
     options = Object.assign(options, {
         url: url,
-        params: { key: key }
+        params: params
+    });
+    return options.url + "?" + this._buildQuery(options.params);
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getOrderImageURL = function(number, key, options) {
+    options = options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/image`;
+    const params = options.params || {};
+    params.key = key;
+    options = Object.assign(options, {
+        url: url,
+        params: params
     });
     return options.url + "?" + this._buildQuery(options.params);
 };
