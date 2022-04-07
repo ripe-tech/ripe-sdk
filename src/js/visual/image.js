@@ -109,6 +109,8 @@ ripe.Image.prototype.init = function() {
     this.initialsBuilder = this.options.initialsBuilder || this.owner.initialsBuilder;
     this.doubleBuffering =
         this.options.doubleBuffering === undefined ? true : this.options.doubleBuffering;
+    this.noAwaitLayout = this.options.noAwaitLayout || this.owner.noAwaitLayout || false;
+    this.composeLogic = this.options.composeLogic || this.owner.composeLogic || false;
     this.imageUrlProvider =
         this.options.imageUrlProvider === undefined
             ? (...args) => this.owner._getImageURL(...args)
@@ -337,6 +339,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const offsets = this.element.dataset.offsets || this.offsets;
         const curve = this.element.dataset.curve || this.curve;
         const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
+        const composeLogic = this.element.dataset.composeLogic || this.composeLogic || undefined;
 
         // in case the state is defined tries to gather the appropriate
         // sate options for both initials and engraving taking into
@@ -360,52 +363,64 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             frame: this.frame
         };
 
-        // encapsulates the initials builder around a promise that for
-        // promised (async) based function allows early cancellation using
-        // the associated cancel event, for non async function simply
-        // ignores the cancel event and executes the method normally,
-        // this strategy allows huge performance gains for quick image
-        // specification changes (eg: rapid initials typing)
-        const _initialsBuilderPromise = (...args) => {
-            return new Promise(resolve => {
-                const cancelBind = this.bind("cancel", () => {
-                    this.unbind("cancel", cancelBind);
-                    resolve();
-                });
-                const promise = this.initialsBuilder(...args);
-                if (promise && promise.then) {
-                    promise.then(result => {
+        let initialsSpec = {};
+
+        // in case the compose (initials builder) logic has been requested then
+        // a simple initials spec is set with only the initials value present
+        // the remainder of the logic will be executed on the server-side
+        if (composeLogic) {
+            initialsSpec = { initials: this.initials };
+        }
+        // otherwise "prepares" the execution of the business logic allowing
+        // proper cancellation of the execution request if needed
+        else {
+            // encapsulates the initials builder around a promise that for
+            // promised (async) based function allows early cancellation using
+            // the associated cancel event, for non async function simply
+            // ignores the cancel event and executes the method normally,
+            // this strategy allows huge performance gains for quick image
+            // specification changes (eg: rapid initials typing)
+            const _initialsBuilderPromise = (...args) => {
+                return new Promise(resolve => {
+                    const cancelBind = this.bind("cancel", () => {
+                        this.unbind("cancel", cancelBind);
+                        resolve();
+                    });
+                    const promise = this.initialsBuilder(...args);
+                    if (promise && promise.then) {
+                        promise.then(result => {
+                            this.unbind("cancel", cancelBind);
+                            resolve(result);
+                        });
+                    } else {
+                        const result = promise;
                         this.unbind("cancel", cancelBind);
                         resolve(result);
-                    });
-                } else {
-                    const result = promise;
-                    this.unbind("cancel", cancelBind);
-                    resolve(result);
+                    }
+                });
+            };
+
+            initialsSpec = this.showInitials
+                ? await _initialsBuilderPromise(
+                      this.initials,
+                      this.engraving,
+                      initialsGroup,
+                      initialsViewport,
+                      context,
+                      ctx
+                  )
+                : {};
+
+            // in case the initials builder promise was cancelled
+            // early then return the control flow immediately
+            if (!initialsSpec) return;
+
+            // if there are message events in initials builder ctx, dispatches
+            // them to the proper message handler (to display message to end user)
+            if (initialsSpec.ctx && initialsSpec.ctx.messages && initialsSpec.ctx.messages.length) {
+                for (const [topic, content] of initialsSpec.ctx.messages) {
+                    this.owner.trigger("message", topic, content);
                 }
-            });
-        };
-
-        const initialsSpec = this.showInitials
-            ? await _initialsBuilderPromise(
-                  this.initials,
-                  this.engraving,
-                  initialsGroup,
-                  initialsViewport,
-                  context,
-                  ctx
-              )
-            : {};
-
-        // in case the initials builder promise was cancelled
-        // early then return the control flow immediately
-        if (!initialsSpec) return;
-
-        // if there are message events in initials builder ctx, dispatches
-        // them to the proper message handler (to display message to end user)
-        if (initialsSpec.ctx && initialsSpec.ctx.messages && initialsSpec.ctx.messages.length) {
-            for (const [topic, content] of initialsSpec.ctx.messages) {
-                this.owner.trigger("message", topic, content);
             }
         }
 
@@ -471,6 +486,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             shadowColor: shadowColor,
             shadowOffset: shadowOffset,
             offsets: offsets,
+            logic: composeLogic,
             curve: curve
         });
 
@@ -535,7 +551,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // for the update promise to be finished (in case an update is
     // currently running)
     await this.cancel();
-    if (this._updatePromise) await this._updatePromise;
+    if (this._updatePromise && (!options.noAwaitLayout || !this.noAwaitLayout)) {
+        await this._updatePromise;
+    }
 
     this._updatePromise = _update();
     try {
@@ -615,6 +633,31 @@ ripe.Image.prototype.setFrame = async function(frame, options) {
  */
 ripe.Image.prototype.setShowInitials = async function(showInitials) {
     this.showInitials = showInitials;
+    await this.update();
+};
+
+/**
+ * Updates the Image's `setComposeLogic` flag that indicates
+ * if the initials builder logic should only run on the server side.
+ *
+ * @param {String} composeLogic If the compose (initials builder) logic
+ * should be executed or not, in case this value is defined the local
+ * initials builder logic should not be executed.
+ */
+ripe.Image.prototype.setComposeLogic = async function(composeLogic) {
+    this.composeLogic = composeLogic;
+    await this.update();
+};
+
+/**
+ * Updates the Image's `noAwaitLayout` flag that indicates if the
+ * current update should not wait the completion of the previous one.
+ *
+ * @param {String} noAwaitLayout If the layout operations should wait
+ * for the complete execution of the previous ones.
+ */
+ripe.Image.prototype.setNoAwaitLayout = async function(noAwaitLayout) {
+    this.noAwaitLayout = noAwaitLayout;
     await this.update();
 };
 
