@@ -368,9 +368,16 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         };
 
         let initialsSpec = {};
+
+        // in case remote initials builder logic has been requested then
+        // a simple initials spec is set with only the initials value present
+        // the remainder of the logic will be executed on the server-side
         if (remoteInitialsBuilderLogic) {
             initialsSpec = { initials: this.initials };
-        } else {
+        }
+        // otherwise "prepares" the execution of the business logic allowing
+        // proper cancellation of the execution request if needed
+        else {
             // encapsulates the initials builder around a promise that for
             // promised (async) based function allows early cancellation using
             // the associated cancel event, for non async function simply
@@ -548,7 +555,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
     // for the update promise to be finished (in case an update is
     // currently running)
     await this.cancel();
-    if (this._updatePromise && !this.noAwaitLayout) await this._updatePromise;
+    if (this._updatePromise && (!options.noAwaitLayout || !this.noAwaitLayout)) {
+        await this._updatePromise;
+    }
 
     this._updatePromise = _update();
     try {
@@ -635,7 +644,9 @@ ripe.Image.prototype.setShowInitials = async function(showInitials) {
  * Updates the Image's `setRemoteInitialsBuilderLogic` flag that indicates
  * if the initials builder logic should only run on the server side.
  *
- * @param {String} showInitials If the image should display initials.
+ * @param {String} remoteInitialsBuilderLogic If the remote initials builder
+ * logic should be executed or not, in case this value is defined the local
+ * initials builder logic should not be executed.
  */
 ripe.Image.prototype.setRemoteInitialsBuilderLogic = async function(remoteInitialsBuilderLogic) {
     this.remoteInitialsBuilderLogic = remoteInitialsBuilderLogic;
@@ -644,9 +655,10 @@ ripe.Image.prototype.setRemoteInitialsBuilderLogic = async function(remoteInitia
 
 /**
  * Updates the Image's `noAwaitLayout` flag that indicates if the
- * current update should wait the completion of the previous one.
+ * current update should not wait the completion of the previous one.
  *
- * @param {String} showInitials If the image should display initials.
+ * @param {String} noAwaitLayout If the layout operations should wait
+ * for the complete execution of the previous ones.
  */
 ripe.Image.prototype.setNoAwaitLayout = async function(noAwaitLayout) {
     this.noAwaitLayout = noAwaitLayout;

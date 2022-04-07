@@ -1398,7 +1398,9 @@ ripe.Ripe.prototype.update = async function(state = null, options = {}, children
     // so that we can safely run the new update promise after all the other
     // previously registered ones are "flushed", after te update the promise
     // reference is forced to null to indicate that no more promises exist
-    if (this.updatePromise && !this.noAwaitLayout) await this.updatePromise;
+    if (this.updatePromise && (!options.noAwaitLayout || !this.noAwaitLayout)) {
+        await this.updatePromise;
+    }
     this.updatePromise = null;
 
     // in case the current update operation is no longer the latest one then
