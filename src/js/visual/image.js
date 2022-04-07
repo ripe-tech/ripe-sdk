@@ -103,15 +103,14 @@ ripe.Image.prototype.init = function() {
     this.offsets = this.options.offsets || null;
     this.curve = this.options.curve || null;
     this.showInitials = this.options.showInitials || false;
-    this.remoteInitialsBuilderLogic =
-        this.options.remoteInitialsBuilderLogic || this.owner.remoteInitialsBuilderLogic || false;
-    this.noAwaitLayout = this.options.noAwaitLayout || this.owner.noAwaitLayout || false;
     this.initialsGroup = this.options.initialsGroup || null;
     this.initialsContext = this.options.initialsContext || null;
     this.getInitialsContext = this.options.getInitialsContext || null;
     this.initialsBuilder = this.options.initialsBuilder || this.owner.initialsBuilder;
     this.doubleBuffering =
         this.options.doubleBuffering === undefined ? true : this.options.doubleBuffering;
+    this.noAwaitLayout = this.options.noAwaitLayout || this.owner.noAwaitLayout || false;
+    this.composeLogic = this.options.composeLogic || this.owner.composeLogic || false;
     this.imageUrlProvider =
         this.options.imageUrlProvider === undefined
             ? (...args) => this.owner._getImageURL(...args)
@@ -340,10 +339,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const offsets = this.element.dataset.offsets || this.offsets;
         const curve = this.element.dataset.curve || this.curve;
         const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
-        const remoteInitialsBuilderLogic =
-            this.element.dataset.remoteInitialsBuilderLogic ||
-            this.remoteInitialsBuilderLogic ||
-            undefined;
+        const composeLogic = this.element.dataset.composeLogic || this.composeLogic || undefined;
 
         // in case the state is defined tries to gather the appropriate
         // sate options for both initials and engraving taking into
@@ -369,10 +365,10 @@ ripe.Image.prototype.update = async function(state, options = {}) {
 
         let initialsSpec = {};
 
-        // in case remote initials builder logic has been requested then
+        // in case the compose (initials builder) logic has been requested then
         // a simple initials spec is set with only the initials value present
         // the remainder of the logic will be executed on the server-side
-        if (remoteInitialsBuilderLogic) {
+        if (composeLogic) {
             initialsSpec = { initials: this.initials };
         }
         // otherwise "prepares" the execution of the business logic allowing
@@ -490,7 +486,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             shadowColor: shadowColor,
             shadowOffset: shadowOffset,
             offsets: offsets,
-            logic: remoteInitialsBuilderLogic,
+            logic: composeLogic,
             curve: curve
         });
 
@@ -641,15 +637,15 @@ ripe.Image.prototype.setShowInitials = async function(showInitials) {
 };
 
 /**
- * Updates the Image's `setRemoteInitialsBuilderLogic` flag that indicates
+ * Updates the Image's `setComposeLogic` flag that indicates
  * if the initials builder logic should only run on the server side.
  *
- * @param {String} remoteInitialsBuilderLogic If the remote initials builder
- * logic should be executed or not, in case this value is defined the local
+ * @param {String} composeLogic If the compose (initials builder) logic
+ * should be executed or not, in case this value is defined the local
  * initials builder logic should not be executed.
  */
-ripe.Image.prototype.setRemoteInitialsBuilderLogic = async function(remoteInitialsBuilderLogic) {
-    this.remoteInitialsBuilderLogic = remoteInitialsBuilderLogic;
+ripe.Image.prototype.setComposeLogic = async function(composeLogic) {
+    this.composeLogic = composeLogic;
     await this.update();
 };
 

@@ -683,16 +683,13 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.usePrice = this.options.usePrice === undefined ? !this.noPrice : this.options.usePrice;
     this.noDiag = this.options.noDiag === undefined ? false : this.options.noDiag;
     this.useDiag = this.options.useDiag === undefined ? !this.noDiag : this.options.useDiag;
+    this.noAwaitLayout =
+        this.options.noAwaitLayout === undefined ? false : this.options.noAwaitLayout;
     this.useInitialsBuilderLogic =
         this.options.useInitialsBuilderLogic === undefined
             ? true
             : this.options.useInitialsBuilderLogic;
-    this.remoteInitialsBuilderLogic =
-        this.options.remoteInitialsBuilderLogic === undefined
-            ? false
-            : this.options.remoteInitialsBuilderLogic;
-    this.noAwaitLayout =
-        this.options.noAwaitLayout === undefined ? false : this.options.noAwaitLayout;
+    this.composeLogic = this.options.composeLogic === undefined ? false : this.options.composeLogic;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account
