@@ -9,9 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added method `resolveJustification` to find the matching justification given context and code or full code - [ripe-pulse/#317](https://github.com/ripe-tech/ripe-pulse/issues/317)
-* Added `composeLogic` option to specify if the (initials builder) logic should run on server-side.  
-* Added `noAwaitLayout` option so that current updates don't wait for the previous ones to be complete.
+*
 
 ### Changed
 
@@ -20,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.26.0] - 2022-04-11
+
+### Added
+
+* Added method `resolveJustification` to find the matching justification given context and code or full code - [ripe-pulse/#317](https://github.com/ripe-tech/ripe-pulse/issues/317)
+* Added `composeLogic` option to specify if the (initials builder) logic should run on server-side.  
+* Added `noAwaitLayout` option so that current updates don't wait for the previous ones to be complete.
 
 ## [2.25.1] - 2022-03-31
 
