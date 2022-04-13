@@ -257,6 +257,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
         options.imageUrlProvider === undefined ? this.imageUrlProvider : options.imageUrlProvider;
     this.frameValidator =
         options.frameValidator === undefined ? this.frameValidator : options.frameValidator;
+    this.extraOptions = options.options === undefined ? this.extraOptions : options.options;
 
     if (update) await this.update();
 };
