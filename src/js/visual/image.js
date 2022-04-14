@@ -119,7 +119,7 @@ ripe.Image.prototype.init = function() {
         this.options.frameValidator === undefined
             ? (...args) => this.owner.hasFrame(...args)
             : this.options.frameValidator;
-    this.extraOptions = this.options.options || null;
+    this._options = this.options.options || null;
     this._observer = null;
     this._url = null;
     this._previousUrl = null;
@@ -257,7 +257,7 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
         options.imageUrlProvider === undefined ? this.imageUrlProvider : options.imageUrlProvider;
     this.frameValidator =
         options.frameValidator === undefined ? this.frameValidator : options.frameValidator;
-    this.extraOptions = options.options === undefined ? this.extraOptions : options.options;
+    this._options = options.options === undefined ? this._options : options.options;
 
     if (update) await this.update();
 };
@@ -342,7 +342,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const curve = this.element.dataset.curve || this.curve;
         const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
         const composeLogic = this.element.dataset.composeLogic || this.composeLogic || undefined;
-        const options = this.element.dataset.options || this.extraOptions;
+        const options = this.element.dataset.options || this._options;
 
         // in case the state is defined tries to gather the appropriate
         // sate options for both initials and engraving taking into
