@@ -119,7 +119,7 @@ ripe.Image.prototype.init = function() {
         this.options.frameValidator === undefined
             ? (...args) => this.owner.hasFrame(...args)
             : this.options.frameValidator;
-    this._options = this.options.options || null;
+    this.composeOptions = this.options.composeOptions || null;
     this._observer = null;
     this._url = null;
     this._previousUrl = null;
@@ -257,7 +257,8 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
         options.imageUrlProvider === undefined ? this.imageUrlProvider : options.imageUrlProvider;
     this.frameValidator =
         options.frameValidator === undefined ? this.frameValidator : options.frameValidator;
-    this._options = options.options === undefined ? this._options : options.options;
+    this.composeOptions =
+        options.options === undefined ? this.composeOptions : options.composeOptions;
 
     if (update) await this.update();
 };
@@ -342,7 +343,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const curve = this.element.dataset.curve || this.curve;
         const doubleBuffering = this.element.dataset.doubleBuffering || this.doubleBuffering;
         const composeLogic = this.element.dataset.composeLogic || this.composeLogic || undefined;
-        const options = this.element.dataset.options || this._options;
+        const composeOptions = this.element.dataset.composeOptions || this.composeOptions;
 
         // in case the state is defined tries to gather the appropriate
         // sate options for both initials and engraving taking into
@@ -491,7 +492,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             offsets: offsets,
             logic: composeLogic,
             curve: curve,
-            options: options
+            composeOptions: composeOptions
         });
 
         // verifies if the target image URL for the update is already

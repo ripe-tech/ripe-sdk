@@ -1120,8 +1120,8 @@ ripe.Ripe.prototype._getImageOptions = function(options = {}) {
         params.logic = options.logic;
     }
 
-    if (options.options !== undefined && options.options !== null) {
-        params.options = options.options;
+    if (options.composeOptions !== undefined && options.composeOptions !== null) {
+        params.options = options.composeOptions;
     }
 
     const url = `${this.url}compose`;
