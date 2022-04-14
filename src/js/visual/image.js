@@ -492,7 +492,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             offsets: offsets,
             logic: composeLogic,
             curve: curve,
-            composeOptions: composeOptions
+            options: composeOptions
         });
 
         // verifies if the target image URL for the update is already
