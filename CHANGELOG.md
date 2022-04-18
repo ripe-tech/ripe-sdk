@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added new compose `composeOptions` to allow passing composition options such as dpi and quality.
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.27.0] - 2022-04-18
+
+### Added
+
+* Added new compose `composeOptions` to allow passing composition options such as dpi and quality.
 
 ## [2.26.0] - 2022-04-11
 
