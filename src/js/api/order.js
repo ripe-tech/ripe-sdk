@@ -2112,6 +2112,49 @@ ripe.Ripe.prototype.touchOrderP = function(number, options) {
 };
 
 /**
+ * Updates the tag for an order.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {String} identifier The unique identifier of the tag.
+ * @param {String} type The tag type.
+ * @returns {XMLHttpRequest} The order.
+ */
+ripe.Ripe.prototype.updateTagOrder = function(number, identifier, type, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const activate = options.activate === undefined ? true : options.activate;
+    const url = `${this.url}orders/${number}/touch`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "PUT",
+        dataJ: {
+            type: type,
+            activate: activate,
+            identifier: identifier
+        }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Updates the tag for an order.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {String} identifier The unique identifier of the tag.
+ * @param {String} type The tag type.
+ * @returns {Promise} The order.
+ */
+ripe.Ripe.prototype.updateTagOrderP = function(number, identifier, type, options) {
+    return new Promise((resolve, reject) => {
+        this.updateTagOrder(number, identifier, type, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
