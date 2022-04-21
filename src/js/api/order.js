@@ -2112,7 +2112,7 @@ ripe.Ripe.prototype.touchOrderP = function(number, options) {
 };
 
 /**
- * Updates the tag for an order.
+ * Updates the tag for an order. By default, activates it as well.
  *
  * @param {Number} number The number of the order to update.
  * @param {String} identifier The unique identifier of the tag.
@@ -2137,7 +2137,7 @@ ripe.Ripe.prototype.updateTagOrder = function(number, identifier, type, options,
 };
 
 /**
- * Updates the tag for an order.
+ * Updates the tag for an order. By default, activates it as well.
  *
  * @param {Number} number The number of the order to update.
  * @param {String} identifier The unique identifier of the tag.
@@ -2147,6 +2147,41 @@ ripe.Ripe.prototype.updateTagOrder = function(number, identifier, type, options,
 ripe.Ripe.prototype.updateTagOrderP = function(number, identifier, type, options) {
     return new Promise((resolve, reject) => {
         this.updateTagOrder(number, identifier, type, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Activates the tag for an order.
+ *
+ * @param {Number} number The number of the order to update.
+ * @returns {XMLHttpRequest} The order.
+ */
+ripe.Ripe.prototype.activateTagOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/tag/activate`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "PUT"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Activates the tag for an order.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {String} identifier The unique identifier of the tag.
+ * @param {String} type The tag type.
+ * @returns {Promise} The order.
+ */
+ripe.Ripe.prototype.activateTagOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.activateTagOrder(number, identifier, type, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
