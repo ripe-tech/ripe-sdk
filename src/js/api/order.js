@@ -2122,18 +2122,16 @@ ripe.Ripe.prototype.touchOrderP = function(number, options) {
 ripe.Ripe.prototype.updateTagOrder = function(number, identifier, type, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const activate = options.activate === undefined ? true : options.activate;
-    const url = `${this.url}orders/${number}/touch`;
+    const url = `${this.url}orders/${number}/tag`;
     options = Object.assign(options, {
         url: url,
         auth: true,
-        method: "PUT",
-        dataJ: {
-            type: type,
-            activate: activate,
-            identifier: identifier
-        }
+        method: "PUT"
     });
+    options.params = options.params || {};
+    options.params.identifier = identifier;
+    options.params.type = type;
+    if (options.activate !== undefined) options.params.activate = options.activate;
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
