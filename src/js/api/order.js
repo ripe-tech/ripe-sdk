@@ -2181,7 +2181,7 @@ ripe.Ripe.prototype.activateTagOrder = function(number, options, callback) {
  */
 ripe.Ripe.prototype.activateTagOrderP = function(number, options) {
     return new Promise((resolve, reject) => {
-        this.activateTagOrder(number, identifier, type, options, (result, isValid, request) => {
+        this.activateTagOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
