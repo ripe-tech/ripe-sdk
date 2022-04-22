@@ -2112,7 +2112,7 @@ ripe.Ripe.prototype.touchOrderP = function(number, options) {
 };
 
 /**
- * Updates the tag for an order. By default, activates it as well.
+ * Updates the tag for an order, by default, activates it as well.
  *
  * @param {Number} number The number of the order to update.
  * @param {String} identifier The unique identifier of the tag.
@@ -2137,7 +2137,7 @@ ripe.Ripe.prototype.updateTagOrder = function(number, identifier, type, options,
 };
 
 /**
- * Updates the tag for an order. By default, activates it as well.
+ * Updates the tag for an order, by default, activates it as well.
  *
  * @param {Number} number The number of the order to update.
  * @param {String} identifier The unique identifier of the tag.
@@ -2153,7 +2153,8 @@ ripe.Ripe.prototype.updateTagOrderP = function(number, identifier, type, options
 };
 
 /**
- * Activates the tag for an order.
+ * Activates the tag for an order, making the tag ready
+ * to be used by external environment.
  *
  * @param {Number} number The number of the order to update.
  * @returns {XMLHttpRequest} The order.
@@ -2172,7 +2173,8 @@ ripe.Ripe.prototype.activateTagOrder = function(number, options, callback) {
 };
 
 /**
- * Activates the tag for an order.
+ * Activates the tag for an order, making the tag ready
+ * to be used by external environment.
  *
  * @param {Number} number The number of the order to update.
  * @param {String} identifier The unique identifier of the tag.
