@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added `activateTagOrderP` and `updateTagOrderP` methods to set the tag of an order and activate it
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.29.0] - 2022-04-28
+
+### Added
+
+* Added `activateTagOrderP` and `updateTagOrderP` methods to set the tag of an order and activate it
 
 ## [2.28.0] - 2022-04-18
 

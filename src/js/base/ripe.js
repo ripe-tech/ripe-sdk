@@ -16,7 +16,7 @@ if (
  * The version of the RIPE SDK currently in load, should
  * be in sync with the package information.
  */
-ripe.VERSION = "2.28.0";
+ripe.VERSION = "2.29.0";
 
 /**
  * Object that contains global (static) information to be used by
