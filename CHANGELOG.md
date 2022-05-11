@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Added `safe` param to be passed in `importOrder` - [ripe-util-vue/#259](https://github.com/ripe-tech/ripe-util-vue/issues/259)
 
 ### Changed
 
