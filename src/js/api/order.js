@@ -2285,7 +2285,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const invoicingInfo = options.invoicingInfo === undefined ? null : options.invoicingInfo;
     const notes = options.notes === undefined ? null : options.notes;
     const images = options.images === undefined ? null : options.images;
-    const safe = options.safe === undefined ? true : options.safe;
+    const safe = options.safe === undefined ? null : options.safe ? "1" : "0";
 
     const url = `${this.url}orders/import`;
     const contents = {
@@ -2324,7 +2324,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (notes) params.notes = notes;
     if (notify) params.notify = notify;
     if (pending) params.pending = pending;
-    params.safe = safe;
+    if (safe) params.safe = safe;
 
     return Object.assign(options, {
         url: url,
