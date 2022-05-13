@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Add `fromArrayBuffer` and `fromBlob` to `FileTuple` - [hermes-proxy/135](https://github.com/ripe-tech/hermes-proxy/issues/135)
 
 ### Changed
 
