@@ -42,12 +42,11 @@ describe("FileTuple", function() {
             const fileTuple = ripe.ripe.FileTuple.fromString("hello", "hello.txt", "text/plain");
             assert.notStrictEqual(fileTuple, null);
             assert.strictEqual(fileTuple.constructor, ripe.ripe.FileTuple);
-            assert.strictEqual(fileTuple.name, "hello.txt");
-            assert.strictEqual(fileTuple.mime, "text/plain");
-            assert.strictEqual(fileTuple.data.byteLength, 5);
+            assert.strictEqual(fileTuple.name(), "hello.txt");
+            assert.strictEqual(fileTuple.mime(), "text/plain");
+            assert.strictEqual(fileTuple.data().byteLength, 5);
             assert.strictEqual(fileTuple instanceof ripe.ripe.FileTuple, true);
             assert.strictEqual(fileTuple instanceof Array, true);
-            assert.strictEqual(Array.isArray(fileTuple), true);
         });
     });
 
@@ -60,16 +59,21 @@ describe("FileTuple", function() {
             );
             assert.notStrictEqual(fileTuple, null);
             assert.strictEqual(fileTuple.constructor, ripe.ripe.FileTuple);
-            assert.strictEqual(fileTuple.name, "hello.txt");
-            assert.strictEqual(fileTuple.mime, "text/plain");
-            assert.strictEqual(fileTuple.data.byteLength, 0);
+            assert.strictEqual(fileTuple.name(), "hello.txt");
+            assert.strictEqual(fileTuple.mime(), "text/plain");
+            assert.strictEqual(fileTuple.data().byteLength, 0);
             assert.strictEqual(fileTuple instanceof ripe.ripe.FileTuple, true);
             assert.strictEqual(fileTuple instanceof Array, true);
-            assert.strictEqual(Array.isArray(fileTuple), true);
         });
     });
 
     describe("#fromBlob()", async function() {
+        beforeEach(function() {
+            if (typeof Blob === "undefined") {
+                this.skip();
+            }
+        });
+
         it("should be able to create a simple file tuple objects", async () => {
             const fileTuple = await ripe.ripe.FileTuple.fromBlob(
                 new Blob(),
@@ -78,12 +82,11 @@ describe("FileTuple", function() {
             );
             assert.notStrictEqual(fileTuple, null);
             assert.strictEqual(fileTuple.constructor, ripe.ripe.FileTuple);
-            assert.strictEqual(fileTuple.name, "hello.txt");
-            assert.strictEqual(fileTuple.mime, "text/plain");
-            assert.strictEqual(fileTuple.data.byteLength, 0);
+            assert.strictEqual(fileTuple.name(), "hello.txt");
+            assert.strictEqual(fileTuple.mime(), "text/plain");
+            assert.strictEqual(fileTuple.data().byteLength, 0);
             assert.strictEqual(fileTuple instanceof ripe.ripe.FileTuple, true);
             assert.strictEqual(fileTuple instanceof Array, true);
-            assert.strictEqual(Array.isArray(fileTuple), true);
         });
     });
 });
