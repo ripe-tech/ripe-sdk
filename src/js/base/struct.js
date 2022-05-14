@@ -28,6 +28,16 @@ ripe.FileTuple.fromString = function(dataString, name = null, mime = null) {
     return this.fromData(data, name, mime);
 };
 
+ripe.FileTuple.fromArrayBuffer = function(arrayBuffer, name = null, mime = null) {
+    const buffer = Buffer.from(arrayBuffer);
+    return this.fromData(buffer, name, mime);
+};
+
+ripe.FileTuple.fromBlob = async function(blob, name = null, mime = null) {
+    const arrayBuffer = await blob.arrayBuffer();
+    return this.fromArrayBuffer(arrayBuffer, name, mime);
+};
+
 ripe.FileTuple.prototype.toString = function() {
     return "[object Array]";
 };
