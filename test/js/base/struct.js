@@ -57,12 +57,6 @@ describe("FileTuple", function() {
     });
 
     describe("#fromArrayBuffer()", async function() {
-        beforeEach(function() {
-            if (typeof TextEncoder === "undefined") {
-                this.skip();
-            }
-        });
-
         it("should be able to create a simple file tuple objects", () => {
             const fileTuple = ripe.ripe.FileTuple.fromArrayBuffer(
                 new ArrayBuffer(),
@@ -81,7 +75,7 @@ describe("FileTuple", function() {
 
     describe("#fromBlob()", async function() {
         beforeEach(function() {
-            if (typeof TextEncoder === "undefined" || typeof Blob === "undefined") {
+            if (typeof Blob === "undefined") {
                 this.skip();
             }
         });
