@@ -1,8 +1,7 @@
 const assert = require("assert");
+const buffer = require("buffer");
 const config = require("../config");
 const ripe = require("../../../src/js");
-
-const { Blob } = require("buffer");
 
 describe("FileTuple", function() {
     this.timeout(config.TEST_TIMEOUT);
@@ -75,14 +74,14 @@ describe("FileTuple", function() {
 
     describe("#fromBlob()", async function() {
         beforeEach(function() {
-            if (typeof Blob === "undefined") {
+            if (typeof buffer.Blob === "undefined") {
                 this.skip();
             }
         });
 
         it("should be able to create a simple file tuple objects", async () => {
             const fileTuple = await ripe.ripe.FileTuple.fromBlob(
-                new Blob(),
+                new buffer.Blob(),
                 "hello.txt",
                 "text/plain"
             );
