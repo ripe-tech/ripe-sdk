@@ -20,8 +20,8 @@ ripe.touchHandler = function(element, options = {}) {
         return;
     }
 
-    const SAFE = options.safe === undefined ? true : options.safe;
-    const VALID = options.valid || ["DIV", "IMG", "SPAN", "CANVAS"];
+    const safe = options.safe === undefined ? true : options.safe;
+    const valid = options.valid || ["DIV", "IMG", "SPAN", "CANVAS"];
 
     const eventHandler = function(event) {
         // retrieves the complete set of touches and uses
@@ -52,8 +52,8 @@ ripe.touchHandler = function(element, options = {}) {
         // verifies if the current event is considered to be valid,
         // this occurs if the target of the type of the target is
         // considered to be valid according to the current rules
-        const isValid = VALID.indexOf(first.target.tagName) === -1;
-        if (SAFE && isValid) {
+        const isValid = valid.indexOf(first.target.tagName) === -1;
+        if (safe && isValid) {
             return;
         }
 
