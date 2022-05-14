@@ -23,8 +23,13 @@ ripe.FileTuple.fromData = function(data, name = null, mime = null) {
     return fileTuple;
 };
 
-ripe.FileTuple.fromString = function(dataString, name = null, mime = null) {
-    const data = new TextEncoder("utf-8").encode(dataString);
+ripe.FileTuple.fromString = function(
+    dataString,
+    name = null,
+    mime = null,
+    { encoding = "utf-8" } = {}
+) {
+    const data = new TextEncoder(encoding).encode(dataString);
     return this.fromData(data, name, mime);
 };
 
