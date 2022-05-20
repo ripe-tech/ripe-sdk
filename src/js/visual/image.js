@@ -440,10 +440,6 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             return false;
         }
 
-        const profile = initialsProfiles
-            ? [...initialsProfiles, ...initialsSpec.profile]
-            : initialsSpec.profile;
-
         // builds the URL of the image using the frame hacking approach
         // this should provide us with the new values
         const url = this.imageUrlProvider({
@@ -456,7 +452,9 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             rotation: rotation,
             crop: crop,
             initials: initialsSpec.initials,
-            profile: profile,
+            profile: initialsProfiles
+                ? [...initialsProfiles, ...initialsSpec.profile]
+                : initialsSpec.profile,
             flip: flip,
             mirror: mirror,
             boundingBox: boundingBox,
