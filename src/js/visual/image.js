@@ -106,6 +106,7 @@ ripe.Image.prototype.init = function() {
     this.initialsGroup = this.options.initialsGroup || null;
     this.initialsContext = this.options.initialsContext || null;
     this.getInitialsContext = this.options.getInitialsContext || null;
+    this.initialsProfiles = this.options.initialsProfiles || null;
     this.initialsBuilder = this.options.initialsBuilder || this.owner.initialsBuilder;
     this.doubleBuffering =
         this.options.doubleBuffering === undefined ? true : this.options.doubleBuffering;
@@ -251,6 +252,8 @@ ripe.Image.prototype.updateOptions = async function(options, update = true) {
         options.getInitialsContext === undefined
             ? this.getInitialsContext
             : options.getInitialsContext;
+    this.initialsProfiles =
+        options.initialsProfiles === undefined ? this.initialsProfiles : options.initialsProfiles;
     this.doubleBuffering =
         options.doubleBuffering === undefined ? this.doubleBuffering : options.doubleBuffering;
     this.imageUrlProvider =
@@ -296,6 +299,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
         const initialsContext = this.element.dataset.initialsContext || this.initialsContext;
         const getInitialsContext =
             this.element.dataset.getInitialsContext || this.getInitialsContext;
+        const initialsProfiles = this.element.dataset.initialsProfiles || this.initialsProfiles;
         const flip = this.element.dataset.flip || this.flip;
         const mirror = this.element.dataset.mirror || this.mirror;
         const boundingBox = this.element.dataset.boundingBox || this.boundingBox;
@@ -436,6 +440,10 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             return false;
         }
 
+        const profile = initialsProfiles
+            ? [...initialsProfiles, ...initialsSpec.profile]
+            : initialsSpec.profile;
+
         // builds the URL of the image using the frame hacking approach
         // this should provide us with the new values
         const url = this.imageUrlProvider({
@@ -448,7 +456,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             rotation: rotation,
             crop: crop,
             initials: initialsSpec.initials,
-            profile: initialsSpec.profile,
+            profile: profile,
             flip: flip,
             mirror: mirror,
             boundingBox: boundingBox,
