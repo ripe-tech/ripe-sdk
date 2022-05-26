@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Fix eslint dependencies problems
 
 ## [2.30.0] - 2022-05-20
 
