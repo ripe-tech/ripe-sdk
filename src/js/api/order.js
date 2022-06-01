@@ -2081,6 +2081,8 @@ ripe.Ripe.prototype.unsubscribeOrderP = function(number, options) {
  * is currently authenticated.
  *
  * @param {Number} number The number of the order to touch.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The order.
  */
 ripe.Ripe.prototype.touchOrder = function(number, options, callback) {
@@ -2101,6 +2103,7 @@ ripe.Ripe.prototype.touchOrder = function(number, options, callback) {
  * is currently authenticated.
  *
  * @param {Number} number The number of the order to touch.
+ * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The order.
  */
 ripe.Ripe.prototype.touchOrderP = function(number, options) {
@@ -2117,6 +2120,8 @@ ripe.Ripe.prototype.touchOrderP = function(number, options) {
  * @param {Number} number The number of the order to update.
  * @param {String} identifier The unique identifier of the tag.
  * @param {String} type The tag type.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The order.
  */
 ripe.Ripe.prototype.updateTagOrder = function(number, identifier, type, options, callback) {
@@ -2142,11 +2147,50 @@ ripe.Ripe.prototype.updateTagOrder = function(number, identifier, type, options,
  * @param {Number} number The number of the order to update.
  * @param {String} identifier The unique identifier of the tag.
  * @param {String} type The tag type.
+ * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The order.
  */
 ripe.Ripe.prototype.updateTagOrderP = function(number, identifier, type, options) {
     return new Promise((resolve, reject) => {
         this.updateTagOrder(number, identifier, type, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Deletes the tag for an order, by default, deactivates it as well.
+ *
+ * @param {Number} number The number of the order with the tag to delete.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The order.
+ */
+ ripe.Ripe.prototype.deleteTagOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/tag`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "DELETE"
+    });
+    options.params = options.params || {};
+    if (options.deactivate !== undefined) options.params.deactivate = options.deactivate;
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Deletes the tag for an order, by default, deactivates it as well.
+ *
+ * @param {Number} number The number of the order with the tag to delete.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order.
+ */
+ripe.Ripe.prototype.deleteTagOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.deleteTagOrder(number, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
