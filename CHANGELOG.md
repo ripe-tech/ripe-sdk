@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [2.31.0] - 2022-06-01
+
+### Added
+
 * Added `deleteTagOrder` methods - [ripe-robin-revamp/#363](https://github.com/ripe-tech/ripe-robin-revamp/issues/363)
 * Added `deactivateTagOrder` methods - [ripe-robin-revamp/#363](https://github.com/ripe-tech/ripe-robin-revamp/issues/363)
 
