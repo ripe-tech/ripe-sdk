@@ -2166,7 +2166,7 @@ ripe.Ripe.prototype.updateTagOrderP = function(number, identifier, type, options
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The order.
  */
- ripe.Ripe.prototype.deleteTagOrder = function(number, options, callback) {
+ripe.Ripe.prototype.deleteTagOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/tag`;
@@ -2242,7 +2242,7 @@ ripe.Ripe.prototype.activateTagOrderP = function(number, options) {
  * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The order.
  */
- ripe.Ripe.prototype.deactivateTagOrder = function(number, options, callback) {
+ripe.Ripe.prototype.deactivateTagOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/tag/activate`;
