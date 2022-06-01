@@ -2201,6 +2201,8 @@ ripe.Ripe.prototype.deleteTagOrderP = function(number, options) {
  * to be used by external environment.
  *
  * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The order.
  */
 ripe.Ripe.prototype.activateTagOrder = function(number, options, callback) {
@@ -2221,8 +2223,7 @@ ripe.Ripe.prototype.activateTagOrder = function(number, options, callback) {
  * to be used by external environment.
  *
  * @param {Number} number The number of the order to update.
- * @param {String} identifier The unique identifier of the tag.
- * @param {String} type The tag type.
+ * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The order.
  */
 ripe.Ripe.prototype.activateTagOrderP = function(number, options) {
