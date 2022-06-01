@@ -2083,7 +2083,7 @@ ripe.Ripe.prototype.unsubscribeOrderP = function(number, options) {
  * @param {Number} number The number of the order to touch.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The order.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.touchOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -2115,14 +2115,14 @@ ripe.Ripe.prototype.touchOrderP = function(number, options) {
 };
 
 /**
- * Updates the tag for an order, by default, activates it as well.
+ * Updates the tag for an order and, by default, activates it as well.
  *
  * @param {Number} number The number of the order to update.
  * @param {String} identifier The unique identifier of the tag.
  * @param {String} type The tag type.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The order.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.updateTagOrder = function(number, identifier, type, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -2142,7 +2142,7 @@ ripe.Ripe.prototype.updateTagOrder = function(number, identifier, type, options,
 };
 
 /**
- * Updates the tag for an order, by default, activates it as well.
+ * Updates the tag for an order and, by default, activates it as well.
  *
  * @param {Number} number The number of the order to update.
  * @param {String} identifier The unique identifier of the tag.
@@ -2159,12 +2159,12 @@ ripe.Ripe.prototype.updateTagOrderP = function(number, identifier, type, options
 };
 
 /**
- * Deletes the tag for an order, by default, deactivates it as well.
+ * Deletes the tag for an order and, by default, deactivates it as well.
  *
  * @param {Number} number The number of the order with the tag to delete.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The order.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.deleteTagOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -2182,7 +2182,7 @@ ripe.Ripe.prototype.deleteTagOrder = function(number, options, callback) {
 };
 
 /**
- * Deletes the tag for an order, by default, deactivates it as well.
+ * Deletes the tag for an order and, by default, deactivates it as well.
  *
  * @param {Number} number The number of the order with the tag to delete.
  * @param {Object} options An object of options to configure the request.
@@ -2203,7 +2203,7 @@ ripe.Ripe.prototype.deleteTagOrderP = function(number, options) {
  * @param {Number} number The number of the order to update.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The order.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.activateTagOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
@@ -2240,12 +2240,12 @@ ripe.Ripe.prototype.activateTagOrderP = function(number, options) {
  * @param {Number} number The number of the order to update.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
- * @returns {XMLHttpRequest} The order.
+ * @returns {XMLHttpRequest} Resulting information for the callback execution.
  */
 ripe.Ripe.prototype.deactivateTagOrder = function(number, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
-    const url = `${this.url}orders/${number}/tag/activate`;
+    const url = `${this.url}orders/${number}/tag/deactivate`;
     options = Object.assign(options, {
         url: url,
         auth: true,
