@@ -2235,6 +2235,42 @@ ripe.Ripe.prototype.activateTagOrderP = function(number, options) {
 };
 
 /**
+ * Deactivates the tag for an order.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The order.
+ */
+ ripe.Ripe.prototype.deactivateTagOrder = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/tag/activate`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "PUT"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Deactivates the tag for an order.
+ *
+ * @param {Number} number The number of the order to update.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The order.
+ */
+ripe.Ripe.prototype.deactivateTagOrderP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.deactivateTagOrder(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * @ignore
  */
 ripe.Ripe.prototype._getOrderReportURL = function(number, key, options) {
