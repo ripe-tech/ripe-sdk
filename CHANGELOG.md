@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [2.31.1] - 2022-06-07
+
+### Fixed
+
 * Fix initialsSpec profile spread fallback value in image
 
 ## [2.31.0] - 2022-06-01
