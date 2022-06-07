@@ -454,7 +454,7 @@ ripe.Image.prototype.update = async function(state, options = {}) {
             initials: initialsSpec.initials,
             profile: initialsProfiles
                 ? [...initialsProfiles, ...(initialsSpec.profile || [])]
-                : initialsSpec.profile,
+                : initialsSpec.profile || [],
             flip: flip,
             mirror: mirror,
             boundingBox: boundingBox,
