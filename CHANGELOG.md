@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Add param `tenant_id` to `updateTagOrder` method - [ripe-robin-revamp/#363](https://github.com/ripe-tech/ripe-robin-revamp/issues/363)
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.31.2] - 2022-06-08
+
+### Added
+
+* Add param `tenant_id` to `updateTagOrder` method - [ripe-robin-revamp/#363](https://github.com/ripe-tech/ripe-robin-revamp/issues/363)
 
 ## [2.31.1] - 2022-06-07
 
