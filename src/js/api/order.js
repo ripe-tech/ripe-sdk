@@ -2137,7 +2137,7 @@ ripe.Ripe.prototype.updateTagOrder = function(number, identifier, type, options,
     options.params.identifier = identifier;
     options.params.type = type;
     if (options.activate !== undefined) options.params.activate = options.activate;
-    if (options.tenant_id !== undefined) options.params.tenant_id = options.tenant_id;
+    if (options.tenantId !== undefined) options.params.tenant_id = options.tenantId;
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
