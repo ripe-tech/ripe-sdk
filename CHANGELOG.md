@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Add dku to request options for import order
 
 ## [2.31.2] - 2022-06-08
 

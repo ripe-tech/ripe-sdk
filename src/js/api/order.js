@@ -2437,6 +2437,7 @@ ripe.Ripe.prototype._precustomizationOrder = function(ffId, options = {}) {
             ? null
             : options.product_id || options.productId;
     const meta = options.meta === undefined ? null : options.meta;
+    const dku = options.dku === undefined ? null : options.dku;
 
     const url = `${this.url}orders/pre_customization`;
     const contents = {
@@ -2460,6 +2461,7 @@ ripe.Ripe.prototype._precustomizationOrder = function(ffId, options = {}) {
         contents: JSON.stringify(contents)
     };
     if (meta) params.meta = meta;
+    if (dku) params.dku = dku;
 
     return Object.assign(options, {
         url: url,
