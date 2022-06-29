@@ -2371,12 +2371,11 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const safe = options.safe === undefined ? null : options.safe ? "1" : "0";
 
     const url = `${this.url}orders/import`;
-    const contents = {
-        brand: brand,
-        model: model,
-        parts: parts,
-        size: size
-    };
+    const contents = {};
+    if (brand) contents.brand = brand;
+    if (model) contents.model = model;
+    if (parts) contents.parts = parts;
+    if (size) contents.size = size;
 
     if (factory) contents.factory = factory;
     if (variant) contents.variant = variant;
@@ -2397,9 +2396,9 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (invoicingInfo) contents.invoicing_info = invoicingInfo;
 
     const params = {
-        ff_order_id: ffOrderId,
-        contents: JSON.stringify(contents)
+        ff_order_id: ffOrderId
     };
+    if (Object.keys(contents).length > 0) params.contents = JSON.stringify(contents);
     if (dku) params.dku = dku;
     if (type) params.type = type;
     if (country) params.country = country;
