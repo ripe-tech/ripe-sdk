@@ -2374,7 +2374,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const contents = {};
     if (brand) contents.brand = brand;
     if (model) contents.model = model;
-    if (parts) contents.parts = parts;
+    if (Object.keys(parts).length > 0) contents.parts = parts;
     if (size) contents.size = size;
 
     if (factory) contents.factory = factory;
