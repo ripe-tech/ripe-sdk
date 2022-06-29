@@ -2336,6 +2336,7 @@ ripe.Ripe.prototype._getOrderImageURL = function(number, key, options) {
  * @see {link https://docs.platforme.com/#order-endpoints-import}
  */
 ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
+    const dku = options.dku === undefined ? null : options.dku;
     const type = options.type === undefined ? null : options.type;
     const brand = options.brand === undefined ? this.brand : options.brand;
     const factory = options.factory === undefined ? null : options.factory;
@@ -2399,6 +2400,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
         ff_order_id: ffOrderId,
         contents: JSON.stringify(contents)
     };
+    if (dku) params.dku = dku;
     if (type) params.type = type;
     if (country) params.country = country;
     if (currency) params.currency = currency;
@@ -2437,7 +2439,6 @@ ripe.Ripe.prototype._precustomizationOrder = function(ffId, options = {}) {
             ? null
             : options.product_id || options.productId;
     const meta = options.meta === undefined ? null : options.meta;
-    const dku = options.dku === undefined ? null : options.dku;
 
     const url = `${this.url}orders/pre_customization`;
     const contents = {
@@ -2461,7 +2462,6 @@ ripe.Ripe.prototype._precustomizationOrder = function(ffId, options = {}) {
         contents: JSON.stringify(contents)
     };
     if (meta) params.meta = meta;
-    if (dku) params.dku = dku;
 
     return Object.assign(options, {
         url: url,
