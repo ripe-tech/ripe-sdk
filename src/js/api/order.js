@@ -2376,7 +2376,6 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (model) contents.model = model;
     if (Object.keys(parts).length > 0) contents.parts = parts;
     if (size) contents.size = size;
-
     if (factory) contents.factory = factory;
     if (variant) contents.variant = variant;
     if (productId) contents.product_id = productId;
@@ -2395,9 +2394,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (shippingInfo) contents.shipping_info = shippingInfo;
     if (invoicingInfo) contents.invoicing_info = invoicingInfo;
 
-    const params = {
-        ff_order_id: ffOrderId
-    };
+    const params = { ff_order_id: ffOrderId };
     if (Object.keys(contents).length > 0) params.contents = JSON.stringify(contents);
     if (dku) params.dku = dku;
     if (type) params.type = type;
