@@ -688,13 +688,21 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
 ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
+    const variant = options.variant === undefined ? this.variant : options.variant;
     const version = options.version === undefined ? this.version : options.version;
+    const size = options.size === undefined ? this.size : options.size;
     const country = options.country === undefined ? this.country : options.country;
     const flag = options.flag === undefined ? this.flag : options.flag;
     const url = `${this.url}brands/${brand}/models/${model}/config`;
     const params = {};
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
+    }
     if (version !== undefined && version !== null) {
         params.version = version;
+    }
+    if (size !== undefined && size !== null) {
+        params.size = size;
     }
     if (country !== undefined && country !== null) {
         params.country = country;
