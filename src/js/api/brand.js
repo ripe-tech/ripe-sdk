@@ -688,8 +688,8 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
 ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
-    const variant = options.variant === undefined ? this.variant : options.variant;
     const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
     const size = options.size === undefined ? this.size : options.size;
     const country = options.country === undefined ? this.country : options.country;
     const flag = options.flag === undefined ? this.flag : options.flag;
