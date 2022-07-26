@@ -695,11 +695,11 @@ ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
     const flag = options.flag === undefined ? this.flag : options.flag;
     const url = `${this.url}brands/${brand}/models/${model}/config`;
     const params = {};
-    if (variant !== undefined && variant !== null) {
-        params.variant = variant;
-    }
     if (version !== undefined && version !== null) {
         params.version = version;
+    }
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
     }
     if (size !== undefined && size !== null) {
         params.size = size;
