@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Add new `variant` and `size` params to `_getConfigOptions` method - [ripe-core/#4745](https://github.com/ripe-tech/ripe-core/issues/4745)
+* Add `variant` passing through `onConfig` and `onPart` - [project/#87](https://github.com/ripe-tech/project/issues/87)
 
 ### Changed
 
