@@ -985,6 +985,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
+    const variant = options.variant === undefined ? this.variant : options.variant;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
     const name = options.name === undefined ? null : options.name;
@@ -995,6 +996,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
         model: model,
         version: version,
         initials: initials,
+        variant: variant,
         parts: parts,
         choices: choices
     });
