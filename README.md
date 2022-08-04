@@ -2,6 +2,20 @@
 
 The public SDK for [RIPE Core](https://github.com/ripe-tech/ripe-core) written in vanilla ECMAScript v6.
 
+## Installation
+
+When using RIPE SDK in a web context, include it via a `<script>` tag, such as:
+
+```html
+<script type="text/javascript" src="https://sdk.platforme.com/js/ripe.min.js"></script>
+```
+
+When using RIPE SDK in a NPM compatible context, use as such:
+
+```bash
+npm install --save ripe-sdk
+```
+
 ## 1. Initialization
 
 As a starting point, you need to provide the `brand` and `model` of your customizable product.
