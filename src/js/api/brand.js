@@ -949,6 +949,7 @@ ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
@@ -959,6 +960,7 @@ ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
         brand: brand,
         model: model,
         version: version,
+        variant: variant,
         initials: initials,
         parts: parts,
         choices: choices
@@ -982,6 +984,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
     const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
     const initials = options.initials === undefined ? this.initialsExtra : options.initials;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const choices = options.choices === undefined ? this.choices : options.choices;
@@ -992,6 +995,7 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
         brand: brand,
         model: model,
         version: version,
+        variant: variant,
         initials: initials,
         parts: parts,
         choices: choices

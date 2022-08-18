@@ -134,6 +134,7 @@ describe("BrandAPI", function() {
             assert.deepStrictEqual(result, {
                 brand: "dummy",
                 model: "dummy",
+                variant: null,
                 version: null,
                 initials: {
                     main: {
@@ -179,6 +180,7 @@ describe("BrandAPI", function() {
             assert.deepStrictEqual(result, {
                 brand: "dummy",
                 model: "dummy",
+                variant: null,
                 version: null,
                 initials: {
                     main: {
