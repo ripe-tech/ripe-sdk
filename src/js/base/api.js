@@ -652,8 +652,8 @@ ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
 
     const brand = options.brand === undefined ? this.brand : options.brand;
     const model = options.model === undefined ? this.model : options.model;
-    const variant = options.variant === undefined ? this.variant : options.variant;
     const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
     const frame = options.frame === undefined ? this.frame : options.frame;
     const parts = options.parts === undefined ? this.parts : options.parts;
     const engraving = options.engraving === undefined ? this.engraving : options.engraving;
@@ -670,12 +670,12 @@ ripe.Ripe.prototype._getQueryOptions = function(options = {}) {
         params.model = model;
     }
 
-    if (variant !== undefined && variant !== null) {
-        params.variant = variant;
-    }
-
     if (version !== undefined && version !== null) {
         params.version = version;
+    }
+
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
     }
 
     if (frame !== undefined && frame !== null) {
