@@ -960,8 +960,8 @@ ripe.Ripe.prototype._onConfigOptions = function(options = {}) {
         brand: brand,
         model: model,
         version: version,
-        initials: initials,
         variant: variant,
+        initials: initials,
         parts: parts,
         choices: choices
     });
@@ -995,8 +995,8 @@ ripe.Ripe.prototype._onPartOptions = function(options = {}) {
         brand: brand,
         model: model,
         version: version,
-        initials: initials,
         variant: variant,
+        initials: initials,
         parts: parts,
         choices: choices
     });
