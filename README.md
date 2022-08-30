@@ -16,6 +16,12 @@ When using RIPE SDK in a NPM compatible context, use as such:
 npm install --save ripe-sdk
 ```
 
+If using the configurator include the needed CSS tag, such as:
+
+```html
+<link rel="stylesheet" type="text/css" href="https://sdk.platforme.com/css/ripe.css">
+```
+
 ## 1. Initialization
 
 As a starting point, you need to provide the `brand` and `model` of your customizable product.
