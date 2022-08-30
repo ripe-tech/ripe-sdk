@@ -1,4 +1,7 @@
 import * as THREE from "three";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 
 if (
     typeof require !== "undefined" &&
@@ -56,7 +59,7 @@ ripe.ConfiguratorCsr.prototype.constructor = ripe.ConfiguratorCsr;
  * Sets the various values for the Configurator taking into
  * owner's default values.
  */
-ripe.ConfiguratorCsr.prototype.init = function() {
+ripe.ConfiguratorCsr.prototype.init = async function() {
     ripe.Visual.prototype.init.call(this);
 
     // TODO init common stuff in another method shared between configurators
@@ -116,7 +119,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // creates the necessary DOM elements and runs the
     // CSR initializer
     this._initLayout();
-    this._initCsr();
+    await this._initCsr();
 };
 
 /**
@@ -430,6 +433,55 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
     this._registerHandlers();
 };
 
+ripe.ConfiguratorCsr.prototype._loadModelGLTF = async function(path) {
+    const dracoLoader = new DRACOLoader();
+    try {
+        dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
+        dracoLoader.preload();
+    } catch (error) {
+        // loader fallback
+        const fallbackURL =
+            "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
+        dracoLoader.setDecoderPath(fallbackURL);
+        dracoLoader.preload();
+    }
+
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
+    return new Promise((resolve, reject) => {
+        loader.load(path, gltf => resolve(gltf.scene));
+    });
+};
+
+ripe.ConfiguratorCsr.prototype._loadModel = async function(path, format = "gltf") {
+    switch (format) {
+        case "gltf":
+            return await this._loadModelGLTF(path);
+        default:
+            throw new Error(`Can't load 3D model, format "${format}" is not supported`);
+    }
+};
+
+ripe.ConfiguratorCsr.prototype._loadEnvironment = function(path) {
+    const rgbeLoader = new RGBELoader();
+    return new Promise((resolve, reject) => {
+        rgbeLoader.load(path, texture => resolve(texture));
+    });
+};
+
+ripe.ConfiguratorCsr.prototype._loadScene = async function() {
+    // TODO don't use hardcoded variant
+    const modelPath = this.owner.getMeshUrl({ variant: "$base" });
+    const model = await this._loadModel(modelPath);
+    this.scene.add(model);
+
+    // TODO don't use hardcoded path
+    const envPath = "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
+    const environment = await this._loadEnvironment(envPath);
+    environment.mapping = THREE.EquirectangularReflectionMapping;
+    this.scene.environment = environment;
+};
+
 ripe.ConfiguratorCsr.prototype._initCamera = function(width, height) {
     this.camera = new THREE.PerspectiveCamera(45, width / height, 0.15, 50);
     this.camera.position.set(0, 0, 5);
@@ -440,7 +492,7 @@ ripe.ConfiguratorCsr.prototype._initCamera = function(width, height) {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initCsr = function() {
+ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     if (!this.element) throw new Error("CSR layout elements are not initiated");
 
     // gets configurator size information
@@ -459,15 +511,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = function() {
 
     // init scene
     this.scene = new THREE.Scene();
-
-    // TODO remove test cube
-    const geometry = new THREE.BoxGeometry(0.9, 0.9, 0.9);
-    const material = new THREE.MeshNormalMaterial();
-    const cube = new THREE.Mesh(geometry, material);
-    cube.rotation.x = Math.PI * 0.1;
-    cube.rotation.y = Math.PI * 0.25;
-
-    this.scene.add(cube);
+    await this._loadScene();
 
     this._render();
 };
