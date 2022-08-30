@@ -99,9 +99,11 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
     this.frameSize = null;
 
     // TODO CSR specific variables
-    this.scene = null;
     this.renderer = null;
     this.camera = null;
+    this.scene = null;
+    this.environmentTexture = null;
+    this.mesh = null;
 
     // creates the necessary DOM elements and runs the
     // CSR initializer
@@ -323,7 +325,7 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
     this._registerHandlers();
 };
 
-ripe.ConfiguratorCsr.prototype._loadModelGLTF = async function(path) {
+ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
     const dracoLoader = new DRACOLoader();
     try {
         dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
@@ -343,10 +345,10 @@ ripe.ConfiguratorCsr.prototype._loadModelGLTF = async function(path) {
     });
 };
 
-ripe.ConfiguratorCsr.prototype._loadModel = async function(path, format = "gltf") {
+ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf") {
     switch (format) {
         case "gltf":
-            return await this._loadModelGLTF(path);
+            return await this._loadMeshGLTF(path);
         default:
             throw new Error(`Can't load 3D model, format "${format}" is not supported`);
     }
@@ -360,15 +362,15 @@ ripe.ConfiguratorCsr.prototype._loadEnvironment = function(path) {
 };
 
 ripe.ConfiguratorCsr.prototype._loadScene = async function() {
-    const modelPath = this.owner.getMeshUrl();
-    const model = await this._loadModel(modelPath);
-    this.scene.add(model);
-
     // TODO don't use hardcoded path
     const envPath = "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
-    const environment = await this._loadEnvironment(envPath);
-    environment.mapping = THREE.EquirectangularReflectionMapping;
-    this.scene.environment = environment;
+    this.environmentTexture = await this._loadEnvironment(envPath);
+    this.environmentTexture.mapping = THREE.EquirectangularReflectionMapping;
+    this.scene.environment = this.environmentTexture;
+
+    const meshPath = this.owner.getMeshUrl();
+    this.mesh = await this._loadMesh(meshPath);
+    this.scene.add(this.mesh);
 };
 
 ripe.ConfiguratorCsr.prototype._initCamera = function(width, height) {
@@ -411,7 +413,26 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
-    // TODO
+    if (this.environmentTexture) {
+        this.environmentTexture.dispose();
+        this.environmentTexture = null;
+    }
+
+    if (this.mesh) {
+        if (this.mesh.geometry) this.mesh.geometry.dispose();
+        if (this.mesh.material) this.mesh.material.dispose();
+        if (this.scene) this.scene.remove(this.mesh);
+        this.mesh = null;
+    }
+
+    if (this.scene) this.scene = null;
+
+    if (this.renderer) {
+        this.renderer.dispose();
+        this.renderer = null;
+    }
+
+    if (this.camera) this.camera = null;
 };
 
 /**
