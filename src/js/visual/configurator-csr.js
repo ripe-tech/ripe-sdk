@@ -470,8 +470,7 @@ ripe.ConfiguratorCsr.prototype._loadEnvironment = function(path) {
 };
 
 ripe.ConfiguratorCsr.prototype._loadScene = async function() {
-    // TODO don't use hardcoded variant
-    const modelPath = this.owner.getMeshUrl({ variant: "$base" });
+    const modelPath = this.owner.getMeshUrl();
     const model = await this._loadModel(modelPath);
     this.scene.add(model);
 
