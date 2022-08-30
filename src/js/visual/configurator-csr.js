@@ -103,19 +103,6 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
     this.renderer = null;
     this.camera = null;
 
-    // registers for the selected part event on the owner
-    // so that we can highlight the associated part
-    this._ownerBinds.selected_part = this.owner.bind("selected_part", part => this.highlight(part));
-
-    // registers for the deselected part event on the owner
-    // so that we can remove the highlight of the associated part
-    this._ownerBinds.deselected_part = this.owner.bind("deselected_part", part => this.lowlight());
-
-    // creates a structure the store the last presented
-    // position of each view, to be used when returning
-    // to a view for better user experience
-    this._lastFrame = {};
-
     // creates the necessary DOM elements and runs the
     // CSR initializer
     this._initLayout();
@@ -283,103 +270,6 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
             force: true
         }
     );
-};
-
-/**
- * Displays a new frame, with an animation from the starting frame
- * proper animation should be performed.
- *
- * This function is meant to be executed using a recursive approach
- * and each run represents a "tick" of the animation operation.
- *
- * @param {Object} frame The new frame to display using the extended and canonical
- * format for the frame description (eg: side-3).
- * @param {Object} options Set of optional parameters to adjust the change frame, such as:
- * - 'type' - The animation style: 'simple' (fade in), 'cross' (crossfade) or 'null'
- * (without any style).
- * - 'duration' - The duration of the animation in milliseconds (defaults to 'null').
- * - 'stepDuration' - If defined the total duration of the animation is
- * calculated using the amount of steps times the number of steps, instead of
- * using the 'duration' field (defaults to 'null').
- * - 'revolutionDuration' - If defined the step duration is calculated by dividing
- * the revolution duration by the number of frames in the view (defaults to 'null').
- * - 'preventDrag' - If drag actions during an animated change of frames should be
- * ignored (defaults to 'true').
- * - 'safe' - If requested then the operation is only performed in case the configurator
- * is not in the an equivalent state (default to 'true').
- */
-ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {}) {
-    // TODO
-};
-
-/**
- * Highlights a model's part, showing a dark mask on top of the such referred
- * part identifying its borders.
- *
- * @param {String} part The part of the model that should be highlighted.
- * @param {Object} options Set of optional parameters to adjust the highlighting.
- */
-ripe.ConfiguratorCsr.prototype.highlight = function(part, options = {}) {
-    // TODO
-};
-
-/**
- * Removes the a highlighting of a model's part, meaning that no masks
- * are going to be presented on screen.
- *
- * @param {String} part The part to lowlight.
- * @param {Object} options Set of optional parameters to adjust the lowlighting.
- */
-ripe.ConfiguratorCsr.prototype.lowlight = function(options) {
-    // TODO
-};
-
-/**
- * Changes the currently displayed frame in the current view to the
- * previous one according to pre-defined direction.
- */
-ripe.ConfiguratorCsr.prototype.previousFrame = function() {
-    // TODO
-};
-
-/**
- * Changes the currently displayed frame in the current view to the
- * next one according to pre-defined direction.
- */
-ripe.ConfiguratorCsr.prototype.nextFrame = function() {
-    // TODO
-};
-
-/**
- * Resizes the Configurator to the defined maximum size.
- *
- * @param {Object} options Set of optional parameters to adjust the resizing.
- */
-ripe.ConfiguratorCsr.prototype.enterFullscreen = async function(options) {
-    // TODO
-};
-
-/**
- * Resizes the Configurator to the prior defined size.
- *
- * @param {Object} options Set of optional parameters to adjust the resizing.
- */
-ripe.ConfiguratorCsr.prototype.leaveFullscreen = async function(options) {
-    // TODO
-};
-
-/**
- * Turns on (enables) the masks on selection/highlight.
- */
-ripe.ConfiguratorCsr.prototype.enableMasks = function() {
-    this.useMasks = true;
-};
-
-/**
- * Turns off (disables) the masks on selection/highlight.
- */
-ripe.ConfiguratorCsr.prototype.disableMasks = function() {
-    this.useMasks = false;
 };
 
 /**
