@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 if (
     typeof require !== "undefined" &&
     (typeof window === "undefined" ||
@@ -57,8 +59,6 @@ ripe.ConfiguratorCsr.prototype.constructor = ripe.ConfiguratorCsr;
 ripe.ConfiguratorCsr.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
-    console.log("ConfiguratorCsr init()");
-
     // TODO init common stuff in another method shared between configurators
     this.width = this.options.width || null;
     this.height = this.options.height || null;
@@ -95,6 +95,11 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this._pending = [];
     this.frameSize = null;
 
+    // TODO CSR specific variables
+    this.scene = null;
+    this.renderer = null;
+    this.camera = null;
+
     // registers for the selected part event on the owner
     // so that we can highlight the associated part
     this._ownerBinds.selected_part = this.owner.bind("selected_part", part => this.highlight(part));
@@ -108,25 +113,10 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // to a view for better user experience
     this._lastFrame = {};
 
-    // creates the necessary DOM elements and runs
-    // the initial layout update operation if the
-    // owner has a model and brand set (is ready)
+    // creates the necessary DOM elements and runs the
+    // CSR initializer
     this._initLayout();
-    if (this.owner.brand && this.owner.model) {
-        this._updateConfig();
-    }
-
-    // registers for the pre config to be able to set the configurator
-    // into a not ready state (update operations blocked)
-    this._ownerBinds.pre_config = this.owner.bind("pre_config", () => {
-        this.ready = false;
-    });
-
-    // registers for the post config change request event to
-    // be able to properly update the internal structures
-    this._ownerBinds.post_config = this.owner.bind("post_config", config => {
-        if (config) this._updateConfig();
-    });
+    this._initCsr();
 };
 
 /**
@@ -136,6 +126,9 @@ ripe.ConfiguratorCsr.prototype.init = function() {
  */
 ripe.ConfiguratorCsr.prototype.deinit = async function() {
     await this.cancel();
+
+    this._unregisterHandlers();
+    this._deinitCsr();
 
     while (this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
@@ -250,9 +243,7 @@ ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
  * instead no cancel logic was executed.
  */
 ripe.ConfiguratorCsr.prototype.cancel = async function(options = {}) {
-    if (this._buildSignature() === this.signatureLoaded || "") return false;
-    if (this._finalize) this._finalize({ canceled: true });
-    return true;
+    // TODO
 };
 
 /**
@@ -267,26 +258,22 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
         return;
     }
 
-    // tries to obtain the best possible size for the configurator
-    // defaulting to the client with of the element as fallback
-    size = size || this.size || this.element.clientWidth;
-    width = width || this.element.dataset.width || this.width || size;
-    height = height || this.element.dataset.height || this.height || size;
+    const sizeValues = this._configuratorSize(size, width, height);
 
     // in case the current size of the configurator ignores the
     // request to avoid usage of unneeded resources
-    if (this.currentSize === size && this.currentWidth === width && this.currentHeight === height) {
+    if (
+        this.currentSize === sizeValues.size &&
+        this.currentWidth === sizeValues.width &&
+        this.currentHeight === sizeValues.height
+    ) {
         return;
     }
 
-    const area = this.element.querySelector(".area");
-    area.width = width * this.pixelRatio;
-    area.height = height * this.pixelRatio;
-    area.style.width = width + "px";
-    area.style.height = height + "px";
-    this.currentSize = size;
-    this.currentWidth = width;
-    this.currentHeight = height;
+    this._resizeCsr(width, height);
+    this.currentSize = sizeValues.size;
+    this.currentWidth = sizeValues.width;
+    this.currentHeight = sizeValues.height;
     await this.update(
         {},
         {
@@ -393,6 +380,28 @@ ripe.ConfiguratorCsr.prototype.disableMasks = function() {
 };
 
 /**
+ * Tries to obtain the best possible size for the configurator
+ * defaulting to the client with of the element as fallback.
+ *
+ * @param {Number} size The number of pixels.
+ * @param {Number} width The number of pixels.
+ * @param {Number} height The number of pixels.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height) {
+    size = size || this.size || this.element.clientWidth;
+    width = width || this.element.dataset.width || this.width || size;
+    height = height || this.element.dataset.height || this.height || size;
+
+    return {
+        size: size,
+        width: width,
+        height: height
+    };
+};
+
+/**
  * Initializes the layout for the configurator element by
  * constructing all te child elements required for the proper
  * configurator functionality to work.
@@ -413,95 +422,90 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
         this.element.removeChild(this.element.firstChild);
     }
 
-    // creates the area canvas and adds it to the element
-    const area = ripe.createElement("div", "area");
-    this.element.appendChild(area);
-
-    // set the size of area
-    this.resize();
+    // creates the renderer canvas and adds it to the element
+    const renderer = ripe.createElement("div", "renderer");
+    this.element.appendChild(renderer);
 
     // register for all the necessary DOM events
     this._registerHandlers();
 };
 
+ripe.ConfiguratorCsr.prototype._initCamera = function(width, height) {
+    this.camera = new THREE.PerspectiveCamera(45, width / height, 0.15, 50);
+    this.camera.position.set(0, 0, 5);
+};
+
 /**
- * @ignore
+ * Initializes and loads everything needed to run the CSR.
+ *
+ * @private
  */
-ripe.ConfiguratorCsr.prototype._updateConfig = async function(animate) {
-    // in case the element is no longer available (possible due to async
-    // nature of execution) returns the control flow immediately
-    if (!this.element) return;
+ripe.ConfiguratorCsr.prototype._initCsr = function() {
+    if (!this.element) throw new Error("CSR layout elements are not initiated");
 
-    // sets ready to false to temporarily block
-    // update requests while the new config
-    // is being loaded
-    this.ready = false;
+    // gets configurator size information
+    const size = this._configuratorSize();
 
-    // removes the highlight from any part
-    this.lowlight();
+    // init renderer
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer.setPixelRatio(this.pixelRatio);
+    this.renderer.setSize(size.width, size.height);
 
-    // retrieves the new product frame object and sets it
-    // under the current state, adapting then the internal
-    // structures to accommodate the possible changes in the
-    // frame structure
-    this.frames = await this.owner.getFrames();
+    const renderer = this.element.querySelector(".renderer");
+    renderer.appendChild(this.renderer.domElement);
 
-    // tries to keep the current view and position
-    // if the new model supports it otherwise
-    // changes to a supported frame
-    let view = this.element.dataset.view;
-    let position = parseInt(this.element.dataset.position);
-    const maxPosition = this.frames[view];
-    if (!maxPosition) {
-        view = Object.keys(this.frames)[0];
-        position = 0;
-    } else if (position >= maxPosition) {
-        position = 0;
-    }
+    // init camera
+    this._initCamera(size.width, size.height);
 
-    // gets the dimensions of the current frame being shown
-    this.frameSize = await this.owner.getSize("$base", view);
+    // init scene
+    this.scene = new THREE.Scene();
 
-    // checks the last viewed frames of each view
-    // and deletes the ones not supported
-    const lastFrameViews = Object.keys(this._lastFrame);
-    for (const _view of lastFrameViews) {
-        const _position = this._lastFrame[_view];
-        const _maxPosition = this.frames[_view];
-        if (!_maxPosition || _position >= _maxPosition) {
-            delete this._lastFrame[_view];
-        }
-    }
+    // TODO remove test cube
+    const geometry = new THREE.BoxGeometry(0.9, 0.9, 0.9);
+    const material = new THREE.MeshNormalMaterial();
+    const cube = new THREE.Mesh(geometry, material);
+    cube.rotation.x = Math.PI * 0.1;
+    cube.rotation.y = Math.PI * 0.25;
 
-    // updates the instance values for the configurator view
-    // and position so that they reflect the current visuals
-    this.view = view;
-    this.position = position;
+    this.scene.add(cube);
 
-    // updates the number of frames in the initial view
-    // taking into account the requested frames data
-    const viewFrames = this.frames[view];
-    this.element.dataset.frames = viewFrames;
+    this._render();
+};
 
-    // updates the attributes related with both the view
-    // and the position for the current model
-    this.element.dataset.view = view;
-    this.element.dataset.position = position;
+/**
+ * Cleanups everything related to CSR.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
+    // TODO
+};
 
-    // marks the current configurator as ready and triggers
-    // the associated ready event to any event listener
-    this.ready = true;
-    this.trigger("ready");
+/**
+ * Renders frame.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._render = function() {
+    if (!this.scene) throw new Error("Scene not initiated");
+    if (!this.camera) throw new Error("Camera not initiated");
+    this.renderer.render(this.scene, this.camera);
+};
 
-    // adds the config visual class indicating that
-    // a configuration already exists for the current
-    // interactive configurator (meta-data)
-    this.element.classList.add("ready");
+/**
+ * Do the resize operation for every CSR element.
+ *
+ * @param {Number} width The number of pixels to resize to.
+ * @param {Number} height The number of pixels to resize to.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
+    // resizes renderer
+    this.renderer.setSize(width, height);
 
-    // computes the frame key for the current frame to
-    // be shown and triggers the changed frame event
-    const frame = ripe.getFrameKey(this.element.dataset.view, this.element.dataset.position);
-    this.trigger("changed_frame", frame);
+    // resizes camera
+    this._initCamera(width, height);
 };
 
 /**
@@ -512,21 +516,8 @@ ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
 };
 
 /**
- * Builds the signature string for the current internal state
- * allowing a single unique representation of the current frame.
- *
- * This signature should allow dirty control for the configurator.
- *
- * @returns {String} The unique signature for the configurator state.
+ * @ignore
  */
-ripe.ConfiguratorCsr.prototype._buildSignature = function() {
-    const dataset = this.element ? this.element.dataset : {};
-    const format = dataset.format || this.format;
-    const size = dataset.size || this.size;
-    const width = dataset.width || this.width || size;
-    const height = dataset.height || this.height || size;
-    const backgroundColor = dataset.background_color || this.backgroundColor;
-    return `${this.owner._getQuery({ full: false })}&width=${String(width)}&height=${String(
-        height
-    )}&format=${String(format)}&background=${String(backgroundColor)}`;
+ripe.ConfiguratorCsr.prototype._unregisterHandlers = function() {
+    // TODO
 };
