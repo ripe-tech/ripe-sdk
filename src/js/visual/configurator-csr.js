@@ -100,6 +100,13 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
     this.environmentTexture = null;
     this.mesh = null;
 
+    // TODO handlers specific variables
+    this.isMouseDown = false;
+    this.referenceX = null;
+    this.referenceY = null;
+    this.prevPercentX = 0;
+    this.prevPercentY = 0;
+
     // creates the necessary DOM elements and runs the
     // CSR initializer
     this._initLayout();
@@ -369,8 +376,8 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
 };
 
 ripe.ConfiguratorCsr.prototype._initCamera = function(width, height) {
-    this.camera = new window.THREE.PerspectiveCamera(45, width / height, 0.15, 50);
-    this.camera.position.set(0, 0, 5);
+    this.camera = new window.THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
+    this.camera.position.set(0, 0, 50);
 };
 
 /**
@@ -467,11 +474,63 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
     this._initCamera(width, height);
 };
 
+ripe.ConfiguratorCsr.prototype._onMouseDown = function(self, event) {
+    self.isMouseDown = true;
+    self.referenceX = event.pageX;
+    self.referenceY = event.pageY;
+    self.prevPercentX = 0;
+    self.prevPercentY = 0;
+    console.log("mousedown:", self.referenceX, self.referenceY);
+};
+
+ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
+    self.isMouseDown = false;
+    self.prevPercentX = 0;
+    self.prevPercentY = 0;
+    console.log("mouseup:", event);
+};
+
+ripe.ConfiguratorCsr.prototype._onMouseLeave = function(self, event) {
+    self.isMouseDown = false;
+    self.prevPercentX = 0;
+    self.prevPercentY = 0;
+    console.log("mouseleave:", event);
+};
+
+ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
+    if (!this.isMouseDown) return;
+    if (!this.mesh) return;
+
+    // TODO add other no drag checks
+
+    const mousePosX = event.pageX;
+    const mousePosY = event.pageY;
+    const deltaX = self.referenceX - mousePosX;
+    const deltaY = self.referenceY - mousePosY;
+    const elementWidth = self.element.clientWidth;
+    const elementHeight = self.element.clientHeight;
+    const percentX = deltaX / elementWidth;
+    const percentY = deltaY / elementHeight;
+    const sensitivity = this.sensitivity * 0.1;
+
+    const dragValueX = (percentX - this.prevPercentX) * sensitivity;
+    self.mesh.rotation.y -= dragValueX;
+
+    const dragValueY = (percentY - this.prevPercentY) * sensitivity;
+    self.mesh.rotation.x -= dragValueY;
+
+    this.prevPercentX = percentX;
+    this.prevPercentY = percentY;
+};
+
 /**
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
-    // TODO
+    this._addElementHandler("mousedown", event => this._onMouseDown(this, event));
+    this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
+    this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
+    this._addElementHandler("mousemove", event => this._onMouseMove(this, event));
 };
 
 /**
