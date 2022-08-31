@@ -393,7 +393,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.setSize(size.width, size.height);
-    this.renderer.setAnimationLoop(this._animationLoop);
+    this.renderer.setAnimationLoop(() => this._onAnimationLoop(this));
 
     const renderer = this.element.querySelector(".renderer");
     renderer.appendChild(this.renderer.domElement);
@@ -452,8 +452,8 @@ ripe.ConfiguratorCsr.prototype._render = function() {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._animationLoop = function() {
-    this._render();
+ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
+    self._render();
 };
 
 /**
