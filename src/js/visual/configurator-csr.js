@@ -105,6 +105,11 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
     this.environmentTexture = null;
     this.mesh = null;
 
+    // TODO handlers specific variables
+    this.isMouseDown = false;
+    this.referenceX = null;
+    this.referenceY = null;
+
     // creates the necessary DOM elements and runs the
     // CSR initializer
     this._initLayout();
@@ -472,11 +477,52 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
     this._initCamera(width, height);
 };
 
+ripe.ConfiguratorCsr.prototype._onMouseDown = function(self, event) {
+    self.isMouseDown = true;
+    self.referenceX = event.pageX;
+    self.referenceY = event.pageY;
+    console.log("mousedown:", self.referenceX, self.referenceY);
+};
+
+ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
+    self.isMouseDown = false;
+    console.log("mouseup:", event);
+};
+
+ripe.ConfiguratorCsr.prototype._onMouseLeave = function(self, event) {
+    self.isMouseDown = false;
+    console.log("mouseleave:", event);
+};
+
+ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
+    if (!this.isMouseDown) return;
+    if (!this.mesh) return;
+
+    // TODO add other no drag checks
+
+    const mousePosX = event.pageX;
+    const mousePosY = event.pageY;
+    const deltaX = self.referenceX - mousePosX;
+    const deltaY = self.referenceY - mousePosY;
+    const elementWidth = self.element.clientWidth;
+    const elementHeight = self.element.clientHeight;
+    const percentX = deltaX / elementWidth;
+    const percentY = deltaY / elementHeight;
+
+    // TODO handle vertical movement
+
+    console.log("mousemove:", percentX);
+    self.mesh.rotation.y += percentX;
+};
+
 /**
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
-    // TODO
+    this._addElementHandler("mousedown", event => this._onMouseDown(this, event));
+    this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
+    this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
+    this._addElementHandler("mousemove", event => this._onMouseMove(this, event));
 };
 
 /**
