@@ -5,7 +5,7 @@
 const FACES = ["side", "top", "front"];
 
 window.onload = function() {
-    const element = document.getElementById("configurator");
+    const element = document.getElementById("configurator-prc");
     const _body = document.querySelector("body");
     const url = _body.dataset.url || "https://sandbox.platforme.com/api/";
     const brand = _body.dataset.brand || "swear";
