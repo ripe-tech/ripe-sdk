@@ -26,6 +26,12 @@ const paths = {
     testSetup: "test/js/setup.js",
     dist: "dist/**/*",
     polyfill: "node_modules/@babel/polyfill/dist/polyfill.js",
+    three: [
+        "node_modules/three/build/three.min.js",
+        "node_modules/three/examples/js/loaders/DRACOLoader.js",
+        "node_modules/three/examples/js/loaders/GLTFLoader.js",
+        "node_modules/three/examples/js/loaders/RGBELoader.js"
+    ],
     basefiles: [
         "src/js/locales/base.js",
         "src/js/base/base.js",
@@ -59,6 +65,7 @@ const paths = {
         "src/js/plugins/restrictions.js",
         "src/js/plugins/sync.js",
         "src/js/visual/visual.js",
+        "src/js/visual/configurator-csr.js",
         "src/js/visual/configurator-prc.js",
         "src/js/visual/image.js"
     ]
@@ -103,7 +110,7 @@ gulp.task("build-css", () => {
 
 gulp.task("build-package-js", () => {
     return gulp
-        .src([paths.polyfill].concat(paths.basefiles))
+        .src([paths.polyfill, ...paths.three, ...paths.basefiles])
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))
@@ -119,7 +126,7 @@ gulp.task("build-package-js", () => {
 
 gulp.task("build-package-min", () => {
     return gulp
-        .src([paths.polyfill].concat(paths.basefiles))
+        .src([paths.polyfill, ...paths.three, ...paths.basefiles])
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))

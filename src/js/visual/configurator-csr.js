@@ -1,8 +1,3 @@
-import * as THREE from "three";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
-
 if (
     typeof require !== "undefined" &&
     (typeof window === "undefined" ||
@@ -333,7 +328,7 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
 };
 
 ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
-    const dracoLoader = new DRACOLoader();
+    const dracoLoader = new window.THREE.DRACOLoader();
     try {
         dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
         dracoLoader.preload();
@@ -345,7 +340,7 @@ ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
         dracoLoader.preload();
     }
 
-    const loader = new GLTFLoader();
+    const loader = new window.THREE.GLTFLoader();
     loader.setDRACOLoader(dracoLoader);
     return new Promise((resolve, reject) => {
         loader.load(path, gltf => resolve(gltf.scene));
@@ -362,7 +357,7 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
 };
 
 ripe.ConfiguratorCsr.prototype._loadEnvironment = function(path) {
-    const rgbeLoader = new RGBELoader();
+    const rgbeLoader = new window.THREE.RGBELoader();
     return new Promise((resolve, reject) => {
         rgbeLoader.load(path, texture => resolve(texture));
     });
@@ -372,7 +367,7 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     // TODO don't use hardcoded path
     const envPath = "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
     this.environmentTexture = await this._loadEnvironment(envPath);
-    this.environmentTexture.mapping = THREE.EquirectangularReflectionMapping;
+    this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
     this.scene.environment = this.environmentTexture;
 
     const meshPath = this.owner.getMeshUrl();
@@ -381,7 +376,7 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
 };
 
 ripe.ConfiguratorCsr.prototype._initCamera = function(width, height) {
-    this.camera = new THREE.PerspectiveCamera(45, width / height, 0.15, 50);
+    this.camera = new window.THREE.PerspectiveCamera(45, width / height, 0.15, 50);
     this.camera.position.set(0, 0, 5);
 };
 
@@ -397,7 +392,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     const size = this._configuratorSize();
 
     // init renderer
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer = new window.THREE.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.setSize(size.width, size.height);
     this.renderer.setAnimationLoop(() => this._onAnimationLoop(this));
@@ -409,7 +404,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     this._initCamera(size.width, size.height);
 
     // init scene
-    this.scene = new THREE.Scene();
+    this.scene = new window.THREE.Scene();
     await this._loadScene();
 
     this._render();
