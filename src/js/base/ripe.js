@@ -1219,12 +1219,6 @@ ripe.Ripe.prototype.bindVideoThumbnail = function(element, options = {}) {
  */
 ripe.Ripe.prototype.bindConfigurator = function(element, options = {}) {
     options = Object.assign({}, { format: this.format }, options);
-
-    const strategyType = options.type || "prc";
-    if (!this.hasStrategy(strategyType)) {
-        throw Error(`Strategy type "${strategyType}" not supported`);
-    }
-
     switch (options.type) {
         case "csr":
             return this.bindConfiguratorCsr(element, options);
