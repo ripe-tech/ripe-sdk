@@ -109,6 +109,7 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
     this.isMouseDown = false;
     this.referenceX = null;
     this.referenceY = null;
+    this.prevPercentX = 0;
 
     // creates the necessary DOM elements and runs the
     // CSR initializer
@@ -481,16 +482,19 @@ ripe.ConfiguratorCsr.prototype._onMouseDown = function(self, event) {
     self.isMouseDown = true;
     self.referenceX = event.pageX;
     self.referenceY = event.pageY;
+    self.prevPercentX = 0;
     console.log("mousedown:", self.referenceX, self.referenceY);
 };
 
 ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
     self.isMouseDown = false;
+    self.prevPercentX = 0;
     console.log("mouseup:", event);
 };
 
 ripe.ConfiguratorCsr.prototype._onMouseLeave = function(self, event) {
     self.isMouseDown = false;
+    self.prevPercentX = 0;
     console.log("mouseleave:", event);
 };
 
@@ -511,8 +515,11 @@ ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
 
     // TODO handle vertical movement
 
-    console.log("mousemove:", percentX);
-    self.mesh.rotation.y += percentX;
+    const sensitivity = this.sensitivity * 0.1;
+    const dragValueX = (percentX - this.prevPercentX) * sensitivity;
+    self.mesh.rotation.y -= dragValueX;
+
+    this.prevPercentX = percentX;
 };
 
 /**
