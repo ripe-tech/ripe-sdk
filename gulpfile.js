@@ -110,7 +110,7 @@ gulp.task("build-css", () => {
 
 gulp.task("build-package-js", () => {
     return gulp
-        .src([paths.polyfill, ...paths.three, ...paths.basefiles])
+        .src([paths.polyfill, ...paths.basefiles])
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))
@@ -124,7 +124,7 @@ gulp.task("build-package-js", () => {
         .pipe(gulp.dest("dist"));
 });
 
-gulp.task("build-package-min", () => {
+gulp.task("build-package-js-three", () => {
     return gulp
         .src([paths.polyfill, ...paths.three, ...paths.basefiles])
         .pipe(sourcemaps.init())
@@ -135,7 +135,45 @@ gulp.task("build-package-min", () => {
                 presets: [["@babel/preset-env"]]
             })
         )
+        .pipe(concat("ripe.three.js"))
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest("dist"));
+});
+
+gulp.task("build-package-min", () => {
+    return gulp
+        .src([paths.polyfill, ...paths.basefiles])
+        .pipe(sourcemaps.init())
+        .pipe(sourcemaps.identityMap())
+        .pipe(replace("__VERSION__", _package.version))
+        .pipe(
+            babel({
+                presets: [["@babel/preset-env"]]
+            })
+        )
         .pipe(concat("ripe.min.js"))
+        .pipe(
+            terser({
+                mangle: false,
+                ecma: 5
+            })
+        )
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest("dist"));
+});
+
+gulp.task("build-package-min-three", () => {
+    return gulp
+        .src([paths.polyfill, ...paths.three, ...paths.basefiles])
+        .pipe(sourcemaps.init())
+        .pipe(sourcemaps.identityMap())
+        .pipe(replace("__VERSION__", _package.version))
+        .pipe(
+            babel({
+                presets: [["@babel/preset-env"]]
+            })
+        )
+        .pipe(concat("ripe.three.min.js"))
         .pipe(
             terser({
                 mangle: false,
@@ -206,7 +244,15 @@ gulp.task("docs", cb => {
 gulp.task("watch-js", () => {
     gulp.watch(
         paths.scripts,
-        gulp.series("build-js", "build-package-js", "build-package-min", "move-js", "compress")
+        gulp.series(
+            "build-js",
+            "build-package-js",
+            "build-package-js-three",
+            "build-package-min",
+            "build-package-min-three",
+            "move-js",
+            "compress"
+        )
     );
 });
 
@@ -220,7 +266,9 @@ gulp.task(
         "build-js",
         "build-css",
         "build-package-js",
+        "build-package-js-three",
         "build-package-min",
+        "build-package-min-three",
         "move-js",
         "move-css",
         "compress"
