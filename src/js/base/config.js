@@ -41,3 +41,8 @@ ripe.Ripe.prototype.hasSize = function() {
 ripe.Ripe.prototype.hasInitialsRadius = function() {
     return !this.hasTag("initials_no_radius");
 };
+
+ripe.Ripe.prototype.hasStrategy = function(strategy) {
+    const strategies = (this.loadedConfig && this.loadedConfig.strategies) || ["prc"];
+    return strategies.includes(strategy);
+};
