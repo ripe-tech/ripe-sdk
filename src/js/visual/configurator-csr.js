@@ -393,6 +393,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.setSize(size.width, size.height);
+    this.renderer.setAnimationLoop(this._animationLoop);
 
     const renderer = this.element.querySelector(".renderer");
     renderer.appendChild(this.renderer.domElement);
@@ -444,6 +445,15 @@ ripe.ConfiguratorCsr.prototype._render = function() {
     if (!this.scene) throw new Error("Scene not initiated");
     if (!this.camera) throw new Error("Camera not initiated");
     this.renderer.render(this.scene, this.camera);
+};
+
+/**
+ * Animation loop tick.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._animationLoop = function() {
+    this._render();
 };
 
 /**
