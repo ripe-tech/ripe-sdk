@@ -9,8 +9,8 @@ window.onload = function() {
     const _body = document.querySelector("body");
     const url = _body.dataset.url || "https://sandbox.platforme.com/api/";
     const brand = _body.dataset.brand || "swear";
-    const model = _body.dataset.model || "vyner";
-    const variant = _body.dataset.variant || "";
+    const model = _body.dataset.model || "vyner_hitop";
+    const variant = _body.dataset.variant || "$base";
     const version = _body.dataset.version || null;
     const format = _body.dataset.format || "lossless";
     const currency = _body.dataset.currency || "USD";
@@ -343,6 +343,10 @@ window.onload = function() {
             // be properly used under this runtime
             ripe.addPlugin(syncPlugin);
             ripe.addPlugin(restrictionsPlugin);
+
+            // TODO improve this
+            const elementCsr = document.getElementById("configurator-csr");
+            ripe.bindConfigurator(elementCsr, { type: "csr" });
         });
     };
 
