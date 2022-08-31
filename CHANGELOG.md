@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-*
+* Avoid warnings by not using `var` in ripe-sdk-demo .js files
 
 ### Fixed
 
