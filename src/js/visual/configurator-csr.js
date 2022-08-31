@@ -376,8 +376,8 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
 };
 
 ripe.ConfiguratorCsr.prototype._initCamera = function(width, height) {
-    this.camera = new window.THREE.PerspectiveCamera(45, width / height, 0.15, 50);
-    this.camera.position.set(0, 0, 5);
+    this.camera = new window.THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
+    this.camera.position.set(0, 0, 50);
 };
 
 /**
