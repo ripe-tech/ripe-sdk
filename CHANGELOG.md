@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Ensures the configurator strategy is supported before advancing with it's setup
+* Avoid warnings by not using `var` in ripe-sdk-demo .js files
 
 ### Fixed
 
