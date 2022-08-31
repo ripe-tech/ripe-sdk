@@ -92,7 +92,7 @@ window.onload = function() {
         initInitials(instance);
     };
 
-    var initBase = function() {
+    const initBase = function() {
         // registers for the key down event on the global document element
         // to listen to some of the key strokes (global operations)
         document.addEventListener("keydown", async function(event) {
@@ -106,7 +106,7 @@ window.onload = function() {
         });
     };
 
-    var initHeader = function() {
+    const initHeader = function() {
         const setPart = document.getElementById("set-part");
         const setMessage = document.getElementById("set-message");
         const getPrice = document.getElementById("get-price");
@@ -175,7 +175,7 @@ window.onload = function() {
         });
     };
 
-    var initOAuth = function() {
+    const initOAuth = function() {
         let oauthLogin = document.getElementById("oauth-login");
         let oauthLogout = document.getElementById("oauth-logout");
         let oauthOperation = document.getElementById("oauth-operation");
@@ -227,7 +227,7 @@ window.onload = function() {
         });
     };
 
-    var initConfigurator = function() {
+    const initConfigurator = function() {
         // loads the config of the product to retrieve the
         // complete configuration of the product and be able
         // to define the visible frames and apply restrictions
@@ -247,10 +247,11 @@ window.onload = function() {
             frameTop.style.display = "none";
             frameFront.style.display = "none";
 
+            let image = null;
             if (result.faces.indexOf("side") !== -1) {
                 if (result.frames > 0) {
                     frame0.style.display = "inline";
-                    var image = ripe.bindImage(frame0, {
+                    image = ripe.bindImage(frame0, {
                         frame: "side-0"
                     });
                 }
@@ -315,7 +316,7 @@ window.onload = function() {
                 }
             });
 
-            var configurator = ripe.bindConfigurator(element, {
+            const configurator = ripe.bindConfigurator(element, {
                 duration: 250,
                 noMasks: false,
                 view: bestFace(result)
@@ -345,7 +346,7 @@ window.onload = function() {
         });
     };
 
-    var initInitials = function() {
+    const initInitials = function() {
         ripe.bindImage(document.getElementById("initials"), {
             showInitials: true
         });
