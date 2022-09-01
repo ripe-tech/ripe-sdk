@@ -85,13 +85,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         posY: cameraOpts.posY !== undefined ? cameraOpts.posY : 0,
         posZ: cameraOpts.posZ !== undefined ? cameraOpts.posZ : 50
     };
-    this.width = this.options.width || null;
-    this.height = this.options.height || null;
-    this.format = this.options.format || null;
-    this.size = this.options.size || null;
-    this.pixelRatio =
-        this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
-    this.sensitivity = this.options.sensitivity || 40;
 
     // general state variables
     this.loading = true;
@@ -154,6 +147,20 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.size = options.size === undefined ? this.size : options.size;
     this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
+    this.dracoLoaderDecoderPath =
+        options.dracoLoaderDecoderPath === undefined
+            ? this.dracoLoaderDecoderPath
+            : options.dracoLoaderDecoderPath;
+    this.dracoLoaderDecoderFallbackPath =
+        options.dracoLoaderDecoderFallbackPath === undefined
+            ? this.dracoLoaderDecoderFallbackPath
+            : options.dracoLoaderDecoderFallbackPath;
+    this.sceneEnvironmentPath =
+        options.sceneEnvironmentPath === undefined
+            ? this.sceneEnvironmentPath
+            : options.sceneEnvironmentPath;
+    const cameraOpts = options.cameraOptions || {};
+    this.cameraOptions = { ...this.cameraOptions, ...cameraOpts };
 
     if (update) await this.update();
 };
