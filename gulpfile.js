@@ -14,8 +14,8 @@ const sourcemaps = require("gulp-sourcemaps");
 const _package = require("./package.json");
 
 const paths = {
-    mainjs: "dist/ripe.js",
-    mainmap: "dist/ripe.js.map",
+    mainjs: "dist/ripe.three.min.js",
+    mainmap: "dist/ripe.three.min.js.map",
     maincss: "src/css/ripe.css",
     mainpython: "src/python/**/main.js",
     scripts: "src/js/**/*.js",
