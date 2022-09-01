@@ -107,7 +107,6 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
  * cleanup operations can be executed.
  */
 ripe.ConfiguratorCsr.prototype.deinit = async function() {
-    this._unregisterHandlers();
     this._deinitCsr();
 
     while (this.element.firstChild) {
@@ -503,11 +502,4 @@ ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
     this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
     this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
     this._addElementHandler("mousemove", event => this._onMouseMove(this, event));
-};
-
-/**
- * @ignore
- */
-ripe.ConfiguratorCsr.prototype._unregisterHandlers = function() {
-    // TODO
 };
