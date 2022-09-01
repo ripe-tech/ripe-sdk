@@ -58,6 +58,13 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
     // options variables
+    this.width = this.options.width || null;
+    this.height = this.options.height || null;
+    this.format = this.options.format || null;
+    this.size = this.options.size || null;
+    this.pixelRatio =
+        this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
+    this.sensitivity = this.options.sensitivity || 40;
     this.dracoLoaderDecoderPath =
         this.options.dracoLoaderDecoderPath || "https://www.gstatic.com/draco/v1/decoders/";
     this.dracoLoaderDecoderFallbackPath =
@@ -223,9 +230,9 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
  * Tries to obtain the best possible size for the configurator
  * defaulting to the client with of the element as fallback.
  *
- * @param {Number} size The number of pixels.
- * @param {Number} width The number of pixels.
- * @param {Number} height The number of pixels.
+ * @param {Number} size The number of pixels for the viewport both width and height.
+ * @param {Number} width The number of pixels for the viewport width.
+ * @param {Number} height The number of pixels for the viewport height.
  *
  * @private
  */
