@@ -89,7 +89,6 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
     this.sensitivity = this.options.sensitivity || 40;
 
     // general state variables
-    this.ready = false;
     this.currentSize = 0;
     this.currentWidth = 0;
     this.currentHeight = 0;
@@ -166,20 +165,24 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
  * update operation.
  */
 ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
-    // in case the configurator is currently nor ready for an
-    // update none is performed and the control flow is returned
-    // with the false value (indicating a no-op, nothing was done)
-    if (this.ready === false) {
-        this.trigger("not_loaded");
-        return false;
-    }
-
     const result = true;
     this.trigger("loaded");
 
     // returns the final result of the underlying update execution
     // to the caller method (may contain the canceled field)
     return result;
+};
+
+/**
+ * This function is called (by the owner) whenever the current operation
+ * in the child should be canceled this way a Configurator is not updated.
+ *
+ * @param {Object} options Set of optional parameters to adjust the Configurator.
+ * @returns {Boolean} If an effective operation has been performed or if
+ * instead no cancel logic was executed.
+ */
+ripe.ConfiguratorCsr.prototype.cancel = async function(options = {}) {
+    return true;
 };
 
 /**
