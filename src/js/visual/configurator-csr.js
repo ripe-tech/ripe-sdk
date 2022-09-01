@@ -54,7 +54,7 @@ ripe.ConfiguratorCsr.prototype.constructor = ripe.ConfiguratorCsr;
  * Sets the various values for the Configurator taking into
  * owner's default values.
  */
-ripe.ConfiguratorCsr.prototype.init = async function() {
+ripe.ConfiguratorCsr.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
     // options variables
@@ -66,7 +66,6 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
     this.sceneEnvironmentPath =
         this.options.sceneEnvironmentPath ||
         "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
-
     const cameraOpts = this.options.cameraOptions || {};
     this.cameraOptions = {
         fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 45,
@@ -79,7 +78,6 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
         posY: cameraOpts.posY !== undefined ? cameraOpts.posY : 0,
         posZ: cameraOpts.posZ !== undefined ? cameraOpts.posZ : 50
     };
-
     this.width = this.options.width || null;
     this.height = this.options.height || null;
     this.format = this.options.format || null;
@@ -89,6 +87,7 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
     this.sensitivity = this.options.sensitivity || 40;
 
     // general state variables
+    this.loading = true;
     this.currentSize = 0;
     this.currentWidth = 0;
     this.currentHeight = 0;
@@ -110,7 +109,9 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
     // creates the necessary DOM elements and runs the
     // CSR initializer
     this._initLayout();
-    await this._initCsr();
+    this._initCsr().then(() => {
+        this.loading = false;
+    });
 };
 
 /**
