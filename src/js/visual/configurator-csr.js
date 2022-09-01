@@ -85,7 +85,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
         posX: cameraOpts.posX !== undefined ? cameraOpts.posX : 0,
         posY: cameraOpts.posY !== undefined ? cameraOpts.posY : 0,
-        posZ: cameraOpts.posZ !== undefined ? cameraOpts.posZ : 50
+        posZ: cameraOpts.posZ !== undefined ? cameraOpts.posZ : 6
     };
 
     // general state variables
