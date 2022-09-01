@@ -500,10 +500,8 @@ ripe.ConfiguratorCsr.prototype._onMouseLeave = function(self, event) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
-    if (!this.isMouseDown) return;
-    if (!this.mesh) return;
-
-    // TODO add other no drag checks
+    if (!self.isMouseDown) return;
+    if (!self.mesh) return;
 
     const mousePosX = event.pageX;
     const mousePosY = event.pageY;
@@ -513,16 +511,16 @@ ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
     const elementHeight = self.element.clientHeight;
     const percentX = deltaX / elementWidth;
     const percentY = deltaY / elementHeight;
-    const sensitivity = this.sensitivity * 0.1;
+    const sensitivity = self.sensitivity * 0.1;
 
-    const dragValueX = (percentX - this.prevPercentX) * sensitivity;
+    const dragValueX = (percentX - self.prevPercentX) * sensitivity;
     self.mesh.rotation.y -= dragValueX;
 
-    const dragValueY = (percentY - this.prevPercentY) * sensitivity;
+    const dragValueY = (percentY - self.prevPercentY) * sensitivity;
     self.mesh.rotation.x -= dragValueY;
 
-    this.prevPercentX = percentX;
-    this.prevPercentY = percentY;
+    self.prevPercentX = percentX;
+    self.prevPercentY = percentY;
 };
 
 /**
