@@ -242,35 +242,6 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
 };
 
 /**
- * Initializes the layout for the configurator element by
- * constructing all te child elements required for the proper
- * configurator functionality to work.
- *
- * From a DOM perspective this is a synchronous operation,
- * meaning that after its execution the configurator is ready
- * to be manipulated.
- *
- * @private
- */
-ripe.ConfiguratorCsr.prototype._initLayout = function() {
-    // in case the element is no longer available (possible due to async
-    // nature of execution) returns the control flow immediately
-    if (!this.element) return;
-
-    // clears the elements children by iterating over them
-    while (this.element.firstChild) {
-        this.element.removeChild(this.element.firstChild);
-    }
-
-    // creates the renderer canvas and adds it to the element
-    const renderer = ripe.createElement("div", "renderer");
-    this.element.appendChild(renderer);
-
-    // register for all the necessary DOM events
-    this._registerHandlers();
-};
-
-/**
  * Loads a GLTF file.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
@@ -322,7 +293,7 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._loadEnvironment = function(path) {
+ripe.ConfiguratorCsr.prototype._loadEnvironment = async function(path) {
     const rgbeLoader = new window.THREE.RGBELoader();
     return new Promise((resolve, reject) => {
         rgbeLoader.load(path, texture => resolve(texture));
@@ -345,6 +316,46 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     const meshPath = this.owner.getMeshUrl();
     this.mesh = await this._loadMesh(meshPath);
     this.scene.add(this.mesh);
+};
+
+/**
+ * Renders frame.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._render = function() {
+    if (!this.scene) throw new Error("Scene not initiated");
+    if (!this.camera) throw new Error("Camera not initiated");
+    this.renderer.render(this.scene, this.camera);
+};
+
+/**
+ * Initializes the layout for the configurator element by
+ * constructing all te child elements required for the proper
+ * configurator functionality to work.
+ *
+ * From a DOM perspective this is a synchronous operation,
+ * meaning that after its execution the configurator is ready
+ * to be manipulated.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._initLayout = function() {
+    // in case the element is no longer available (possible due to async
+    // nature of execution) returns the control flow immediately
+    if (!this.element) return;
+
+    // clears the elements children by iterating over them
+    while (this.element.firstChild) {
+        this.element.removeChild(this.element.firstChild);
+    }
+
+    // creates the renderer canvas and adds it to the element
+    const renderer = ripe.createElement("div", "renderer");
+    this.element.appendChild(renderer);
+
+    // register for all the necessary DOM events
+    this._registerHandlers();
 };
 
 /**
@@ -428,17 +439,6 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     }
 
     if (this.camera) this.camera = null;
-};
-
-/**
- * Renders frame.
- *
- * @private
- */
-ripe.ConfiguratorCsr.prototype._render = function() {
-    if (!this.scene) throw new Error("Scene not initiated");
-    if (!this.camera) throw new Error("Camera not initiated");
-    this.renderer.render(this.scene, this.camera);
 };
 
 /**
