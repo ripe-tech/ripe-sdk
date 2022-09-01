@@ -65,6 +65,8 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.pixelRatio =
         this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
     this.sensitivity = this.options.sensitivity || 40;
+    this.useDracoLoader =
+        this.options.useDracoLoader !== undefined ? this.options.useDracoLoader : true;
     this.dracoLoaderDecoderPath =
         this.options.dracoLoaderDecoderPath || "https://www.gstatic.com/draco/v1/decoders/";
     this.dracoLoaderDecoderFallbackPath =
@@ -147,6 +149,8 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.size = options.size === undefined ? this.size : options.size;
     this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
+    this.useDracoLoader =
+        options.useDracoLoader === undefined ? this.useDracoLoader : options.useDracoLoader;
     this.dracoLoaderDecoderPath =
         options.dracoLoaderDecoderPath === undefined
             ? this.dracoLoaderDecoderPath
@@ -264,18 +268,21 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
  * @private
  */
 ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
-    const dracoLoader = new window.THREE.DRACOLoader();
-    try {
-        dracoLoader.setDecoderPath(this.dracoLoaderDecoderPath);
-        dracoLoader.preload();
-    } catch (error) {
-        // loader fallback
-        dracoLoader.setDecoderPath(this.dracoLoaderDecoderFallbackPath);
-        dracoLoader.preload();
+    const loader = new window.THREE.GLTFLoader();
+
+    if (this.useDracoLoader) {
+        const dracoLoader = new window.THREE.DRACOLoader();
+        try {
+            dracoLoader.setDecoderPath(this.dracoLoaderDecoderPath);
+            dracoLoader.preload();
+        } catch (error) {
+            // loader fallback
+            dracoLoader.setDecoderPath(this.dracoLoaderDecoderFallbackPath);
+            dracoLoader.preload();
+        }
+        loader.setDRACOLoader(dracoLoader);
     }
 
-    const loader = new window.THREE.GLTFLoader();
-    loader.setDRACOLoader(dracoLoader);
     return new Promise((resolve, reject) => {
         loader.load(path, gltf => resolve(gltf.scene));
     });
