@@ -441,15 +441,6 @@ ripe.ConfiguratorCsr.prototype._render = function() {
 };
 
 /**
- * Animation loop tick.
- *
- * @private
- */
-ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
-    self._render();
-};
-
-/**
  * Do the resize operation for every CSR element.
  *
  * @param {Number} width The number of pixels to resize to.
@@ -468,6 +459,15 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
 
     // creates a new camera respecting the new renderer size
     this._initCamera();
+};
+
+/**
+ * Animation loop tick.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
+    self._render();
 };
 
 /**
