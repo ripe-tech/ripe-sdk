@@ -230,7 +230,7 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height) {
-    size = size || this.size || this.element.clientWidth;
+    size = size || this.element.dataset.size || this.size || this.element.clientWidth;
     width = width || this.element.dataset.width || this.width || size;
     height = height || this.element.dataset.height || this.height || size;
 
