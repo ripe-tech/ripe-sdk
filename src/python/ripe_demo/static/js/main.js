@@ -88,8 +88,9 @@ window.onload = function() {
         initBase(instance);
         initHeader(instance);
         initOAuth(instance);
-        initConfigurator(instance);
+        initConfiguratorPrc(instance);
         initInitials(instance);
+        initConfiguratorCsr();
     };
 
     const initBase = function() {
@@ -227,7 +228,7 @@ window.onload = function() {
         });
     };
 
-    const initConfigurator = function() {
+    const initConfiguratorPrc = function() {
         // loads the config of the product to retrieve the
         // complete configuration of the product and be able
         // to define the visible frames and apply restrictions
@@ -343,10 +344,6 @@ window.onload = function() {
             // be properly used under this runtime
             ripe.addPlugin(syncPlugin);
             ripe.addPlugin(restrictionsPlugin);
-
-            // TODO improve this
-            const elementCsr = document.getElementById("configurator-csr");
-            ripe.bindConfigurator(elementCsr, { type: "csr" });
         });
     };
 
@@ -404,6 +401,11 @@ window.onload = function() {
                 dropdown.dispatchEvent(new Event("enable"));
             }
         });
+    };
+
+    const initConfiguratorCsr = function() {
+        const element = document.getElementById("configurator-csr");
+        ripe.bindConfigurator(element, { type: "csr" });
     };
 
     // starts the loading process for the RIPE main instance and binds
