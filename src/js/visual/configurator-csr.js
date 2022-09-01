@@ -238,6 +238,68 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
 };
 
 /**
+ * Rotates the model to match the PRC frame.
+ *
+ * @param {Object} frame The new PRC frame to display using the extended and canonical
+ * format for the frame description (eg: side-3).
+ * @param {Object} options Set of optional parameters to adjust the change frame, such as:
+ * - 'duration' - The duration of the animation in milliseconds (defaults to 'null').
+ * - 'preventDrag' - If drag actions during an animated change of frames should be
+ * ignored (defaults to 'true').
+ * - 'safe' - If requested then the operation is only performed in case the configurator
+ * is not in the an equivalent state (default to 'true').
+ */
+ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {}) {
+    // in case the model mesh is not loaded then it's not possible to change the frame
+    if (!this.mesh) throw new Error("Model mesh not loaded");
+
+    // parses the requested frame value according to the pre-defined
+    // standard (eg: side-3) and then unpacks it as view and position
+    const _frame = ripe.parseFrameKey(frame);
+    const nextView = _frame[0];
+    const nextPosition = parseInt(_frame[1]);
+
+    console.log("changeFrame:", _frame, nextView, nextPosition);
+
+    // in case the next position value was not properly parsed (probably undefined)
+    // then it's not possible to change frame (throws exception)
+    if (isNaN(nextPosition)) {
+        throw new RangeError("Frame position is not defined");
+    }
+
+    // unpacks the other options to the frame change defaulting their values
+    // in case undefined values are found
+    const duration = options.duration !== undefined ? options.duration : null;
+    const preventDrag = options.preventDrag !== undefined ? options.preventDrag : true;
+    const safe = options.safe !== undefined ? options.safe : true;
+
+    // retrieves the model frame object
+    const frames = await this.owner.getFrames();
+
+    // tries to retrieve the amount of frames for the target view and
+    // validates that the target view exists and that the target position
+    // (frame) does not overflow the amount of frames in for the view
+    const viewFramesNum = frames[nextView];
+    console.log("viewFrames", viewFramesNum);
+    if (!viewFramesNum || nextPosition >= viewFramesNum) {
+        throw new RangeError("Frame " + frame + " is not supported");
+    }
+
+    // // normalizes both the (current) view and position values
+    // const view = this.element.dataset.view;
+    // const position = parseInt(this.element.dataset.position);
+
+    // TODO support pending
+    // TODO support safe mode
+    // TODO support preventDrag
+
+    const degPerFrame = Math.PI / viewFramesNum;
+    console.log("degPerFrame:", degPerFrame);
+
+    this.mesh.rotation.y = nextPosition * degPerFrame;
+};
+
+/**
  * Tries to obtain the best possible size for the configurator
  * defaulting to the client with of the element as fallback.
  *
