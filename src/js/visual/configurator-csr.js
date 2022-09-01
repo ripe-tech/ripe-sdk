@@ -57,50 +57,38 @@ ripe.ConfiguratorCsr.prototype.constructor = ripe.ConfiguratorCsr;
 ripe.ConfiguratorCsr.prototype.init = async function() {
     ripe.Visual.prototype.init.call(this);
 
-    // TODO init common stuff in another method shared between configurators
+    // options variables
+    this.dracoLoaderDecoderPath =
+        this.options.dracoLoaderDecoderPath || "https://www.gstatic.com/draco/v1/decoders/";
+    this.dracoLoaderDecoderFallbackPath =
+        this.options.dracoLoaderDecoderFallbackPath ||
+        "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
+    this.sceneEnvironmentPath =
+        this.options.sceneEnvironmentPath ||
+        "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
+
     this.width = this.options.width || null;
     this.height = this.options.height || null;
     this.format = this.options.format || null;
     this.size = this.options.size || null;
-    this.mutations = this.options.mutations || false;
-    this.maxSize = this.options.maxSize || 1000;
     this.pixelRatio =
         this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
     this.sensitivity = this.options.sensitivity || 40;
-    this.verticalThreshold = this.options.verticalThreshold || 15;
-    this.clickThreshold = this.options.clickThreshold || 0.015;
-    this.duration = this.options.duration || 500;
-    this.preloadDelay = this.options.preloadDelay || 150;
-    this.maskOpacity = this.options.maskOpacity || 0.4;
-    this.maskDuration = this.options.maskDuration || 150;
-    this.noMasks = this.options.noMasks === undefined ? undefined : this.options.noMasks;
-    this.useMasks =
-        this.options.useMasks === undefined
-            ? this.noMasks === undefined
-                ? undefined
-                : !this.noMasks
-            : this.options.useMasks;
-    this.useDefaultSize = this.options.useDefaultSize || true;
-    this.view = this.options.view || "side";
-    this.position = this.options.position || 0;
-    this.configAnimate =
-        this.options.configAnimate === undefined ? "cross" : this.options.configAnimate;
-    this.viewAnimate = this.options.viewAnimate === undefined ? "cross" : this.options.viewAnimate;
-    this.ready = false;
-    this._finalize = null;
-    this._observer = null;
-    this._ownerBinds = {};
-    this._pending = [];
-    this.frameSize = null;
 
-    // TODO CSR specific variables
+    // general state variables
+    this.ready = false;
+    this.currentSize = 0;
+    this.currentWidth = 0;
+    this.currentHeight = 0;
+
+    // CSR variables
     this.renderer = null;
     this.camera = null;
     this.scene = null;
     this.environmentTexture = null;
     this.mesh = null;
 
-    // TODO handlers specific variables
+    // handlers variables
     this.isMouseDown = false;
     this.referenceX = null;
     this.referenceY = null;
@@ -119,8 +107,6 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
  * cleanup operations can be executed.
  */
 ripe.ConfiguratorCsr.prototype.deinit = async function() {
-    await this.cancel();
-
     this._unregisterHandlers();
     this._deinitCsr();
 
@@ -128,16 +114,7 @@ ripe.ConfiguratorCsr.prototype.deinit = async function() {
         this.element.removeChild(this.element.firstChild);
     }
 
-    for (const bind in this._ownerBinds) {
-        this.owner.unbind(bind, this._ownerBinds[bind]);
-    }
-
     this._removeElementHandlers();
-
-    if (this._observer) this._observer.disconnect();
-
-    this._finalize = null;
-    this._observer = null;
 
     ripe.Visual.prototype.deinit.call(this);
 };
@@ -145,11 +122,7 @@ ripe.ConfiguratorCsr.prototype.deinit = async function() {
 /**
  * Updates configurator current options with the ones provided.
  *
- * @param {Object} options Set of optional parameters to adjust the Configurator, such as:
- * - 'sensitivity' - Rotation sensitivity to the user mouse drag action.
- * - 'duration' - The duration in milliseconds that the transition should take.
- * - 'useMasks' - Usage of masks in the current model, necessary for the part highlighting action.
- * - 'configAnimate' - The configurator animation style: 'simple' (fade in), 'cross' (crossfade) or 'null'.
+ * @param {Object} options Set of optional parameters to adjust the Configurator.
  * @param {Boolean} update If an update operation should be executed after
  * the options updated operation has been performed.
  */
@@ -160,34 +133,8 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.height = options.height === undefined ? this.height : options.height;
     this.format = options.format === undefined ? this.format : options.format;
     this.size = options.size === undefined ? this.size : options.size;
-    this.mutations = options.mutations === undefined ? this.mutations : options.mutations;
-    this.maxSize = options.maxSize === undefined ? this.maxSize : this.maxSize;
     this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
-    this.verticalThreshold =
-        options.verticalThreshold === undefined
-            ? this.verticalThreshold
-            : options.verticalThreshold;
-    this.clickThreshold =
-        options.clickThreshold === undefined ? this.clickThreshold : options.clickThreshold;
-    this.duration = options.duration === undefined ? this.duration : options.duration;
-    this.preloadDelay =
-        options.preloadDelay === undefined ? this.preloadDelay : options.preloadDelay;
-    this.maskOpacity = options.maskOpacity === undefined ? this.maskOpacity : options.maskOpacity;
-    this.maskDuration =
-        options.maskDuration === undefined ? this.maskDuration : options.maskDuration;
-    this.noMasks = options.noMasks === undefined ? this.noMasks : options.noMasks;
-    this.useMasks =
-        this.options.useMasks === undefined
-            ? this.noMasks === undefined
-                ? this.noMasks
-                : !this.noMasks
-            : this.options.useMasks;
-    this.useDefaultSize =
-        options.useDefaultSize === undefined ? this.useDefaultSize : options.useDefaultSize;
-    this.configAnimate =
-        options.configAnimate === undefined ? this.configAnimate : options.configAnimate;
-    this.viewAnimate = options.viewAnimate === undefined ? this.viewAnimate : options.viewAnimate;
 
     if (update) await this.update();
 };
@@ -202,12 +149,7 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
  * same as the one previously set.
  *
  * @param {Object} state An object containing the new state of the owner.
- * @param {Object} options Set of optional parameters to adjust the Configurator update, such as:
- * - 'animate' - If it's to animate the update (defaults to 'false').
- * - 'duration' - The duration in milliseconds that the transition should take.
- * - 'callback' - The callback to be called at the end of the update.
- * - 'preload' - If it's to execute the pre-loading process.
- * - 'force' - If the updating operation should be forced (ignores signature).
+ * @param {Object} options Set of optional parameters to adjust the Configurator update.
  * @returns {Boolean} If an effective operation has been performed by the
  * update operation.
  */
@@ -220,8 +162,8 @@ ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
         return false;
     }
 
-    // TODO
     const result = true;
+    this.trigger("loaded");
 
     // returns the final result of the underlying update execution
     // to the caller method (may contain the canceled field)
@@ -229,28 +171,13 @@ ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
 };
 
 /**
- * This function is called (by the owner) whenever the current operation
- * in the child should be canceled this way a Configurator is not updated.
- *
- * @param {Object} options Set of optional parameters to adjust the Configurator.
- * @returns {Boolean} If an effective operation has been performed or if
- * instead no cancel logic was executed.
- */
-ripe.ConfiguratorCsr.prototype.cancel = async function(options = {}) {
-    // TODO
-};
-
-/**
- * Resizes the configurator's DOM element to 'size' pixels.
- * This action is performed by setting both the attributes from
- * the HTML elements and the style.
+ * Resizes the configurator's DOM element to 'size' pixels. You can also specify the
+ * width and height, the size applied is the more specific one.
  *
  * @param {Number} size The number of pixels to resize to.
  */
 ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
-    if (this.element === undefined) {
-        return;
-    }
+    if (!this.element) return;
 
     const sizeValues = this._configuratorSize(size, width, height);
 
@@ -327,16 +254,22 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
     this._registerHandlers();
 };
 
+/**
+ * Loads a GLTF file.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @returns {THREE.Mesh} The loaded model.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
     const dracoLoader = new window.THREE.DRACOLoader();
     try {
-        dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
+        dracoLoader.setDecoderPath(this.dracoLoaderDecoderPath);
         dracoLoader.preload();
     } catch (error) {
         // loader fallback
-        const fallbackURL =
-            "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
-        dracoLoader.setDecoderPath(fallbackURL);
+        dracoLoader.setDecoderPath(this.dracoLoaderDecoderFallbackPath);
         dracoLoader.preload();
     }
 
@@ -347,6 +280,15 @@ ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
     });
 };
 
+/**
+ * Loads a mesh.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @param {String} format Mesh file format.
+ * @returns {THREE.Mesh} The loaded model.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf") {
     switch (format) {
         case "gltf":
@@ -356,6 +298,14 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
     }
 };
 
+/**
+ * Loads a environment file, which are normally hdr files.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @returns {THREE.Texture} The environment texture.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._loadEnvironment = function(path) {
     const rgbeLoader = new window.THREE.RGBELoader();
     return new Promise((resolve, reject) => {
@@ -363,25 +313,38 @@ ripe.ConfiguratorCsr.prototype._loadEnvironment = function(path) {
     });
 };
 
+/**
+ * Loads the build scene by setting it's environment and adding it's model to
+ * the renderer scene.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._loadScene = async function() {
-    // TODO don't use hardcoded path
-    const envPath = "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
-    this.environmentTexture = await this._loadEnvironment(envPath);
+    // loads and sets scene environment
+    this.environmentTexture = await this._loadEnvironment(this.sceneEnvironmentPath);
     this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
     this.scene.environment = this.environmentTexture;
 
+    // loads and sets the model mesh
     const meshPath = this.owner.getMeshUrl();
     this.mesh = await this._loadMesh(meshPath);
     this.scene.add(this.mesh);
 };
 
+/**
+ * Creates and initiates the renderer scene camera.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._initCamera = function(width, height) {
+    // TODO configurable camera
     this.camera = new window.THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
     this.camera.position.set(0, 0, 50);
 };
 
 /**
- * Initializes and loads everything needed to run the CSR.
+ * Initializes and loads everything needed to run the CSR. This means
+ * initializing the renderer, it's camera and it's scene.
  *
  * @private
  */
@@ -470,33 +433,42 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
     // resizes renderer
     this.renderer.setSize(width, height);
 
-    // resizes camera
+    // creates a new camera respecting the new renderer size
     this._initCamera(width, height);
 };
 
+/**
+ * @ignore
+ */
 ripe.ConfiguratorCsr.prototype._onMouseDown = function(self, event) {
     self.isMouseDown = true;
     self.referenceX = event.pageX;
     self.referenceY = event.pageY;
     self.prevPercentX = 0;
     self.prevPercentY = 0;
-    console.log("mousedown:", self.referenceX, self.referenceY);
 };
 
+/**
+ * @ignore
+ */
 ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
     self.isMouseDown = false;
     self.prevPercentX = 0;
     self.prevPercentY = 0;
-    console.log("mouseup:", event);
 };
 
+/**
+ * @ignore
+ */
 ripe.ConfiguratorCsr.prototype._onMouseLeave = function(self, event) {
     self.isMouseDown = false;
     self.prevPercentX = 0;
     self.prevPercentY = 0;
-    console.log("mouseleave:", event);
 };
 
+/**
+ * @ignore
+ */
 ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
     if (!this.isMouseDown) return;
     if (!this.mesh) return;
