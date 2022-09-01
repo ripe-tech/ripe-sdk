@@ -7,6 +7,7 @@
            {% endif %}
         <li id="get-price">Get Price</li>
         <li id="get-combinations">Get Combinations</li>
+        <li id="change-configurator">Change Configurator</li>
     </ul>
     <ul class="oauth">
         <li id="oauth-operation">Get Orders</li>
@@ -22,8 +23,8 @@
         </div>
     {% endif %}
     {% block canvas %}
-        <div id="configurator" class="configurator" data-size="620" data-sensitivity="40" data-position="0" data-view="side">
-        </div>
+        <div id="configurator-prc" class="configurator-prc" data-size="620" data-sensitivity="40" data-position="0" data-view="side"></div>
+        <div id="configurator-csr" class="configurator-csr" data-size="620"></div>
         <div id="images" class="images">
             <img id="frame-0" data-size="200" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
             <img id="frame-6" data-size="200" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />

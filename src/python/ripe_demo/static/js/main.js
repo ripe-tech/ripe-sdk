@@ -5,12 +5,14 @@
 const FACES = ["side", "top", "front"];
 
 window.onload = function() {
-    const element = document.getElementById("configurator");
+    let visibleConfigurator = null;
+
+    const element = document.getElementById("configurator-prc");
     const _body = document.querySelector("body");
     const url = _body.dataset.url || "https://sandbox.platforme.com/api/";
     const brand = _body.dataset.brand || "swear";
-    const model = _body.dataset.model || "vyner";
-    const variant = _body.dataset.variant || "";
+    const model = _body.dataset.model || "vyner_hitop";
+    const variant = _body.dataset.variant || "$base";
     const version = _body.dataset.version || null;
     const format = _body.dataset.format || "lossless";
     const currency = _body.dataset.currency || "USD";
@@ -84,12 +86,33 @@ window.onload = function() {
         return faces.length > 0 ? faces[0] : null;
     };
 
+    const showConfigurator = function(type) {
+        const prcElement = document.getElementById("configurator-prc");
+        const csrElement = document.getElementById("configurator-csr");
+        prcElement.style.display = "none";
+        csrElement.style.display = "none";
+
+        switch (type) {
+            case "csr":
+                csrElement.style.display = "block";
+                visibleConfigurator = "csr";
+                break;
+            case "prc":
+            default:
+                prcElement.style.display = "block";
+                visibleConfigurator = "prc";
+                break;
+        }
+    };
+
     const init = function(instance) {
+        showConfigurator("prc");
         initBase(instance);
         initHeader(instance);
         initOAuth(instance);
-        initConfigurator(instance);
+        initConfiguratorPrc(instance);
         initInitials(instance);
+        initConfiguratorCsr();
     };
 
     const initBase = function() {
@@ -111,6 +134,7 @@ window.onload = function() {
         const setMessage = document.getElementById("set-message");
         const getPrice = document.getElementById("get-price");
         const getCombinations = document.getElementById("get-combinations");
+        const changeConfigurator = document.getElementById("change-configurator");
 
         setPart &&
             setPart.addEventListener("click", function() {
@@ -145,6 +169,18 @@ window.onload = function() {
                     );
                 });
             });
+
+        changeConfigurator && changeConfigurator.addEventListener("click", function() {
+            switch (visibleConfigurator) {
+                case "prc":
+                    showConfigurator("csr");
+                    break;
+                case "csr":
+                default:
+                    showConfigurator("prc");
+                    break;
+            }
+        });
 
         ripe.bind("error", function(error, description) {
             alert(error);
@@ -227,7 +263,7 @@ window.onload = function() {
         });
     };
 
-    const initConfigurator = function() {
+    const initConfiguratorPrc = function() {
         // loads the config of the product to retrieve the
         // complete configuration of the product and be able
         // to define the visible frames and apply restrictions
@@ -400,6 +436,11 @@ window.onload = function() {
                 dropdown.dispatchEvent(new Event("enable"));
             }
         });
+    };
+
+    const initConfiguratorCsr = function() {
+        const element = document.getElementById("configurator-csr");
+        ripe.bindConfigurator(element, { type: "csr" });
     };
 
     // starts the loading process for the RIPE main instance and binds

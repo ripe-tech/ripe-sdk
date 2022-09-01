@@ -14,8 +14,8 @@ const sourcemaps = require("gulp-sourcemaps");
 const _package = require("./package.json");
 
 const paths = {
-    mainjs: "dist/ripe.js",
-    mainmap: "dist/ripe.js.map",
+    mainjs: "dist/ripe.three.min.js",
+    mainmap: "dist/ripe.three.min.js.map",
     maincss: "src/css/ripe.css",
     mainpython: "src/python/**/main.js",
     scripts: "src/js/**/*.js",
@@ -26,6 +26,12 @@ const paths = {
     testSetup: "test/js/setup.js",
     dist: "dist/**/*",
     polyfill: "node_modules/@babel/polyfill/dist/polyfill.js",
+    three: [
+        "node_modules/three/build/three.min.js",
+        "node_modules/three/examples/js/loaders/DRACOLoader.js",
+        "node_modules/three/examples/js/loaders/GLTFLoader.js",
+        "node_modules/three/examples/js/loaders/RGBELoader.js"
+    ],
     basefiles: [
         "src/js/locales/base.js",
         "src/js/base/base.js",
@@ -59,6 +65,7 @@ const paths = {
         "src/js/plugins/restrictions.js",
         "src/js/plugins/sync.js",
         "src/js/visual/visual.js",
+        "src/js/visual/configurator-csr.js",
         "src/js/visual/configurator-prc.js",
         "src/js/visual/image.js"
     ]
@@ -103,7 +110,7 @@ gulp.task("build-css", () => {
 
 gulp.task("build-package-js", () => {
     return gulp
-        .src([paths.polyfill].concat(paths.basefiles))
+        .src([paths.polyfill, ...paths.basefiles])
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))
@@ -117,9 +124,25 @@ gulp.task("build-package-js", () => {
         .pipe(gulp.dest("dist"));
 });
 
+gulp.task("build-package-js-three", () => {
+    return gulp
+        .src([paths.polyfill, ...paths.three, ...paths.basefiles])
+        .pipe(sourcemaps.init())
+        .pipe(sourcemaps.identityMap())
+        .pipe(replace("__VERSION__", _package.version))
+        .pipe(
+            babel({
+                presets: [["@babel/preset-env"]]
+            })
+        )
+        .pipe(concat("ripe.three.js"))
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest("dist"));
+});
+
 gulp.task("build-package-min", () => {
     return gulp
-        .src([paths.polyfill].concat(paths.basefiles))
+        .src([paths.polyfill, ...paths.basefiles])
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.identityMap())
         .pipe(replace("__VERSION__", _package.version))
@@ -129,6 +152,28 @@ gulp.task("build-package-min", () => {
             })
         )
         .pipe(concat("ripe.min.js"))
+        .pipe(
+            terser({
+                mangle: false,
+                ecma: 5
+            })
+        )
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest("dist"));
+});
+
+gulp.task("build-package-min-three", () => {
+    return gulp
+        .src([paths.polyfill, ...paths.three, ...paths.basefiles])
+        .pipe(sourcemaps.init())
+        .pipe(sourcemaps.identityMap())
+        .pipe(replace("__VERSION__", _package.version))
+        .pipe(
+            babel({
+                presets: [["@babel/preset-env"]]
+            })
+        )
+        .pipe(concat("ripe.three.min.js"))
         .pipe(
             terser({
                 mangle: false,
@@ -199,7 +244,15 @@ gulp.task("docs", cb => {
 gulp.task("watch-js", () => {
     gulp.watch(
         paths.scripts,
-        gulp.series("build-js", "build-package-js", "build-package-min", "move-js", "compress")
+        gulp.series(
+            "build-js",
+            "build-package-js",
+            "build-package-js-three",
+            "build-package-min",
+            "build-package-min-three",
+            "move-js",
+            "compress"
+        )
     );
 });
 
@@ -213,7 +266,9 @@ gulp.task(
         "build-js",
         "build-css",
         "build-package-js",
+        "build-package-js-three",
         "build-package-min",
+        "build-package-min-three",
         "move-js",
         "move-css",
         "compress"
