@@ -67,6 +67,19 @@ ripe.ConfiguratorCsr.prototype.init = async function() {
         this.options.sceneEnvironmentPath ||
         "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
 
+    const cameraOpts = this.options.cameraOptions || {};
+    this.cameraOptions = {
+        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 45,
+        aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
+        updateAspectOnResize:
+            cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
+        near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
+        far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
+        posX: cameraOpts.posX !== undefined ? cameraOpts.posX : 0,
+        posY: cameraOpts.posY !== undefined ? cameraOpts.posY : 0,
+        posZ: cameraOpts.posZ !== undefined ? cameraOpts.posZ : 50
+    };
+
     this.width = this.options.width || null;
     this.height = this.options.height || null;
     this.format = this.options.format || null;
@@ -335,10 +348,18 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initCamera = function(width, height) {
-    // TODO configurable camera
-    this.camera = new window.THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
-    this.camera.position.set(0, 0, 50);
+ripe.ConfiguratorCsr.prototype._initCamera = function() {
+    this.camera = new window.THREE.PerspectiveCamera(
+        this.cameraOptions.fov,
+        this.cameraOptions.aspect,
+        this.cameraOptions.near,
+        this.cameraOptions.far
+    );
+    this.camera.position.set(
+        this.cameraOptions.posX,
+        this.cameraOptions.posY,
+        this.cameraOptions.posZ
+    );
 };
 
 /**
@@ -362,8 +383,13 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     const renderer = this.element.querySelector(".renderer");
     renderer.appendChild(this.renderer.domElement);
 
+    // calculates the camera aspect ratio
+    if (this.cameraOptions.aspect === null) {
+        this.cameraOptions.aspect = size.width / size.height;
+    }
+
     // init camera
-    this._initCamera(size.width, size.height);
+    this._initCamera();
 
     // init scene
     this.scene = new window.THREE.Scene();
@@ -432,8 +458,13 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
     // resizes renderer
     this.renderer.setSize(width, height);
 
+    // updates the camera aspect ratio
+    if (this.cameraOptions.updateAspectOnResize || this.cameraOptions.aspect === null) {
+        this.cameraOptions.aspect = width / height;
+    }
+
     // creates a new camera respecting the new renderer size
-    this._initCamera(width, height);
+    this._initCamera();
 };
 
 /**
