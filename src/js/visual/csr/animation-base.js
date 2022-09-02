@@ -11,7 +11,9 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.CsrAnimation = function(object3D, duration) {
+ripe.CsrAnimation = function(type, object3D, duration) {
+    this.type = type || "CsrAnimation";
+    this.signature = null;
     this.object3D = object3D;
     this.duration = duration;
     this.run = true;
@@ -21,6 +23,10 @@ ripe.CsrAnimation.prototype.constructor = ripe.CsrAnimation;
 
 ripe.CsrAnimation.prototype.isFinished = function() {
     return this.finished;
+};
+
+ripe.CsrAnimation.prototype.sign = function(signature) {
+    this.signature = `${this.type}-${signature}`;
 };
 
 ripe.CsrAnimation.prototype.tick = function(delta) {

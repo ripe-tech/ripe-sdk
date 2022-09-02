@@ -296,8 +296,7 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     // TODO support safe mode
     // TODO support preventDrag
 
-    // TODO ver se já existe animacao deste tipo, se sim remover e criar uma nova
-
+    // creates a change frame animation
     this._normalizeRotations(this.modelGroup);
     const animation = new ripe.CsrChangeFrameAnimation(
         this.modelGroup,
@@ -306,6 +305,22 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         nextPosition,
         viewFramesNum
     );
+
+    // checks for change frame animations that are already running
+    const index = this.animations.findIndex(
+        animation => animation.type === "CsrChangeFrameAnimation"
+    );
+    const runningAnimation = this.animations[index];
+    if (runningAnimation) {
+        // ignore this call as the running animation is the same
+        if (runningAnimation.signature === animation.signature) {
+            return;
+        }
+
+        // removes the running animation as the new animation is different
+        this.animations.splice(index, 1);
+    }
+
     this.animations.push(animation);
 };
 

@@ -13,12 +13,15 @@ if (
 }
 
 ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, framesNumber) {
-    ripe.CsrAnimation.call(this, object3D, duration);
+    ripe.CsrAnimation.call(this, "CsrChangeFrameAnimation", object3D, duration);
 
     // TODO support other views
     if (view !== "side") {
         throw new Error("Only 'side' view is supported in 'ChangeFrameAnimation' (for now)");
     }
+
+    // sings the CSR animation
+    this.sign(`${object3D.uuid}${duration}${view}${position}${framesNumber}`);
 
     const radPerSide = (Math.PI * 2) / framesNumber;
     const rotYStart = parseFloat(parseFloat(this.object3D.rotation.y).toPrecision(12));
