@@ -296,97 +296,16 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     // TODO support safe mode
     // TODO support preventDrag
 
-    class Animation {
-        constructor(object3D, duration) {
-            this.object3D = object3D;
-            this.duration = duration;
-            this.run = true;
-            this.finished = false;
-        }
-
-        isFinished() {
-            return this.finished;
-        }
-
-        tick(delta) {
-            throw new Error("Not implemented");
-        }
-
-        tickMultiplier(delta) {
-            return delta * (1 / this.duration);
-        }
-
-        start() {
-            this.run = true;
-        }
-
-        pause() {
-            this.run = false;
-        }
-
-        finish() {
-            this.run = false;
-            this.finished = true;
-        }
-    }
-
-    class ChangeFrameAnimation extends Animation {
-        constructor(object3D, duration, view, position) {
-            super(object3D, duration);
-
-            // TODO support other views
-            if (view !== "side") {
-                throw new Error(
-                    "Only 'side' view is supported in 'ChangeFrameAnimation' (for now)"
-                );
-            }
-
-            const radPerSide = (Math.PI * 2) / viewFramesNum;
-            const rotYStart = parseFloat(parseFloat(this.object3D.rotation.y).toPrecision(12));
-            const rotYEnd = parseFloat(parseFloat(position * radPerSide).toPrecision(12));
-            const rotYQty = rotYEnd - rotYStart;
-
-            // don't perform the animation as it's already in the wanted frame
-            if (rotYQty === 0) {
-                super.finish();
-                return;
-            }
-
-            this.rotYEnd = rotYEnd;
-            this.rotYQty = rotYQty;
-            this.rotYQtyDone = 0;
-        }
-
-        finishAnimation() {
-            this.object3D.rotation.y = this.rotYEnd;
-            this.finish();
-        }
-
-        tick(delta) {
-            if (!this.run) return;
-
-            // no animation duration specified so it completes the animation immediately
-            if (!this.duration) {
-                this.finishAnimation();
-                return;
-            }
-
-            // calculates the tick rotation and adds it to the rotation axis
-            const tickRotYQty = this.rotYQty * this.tickMultiplier(delta);
-            this.object3D.rotation.y += tickRotYQty;
-
-            // updates animation progress
-            this.rotYQtyDone += Math.abs(tickRotYQty);
-            if (this.rotYQtyDone >= Math.abs(this.rotYQty)) this.finishAnimation();
-        }
-    }
     // TODO ver se já existe animacao deste tipo, se sim remover e criar uma nova
 
-    // TODO, neste momento a animaçao so esta a rotar x rad, tenho de mudar para que ele automaticamente
-    // calcule qual é o resultado final que o modelo tem de estar e ajustar o que tem de rodar e quanto
-
     this._normalizeRotations(this.modelGroup);
-    const animation = new ChangeFrameAnimation(this.modelGroup, 1, nextView, nextPosition);
+    const animation = new ripe.CsrChangeFrameAnimation(
+        this.modelGroup,
+        1,
+        nextView,
+        nextPosition,
+        viewFramesNum
+    );
     this.animations.push(animation);
 };
 

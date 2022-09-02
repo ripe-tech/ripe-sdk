@@ -65,6 +65,8 @@ const paths = {
         "src/js/plugins/restrictions.js",
         "src/js/plugins/sync.js",
         "src/js/visual/visual.js",
+        "src/js/visual/csr/animation-base.js",
+        "src/js/visual/csr/animation-change-frame.js",
         "src/js/visual/configurator-csr.js",
         "src/js/visual/configurator-prc.js",
         "src/js/visual/image.js"
