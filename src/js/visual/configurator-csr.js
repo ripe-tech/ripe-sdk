@@ -65,6 +65,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.pixelRatio =
         this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
     this.sensitivity = this.options.sensitivity || 40;
+    this.duration = this.options.duration || 500;
     this.useDracoLoader =
         this.options.useDracoLoader !== undefined ? this.options.useDracoLoader : true;
     this.dracoLoaderDecoderPath =
@@ -152,6 +153,7 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.size = options.size === undefined ? this.size : options.size;
     this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
+    this.duration = options.duration === undefined ? this.duration : options.duration;
     this.useDracoLoader =
         options.useDracoLoader === undefined ? this.useDracoLoader : options.useDracoLoader;
     this.dracoLoaderDecoderPath =
@@ -247,6 +249,11 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
  * format for the frame description (eg: side-3).
  * @param {Object} options Set of optional parameters to adjust the change frame, such as:
  * - 'duration' - The duration of the animation in milliseconds (defaults to 'null').
+ * - 'stepDuration' - If defined the total duration of the animation is
+ * calculated using the amount of steps times the number of steps, instead of
+ * using the 'duration' field (defaults to 'null').
+ * - 'revolutionDuration' - If defined the step duration is calculated by dividing
+ * the revolution duration by the number of frames in the view (defaults to 'null').
  * - 'preventDrag' - If drag actions during an animated change of frames should be
  * ignored (defaults to 'true').
  * - 'safe' - If requested then the operation is only performed in case the configurator
@@ -272,7 +279,7 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
 
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
-    const duration = options.duration !== undefined ? options.duration : null;
+    let duration = options.duration !== undefined ? options.duration : null;
     const preventDrag = options.preventDrag !== undefined ? options.preventDrag : true;
     const safe = options.safe !== undefined ? options.safe : true;
 
@@ -288,19 +295,27 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         throw new RangeError("Frame " + frame + " is not supported");
     }
 
+    // calculates the animation duration
+    duration = duration || this.duration;
+
+    // duration value compatible with CSR animation
+    duration = duration ? duration / 1000 : 0;
+
     // // normalizes both the (current) view and position values
     // const view = this.element.dataset.view;
     // const position = parseInt(this.element.dataset.position);
 
+    // TODO support stepDuration
+    // TODO support revolutionDuration
     // TODO support pending
-    // TODO support safe mode
     // TODO support preventDrag
+    // TODO support safe mode
 
     // creates a change frame animation
     this._normalizeRotations(this.modelGroup);
     const animation = new ripe.CsrChangeFrameAnimation(
         this.modelGroup,
-        1,
+        duration,
         nextView,
         nextPosition,
         viewFramesNum
