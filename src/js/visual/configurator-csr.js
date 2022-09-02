@@ -93,6 +93,8 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.currentSize = 0;
     this.currentWidth = 0;
     this.currentHeight = 0;
+    this.clock = null;
+    this.animations = [];
 
     // CSR variables
     this.renderer = null;
@@ -293,10 +295,10 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     // TODO support safe mode
     // TODO support preventDrag
 
-    const degPerFrame = Math.PI / viewFramesNum;
-    console.log("degPerFrame:", degPerFrame);
+    const radPerFrame = (2 * Math.PI) / viewFramesNum;
+    console.log("radPerFrame:", radPerFrame);
 
-    this.mesh.rotation.y = nextPosition * degPerFrame;
+    this.mesh.rotation.y = nextPosition * radPerFrame;
 };
 
 /**
@@ -390,6 +392,9 @@ ripe.ConfiguratorCsr.prototype._loadEnvironment = async function(path) {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._loadScene = async function() {
+    // inits the scene clock
+    this.clock = new window.THREE.Clock();
+
     // loads and sets scene environment
     this.environmentTexture = await this._loadEnvironment(this.sceneEnvironmentPath);
     this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
@@ -546,11 +551,31 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
 };
 
 /**
+ * Process the animation tick.
+ *
+ * @param {Object} animation The animation to update.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._tickAnimation = function(animation, delta) {
+
+};
+
+/**
  * Animation loop tick.
  *
  * @private
  */
 ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
+    if (!self.mesh) return;
+
+    const delta = this.clock.getDelta();
+    self.animations.forEach(animation => this._tickAnimation(animation, delta));
+    // console.log(delta);
+
+    const radAmnt = Math.PI * 2; // quanto vai rodar por segundo
+    self.mesh.rotation.y -= radAmnt * delta;
+
     self._render();
 };
 
