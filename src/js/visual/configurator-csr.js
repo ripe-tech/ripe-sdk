@@ -300,7 +300,6 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         constructor(object3D, duration) {
             this.object3D = object3D;
             this.duration = duration;
-            this.progress = 0;
             this.run = true;
             this.finished = false;
         }
