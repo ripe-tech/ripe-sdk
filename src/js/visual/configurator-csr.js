@@ -412,6 +412,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
 
     // init renderer
     this.renderer = new window.THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer.outputEncoding = window.THREE.sRGBEncoding;
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.setSize(size.width, size.height);
     this.renderer.setAnimationLoop(() => this._onAnimationLoop(this));
