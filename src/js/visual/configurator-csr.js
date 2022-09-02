@@ -101,6 +101,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.camera = null;
     this.scene = null;
     this.environmentTexture = null;
+    this.modelGroup = null;
     this.mesh = null;
 
     // handlers variables
@@ -252,8 +253,8 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
  * is not in the an equivalent state (default to 'true').
  */
 ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {}) {
-    // in case the model mesh is not loaded then it's not possible to change the frame
-    if (!this.mesh) throw new Error("Model mesh not loaded");
+    // in case the scene group is not loaded then it's not possible to change the frame
+    if (!this.modelGroup) throw new Error("Model group not loaded");
 
     // parses the requested frame value according to the pre-defined
     // standard (eg: side-3) and then unpacks it as view and position
@@ -298,7 +299,7 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     const radPerFrame = (2 * Math.PI) / viewFramesNum;
     console.log("radPerFrame:", radPerFrame);
 
-    this.mesh.rotation.y = nextPosition * radPerFrame;
+    this.modelGroup.rotation.y = nextPosition * radPerFrame;
 };
 
 /**
@@ -400,10 +401,15 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
     this.scene.environment = this.environmentTexture;
 
+    // inits the scene model group
+    this.modelGroup = new window.THREE.Group();
+
     // loads and sets the model mesh
     const meshPath = this.owner.getMeshUrl();
     this.mesh = await this._loadMesh(meshPath);
-    this.scene.add(this.mesh);
+    this.modelGroup.add(this.mesh);
+
+    this.scene.add(this.modelGroup);
 };
 
 /**
@@ -512,11 +518,14 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
         this.environmentTexture = null;
     }
 
-    if (this.mesh) {
-        if (this.mesh.geometry) this.mesh.geometry.dispose();
-        if (this.mesh.material) this.mesh.material.dispose();
-        if (this.scene) this.scene.remove(this.mesh);
-        this.mesh = null;
+    if (this.modelGroup) {
+        if (this.mesh) {
+            if (this.mesh.geometry) this.mesh.geometry.dispose();
+            if (this.mesh.material) this.mesh.material.dispose();
+            this.modelGroup.remove(this.mesh);
+            this.mesh = null;
+        }
+        this.modelGroup = null;
     }
 
     if (this.scene) this.scene = null;
@@ -567,14 +576,14 @@ ripe.ConfiguratorCsr.prototype._tickAnimation = function(animation, delta) {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
-    if (!self.mesh) return;
+    if (!self.modelGroup) return;
 
     const delta = this.clock.getDelta();
     self.animations.forEach(animation => this._tickAnimation(animation, delta));
     // console.log(delta);
 
     const radAmnt = Math.PI * 2; // quanto vai rodar por segundo
-    self.mesh.rotation.y -= radAmnt * delta;
+    self.modelGroup.rotation.y -= radAmnt * delta;
 
     self._render();
 };
@@ -613,7 +622,7 @@ ripe.ConfiguratorCsr.prototype._onMouseLeave = function(self, event) {
  */
 ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
     if (!self.isMouseDown) return;
-    if (!self.mesh) return;
+    if (!self.modelGroup) return;
 
     const mousePosX = event.pageX;
     const mousePosY = event.pageY;
@@ -626,10 +635,10 @@ ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
     const sensitivity = self.sensitivity * 0.1;
 
     const dragValueX = (percentX - self.prevPercentX) * sensitivity;
-    self.mesh.rotation.y -= dragValueX;
+    self.modelGroup.rotation.y -= dragValueX;
 
     const dragValueY = (percentY - self.prevPercentY) * sensitivity;
-    self.mesh.rotation.x -= dragValueY;
+    self.modelGroup.rotation.x -= dragValueY;
 
     self.prevPercentX = percentX;
     self.prevPercentY = percentY;
