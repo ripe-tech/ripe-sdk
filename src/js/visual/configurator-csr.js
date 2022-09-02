@@ -352,9 +352,9 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
                 return;
             }
 
-            this.rotYQty = rotYQty;
             this.rotYEnd = rotYEnd;
-            this.currentRotYQty = 0;
+            this.rotYQty = rotYQty;
+            this.rotYQtyDone = 0;
         }
 
         finishAnimation() {
@@ -376,8 +376,8 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
             this.object3D.rotation.y += tickRotYQty;
 
             // updates animation progress
-            this.currentRotYQty += Math.abs(tickRotYQty);
-            if (this.currentRotYQty >= this.rotYQty) this.finishAnimation();
+            this.rotYQtyDone += Math.abs(tickRotYQty);
+            if (this.rotYQtyDone >= Math.abs(this.rotYQty)) this.finishAnimation();
         }
     }
     // TODO ver se já existe animacao deste tipo, se sim remover e criar uma nova
@@ -385,6 +385,7 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     // TODO, neste momento a animaçao so esta a rotar x rad, tenho de mudar para que ele automaticamente
     // calcule qual é o resultado final que o modelo tem de estar e ajustar o que tem de rodar e quanto
 
+    this._normalizeRotations(this.modelGroup);
     const animation = new ChangeFrameAnimation(this.modelGroup, 1, nextView, nextPosition);
     this.animations.push(animation);
 };
@@ -664,9 +665,9 @@ ripe.ConfiguratorCsr.prototype._normalizeRotations = function(object3D) {
     x = x < 0 ? x + range : x;
     y = y < 0 ? y + range : y;
     z = z < 0 ? z + range : z;
-    object3D.rotation.x = x;
-    object3D.rotation.y = y;
-    object3D.rotation.z = z;
+    object3D.rotation.x = parseFloat(parseFloat(x).toPrecision(15));
+    object3D.rotation.y = parseFloat(parseFloat(y).toPrecision(15));
+    object3D.rotation.z = parseFloat(parseFloat(z).toPrecision(15));
 };
 
 /**
@@ -690,7 +691,7 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
         }
 
         // normalizes the model group rotation
-        // this._normalizeRotations(self.modelGroup);
+        this._normalizeRotations(self.modelGroup);
     }
 
     // renders a frame
