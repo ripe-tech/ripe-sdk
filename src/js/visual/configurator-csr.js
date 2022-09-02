@@ -671,7 +671,7 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
             if (animation.isFinished()) self.animations.splice(i, 1);
         }
 
-        // normalizes the model group rotations
+        // normalizes the model group rotation
         this._normalizeRotations(self.modelGroup);
     }
 
