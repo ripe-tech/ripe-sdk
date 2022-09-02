@@ -299,7 +299,60 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     const radPerFrame = (2 * Math.PI) / viewFramesNum;
     console.log("radPerFrame:", radPerFrame);
 
-    this.modelGroup.rotation.y = nextPosition * radPerFrame;
+    class Animation {
+        constructor(object3D, duration) {
+          this.object3D = object3D;
+          this.duration = duration;
+          this.progress = 0;
+          this.run = false;
+        }
+
+        tick(delta) {
+            throw new Error("Not implemented");
+        }
+
+        tickMultiplier(delta) {
+            return delta * (1 / this.duration);
+        }
+
+        start() {
+            this.run = true;
+        }
+
+        stop() {
+            this.run = false;
+        }
+    }
+
+    class ChangeFrameAnimation extends Animation {
+        constructor(object3D, duration, radAmount) {
+            super(object3D, duration);
+
+            this.radAmount = radAmount; // nextPosition * radPerFrame;
+            this.currentRad = 0;
+        };
+
+        tick(delta) {
+            if (!this.run) return;
+
+            const rotationAmt = this.radAmount * this.tickMultiplier(delta);
+            this.object3D.rotation.y -= rotationAmt;
+            this.currentRad += rotationAmt;
+
+            if (this.currentRad >= this.radAmount) {
+                // this.object3D.rotation.y = this.radAmount;
+                this.stop();
+            }
+        }
+    }
+    // TODO ver se já existe animacao deste tipo, se sim remover e criar uma nova
+
+    // TODO, neste momento a animaçao so esta a rotar x rad, tenho de mudar para que ele automaticamente
+    // calcule qual é o resultado final que o modelo tem de estar e ajustar o que tem de rodar e quanto
+
+    const animation = new ChangeFrameAnimation(this.modelGroup, 1, Math.PI * 2);
+    animation.start();
+    this.animations.push(animation);
 };
 
 /**
@@ -560,14 +613,26 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
 };
 
 /**
- * Process the animation tick.
+ * Normalizes a THREE.Object3D rotation setting it's axis only with positive
+ * values ranging from 0 to 2 PI.
  *
- * @param {Object} animation The animation to update.
+ * @param {THREE.Object3D} object3D An instance of a THREE.Object3D.
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._tickAnimation = function(animation, delta) {
+ripe.ConfiguratorCsr.prototype._normalizeRotations = function(object3D) {
+    if (!object3D) return;
 
+    const range = Math.PI * 2;
+    let x = object3D.rotation.x % range;
+    let y = object3D.rotation.y % range;
+    let z = object3D.rotation.z % range;
+    x = x < 0 ? x + range : x;
+    y = y < 0 ? y + range : y;
+    z = z < 0 ? z + range : z;
+    object3D.rotation.x = x;
+    object3D.rotation.y = y;
+    object3D.rotation.z = z;
 };
 
 /**
@@ -578,13 +643,23 @@ ripe.ConfiguratorCsr.prototype._tickAnimation = function(animation, delta) {
 ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
     if (!self.modelGroup) return;
 
-    const delta = this.clock.getDelta();
-    self.animations.forEach(animation => this._tickAnimation(animation, delta));
-    // console.log(delta);
+    if (self.animations.length > 0) {
+        // gets animation loop tick delta
+        const delta = this.clock.getDelta();
 
-    const radAmnt = Math.PI * 2; // quanto vai rodar por segundo
-    self.modelGroup.rotation.y -= radAmnt * delta;
+        // ticks animations
+        for (let i = self.animations.length - 1; i >= 0; i--) {
+            const animation = self.animations[i];
+            animation.tick(delta);
 
+            // TODO cleanup animations
+        }
+
+        // normalizes the model group rotations
+        this._normalizeRotations(self.modelGroup);
+    }
+
+    // renders a frame
     self._render();
 };
 
