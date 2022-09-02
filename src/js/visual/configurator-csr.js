@@ -304,7 +304,12 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
           this.object3D = object3D;
           this.duration = duration;
           this.progress = 0;
-          this.run = false;
+          this.run = true;
+          this.finished = false;
+        }
+
+        isFinished() {
+            return this.finished;
         }
 
         tick(delta) {
@@ -319,8 +324,13 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
             this.run = true;
         }
 
-        stop() {
+        pause() {
             this.run = false;
+        }
+
+        finish() {
+            this.run = false;
+            this.finished = true;
         }
     }
 
@@ -335,13 +345,20 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         tick(delta) {
             if (!this.run) return;
 
+            // no animation duration specified so it completes the animation immediately
+            if (!this.duration) {
+                // TODO immediately finishes the animation and returns
+                this.finish();
+                return;
+            }
+
             const rotationAmt = this.radAmount * this.tickMultiplier(delta);
             this.object3D.rotation.y -= rotationAmt;
             this.currentRad += rotationAmt;
 
             if (this.currentRad >= this.radAmount) {
                 // this.object3D.rotation.y = this.radAmount;
-                this.stop();
+                this.finish();
             }
         }
     }
@@ -351,7 +368,6 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     // calcule qual é o resultado final que o modelo tem de estar e ajustar o que tem de rodar e quanto
 
     const animation = new ChangeFrameAnimation(this.modelGroup, 1, Math.PI * 2);
-    animation.start();
     this.animations.push(animation);
 };
 
@@ -652,7 +668,7 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
             const animation = self.animations[i];
             animation.tick(delta);
 
-            // TODO cleanup animations
+            if (animation.isFinished()) self.animations.splice(i, 1);
         }
 
         // normalizes the model group rotations
