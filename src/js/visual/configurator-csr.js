@@ -310,8 +310,6 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     const nextView = _frame[0];
     const nextPosition = parseInt(_frame[1]);
 
-    console.log("changeFrame:", _frame, nextView, nextPosition);
-
     // in case the next position value was not properly parsed (probably undefined)
     // then it's not possible to change frame (throws exception)
     if (isNaN(nextPosition)) {
@@ -334,7 +332,6 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     // validates that the target view exists and that the target position
     // (frame) does not overflow the amount of frames in for the view
     const viewFramesNum = frames[nextView];
-    console.log("viewFrames", viewFramesNum);
     if (!viewFramesNum || nextPosition >= viewFramesNum) {
         throw new RangeError("Frame " + frame + " is not supported");
     }
@@ -349,8 +346,6 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
 
     // normalizes the model group rotation values
     this._normalizeRotations(this.modelGroup);
-
-    // TODO support other views
 
     // calculates step duration based on revolutionDuration defaulting to the stepDuration
     // if no revolutionDuration is specified
