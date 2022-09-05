@@ -66,6 +66,13 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
     this.sensitivity = this.options.sensitivity || 40;
     this.duration = this.options.duration || 500;
+    const rendererOpts = this.options.rendererOptions || {};
+    this.rendererOptions = {
+        outputEncoding:
+            rendererOpts.outputEncoding !== undefined
+                ? rendererOpts.outputEncoding
+                : window.THREE.sRGBEncoding
+    };
     this.useDracoLoader =
         this.options.useDracoLoader !== undefined ? this.options.useDracoLoader : true;
     this.dracoLoaderDecoderPath =
@@ -158,6 +165,8 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
     this.duration = options.duration === undefined ? this.duration : options.duration;
+    const rendererOpts = options.rendererOptions || {};
+    this.rendererOptions = { ...this.rendererOptions, ...rendererOpts };
     this.useDracoLoader =
         options.useDracoLoader === undefined ? this.useDracoLoader : options.useDracoLoader;
     this.dracoLoaderDecoderPath =
@@ -599,6 +608,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
 
     // init renderer
     this.renderer = new window.THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer.outputEncoding = window.THREE.sRGBEncoding;
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.setSize(size.width, size.height);
     this.renderer.setAnimationLoop(() => this._onAnimationLoop(this));
