@@ -280,6 +280,8 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
     let duration = options.duration !== undefined ? options.duration : null;
+    let stepDuration = options.stepDuration !== undefined ? options.staepDuration : null;
+    const revolutionDuration = options.revolutionDuration !== undefined ? options.revolutionDuration : null;
     const preventDrag = options.preventDrag !== undefined ? options.preventDrag : true;
     const safe = options.safe !== undefined ? options.safe : true;
 
@@ -295,24 +297,45 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         throw new RangeError("Frame " + frame + " is not supported");
     }
 
-    // calculates the animation duration
+    // normalizes the model group rotation values
+    this._normalizeRotations(this.modelGroup);
+
+    // TODO support other views
+
+    // calculates step duration based on revolutionDuration defaulting to the stepDuration
+    // if no revolutionDuration is specified
+    stepDuration = revolutionDuration !== null ? parseInt(revolutionDuration / viewFramesNum) : stepDuration;
+
+    // bases the duration on the stepDuration if stepDuration is specified
+    if (stepDuration) {
+        // calculates the PRC compatible step count for the change frame animation
+        const radPerSide = (Math.PI * 2) / viewFramesNum;
+        const rotYStart = parseFloat(parseFloat(this.modelGroup.rotation.y).toFixed(6));
+        const rotYEnd = parseFloat(parseFloat(nextPosition * radPerSide).toFixed(6));
+        const rotYQty = rotYEnd - rotYStart;
+
+        // gets the number of PRC compatible steps
+        const stepCount = Math.abs(rotYQty / radPerSide);
+
+        // rounds the step count to it's respective a whole number
+        const stepCountRounded = Math.round(stepCount);
+
+        // sets duration based on stepDuration
+        duration = stepDuration * stepCountRounded;
+    }
+
+    // ensures duration default if no duration is set
     duration = duration || this.duration;
 
-    // duration value compatible with CSR animation
+    // duration value compatible with CSR animation defaulting
+    // to 0 if no duration was successfully set
     duration = duration ? duration / 1000 : 0;
 
-    // // normalizes both the (current) view and position values
-    // const view = this.element.dataset.view;
-    // const position = parseInt(this.element.dataset.position);
-
-    // TODO support stepDuration
-    // TODO support revolutionDuration
     // TODO support pending
     // TODO support preventDrag
     // TODO support safe mode
 
     // creates a change frame animation
-    this._normalizeRotations(this.modelGroup);
     const animation = new ripe.CsrChangeFrameAnimation(
         this.modelGroup,
         duration,
