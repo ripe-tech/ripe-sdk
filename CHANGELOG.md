@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Avoid warnings by not using `var` in ripe-sdk-demo .js files
 * Set renderer output encoding to `sRGBEncoding`
+* Set ripe-sdk-demo brand and model to `dummy` `cube`
+* Set CSR camera default values standard
 
 ### Fixed
 
