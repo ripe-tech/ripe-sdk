@@ -312,7 +312,7 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     // unpacks the other options to the frame change defaulting their values
     // in case undefined values are found
     let duration = options.duration !== undefined ? options.duration : null;
-    let stepDuration = options.stepDuration !== undefined ? options.staepDuration : null;
+    let stepDuration = options.stepDuration !== undefined ? options.stepDuration : null;
     const revolutionDuration =
         options.revolutionDuration !== undefined ? options.revolutionDuration : null;
     const preventDrag = options.preventDrag !== undefined ? options.preventDrag : true;
