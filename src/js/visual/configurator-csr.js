@@ -317,8 +317,8 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         // gets the number of PRC compatible steps
         const stepCount = Math.abs(rotYQty / radPerSide);
 
-        // rounds the step count to it's respective a whole number
-        const stepCountRounded = Math.round(stepCount);
+        // rounds up the step count to it's respective a whole number
+        const stepCountRounded = Math.ceil(stepCount);
 
         // sets duration based on stepDuration
         duration = stepDuration * stepCountRounded;
