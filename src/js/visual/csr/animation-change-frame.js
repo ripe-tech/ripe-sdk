@@ -39,21 +39,27 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
             throw new Error(`View '${view}' is not supported by 'ChangeFrameAnimation`);
     }
 
-    console.log("end:", rotXEnd, rotYEnd, rotZEnd);
-
     // gets the initial rotations
     const rotXStart = parseFloat(parseFloat(this.object3D.rotation.x).toFixed(6));
     const rotYStart = parseFloat(parseFloat(this.object3D.rotation.y).toFixed(6));
     const rotZStart = parseFloat(parseFloat(this.object3D.rotation.z).toFixed(6));
 
-    // calculates how much it should rotate for each axis
-    const rotXQty = rotXEnd - rotXStart;
+    // calculates how much it should rotate for X axis
+    const isInQuadrant2 = rotXStart >= (1.5 * Math.PI);
+    const rotateForward = isInQuadrant2 || (rotXStart >= 0 && rotXStart <= rotXEnd);
+    const rotateForwardQty = isInQuadrant2 ? (2 * Math.PI) - rotXStart + rotXEnd : rotXEnd - rotXStart;
+    const rotXQty = rotateForward ? rotateForwardQty : rotXEnd - rotXStart;
+
+    // calculates how much it should rotate for Y axis
     const rotYQty = rotYEnd - rotYStart;
+
+    // calculates how much it should rotate for Z axis
     const rotZQty = rotZEnd - rotZStart;
-    const isRotXFinished = rotXQty === 0;
+
+    // checks if axis is already in finish state
+    const isRotXFinished = rotXStart === rotXEnd;
     const isRotYFinished = rotYQty === 0;
     const isRotZFinished = rotZQty === 0;
-    console.log("qty:", rotXQty, rotYQty, rotZQty);
 
     // don't perform the animation as it's already in the correct position
     if (isRotXFinished && isRotYFinished && isRotZFinished) {
@@ -118,11 +124,5 @@ ripe.CsrChangeFrameAnimation.prototype._finishAnimation = function() {
     this.object3D.rotation.x = this.rotXEnd;
     this.object3D.rotation.y = this.rotYEnd;
     this.object3D.rotation.z = this.rotZEnd;
-    console.log(
-        "finished with",
-        this.object3D.rotation.x,
-        this.object3D.rotation.y,
-        this.object3D.rotation.z
-    );
     this.finish();
 };
