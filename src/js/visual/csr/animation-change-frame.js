@@ -24,7 +24,6 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     // sets the end rotations
     let rotXEnd = 0;
     let rotYEnd = 0;
-    const rotZEnd = 0;
     switch (view) {
         case "side":
             rotYEnd = parseFloat(parseFloat(position * radPerSide).toFixed(6));
@@ -42,7 +41,6 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     // gets the initial rotations
     const rotXStart = parseFloat(parseFloat(this.object3D.rotation.x).toFixed(6));
     const rotYStart = parseFloat(parseFloat(this.object3D.rotation.y).toFixed(6));
-    const rotZStart = parseFloat(parseFloat(this.object3D.rotation.z).toFixed(6));
 
     // calculates how much it should rotate for X axis
     const isInQuadrant2 = rotXStart >= (1.5 * Math.PI);
@@ -53,16 +51,12 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     // calculates how much it should rotate for Y axis
     const rotYQty = rotYEnd - rotYStart;
 
-    // calculates how much it should rotate for Z axis
-    const rotZQty = rotZEnd - rotZStart;
-
     // checks if axis is already in finish state
     const isRotXFinished = rotXStart === rotXEnd;
     const isRotYFinished = rotYQty === 0;
-    const isRotZFinished = rotZQty === 0;
 
     // don't perform the animation as it's already in the correct position
-    if (isRotXFinished && isRotYFinished && isRotZFinished) {
+    if (isRotXFinished && isRotYFinished) {
         this.finish();
         return;
     }
@@ -70,16 +64,12 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     // initializes the animation state variables
     this.isRotXFinished = isRotXFinished;
     this.isRotYFinished = isRotYFinished;
-    this.isRotZFinished = isRotZFinished;
     this.rotXEnd = rotXEnd;
     this.rotXQty = rotXQty;
     this.rotXQtyDone = 0;
     this.rotYEnd = rotYEnd;
     this.rotYQty = rotYQty;
     this.rotYQtyDone = 0;
-    this.rotZEnd = rotZEnd;
-    this.rotZQty = rotZQty;
-    this.rotZQtyDone = 0;
 };
 
 ripe.CsrChangeFrameAnimation.prototype = ripe.build(ripe.CsrAnimation.prototype);
@@ -97,7 +87,6 @@ ripe.CsrChangeFrameAnimation.prototype.tick = function(delta) {
     // calculates the tick rotation
     const tickRotXQty = this.rotXQty * this.tickMultiplier(delta);
     const tickRotYQty = this.rotYQty * this.tickMultiplier(delta);
-    const tickRotZQty = this.rotZQty * this.tickMultiplier(delta);
 
     // adds the tick rotation and updates its state
     if (!this.isRotXFinished) {
@@ -110,19 +99,13 @@ ripe.CsrChangeFrameAnimation.prototype.tick = function(delta) {
         this.rotYQtyDone += Math.abs(tickRotYQty);
         this.isRotYFinished = this.rotYQtyDone >= Math.abs(this.rotYQty);
     }
-    if (!this.isRotZFinished) {
-        this.object3D.rotation.z += tickRotZQty;
-        this.rotZQtyDone += Math.abs(tickRotZQty);
-        this.isRotZFinished = this.rotZQtyDone >= Math.abs(this.rotZQty);
-    }
 
     // checks if the animation finished
-    if (this.isRotXFinished && this.isRotYFinished && this.isRotZFinished) this._finishAnimation();
+    if (this.isRotXFinished && this.isRotYFinished) this._finishAnimation();
 };
 
 ripe.CsrChangeFrameAnimation.prototype._finishAnimation = function() {
     this.object3D.rotation.x = this.rotXEnd;
     this.object3D.rotation.y = this.rotYEnd;
-    this.object3D.rotation.z = this.rotZEnd;
     this.finish();
 };
