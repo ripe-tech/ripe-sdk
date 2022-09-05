@@ -18,6 +18,7 @@ ripe.CsrAnimation = function(type, object3D, duration) {
     this.duration = duration;
     this.run = true;
     this.finished = false;
+    this.onFinished = () => {};
 };
 ripe.CsrAnimation.prototype.constructor = ripe.CsrAnimation;
 
@@ -48,4 +49,5 @@ ripe.CsrAnimation.prototype.pause = function() {
 ripe.CsrAnimation.prototype.finish = function() {
     this.run = false;
     this.finished = true;
+    this.onFinished();
 };

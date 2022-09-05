@@ -91,11 +91,14 @@ ripe.ConfiguratorCsr.prototype.init = function() {
 
     // general state variables
     this.loading = true;
+    this.noDrag = false;
     this.currentSize = 0;
     this.currentWidth = 0;
     this.currentHeight = 0;
     this.clock = null;
     this.animations = [];
+    this.isChangeFrameAnimationRunning = false;
+    this._pendingOps = [];
 
     // CSR variables
     this.renderer = null;
@@ -115,8 +118,9 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // creates the necessary DOM elements and runs the
     // CSR initializer
     this._initLayout();
-    this._initCsr().then(() => {
+    this._initCsr().then(async () => {
         this.loading = false;
+        await this.flushPending(true);
     });
 };
 
@@ -243,6 +247,34 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
 };
 
 /**
+ * Executes pending operations that were not performed so as
+ * to not conflict with the tasks already being executed.
+ *
+ * The main reason for collision is the loading operation
+ * being executed (long duration operation).
+ *
+ * @param {Boolean} tail If only the last pending operation should
+ * be flushed, meaning that the others are discarded.
+ */
+ripe.ConfiguratorCsr.prototype.flushPending = async function(tail = false) {
+    const pending =
+        tail && this._pendingOps.length > 0
+            ? [this._pendingOps[this._pendingOps.length - 1]]
+            : this._pendingOps;
+    this._pendingOps = [];
+    while (pending.length > 0) {
+        const { operation, args } = pending.shift();
+        switch (operation) {
+            case "changeFrame":
+                await this.changeFrame(...args);
+                break;
+            default:
+                break;
+        }
+    }
+};
+
+/**
  * Rotates the model to match the PRC frame.
  *
  * @param {Object} frame The new PRC frame to display using the extended and canonical
@@ -281,7 +313,8 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     // in case undefined values are found
     let duration = options.duration !== undefined ? options.duration : null;
     let stepDuration = options.stepDuration !== undefined ? options.staepDuration : null;
-    const revolutionDuration = options.revolutionDuration !== undefined ? options.revolutionDuration : null;
+    const revolutionDuration =
+        options.revolutionDuration !== undefined ? options.revolutionDuration : null;
     const preventDrag = options.preventDrag !== undefined ? options.preventDrag : true;
     const safe = options.safe !== undefined ? options.safe : true;
 
@@ -297,6 +330,14 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         throw new RangeError("Frame " + frame + " is not supported");
     }
 
+    // in case the safe mode is enabled and the current configuration is
+    // still under the loading situation the change frame operation is
+    // saved and will be executed after the loading is finished
+    if (safe && this.loading) {
+        this._pendingOps = [{ operation: "changeFrame", args: [frame, options] }];
+        return;
+    }
+
     // normalizes the model group rotation values
     this._normalizeRotations(this.modelGroup);
 
@@ -304,7 +345,8 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
 
     // calculates step duration based on revolutionDuration defaulting to the stepDuration
     // if no revolutionDuration is specified
-    stepDuration = revolutionDuration !== null ? parseInt(revolutionDuration / viewFramesNum) : stepDuration;
+    stepDuration =
+        revolutionDuration !== null ? parseInt(revolutionDuration / viewFramesNum) : stepDuration;
 
     // bases the duration on the stepDuration if stepDuration is specified
     if (stepDuration) {
@@ -331,10 +373,6 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     // to 0 if no duration was successfully set
     duration = duration ? duration / 1000 : 0;
 
-    // TODO support pending
-    // TODO support preventDrag
-    // TODO support safe mode
-
     // creates a change frame animation
     const animation = new ripe.CsrChangeFrameAnimation(
         this.modelGroup,
@@ -343,6 +381,12 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         nextPosition,
         viewFramesNum
     );
+
+    // sets the animation to clean the state when the animation finishes
+    animation.onFinished = () => {
+        this.isChangeFrameAnimationRunning = false;
+        this.noDrag = false;
+    };
 
     // checks for change frame animations that are already running
     const index = this.animations.findIndex(
@@ -359,6 +403,10 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         this.animations.splice(index, 1);
     }
 
+    // sets the needed state variables and adds the new animation so
+    // it can be run
+    this.isChangeFrameAnimationRunning = true;
+    this.noDrag = preventDrag;
     this.animations.push(animation);
 };
 
@@ -705,6 +753,7 @@ ripe.ConfiguratorCsr.prototype._onMouseLeave = function(self, event) {
 ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
     if (!self.isMouseDown) return;
     if (!self.modelGroup) return;
+    if (self.noDrag) return;
 
     const mousePosX = event.pageX;
     const mousePosY = event.pageY;
