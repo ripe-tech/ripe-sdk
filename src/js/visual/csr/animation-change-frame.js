@@ -43,9 +43,11 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     const rotYStart = parseFloat(parseFloat(this.object3D.rotation.y).toFixed(6));
 
     // calculates how much it should rotate for X axis
-    const isInQuadrant2 = rotXStart >= (1.5 * Math.PI);
+    const isInQuadrant2 = rotXStart >= 1.5 * Math.PI;
     const rotateForward = isInQuadrant2 || (rotXStart >= 0 && rotXStart <= rotXEnd);
-    const rotateForwardQty = isInQuadrant2 ? (2 * Math.PI) - rotXStart + rotXEnd : rotXEnd - rotXStart;
+    const rotateForwardQty = isInQuadrant2
+        ? 2 * Math.PI - rotXStart + rotXEnd
+        : rotXEnd - rotXStart;
     const rotXQty = rotateForward ? rotateForwardQty : rotXEnd - rotXStart;
 
     // calculates how much it should rotate for Y axis
