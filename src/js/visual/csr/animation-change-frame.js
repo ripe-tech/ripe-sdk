@@ -24,8 +24,8 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     this.sign(`${object3D.uuid}${duration}${view}${position}${framesNumber}`);
 
     const radPerSide = (Math.PI * 2) / framesNumber;
-    const rotYStart = parseFloat(parseFloat(this.object3D.rotation.y).toPrecision(12));
-    const rotYEnd = parseFloat(parseFloat(position * radPerSide).toPrecision(12));
+    const rotYStart = parseFloat(parseFloat(this.object3D.rotation.y).toFixed(6));
+    const rotYEnd = parseFloat(parseFloat(position * radPerSide).toFixed(6));
     const rotYQty = rotYEnd - rotYStart;
 
     // don't perform the animation as it's already in the correct position

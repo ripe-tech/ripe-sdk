@@ -637,9 +637,9 @@ ripe.ConfiguratorCsr.prototype._normalizeRotations = function(object3D) {
     x = x < 0 ? x + range : x;
     y = y < 0 ? y + range : y;
     z = z < 0 ? z + range : z;
-    object3D.rotation.x = parseFloat(parseFloat(x).toPrecision(15));
-    object3D.rotation.y = parseFloat(parseFloat(y).toPrecision(15));
-    object3D.rotation.z = parseFloat(parseFloat(z).toPrecision(15));
+    object3D.rotation.x = parseFloat(parseFloat(x).toFixed(7));
+    object3D.rotation.y = parseFloat(parseFloat(y).toFixed(7));
+    object3D.rotation.z = parseFloat(parseFloat(z).toFixed(7));
 };
 
 /**
