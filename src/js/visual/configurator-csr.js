@@ -60,7 +60,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // options variables
     this.width = this.options.width || null;
     this.height = this.options.height || null;
-    this.format = this.options.format || null;
     this.size = this.options.size || null;
     this.pixelRatio =
         this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
@@ -160,7 +159,6 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
 
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
-    this.format = options.format === undefined ? this.format : options.format;
     this.size = options.size === undefined ? this.size : options.size;
     this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
