@@ -437,7 +437,6 @@ ripe.ConfiguratorCsr.prototype.syncToPRC = async function(prcConfigurator) {
     // syncs the CSR configurator visuals so it matches the PRC frame
     const frame = ripe.getFrameKey(prcConfigurator.view, prcConfigurator.position);
     await this.changeFrame(frame, { duration: 0 });
-    console.log("prcConfigurator", prcConfigurator, frame);
 };
 
 /**
