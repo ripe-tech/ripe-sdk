@@ -360,7 +360,7 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         // step count calculation logic for "side" view
         if (nextView === "side") {
             // calculates the PRC compatible step count for the change frame animation
-            const radPerSide = (Math.PI * 2) / viewFramesNum;
+            const radPerSide = (2 * Math.PI) / viewFramesNum;
             const rotYStart = ripe.CsrUtils.toPrecision(this.modelGroup.rotation.y);
             const rotYEnd = ripe.CsrUtils.toPrecision(nextPosition * radPerSide);
             const rotYQty = rotYEnd - rotYStart;

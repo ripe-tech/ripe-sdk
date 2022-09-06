@@ -33,7 +33,7 @@ ripe.CsrUtils.toPrecision = function(value, precision = 6) {
 ripe.CsrUtils.normalizeRotations = function(object3D) {
     if (!object3D) return;
 
-    const range = Math.PI * 2;
+    const range = 2 * Math.PI;
     let x = object3D.rotation.x % range;
     let y = object3D.rotation.y % range;
     let z = object3D.rotation.z % range;

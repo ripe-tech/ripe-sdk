@@ -19,7 +19,7 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     this.sign(`${object3D.uuid}${duration}${view}${position}${framesNumber}`);
 
     // calculates how much it should rotate per side position
-    const radPerSide = (Math.PI * 2) / framesNumber;
+    const radPerSide = (2 * Math.PI) / framesNumber;
 
     // sets the end rotations
     let rotXEnd = 0;
