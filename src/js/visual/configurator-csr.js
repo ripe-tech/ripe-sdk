@@ -427,7 +427,7 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
  *
  * @param {ConfiguratorPrc} prcConfigurator The PRC configurator.
  */
-ripe.ConfiguratorCsr.prototype.syncToPRC = async function(prcConfigurator) {
+ripe.ConfiguratorCsr.prototype.syncFromPRC = async function(prcConfigurator) {
     // syncs the CSR configurator state
     await this.updateOptions(prcConfigurator);
 
