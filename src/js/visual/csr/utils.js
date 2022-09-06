@@ -12,3 +12,13 @@ if (
 }
 
 ripe.CsrUtils = {};
+
+/**
+ * Calculates the shortest path (in radians) to rotate between points in a
+ * unit circle.
+ */
+ripe.CsrUtils.shortestRotationRad = function(start, end) {
+    const shortestPath =
+        ((((end - start) % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
+    return parseFloat(parseFloat(shortestPath).toFixed(6));
+};

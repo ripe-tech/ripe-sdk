@@ -43,8 +43,8 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     const rotYStart = parseFloat(parseFloat(this.object3D.rotation.y).toFixed(6));
 
     // calculates how much it should rotate for each axis
-    const rotXQty = this._shortestRotationQty(rotXStart, rotXEnd);
-    const rotYQty = this._shortestRotationQty(rotYStart, rotYEnd);
+    const rotXQty = ripe.CsrUtils.shortestRotationRad(rotXStart, rotXEnd);
+    const rotYQty = ripe.CsrUtils.shortestRotationRad(rotYStart, rotYEnd);
 
     // checks if axis is already in the finish state
     const isRotXFinished = rotXStart === rotXEnd;
@@ -100,13 +100,4 @@ ripe.CsrChangeFrameAnimation.prototype._finishAnimation = function() {
     this.object3D.rotation.x = this.rotXEnd;
     this.object3D.rotation.y = this.rotYEnd;
     this.finish();
-};
-
-ripe.CsrChangeFrameAnimation.prototype._shortestRotationQty = function(
-    rotationStart,
-    rotationEnd
-) {
-    const shortestPath =
-        ((((rotationEnd - rotationStart) % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
-    return parseFloat(parseFloat(shortestPath).toFixed(6));
 };
