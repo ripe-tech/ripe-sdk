@@ -57,12 +57,6 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     const isRotXFinished = rotXStart === rotXEnd;
     const isRotYFinished = rotYQty === 0;
 
-    // don't perform the animation as it's already in the correct position
-    if (isRotXFinished && isRotYFinished) {
-        this.finish();
-        return;
-    }
-
     // initializes the animation state variables
     this.isRotXFinished = isRotXFinished;
     this.isRotYFinished = isRotYFinished;
@@ -78,6 +72,12 @@ ripe.CsrChangeFrameAnimation.prototype = ripe.build(ripe.CsrAnimation.prototype)
 ripe.CsrChangeFrameAnimation.prototype.constructor = ripe.CsrChangeFrameAnimation;
 
 ripe.CsrChangeFrameAnimation.prototype.tick = function(delta) {
+    // checks if the animation finished
+    if (this.isRotXFinished && this.isRotYFinished) {
+        this._finishAnimation();
+        return;
+    }
+
     if (!this.run) return;
 
     // no animation duration specified so it completes the animation immediately
@@ -101,9 +101,6 @@ ripe.CsrChangeFrameAnimation.prototype.tick = function(delta) {
         this.rotYQtyDone += Math.abs(tickRotYQty);
         this.isRotYFinished = this.rotYQtyDone >= Math.abs(this.rotYQty);
     }
-
-    // checks if the animation finished
-    if (this.isRotXFinished && this.isRotYFinished) this._finishAnimation();
 };
 
 ripe.CsrChangeFrameAnimation.prototype._finishAnimation = function() {

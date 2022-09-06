@@ -406,6 +406,8 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     if (runningAnimation) {
         // ignore this call as the running animation is the same
         if (runningAnimation.signature === animation.signature) {
+            this.isChangeFrameAnimationRunning = false;
+            this.noDrag = false;
             return;
         }
 
