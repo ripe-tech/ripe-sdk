@@ -98,9 +98,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // general state variables
     this.loading = true;
     this.noDrag = false;
-    this.currentSize = 0;
-    this.currentWidth = 0;
-    this.currentHeight = 0;
     this.clock = null;
     this.animations = [];
     this.isChangeFrameAnimationRunning = false;
@@ -234,17 +231,17 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
     // in case the current size of the configurator ignores the
     // request to avoid usage of unneeded resources
     if (
-        this.currentSize === sizeValues.size &&
-        this.currentWidth === sizeValues.width &&
-        this.currentHeight === sizeValues.height
+        this.size === sizeValues.size &&
+        this.width === sizeValues.width &&
+        this.height === sizeValues.height
     ) {
         return;
     }
 
     this._resizeCsr(sizeValues.width, sizeValues.height);
-    this.currentSize = sizeValues.size;
-    this.currentWidth = sizeValues.width;
-    this.currentHeight = sizeValues.height;
+    this.size = sizeValues.size;
+    this.width = sizeValues.width;
+    this.height = sizeValues.height;
     await this.update(
         {},
         {
