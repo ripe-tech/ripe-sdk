@@ -470,11 +470,11 @@ ripe.ConfiguratorCsr.prototype.prcFrame = function() {
     const framesNum = 24;
 
     // calculates the PRC equivalent side frame
-    const radPerSide = ripe.CsrUtils.toPrecision((Math.PI * 2) / framesNum);
-    const position = ripe.CsrUtils.toPrecision(this.modelGroup.rotation.y / radPerSide);
-    console.log(position);
+    const radPerSide = (Math.PI * 2) / framesNum;
+    const position = ripe.CsrUtils.toPrecision(this.modelGroup.rotation.y / radPerSide, 4);
+    const positionRounded = Math.round(position);
 
-    return "side-12";
+    return `side-${positionRounded}`;
 };
 
 /**
