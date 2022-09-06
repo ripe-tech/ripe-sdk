@@ -961,12 +961,9 @@ ripe.ConfiguratorPrc.prototype.syncFromCSR = async function(csrConfigurator) {
     // resizes the PRC configurator to match the CSR size
     await this.resize();
 
-    // syncs the PRC configurator visuals so it matches the PRC frame
-    const frame = "aaa"; // TODO
-    console.log("\nsyncFromCSR frame:", frame);
-
     // changes the PRC frame to match CSR configurator visuals
-    await this.changeFrame("side-0", { duration: 0 }); // TODO
+    const frame = await csrConfigurator.prcFrame();
+    await this.changeFrame(frame, { duration: 0 });
 };
 
 /**

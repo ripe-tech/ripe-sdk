@@ -450,8 +450,11 @@ ripe.ConfiguratorCsr.prototype.syncFromPRC = async function(prcConfigurator) {
     await this.changeFrame(frame, { duration: 0 });
 };
 
-ripe.ConfiguratorCsr.prototype.prcFrame = function() {
+ripe.ConfiguratorCsr.prototype.prcFrame = async function() {
     if (!this.modelGroup) return null;
+
+    // gets PRC frames object
+    const frames = await this.owner.getFrames();
 
     // normalizes the model group rotations
     ripe.CsrUtils.normalizeRotations(this.modelGroup);
@@ -463,8 +466,7 @@ ripe.ConfiguratorCsr.prototype.prcFrame = function() {
     const topDegMin = 90 - this.verticalThreshold;
     const topDegMax = 90 + this.verticalThreshold;
     const isTop = verticalDeg >= topDegMin && verticalDeg <= topDegMax;
-    if (isTop) {
-        // TODO improve logic of choosing top frame
+    if (isTop && frames.top !== undefined) {
         return "top-0";
     }
 
@@ -472,15 +474,12 @@ ripe.ConfiguratorCsr.prototype.prcFrame = function() {
     const bottomDegMin = 270 - this.verticalThreshold;
     const bottomDegMax = 270 + this.verticalThreshold;
     const isBottom = verticalDeg >= bottomDegMin && verticalDeg <= bottomDegMax;
-    console.log("isBottom:", isBottom);
-    if (isBottom) {
-        // TODO improve logic of choosing bottom frame
+    if (isBottom && frames.bottom !== undefined) {
         return "bottom-0";
     }
 
-    const framesNum = 24;
-
     // calculates the PRC equivalent side frame
+    const framesNum = frames.side || 0;
     const radPerSide = (Math.PI * 2) / framesNum;
     const position = ripe.CsrUtils.toPrecision(this.modelGroup.rotation.y / radPerSide, 4);
     const positionRounded = Math.round(position);
