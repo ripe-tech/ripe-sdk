@@ -361,8 +361,8 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
         if (nextView === "side") {
             // calculates the PRC compatible step count for the change frame animation
             const radPerSide = (Math.PI * 2) / viewFramesNum;
-            const rotYStart = parseFloat(parseFloat(this.modelGroup.rotation.y).toFixed(6));
-            const rotYEnd = parseFloat(parseFloat(nextPosition * radPerSide).toFixed(6));
+            const rotYStart = ripe.CsrUtils.toPrecision(this.modelGroup.rotation.y);
+            const rotYEnd = ripe.CsrUtils.toPrecision(nextPosition * radPerSide);
             const rotYQty = rotYEnd - rotYStart;
 
             // gets the number of PRC compatible steps
@@ -698,9 +698,9 @@ ripe.ConfiguratorCsr.prototype._normalizeRotations = function(object3D) {
     x = x < 0 ? x + range : x;
     y = y < 0 ? y + range : y;
     z = z < 0 ? z + range : z;
-    object3D.rotation.x = parseFloat(parseFloat(x).toFixed(7));
-    object3D.rotation.y = parseFloat(parseFloat(y).toFixed(7));
-    object3D.rotation.z = parseFloat(parseFloat(z).toFixed(7));
+    object3D.rotation.x = ripe.CsrUtils.toPrecision(x, 7);
+    object3D.rotation.y = ripe.CsrUtils.toPrecision(y, 7);
+    object3D.rotation.z = ripe.CsrUtils.toPrecision(z, 7);
 };
 
 /**

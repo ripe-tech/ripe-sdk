@@ -26,7 +26,7 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     let rotYEnd = 0;
     switch (view) {
         case "side":
-            rotYEnd = parseFloat(parseFloat(position * radPerSide).toFixed(6));
+            rotYEnd = ripe.CsrUtils.toPrecision(position * radPerSide);
             break;
         case "top":
             rotXEnd = 0.5 * Math.PI;
@@ -39,8 +39,8 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     }
 
     // gets the initial rotations
-    const rotXStart = parseFloat(parseFloat(this.object3D.rotation.x).toFixed(6));
-    const rotYStart = parseFloat(parseFloat(this.object3D.rotation.y).toFixed(6));
+    const rotXStart = ripe.CsrUtils.toPrecision(this.object3D.rotation.x);
+    const rotYStart = ripe.CsrUtils.toPrecision(this.object3D.rotation.y);
 
     // calculates how much it should rotate for each axis
     const rotXQty = ripe.CsrUtils.shortestRotationRad(rotXStart, rotXEnd);
