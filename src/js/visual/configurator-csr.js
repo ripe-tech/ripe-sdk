@@ -712,6 +712,7 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
 
     if (!self.modelGroup) return;
 
+    // checks if there are animations to process
     if (self.animations.length > 0) {
         // ticks animations
         for (let i = self.animations.length - 1; i >= 0; i--) {
@@ -721,7 +722,7 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
             if (animation.isFinished()) self.animations.splice(i, 1);
         }
 
-        // normalizes the model group rotation
+        // normalizes the model group rotations
         this._normalizeRotations(self.modelGroup);
     }
 
