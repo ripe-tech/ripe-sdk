@@ -103,14 +103,20 @@ window.onload = function() {
                 break;
             case "prc":
             default:
-                prcElement.style.display = "block";
-                visibleConfigurator = "prc";
+                configuratorPrc.syncFromCSR(configuratorCsr).then(() => {
+                    prcElement.style.display = "block";
+                    visibleConfigurator = "prc";
+                });
                 break;
         }
     };
 
     const init = function(instance) {
-        showConfigurator("prc");
+        // force PRC visualizer to appear at the start
+        const prcElement = document.getElementById("configurator-prc");
+        prcElement.style.display = "block";
+        visibleConfigurator = "prc";
+
         initBase(instance);
         initHeader(instance);
         initOAuth(instance);
