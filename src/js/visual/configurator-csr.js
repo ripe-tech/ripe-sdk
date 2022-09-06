@@ -160,7 +160,10 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.size = options.size === undefined ? this.size : options.size;
     this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
-    this.verticalThreshold = options.verticalThreshold === undefined ? this.verticalThreshold : options.verticalThreshold;
+    this.verticalThreshold =
+        options.verticalThreshold === undefined
+            ? this.verticalThreshold
+            : options.verticalThreshold;
     this.duration = options.duration === undefined ? this.duration : options.duration;
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = { ...this.rendererOptions, ...rendererOpts };
@@ -459,7 +462,7 @@ ripe.ConfiguratorCsr.prototype.prcFrame = function() {
     // checks if CSR state is equivalent to PRC top frame
     const topDegMin = 90 - this.verticalThreshold;
     const topDegMax = 90 + this.verticalThreshold;
-    const isTop = (verticalDeg >= topDegMin) && (verticalDeg <= topDegMax);
+    const isTop = verticalDeg >= topDegMin && verticalDeg <= topDegMax;
     if (isTop) {
         // TODO improve logic of choosing top frame
         return "top-0";
