@@ -51,7 +51,7 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
     const rotXQty = rotateForward ? rotateForwardQty : rotXEnd - rotXStart;
 
     // calculates how much it should rotate for Y axis
-    const rotYQty = rotYEnd - rotYStart;
+    const rotYQty = ((((rotYEnd - rotYStart) % (2*Math.PI)) + (3*Math.PI)) % (2*Math.PI)) - Math.PI;
 
     // checks if axis is already in finish state
     const isRotXFinished = rotXStart === rotXEnd;
