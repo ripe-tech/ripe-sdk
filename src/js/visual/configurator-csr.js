@@ -377,7 +377,7 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     }
 
     // ensures duration default if no duration is set
-    duration = duration || this.duration;
+    duration = duration !== null ? duration : this.duration;
 
     // duration value compatible with CSR animation defaulting
     // to 0 if no duration was successfully set
