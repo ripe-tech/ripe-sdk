@@ -29,10 +29,10 @@ ripe.CsrChangeFrameAnimation = function(object3D, duration, view, position, fram
             rotYEnd = parseFloat(parseFloat(position * radPerSide).toFixed(6));
             break;
         case "top":
-            rotXEnd = Math.PI / 2;
+            rotXEnd = 0.5 * Math.PI;
             break;
         case "bottom":
-            rotXEnd = Math.PI;
+            rotXEnd = 1.5 * Math.PI;
             break;
         default:
             throw new Error(`View '${view}' is not supported by 'ChangeFrameAnimation`);
