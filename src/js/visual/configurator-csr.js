@@ -243,7 +243,7 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
         return;
     }
 
-    this._resizeCsr(width, height);
+    this._resizeCsr(sizeValues.width, sizeValues.height);
     this.currentSize = sizeValues.size;
     this.currentWidth = sizeValues.width;
     this.currentHeight = sizeValues.height;
@@ -432,7 +432,7 @@ ripe.ConfiguratorCsr.prototype.syncToPRC = async function(prcConfigurator) {
     await this.updateOptions(prcConfigurator);
 
     // syncs the CSR configurator size
-    // await this.resize();
+    await this.resize();
 
     // syncs the CSR configurator visuals so it matches the PRC frame
     const frame = ripe.getFrameKey(prcConfigurator.view, prcConfigurator.position);
@@ -456,9 +456,9 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
     height = height || this.element.dataset.height || this.height || size;
 
     return {
-        size: size,
-        width: width,
-        height: height
+        size: parseInt(size),
+        width: parseInt(width),
+        height: parseInt(height)
     };
 };
 
