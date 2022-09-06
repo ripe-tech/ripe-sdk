@@ -345,7 +345,7 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
     }
 
     // normalizes the model group rotation values
-    this._normalizeRotations(this.modelGroup);
+    ripe.CsrUtils.normalizeRotations(this.modelGroup);
 
     // calculates step duration based on revolutionDuration defaulting to the stepDuration
     // if no revolutionDuration is specified
@@ -681,29 +681,6 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
 };
 
 /**
- * Normalizes a THREE.Object3D rotation setting it's axis only with positive
- * values ranging from 0 to 2 PI.
- *
- * @param {THREE.Object3D} object3D An instance of a THREE.Object3D.
- *
- * @private
- */
-ripe.ConfiguratorCsr.prototype._normalizeRotations = function(object3D) {
-    if (!object3D) return;
-
-    const range = Math.PI * 2;
-    let x = object3D.rotation.x % range;
-    let y = object3D.rotation.y % range;
-    let z = object3D.rotation.z % range;
-    x = x < 0 ? x + range : x;
-    y = y < 0 ? y + range : y;
-    z = z < 0 ? z + range : z;
-    object3D.rotation.x = ripe.CsrUtils.toPrecision(x, 7);
-    object3D.rotation.y = ripe.CsrUtils.toPrecision(y, 7);
-    object3D.rotation.z = ripe.CsrUtils.toPrecision(z, 7);
-};
-
-/**
  * Animation loop tick.
  *
  * @private
@@ -725,7 +702,7 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
         }
 
         // normalizes the model group rotations
-        this._normalizeRotations(self.modelGroup);
+        ripe.CsrUtils.normalizeRotations(self.modelGroup);
     }
 
     // renders a frame

@@ -13,8 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `variant` passing through `onConfig` and `onPart`
 * Add CSS `link` to `README.md`
 * Add `hasStrategy` method
-* Add `CsrAnimation` and `CsrChangeFrameAnimation`
-* Add `changeFrame`, `flushPending` and `_normalizeRotations` methods to CSR configurator
+* Add `CsrAnimation`, `CsrChangeFrameAnimation` and `CsrUtils`
+* Add `changeFrame` and `flushPending` methods to CSR configurator
 * Add click binds to ripe-sdk-demo that allows to match CSR to the PRC frames
 
 ### Changed
