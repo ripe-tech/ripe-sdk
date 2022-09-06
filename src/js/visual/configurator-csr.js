@@ -711,8 +711,10 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
+    if (this.loading) return;
+
     // processes the animation loop tick delta
-    const delta = this.clock.getDelta();
+    const delta = self.clock.getDelta();
 
     if (!self.modelGroup) return;
 
