@@ -468,7 +468,15 @@ ripe.ConfiguratorCsr.prototype.prcFrame = function() {
         return "top-0";
     }
 
-    // TODO bottom frame
+    // checks if CSR state is equivalent to PRC bottom frame
+    const bottomDegMin = 270 - this.verticalThreshold;
+    const bottomDegMax = 270 + this.verticalThreshold;
+    const isBottom = verticalDeg >= bottomDegMin && verticalDeg <= bottomDegMax;
+    console.log("isBottom:", isBottom);
+    if (isBottom) {
+        // TODO improve logic of choosing bottom frame
+        return "bottom-0";
+    }
 
     const framesNum = 24;
 
