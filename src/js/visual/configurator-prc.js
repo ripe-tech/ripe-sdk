@@ -954,6 +954,7 @@ ripe.ConfiguratorPrc.prototype.syncFromCSR = async function(csrConfigurator) {
         size: csrConfigurator.size,
         pixelRatio: csrConfigurator.pixelRatio,
         sensitivity: csrConfigurator.sensitivity,
+        verticalThreshold: csrConfigurator.verticalThreshold,
         duration: csrConfigurator.duration
     });
 

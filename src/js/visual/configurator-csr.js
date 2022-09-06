@@ -64,6 +64,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.pixelRatio =
         this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
     this.sensitivity = this.options.sensitivity || 40;
+    this.verticalThreshold = this.options.verticalThreshold || 15;
     this.duration = this.options.duration || 500;
     const rendererOpts = this.options.rendererOptions || {};
     this.rendererOptions = {
@@ -159,6 +160,7 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.size = options.size === undefined ? this.size : options.size;
     this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
+    this.verticalThreshold = options.verticalThreshold === undefined ? this.verticalThreshold : options.verticalThreshold;
     this.duration = options.duration === undefined ? this.duration : options.duration;
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = { ...this.rendererOptions, ...rendererOpts };
@@ -433,6 +435,7 @@ ripe.ConfiguratorCsr.prototype.syncFromPRC = async function(prcConfigurator) {
         size: parseInt(size),
         pixelRatio: prcConfigurator.pixelRatio,
         sensitivity: prcConfigurator.sensitivity,
+        verticalThreshold: prcConfigurator.verticalThreshold,
         duration: prcConfigurator.duration
     });
 
