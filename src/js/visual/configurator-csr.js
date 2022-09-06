@@ -447,6 +447,36 @@ ripe.ConfiguratorCsr.prototype.syncFromPRC = async function(prcConfigurator) {
     await this.changeFrame(frame, { duration: 0 });
 };
 
+ripe.ConfiguratorCsr.prototype.prcFrame = function() {
+    if (!this.modelGroup) return null;
+
+    // normalizes the model group rotations
+    ripe.CsrUtils.normalizeRotations(this.modelGroup);
+
+    // converts the model group x axis rotation value to degrees
+    const verticalDeg = window.THREE.MathUtils.radToDeg(this.modelGroup.rotation.x);
+
+    // checks if CSR state is equivalent to PRC top frame
+    const topDegMin = 90 - this.verticalThreshold;
+    const topDegMax = 90 + this.verticalThreshold;
+    const isTop = (verticalDeg >= topDegMin) && (verticalDeg <= topDegMax);
+    if (isTop) {
+        // TODO improve logic of choosing top frame
+        return "top-0";
+    }
+
+    // TODO bottom frame
+
+    const framesNum = 24;
+
+    // calculates the PRC equivalent side frame
+    const radPerSide = ripe.CsrUtils.toPrecision((Math.PI * 2) / framesNum);
+    const position = ripe.CsrUtils.toPrecision(this.modelGroup.rotation.y / radPerSide);
+    console.log(position);
+
+    return "side-12";
+};
+
 /**
  * Tries to obtain the best possible size for the configurator
  * defaulting to the client with of the element as fallback.
