@@ -423,6 +423,24 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
 };
 
 /**
+ * Syncs the CSR configurator state to a PRC configurator state.
+ *
+ * @param {ConfiguratorPrc} prcConfigurator The PRC configurator.
+ */
+ripe.ConfiguratorCsr.prototype.syncToPRC = async function(prcConfigurator) {
+    // syncs the CSR configurator state
+    await this.updateOptions(prcConfigurator);
+
+    // syncs the CSR configurator size
+    // await this.resize();
+
+    // syncs the CSR configurator visuals so it matches the PRC frame
+    const frame = ripe.getFrameKey(prcConfigurator.view, prcConfigurator.position);
+    await this.changeFrame(frame, { duration: 0 });
+    console.log("prcConfigurator", prcConfigurator, frame);
+};
+
+/**
  * Tries to obtain the best possible size for the configurator
  * defaulting to the client with of the element as fallback.
  *

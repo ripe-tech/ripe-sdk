@@ -96,8 +96,10 @@ window.onload = function() {
 
         switch (type) {
             case "csr":
-                csrElement.style.display = "block";
-                visibleConfigurator = "csr";
+                configuratorCsr.syncToPRC(configuratorPrc).then(() => {
+                    csrElement.style.display = "block";
+                    visibleConfigurator = "csr";
+                });
                 break;
             case "prc":
             default:
