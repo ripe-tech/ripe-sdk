@@ -516,17 +516,21 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     // inits the scene clock
     this.clock = new window.THREE.Clock();
 
-    // loads and sets scene environment
-    this.environmentTexture = await this._loadEnvironment(this.sceneEnvironmentPath);
+    // loads resources
+    const meshPath = this.owner.getMeshUrl();
+    [this.environmentTexture, this.mesh] = await Promise.all([
+        this._loadEnvironment(this.sceneEnvironmentPath),
+        this._loadMesh(meshPath)
+    ]);
+
+    // sets the scene environment
     this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
     this.scene.environment = this.environmentTexture;
 
     // inits the scene model group
     this.modelGroup = new window.THREE.Group();
 
-    // loads and sets the model mesh
-    const meshPath = this.owner.getMeshUrl();
-    this.mesh = await this._loadMesh(meshPath);
+    // sets the model mesh
     this.modelGroup.add(this.mesh);
 
     this.scene.add(this.modelGroup);
