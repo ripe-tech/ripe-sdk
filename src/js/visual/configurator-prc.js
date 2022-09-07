@@ -942,6 +942,31 @@ ripe.ConfiguratorPrc.prototype.disableMasks = function() {
 };
 
 /**
+ * Syncs the PRC configurator state to a CSR configurator state.
+ *
+ * @param {ConfiguratorCsr} csrConfigurator The CSR configurator.
+ */
+ripe.ConfiguratorPrc.prototype.syncFromCSR = async function(csrConfigurator) {
+    // sets the PRC configurator state
+    await this.updateOptions({
+        width: csrConfigurator.width,
+        height: csrConfigurator.height,
+        size: csrConfigurator.size,
+        pixelRatio: csrConfigurator.pixelRatio,
+        sensitivity: csrConfigurator.sensitivity,
+        verticalThreshold: csrConfigurator.verticalThreshold,
+        duration: csrConfigurator.duration
+    });
+
+    // resizes the PRC configurator to match the CSR size
+    await this.resize();
+
+    // changes the PRC frame to match CSR configurator visuals
+    const frame = await csrConfigurator.prcFrame();
+    await this.changeFrame(frame, { duration: 0 });
+};
+
+/**
  * Initializes the layout for the configurator element by
  * constructing all te child elements required for the proper
  * configurator functionality to work.

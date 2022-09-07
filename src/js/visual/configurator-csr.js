@@ -60,11 +60,11 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // options variables
     this.width = this.options.width || null;
     this.height = this.options.height || null;
-    this.format = this.options.format || null;
     this.size = this.options.size || null;
     this.pixelRatio =
         this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
     this.sensitivity = this.options.sensitivity || 40;
+    this.verticalThreshold = this.options.verticalThreshold || 15;
     this.duration = this.options.duration || 500;
     const rendererOpts = this.options.rendererOptions || {};
     this.rendererOptions = {
@@ -99,9 +99,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // general state variables
     this.loading = true;
     this.noDrag = false;
-    this.currentSize = 0;
-    this.currentWidth = 0;
-    this.currentHeight = 0;
     this.clock = null;
     this.animations = [];
     this.isChangeFrameAnimationRunning = false;
@@ -160,10 +157,13 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
 
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
-    this.format = options.format === undefined ? this.format : options.format;
     this.size = options.size === undefined ? this.size : options.size;
     this.pixelRatio = options.pixelRatio === undefined ? this.pixelRatio : options.pixelRatio;
     this.sensitivity = options.sensitivity === undefined ? this.sensitivity : options.sensitivity;
+    this.verticalThreshold =
+        options.verticalThreshold === undefined
+            ? this.verticalThreshold
+            : options.verticalThreshold;
     this.duration = options.duration === undefined ? this.duration : options.duration;
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = { ...this.rendererOptions, ...rendererOpts };
@@ -236,17 +236,17 @@ ripe.ConfiguratorCsr.prototype.resize = async function(size, width, height) {
     // in case the current size of the configurator ignores the
     // request to avoid usage of unneeded resources
     if (
-        this.currentSize === sizeValues.size &&
-        this.currentWidth === sizeValues.width &&
-        this.currentHeight === sizeValues.height
+        this.size === sizeValues.size &&
+        this.width === sizeValues.width &&
+        this.height === sizeValues.height
     ) {
         return;
     }
 
-    this._resizeCsr(width, height);
-    this.currentSize = sizeValues.size;
-    this.currentWidth = sizeValues.width;
-    this.currentHeight = sizeValues.height;
+    this._resizeCsr(sizeValues.width, sizeValues.height);
+    this.size = sizeValues.size;
+    this.width = sizeValues.width;
+    this.height = sizeValues.height;
     await this.update(
         {},
         {
@@ -423,6 +423,71 @@ ripe.ConfiguratorCsr.prototype.changeFrame = async function(frame, options = {})
 };
 
 /**
+ * Syncs the CSR configurator state to a PRC configurator state.
+ *
+ * @param {ConfiguratorPrc} prcConfigurator The PRC configurator.
+ */
+ripe.ConfiguratorCsr.prototype.syncFromPRC = async function(prcConfigurator) {
+    // sets the CSR configurator state
+    const size = prcConfigurator.element.dataset.size || prcConfigurator.size;
+    const width = prcConfigurator.element.dataset.width || prcConfigurator.width || size;
+    const height = prcConfigurator.element.dataset.height || prcConfigurator.height || size;
+    await this.updateOptions({
+        width: parseInt(width),
+        height: parseInt(height),
+        size: parseInt(size),
+        pixelRatio: prcConfigurator.pixelRatio,
+        sensitivity: prcConfigurator.sensitivity,
+        verticalThreshold: prcConfigurator.verticalThreshold,
+        duration: prcConfigurator.duration
+    });
+
+    // resizes the CSR configurator to match the PRC size
+    await this.resize();
+
+    // sets the CSR configurator visuals so it matches the PRC frame
+    const frame = ripe.getFrameKey(prcConfigurator.view, prcConfigurator.position);
+    await this.changeFrame(frame, { duration: 0 });
+};
+
+ripe.ConfiguratorCsr.prototype.prcFrame = async function() {
+    if (!this.modelGroup) return null;
+
+    // gets PRC frames object
+    const frames = await this.owner.getFrames();
+
+    // normalizes the model group rotations
+    ripe.CsrUtils.normalizeRotations(this.modelGroup);
+
+    // converts the model group x axis rotation value to degrees
+    const verticalDeg = window.THREE.MathUtils.radToDeg(this.modelGroup.rotation.x);
+
+    // checks if CSR state is equivalent to PRC top frame
+    const topDegMin = 90 - this.verticalThreshold;
+    const topDegMax = 90 + this.verticalThreshold;
+    const isTop = verticalDeg >= topDegMin && verticalDeg <= topDegMax;
+    if (isTop && frames.top !== undefined) {
+        return "top-0";
+    }
+
+    // checks if CSR state is equivalent to PRC bottom frame
+    const bottomDegMin = 270 - this.verticalThreshold;
+    const bottomDegMax = 270 + this.verticalThreshold;
+    const isBottom = verticalDeg >= bottomDegMin && verticalDeg <= bottomDegMax;
+    if (isBottom && frames.bottom !== undefined) {
+        return "bottom-0";
+    }
+
+    // calculates the PRC equivalent side frame
+    const framesNum = frames.side || 0;
+    const radPerSide = (Math.PI * 2) / framesNum;
+    const position = ripe.CsrUtils.toPrecision(this.modelGroup.rotation.y / radPerSide, 4);
+    const positionRounded = Math.round(position);
+
+    return `side-${positionRounded}`;
+};
+
+/**
  * Tries to obtain the best possible size for the configurator
  * defaulting to the client with of the element as fallback.
  *
@@ -438,9 +503,9 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
     height = height || this.element.dataset.height || this.height || size;
 
     return {
-        size: size,
-        width: width,
-        height: height
+        size: parseInt(size),
+        width: parseInt(width),
+        height: parseInt(height)
     };
 };
 

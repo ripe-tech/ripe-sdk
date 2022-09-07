@@ -6,6 +6,8 @@ const FACES = ["side", "top", "front"];
 
 window.onload = function() {
     let visibleConfigurator = null;
+    let configuratorPrc = null;
+    let configuratorCsr = null;
 
     const element = document.getElementById("configurator-prc");
     const _body = document.querySelector("body");
@@ -94,19 +96,27 @@ window.onload = function() {
 
         switch (type) {
             case "csr":
-                csrElement.style.display = "block";
-                visibleConfigurator = "csr";
+                configuratorCsr.syncFromPRC(configuratorPrc).then(() => {
+                    csrElement.style.display = "block";
+                    visibleConfigurator = "csr";
+                });
                 break;
             case "prc":
             default:
-                prcElement.style.display = "block";
-                visibleConfigurator = "prc";
+                configuratorPrc.syncFromCSR(configuratorCsr).then(() => {
+                    prcElement.style.display = "block";
+                    visibleConfigurator = "prc";
+                });
                 break;
         }
     };
 
     const init = function(instance) {
-        showConfigurator("prc");
+        // force PRC visualizer to appear at the start
+        const prcElement = document.getElementById("configurator-prc");
+        prcElement.style.display = "block";
+        visibleConfigurator = "prc";
+
         initBase(instance);
         initHeader(instance);
         initOAuth(instance);
@@ -316,27 +326,27 @@ window.onload = function() {
 
             frame0.addEventListener("click", function() {
                 if (result.frames > 9) {
-                    configurator.changeFrame("side-9", {
+                    configuratorPrc.changeFrame("side-9", {
                         revolutionDuration: 500
                     });
                 } else {
-                    configurator.changeFrame("side-0", {
+                    configuratorPrc.changeFrame("side-0", {
                         revolutionDuration: 500
                     });
                 }
             });
             frame6.addEventListener("click", function() {
-                configurator.changeFrame("side-6", {
+                configuratorPrc.changeFrame("side-6", {
                     revolutionDuration: 500
                 });
             });
             frameTop.addEventListener("click", function() {
-                configurator.changeFrame("top-0", {
+                configuratorPrc.changeFrame("top-0", {
                     duration: 250
                 });
             });
             frameFront.addEventListener("click", function() {
-                configurator.changeFrame("front-0", {
+                configuratorPrc.changeFrame("front-0", {
                     duration: 250
                 });
             });
@@ -352,18 +362,18 @@ window.onload = function() {
                 }
             });
 
-            const configurator = ripe.bindConfigurator(element, {
+            configuratorPrc = ripe.bindConfigurator(element, {
                 duration: 250,
                 noMasks: false,
                 view: bestFace(result)
             });
-            configurator.isFirst = true;
+            configuratorPrc.isFirst = true;
 
-            configurator.bind("loaded", function() {
-                if (configurator.isFirst) configurator.isFirst = false;
+            configuratorPrc.bind("loaded", function() {
+                if (configuratorPrc.isFirst) configuratorPrc.isFirst = false;
                 else return;
                 if (result.faces.indexOf("side") !== -1) {
-                    configurator.changeFrame("side-12", {
+                    configuratorPrc.changeFrame("side-12", {
                         revolutionDuration: 500
                     });
                 }
@@ -440,7 +450,7 @@ window.onload = function() {
 
     const initConfiguratorCsr = function() {
         const element = document.getElementById("configurator-csr");
-        const configurator = ripe.bindConfigurator(element, { type: "csr" });
+        configuratorCsr = ripe.bindConfigurator(element, { type: "csr" });
 
         // change frame on frame click
         const frame0 = document.getElementById("frame-0");
@@ -448,22 +458,22 @@ window.onload = function() {
         const frameTop = document.getElementById("frame-top");
         const frameFront = document.getElementById("frame-front");
         frame0.addEventListener("click", function() {
-            configurator.changeFrame("side-9", {
+            configuratorCsr.changeFrame("side-9", {
                 revolutionDuration: 500
             });
         });
         frame6.addEventListener("click", function() {
-            configurator.changeFrame("side-6", {
+            configuratorCsr.changeFrame("side-6", {
                 revolutionDuration: 500
             });
         });
         frameTop.addEventListener("click", function() {
-            configurator.changeFrame("top-0", {
+            configuratorCsr.changeFrame("top-0", {
                 duration: 250
             });
         });
         frameFront.addEventListener("click", function() {
-            configurator.changeFrame("front-0", {
+            configuratorCsr.changeFrame("front-0", {
                 duration: 250
             });
         });
