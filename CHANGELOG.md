@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `CsrAnimation`, `CsrChangeFrameAnimation` and `CsrUtils`
 * Add `changeFrame` and `flushPending` methods to CSR configurator
 * Add click binds to ripe-sdk-demo that allows to match CSR to the PRC frames
+* Add `syncFromCSR` method to `ConfiguratorPrc`
+* Add `syncFromPRC` and `prcFrame` methods to `ConfiguratorCsr`
+* Add bilateral synchronization between PRC and CSR configurators in ripe-sdk-demo when changing configurator
 
 ### Changed
 
@@ -26,11 +29,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Use `THREE.Group` to manipulate positions and rotations instead of directly changing mesh axis
 * Improve animation loop so it can tick animations
 * Greatly improve CSR scene loading time
+* Removed unused `format` variable from `ConfiguratorCsr`
 
 ### Fixed
 
 * Add `dku` to request options for import order
 * Add `contents` to params of import order only if filled with some value
+* Fix `ConfiguratorCsr` sizes and `resize()` logic
 
 ## [2.31.2] - 2022-06-08
 
