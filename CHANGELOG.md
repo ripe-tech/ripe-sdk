@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Set CSR camera default values standard
 * Use `THREE.Group` to manipulate positions and rotations instead of directly changing mesh axis
 * Improve animation loop so it can tick animations
+* Greatly improve CSR scene loading time
 * Removed unused `format` variable from `ConfiguratorCsr`
 
 ### Fixed
