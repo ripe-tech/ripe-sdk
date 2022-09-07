@@ -10,8 +10,8 @@ window.onload = function() {
     const element = document.getElementById("configurator-prc");
     const _body = document.querySelector("body");
     const url = _body.dataset.url || "https://sandbox.platforme.com/api/";
-    const brand = _body.dataset.brand || "swear";
-    const model = _body.dataset.model || "vyner_hitop";
+    const brand = _body.dataset.brand || "dummy";
+    const model = _body.dataset.model || "cube";
     const variant = _body.dataset.variant || "$base";
     const version = _body.dataset.version || null;
     const format = _body.dataset.format || "lossless";
@@ -440,7 +440,33 @@ window.onload = function() {
 
     const initConfiguratorCsr = function() {
         const element = document.getElementById("configurator-csr");
-        ripe.bindConfigurator(element, { type: "csr" });
+        const configurator = ripe.bindConfigurator(element, { type: "csr" });
+
+        // change frame on frame click
+        const frame0 = document.getElementById("frame-0");
+        const frame6 = document.getElementById("frame-6");
+        const frameTop = document.getElementById("frame-top");
+        const frameFront = document.getElementById("frame-front");
+        frame0.addEventListener("click", function() {
+            configurator.changeFrame("side-9", {
+                revolutionDuration: 500
+            });
+        });
+        frame6.addEventListener("click", function() {
+            configurator.changeFrame("side-6", {
+                revolutionDuration: 500
+            });
+        });
+        frameTop.addEventListener("click", function() {
+            configurator.changeFrame("top-0", {
+                duration: 250
+            });
+        });
+        frameFront.addEventListener("click", function() {
+            configurator.changeFrame("front-0", {
+                duration: 250
+            });
+        });
     };
 
     // starts the loading process for the RIPE main instance and binds
