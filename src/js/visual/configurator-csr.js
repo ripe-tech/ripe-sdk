@@ -119,9 +119,9 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.modelGroup = null;
     this.mesh = null;
     this.debugRefs = {
+        framerate: null,
         worldAxis: null,
         modelAxis: null
-        // TODO framerate??
     };
 
     // handlers variables
@@ -682,16 +682,20 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
  */
  ripe.ConfiguratorCsr.prototype._initDebug = function() {
     if (!this.debug) return;
-    if (!this.scene) throw new Error("Scene not initiated, can't load debug tools");
 
     // ensures a clean state
     this._deinitDebug();
 
     if (this.debugOptions.framerate) {
-        // TODO
+        const renderer = this.element.querySelector(".renderer");
+        if (!renderer) throw new Error("Renderer container not initialized, can't load debug framerate");
+        this.debugRefs.framerate = new window.Stats();
+        this.debugRefs.framerate.dom.classList.add("framerate-panel");
+        renderer.appendChild(this.debugRefs.framerate.dom);
     }
 
     if (this.debugOptions.worldAxis) {
+        if (!this.scene) throw new Error("Scene not initialized, can't load debug axis");
         this.debugRefs.worldAxis = new window.THREE.AxesHelper(100);
         this.scene.add(this.debugRefs.worldAxis);
     }
@@ -709,6 +713,10 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
  * @private
  */
  ripe.ConfiguratorCsr.prototype._deinitDebug = function() {
+    if (this.debugRefs.framerate) {
+        this.debugRefs.framerate.dom.remove();
+        this.debugRefs.framerate = null;
+    }
     if (this.debugRefs.worldAxis) {
         this.debugRefs.worldAxis.dispose();
         this.scene.remove(this.debugRefs.worldAxis);
@@ -822,6 +830,11 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
  */
 ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
     if (self.loading) return;
+
+    // processes debug related ticks
+    if (self.debug) {
+        if (self.debugRefs.framerate) self.debugRefs.framerate.update();
+    }
 
     // processes the animation loop tick delta
     const delta = self.clock.getDelta();
