@@ -30,7 +30,9 @@ const paths = {
         "node_modules/three/build/three.min.js",
         "node_modules/three/examples/js/loaders/DRACOLoader.js",
         "node_modules/three/examples/js/loaders/GLTFLoader.js",
-        "node_modules/three/examples/js/loaders/RGBELoader.js"
+        "node_modules/three/examples/js/loaders/FBXLoader.js",
+        "node_modules/three/examples/js/loaders/RGBELoader.js",
+        "node_modules/three/examples/js/libs/fflate.min.js"
     ],
     basefiles: [
         "src/js/locales/base.js",

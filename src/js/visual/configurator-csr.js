@@ -85,15 +85,44 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
     const cameraOpts = this.options.cameraOptions || {};
     this.cameraOptions = {
-        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 45,
+        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 80,
         aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
         updateAspectOnResize:
             cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
         near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
         far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
-        posX: cameraOpts.posX !== undefined ? cameraOpts.posX : 0,
-        posY: cameraOpts.posY !== undefined ? cameraOpts.posY : 0,
-        posZ: cameraOpts.posZ !== undefined ? cameraOpts.posZ : 6
+        position: {
+            x: 0,
+            y: 0,
+            z: 200
+        },
+        rotation: {
+            x: 0,
+            y: 0,
+            z: 0
+        },
+        scale: {
+            x: 1,
+            y: 1,
+            z: 1
+        }
+        /*
+        position: {
+            x: 0,
+            y: 48.80,
+            z: 204.23
+        },
+        rotation: {
+            x: -7.907,
+            y: 0,
+            z: 0
+        },
+        scale: {
+            x: 1,
+            y: 1,
+            z: 1
+        }
+        */
     };
 
     // general state variables
@@ -110,6 +139,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.scene = null;
     this.environmentTexture = null;
     this.modelGroup = null;
+    this.floor = null;
     this.mesh = null;
 
     // handlers variables
@@ -538,6 +568,13 @@ ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
     });
 };
 
+ripe.ConfiguratorCsr.prototype._loadMeshFBX = async function(path) {
+    const loader = new window.THREE.FBXLoader();
+    return new Promise((resolve, reject) => {
+        loader.load(path, obj => resolve(obj));
+    });
+};
+
 /**
  * Loads a mesh.
  *
@@ -551,6 +588,8 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
     switch (format) {
         case "gltf":
             return await this._loadMeshGLTF(path);
+        case "fbx":
+            return await this._loadMeshFBX(path);
         default:
             throw new Error(`Can't load 3D model, format "${format}" is not supported`);
     }
@@ -581,24 +620,83 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     // inits the scene clock
     this.clock = new window.THREE.Clock();
 
+    // loads floor
+    // const geometry = new window.THREE.PlaneBufferGeometry(92.645, 92.645);
+    // this.floor = new window.THREE.Mesh(geometry, new window.THREE.MeshNormalMaterial());
+    // this.floor.position.set(0, 85.688, 24.593);
+    // this.floor.scale.set(1.246, 1.246, 1.246);
+    // this.scene.add(this.floor);
+
+    const start = Date.now();
+    const mayaScenePath = "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx?";
+    const mayaScene = await this._loadMesh(mayaScenePath, "fbx");
+    const end = Date.now();
+    console.log("maya scene took:", end - start, "ms");
+    console.log("maya scene:", mayaScene);
+
+    const shoe = mayaScene.children.find(obj => obj.name === "vynerShoe");
+    console.log("shoeee", shoe);
+
+    const sideCamera = mayaScene.getObjectByName("sideCam");
+    const sideCameraAim = mayaScene.getObjectByName("sideCam_aim");
+    console.log("sideCamera:", sideCamera);
+    console.log("sideCameraAim:", sideCameraAim);
+
+    // this.camera = sideCamera;
+    this.camera = new window.THREE.PerspectiveCamera(
+        sideCamera.fov,
+        sideCamera.aspect,
+        this.cameraOptions.near,
+        this.cameraOptions.far
+    );
+    this.camera.filmGauge = sideCamera.filmGauge;
+    this.camera.position.set(
+        sideCamera.position.x - sideCameraAim.position.x,
+        sideCamera.position.y - sideCameraAim.position.y,
+        sideCamera.position.z - sideCameraAim.position.z
+    );
+    // this.camera.rotation.x = sideCamera.rotation.x;
+    // this.camera.rotation.y = sideCamera.rotation.y;
+    // this.camera.rotation.z = sideCamera.rotation.z;
+
     // loads resources
+    /*
+    // const meshPath = "https://www.dl.dropboxusercontent.com/s/45miexcatvx1axq/vyner_mayaScene.fbx";
     const meshPath = this.owner.getMeshUrl();
     [this.environmentTexture, this.mesh] = await Promise.all([
-        this._loadEnvironment(this.sceneEnvironmentPath),
-        this._loadMesh(meshPath)
+         this._loadEnvironment(this.sceneEnvironmentPath),
+         this._loadMesh(meshPath)
     ]);
 
     // sets the scene environment
     this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
     this.scene.environment = this.environmentTexture;
+    */
 
     // inits the scene model group
     this.modelGroup = new window.THREE.Group();
+    this.modelGroup.scale.set(20, 20, 20);
 
     // sets the model mesh
-    this.modelGroup.add(this.mesh);
+    // this.modelGroup.add(this.mesh);
 
+    this.scene.add(mayaScene);
     this.scene.add(this.modelGroup);
+
+    // this.scene = mayaScene;
+
+    const spotLight = new window.THREE.SpotLight(0xffffff);
+    spotLight.position.set(100, 1000, 100);
+    spotLight.castShadow = true;
+    spotLight.shadow.mapSize.width = 1024;
+    spotLight.shadow.mapSize.height = 1024;
+    spotLight.shadow.camera.near = 500;
+    spotLight.shadow.camera.far = 4000;
+    spotLight.shadow.camera.fov = 30;
+    this.scene.add(spotLight);
+
+    const light = new window.THREE.AmbientLight(0x404040);
+    this.scene.add(light);
 };
 
 /**
@@ -654,10 +752,18 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
         this.cameraOptions.far
     );
     this.camera.position.set(
-        this.cameraOptions.posX,
-        this.cameraOptions.posY,
-        this.cameraOptions.posZ
+        this.cameraOptions.position.x,
+        this.cameraOptions.position.y,
+        this.cameraOptions.position.z
     );
+    this.camera.scale.set(
+        this.cameraOptions.scale.x,
+        this.cameraOptions.scale.y,
+        this.cameraOptions.scale.z
+    );
+    this.camera.rotation.x = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.x);
+    this.camera.rotation.y = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.y);
+    this.camera.rotation.z = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.z);
 };
 
 /**
