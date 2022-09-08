@@ -697,7 +697,9 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
     }
 
     if (this.debugOptions.modelAxis) {
-        // TODO
+        if (!this.modelGroup) throw new Error("Model group not initialized, can't load debug axis");
+        this.debugRefs.modelAxis = new window.THREE.AxesHelper(4);
+        this.modelGroup.add(this.debugRefs.modelAxis);
     }
 };
 
@@ -714,7 +716,7 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
     }
     if (this.debugRefs.modelAxis) {
         this.debugRefs.modelAxis.dispose();
-        this.scene.remove(this.debugRefs.modelAxis);
+        this.modelGroup.remove(this.debugRefs.modelAxis);
         this.debugRefs.modelAxis = null;
     };
 };
