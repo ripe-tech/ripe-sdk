@@ -680,7 +680,7 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
  *
  * @private
  */
- ripe.ConfiguratorCsr.prototype._initDebug = function() {
+ripe.ConfiguratorCsr.prototype._initDebug = function() {
     if (!this.debug) return;
 
     // ensures a clean state
@@ -689,7 +689,9 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
     // inits framerate panel
     if (this.debugOptions.framerate) {
         const renderer = this.element.querySelector(".renderer");
-        if (!renderer) throw new Error("Renderer container not initialized, can't load debug framerate");
+        if (!renderer) {
+            throw new Error("Renderer container not initialized, can't load debug framerate");
+        }
         this.debugRefs.framerate = new window.Stats();
         this.debugRefs.framerate.dom.classList.add("framerate-panel");
         renderer.appendChild(this.debugRefs.framerate.dom);
@@ -715,12 +717,12 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
  *
  * @private
  */
- ripe.ConfiguratorCsr.prototype._deinitDebug = function() {
+ripe.ConfiguratorCsr.prototype._deinitDebug = function() {
     if (this.debugRefs.modelAxis) {
         this.debugRefs.modelAxis.dispose();
         this.modelGroup.remove(this.debugRefs.modelAxis);
         this.debugRefs.modelAxis = null;
-    };
+    }
     if (this.debugRefs.worldAxis) {
         this.debugRefs.worldAxis.dispose();
         this.scene.remove(this.debugRefs.worldAxis);
