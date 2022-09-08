@@ -66,6 +66,13 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.duration = this.options.duration || 500;
+    this.debug = this.options.debug || false;
+    const debugOpts = this.options.debugOptions || {};
+    this.debugOptions = {
+        framerate: debugOpts.framerate !== undefined ? debugOpts.framerate : true,
+        worldAxis: debugOpts.worldAxis !== undefined ? debugOpts.worldAxis : true,
+        modelAxis: debugOpts.modelAxis !== undefined ? debugOpts.modelAxis : true
+    };
     const rendererOpts = this.options.rendererOptions || {};
     this.rendererOptions = {
         outputEncoding:
@@ -165,6 +172,9 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
             ? this.verticalThreshold
             : options.verticalThreshold;
     this.duration = options.duration === undefined ? this.duration : options.duration;
+    this.debug = options.debug === undefined ? this.debug : options.debug;
+    const debugOpts = options.debugOptions || {};
+    this.debugOptions = { ...this.debugOptions, ...debugOpts };
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = { ...this.rendererOptions, ...rendererOpts };
     this.useDracoLoader =
