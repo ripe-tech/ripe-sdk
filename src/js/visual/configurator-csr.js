@@ -118,6 +118,11 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.environmentTexture = null;
     this.modelGroup = null;
     this.mesh = null;
+    this.debugRefs = {
+        worldAxis: null,
+        modelAxis: null
+        // TODO framerate??
+    };
 
     // handlers variables
     this.isMouseDown = false;
@@ -671,6 +676,50 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
 };
 
 /**
+ * Initiates the debug tools.
+ *
+ * @private
+ */
+ ripe.ConfiguratorCsr.prototype._initDebug = function() {
+    if (!this.debug) return;
+    if (!this.scene) throw new Error("Scene not initiated, can't load debug tools");
+
+    // ensures a clean state
+    this._deinitDebug();
+
+    if (this.debugOptions.framerate) {
+        // TODO
+    }
+
+    if (this.debugOptions.worldAxis) {
+        this.debugRefs.worldAxis = new window.THREE.AxesHelper(100);
+        this.scene.add(this.debugRefs.worldAxis);
+    }
+
+    if (this.debugOptions.modelAxis) {
+        // TODO
+    }
+};
+
+/**
+ * Initiates the debug tools.
+ *
+ * @private
+ */
+ ripe.ConfiguratorCsr.prototype._deinitDebug = function() {
+    if (this.debugRefs.worldAxis) {
+        this.debugRefs.worldAxis.dispose();
+        this.scene.remove(this.debugRefs.worldAxis);
+        this.debugRefs.worldAxis = null;
+    }
+    if (this.debugRefs.modelAxis) {
+        this.debugRefs.modelAxis.dispose();
+        this.scene.remove(this.debugRefs.modelAxis);
+        this.debugRefs.modelAxis = null;
+    };
+};
+
+/**
  * Initializes and loads everything needed to run the CSR. This means
  * initializing the renderer, it's camera and it's scene.
  *
@@ -704,6 +753,9 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     this.scene = new window.THREE.Scene();
     await this._loadScene();
 
+    // init debug tools
+    this._initDebug();
+
     this._render();
 };
 
@@ -713,6 +765,8 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
+    this._deinitDebug();
+
     if (this.environmentTexture) {
         this.environmentTexture.dispose();
         this.environmentTexture = null;
