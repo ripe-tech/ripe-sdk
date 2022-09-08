@@ -713,7 +713,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
 };
 
 /**
- * Initiates the debug tools.
+ * Cleanups everything related to the debug tools.
  *
  * @private
  */
