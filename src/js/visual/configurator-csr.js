@@ -686,6 +686,7 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
     // ensures a clean state
     this._deinitDebug();
 
+    // inits framerate panel
     if (this.debugOptions.framerate) {
         const renderer = this.element.querySelector(".renderer");
         if (!renderer) throw new Error("Renderer container not initialized, can't load debug framerate");
@@ -694,12 +695,14 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
         renderer.appendChild(this.debugRefs.framerate.dom);
     }
 
+    // inits world axis
     if (this.debugOptions.worldAxis) {
         if (!this.scene) throw new Error("Scene not initialized, can't load debug axis");
         this.debugRefs.worldAxis = new window.THREE.AxesHelper(100);
         this.scene.add(this.debugRefs.worldAxis);
     }
 
+    // inits model group axis
     if (this.debugOptions.modelAxis) {
         if (!this.modelGroup) throw new Error("Model group not initialized, can't load debug axis");
         this.debugRefs.modelAxis = new window.THREE.AxesHelper(4);
@@ -713,20 +716,20 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
  * @private
  */
  ripe.ConfiguratorCsr.prototype._deinitDebug = function() {
-    if (this.debugRefs.framerate) {
-        this.debugRefs.framerate.dom.remove();
-        this.debugRefs.framerate = null;
-    }
-    if (this.debugRefs.worldAxis) {
-        this.debugRefs.worldAxis.dispose();
-        this.scene.remove(this.debugRefs.worldAxis);
-        this.debugRefs.worldAxis = null;
-    }
     if (this.debugRefs.modelAxis) {
         this.debugRefs.modelAxis.dispose();
         this.modelGroup.remove(this.debugRefs.modelAxis);
         this.debugRefs.modelAxis = null;
     };
+    if (this.debugRefs.worldAxis) {
+        this.debugRefs.worldAxis.dispose();
+        this.scene.remove(this.debugRefs.worldAxis);
+        this.debugRefs.worldAxis = null;
+    }
+    if (this.debugRefs.framerate) {
+        this.debugRefs.framerate.dom.remove();
+        this.debugRefs.framerate = null;
+    }
 };
 
 /**
