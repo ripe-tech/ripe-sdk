@@ -651,18 +651,19 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     );
     this.camera.filmGauge = sideCamera.filmGauge;
     this.camera.position.set(
-        sideCamera.position.x - sideCameraAim.position.x,
-        sideCamera.position.y - sideCameraAim.position.y,
-        sideCamera.position.z - sideCameraAim.position.z
+        sideCamera.position.x, // - sideCameraAim.position.x,
+        sideCamera.position.y, //  - sideCameraAim.position.y,
+        sideCamera.position.z//  - sideCameraAim.position.z
     );
+    this.camera.lookAt(sideCameraAim.position.x, sideCameraAim.position.y, sideCameraAim.position.z);
     // this.camera.rotation.x = sideCamera.rotation.x;
     // this.camera.rotation.y = sideCamera.rotation.y;
     // this.camera.rotation.z = sideCamera.rotation.z;
 
     // loads resources
-    /*
     // const meshPath = "https://www.dl.dropboxusercontent.com/s/45miexcatvx1axq/vyner_mayaScene.fbx";
-    const meshPath = this.owner.getMeshUrl();
+    const meshPath = "https://www.dl.dropboxusercontent.com/s/3h8lv2wegriywmx/vyner.glb";
+    // const meshPath = this.owner.getMeshUrl();
     [this.environmentTexture, this.mesh] = await Promise.all([
          this._loadEnvironment(this.sceneEnvironmentPath),
          this._loadMesh(meshPath)
@@ -671,15 +672,15 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     // sets the scene environment
     this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
     this.scene.environment = this.environmentTexture;
-    */
 
     // inits the scene model group
     this.modelGroup = new window.THREE.Group();
-    this.modelGroup.scale.set(20, 20, 20);
 
     // sets the model mesh
-    // this.modelGroup.add(this.mesh);
+    this.modelGroup.add(this.mesh);
+    this.modelGroup.scale.set(30, 30, 30);
 
+    // mayaScene.scale.set(20, 20, 20);
     this.scene.add(mayaScene);
     this.scene.add(this.modelGroup);
 
