@@ -86,7 +86,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
     const cameraOpts = this.options.cameraOptions || {};
     this.cameraOptions = {
-        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 80,
+        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 24.678,
         filmGauge: cameraOpts.filmGauge !== undefined ? cameraOpts.filmGauge : null,
         aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
         updateAspectOnResize:
@@ -95,7 +95,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
 
         // TODO defaults
-        position: { x: 0, y: 0, z: 200 },
+        position: { x: 0, y: 0, z: 207 },
         rotation: { x: 0, y: 0, z: 0 },
         scale: { x: 1, y: 1, z: 1 },
         lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
@@ -649,10 +649,11 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
     this.clock = new window.THREE.Clock();
 
     // loads maya scene information
-    this.mayaScenePath = "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx";
+    console.log("hmmm aaaaaaaaaaaaa");
+    console.log("before:", JSON.stringify(this.cameraOptions));
+    // this.mayaScenePath = "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx";
     if (this.mayaScenePath) {
         const mayaScene = await this._loadMayaScene(this.mayaScenePath);
-        console.log("before:", JSON.stringify(this.cameraOptions));
         this.cameraOptions = { ...this.cameraOptions, ...mayaScene.camera, lookAt: mayaScene.cameraLookAt };
         console.log("after:", JSON.stringify(this.cameraOptions));
         // TODO model info
