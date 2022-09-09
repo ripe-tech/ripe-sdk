@@ -66,6 +66,13 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.duration = this.options.duration || 500;
+    this.debug = this.options.debug || false;
+    const debugOpts = this.options.debugOptions || {};
+    this.debugOptions = {
+        framerate: debugOpts.framerate !== undefined ? debugOpts.framerate : true,
+        worldAxis: debugOpts.worldAxis !== undefined ? debugOpts.worldAxis : true,
+        modelAxis: debugOpts.modelAxis !== undefined ? debugOpts.modelAxis : true
+    };
     const rendererOpts = this.options.rendererOptions || {};
     this.rendererOptions = {
         outputEncoding:
@@ -117,6 +124,11 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.modelGroup = null;
     this.floor = null;
     this.mesh = null;
+    this.debugRefs = {
+        framerate: null,
+        worldAxis: null,
+        modelAxis: null
+    };
 
     // handlers variables
     this.isMouseDown = false;
@@ -171,6 +183,9 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
             ? this.verticalThreshold
             : options.verticalThreshold;
     this.duration = options.duration === undefined ? this.duration : options.duration;
+    this.debug = options.debug === undefined ? this.debug : options.debug;
+    const debugOpts = options.debugOptions || {};
+    this.debugOptions = { ...this.debugOptions, ...debugOpts };
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = { ...this.rendererOptions, ...rendererOpts };
     this.mayaScenePath = options.mayaScenePath === undefined ? this.mayaScenePath : options.mayaScenePath;
@@ -766,6 +781,65 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
 };
 
 /**
+ * Initiates the debug tools.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._initDebug = function() {
+    if (!this.debug) return;
+
+    // ensures a clean state
+    this._deinitDebug();
+
+    // inits framerate panel
+    if (this.debugOptions.framerate) {
+        const renderer = this.element.querySelector(".renderer");
+        if (!renderer) {
+            throw new Error("Renderer container not initialized, can't load debug framerate");
+        }
+        this.debugRefs.framerate = new window.Stats();
+        this.debugRefs.framerate.dom.classList.add("framerate-panel");
+        renderer.appendChild(this.debugRefs.framerate.dom);
+    }
+
+    // inits world axis
+    if (this.debugOptions.worldAxis) {
+        if (!this.scene) throw new Error("Scene not initialized, can't load debug axis");
+        this.debugRefs.worldAxis = new window.THREE.AxesHelper(100);
+        this.scene.add(this.debugRefs.worldAxis);
+    }
+
+    // inits model group axis
+    if (this.debugOptions.modelAxis) {
+        if (!this.modelGroup) throw new Error("Model group not initialized, can't load debug axis");
+        this.debugRefs.modelAxis = new window.THREE.AxesHelper(4);
+        this.modelGroup.add(this.debugRefs.modelAxis);
+    }
+};
+
+/**
+ * Cleanups everything related to the debug tools.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._deinitDebug = function() {
+    if (this.debugRefs.modelAxis) {
+        this.debugRefs.modelAxis.dispose();
+        this.modelGroup.remove(this.debugRefs.modelAxis);
+        this.debugRefs.modelAxis = null;
+    }
+    if (this.debugRefs.worldAxis) {
+        this.debugRefs.worldAxis.dispose();
+        this.scene.remove(this.debugRefs.worldAxis);
+        this.debugRefs.worldAxis = null;
+    }
+    if (this.debugRefs.framerate) {
+        this.debugRefs.framerate.dom.remove();
+        this.debugRefs.framerate = null;
+    }
+};
+
+/**
  * Initializes and loads everything needed to run the CSR. This means
  * initializing the renderer, it's camera and it's scene.
  *
@@ -795,6 +869,9 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     // init scene
     await this._initScene();
 
+    // init debug tools
+    this._initDebug();
+
     this._render();
 };
 
@@ -804,6 +881,8 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
+    this._deinitDebug();
+
     if (this.environmentTexture) {
         this.environmentTexture.dispose();
         this.environmentTexture = null;
@@ -857,6 +936,11 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
  */
 ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
     if (self.loading) return;
+
+    // processes debug related ticks
+    if (self.debug) {
+        if (self.debugRefs.framerate) self.debugRefs.framerate.update();
+    }
 
     // processes the animation loop tick delta
     const delta = self.clock.getDelta();

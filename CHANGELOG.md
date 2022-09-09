@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `syncFromCSR` method to `ConfiguratorPrc`
 * Add `syncFromPRC` and `prcFrame` methods to `ConfiguratorCsr`
 * Add bilateral synchronization between PRC and CSR configurators in ripe-sdk-demo when changing configurator
+* Add CSR debug support
+* Add CSR framerate, world axis and model axis debug tools
 
 ### Changed
 
