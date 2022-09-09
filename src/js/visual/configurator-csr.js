@@ -685,6 +685,17 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
 };
 
 /**
+ * Sets the camera zoom.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
+    if (!this.camera) throw new Error("Camera not initialized");
+    this.camera.zoom = zoom;
+    this.camera.updateProjectionMatrix();
+};
+
+/**
  * Initiates the debug tools.
  *
  * @private
@@ -944,8 +955,7 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
     zoom = Math.min(Math.max(self.zoomOptions.min, zoom), self.zoomOptions.max);
 
     // updates camera zoom
-    self.camera.zoom = zoom;
-    self.camera.updateProjectionMatrix();
+    self._setZoom(zoom);
 };
 
 /**
