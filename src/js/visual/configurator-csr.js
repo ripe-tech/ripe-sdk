@@ -603,7 +603,7 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
  *
  * @private
  */
- ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "fbx") {
+ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "fbx") {
     const scene = {};
     switch (format) {
         case "fbx": {
@@ -614,12 +614,20 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
             scene.camera = {
                 fov: sideCamera.fov,
                 filmGauge: sideCamera.filmGauge,
-                position: { x: sideCamera.position.x, y: sideCamera.position.y, z: sideCamera.position.z }
+                position: {
+                    x: sideCamera.position.x,
+                    y: sideCamera.position.y,
+                    z: sideCamera.position.z
+                }
             };
 
             // gets information about the side camera aim
             const sideCameraAim = fbxObj.getObjectByName("sideCam_aim");
-            scene.cameraLookAt = { x: sideCameraAim.position.x, y: sideCameraAim.position.y, z: sideCameraAim.position.z };
+            scene.cameraLookAt = {
+                x: sideCameraAim.position.x,
+                y: sideCameraAim.position.y,
+                z: sideCameraAim.position.z
+            };
 
             // gets information about the model
             const model = fbxObj.getObjectByName("vynerShoe");
@@ -661,7 +669,8 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     this.clock = new window.THREE.Clock();
 
     const start = Date.now();
-    const mayaScenePath = "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx?";
+    const mayaScenePath =
+        "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx?";
     const mayaScene = await this._loadMayaScene(mayaScenePath);
     const end = Date.now();
     console.log("maya scene took:", end - start, "ms");
@@ -677,16 +686,24 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
         this.cameraOptions.far
     );
     this.camera.filmGauge = mayaScene.camera.filmGauge;
-    this.camera.position.set(mayaScene.camera.position.x, mayaScene.camera.position.y, mayaScene.camera.position.z);
-    this.camera.lookAt(mayaScene.cameraLookAt.x, mayaScene.cameraLookAt.y, mayaScene.cameraLookAt.z);
+    this.camera.position.set(
+        mayaScene.camera.position.x,
+        mayaScene.camera.position.y,
+        mayaScene.camera.position.z
+    );
+    this.camera.lookAt(
+        mayaScene.cameraLookAt.x,
+        mayaScene.cameraLookAt.y,
+        mayaScene.cameraLookAt.z
+    );
 
     // loads resources
     // const meshPath = "https://www.dl.dropboxusercontent.com/s/45miexcatvx1axq/vyner_mayaScene.fbx";
     const meshPath = "https://www.dl.dropboxusercontent.com/s/3h8lv2wegriywmx/vyner.glb";
     // const meshPath = this.owner.getMeshUrl();
     [this.environmentTexture, this.mesh] = await Promise.all([
-         this._loadEnvironment(this.sceneEnvironmentPath),
-         this._loadMesh(meshPath)
+        this._loadEnvironment(this.sceneEnvironmentPath),
+        this._loadMesh(meshPath)
     ]);
 
     // sets the scene environment
