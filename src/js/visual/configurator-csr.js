@@ -73,6 +73,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
                 ? rendererOpts.outputEncoding
                 : window.THREE.sRGBEncoding
     };
+    this.mayaScenePath = this.options.mayaScenePath || null;
     this.useDracoLoader =
         this.options.useDracoLoader !== undefined ? this.options.useDracoLoader : true;
     this.dracoLoaderDecoderPath =
@@ -86,43 +87,18 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     const cameraOpts = this.options.cameraOptions || {};
     this.cameraOptions = {
         fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 80,
+        filmGauge: cameraOpts.filmGauge !== undefined ? cameraOpts.filmGauge : null,
         aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
         updateAspectOnResize:
             cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
         near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
         far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
-        position: {
-            x: 0,
-            y: 0,
-            z: 200
-        },
-        rotation: {
-            x: 0,
-            y: 0,
-            z: 0
-        },
-        scale: {
-            x: 1,
-            y: 1,
-            z: 1
-        }
-        /*
-        position: {
-            x: 0,
-            y: 48.80,
-            z: 204.23
-        },
-        rotation: {
-            x: -7.907,
-            y: 0,
-            z: 0
-        },
-        scale: {
-            x: 1,
-            y: 1,
-            z: 1
-        }
-        */
+
+        // TODO defaults
+        position: { x: 0, y: 0, z: 200 },
+        rotation: { x: 0, y: 0, z: 0 },
+        scale: { x: 1, y: 1, z: 1 },
+        lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
     };
 
     // general state variables
@@ -197,6 +173,7 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.duration = options.duration === undefined ? this.duration : options.duration;
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = { ...this.rendererOptions, ...rendererOpts };
+    this.mayaScenePath = options.mayaScenePath === undefined ? this.mayaScenePath : options.mayaScenePath;
     this.useDracoLoader =
         options.useDracoLoader === undefined ? this.useDracoLoader : options.useDracoLoader;
     this.dracoLoaderDecoderPath =
@@ -664,46 +641,37 @@ ripe.ConfiguratorCsr.prototype._loadEnvironment = async function(path) {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._loadScene = async function() {
+ripe.ConfiguratorCsr.prototype._initScene = async function() {
+    // creates empty scene
+    this.scene = new window.THREE.Scene();
+
     // inits the scene clock
     this.clock = new window.THREE.Clock();
 
-    const start = Date.now();
-    const mayaScenePath =
-        "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx?";
-    const mayaScene = await this._loadMayaScene(mayaScenePath);
-    const end = Date.now();
-    console.log("maya scene took:", end - start, "ms");
-    console.log("maya scene:", mayaScene);
+    // loads maya scene information
+    this.mayaScenePath = "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx";
+    if (this.mayaScenePath) {
+        const mayaScene = await this._loadMayaScene(this.mayaScenePath);
+        console.log("before:", JSON.stringify(this.cameraOptions));
+        this.cameraOptions = { ...this.cameraOptions, ...mayaScene.camera, lookAt: mayaScene.cameraLookAt };
+        console.log("after:", JSON.stringify(this.cameraOptions));
+        // TODO model info
+    };
 
-    const mayaScenefbx = await this._loadMesh(mayaScenePath, "fbx");
-    this.scene.add(mayaScenefbx);
+    // const mayaScenefbx = await this._loadMesh(this.mayaScenePath, "fbx");
+    // this.scene.add(mayaScenefbx);
 
-    this.camera = new window.THREE.PerspectiveCamera(
-        mayaScene.camera.fov,
-        this.cameraOptions.aspect,
-        this.cameraOptions.near,
-        this.cameraOptions.far
-    );
-    this.camera.filmGauge = mayaScene.camera.filmGauge;
-    this.camera.position.set(
-        mayaScene.camera.position.x,
-        mayaScene.camera.position.y,
-        mayaScene.camera.position.z
-    );
-    this.camera.lookAt(
-        mayaScene.cameraLookAt.x,
-        mayaScene.cameraLookAt.y,
-        mayaScene.cameraLookAt.z
-    );
+    // inits camera thats going to be used to view the scene
+    this._initCamera();
 
-    // loads resources
-    // const meshPath = "https://www.dl.dropboxusercontent.com/s/45miexcatvx1axq/vyner_mayaScene.fbx";
-    const meshPath = "https://www.dl.dropboxusercontent.com/s/3h8lv2wegriywmx/vyner.glb";
+    // loads scene resources
+    const meshPath = "https://www.dl.dropboxusercontent.com/s/45miexcatvx1axq/vyner_mayaScene.fbx";
+    // https://www.dropbox.com/s/g0fni9u6tikurkr/vyner.glb?dl=0
+    // const meshPath = "https://www.dl.dropboxusercontent.com/s/3h8lv2wegriywmx/vyner.glb";
     // const meshPath = this.owner.getMeshUrl();
     [this.environmentTexture, this.mesh] = await Promise.all([
         this._loadEnvironment(this.sceneEnvironmentPath),
-        this._loadMesh(meshPath)
+        this._loadMesh(meshPath, "fbx")
     ]);
 
     // sets the scene environment
@@ -715,7 +683,6 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
 
     // sets the model mesh
     this.modelGroup.add(this.mesh);
-    this.modelGroup.scale.set(30, 30, 30); // TODO remove me
     this.scene.add(this.modelGroup);
 
     // TODO remove this light
@@ -782,6 +749,7 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
         this.cameraOptions.near,
         this.cameraOptions.far
     );
+    if (this.cameraOptions.filmGauge) this.camera.filmGauge = this.cameraOptions.filmGauge;
     this.camera.position.set(
         this.cameraOptions.position.x,
         this.cameraOptions.position.y,
@@ -795,6 +763,8 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
     this.camera.rotation.x = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.x);
     this.camera.rotation.y = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.y);
     this.camera.rotation.z = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.z);
+
+    if (this.cameraOptions.lookAt) this.camera.lookAt(this.cameraOptions.lookAt.x,this.cameraOptions.lookAt.y,this.cameraOptions.lookAt.z);
 };
 
 /**
@@ -824,12 +794,8 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
         this.cameraOptions.aspect = size.width / size.height;
     }
 
-    // init camera
-    this._initCamera();
-
     // init scene
-    this.scene = new window.THREE.Scene();
-    await this._loadScene();
+    await this._initScene();
 
     this._render();
 };
