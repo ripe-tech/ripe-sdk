@@ -660,13 +660,6 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     // inits the scene clock
     this.clock = new window.THREE.Clock();
 
-    // loads floor
-    // const geometry = new window.THREE.PlaneBufferGeometry(92.645, 92.645);
-    // this.floor = new window.THREE.Mesh(geometry, new window.THREE.MeshNormalMaterial());
-    // this.floor.position.set(0, 85.688, 24.593);
-    // this.floor.scale.set(1.246, 1.246, 1.246);
-    // this.scene.add(this.floor);
-
     const start = Date.now();
     const mayaScenePath = "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx?";
     const mayaScene = await this._loadMayaScene(mayaScenePath);
@@ -674,7 +667,9 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     console.log("maya scene took:", end - start, "ms");
     console.log("maya scene:", mayaScene);
 
-    // this.camera = sideCamera;
+    const mayaScenefbx = await this._loadMesh(mayaScenePath, "fbx");
+    this.scene.add(mayaScenefbx);
+
     this.camera = new window.THREE.PerspectiveCamera(
         mayaScene.camera.fov,
         this.cameraOptions.aspect,
@@ -703,14 +698,10 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
 
     // sets the model mesh
     this.modelGroup.add(this.mesh);
-    this.modelGroup.scale.set(30, 30, 30);
-
-    const mayaScenefbx = await this._loadMesh(mayaScenePath, "fbx");
-    this.scene.add(mayaScenefbx);
+    this.modelGroup.scale.set(30, 30, 30); // TODO remove me
     this.scene.add(this.modelGroup);
 
-    // this.scene = mayaScene;
-
+    // TODO remove this light
     const spotLight = new window.THREE.SpotLight(0xffffff);
     spotLight.position.set(100, 1000, 100);
     spotLight.castShadow = true;
@@ -720,9 +711,6 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     spotLight.shadow.camera.far = 4000;
     spotLight.shadow.camera.fov = 30;
     this.scene.add(spotLight);
-
-    const light = new window.THREE.AmbientLight(0x404040);
-    this.scene.add(light);
 };
 
 /**
