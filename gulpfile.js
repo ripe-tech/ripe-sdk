@@ -28,6 +28,7 @@ const paths = {
     polyfill: "node_modules/@babel/polyfill/dist/polyfill.js",
     three: [
         "node_modules/three/build/three.min.js",
+        "node_modules/three/examples/js/libs/stats.min.js",
         "node_modules/three/examples/js/loaders/DRACOLoader.js",
         "node_modules/three/examples/js/loaders/GLTFLoader.js",
         "node_modules/three/examples/js/loaders/RGBELoader.js"
