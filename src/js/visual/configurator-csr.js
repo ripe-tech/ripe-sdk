@@ -924,9 +924,27 @@ ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
 /**
  * @ignore
  */
+ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
+    event.preventDefault();
+    if (!self.modelGroup) return;
+    if (!self.camera) return;
+
+    // calculates zoom value
+    let zoom = self.camera.zoom + event.deltaY * -(1 / 1000);
+    zoom = Math.min(Math.max(0.75, zoom), 1.5);
+
+    // updates camera zoom
+    self.camera.zoom = zoom;
+    self.camera.updateProjectionMatrix();
+};
+
+/**
+ * @ignore
+ */
 ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
     this._addElementHandler("mousedown", event => this._onMouseDown(this, event));
     this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
     this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
     this._addElementHandler("mousemove", event => this._onMouseMove(this, event));
+    this._addElementHandler("wheel", event => this._onWheel(this, event));
 };
