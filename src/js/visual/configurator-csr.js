@@ -102,6 +102,13 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         posY: cameraOpts.posY !== undefined ? cameraOpts.posY : 0,
         posZ: cameraOpts.posZ !== undefined ? cameraOpts.posZ : 6
     };
+    const zoomOpts = this.options.zoomOptions || {};
+    this.zoomOptions = {
+        enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
+        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
+        min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
+        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
+    };
 
     // general state variables
     this.loading = true;
@@ -198,6 +205,8 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
             : options.sceneEnvironmentPath;
     const cameraOpts = options.cameraOptions || {};
     this.cameraOptions = { ...this.cameraOptions, ...cameraOpts };
+    const zoomOpts = options.zoomOptions || {};
+    this.zoomOptions = { ...this.zoomOptions, ...zoomOpts };
 
     if (update) await this.update();
 };
@@ -926,12 +935,13 @@ ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
  */
 ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
     event.preventDefault();
+    if (!self.zoomOptions.enabled) return;
     if (!self.modelGroup) return;
     if (!self.camera) return;
 
     // calculates zoom value
-    let zoom = self.camera.zoom + event.deltaY * -(1 / 1000);
-    zoom = Math.min(Math.max(0.75, zoom), 1.5);
+    let zoom = self.camera.zoom + event.deltaY * -(self.zoomOptions.sensitivity / 1000);
+    zoom = Math.min(Math.max(self.zoomOptions.min, zoom), self.zoomOptions.max);
 
     // updates camera zoom
     self.camera.zoom = zoom;
