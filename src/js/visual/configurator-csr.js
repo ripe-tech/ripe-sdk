@@ -596,6 +596,46 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
 };
 
 /**
+ * Loads a Maya exported fbx scene.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @returns {Object} Information about the scene.
+ *
+ * @private
+ */
+ ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "fbx") {
+    const scene = {};
+    switch (format) {
+        case "fbx": {
+            const fbxObj = await this._loadMeshFBX(path);
+
+            // gets information about the side camera
+            const sideCamera = fbxObj.getObjectByName("sideCam");
+            scene.camera = {
+                fov: sideCamera.fov,
+                filmGauge: sideCamera.filmGauge,
+                position: { x: sideCamera.position.x, y: sideCamera.position.y, z: sideCamera.position.z }
+            };
+
+            // gets information about the side camera aim
+            const sideCameraAim = fbxObj.getObjectByName("sideCam_aim");
+            scene.cameraLookAt = { x: sideCameraAim.position.x, y: sideCameraAim.position.y, z: sideCameraAim.position.z };
+
+            // gets information about the model
+            const model = fbxObj.getObjectByName("vynerShoe");
+            scene.model = {
+                position: { x: model.position.x, y: model.position.y, z: model.position.z }
+            };
+            break;
+        }
+        default:
+            throw new Error(`Can't load 3D model, format "${format}" is not supported`);
+    }
+
+    return scene;
+};
+
+/**
  * Loads a environment file, which are normally hdr files.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
@@ -629,36 +669,21 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
 
     const start = Date.now();
     const mayaScenePath = "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx?";
-    const mayaScene = await this._loadMesh(mayaScenePath, "fbx");
+    const mayaScene = await this._loadMayaScene(mayaScenePath);
     const end = Date.now();
     console.log("maya scene took:", end - start, "ms");
     console.log("maya scene:", mayaScene);
 
-    const shoe = mayaScene.children.find(obj => obj.name === "vynerShoe");
-    console.log("shoeee", shoe);
-
-    const sideCamera = mayaScene.getObjectByName("sideCam");
-    const sideCameraAim = mayaScene.getObjectByName("sideCam_aim");
-    console.log("sideCamera:", sideCamera);
-    console.log("sideCameraAim:", sideCameraAim);
-
     // this.camera = sideCamera;
     this.camera = new window.THREE.PerspectiveCamera(
-        sideCamera.fov,
-        sideCamera.aspect,
+        mayaScene.camera.fov,
+        this.cameraOptions.aspect,
         this.cameraOptions.near,
         this.cameraOptions.far
     );
-    this.camera.filmGauge = sideCamera.filmGauge;
-    this.camera.position.set(
-        sideCamera.position.x, // - sideCameraAim.position.x,
-        sideCamera.position.y, //  - sideCameraAim.position.y,
-        sideCamera.position.z//  - sideCameraAim.position.z
-    );
-    this.camera.lookAt(sideCameraAim.position.x, sideCameraAim.position.y, sideCameraAim.position.z);
-    // this.camera.rotation.x = sideCamera.rotation.x;
-    // this.camera.rotation.y = sideCamera.rotation.y;
-    // this.camera.rotation.z = sideCamera.rotation.z;
+    this.camera.filmGauge = mayaScene.camera.filmGauge;
+    this.camera.position.set(mayaScene.camera.position.x, mayaScene.camera.position.y, mayaScene.camera.position.z);
+    this.camera.lookAt(mayaScene.cameraLookAt.x, mayaScene.cameraLookAt.y, mayaScene.cameraLookAt.z);
 
     // loads resources
     // const meshPath = "https://www.dl.dropboxusercontent.com/s/45miexcatvx1axq/vyner_mayaScene.fbx";
@@ -680,8 +705,8 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     this.modelGroup.add(this.mesh);
     this.modelGroup.scale.set(30, 30, 30);
 
-    // mayaScene.scale.set(20, 20, 20);
-    this.scene.add(mayaScene);
+    const mayaScenefbx = await this._loadMesh(mayaScenePath, "fbx");
+    this.scene.add(mayaScenefbx);
     this.scene.add(this.modelGroup);
 
     // this.scene = mayaScene;
