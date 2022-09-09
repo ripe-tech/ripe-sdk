@@ -649,13 +649,10 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
     this.clock = new window.THREE.Clock();
 
     // loads maya scene information
-    console.log("hmmm aaaaaaaaaaaaa");
-    console.log("before:", JSON.stringify(this.cameraOptions));
     // this.mayaScenePath = "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx";
     if (this.mayaScenePath) {
         const mayaScene = await this._loadMayaScene(this.mayaScenePath);
         this.cameraOptions = { ...this.cameraOptions, ...mayaScene.camera, lookAt: mayaScene.cameraLookAt };
-        console.log("after:", JSON.stringify(this.cameraOptions));
         // TODO model info
     };
 
