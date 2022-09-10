@@ -685,7 +685,8 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
 };
 
 /**
- * Sets the camera zoom.
+ * Sets the camera zoom, will trigger the update of the
+ * projection matrix in conformance.
  *
  * @private
  */
@@ -954,7 +955,8 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
     let zoom = self.camera.zoom + event.deltaY * -(self.zoomOptions.sensitivity / 1000);
     zoom = Math.min(Math.max(self.zoomOptions.min, zoom), self.zoomOptions.max);
 
-    // updates camera zoom
+    // updates camera zoom, this will trigger
+    // the update of the projection matrix
     self._setZoom(zoom);
 };
 
