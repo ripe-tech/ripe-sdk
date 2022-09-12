@@ -127,7 +127,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.scene = null;
     this.environmentTexture = null;
     this.modelGroup = null;
-    this.floor = null;
     this.mesh = null;
     this.debugRefs = {
         framerate: null,
