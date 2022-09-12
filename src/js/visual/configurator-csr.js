@@ -648,7 +648,7 @@ ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "f
             }
             break;
         default:
-            throw new Error(`Can't load 3D model, format "${format}" is not supported`);
+            throw new Error(`Can't load Maya scene, format "${format}" is not supported`);
     }
 
     return scene;
