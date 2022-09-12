@@ -570,6 +570,15 @@ ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
     });
 };
 
+/**
+ * Loads a FBX file.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @param {String} format Mesh file format.
+ * @returns {THREE.Mesh} The loaded model.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._loadMeshFBX = async function(path) {
     const loader = new window.THREE.FBXLoader();
     return new Promise((resolve, reject) => {
@@ -632,13 +641,14 @@ ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "f
             };
             break;
         }
-        case "json": {
-            const response = await fetch(path);
-            const data = await response.json();
-            scene.camera = data.camera;
-            scene.cameraLookAt = data.cameraLookAt;
-        }
-        break;
+        case "json":
+            {
+                const response = await fetch(path);
+                const data = await response.json();
+                scene.camera = data.camera;
+                scene.cameraLookAt = data.cameraLookAt;
+            }
+            break;
         default:
             throw new Error(`Can't load 3D model, format "${format}" is not supported`);
     }
