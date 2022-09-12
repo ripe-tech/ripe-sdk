@@ -629,12 +629,6 @@ ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "f
                 y: sideCameraAim.position.y,
                 z: sideCameraAim.position.z
             };
-
-            // gets information about the model
-            const model = fbxObj.getObjectByName("vynerShoe");
-            scene.model = {
-                position: { x: model.position.x, y: model.position.y, z: model.position.z }
-            };
             break;
         }
         default:
@@ -677,7 +671,6 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
     if (this.mayaScenePath) {
         const mayaScene = await this._loadMayaScene(this.mayaScenePath);
         this.cameraOptions = { ...this.cameraOptions, ...mayaScene.camera, lookAt: mayaScene.cameraLookAt };
-        // TODO model info
     };
 
     // const mayaScenefbx = await this._loadMesh(this.mayaScenePath, "fbx");
