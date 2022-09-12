@@ -11,17 +11,14 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.CsrTextureRenderer = function() {
-    const rendererOptions = {}; // TODO
-    this.width = 100; // TODO
-    this.height = 100; // TODO
+ripe.CsrTextureRenderer = function(width, height, pixelRatio, rendererOptions) {
+    this.width = width;
+    this.height = height;
     this.renderer = null;
     this.rendererTarget = null;
     this.scene = null;
     this.camera = null;
     this.plane = null;
-
-    const pixelRatio = window.devicePixelRatio; // TODO
 
     // creates the renderer that is used to extract pixels data
     this.renderer = new window.THREE.WebGLRenderer({ antialias: true, ...rendererOptions });
