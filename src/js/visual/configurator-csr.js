@@ -195,7 +195,8 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.debugOptions = { ...this.debugOptions, ...debugOpts };
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = { ...this.rendererOptions, ...rendererOpts };
-    this.mayaScenePath = options.mayaScenePath === undefined ? this.mayaScenePath : options.mayaScenePath;
+    this.mayaScenePath =
+        options.mayaScenePath === undefined ? this.mayaScenePath : options.mayaScenePath;
     this.useDracoLoader =
         options.useDracoLoader === undefined ? this.useDracoLoader : options.useDracoLoader;
     this.dracoLoaderDecoderPath =
@@ -670,8 +671,12 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
     // this.mayaScenePath = "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx";
     if (this.mayaScenePath) {
         const mayaScene = await this._loadMayaScene(this.mayaScenePath);
-        this.cameraOptions = { ...this.cameraOptions, ...mayaScene.camera, lookAt: mayaScene.cameraLookAt };
-    };
+        this.cameraOptions = {
+            ...this.cameraOptions,
+            ...mayaScene.camera,
+            lookAt: mayaScene.cameraLookAt
+        };
+    }
 
     // const mayaScenefbx = await this._loadMesh(this.mayaScenePath, "fbx");
     // this.scene.add(mayaScenefbx);
@@ -779,7 +784,13 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
     this.camera.rotation.y = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.y);
     this.camera.rotation.z = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.z);
 
-    if (this.cameraOptions.lookAt) this.camera.lookAt(this.cameraOptions.lookAt.x,this.cameraOptions.lookAt.y,this.cameraOptions.lookAt.z);
+    if (this.cameraOptions.lookAt) {
+        this.camera.lookAt(
+            this.cameraOptions.lookAt.x,
+            this.cameraOptions.lookAt.y,
+            this.cameraOptions.lookAt.z
+        );
+    }
 };
 
 /**
