@@ -632,6 +632,13 @@ ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "f
             };
             break;
         }
+        case "json": {
+            const response = await fetch(path);
+            const data = await response.json();
+            scene.camera = data.camera;
+            scene.cameraLookAt = data.cameraLookAt;
+        }
+        break;
         default:
             throw new Error(`Can't load 3D model, format "${format}" is not supported`);
     }
