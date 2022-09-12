@@ -619,23 +619,27 @@ ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "f
 
             // gets information about the side camera
             const sideCamera = fbxObj.getObjectByName("sideCam");
-            scene.camera = {
-                fov: sideCamera.fov,
-                filmGauge: sideCamera.filmGauge,
-                position: {
-                    x: sideCamera.position.x,
-                    y: sideCamera.position.y,
-                    z: sideCamera.position.z
-                }
-            };
+            if (sideCamera) {
+                scene.camera = {
+                    fov: sideCamera.fov,
+                    filmGauge: sideCamera.filmGauge,
+                    position: {
+                        x: sideCamera.position.x,
+                        y: sideCamera.position.y,
+                        z: sideCamera.position.z
+                    }
+                };
+            }
 
             // gets information about the side camera aim
             const sideCameraAim = fbxObj.getObjectByName("sideCam_aim");
-            scene.cameraLookAt = {
-                x: sideCameraAim.position.x,
-                y: sideCameraAim.position.y,
-                z: sideCameraAim.position.z
-            };
+            if (sideCameraAim) {
+                scene.cameraLookAt = {
+                    x: sideCameraAim.position.x,
+                    y: sideCameraAim.position.y,
+                    z: sideCameraAim.position.z
+                };
+            }
             break;
         }
         case "json":
