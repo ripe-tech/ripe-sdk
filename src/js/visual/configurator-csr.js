@@ -612,7 +612,10 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
  * @private
  */
 ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "fbx") {
-    const scene = {};
+    const scene = {
+        camera: {},
+        cameraLookAt: {}
+    };
     switch (format) {
         case "fbx": {
             const fbxObj = await this._loadMeshFBX(path);
