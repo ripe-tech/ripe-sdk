@@ -711,6 +711,8 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
 
     // sets the model mesh
     this.modelGroup.add(this.mesh);
+
+    // adds model group to the scene
     this.scene.add(this.modelGroup);
 };
 
