@@ -100,8 +100,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
             cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
         near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
         far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
-
-        // TODO defaults
         position: { x: 0, y: 0, z: 207 },
         rotation: { x: 0, y: 0, z: 0 },
         scale: { x: 1, y: 1, z: 1 },
