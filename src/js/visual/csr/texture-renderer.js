@@ -19,7 +19,6 @@ ripe.CsrTextureRenderer = function() {
     this.rendererTarget = null;
     this.scene = null;
     this.camera = null;
-    this.material = null;
     this.plane = null;
 
     const pixelRatio = window.devicePixelRatio; // TODO
@@ -40,8 +39,7 @@ ripe.CsrTextureRenderer = function() {
         10
     );
     const geometry = new window.THREE.PlaneBufferGeometry(this.width, this.height);
-    this.material = new window.THREE.MeshBasicMaterial({ color: 0xff00ff });
-    this.plane = new window.THREE.Mesh(geometry, this.material);
+    this.plane = new window.THREE.Mesh(geometry);
     this.scene.add(this.plane);
 
     // creates and sets the renderer target
@@ -51,7 +49,25 @@ ripe.CsrTextureRenderer = function() {
 ripe.CsrTextureRenderer.prototype.constructor = ripe.CsrTextureRenderer;
 
 ripe.CsrTextureRenderer.prototype.destroy = function() {
-    // TODO
+    if (this.plane) {
+        if (this.plane.geometry) this.plane.geometry.dispose();
+        this.scene.remove(this.plane);
+        this.plane = null;
+    }
+
+    if (this.camera) this.camera = null;
+
+    if (this.scene) this.scene = null;
+
+    if (this.rendererTarget) {
+        this.rendererTarget.dispose();
+        this.rendererTarget = null;
+    }
+
+    if (this.renderer) {
+        this.renderer.dispose();
+        this.renderer = null;
+    }
 };
 
 /**
@@ -61,8 +77,6 @@ ripe.CsrTextureRenderer.prototype.destroy = function() {
  * @returns {THREE.Texture} Texture with the rendered result.
  */
 ripe.CsrTextureRenderer.prototype.textureFromMaterial = function(material) {
-    console.log("yyy", this.renderer);
-
     // render the material to the scene plane
     this.plane.material = material;
     this.renderer.clear();
