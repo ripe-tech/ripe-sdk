@@ -11,7 +11,7 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.CsrInitialsRenderer = function() {
+ripe.CsrTextureRenderer = function() {
     const rendererOptions = {}; // TODO
     this.width = 100; // TODO
     this.height = 100; // TODO
@@ -48,9 +48,9 @@ ripe.CsrInitialsRenderer = function() {
     this.rendererTarget = new window.THREE.WebGLRenderTarget(this.width, this.height);
     this.renderer.setRenderTarget(this.rendererTarget);
 };
-ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
+ripe.CsrTextureRenderer.prototype.constructor = ripe.CsrTextureRenderer;
 
-ripe.CsrInitialsRenderer.prototype.destroy = function() {
+ripe.CsrTextureRenderer.prototype.destroy = function() {
     // TODO
 };
 
@@ -60,7 +60,7 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
  * @param {THREE.Material} material Material that is used in the render pass.
  * @returns {THREE.Texture} Texture with the rendered result.
  */
-ripe.CsrInitialsRenderer.prototype.textureFromMaterial = function(material) {
+ripe.CsrTextureRenderer.prototype.textureFromMaterial = function(material) {
     console.log("yyy", this.renderer);
 
     // render the material to the scene plane
