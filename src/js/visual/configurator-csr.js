@@ -675,7 +675,6 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
     this.clock = new window.THREE.Clock();
 
     // loads maya scene information
-    // this.mayaScenePath = "https://www.dl.dropboxusercontent.com/s/8sr1hvniegd8t8p/vyner_mayaScene_all.fbx";
     if (this.mayaScenePath) {
         const mayaScene = await this._loadMayaScene(this.mayaScenePath);
         this.cameraOptions = {
@@ -685,20 +684,14 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
         };
     }
 
-    // const mayaScenefbx = await this._loadMesh(this.mayaScenePath, "fbx");
-    // this.scene.add(mayaScenefbx);
-
     // inits camera thats going to be used to view the scene
     this._initCamera();
 
     // loads scene resources
-    const meshPath = "https://www.dl.dropboxusercontent.com/s/45miexcatvx1axq/vyner_mayaScene.fbx";
-    // https://www.dropbox.com/s/g0fni9u6tikurkr/vyner.glb?dl=0
-    // const meshPath = "https://www.dl.dropboxusercontent.com/s/3h8lv2wegriywmx/vyner.glb";
-    // const meshPath = this.owner.getMeshUrl();
+    const meshPath = this.owner.getMeshUrl();
     [this.environmentTexture, this.mesh] = await Promise.all([
         this._loadEnvironment(this.sceneEnvironmentPath),
-        this._loadMesh(meshPath, "fbx")
+        this._loadMesh(meshPath)
     ]);
 
     // sets the scene environment
@@ -711,17 +704,6 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
     // sets the model mesh
     this.modelGroup.add(this.mesh);
     this.scene.add(this.modelGroup);
-
-    // TODO remove this light
-    const spotLight = new window.THREE.SpotLight(0xffffff);
-    spotLight.position.set(100, 1000, 100);
-    spotLight.castShadow = true;
-    spotLight.shadow.mapSize.width = 1024;
-    spotLight.shadow.mapSize.height = 1024;
-    spotLight.shadow.camera.near = 500;
-    spotLight.shadow.camera.far = 4000;
-    spotLight.shadow.camera.fov = 30;
-    this.scene.add(spotLight);
 };
 
 /**
