@@ -107,6 +107,13 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         scale: { x: 1, y: 1, z: 1 },
         lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
     };
+    const zoomOpts = this.options.zoomOptions || {};
+    this.zoomOptions = {
+        enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
+        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
+        min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
+        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
+    };
 
     // general state variables
     this.loading = true;
@@ -205,6 +212,8 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
             : options.sceneEnvironmentPath;
     const cameraOpts = options.cameraOptions || {};
     this.cameraOptions = { ...this.cameraOptions, ...cameraOpts };
+    const zoomOpts = options.zoomOptions || {};
+    this.zoomOptions = { ...this.zoomOptions, ...zoomOpts };
 
     if (update) await this.update();
 };
@@ -781,6 +790,18 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
 };
 
 /**
+ * Sets the camera zoom, will trigger the update of the
+ * projection matrix in conformance.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
+    if (!this.camera) throw new Error("Camera not initialized");
+    this.camera.zoom = zoom;
+    this.camera.updateProjectionMatrix();
+};
+
+/**
  * Initiates the debug tools.
  *
  * @private
@@ -1025,9 +1046,28 @@ ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
 /**
  * @ignore
  */
+ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
+    event.preventDefault();
+    if (!self.zoomOptions.enabled) return;
+    if (!self.modelGroup) return;
+    if (!self.camera) return;
+
+    // calculates zoom value
+    let zoom = self.camera.zoom + event.deltaY * -(self.zoomOptions.sensitivity / 1000);
+    zoom = Math.min(Math.max(self.zoomOptions.min, zoom), self.zoomOptions.max);
+
+    // updates camera zoom, this will trigger
+    // the update of the projection matrix
+    self._setZoom(zoom);
+};
+
+/**
+ * @ignore
+ */
 ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
     this._addElementHandler("mousedown", event => this._onMouseDown(this, event));
     this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
     this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
     this._addElementHandler("mousemove", event => this._onMouseMove(this, event));
+    this._addElementHandler("wheel", event => this._onWheel(this, event));
 };
