@@ -100,7 +100,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
         posX: cameraOpts.posX !== undefined ? cameraOpts.posX : 0,
         posY: cameraOpts.posY !== undefined ? cameraOpts.posY : 0,
-        posZ: cameraOpts.posZ !== undefined ? cameraOpts.posZ : 6
+        posZ: cameraOpts.posZ !== undefined ? cameraOpts.posZ : 207
     };
     const zoomOpts = this.options.zoomOptions || {};
     this.zoomOptions = {
@@ -661,12 +661,17 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
     const renderer = ripe.createElement("div", "renderer");
     this.element.appendChild(renderer);
 
-    // creates the initials canvas and adds it to the element
+    // creates the initials container and its canvas
+    const initialsContainer = ripe.createElement("div", "initials-container");
     const initialsCanvas = ripe.createElement("canvas", "canvas");
     const initialsDisplacementCanvas = ripe.createElement("canvas", "displacement");
-    const initialsContainer = ripe.createElement("div", "initials-container");
     initialsContainer.appendChild(initialsCanvas);
     initialsContainer.appendChild(initialsDisplacementCanvas);
+
+    // hides the initials container
+    initialsContainer.style.display = "none";
+
+    // adds the initials container to the element
     this.element.appendChild(initialsContainer);
 
     // register for all the necessary DOM events
