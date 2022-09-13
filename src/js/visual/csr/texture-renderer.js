@@ -11,7 +11,16 @@ if (
     var ripe = base.ripe;
 }
 
-ripe.CsrTextureRenderer = function(width, height, pixelRatio, rendererOptions) {
+ripe.CsrTextureRenderer = function(
+    width = null,
+    height = null,
+    pixelRatio = null,
+    rendererOptions = {}
+) {
+    if (width === null) throw new Error("width is required");
+    if (height === null) throw new Error("height is required");
+    if (pixelRatio === null) throw new Error("pixelRatio is required");
+
     this.width = width;
     this.height = height;
     this.renderer = null;
@@ -45,6 +54,9 @@ ripe.CsrTextureRenderer = function(width, height, pixelRatio, rendererOptions) {
 };
 ripe.CsrTextureRenderer.prototype.constructor = ripe.CsrTextureRenderer;
 
+/**
+ * Cleanups the `CsrTextureRenderer` instance thus avoiding memory leak issues.
+ */
 ripe.CsrTextureRenderer.prototype.destroy = function() {
     if (this.plane) {
         if (this.plane.geometry) this.plane.geometry.dispose();
