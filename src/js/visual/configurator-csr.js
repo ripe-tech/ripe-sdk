@@ -815,18 +815,14 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     const initialsRenderer = new ripe.CsrInitialsRenderer(
         initialsCanvas,
         initialsDisplacementCanvas,
-        100,
-        100
+        1000,
+        1000
     );
-    const texture = initialsRenderer._textToTexture("example test");
 
-    const geometry = new window.THREE.PlaneGeometry(100, 100, 1, 1);
-    const material = new window.THREE.MeshStandardMaterial({
-        transparent: false,
-        map: texture
-    });
-    const plane = new window.THREE.Mesh(geometry, material);
-    this.scene.add(plane);
+    const mesh = initialsRenderer.getMesh();
+    mesh.scale.set(0.1, 0.1, 0.1);
+
+    this.scene.add(mesh);
 };
 
 /**
