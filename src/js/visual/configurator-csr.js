@@ -801,6 +801,27 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     this._initDebug();
 
     this._render();
+
+    // TODO delete these tests
+    const initialsContainer = this.element.querySelector(".initials-container");
+    const initialsCanvas = initialsContainer.querySelector(".canvas");
+    const initialsDisplacementCanvas = initialsContainer.querySelector(".displacement");
+
+    const initialsRenderer = new ripe.CsrInitialsRenderer(
+        initialsCanvas,
+        initialsDisplacementCanvas,
+        100,
+        100
+    );
+    const texture = initialsRenderer._textToTexture("example test");
+
+    const geometry = new window.THREE.PlaneGeometry(100, 100, 1, 1);
+    const material = new window.THREE.MeshStandardMaterial({
+        transparent: false,
+        map: texture
+    });
+    const plane = new window.THREE.Mesh(geometry, material);
+    this.scene.add(plane);
 };
 
 /**
