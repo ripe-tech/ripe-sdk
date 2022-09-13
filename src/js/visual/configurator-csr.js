@@ -661,6 +661,14 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
     const renderer = ripe.createElement("div", "renderer");
     this.element.appendChild(renderer);
 
+    // creates the initials canvas and adds it to the element
+    const initialsCanvas = ripe.createElement("canvas", "canvas");
+    const initialsDisplacementCanvas = ripe.createElement("canvas", "displacement");
+    const initialsContainer = ripe.createElement("div", "initials-container");
+    initialsContainer.appendChild(initialsCanvas);
+    initialsContainer.appendChild(initialsDisplacementCanvas);
+    this.element.appendChild(initialsContainer);
+
     // register for all the necessary DOM events
     this._registerHandlers();
 };
