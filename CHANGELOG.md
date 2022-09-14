@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `dku` to request options for import order
 * Add `contents` to params of import order only if filled with some value
 * Fix `ConfiguratorCsr` sizes and `resize()` logic
+* Fix CSR configurator no being hidden at the demo start
 
 ## [2.31.2] - 2022-06-08
 
