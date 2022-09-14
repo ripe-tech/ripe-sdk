@@ -842,7 +842,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
     // inits model group axis
     if (this.debugOptions.modelAxis) {
         if (!this.modelGroup) throw new Error("Model group not initialized, can't load debug axis");
-        this.debugRefs.modelAxis = new window.THREE.AxesHelper(4);
+        this.debugRefs.modelAxis = new window.THREE.AxesHelper(50);
         this.modelGroup.add(this.debugRefs.modelAxis);
     }
 };
