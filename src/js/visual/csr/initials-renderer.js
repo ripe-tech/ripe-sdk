@@ -198,7 +198,7 @@ ripe.CsrInitialsRenderer.prototype._textToTexture = function(text) {
     ctx.fillText(text, posX + xOffset, posY + yOffset);
 
     // creates texture from canvas
-    const texture = new window.THREE.CanvasTexture(this.canvasDisplacement1);
+    const texture = new window.THREE.CanvasTexture(this.canvasDisplacement);
 
     return texture;
 };
