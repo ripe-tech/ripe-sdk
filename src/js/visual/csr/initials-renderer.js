@@ -11,6 +11,22 @@ if (
     var ripe = base.ripe;
 }
 
+const DEFAULT_TEXTURE_SETTINGS = {
+    wrapS: window.THREE.RepeatWrapping,
+    wrapT: window.THREE.RepeatWrapping,
+    offset: new window.THREE.Vector2(0, 0),
+    repeat: new window.THREE.Vector2(1, 1),
+    rotation: 0,
+    center: new window.THREE.Vector2(0, 0),
+    encoding: window.THREE.sRGBEncoding
+};
+
+const PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
+const DISPLACEMENT_PATTERN_URL =
+    "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
+
+const TEXT = "example";
+
 /**
  * This class encapsulates all logic related to the CSR initials. It provides tools to process and get
  * CSR initials related resources such as textures, materials and 3D objects that can be used to
@@ -37,8 +53,14 @@ ripe.CsrInitialsRenderer = function(
     this.width = width;
     this.height = width;
 
-    this.mesh = null;
+    // TODO pixel ratio
+    this.textureRenderer = new ripe.CsrTextureRenderer(width, height, 1);
 
+    this.mesh = null;
+    this.baseTexture = null;
+    this.baseTextureOptions = DEFAULT_TEXTURE_SETTINGS;
+
+    // TODO set size method
     this.canvas.width = width;
     this.canvas.height = height;
     this.canvasDisplacement.width = width;
@@ -52,9 +74,15 @@ ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
  * Cleanups the `CsrInitialsRenderer` instance thus avoiding memory leak issues.
  */
 ripe.CsrInitialsRenderer.prototype.destroy = function() {
+    this.textureRenderer.destroy();
     // TODO complete this
 
     this._destroyMesh();
+};
+
+ripe.CsrInitialsRenderer.prototype.setBaseTexture = async function(path, options = {}) {
+    this.baseTextureOptions = { ...options };
+    await this._buildBaseTexture(path);
 };
 
 /**
@@ -62,14 +90,15 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
  *
  * @returns {THREE.Object3D} Mesh that will have the initials text.
  */
-ripe.CsrInitialsRenderer.prototype.getMesh = function() {
+ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
     // ensure mesh exists
     if (!this.mesh) this._buildInitialsMesh();
 
     // TODO improve updates
     // rebuilds the text texture
-    const texture = this._textToTexture("mesh test"); // TODO merge pattern with texture
-    this.mesh.material.map = texture;
+    // const texture = this._textToTexture("mesh test"); // TODO merge pattern with texture
+    await this._buildBaseTexture();
+    this.mesh.material.map = this.baseTexture;
 
     // rebuilds the text displacement texture
     const displacementTexture = this._textToDisplacementTexture("mesh test"); // TODO merge pattern with texture
@@ -122,6 +151,96 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
     this.mesh = new window.THREE.Mesh(geometry, material);
 };
 
+ripe.CsrInitialsRenderer.prototype._preCookTexture = function(
+    texture,
+    options,
+    transparent = true
+) {
+    texture = ripe.CsrUtils.applyOptions(texture, options);
+
+    // TODO hande disposal of material
+    const material = new window.THREE.MeshBasicMaterial({
+        transparent: transparent,
+        map: texture
+    });
+    const updatedTexture = this.textureRenderer.textureFromMaterial(material);
+    return updatedTexture;
+};
+
+ripe.CsrInitialsRenderer.prototype.mixPatternWithTexture = function(
+    patternTexture,
+    texture,
+    patternOpts = null,
+    textureOpts = null
+) {
+    // reloads texture with applied options
+    texture = textureOpts ? this._preCookTexture(texture, textureOpts) : texture;
+    patternTexture = patternOpts
+        ? this._preCookTexture(patternTexture, patternOpts)
+        : patternTexture;
+
+    // create material that mixes textures
+    const material = new window.THREE.ShaderMaterial({
+        uniforms: window.THREE.UniformsUtils.merge([
+            {
+                baseTexture: {
+                    type: "t",
+                    value: texture
+                },
+                patternTexture: {
+                    type: "t",
+                    value: patternTexture
+                }
+            }
+        ]),
+        vertexShader: `
+                    precision highp float;
+                    precision highp int;
+
+                    varying vec2 vUv;
+
+                    void main() {
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                    }
+                `,
+        fragmentShader: `
+                    precision mediump float;
+                    uniform sampler2D baseTexture;
+                    uniform sampler2D patternTexture;
+                    varying vec2 vUv;
+
+                    void main() {
+                        vec4 t1 = texture2D( patternTexture, vUv );
+                        vec4 t2 = texture2D( baseTexture, vUv );
+                        gl_FragColor = vec4(mix(t2.rgb, t1.rgb, t2.a), t2.a);
+                    }
+                `
+    });
+
+    return this.textureRenderer.textureFromMaterial(material);
+};
+
+ripe.CsrInitialsRenderer.prototype._buildBaseTexture = async function(path) {
+    const textTexture = this._textToTexture(TEXT);
+
+    const patternTexture = await ripe.CsrUtils.loadTexture(PATTERN_URL);
+    patternTexture.wrapS = this.baseTextureOptions.wrapS;
+    patternTexture.wrapT = this.baseTextureOptions.wrapT;
+    patternTexture.offset = this.baseTextureOptions.offset;
+    patternTexture.repeat = this.baseTextureOptions.repeat;
+    patternTexture.rotation = this.baseTextureOptions.rotation;
+    patternTexture.center = this.baseTextureOptions.center;
+    patternTexture.encoding = this.baseTextureOptions.encoding;
+
+    const textTextureWithPattern = this.mixPatternWithTexture(
+        patternTexture,
+        textTexture,
+        this.baseTextureOptions
+    );
+    this.baseTexture = textTextureWithPattern;
+};
+
 /**
  * Transforms a string into a texture.
  *
@@ -170,7 +289,7 @@ ripe.CsrInitialsRenderer.prototype._textToTexture = function(text) {
  * @param {String} text Text to be transformed into a texture.
  * @returns {THREE.Texture} Texture with the initials text.
  */
- ripe.CsrInitialsRenderer.prototype._textToDisplacementTexture = function(text) {
+ripe.CsrInitialsRenderer.prototype._textToDisplacementTexture = function(text) {
     const ctx = this.canvasDisplacement.getContext("2d");
 
     // cleans canvas with black color
