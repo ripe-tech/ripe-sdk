@@ -80,6 +80,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
                 ? rendererOpts.outputEncoding
                 : window.THREE.sRGBEncoding
     };
+    this.mayaScenePath = this.options.mayaScenePath || null;
     this.useDracoLoader =
         this.options.useDracoLoader !== undefined ? this.options.useDracoLoader : true;
     this.dracoLoaderDecoderPath =
@@ -92,15 +93,17 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
     const cameraOpts = this.options.cameraOptions || {};
     this.cameraOptions = {
-        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 45,
+        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 24.678,
+        filmGauge: cameraOpts.filmGauge !== undefined ? cameraOpts.filmGauge : null,
         aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
         updateAspectOnResize:
             cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
         near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
         far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
-        posX: cameraOpts.posX !== undefined ? cameraOpts.posX : 0,
-        posY: cameraOpts.posY !== undefined ? cameraOpts.posY : 0,
-        posZ: cameraOpts.posZ !== undefined ? cameraOpts.posZ : 207
+        position: { x: 0, y: 0, z: 207 },
+        rotation: { x: 0, y: 0, z: 0 },
+        scale: { x: 1, y: 1, z: 1 },
+        lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
     };
     const zoomOpts = this.options.zoomOptions || {};
     this.zoomOptions = {
@@ -189,6 +192,8 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.debugOptions = { ...this.debugOptions, ...debugOpts };
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = { ...this.rendererOptions, ...rendererOpts };
+    this.mayaScenePath =
+        options.mayaScenePath === undefined ? this.mayaScenePath : options.mayaScenePath;
     this.useDracoLoader =
         options.useDracoLoader === undefined ? this.useDracoLoader : options.useDracoLoader;
     this.dracoLoaderDecoderPath =
@@ -563,6 +568,22 @@ ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
 };
 
 /**
+ * Loads a FBX file.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @param {String} format Mesh file format.
+ * @returns {THREE.Mesh} The loaded model.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._loadMeshFBX = async function(path) {
+    const loader = new window.THREE.FBXLoader();
+    return new Promise((resolve, reject) => {
+        loader.load(path, obj => resolve(obj));
+    });
+};
+
+/**
  * Loads a mesh.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
@@ -575,9 +596,68 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
     switch (format) {
         case "gltf":
             return await this._loadMeshGLTF(path);
+        case "fbx":
+            return await this._loadMeshFBX(path);
         default:
             throw new Error(`Can't load 3D model, format "${format}" is not supported`);
     }
+};
+
+/**
+ * Loads a Maya exported fbx scene.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @returns {Object} Information about the scene.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "fbx") {
+    const scene = {
+        camera: {},
+        cameraLookAt: {}
+    };
+    switch (format) {
+        case "fbx": {
+            const fbxObj = await this._loadMeshFBX(path);
+
+            // gets information about the side camera
+            const sideCamera = fbxObj.getObjectByName("sideCam");
+            if (sideCamera) {
+                scene.camera = {
+                    fov: sideCamera.fov,
+                    filmGauge: sideCamera.filmGauge,
+                    position: {
+                        x: sideCamera.position.x,
+                        y: sideCamera.position.y,
+                        z: sideCamera.position.z
+                    }
+                };
+            }
+
+            // gets information about the side camera aim
+            const sideCameraAim = fbxObj.getObjectByName("sideCam_aim");
+            if (sideCameraAim) {
+                scene.cameraLookAt = {
+                    x: sideCameraAim.position.x,
+                    y: sideCameraAim.position.y,
+                    z: sideCameraAim.position.z
+                };
+            }
+            break;
+        }
+        case "json":
+            {
+                const response = await fetch(path);
+                const data = await response.json();
+                scene.camera = data.camera;
+                scene.cameraLookAt = data.cameraLookAt;
+            }
+            break;
+        default:
+            throw new Error(`Can't load Maya scene, format "${format}" is not supported`);
+    }
+
+    return scene;
 };
 
 /**
@@ -601,11 +681,27 @@ ripe.ConfiguratorCsr.prototype._loadEnvironment = async function(path) {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._loadScene = async function() {
+ripe.ConfiguratorCsr.prototype._initScene = async function() {
+    // creates empty scene
+    this.scene = new window.THREE.Scene();
+
     // inits the scene clock
     this.clock = new window.THREE.Clock();
 
-    // loads resources
+    // loads maya scene information
+    if (this.mayaScenePath) {
+        const mayaScene = await this._loadMayaScene(this.mayaScenePath);
+        this.cameraOptions = {
+            ...this.cameraOptions,
+            ...mayaScene.camera,
+            lookAt: mayaScene.cameraLookAt
+        };
+    }
+
+    // inits camera thats going to be used to view the scene
+    this._initCamera();
+
+    // loads scene resources
     const meshPath = this.owner.getMeshUrl();
     [this.environmentTexture, this.mesh] = await Promise.all([
         this._loadEnvironment(this.sceneEnvironmentPath),
@@ -622,6 +718,7 @@ ripe.ConfiguratorCsr.prototype._loadScene = async function() {
     // sets the model mesh
     this.modelGroup.add(this.mesh);
 
+    // adds model group to the scene
     this.scene.add(this.modelGroup);
 };
 
@@ -690,11 +787,28 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
         this.cameraOptions.near,
         this.cameraOptions.far
     );
+    if (this.cameraOptions.filmGauge) this.camera.filmGauge = this.cameraOptions.filmGauge;
     this.camera.position.set(
-        this.cameraOptions.posX,
-        this.cameraOptions.posY,
-        this.cameraOptions.posZ
+        this.cameraOptions.position.x,
+        this.cameraOptions.position.y,
+        this.cameraOptions.position.z
     );
+    this.camera.scale.set(
+        this.cameraOptions.scale.x,
+        this.cameraOptions.scale.y,
+        this.cameraOptions.scale.z
+    );
+    this.camera.rotation.x = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.x);
+    this.camera.rotation.y = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.y);
+    this.camera.rotation.z = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.z);
+
+    if (this.cameraOptions.lookAt) {
+        this.camera.lookAt(
+            this.cameraOptions.lookAt.x,
+            this.cameraOptions.lookAt.y,
+            this.cameraOptions.lookAt.z
+        );
+    }
 };
 
 /**
@@ -741,7 +855,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
     // inits model group axis
     if (this.debugOptions.modelAxis) {
         if (!this.modelGroup) throw new Error("Model group not initialized, can't load debug axis");
-        this.debugRefs.modelAxis = new window.THREE.AxesHelper(4);
+        this.debugRefs.modelAxis = new window.THREE.AxesHelper(50);
         this.modelGroup.add(this.debugRefs.modelAxis);
     }
 };
@@ -795,12 +909,8 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
         this.cameraOptions.aspect = size.width / size.height;
     }
 
-    // init camera
-    this._initCamera();
-
     // init scene
-    this.scene = new window.THREE.Scene();
-    await this._loadScene();
+    await this._initScene();
 
     // init debug tools
     this._initDebug();
