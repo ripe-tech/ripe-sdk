@@ -822,7 +822,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     const mesh = initialsRenderer.getMesh();
     mesh.scale.set(0.1, 0.1, 0.1);
 
-    this.scene.add(mesh);
+    this.modelGroup.add(mesh);
 };
 
 /**

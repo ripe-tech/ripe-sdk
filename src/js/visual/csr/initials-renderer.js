@@ -77,7 +77,7 @@ ripe.CsrInitialsRenderer.prototype.getMesh = function() {
 
     // TODO remove this from here
     // sets materials options
-    this.mesh.material.displacementScale = 1;
+    this.mesh.material.displacementScale = 50;
 
     // marks material to do a internal update
     this.mesh.material.needsUpdate = true;
@@ -118,9 +118,7 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
         500 // TODO height segments
     );
 
-    const material = new window.THREE.MeshStandardMaterial({
-        transparent: false // TODO set to true
-    });
+    const material = new window.THREE.MeshStandardMaterial({ transparent: true });
     this.mesh = new window.THREE.Mesh(geometry, material);
 };
 
