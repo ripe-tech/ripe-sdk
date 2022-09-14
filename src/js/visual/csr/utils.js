@@ -71,3 +71,15 @@ ripe.CsrUtils.loadTexture = async function(path) {
         loader.load(path, texture => resolve(texture));
     });
 };
+
+/**
+ * Applies properties to any type of Three.js object instance.
+ *
+ * @param {THREE.any} obj Any type of Three.js instance that support properties.
+ * @param {Object} options Properties to be applied.
+ * @returns {THREE.any} The same instance but with the applied options.
+ */
+ripe.CsrUtils.applyOptions = function(obj, options = {}) {
+    Object.keys(options).forEach(key => (obj[key] = options[key]));
+    return obj;
+};
