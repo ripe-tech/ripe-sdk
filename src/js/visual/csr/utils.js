@@ -58,3 +58,16 @@ ripe.CsrUtils.shortestRotationRad = function(start, end) {
         ((((end - start) % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
     return this.toPrecision(shortestPath);
 };
+
+/**
+ * Loads a texture from a file.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @returns {THREE.Texture} The loaded texture.
+ */
+ripe.CsrUtils.loadTexture = async function(path) {
+    const loader = new window.THREE.TextureLoader();
+    return new Promise((resolve, reject) => {
+        loader.load(path, texture => resolve(texture));
+    });
+};
