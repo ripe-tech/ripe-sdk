@@ -114,6 +114,8 @@ window.onload = function() {
     const init = function(instance) {
         // force PRC visualizer to appear at the start
         const prcElement = document.getElementById("configurator-prc");
+        const csrElement = document.getElementById("configurator-csr");
+        csrElement.style.display = "none";
         prcElement.style.display = "block";
         visibleConfigurator = "prc";
 
