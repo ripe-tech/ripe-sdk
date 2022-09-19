@@ -47,9 +47,10 @@ ripe.CsrInitialsRenderer = function(
     this.canvas = canvas;
     this.canvasDisplacement = canvasDisplacement;
     this.width = width;
-    this.height = width;
+    this.height = height;
+    this.pixelRatio = pixelRatio;
 
-    this.textureRenderer = new ripe.CsrTextureRenderer(width, height, pixelRatio);
+    this.setSize(width, height);
 
     // generates the initials material
     this.material = new window.THREE.MeshStandardMaterial({ transparent: true });
@@ -65,13 +66,7 @@ ripe.CsrInitialsRenderer = function(
     this.displacementTexture = null;
     this.displacementTextureOptions = DEFAULT_TEXTURE_SETTINGS;
 
-    // TODO set size method
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.canvasDisplacement.width = width;
-    this.canvasDisplacement.height = height;
     // TODO general options
-    // TODO mesh options
 };
 ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
 
@@ -94,6 +89,29 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
     // cleans up the initials mesh
     this._destroyMesh();
 };
+
+/**
+ * Sets the initials renderer width and height.
+ *
+ * @param {Number} width Number for the width in pixels.
+ * @param {Number} height Number for the height in pixels.
+ */
+ ripe.CsrInitialsRenderer.prototype.setSize = async function(width = null, height = null) {
+    if (width === null) throw new Error("width is required");
+    if (height === null) throw new Error("height is required");
+
+    this.width = width;
+    this.height = width;
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+    this.canvasDisplacement.width = this.width;
+    this.canvasDisplacement.height = this.height;
+
+    // rebuilds texture renderer with the new size
+    if (this.textureRenderer) this.textureRenderer.this.destroy();
+    this.textureRenderer = new ripe.CsrTextureRenderer(width, height, this.pixelRatio);
+};
+
 
 /**
  * Sets the diffuse texture. This texture is the diffuse pattern that is applied to the

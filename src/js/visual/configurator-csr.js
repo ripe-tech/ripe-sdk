@@ -926,7 +926,8 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
         initialsCanvas,
         initialsDisplacementCanvas,
         1000,
-        1000
+        1000,
+        this.pixelRatio
     );
 
     const PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
