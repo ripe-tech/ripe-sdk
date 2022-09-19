@@ -101,15 +101,13 @@ ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
     // ensure mesh exists
     if (!this.mesh) this._buildInitialsMesh();
 
-    // TODO improve updates
-    // rebuilds the text texture
-    // const texture = this._textToTexture("mesh test"); // TODO merge pattern with texture
-    await this._buildBaseTexture();
-    this.mesh.material.map = this.baseTexture;
+    // rebuilds the base and displacement textures
+    await Promise.all([
+        this.setBaseTexture(),
+        this.setDisplacementTexture()
+    ]);
 
-    // rebuilds the text displacement texture
-    await this._buildDisplacementTexture();
-    // const displacementTexture = this._textToDisplacementTexture("mesh test"); // TODO merge pattern with texture
+    this.mesh.material.map = this.baseTexture;
     this.mesh.material.displacementMap = this.displacementTexture;
 
     // TODO remove this from here
