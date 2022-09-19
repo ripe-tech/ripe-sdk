@@ -929,7 +929,16 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
         1000
     );
 
-    const mesh = initialsRenderer.getMesh();
+    const PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
+    const DISPLACEMENT_PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
+    await Promise.all([
+        initialsRenderer.setBaseTexture(PATTERN_URL),
+        initialsRenderer.setDisplacementTexture(DISPLACEMENT_PATTERN_URL)
+    ]);
+
+    initialsRenderer.setInitials("Example Text");
+
+    const mesh = await initialsRenderer.getMesh();
     mesh.scale.set(0.1, 0.1, 0.1);
 
     this.modelGroup.add(mesh);

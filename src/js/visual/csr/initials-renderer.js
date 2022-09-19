@@ -26,12 +26,6 @@ const DEFAULT_MESH_SETTINGS = {
     heightSegments: 500
 };
 
-const PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
-const DISPLACEMENT_PATTERN_URL =
-    "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
-
-const TEXT = "example";
-
 /**
  * This class encapsulates all logic related to the CSR initials. It provides tools to process and get
  * CSR initials related resources such as textures, materials and 3D objects that can be used to
@@ -86,12 +80,19 @@ ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
  * Cleanups the `CsrInitialsRenderer` instance thus avoiding memory leak issues.
  */
 ripe.CsrInitialsRenderer.prototype.destroy = function() {
+    // cleans up the texture renderer
     this.textureRenderer.destroy();
 
-    if (this.geometry) this.geometry.dispose();
+    // cleans up textures
+    if (this.baseTexture) this.baseTexture.dispose();
+    if (this.displacementTexture) this.displacementTexture.dispose();
+
+    // cleans up the material
     if (this.material) this.material.dispose();
+
     // TODO complete this
 
+    // cleans up the initials mesh
     this._destroyMesh();
 };
 
@@ -152,31 +153,22 @@ ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path,
  * @returns {THREE.Object3D} Mesh that will have the initials text.
  */
 ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
-    // ensure mesh exists
+    // ensures mesh exists
     if (!this.mesh) this._buildInitialsMesh();
 
-    // rebuilds the base and displacement textures
-    await Promise.all([
-        this.setBaseTexture(PATTERN_URL),
-        this.setDisplacementTexture(DISPLACEMENT_PATTERN_URL)
-    ]);
-
-    this.setInitials(TEXT);
-
-    // returns the initials mesh
     return this.mesh;
 };
 
 /**
- * Cleanups everything related with the initials mesh.
+ * Cleanups everything used only by the initials mesh.
  *
  * @private
  */
 ripe.CsrInitialsRenderer.prototype._destroyMesh = function() {
     if (!this.mesh) return;
 
+    if (this.geometry) this.geometry.dispose();
     if (this.mesh.geometry) this.mesh.geometry.dispose();
-    if (this.mesh.material) this.mesh.material.dispose();
     this.mesh = null;
 };
 
@@ -188,7 +180,7 @@ ripe.CsrInitialsRenderer.prototype._destroyMesh = function() {
  */
 ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
     // cleans current mesh
-    if (this.mesh) this._destroyInitialsMesh();
+    if (this.mesh) this._destroyMesh();
 
     // generates the initials plane geometry
     this.geometry = new window.THREE.PlaneBufferGeometry(
@@ -360,7 +352,7 @@ ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
     this.material.displacementScale = 50; // TODO update with options
 
     // marks material to do a internal update
-    this.mesh.material.needsUpdate = true;
+    this.material.needsUpdate = true;
 };
 
 /**
