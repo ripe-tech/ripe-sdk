@@ -35,20 +35,21 @@ ripe.CsrInitialsRenderer = function(
     canvas = null,
     canvasDisplacement = null,
     width = null,
-    height = null
+    height = null,
+    pixelRatio = null
 ) {
     if (canvas === null) throw new Error("canvas is required");
     if (canvasDisplacement === null) throw new Error("canvasDisplacement is required");
     if (width === null) throw new Error("width is required");
     if (height === null) throw new Error("height is required");
+    if (pixelRatio === null) throw new Error("pixelRatio is required");
 
     this.canvas = canvas;
     this.canvasDisplacement = canvasDisplacement;
     this.width = width;
     this.height = width;
 
-    // TODO pixel ratio
-    this.textureRenderer = new ripe.CsrTextureRenderer(width, height, 1);
+    this.textureRenderer = new ripe.CsrTextureRenderer(width, height, pixelRatio);
 
     // generates the initials material
     this.material = new window.THREE.MeshStandardMaterial({ transparent: true });
