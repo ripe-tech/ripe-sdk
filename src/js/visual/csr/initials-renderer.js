@@ -83,46 +83,55 @@ ripe.CsrInitialsRenderer = function(
 };
 ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
 
-/**
- * Cleanups the `CsrInitialsRenderer` instance thus avoiding memory leak issues.
- */
-ripe.CsrInitialsRenderer.prototype.destroy = function() {
-    // cleans up the texture renderer
-    this.textureRenderer.destroy();
-
-    // cleans up textures
-    if (this.baseTexture) this.baseTexture.dispose();
-    if (this.displacementTexture) this.displacementTexture.dispose();
+ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
+    // cleans up textures that are going to be replaced
     this._destroyMaterialTextures();
 
-    // cleans up the material
-    if (this.material) this.material.dispose();
+    // generates the necessary text textures
+    const textTexture = this._textToTexture(text);
+    const displacementTexture = this._textToDisplacementTexture(text);
 
-    // cleans up the initials mesh
-    this._destroyMesh();
+    // applies the patterns to the text textures
+    this.mapTexture = this._mixPatternWithTexture(textTexture, this.baseTexture);
+    this.displacementMapTexture = this._mixPatternWithDisplacementTexture(
+        displacementTexture,
+        this.displacementTexture
+    );
+
+    // cleans up temporary textures
+    textTexture.dispose();
+    displacementTexture.dispose();
+
+    // updates the initials material
+    this.material.map = this.mapTexture;
+    this.material.displacementMap = this.displacementMapTexture;
+    this.material.displacementScale = 50; // TODO update with options
+
+    // marks material to do a internal update
+    this.material.needsUpdate = true;
 };
 
 /**
- * Sets the initials renderer width and height. It also updates the texture renderer used by
- * this instance.
+ * Gets the initials material. This material can be applied to a mesh in order to obtain the
+ * 3D text effect.
  *
- * @param {Number} width Number for the width in pixels.
- * @param {Number} height Number for the height in pixels.
+ * @returns {THREE.Material} Material that makes the 3D text effect.
  */
-ripe.CsrInitialsRenderer.prototype.setSize = function(width = null, height = null) {
-    if (width === null) throw new Error("width is required");
-    if (height === null) throw new Error("height is required");
+ripe.CsrInitialsRenderer.prototype.getMaterial = async function() {
+    if (!this.material) throw new Error("The material doesn't exist");
+    return this.material;
+};
 
-    this.width = width;
-    this.height = width;
-    this.canvas.width = this.width;
-    this.canvas.height = this.height;
-    this.canvasDisplacement.width = this.width;
-    this.canvasDisplacement.height = this.height;
+/**
+ * Gets the initials 3D object.
+ *
+ * @returns {THREE.Object3D} Mesh that will have the initials text.
+ */
+ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
+    // ensures mesh exists
+    if (!this.mesh) this._buildInitialsMesh();
 
-    // rebuilds texture renderer with the new size
-    if (this.textureRenderer) this.textureRenderer.destroy();
-    this.textureRenderer = new ripe.CsrTextureRenderer(width, height, this.pixelRatio);
+    return this.mesh;
 };
 
 /**
@@ -166,26 +175,45 @@ ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path,
 };
 
 /**
- * Gets the initials material. This material can be applied to a mesh in order to obtain the
- * 3D text effect.
- *
- * @returns {THREE.Material} Material that makes the 3D text effect.
+ * Cleanups the `CsrInitialsRenderer` instance thus avoiding memory leak issues.
  */
-ripe.CsrInitialsRenderer.prototype.getMaterial = async function() {
-    if (!this.material) throw new Error("The material doesn't exist");
-    return this.material;
+ripe.CsrInitialsRenderer.prototype.destroy = function() {
+    // cleans up the texture renderer
+    this.textureRenderer.destroy();
+
+    // cleans up textures
+    if (this.baseTexture) this.baseTexture.dispose();
+    if (this.displacementTexture) this.displacementTexture.dispose();
+    this._destroyMaterialTextures();
+
+    // cleans up the material
+    if (this.material) this.material.dispose();
+
+    // cleans up the initials mesh
+    this._destroyMesh();
 };
 
 /**
- * Gets the initials 3D object.
+ * Sets the initials renderer width and height. It also updates the texture renderer used by
+ * this instance.
  *
- * @returns {THREE.Object3D} Mesh that will have the initials text.
+ * @param {Number} width Number for the width in pixels.
+ * @param {Number} height Number for the height in pixels.
  */
-ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
-    // ensures mesh exists
-    if (!this.mesh) this._buildInitialsMesh();
+ripe.CsrInitialsRenderer.prototype.setSize = function(width = null, height = null) {
+    if (width === null) throw new Error("width is required");
+    if (height === null) throw new Error("height is required");
 
-    return this.mesh;
+    this.width = width;
+    this.height = width;
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+    this.canvasDisplacement.width = this.width;
+    this.canvasDisplacement.height = this.height;
+
+    // rebuilds texture renderer with the new size
+    if (this.textureRenderer) this.textureRenderer.destroy();
+    this.textureRenderer = new ripe.CsrTextureRenderer(width, height, this.pixelRatio);
 };
 
 /**
@@ -393,34 +421,6 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function
     material.dispose();
 
     return mixedTexture;
-};
-
-ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
-    // cleans up textures that are going to be replaced
-    this._destroyMaterialTextures();
-
-    // generates the necessary text textures
-    const textTexture = this._textToTexture(text);
-    const displacementTexture = this._textToDisplacementTexture(text);
-
-    // applies the patterns to the text textures
-    this.mapTexture = this._mixPatternWithTexture(textTexture, this.baseTexture);
-    this.displacementMapTexture = this._mixPatternWithDisplacementTexture(
-        displacementTexture,
-        this.displacementTexture
-    );
-
-    // cleans up temporary textures
-    textTexture.dispose();
-    displacementTexture.dispose();
-
-    // updates the initials material
-    this.material.map = this.mapTexture;
-    this.material.displacementMap = this.displacementMapTexture;
-    this.material.displacementScale = 50; // TODO update with options
-
-    // marks material to do a internal update
-    this.material.needsUpdate = true;
 };
 
 /**
