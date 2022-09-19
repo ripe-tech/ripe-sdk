@@ -36,7 +36,8 @@ ripe.CsrInitialsRenderer = function(
     canvasDisplacement = null,
     width = null,
     height = null,
-    pixelRatio = null
+    pixelRatio = null,
+    options = {}
 ) {
     if (canvas === null) throw new Error("canvas is required");
     if (canvasDisplacement === null) throw new Error("canvasDisplacement is required");
@@ -44,29 +45,35 @@ ripe.CsrInitialsRenderer = function(
     if (height === null) throw new Error("height is required");
     if (pixelRatio === null) throw new Error("pixelRatio is required");
 
+    // variables
     this.canvas = canvas;
     this.canvasDisplacement = canvasDisplacement;
     this.width = width;
     this.height = height;
     this.pixelRatio = pixelRatio;
-
-    this.setSize(width, height);
-
-    // generates the initials material
-    this.material = new window.THREE.MeshStandardMaterial({ transparent: true });
-
+    this.textureRenderer = null;
+    this.material = null;
+    this.baseTexture = null;
+    this.displacementTexture = null;
     this.geometry = null;
     this.mesh = null;
-    this.meshOptions = {
-        widthSegments: 500,
-        heightSegments: 500
-    };
-    this.baseTexture = null;
-    this.baseTextureOptions = DEFAULT_TEXTURE_SETTINGS;
-    this.displacementTexture = null;
-    this.displacementTextureOptions = DEFAULT_TEXTURE_SETTINGS;
 
-    // TODO general options
+    // unpacks the CSR Initials Renderer option
+    // TODO text options
+    const meshOpts = options.meshOptions || {};
+    this.meshOptions = {
+        widthSegments: meshOpts.widthSegments !== undefined ? meshOpts.widthSegments : 500,
+        heightSegments: meshOpts.heightSegments !== undefined ? meshOpts.heightSegments : 500
+    };
+    console.log("this.meshOptions", this.meshOptions);
+    this.baseTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...options.baseTextureOptions };
+    this.displacementTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...options.displacementTextureOptions };
+
+    // sets the CSR Initials Renderer size
+    this.setSize(width, height);
+
+    // inits the CSR Initials Renderer material
+    this.material = new window.THREE.MeshStandardMaterial({ transparent: true });
 };
 ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
 
