@@ -90,14 +90,44 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
     this._destroyMesh();
 };
 
+/**
+ * Sets the diffuse texture. This texture is the diffuse pattern that is applied to the
+ * initials characters.
+ *
+ * @param {String} path Path to the texture.
+ * @param {Object} options Options to apply to the texture.
+ */
 ripe.CsrInitialsRenderer.prototype.setBaseTexture = async function(path, options = {}) {
     this.baseTextureOptions = { ...options };
-    await this._buildBaseTexture(path);
+
+    // loads the initials pattern texture
+    let patternTexture = await ripe.CsrUtils.loadTexture(path);
+
+    // applies texture options by precooking the texture
+    patternTexture = this._preCookTexture(patternTexture, this.baseTextureOptions);
+
+    // assigns the base texture
+    this.baseTexture = patternTexture;
 };
 
+/**
+ * Sets the height map texture. This texture is the height map pattern that is applied to the
+ * height map texture of the initials characters.
+ *
+ * @param {String} path Path to the texture.
+ * @param {Object} options Options to apply to the texture.
+ */
 ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path, options = {}) {
     this.displacementTextureOptions = { ...options };
-    await this._buildDisplacementTexture(path);
+
+    // loads the initials height map pattern texture
+    let patternTexture = await ripe.CsrUtils.loadTexture(path);
+
+    // applies texture options by precooking the texture
+    patternTexture = this._preCookTexture(patternTexture, this.displacementTextureOptions);
+
+    // assigns the height map texture
+    this.displacementTexture = patternTexture;
 };
 
 /**
@@ -115,15 +145,7 @@ ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
         this.setDisplacementTexture(DISPLACEMENT_PATTERN_URL)
     ]);
 
-    this.mesh.material.map = this.baseTexture;
-    this.mesh.material.displacementMap = this.displacementTexture;
-
-    // TODO remove this from here
-    // sets materials options
-    this.mesh.material.displacementScale = 50;
-
-    // marks material to do a internal update
-    this.mesh.material.needsUpdate = true;
+    this.setInitials(TEXT);
 
     // returns the initials mesh
     return this.mesh;
@@ -301,41 +323,31 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function
     return mixedTexture;
 };
 
-ripe.CsrInitialsRenderer.prototype._buildBaseTexture = async function(path) {
+ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
+    // TODO cleanup textures
+
     // generates a texture with the text
-    const textTexture = this._textToTexture(TEXT);
+    const textTexture = this._textToTexture(text);
 
-    // loads the initials pattern texture
-    let patternTexture = await ripe.CsrUtils.loadTexture(path);
-
-    // precooks the pattern texture
-    patternTexture = this._preCookTexture(patternTexture, this.baseTextureOptions);
+    // generates a height map for the text
+    const displacementTexture = this._textToDisplacementTexture(text);
 
     // applies the pattern to the text
-    const textTextureWithPattern = this._mixPatternWithTexture(textTexture, patternTexture);
-
-    // assigns the base texture
-    this.baseTexture = textTextureWithPattern;
-};
-
-ripe.CsrInitialsRenderer.prototype._buildDisplacementTexture = async function(path) {
-    // generates a height map for the text
-    const displacementTexture = this._textToDisplacementTexture(TEXT);
-
-    // loads the initials height map pattern texture
-    let patternTexture = await ripe.CsrUtils.loadTexture(path);
-
-    // precooks the pattern texture
-    patternTexture = this._preCookTexture(patternTexture, this.displacementTextureOptions);
+    const textTextureWithPattern = this._mixPatternWithTexture(textTexture, this.baseTexture);
 
     // applies the pattern to the height map texture
     const displacementTextureWithPattern = this._mixPatternWithDisplacementTexture(
         displacementTexture,
-        patternTexture
+        this.displacementTexture
     );
 
-    // assigns the height map texture
-    this.displacementTexture = displacementTextureWithPattern;
+    // updates the initials material
+    this.material.map = textTextureWithPattern;
+    this.material.displacementMap = displacementTextureWithPattern;
+    this.material.displacementScale = 50; // TODO update with options
+
+    // marks material to do a internal update
+    this.mesh.material.needsUpdate = true;
 };
 
 /**
