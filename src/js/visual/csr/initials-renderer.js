@@ -65,7 +65,6 @@ ripe.CsrInitialsRenderer = function(
         widthSegments: meshOpts.widthSegments !== undefined ? meshOpts.widthSegments : 500,
         heightSegments: meshOpts.heightSegments !== undefined ? meshOpts.heightSegments : 500
     };
-    console.log("this.meshOptions", this.meshOptions);
     this.baseTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...options.baseTextureOptions };
     this.displacementTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...options.displacementTextureOptions };
 
@@ -91,14 +90,13 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
     // cleans up the material
     if (this.material) this.material.dispose();
 
-    // TODO complete this
-
     // cleans up the initials mesh
     this._destroyMesh();
 };
 
 /**
- * Sets the initials renderer width and height.
+ * Sets the initials renderer width and height. It also updates the texture renderer used by
+ * this instance.
  *
  * @param {Number} width Number for the width in pixels.
  * @param {Number} height Number for the height in pixels.
@@ -115,7 +113,7 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
     this.canvasDisplacement.height = this.height;
 
     // rebuilds texture renderer with the new size
-    if (this.textureRenderer) this.textureRenderer.this.destroy();
+    if (this.textureRenderer) this.textureRenderer.destroy();
     this.textureRenderer = new ripe.CsrTextureRenderer(width, height, this.pixelRatio);
 };
 
