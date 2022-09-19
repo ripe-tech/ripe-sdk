@@ -167,6 +167,16 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
     this.mesh = new window.THREE.Mesh(this.geometry, this.material);
 };
 
+/**
+ * This method is used to go around the Three.js limitation of not respecting all
+ * THREE.Texture when mapping some textures such as displacement maps, normal
+ * maps, etc.
+ *
+ * @param {THREE.Texture} texture That we are going to pre cook.
+ * @param {Object} options Options to apply to the texture.
+ * @param {Boolean} transparent Dictates if the material should be transparent.
+ * @returns {THREE.Texture} Texture with the result of the applied options.
+ */
 ripe.CsrInitialsRenderer.prototype._preCookTexture = function(
     texture,
     options,
