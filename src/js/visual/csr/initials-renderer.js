@@ -64,6 +64,18 @@ ripe.CsrInitialsRenderer = function(
 
     // unpacks the CSR Initials Renderer option
     // TODO text options
+    const materialOpts = options.materialOptions || {};
+    this.materialOptions = {
+        color: materialOpts.color !== undefined ? new window.THREE.Color(materialOpts.color) : new window.THREE.Color("#ffffff"),
+        displacementScale: materialOpts.displacementScale !== undefined ? materialOpts.displacementScale : 50,
+        displacementBias: materialOpts.displacementBias !== undefined ? materialOpts.displacementBias : 0,
+        emissive: materialOpts.emissive !== undefined ? new window.THREE.Color(materialOpts.emissive) : new window.THREE.Color("#000000"),
+        emissiveIntensity: materialOpts.emissiveIntensity !== undefined ? materialOpts.emissiveIntensity : 1,
+        flatShading: materialOpts.flatShading !== undefined ? materialOpts.flatShading : false,
+        metalness: materialOpts.metalness !== undefined ? materialOpts.metalness : 0,
+        roughness: materialOpts.roughness !== undefined ? materialOpts.roughness : 1,
+        wireframe: materialOpts.wireframe !== undefined ? materialOpts.wireframe : false
+    };
     const meshOpts = options.meshOptions || {};
     this.meshOptions = {
         widthSegments: meshOpts.widthSegments !== undefined ? meshOpts.widthSegments : 500,
@@ -79,7 +91,7 @@ ripe.CsrInitialsRenderer = function(
     this.setSize(width, height);
 
     // inits the CSR Initials Renderer material
-    this.material = new window.THREE.MeshStandardMaterial({ transparent: true });
+    this.material = new window.THREE.MeshStandardMaterial({ transparent: true, ...this.materialOptions });
 };
 ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
 
@@ -110,7 +122,6 @@ ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
     // updates the initials material
     this.material.map = this.mapTexture;
     this.material.displacementMap = this.displacementMapTexture;
-    this.material.displacementScale = 50; // TODO update with options
 
     // marks material to do a internal update
     this.material.needsUpdate = true;
