@@ -228,7 +228,8 @@ ripe.CsrInitialsRenderer.prototype.mixPatternWithDisplacementTexture = function(
     patternTexture,
     texture,
     patternOpts = null,
-    textureOpts = null
+    textureOpts = null,
+    patternStrength = 1
 ) {
     // reloads texture with applied options
     texture = textureOpts ? this._preCookTexture(texture, textureOpts) : texture;
@@ -247,6 +248,10 @@ ripe.CsrInitialsRenderer.prototype.mixPatternWithDisplacementTexture = function(
                 patternTexture: {
                     type: "t",
                     value: patternTexture
+                },
+                patternStrength: {
+                    type: "f",
+                    value: patternStrength
                 }
             }
         ]),
@@ -265,13 +270,14 @@ ripe.CsrInitialsRenderer.prototype.mixPatternWithDisplacementTexture = function(
                 precision mediump float;
                 uniform sampler2D baseTexture;
                 uniform sampler2D patternTexture;
+                uniform float patternStrength;
                 varying vec2 vUv;
                 float grayScale;
 
                 void main() {
                     vec4 t1 = texture2D( patternTexture, vUv );
                     vec4 t2 = texture2D( baseTexture, vUv );
-                    grayScale = t2.r;
+                    grayScale = t2.r * patternStrength;
                     gl_FragColor = vec4(mix(t2.rgb, t1.rgb, grayScale), grayScale);
                 }
             `
