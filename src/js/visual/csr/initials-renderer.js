@@ -21,6 +21,8 @@ const DEFAULT_TEXTURE_SETTINGS = {
     encoding: window.THREE.sRGBEncoding
 };
 
+// TODO support curve points
+
 /**
  * This class encapsulates all logic related to the CSR initials. It provides tools to process and get
  * CSR initials related resources such as textures, materials and 3D objects that can be used to
@@ -107,7 +109,7 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
  * @param {Number} width Number for the width in pixels.
  * @param {Number} height Number for the height in pixels.
  */
-ripe.CsrInitialsRenderer.prototype.setSize = async function(width = null, height = null) {
+ripe.CsrInitialsRenderer.prototype.setSize = function(width = null, height = null) {
     if (width === null) throw new Error("width is required");
     if (height === null) throw new Error("height is required");
 
@@ -131,7 +133,7 @@ ripe.CsrInitialsRenderer.prototype.setSize = async function(width = null, height
  * @param {Object} options Options to apply to the texture.
  */
 ripe.CsrInitialsRenderer.prototype.setBaseTexture = async function(path, options = {}) {
-    this.baseTextureOptions = { ...options };
+    this.baseTextureOptions = { ...this.baseTextureOptions, ...options };
 
     // loads the initials pattern texture
     let patternTexture = await ripe.CsrUtils.loadTexture(path);
@@ -151,7 +153,7 @@ ripe.CsrInitialsRenderer.prototype.setBaseTexture = async function(path, options
  * @param {Object} options Options to apply to the texture.
  */
 ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path, options = {}) {
-    this.displacementTextureOptions = { ...options };
+    this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
 
     // loads the initials height map pattern texture
     let patternTexture = await ripe.CsrUtils.loadTexture(path);
@@ -167,7 +169,7 @@ ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path,
  * Gets the initials material. This material can be applied to a mesh in order to obtain the
  * 3D text effect.
  *
- * @returns {THREE.material} Material that makes the 3D text effect.
+ * @returns {THREE.Material} Material that makes the 3D text effect.
  */
 ripe.CsrInitialsRenderer.prototype.getMaterial = async function() {
     if (!this.material) throw new Error("The material doesn't exist");
@@ -240,12 +242,14 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
 
 /**
  * This method is used to go around the Three.js limitation of not respecting all
- * THREE.Texture when mapping some textures such as displacement maps, normal
- * maps, etc.
+ * THREE.Texture properties when mapping some textures such as displacement maps,
+ * normal maps, etc.
  *
  * @param {THREE.Texture} texture Texture that is going to be pre cook.
  * @param {Object} options Options to apply to the texture.
  * @returns {THREE.Texture} Texture with the result of the applied options.
+ *
+ * @private
  */
 ripe.CsrInitialsRenderer.prototype._preCookTexture = function(texture, options) {
     texture = ripe.CsrUtils.applyOptions(texture, options);
@@ -260,6 +264,15 @@ ripe.CsrInitialsRenderer.prototype._preCookTexture = function(texture, options) 
     return updatedTexture;
 };
 
+/**
+ * Mixes a pattern with a texture. It's used to apply a pattern to the initials text.
+ *
+ * @param {THREE.Texture} texture Texture with the initials text.
+ * @param {THREE.Texture} patternTexture Texture with the pattern to apply.
+ * @returns {THREE.Texture} Texture with the pattern applied to the initials text.
+ *
+ * @private
+ */
 ripe.CsrInitialsRenderer.prototype._mixPatternWithTexture = function(texture, patternTexture) {
     // creates a material to run a shader that applies a pattern to a texture
     const material = new window.THREE.ShaderMaterial({
@@ -309,10 +322,23 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithTexture = function(texture, pa
     return mixedTexture;
 };
 
+/**
+ * Mixes a pattern with a displacement texture. It's used to apply a pattern to the
+ * height map texture of the initials text.
+ *
+ * @param {THREE.Texture} texture Texture with the initials height map texture.
+ * @param {THREE.Texture} patternTexture Texture with the pattern to apply.
+ * @param {Number} patternIntensity The intensity of on which the pattern will be applied. It
+ * ranges from 0 to 1 being that the higher the number the more intensely the pattern will be
+ * applied to the height map texture.
+ * @returns {THREE.Texture} Texture with the pattern applied to the initials text.
+ *
+ * @private
+ */
 ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function(
     texture,
     patternTexture,
-    patternStrength = 1
+    patternIntensity = 1
 ) {
     // creates a material to run a shader that applies a pattern to a height map texture
     const material = new window.THREE.ShaderMaterial({
@@ -326,9 +352,9 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function
                     type: "t",
                     value: patternTexture
                 },
-                patternStrength: {
+                patternIntensity: {
                     type: "f",
-                    value: patternStrength
+                    value: patternIntensity
                 }
             }
         ]),
@@ -347,14 +373,14 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function
                 precision mediump float;
                 uniform sampler2D baseTexture;
                 uniform sampler2D patternTexture;
-                uniform float patternStrength;
+                uniform float patternIntensity;
                 varying vec2 vUv;
                 float grayScale;
 
                 void main() {
                     vec4 t1 = texture2D(patternTexture, vUv);
                     vec4 t2 = texture2D(baseTexture, vUv);
-                    grayScale = t2.r * patternStrength;
+                    grayScale = t2.r * patternIntensity;
                     gl_FragColor = vec4(mix(t2.rgb, t1.rgb, grayScale), grayScale);
                 }
             `
@@ -373,16 +399,12 @@ ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
     // cleans up textures that are going to be replaced
     this._destroyMaterialTextures();
 
-    // generates a texture with the text
+    // generates the necessary text textures
     const textTexture = this._textToTexture(text);
-
-    // generates a height map for the text
     const displacementTexture = this._textToDisplacementTexture(text);
 
-    // generates text texture with the applied the pattern
+    // applies the patterns to the text textures
     this.mapTexture = this._mixPatternWithTexture(textTexture, this.baseTexture);
-
-    // generates text height map texture with the applied pattern
     this.displacementMapTexture = this._mixPatternWithDisplacementTexture(
         displacementTexture,
         this.displacementTexture
@@ -406,6 +428,8 @@ ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
  *
  * @param {String} text Text to be transformed into a texture.
  * @returns {THREE.Texture} Texture with the initials text.
+ *
+ * @private
  */
 ripe.CsrInitialsRenderer.prototype._textToTexture = function(text) {
     const width = this.canvas.width;
@@ -448,6 +472,8 @@ ripe.CsrInitialsRenderer.prototype._textToTexture = function(text) {
  *
  * @param {String} text Text to be transformed into a texture.
  * @returns {THREE.Texture} Texture with the initials text.
+ *
+ * @private
  */
 ripe.CsrInitialsRenderer.prototype._textToDisplacementTexture = function(text) {
     const ctx = this.canvasDisplacement.getContext("2d");
