@@ -21,11 +21,6 @@ const DEFAULT_TEXTURE_SETTINGS = {
     encoding: window.THREE.sRGBEncoding
 };
 
-const DEFAULT_MESH_SETTINGS = {
-    widthSegments: 500,
-    heightSegments: 500
-};
-
 /**
  * This class encapsulates all logic related to the CSR initials. It provides tools to process and get
  * CSR initials related resources such as textures, materials and 3D objects that can be used to
@@ -60,7 +55,10 @@ ripe.CsrInitialsRenderer = function(
 
     this.geometry = null;
     this.mesh = null;
-    this.meshOptions = DEFAULT_MESH_SETTINGS;
+    this.meshOptions = {
+        widthSegments: 500,
+        heightSegments: 500
+    };
     this.baseTexture = null;
     this.baseTextureOptions = DEFAULT_TEXTURE_SETTINGS;
     this.displacementTexture = null;
