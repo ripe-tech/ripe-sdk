@@ -59,6 +59,8 @@ ripe.CsrInitialsRenderer = function(
     this.mesh = null;
     this.baseTexture = null;
     this.baseTextureOptions = DEFAULT_TEXTURE_SETTINGS;
+    this.displacementTexture = null;
+    this.displacementTextureOptions = DEFAULT_TEXTURE_SETTINGS;
 
     // TODO set size method
     this.canvas.width = width;
@@ -101,8 +103,9 @@ ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
     this.mesh.material.map = this.baseTexture;
 
     // rebuilds the text displacement texture
-    const displacementTexture = this._textToDisplacementTexture("mesh test"); // TODO merge pattern with texture
-    this.mesh.material.displacementMap = displacementTexture;
+    await this._buildDisplacementTexture();
+    // const displacementTexture = this._textToDisplacementTexture("mesh test"); // TODO merge pattern with texture
+    this.mesh.material.displacementMap = this.displacementTexture;
 
     // TODO remove this from here
     // sets materials options
@@ -221,17 +224,66 @@ ripe.CsrInitialsRenderer.prototype.mixPatternWithTexture = function(
     return this.textureRenderer.textureFromMaterial(material);
 };
 
+ripe.CsrInitialsRenderer.prototype.mixPatternWithDisplacementTexture = function(
+    patternTexture,
+    texture,
+    patternOpts = null,
+    textureOpts = null
+) {
+    // reloads texture with applied options
+    texture = textureOpts ? this._preCookTexture(texture, textureOpts) : texture;
+    patternTexture = patternOpts
+        ? this._preCookTexture(patternTexture, patternOpts)
+        : patternTexture;
+
+    // create material that mixes textures
+    const material = new window.THREE.ShaderMaterial({
+        uniforms: window.THREE.UniformsUtils.merge([
+            {
+                baseTexture: {
+                    type: "t",
+                    value: texture
+                },
+                patternTexture: {
+                    type: "t",
+                    value: patternTexture
+                }
+            }
+        ]),
+        vertexShader: `
+                precision highp float;
+                precision highp int;
+
+                varying vec2 vUv;
+
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                }
+            `,
+        fragmentShader: `
+                precision mediump float;
+                uniform sampler2D baseTexture;
+                uniform sampler2D patternTexture;
+                varying vec2 vUv;
+                float grayScale;
+
+                void main() {
+                    vec4 t1 = texture2D( patternTexture, vUv );
+                    vec4 t2 = texture2D( baseTexture, vUv );
+                    grayScale = t2.r;
+                    gl_FragColor = vec4(mix(t2.rgb, t1.rgb, grayScale), grayScale);
+                }
+            `
+    });
+
+    return this.textureRenderer.textureFromMaterial(material);
+};
+
 ripe.CsrInitialsRenderer.prototype._buildBaseTexture = async function(path) {
     const textTexture = this._textToTexture(TEXT);
 
     const patternTexture = await ripe.CsrUtils.loadTexture(PATTERN_URL);
-    patternTexture.wrapS = this.baseTextureOptions.wrapS;
-    patternTexture.wrapT = this.baseTextureOptions.wrapT;
-    patternTexture.offset = this.baseTextureOptions.offset;
-    patternTexture.repeat = this.baseTextureOptions.repeat;
-    patternTexture.rotation = this.baseTextureOptions.rotation;
-    patternTexture.center = this.baseTextureOptions.center;
-    patternTexture.encoding = this.baseTextureOptions.encoding;
 
     const textTextureWithPattern = this.mixPatternWithTexture(
         patternTexture,
@@ -239,6 +291,19 @@ ripe.CsrInitialsRenderer.prototype._buildBaseTexture = async function(path) {
         this.baseTextureOptions
     );
     this.baseTexture = textTextureWithPattern;
+};
+
+ripe.CsrInitialsRenderer.prototype._buildDisplacementTexture = async function(path) {
+    const displacementTexture = this._textToDisplacementTexture(TEXT);
+
+    const patternTexture = await ripe.CsrUtils.loadTexture(DISPLACEMENT_PATTERN_URL);
+
+    const textTextureWithPattern = this.mixPatternWithDisplacementTexture(
+        patternTexture,
+        displacementTexture,
+        this.displacementTextureOptions
+    );
+    this.displacementTexture = textTextureWithPattern;
 };
 
 /**
