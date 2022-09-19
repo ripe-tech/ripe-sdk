@@ -142,7 +142,7 @@ ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path,
  *
  * @returns {THREE.material} Material that makes the 3D text effect.
  */
- ripe.CsrInitialsRenderer.prototype.getMaterial = async function() {
+ripe.CsrInitialsRenderer.prototype.getMaterial = async function() {
     if (!this.material) throw new Error("The material doesn't exist");
     return this.material;
 };
