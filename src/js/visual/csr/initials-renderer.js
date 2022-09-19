@@ -55,6 +55,8 @@ ripe.CsrInitialsRenderer = function(
     this.material = null;
     this.baseTexture = null;
     this.displacementTexture = null;
+    this.mapTexture = null;
+    this.displacementMapTexture = null;
     this.geometry = null;
     this.mesh = null;
 
@@ -89,6 +91,7 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
     // cleans up textures
     if (this.baseTexture) this.baseTexture.dispose();
     if (this.displacementTexture) this.displacementTexture.dispose();
+    this._destroyMaterialTextures();
 
     // cleans up the material
     if (this.material) this.material.dispose();
@@ -194,6 +197,23 @@ ripe.CsrInitialsRenderer.prototype._destroyMesh = function() {
     if (this.geometry) this.geometry.dispose();
     if (this.mesh.geometry) this.mesh.geometry.dispose();
     this.mesh = null;
+};
+
+/**
+ * Cleanups textures mapped to the material.
+ *
+ * @private
+ */
+ripe.CsrInitialsRenderer.prototype._destroyMaterialTextures = function() {
+    if (this.mapTexture) {
+        this.mapTexture.dispose();
+        this.mapTexture = null;
+    }
+
+    if (this.displacementMapTexture) {
+        this.displacementMapTexture.dispose();
+        this.displacementMapTexture = null;
+    }
 };
 
 /**
@@ -350,7 +370,8 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function
 };
 
 ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
-    // TODO cleanup textures
+    // cleans up textures that are going to be replaced
+    this._destroyMaterialTextures();
 
     // generates a texture with the text
     const textTexture = this._textToTexture(text);
@@ -358,18 +379,22 @@ ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
     // generates a height map for the text
     const displacementTexture = this._textToDisplacementTexture(text);
 
-    // applies the pattern to the text
-    const textTextureWithPattern = this._mixPatternWithTexture(textTexture, this.baseTexture);
+    // generates text texture with the applied the pattern
+    this.mapTexture = this._mixPatternWithTexture(textTexture, this.baseTexture);
 
-    // applies the pattern to the height map texture
-    const displacementTextureWithPattern = this._mixPatternWithDisplacementTexture(
+    // generates text height map texture with the applied pattern
+    this.displacementMapTexture = this._mixPatternWithDisplacementTexture(
         displacementTexture,
         this.displacementTexture
     );
 
+    // cleans up temporary textures
+    textTexture.dispose();
+    displacementTexture.dispose();
+
     // updates the initials material
-    this.material.map = textTextureWithPattern;
-    this.material.displacementMap = displacementTextureWithPattern;
+    this.material.map = this.mapTexture;
+    this.material.displacementMap = this.displacementMapTexture;
     this.material.displacementScale = 50; // TODO update with options
 
     // marks material to do a internal update
