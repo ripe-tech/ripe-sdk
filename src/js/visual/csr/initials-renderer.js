@@ -56,6 +56,8 @@ ripe.CsrInitialsRenderer = function(
     // TODO pixel ratio
     this.textureRenderer = new ripe.CsrTextureRenderer(width, height, 1);
 
+    this.geometry = null;
+    this.material = null;
     this.mesh = null;
     this.baseTexture = null;
     this.baseTextureOptions = DEFAULT_TEXTURE_SETTINGS;
@@ -129,8 +131,8 @@ ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
 ripe.CsrInitialsRenderer.prototype._destroyMesh = function() {
     if (!this.mesh) return;
 
-    if (this.mesh.geometry) this.mesh.geometry.dispose();
-    if (this.mesh.material) this.mesh.material.dispose();
+    if (this.geometry) this.geometry.dispose();
+    if (this.material) this.material.dispose();
     this.mesh = null;
 };
 
@@ -141,20 +143,22 @@ ripe.CsrInitialsRenderer.prototype._destroyMesh = function() {
  * @private
  */
 ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
-    // TODO save geometry and material reference
-
     // cleans current mesh
     if (this.mesh) this._destroyInitialsMesh();
 
-    const geometry = new window.THREE.PlaneBufferGeometry(
+    // generates the initials plane geometry
+    this.geometry = new window.THREE.PlaneBufferGeometry(
         this.width,
         this.height,
         500, // TODO width segments
         500 // TODO height segments
     );
 
-    const material = new window.THREE.MeshStandardMaterial({ transparent: true });
-    this.mesh = new window.THREE.Mesh(geometry, material);
+    // generates the initials material
+    this.material = new window.THREE.MeshStandardMaterial({ transparent: true });
+
+    // creates the initials mesh
+    this.mesh = new window.THREE.Mesh(this.geometry, this.material);
 };
 
 ripe.CsrInitialsRenderer.prototype._preCookTexture = function(
