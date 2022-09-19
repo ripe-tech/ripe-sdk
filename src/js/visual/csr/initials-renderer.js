@@ -87,6 +87,11 @@ ripe.CsrInitialsRenderer.prototype.setBaseTexture = async function(path, options
     await this._buildBaseTexture(path);
 };
 
+ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path, options = {}) {
+    this.displacementTextureOptions = { ...options };
+    await this._buildDisplacementTexture(path);
+};
+
 /**
  * Gets the initials 3D object.
  *
