@@ -168,12 +168,13 @@ ripe.CsrInitialsRenderer.prototype._preCookTexture = function(
 ) {
     texture = ripe.CsrUtils.applyOptions(texture, options);
 
-    // TODO hande disposal of material
-    const material = new window.THREE.MeshBasicMaterial({
-        transparent: transparent,
-        map: texture
-    });
+    // generates a texture with the updated options
+    const material = new window.THREE.MeshBasicMaterial({ transparent: transparent, map: texture });
     const updatedTexture = this.textureRenderer.textureFromMaterial(material);
+
+    // disposes of the temporary material
+    material.dispose();
+
     return updatedTexture;
 };
 
