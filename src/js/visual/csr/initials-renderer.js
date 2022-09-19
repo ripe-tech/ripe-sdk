@@ -21,6 +21,11 @@ const DEFAULT_TEXTURE_SETTINGS = {
     encoding: window.THREE.sRGBEncoding
 };
 
+const DEFAULT_MESH_SETTINGS = {
+    widthSegments: 500,
+    heightSegments: 500
+};
+
 const PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
 const DISPLACEMENT_PATTERN_URL =
     "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
@@ -59,6 +64,7 @@ ripe.CsrInitialsRenderer = function(
     this.geometry = null;
     this.material = null;
     this.mesh = null;
+    this.meshOptions = DEFAULT_MESH_SETTINGS;
     this.baseTexture = null;
     this.baseTextureOptions = DEFAULT_TEXTURE_SETTINGS;
     this.displacementTexture = null;
@@ -150,8 +156,8 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
     this.geometry = new window.THREE.PlaneBufferGeometry(
         this.width,
         this.height,
-        500, // TODO width segments
-        500 // TODO height segments
+        this.meshOptions.widthSegments,
+        this.meshOptions.heightSegments
     );
 
     // generates the initials material
