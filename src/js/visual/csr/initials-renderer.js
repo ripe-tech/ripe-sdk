@@ -111,8 +111,8 @@ ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
 
     // rebuilds the base and displacement textures
     await Promise.all([
-        this.setBaseTexture(),
-        this.setDisplacementTexture()
+        this.setBaseTexture(PATTERN_URL),
+        this.setDisplacementTexture(DISPLACEMENT_PATTERN_URL)
     ]);
 
     this.mesh.material.map = this.baseTexture;
@@ -194,19 +194,8 @@ ripe.CsrInitialsRenderer.prototype._preCookTexture = function(
     return updatedTexture;
 };
 
-ripe.CsrInitialsRenderer.prototype.mixPatternWithTexture = function(
-    patternTexture,
-    texture,
-    patternOpts = null,
-    textureOpts = null
-) {
-    // reloads texture with applied options
-    texture = textureOpts ? this._preCookTexture(texture, textureOpts) : texture;
-    patternTexture = patternOpts
-        ? this._preCookTexture(patternTexture, patternOpts)
-        : patternTexture;
-
-    // create material that mixes textures
+ripe.CsrInitialsRenderer.prototype._mixPatternWithTexture = function(texture, patternTexture) {
+    // creates a material to run a shader that applies a pattern to a texture
     const material = new window.THREE.ShaderMaterial({
         uniforms: window.THREE.UniformsUtils.merge([
             {
@@ -228,7 +217,7 @@ ripe.CsrInitialsRenderer.prototype.mixPatternWithTexture = function(
 
                     void main() {
                         vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                     }
                 `,
         fragmentShader: `
@@ -238,30 +227,27 @@ ripe.CsrInitialsRenderer.prototype.mixPatternWithTexture = function(
                     varying vec2 vUv;
 
                     void main() {
-                        vec4 t1 = texture2D( patternTexture, vUv );
-                        vec4 t2 = texture2D( baseTexture, vUv );
+                        vec4 t1 = texture2D(patternTexture, vUv);
+                        vec4 t2 = texture2D(baseTexture, vUv);
                         gl_FragColor = vec4(mix(t2.rgb, t1.rgb, t2.a), t2.a);
                     }
                 `
     });
 
-    return this.textureRenderer.textureFromMaterial(material);
+    const mixedTexture = this.textureRenderer.textureFromMaterial(material);
+
+    // disposes of the temporary material
+    material.dispose();
+
+    return mixedTexture;
 };
 
-ripe.CsrInitialsRenderer.prototype.mixPatternWithDisplacementTexture = function(
-    patternTexture,
+ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function(
     texture,
-    patternOpts = null,
-    textureOpts = null,
+    patternTexture,
     patternStrength = 1
 ) {
-    // reloads texture with applied options
-    texture = textureOpts ? this._preCookTexture(texture, textureOpts) : texture;
-    patternTexture = patternOpts
-        ? this._preCookTexture(patternTexture, patternOpts)
-        : patternTexture;
-
-    // create material that mixes textures
+    // creates a material to run a shader that applies a pattern to a height map texture
     const material = new window.THREE.ShaderMaterial({
         uniforms: window.THREE.UniformsUtils.merge([
             {
@@ -287,7 +273,7 @@ ripe.CsrInitialsRenderer.prototype.mixPatternWithDisplacementTexture = function(
 
                 void main() {
                     vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                 }
             `,
         fragmentShader: `
@@ -299,41 +285,57 @@ ripe.CsrInitialsRenderer.prototype.mixPatternWithDisplacementTexture = function(
                 float grayScale;
 
                 void main() {
-                    vec4 t1 = texture2D( patternTexture, vUv );
-                    vec4 t2 = texture2D( baseTexture, vUv );
+                    vec4 t1 = texture2D(patternTexture, vUv);
+                    vec4 t2 = texture2D(baseTexture, vUv);
                     grayScale = t2.r * patternStrength;
                     gl_FragColor = vec4(mix(t2.rgb, t1.rgb, grayScale), grayScale);
                 }
             `
     });
 
-    return this.textureRenderer.textureFromMaterial(material);
+    const mixedTexture = this.textureRenderer.textureFromMaterial(material);
+
+    // disposes of the temporary material
+    material.dispose();
+
+    return mixedTexture;
 };
 
 ripe.CsrInitialsRenderer.prototype._buildBaseTexture = async function(path) {
+    // generates a texture with the text
     const textTexture = this._textToTexture(TEXT);
 
-    const patternTexture = await ripe.CsrUtils.loadTexture(PATTERN_URL);
+    // loads the initials pattern texture
+    let patternTexture = await ripe.CsrUtils.loadTexture(path);
 
-    const textTextureWithPattern = this.mixPatternWithTexture(
-        patternTexture,
-        textTexture,
-        this.baseTextureOptions
-    );
+    // precooks the pattern texture
+    patternTexture = this._preCookTexture(patternTexture, this.baseTextureOptions);
+
+    // applies the pattern to the text
+    const textTextureWithPattern = this._mixPatternWithTexture(textTexture, patternTexture);
+
+    // assigns the base texture
     this.baseTexture = textTextureWithPattern;
 };
 
 ripe.CsrInitialsRenderer.prototype._buildDisplacementTexture = async function(path) {
+    // generates a height map for the text
     const displacementTexture = this._textToDisplacementTexture(TEXT);
 
-    const patternTexture = await ripe.CsrUtils.loadTexture(DISPLACEMENT_PATTERN_URL);
+    // loads the initials height map pattern texture
+    let patternTexture = await ripe.CsrUtils.loadTexture(path);
 
-    const textTextureWithPattern = this.mixPatternWithDisplacementTexture(
-        patternTexture,
+    // precooks the pattern texture
+    patternTexture = this._preCookTexture(patternTexture, this.displacementTextureOptions);
+
+    // applies the pattern to the height map texture
+    const displacementTextureWithPattern = this._mixPatternWithDisplacementTexture(
         displacementTexture,
-        this.displacementTextureOptions
+        patternTexture
     );
-    this.displacementTexture = textTextureWithPattern;
+
+    // assigns the height map texture
+    this.displacementTexture = displacementTextureWithPattern;
 };
 
 /**
