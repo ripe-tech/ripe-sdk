@@ -83,6 +83,11 @@ ripe.CsrInitialsRenderer = function(
 };
 ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
 
+/**
+ * Sets the initials text.
+ *
+ * @param {String} text Initials text.
+ */
 ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
     // cleans up textures that are going to be replaced
     this._destroyMaterialTextures();
