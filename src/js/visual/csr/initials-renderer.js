@@ -117,7 +117,6 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
     this.textureRenderer = new ripe.CsrTextureRenderer(width, height, this.pixelRatio);
 };
 
-
 /**
  * Sets the diffuse texture. This texture is the diffuse pattern that is applied to the
  * initials characters.
@@ -223,21 +222,16 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
  *
  * @param {THREE.Texture} texture That we are going to pre cook.
  * @param {Object} options Options to apply to the texture.
- * @param {Boolean} transparent Dictates if the material should be transparent.
  * @returns {THREE.Texture} Texture with the result of the applied options.
  */
-ripe.CsrInitialsRenderer.prototype._preCookTexture = function(
-    texture,
-    options,
-    transparent = true
-) {
+ripe.CsrInitialsRenderer.prototype._preCookTexture = function(texture, options) {
     texture = ripe.CsrUtils.applyOptions(texture, options);
 
     // generates a texture with the updated options
-    const material = new window.THREE.MeshBasicMaterial({ transparent: transparent, map: texture });
+    const material = new window.THREE.MeshBasicMaterial({ transparent: true, map: texture });
     const updatedTexture = this.textureRenderer.textureFromMaterial(material);
 
-    // disposes of the temporary material
+    // cleans up the temporary material
     material.dispose();
 
     return updatedTexture;
@@ -283,9 +277,10 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithTexture = function(texture, pa
                 `
     });
 
+    // generates a texture with the textures mixed
     const mixedTexture = this.textureRenderer.textureFromMaterial(material);
 
-    // disposes of the temporary material
+   // cleans up the temporary material
     material.dispose();
 
     return mixedTexture;
@@ -342,9 +337,10 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function
             `
     });
 
+    // generates a texture with the textures mixed
     const mixedTexture = this.textureRenderer.textureFromMaterial(material);
 
-    // disposes of the temporary material
+    // cleans up the temporary material
     material.dispose();
 
     return mixedTexture;
