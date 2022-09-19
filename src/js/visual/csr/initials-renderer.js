@@ -61,8 +61,10 @@ ripe.CsrInitialsRenderer = function(
     // TODO pixel ratio
     this.textureRenderer = new ripe.CsrTextureRenderer(width, height, 1);
 
+    // generates the initials material
+    this.material = new window.THREE.MeshStandardMaterial({ transparent: true });
+
     this.geometry = null;
-    this.material = null;
     this.mesh = null;
     this.meshOptions = DEFAULT_MESH_SETTINGS;
     this.baseTexture = null;
@@ -85,6 +87,9 @@ ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
  */
 ripe.CsrInitialsRenderer.prototype.destroy = function() {
     this.textureRenderer.destroy();
+
+    if (this.geometry) this.geometry.dispose();
+    if (this.material) this.material.dispose();
     // TODO complete this
 
     this._destroyMesh();
@@ -131,6 +136,17 @@ ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path,
 };
 
 /**
+ * Gets the initials material. This material can be applied to a mesh in order to obtain the
+ * 3D text effect.
+ *
+ * @returns {THREE.material} Material that makes the 3D text effect.
+ */
+ ripe.CsrInitialsRenderer.prototype.getMaterial = async function() {
+    if (!this.material) throw new Error("The material doesn't exist");
+    return this.material;
+};
+
+/**
  * Gets the initials 3D object.
  *
  * @returns {THREE.Object3D} Mesh that will have the initials text.
@@ -159,8 +175,8 @@ ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
 ripe.CsrInitialsRenderer.prototype._destroyMesh = function() {
     if (!this.mesh) return;
 
-    if (this.geometry) this.geometry.dispose();
-    if (this.material) this.material.dispose();
+    if (this.mesh.geometry) this.mesh.geometry.dispose();
+    if (this.mesh.material) this.mesh.material.dispose();
     this.mesh = null;
 };
 
@@ -181,9 +197,6 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
         this.meshOptions.widthSegments,
         this.meshOptions.heightSegments
     );
-
-    // generates the initials material
-    this.material = new window.THREE.MeshStandardMaterial({ transparent: true });
 
     // creates the initials mesh
     this.mesh = new window.THREE.Mesh(this.geometry, this.material);
