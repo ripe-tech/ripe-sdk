@@ -66,7 +66,10 @@ ripe.CsrInitialsRenderer = function(
         heightSegments: meshOpts.heightSegments !== undefined ? meshOpts.heightSegments : 500
     };
     this.baseTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...options.baseTextureOptions };
-    this.displacementTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...options.displacementTextureOptions };
+    this.displacementTextureOptions = {
+        ...DEFAULT_TEXTURE_SETTINGS,
+        ...options.displacementTextureOptions
+    };
 
     // sets the CSR Initials Renderer size
     this.setSize(width, height);
@@ -101,7 +104,7 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
  * @param {Number} width Number for the width in pixels.
  * @param {Number} height Number for the height in pixels.
  */
- ripe.CsrInitialsRenderer.prototype.setSize = async function(width = null, height = null) {
+ripe.CsrInitialsRenderer.prototype.setSize = async function(width = null, height = null) {
     if (width === null) throw new Error("width is required");
     if (height === null) throw new Error("height is required");
 
@@ -220,7 +223,7 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
  * THREE.Texture when mapping some textures such as displacement maps, normal
  * maps, etc.
  *
- * @param {THREE.Texture} texture That we are going to pre cook.
+ * @param {THREE.Texture} texture Texture that is going to be pre cook.
  * @param {Object} options Options to apply to the texture.
  * @returns {THREE.Texture} Texture with the result of the applied options.
  */
@@ -280,7 +283,7 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithTexture = function(texture, pa
     // generates a texture with the textures mixed
     const mixedTexture = this.textureRenderer.textureFromMaterial(material);
 
-   // cleans up the temporary material
+    // cleans up the temporary material
     material.dispose();
 
     return mixedTexture;
