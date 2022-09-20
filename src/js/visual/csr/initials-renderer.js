@@ -63,15 +63,35 @@ ripe.CsrInitialsRenderer = function(
     this.geometry = null;
     this.mesh = null;
 
-    // unpacks the CSR Initials Renderer option
-    // TODO text options
+    // unpacks the CSR Initials Renderer options
+    const textOpts = options.textOptions || {};
+    this.textOptions = {
+        font: textOpts.font !== undefined ? textOpts.font : "Arial",
+        fontSize: textOpts.fontSize !== undefined ? textOpts.fontSize : 200,
+        xOffset: textOpts.xOffset !== undefined ? textOpts.xOffset : 0,
+        yOffset: textOpts.yOffset !== undefined ? textOpts.yOffset : 0,
+        lineWidth: textOpts.lineWidth !== undefined ? textOpts.lineWidth : 5,
+        displacementMapTextBlur:
+            textOpts.displacementMapTextBlur !== undefined ? textOpts.displacementMapTextBlur : 1.5,
+        normalMapBlurIntensity:
+            textOpts.normalMapBlurIntensity !== undefined ? textOpts.normalMapBlurIntensity : 1
+    };
     const materialOpts = options.materialOptions || {};
     this.materialOptions = {
-        color: materialOpts.color !== undefined ? new window.THREE.Color(materialOpts.color) : new window.THREE.Color("#ffffff"),
-        displacementScale: materialOpts.displacementScale !== undefined ? materialOpts.displacementScale : 50,
-        displacementBias: materialOpts.displacementBias !== undefined ? materialOpts.displacementBias : 0,
-        emissive: materialOpts.emissive !== undefined ? new window.THREE.Color(materialOpts.emissive) : new window.THREE.Color("#000000"),
-        emissiveIntensity: materialOpts.emissiveIntensity !== undefined ? materialOpts.emissiveIntensity : 1,
+        color:
+            materialOpts.color !== undefined
+                ? new window.THREE.Color(materialOpts.color)
+                : new window.THREE.Color("#ffffff"),
+        displacementScale:
+            materialOpts.displacementScale !== undefined ? materialOpts.displacementScale : 50,
+        displacementBias:
+            materialOpts.displacementBias !== undefined ? materialOpts.displacementBias : 0,
+        emissive:
+            materialOpts.emissive !== undefined
+                ? new window.THREE.Color(materialOpts.emissive)
+                : new window.THREE.Color("#000000"),
+        emissiveIntensity:
+            materialOpts.emissiveIntensity !== undefined ? materialOpts.emissiveIntensity : 1,
         flatShading: materialOpts.flatShading !== undefined ? materialOpts.flatShading : false,
         metalness: materialOpts.metalness !== undefined ? materialOpts.metalness : 0,
         roughness: materialOpts.roughness !== undefined ? materialOpts.roughness : 1,
@@ -92,7 +112,10 @@ ripe.CsrInitialsRenderer = function(
     this.setSize(width, height);
 
     // inits the CSR Initials Renderer material
-    this.material = new window.THREE.MeshStandardMaterial({ transparent: true, ...this.materialOptions });
+    this.material = new window.THREE.MeshStandardMaterial({
+        transparent: true,
+        ...this.materialOptions
+    });
 };
 ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
 
@@ -305,28 +328,28 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
  * @private
  */
 ripe.CsrInitialsRenderer.prototype._textToTexture = function(text) {
-    const width = this.canvas.width;
-    const height = this.canvas.height;
+    const width = this.width;
+    const height = this.height;
+    const font = this.textOptions.font;
+    const fontSize = this.textOptions.fontSize;
+    const xOffset = this.textOptions.xOffset;
+    const yOffset = this.textOptions.yOffset;
+    const lineWidth = this.textOptions.lineWidth;
 
     const ctx = this.canvas.getContext("2d");
 
     // cleans canvas
     ctx.clearRect(0, 0, width, height);
 
-    ctx.font = `${200}px Arial`; // TODO set font and font size
-    // ctx.fillStyle = "#ff0000";
-    ctx.fillStyle = "#ff00ff";
+    ctx.font = `${fontSize}px ${font}`;
+    ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
     // adds a little thickness so that when the displacement is applied,
     // the color expands to the edges of the text
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = "#ff00ff";
-
-    // TODO offsets as options
-    const xOffset = 0;
-    const yOffset = 0;
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = "#ffffff";
 
     // writes text to the center of the canvas
     const posX = width / 2;
@@ -349,28 +372,32 @@ ripe.CsrInitialsRenderer.prototype._textToTexture = function(text) {
  * @private
  */
 ripe.CsrInitialsRenderer.prototype._textToDisplacementTexture = function(text) {
+    const width = this.width;
+    const height = this.height;
+    const font = this.textOptions.font;
+    const fontSize = this.textOptions.fontSize;
+    const xOffset = this.textOptions.xOffset;
+    const yOffset = this.textOptions.yOffset;
+    const blur = this.textOptions.displacementMapTextBlur;
+
     const ctx = this.canvasDisplacement.getContext("2d");
 
     // cleans canvas with black color
     ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, this.width, this.height);
+    ctx.fillRect(0, 0, width, height);
 
-    ctx.font = `${200}px Arial`; // TODO set font and font size
+    ctx.font = `${fontSize}px ${font}`;
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
     // adds blur filter to attenuate the displacement
     // more blur equals less displacement which means more rounded edges
-    ctx.filter = "blur(1.5px)";
-
-    // TODO offsets as options
-    const xOffset = 0;
-    const yOffset = 0;
+    ctx.filter = `blur(${blur}px)`;
 
     // writes text to the center of the canvas
-    const posX = this.width / 2;
-    const posY = this.height / 2;
+    const posX = width / 2;
+    const posY = height / 2;
     ctx.fillText(text, posX + xOffset, posY + yOffset);
 
     // creates texture from canvas
