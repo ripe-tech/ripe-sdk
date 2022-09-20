@@ -83,3 +83,54 @@ ripe.CsrUtils.applyOptions = function(obj, options = {}) {
     Object.keys(options).forEach(key => (obj[key] = options[key]));
     return obj;
 };
+
+/**
+ * Converts height map texture to a normal map texture.
+ *
+ * @param {ImageData} imgData The height map ImageData object.
+ * @returns {THREE.Texture} A normal map texture.
+ */
+ripe.CsrUtils.heightMapToNormalMap = function(imgData) {
+    const width = imgData.width;
+    const height = imgData.height;
+
+    const size = width * height * 4;
+    const pixels = new Uint8Array(size);
+
+    for (let i = 0; i < size; i += 4) {
+        let x1, x2, y1, y2;
+
+        if (i % (width * 4) === 0) {
+            x1 = imgData.data[i];
+            x2 = imgData.data[i + 4];
+        } else if (i % (width * 4) === (width - 1) * 4) {
+            x1 = imgData.data[i - 4];
+            x2 = imgData.data[i];
+        } else {
+            x1 = imgData.data[i - 4];
+            x2 = imgData.data[i + 4];
+        }
+
+        if (i < width * 4) {
+            y1 = imgData.data[i];
+            y2 = imgData.data[i + width * 4];
+        } else if (i > width * (height - 1) * 4) {
+            y1 = imgData.data[i - width * 4];
+            y2 = imgData.data[i];
+        } else {
+            y1 = imgData.data[i - width * 4];
+            y2 = imgData.data[i + width * 4];
+        }
+
+        pixels[i] = x1 - x2 + 127;
+        pixels[i + 1] = y1 - y2 + 127;
+        pixels[i + 2] = 255;
+        pixels[i + 3] = 255;
+    }
+
+    const texture = new window.THREE.DataTexture(pixels, width, height);
+    texture.flipY = true;
+    texture.needsUpdate = true;
+
+    return texture;
+};
