@@ -134,3 +134,20 @@ ripe.CsrUtils.heightMapToNormalMap = function(imgData) {
 
     return texture;
 };
+
+/**
+ * Converts height map texture to a normal map texture.
+ *
+ * @param {Canvas} canvas The height map ImageData object.
+ * @returns {THREE.Texture} A normal map texture.
+ */
+ripe.CsrUtils.normalMapFromCanvas = function(canvas) {
+    const width = canvas.width;
+    const height = canvas.height;
+    const ctx = canvas.getContext("2d");
+
+    // ctx.filter = "blur(200px)";
+
+    const displacementTextureData = ctx.getImageData(0, 0, width, height);
+    return this.heightMapToNormalMap(displacementTextureData);
+};

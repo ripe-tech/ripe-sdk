@@ -458,6 +458,73 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function
 };
 
 /**
+ * Blurs a texture by doing a Gaussian blur pass.
+ *
+ * @param {THREE.Texture} texture Texture to blur.
+ * @param {Number} blurIntensity Intensity of blur filter that is going to be applied.
+ * @returns {THREE.Texture} The blurred texture.
+ */
+ripe.CsrInitialsRenderer.prototype._blurTexture = function(texture, blurIntensity = 1) {
+    // creates a material to run a shader that blurs the texture
+    const material = new window.THREE.ShaderMaterial({
+        uniforms: window.THREE.UniformsUtils.merge([
+            {
+                baseTexture: {
+                    type: "t",
+                    value: texture
+                },
+                h: {
+                    type: "f",
+                    value: 1 / (this.width * blurIntensity)
+                },
+                v: {
+                    type: "f",
+                    value: 1 / (this.height * blurIntensity)
+                }
+            }
+        ]),
+        vertexShader: `
+                varying vec2 vUv;
+
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+        fragmentShader: `
+            uniform sampler2D baseTexture;
+            uniform float h;
+            uniform float v;
+            varying vec2 vUv;
+
+            void main() {
+                vec4 sum = vec4(0.0);
+                
+                sum += texture2D(baseTexture, vec2(vUv.x - 4.0 * h,  vUv.y - 4.0 * v)) * 0.051;
+                sum += texture2D(baseTexture, vec2(vUv.x - 3.0 * h,  vUv.y - 3.0 * v)) * 0.0918;
+                sum += texture2D(baseTexture, vec2(vUv.x - 2.0 * h,  vUv.y - 2.0 * v)) * 0.12245;
+                sum += texture2D(baseTexture, vec2(vUv.x - 1.0 * h,  vUv.y - 1.0 * v)) * 0.1531;
+                sum += texture2D(baseTexture, vec2(vUv.x, vUv.y)) * 0.1633;
+                sum += texture2D(baseTexture, vec2(vUv.x + 1.0 * h, vUv.y + 1.0 * v)) * 0.1531;
+                sum += texture2D(baseTexture, vec2(vUv.x + 2.0 * h, vUv.y + 2.0 * v)) * 0.12245;
+                sum += texture2D(baseTexture, vec2(vUv.x + 3.0 * h, vUv.y + 3.0 * v)) * 0.0918;
+                sum += texture2D(baseTexture, vec2(vUv.x + 4.0 * h, vUv.y + 4.0 * v)) * 0.051;
+
+                gl_FragColor = sum;
+            }
+        `
+    });
+
+    // generates a blurred texture
+    const blurredTexture = this.textureRenderer.textureFromMaterial(material);
+
+    // cleans up the temporary material
+    material.dispose();
+
+    return blurredTexture;
+};
+
+/**
  * Transforms a string into a texture.
  *
  * @param {String} text Text to be transformed into a texture.
