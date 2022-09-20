@@ -133,9 +133,16 @@ ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
     const displacementTexture = this._textToDisplacementTexture(text);
 
     // generates a normal map for the text displacement map texture
-    const ctx = this.canvasDisplacement.getContext("2d");
-    const displacementTextureData = ctx.getImageData(0, 0, this.width, this.height);
-    this.displacementNormalMapTexture = ripe.CsrUtils.heightMapToNormalMap(displacementTextureData);
+    this.displacementNormalMapTexture = ripe.CsrUtils.normalMapFromCanvas(this.canvasDisplacement);
+
+    // blurs normal map texture to avoid normal map color banding
+    const blurIntensity = this.textOptions.normalMapBlurIntensity;
+    if (blurIntensity > 0) {
+        this.displacementNormalMapTexture = this._blurTexture(
+            this.displacementNormalMapTexture,
+            blurIntensity
+        );
+    }
 
     // applies the patterns to the text textures
     this.mapTexture = this._mixPatternWithTexture(textTexture, this.baseTexture);
