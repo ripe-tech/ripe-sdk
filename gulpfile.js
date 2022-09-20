@@ -69,6 +69,7 @@ const paths = {
         "src/js/plugins/sync.js",
         "src/js/visual/visual.js",
         "src/js/visual/csr/animation-base.js",
+        "src/js/visual/csr/texture-renderer.js",
         "src/js/visual/csr/animation-change-frame.js",
         "src/js/visual/csr/utils.js",
         "src/js/visual/configurator-csr.js",
