@@ -59,6 +59,7 @@ ripe.CsrInitialsRenderer = function(
     this.displacementTexture = null;
     this.mapTexture = null;
     this.displacementMapTexture = null;
+    this.displacementNormalMapTexture = null;
     this.geometry = null;
     this.mesh = null;
 
@@ -108,6 +109,11 @@ ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
     const textTexture = this._textToTexture(text);
     const displacementTexture = this._textToDisplacementTexture(text);
 
+    // generates a normal map for the text displacement map texture
+    const ctx = this.canvasDisplacement.getContext("2d");
+    const displacementTextureData = ctx.getImageData(0, 0, this.width, this.height);
+    this.displacementNormalMapTexture = ripe.CsrUtils.heightMapToNormalMap(displacementTextureData);
+
     // applies the patterns to the text textures
     this.mapTexture = this._mixPatternWithTexture(textTexture, this.baseTexture);
     this.displacementMapTexture = this._mixPatternWithDisplacementTexture(
@@ -122,6 +128,7 @@ ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
     // updates the initials material
     this.material.map = this.mapTexture;
     this.material.displacementMap = this.displacementMapTexture;
+    this.material.normalMap = this.displacementNormalMapTexture;
 
     // marks material to do a internal update
     this.material.needsUpdate = true;
@@ -259,6 +266,11 @@ ripe.CsrInitialsRenderer.prototype._destroyMaterialTextures = function() {
     if (this.displacementMapTexture) {
         this.displacementMapTexture.dispose();
         this.displacementMapTexture = null;
+    }
+
+    if (this.displacementNormalMapTexture) {
+        this.displacementNormalMapTexture.dispose();
+        this.displacementNormalMapTexture = null;
     }
 };
 
