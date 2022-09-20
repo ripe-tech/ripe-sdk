@@ -258,7 +258,7 @@ ripe.CsrInitialsRenderer.prototype.setSize = function(width = null, height = nul
     if (height === null) throw new Error("height is required");
 
     this.width = width;
-    this.height = width;
+    this.height = height;
     this.canvas.width = this.width;
     this.canvas.height = this.height;
     this.canvasDisplacement.width = this.width;
