@@ -318,6 +318,9 @@ ripe.CsrInitialsRenderer.prototype._preCookTexture = function(texture, options) 
  * @private
  */
 ripe.CsrInitialsRenderer.prototype._mixPatternWithTexture = function(texture, patternTexture) {
+    // returns the original texture if no pattern texture is provided
+    if (!patternTexture) return texture;
+
     // creates a material to run a shader that applies a pattern to a texture
     const material = new window.THREE.ShaderMaterial({
         uniforms: window.THREE.UniformsUtils.merge([
@@ -384,6 +387,9 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function
     patternTexture,
     patternIntensity = 1
 ) {
+    // returns the original texture if no pattern texture is provided
+    if (!patternTexture) return texture;
+
     // creates a material to run a shader that applies a pattern to a height map texture
     const material = new window.THREE.ShaderMaterial({
         uniforms: window.THREE.UniformsUtils.merge([
