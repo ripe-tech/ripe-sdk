@@ -297,6 +297,89 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
 };
 
 /**
+ * Transforms a string into a texture.
+ *
+ * @param {String} text Text to be transformed into a texture.
+ * @returns {THREE.Texture} Texture with the initials text.
+ *
+ * @private
+ */
+ripe.CsrInitialsRenderer.prototype._textToTexture = function(text) {
+    const width = this.canvas.width;
+    const height = this.canvas.height;
+
+    const ctx = this.canvas.getContext("2d");
+
+    // cleans canvas
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.font = `${200}px Arial`; // TODO set font and font size
+    // ctx.fillStyle = "#ff0000";
+    ctx.fillStyle = "#ff00ff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // adds a little thickness so that when the displacement is applied,
+    // the color expands to the edges of the text
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "#ff00ff";
+
+    // TODO offsets as options
+    const xOffset = 0;
+    const yOffset = 0;
+
+    // writes text to the center of the canvas
+    const posX = width / 2;
+    const posY = height / 2;
+    ctx.fillText(text, posX + xOffset, posY + yOffset);
+    ctx.strokeText(text, posX + xOffset, posY + yOffset);
+
+    // creates texture from canvas
+    const texture = new window.THREE.CanvasTexture(this.canvas);
+
+    return texture;
+};
+
+/**
+ * Transforms a string into a displacement texture.
+ *
+ * @param {String} text Text to be transformed into a texture.
+ * @returns {THREE.Texture} Texture with the initials text.
+ *
+ * @private
+ */
+ripe.CsrInitialsRenderer.prototype._textToDisplacementTexture = function(text) {
+    const ctx = this.canvasDisplacement.getContext("2d");
+
+    // cleans canvas with black color
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, this.width, this.height);
+
+    ctx.font = `${200}px Arial`; // TODO set font and font size
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // adds blur filter to attenuate the displacement
+    // more blur equals less displacement which means more rounded edges
+    ctx.filter = "blur(1.5px)";
+
+    // TODO offsets as options
+    const xOffset = 0;
+    const yOffset = 0;
+
+    // writes text to the center of the canvas
+    const posX = this.width / 2;
+    const posY = this.height / 2;
+    ctx.fillText(text, posX + xOffset, posY + yOffset);
+
+    // creates texture from canvas
+    const texture = new window.THREE.CanvasTexture(this.canvasDisplacement);
+
+    return texture;
+};
+
+/**
  * This method is used to go around the Three.js limitation of not respecting all
  * THREE.Texture properties when mapping some textures such as displacement maps,
  * normal maps, etc.
@@ -318,6 +401,73 @@ ripe.CsrInitialsRenderer.prototype._preCookTexture = function(texture, options) 
     material.dispose();
 
     return updatedTexture;
+};
+
+/**
+ * Blurs a texture by doing a Gaussian blur pass.
+ *
+ * @param {THREE.Texture} texture Texture to blur.
+ * @param {Number} blurIntensity Intensity of blur filter that is going to be applied.
+ * @returns {THREE.Texture} The blurred texture.
+ */
+ripe.CsrInitialsRenderer.prototype._blurTexture = function(texture, blurIntensity = 1) {
+    // creates a material to run a shader that blurs the texture
+    const material = new window.THREE.ShaderMaterial({
+        uniforms: window.THREE.UniformsUtils.merge([
+            {
+                baseTexture: {
+                    type: "t",
+                    value: texture
+                },
+                h: {
+                    type: "f",
+                    value: 1 / (this.width * blurIntensity)
+                },
+                v: {
+                    type: "f",
+                    value: 1 / (this.height * blurIntensity)
+                }
+            }
+        ]),
+        vertexShader: `
+                varying vec2 vUv;
+
+                void main() {
+                    vUv = uv;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+        fragmentShader: `
+            uniform sampler2D baseTexture;
+            uniform float h;
+            uniform float v;
+            varying vec2 vUv;
+
+            void main() {
+                vec4 sum = vec4(0.0);
+                
+                sum += texture2D(baseTexture, vec2(vUv.x - 4.0 * h,  vUv.y - 4.0 * v)) * 0.051;
+                sum += texture2D(baseTexture, vec2(vUv.x - 3.0 * h,  vUv.y - 3.0 * v)) * 0.0918;
+                sum += texture2D(baseTexture, vec2(vUv.x - 2.0 * h,  vUv.y - 2.0 * v)) * 0.12245;
+                sum += texture2D(baseTexture, vec2(vUv.x - 1.0 * h,  vUv.y - 1.0 * v)) * 0.1531;
+                sum += texture2D(baseTexture, vec2(vUv.x, vUv.y)) * 0.1633;
+                sum += texture2D(baseTexture, vec2(vUv.x + 1.0 * h, vUv.y + 1.0 * v)) * 0.1531;
+                sum += texture2D(baseTexture, vec2(vUv.x + 2.0 * h, vUv.y + 2.0 * v)) * 0.12245;
+                sum += texture2D(baseTexture, vec2(vUv.x + 3.0 * h, vUv.y + 3.0 * v)) * 0.0918;
+                sum += texture2D(baseTexture, vec2(vUv.x + 4.0 * h, vUv.y + 4.0 * v)) * 0.051;
+
+                gl_FragColor = sum;
+            }
+        `
+    });
+
+    // generates a blurred texture
+    const blurredTexture = this.textureRenderer.textureFromMaterial(material);
+
+    // cleans up the temporary material
+    material.dispose();
+
+    return blurredTexture;
 };
 
 /**
@@ -455,154 +605,4 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function
     material.dispose();
 
     return mixedTexture;
-};
-
-/**
- * Blurs a texture by doing a Gaussian blur pass.
- *
- * @param {THREE.Texture} texture Texture to blur.
- * @param {Number} blurIntensity Intensity of blur filter that is going to be applied.
- * @returns {THREE.Texture} The blurred texture.
- */
-ripe.CsrInitialsRenderer.prototype._blurTexture = function(texture, blurIntensity = 1) {
-    // creates a material to run a shader that blurs the texture
-    const material = new window.THREE.ShaderMaterial({
-        uniforms: window.THREE.UniformsUtils.merge([
-            {
-                baseTexture: {
-                    type: "t",
-                    value: texture
-                },
-                h: {
-                    type: "f",
-                    value: 1 / (this.width * blurIntensity)
-                },
-                v: {
-                    type: "f",
-                    value: 1 / (this.height * blurIntensity)
-                }
-            }
-        ]),
-        vertexShader: `
-                varying vec2 vUv;
-
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-        fragmentShader: `
-            uniform sampler2D baseTexture;
-            uniform float h;
-            uniform float v;
-            varying vec2 vUv;
-
-            void main() {
-                vec4 sum = vec4(0.0);
-                
-                sum += texture2D(baseTexture, vec2(vUv.x - 4.0 * h,  vUv.y - 4.0 * v)) * 0.051;
-                sum += texture2D(baseTexture, vec2(vUv.x - 3.0 * h,  vUv.y - 3.0 * v)) * 0.0918;
-                sum += texture2D(baseTexture, vec2(vUv.x - 2.0 * h,  vUv.y - 2.0 * v)) * 0.12245;
-                sum += texture2D(baseTexture, vec2(vUv.x - 1.0 * h,  vUv.y - 1.0 * v)) * 0.1531;
-                sum += texture2D(baseTexture, vec2(vUv.x, vUv.y)) * 0.1633;
-                sum += texture2D(baseTexture, vec2(vUv.x + 1.0 * h, vUv.y + 1.0 * v)) * 0.1531;
-                sum += texture2D(baseTexture, vec2(vUv.x + 2.0 * h, vUv.y + 2.0 * v)) * 0.12245;
-                sum += texture2D(baseTexture, vec2(vUv.x + 3.0 * h, vUv.y + 3.0 * v)) * 0.0918;
-                sum += texture2D(baseTexture, vec2(vUv.x + 4.0 * h, vUv.y + 4.0 * v)) * 0.051;
-
-                gl_FragColor = sum;
-            }
-        `
-    });
-
-    // generates a blurred texture
-    const blurredTexture = this.textureRenderer.textureFromMaterial(material);
-
-    // cleans up the temporary material
-    material.dispose();
-
-    return blurredTexture;
-};
-
-/**
- * Transforms a string into a texture.
- *
- * @param {String} text Text to be transformed into a texture.
- * @returns {THREE.Texture} Texture with the initials text.
- *
- * @private
- */
-ripe.CsrInitialsRenderer.prototype._textToTexture = function(text) {
-    const width = this.canvas.width;
-    const height = this.canvas.height;
-
-    const ctx = this.canvas.getContext("2d");
-
-    // cleans canvas
-    ctx.clearRect(0, 0, width, height);
-
-    ctx.font = `${200}px Arial`; // TODO set font and font size
-    // ctx.fillStyle = "#ff0000";
-    ctx.fillStyle = "#ffffff";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    // adds a little thickness so that when the displacement is applied,
-    // the color expands to the edges of the text
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = "#ffffff";
-
-    // TODO offsets as options
-    const xOffset = 0;
-    const yOffset = 0;
-
-    // writes text to the center of the canvas
-    const posX = width / 2;
-    const posY = height / 2;
-    ctx.fillText(text, posX + xOffset, posY + yOffset);
-    ctx.strokeText(text, posX + xOffset, posY + yOffset);
-
-    // creates texture from canvas
-    const texture = new window.THREE.CanvasTexture(this.canvas);
-
-    return texture;
-};
-
-/**
- * Transforms a string into a displacement texture.
- *
- * @param {String} text Text to be transformed into a texture.
- * @returns {THREE.Texture} Texture with the initials text.
- *
- * @private
- */
-ripe.CsrInitialsRenderer.prototype._textToDisplacementTexture = function(text) {
-    const ctx = this.canvasDisplacement.getContext("2d");
-
-    // cleans canvas with black color
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, this.width, this.height);
-
-    ctx.font = `${200}px Arial`; // TODO set font and font size
-    ctx.fillStyle = "#ffffff";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    // adds blur filter to attenuate the displacement
-    // more blur equals less displacement which means more rounded edges
-    ctx.filter = "blur(1.5px)";
-
-    // TODO offsets as options
-    const xOffset = 0;
-    const yOffset = 0;
-
-    // writes text to the center of the canvas
-    const posX = this.width / 2;
-    const posY = this.height / 2;
-    ctx.fillText(text, posX + xOffset, posY + yOffset);
-
-    // creates texture from canvas
-    const texture = new window.THREE.CanvasTexture(this.canvasDisplacement);
-
-    return texture;
 };
