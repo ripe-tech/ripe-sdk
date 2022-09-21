@@ -242,14 +242,17 @@ ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) 
     if (options.materialOptions) {
         this.materialOptions = { ...this.materialOptions, ...options.materialOptions };
         updateMaterial = true;
+        updateInitials = true;
     }
     if (options.meshOptions) {
         this.meshOptions = { ...this.meshOptions, ...options.meshOptions };
         updateMesh = true;
+        updateInitials = true;
     }
     if (options.baseTextureOptions) {
         this.baseTextureOptions = { ...this.baseTextureOptions, ...options.baseTextureOptions };
         updateBaseTexture = true;
+        updateInitials = true;
     }
     if (options.displacementTextureOptions) {
         this.displacementTextureOptions = {
@@ -257,6 +260,7 @@ ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) 
             ...options.displacementTextureOptions
         };
         updateDisplacementTexture = true;
+        updateInitials = true;
     }
 
     // performs the update operations. The order matters
