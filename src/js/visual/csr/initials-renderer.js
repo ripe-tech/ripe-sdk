@@ -224,6 +224,38 @@ ripe.CsrInitialsRenderer.prototype.setBaseTextureOptions = async function(option
 };
 
 /**
+ * Sets the height map texture. This texture is the height map pattern that is applied to the
+ * height map texture of the initials characters.
+ *
+ * @param {String} path Path to the texture.
+ * @param {Object} options Options to apply to the texture.
+ */
+ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path, options = {}) {
+    if (!path) throw new Error("Invalid texture path");
+
+    this.currentDisplacementTexturePath = path;
+    this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
+
+    // loads the initials height map pattern texture
+    let patternTexture = await ripe.CsrUtils.loadTexture(path);
+
+    // applies texture options by precooking the texture
+    patternTexture = this._preCookTexture(patternTexture, this.displacementTextureOptions);
+
+    // assigns the height map texture
+    this.displacementTexture = patternTexture;
+};
+
+/**
+ * Sets the height map texture attributes.
+ *
+ * @param {Object} options Options to apply to the texture.
+ */
+ripe.CsrInitialsRenderer.prototype.setDisplacementTextureOptions = async function(options = {}) {
+    await this.setDisplacementTexture(this.currentDisplacementTexturePath, options);
+};
+
+/**
  * Updates initials renderer state by updating it's options.
  *
  * @param {Object} options Set of optional parameters to adjust the initials renderer.
@@ -273,38 +305,6 @@ ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) 
     }
     if (updateInitials) this.setInitials(this.currentText);
     if (updateMesh) this._buildInitialsMesh();
-};
-
-/**
- * Sets the height map texture. This texture is the height map pattern that is applied to the
- * height map texture of the initials characters.
- *
- * @param {String} path Path to the texture.
- * @param {Object} options Options to apply to the texture.
- */
-ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path, options = {}) {
-    if (!path) throw new Error("Invalid texture path");
-
-    this.currentDisplacementTexturePath = path;
-    this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
-
-    // loads the initials height map pattern texture
-    let patternTexture = await ripe.CsrUtils.loadTexture(path);
-
-    // applies texture options by precooking the texture
-    patternTexture = this._preCookTexture(patternTexture, this.displacementTextureOptions);
-
-    // assigns the height map texture
-    this.displacementTexture = patternTexture;
-};
-
-/**
- * Sets the height map texture attributes.
- *
- * @param {Object} options Options to apply to the texture.
- */
-ripe.CsrInitialsRenderer.prototype.setDisplacementTextureOptions = async function(options = {}) {
-    await this.setDisplacementTexture(this.currentDisplacementTexturePath, options);
 };
 
 /**
