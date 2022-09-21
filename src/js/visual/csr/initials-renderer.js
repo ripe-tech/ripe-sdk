@@ -414,32 +414,36 @@ ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
     );
 
     const points = [
-        new window.THREE.Vector3(-50, 0, 0),
+        new window.THREE.Vector3(-500, 0, 0),
         new window.THREE.Vector3(0, 0, 0),
-        new window.THREE.Vector3(50, 0, 0)
+        new window.THREE.Vector3(500, 0, 0)
     ];
     const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
 
     const curveWidth = Math.round(curve.getLength());
-    // const curvePointOffset = curveWidth > this.width ? Math.floor((curveWidth / 2) - (this.width / 2)) : 0;
+    const curveWidthOffset = curveWidth > this.width ? Math.floor((curveWidth / 2) - (this.width / 2)) : 0;
 
-    const pointsNum = 10;// this.meshOptions.widthSegments; // Math.max(this.meshOptions.widthSegments, curveWidth);
+    const pointsNum = curveWidth;
+    const curvePointOffset = curveWidthOffset === 0 ? 0 : Math.floor(pointsNum * (curveWidthOffset / curveWidth));
     const curvePoints = curve.getPoints(pointsNum);
-    // /// const step = Math.floor(pointsNum / this.meshOptions.widthSegments);
-    // const curvePointOffset = curveWidthOffset === 0 ? 0 : Math.floor(this.meshOptions.widthSegments * (curveWidthOffset / curveWidth));
-    // console.log(curvePointOffset);
+    const pointStep = Math.floor(this.width / this.meshOptions.widthSegments);
 
-    console.log("curvePoints", curvePoints);
+    console.log("width:", this.width);
     console.log("curveWidth:", curveWidth);
+    console.log("curveWidthOffset:", curveWidthOffset);
+    console.log("curvePoints", curvePoints);
+    console.log("curvePointOffset:", curvePointOffset);
+    console.log("pointStep:", pointStep);
 
     const geoPos = geometry.attributes.position;
     for (let i = 0; i <= this.meshOptions.heightSegments; i++) {
         console.log("\n\n", i);
-        for (let j = 0; j <= this.meshOptions.widthSegments; j++) {
+        for (let j = 0, cPointIdx = curvePointOffset; j <= this.meshOptions.widthSegments; j++, cPointIdx += pointStep) {
             const vIdx = j + i + (this.meshOptions.widthSegments * i);
 
-            const curvePoint = curvePoints[j];
-            console.log("vIdx", vIdx, "x: " + geoPos.getX(vIdx), "curvePoint:", curvePoint);
+            console.log("cPointIdx:", cPointIdx);
+            const curvePoint = curvePoints[cPointIdx];
+            // console.log("vIdx", vIdx, "x: " + geoPos.getX(vIdx), "curvePoint:", curvePoint);
 
             geoPos.setXYZ(vIdx, curvePoint.x, geoPos.getY(vIdx) + curvePoint.y, curvePoint.z);
         }
