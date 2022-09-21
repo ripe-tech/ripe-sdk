@@ -62,6 +62,7 @@ ripe.CsrInitialsRenderer = function(
     this.displacementNormalMapTexture = null;
     this.geometry = null;
     this.mesh = null;
+    this.currentText = "";
 
     // unpacks the CSR Initials Renderer options
     const textOpts = options.textOptions || {};
@@ -124,6 +125,8 @@ ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
  * @param {String} text Initials text.
  */
 ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
+    this.currentText = text;
+
     // cleans up textures that are going to be replaced
     this._destroyMaterialTextures();
 
