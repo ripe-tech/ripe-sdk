@@ -916,34 +916,6 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     this._initDebug();
 
     this._render();
-
-    // TODO delete these tests
-    const initialsContainer = this.element.querySelector(".initials-container");
-    const initialsCanvas = initialsContainer.querySelector(".canvas");
-    const initialsDisplacementCanvas = initialsContainer.querySelector(".displacement");
-
-    const initialsRenderer = new ripe.CsrInitialsRenderer(
-        initialsCanvas,
-        initialsDisplacementCanvas,
-        1000,
-        1000,
-        this.pixelRatio
-    );
-
-    const PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
-    const DISPLACEMENT_PATTERN_URL =
-        "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
-    await Promise.all([
-        initialsRenderer.setBaseTexture(PATTERN_URL),
-        initialsRenderer.setDisplacementTexture(DISPLACEMENT_PATTERN_URL)
-    ]);
-
-    initialsRenderer.setInitials("Example Text");
-
-    const mesh = await initialsRenderer.getMesh();
-    mesh.scale.set(0.1, 0.1, 0.1);
-
-    this.modelGroup.add(mesh);
 };
 
 /**
