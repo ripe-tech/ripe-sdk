@@ -102,11 +102,10 @@ ripe.CsrInitialsRenderer = function(
         widthSegments: meshOpts.widthSegments !== undefined ? meshOpts.widthSegments : 500,
         heightSegments: meshOpts.heightSegments !== undefined ? meshOpts.heightSegments : 500
     };
-    this.baseTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...options.baseTextureOptions };
-    this.displacementTextureOptions = {
-        ...DEFAULT_TEXTURE_SETTINGS,
-        ...options.displacementTextureOptions
-    };
+    const baseTextureOpts = options.baseTextureOptions || {};
+    this.baseTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...baseTextureOpts };
+    const displacementTextureOpts = options.displacementTextureOptions || {};
+    this.displacementTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...displacementTextureOpts };
 
     // sets the CSR Initials Renderer size
     this.setSize(width, height);
@@ -205,6 +204,27 @@ ripe.CsrInitialsRenderer.prototype.setBaseTexture = async function(path, options
 
     // assigns the base texture
     this.baseTexture = patternTexture;
+};
+
+/**
+ * Updates configurator current options with the ones provided.
+ *
+ * @param {Object} options Set of optional parameters to adjust the Configurator.
+ */
+ripe.CsrInitialsRenderer.prototype.updateOptions = function(options = {}) {
+    const textOpts = options.textOptions || {};
+    this.textOptions = { ...this.textOptions, ...textOpts };
+    const materialOpts = options.materialOptions || {};
+    this.materialOptions = { ...this.materialOptions, ...materialOpts };
+    const meshOpts = options.meshOptions || {};
+    this.meshOptions = { ...this.meshOptions, ...meshOpts };
+    const baseTextureOpts = options.baseTextureOptions || {};
+    this.baseTextureOptions = { ...this.baseTextureOptions, ...baseTextureOpts };
+    const displacementTextureOpts = options.displacementTextureOptions || {};
+    this.displacementTextureOptions = {
+        ...this.displacementTextureOptions,
+        ...displacementTextureOpts
+    };
 };
 
 /**
