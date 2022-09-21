@@ -256,6 +256,29 @@ ripe.CsrInitialsRenderer.prototype.setDisplacementTextureOptions = async functio
 };
 
 /**
+ * Sets the initials renderer width and height. It also updates the texture renderer used by
+ * this instance.
+ *
+ * @param {Number} width Number for the width in pixels.
+ * @param {Number} height Number for the height in pixels.
+ */
+ripe.CsrInitialsRenderer.prototype.setSize = function(width = null, height = null) {
+    if (width === null) throw new Error("width is required");
+    if (height === null) throw new Error("height is required");
+
+    this.width = width;
+    this.height = height;
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+    this.canvasDisplacement.width = this.width;
+    this.canvasDisplacement.height = this.height;
+
+    // rebuilds texture renderer with the new size
+    if (this.textureRenderer) this.textureRenderer.destroy();
+    this.textureRenderer = new ripe.CsrTextureRenderer(width, height, this.pixelRatio);
+};
+
+/**
  * Updates initials renderer state by updating it's options.
  *
  * @param {Object} options Set of optional parameters to adjust the initials renderer.
@@ -324,29 +347,6 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
 
     // cleans up the initials mesh
     this._destroyMesh();
-};
-
-/**
- * Sets the initials renderer width and height. It also updates the texture renderer used by
- * this instance.
- *
- * @param {Number} width Number for the width in pixels.
- * @param {Number} height Number for the height in pixels.
- */
-ripe.CsrInitialsRenderer.prototype.setSize = function(width = null, height = null) {
-    if (width === null) throw new Error("width is required");
-    if (height === null) throw new Error("height is required");
-
-    this.width = width;
-    this.height = height;
-    this.canvas.width = this.width;
-    this.canvas.height = this.height;
-    this.canvasDisplacement.width = this.width;
-    this.canvasDisplacement.height = this.height;
-
-    // rebuilds texture renderer with the new size
-    if (this.textureRenderer) this.textureRenderer.destroy();
-    this.textureRenderer = new ripe.CsrTextureRenderer(width, height, this.pixelRatio);
 };
 
 /**
