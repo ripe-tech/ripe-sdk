@@ -262,7 +262,7 @@ ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) 
         updateInitials = true;
     }
 
-    // performs the update operations. The order matters
+    // performs update operations. The order is important
     if (updateBaseTexture) await this.setBaseTextureOptions(this.baseTextureOptions);
     if (updateDisplacementTexture) {
         await this.setDisplacementTextureOptions(this.displacementTextureOptions);
