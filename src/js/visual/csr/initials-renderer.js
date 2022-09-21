@@ -247,7 +247,6 @@ ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) 
     if (options.meshOptions) {
         this.meshOptions = { ...this.meshOptions, ...options.meshOptions };
         updateMesh = true;
-        updateInitials = true;
     }
     if (options.baseTextureOptions) {
         this.baseTextureOptions = { ...this.baseTextureOptions, ...options.baseTextureOptions };
@@ -272,10 +271,8 @@ ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) 
         ripe.CsrUtils.applyOptions(this.materialOptions);
         this.material.needsUpdate = true;
     }
-    if (updateMesh) {
-        // TODO destroy and reconstruct mesh
-    }
     if (updateInitials) this.setInitials(this.currentText);
+    if (updateMesh) this._buildInitialsMesh();
 };
 
 /**
