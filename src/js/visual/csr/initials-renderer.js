@@ -11,8 +11,6 @@ if (
     var ripe = base.ripe;
 }
 
-// TODO support curve points
-
 /**
  * This class encapsulates all logic related to the CSR initials. It provides tools to process and get
  * CSR initials related resources such as textures, materials and 3D objects that can be used to
@@ -395,15 +393,42 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
     if (this.mesh) this._destroyMesh();
 
     // generates the initials plane geometry
-    this.geometry = new window.THREE.PlaneBufferGeometry(
+    this.geometry = this._testGeometry();
+
+    // creates the initials mesh
+    // this.mesh = new window.THREE.Mesh(this.geometry, this.material);
+
+    const material = new window.THREE.MeshNormalMaterial();
+    this.mesh = new window.THREE.Mesh(this.geometry, material);
+};
+
+ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
+    const geometry = new window.THREE.PlaneBufferGeometry(
         this.width,
         this.height,
         this.meshOptions.widthSegments,
         this.meshOptions.heightSegments
     );
 
-    // creates the initials mesh
-    this.mesh = new window.THREE.Mesh(this.geometry, this.material);
+    const points = [
+        new window.THREE.Vector3(-250, 0, 0),
+        new window.THREE.Vector3(0, 0, -150),
+        new window.THREE.Vector3(250, 0, 0)
+    ];
+    const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
+
+    const curvePoints = curve.getPoints(this.meshOptions.widthSegments);
+
+    const geoPos = geometry.attributes.position;
+    for (let i = 0; i <= this.meshOptions.heightSegments; i++) {
+        for (let j = 0; j < curvePoints.length; j++) {
+            const curvePoint = curvePoints[j];
+            const vIdx = j + curvePoints.length * i;
+            geoPos.setXYZ(vIdx, curvePoint.x, geoPos.getY(vIdx) + curvePoint.y, curvePoint.z);
+        }
+    }
+
+    return geometry;
 };
 
 /**
