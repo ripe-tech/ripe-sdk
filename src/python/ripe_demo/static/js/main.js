@@ -452,7 +452,7 @@ window.onload = function() {
 
     const initConfiguratorCsr = function() {
         const element = document.getElementById("configurator-csr");
-        configuratorCsr = ripe.bindConfigurator(element, { type: "csr" });
+        configuratorCsr = ripe.bindConfigurator(element, { type: "csr", debug: true });
 
         // change frame on frame click
         const frame0 = document.getElementById("frame-0");
