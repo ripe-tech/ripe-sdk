@@ -398,11 +398,14 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
     // creates the initials mesh
     // this.mesh = new window.THREE.Mesh(this.geometry, this.material);
 
-    const material = new window.THREE.MeshNormalMaterial();
+    const material = new window.THREE.MeshNormalMaterial({ wireframe: true });
     this.mesh = new window.THREE.Mesh(this.geometry, material);
 };
 
 ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
+    this.meshOptions.widthSegments = 10;
+    this.meshOptions.heightSegments = 5;
+
     const geometry = new window.THREE.PlaneBufferGeometry(
         this.width,
         this.height,
@@ -411,19 +414,33 @@ ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
     );
 
     const points = [
-        new window.THREE.Vector3(-250, 0, 0),
-        new window.THREE.Vector3(0, 0, -150),
-        new window.THREE.Vector3(250, 0, 0)
+        new window.THREE.Vector3(-50, 0, 0),
+        new window.THREE.Vector3(0, 0, 0),
+        new window.THREE.Vector3(50, 0, 0)
     ];
     const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
 
-    const curvePoints = curve.getPoints(this.meshOptions.widthSegments);
+    const curveWidth = Math.round(curve.getLength());
+    // const curvePointOffset = curveWidth > this.width ? Math.floor((curveWidth / 2) - (this.width / 2)) : 0;
+
+    const pointsNum = 10;// this.meshOptions.widthSegments; // Math.max(this.meshOptions.widthSegments, curveWidth);
+    const curvePoints = curve.getPoints(pointsNum);
+    // /// const step = Math.floor(pointsNum / this.meshOptions.widthSegments);
+    // const curvePointOffset = curveWidthOffset === 0 ? 0 : Math.floor(this.meshOptions.widthSegments * (curveWidthOffset / curveWidth));
+    // console.log(curvePointOffset);
+
+    console.log("curvePoints", curvePoints);
+    console.log("curveWidth:", curveWidth);
 
     const geoPos = geometry.attributes.position;
     for (let i = 0; i <= this.meshOptions.heightSegments; i++) {
-        for (let j = 0; j < curvePoints.length; j++) {
+        console.log("\n\n", i);
+        for (let j = 0; j <= this.meshOptions.widthSegments; j++) {
+            const vIdx = j + i + (this.meshOptions.widthSegments * i);
+
             const curvePoint = curvePoints[j];
-            const vIdx = j + curvePoints.length * i;
+            console.log("vIdx", vIdx, "x: " + geoPos.getX(vIdx), "curvePoint:", curvePoint);
+
             geoPos.setXYZ(vIdx, curvePoint.x, geoPos.getY(vIdx) + curvePoint.y, curvePoint.z);
         }
     }
