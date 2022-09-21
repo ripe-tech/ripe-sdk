@@ -11,16 +11,6 @@ if (
     var ripe = base.ripe;
 }
 
-const DEFAULT_TEXTURE_SETTINGS = {
-    wrapS: window.THREE.RepeatWrapping,
-    wrapT: window.THREE.RepeatWrapping,
-    offset: new window.THREE.Vector2(0, 0),
-    repeat: new window.THREE.Vector2(1, 1),
-    rotation: 0,
-    center: new window.THREE.Vector2(0, 0),
-    encoding: window.THREE.sRGBEncoding
-};
-
 // TODO support curve points
 
 /**
@@ -65,6 +55,16 @@ ripe.CsrInitialsRenderer = function(
     this.geometry = null;
     this.mesh = null;
     this.currentText = "";
+
+    const DEFAULT_TEXTURE_SETTINGS = {
+        wrapS: window.THREE.RepeatWrapping,
+        wrapT: window.THREE.RepeatWrapping,
+        offset: new window.THREE.Vector2(0, 0),
+        repeat: new window.THREE.Vector2(1, 1),
+        rotation: 0,
+        center: new window.THREE.Vector2(0, 0),
+        encoding: window.THREE.sRGBEncoding
+    };
 
     // unpacks the CSR Initials Renderer options
     const textOpts = options.textOptions || {};
