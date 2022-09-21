@@ -273,6 +273,12 @@ ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) 
         ripe.CsrUtils.applyOptions(this.materialOptions);
         // TODO assign textures
         this.material.needsUpdate = true;
+    }
+    if (updateInitials) this.setInitials(this.currentText);
+
+    if (updateMesh) {
+        // TODO destroy and reconstruct mesh
+    }
 };
 
 /**
