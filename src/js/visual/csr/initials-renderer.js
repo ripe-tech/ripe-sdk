@@ -403,7 +403,7 @@ ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
 };
 
 ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
-    this.meshOptions.widthSegments = 10;
+    this.meshOptions.widthSegments = 300;
     this.meshOptions.heightSegments = 5;
 
     const geometry = new window.THREE.PlaneBufferGeometry(
@@ -414,11 +414,11 @@ ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
     );
 
     const points = [
-        new window.THREE.Vector3(-500, 0, 0),
+        // new window.THREE.Vector3(-100, 0, 0),
         new window.THREE.Vector3(-100, 0, 0),
-        new window.THREE.Vector3(0, 0, 250),
-        new window.THREE.Vector3(100, 0, 0),
-        new window.THREE.Vector3(500, 0, 0)
+        new window.THREE.Vector3(0, 0, 0),
+        new window.THREE.Vector3(100, 0, 0)
+        // new window.THREE.Vector3(500, 0, 0)
     ];
     const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
 
@@ -428,7 +428,7 @@ ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
     const pointsNum = curveWidth;
     const curvePointOffset = curveWidthOffset === 0 ? 0 : Math.floor(pointsNum * (curveWidthOffset / curveWidth));
     const curvePoints = curve.getPoints(pointsNum);
-    const pointStep = Math.floor(this.width / this.meshOptions.widthSegments);
+    const pointStep = curveWidth >= this.width ? Math.floor(this.width / this.meshOptions.widthSegments) : curveWidth / this.meshOptions.widthSegments;
 
     console.log("width:", this.width);
     console.log("curveWidth:", curveWidth);
@@ -444,7 +444,7 @@ ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
             const vIdx = j + i + (this.meshOptions.widthSegments * i);
 
             console.log("cPointIdx:", cPointIdx);
-            const curvePoint = curvePoints[cPointIdx];
+            const curvePoint = curvePoints[Math.round(cPointIdx)];
             // console.log("vIdx", vIdx, "x: " + geoPos.getX(vIdx), "curvePoint:", curvePoint);
 
             geoPos.setXYZ(vIdx, curvePoint.x, geoPos.getY(vIdx) + curvePoint.y, curvePoint.z);
