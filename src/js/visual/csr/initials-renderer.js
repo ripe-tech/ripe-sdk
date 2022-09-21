@@ -264,25 +264,18 @@ ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) 
     }
 
     // performs the update operations. The order matters
-    if (updateBaseTexture) {
-        await this.setBaseTextureOptions(this.baseTextureOptions);
-    }
-
+    if (updateBaseTexture) await this.setBaseTextureOptions(this.baseTextureOptions);
     if (updateDisplacementTexture) {
         await this.setDisplacementTextureOptions(this.displacementTextureOptions);
-        // TODO generate normal map again
     }
-
     if (updateMaterial) {
         ripe.CsrUtils.applyOptions(this.materialOptions);
-        // TODO assign textures
         this.material.needsUpdate = true;
     }
-    if (updateInitials) this.setInitials(this.currentText);
-
     if (updateMesh) {
         // TODO destroy and reconstruct mesh
     }
+    if (updateInitials) this.setInitials(this.currentText);
 };
 
 /**
