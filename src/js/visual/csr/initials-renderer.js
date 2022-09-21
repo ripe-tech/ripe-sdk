@@ -415,7 +415,9 @@ ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
 
     const points = [
         new window.THREE.Vector3(-500, 0, 0),
-        new window.THREE.Vector3(0, 0, 0),
+        new window.THREE.Vector3(-100, 0, 0),
+        new window.THREE.Vector3(0, 0, 250),
+        new window.THREE.Vector3(100, 0, 0),
         new window.THREE.Vector3(500, 0, 0)
     ];
     const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
