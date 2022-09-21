@@ -224,24 +224,55 @@ ripe.CsrInitialsRenderer.prototype.setBaseTextureOptions = async function(option
 };
 
 /**
- * Updates configurator current options with the ones provided.
+ * Updates initials renderer state by updating it's options.
  *
- * @param {Object} options Set of optional parameters to adjust the Configurator.
+ * @param {Object} options Set of optional parameters to adjust the initials renderer.
  */
-ripe.CsrInitialsRenderer.prototype.updateOptions = function(options = {}) {
-    const textOpts = options.textOptions || {};
-    this.textOptions = { ...this.textOptions, ...textOpts };
-    const materialOpts = options.materialOptions || {};
-    this.materialOptions = { ...this.materialOptions, ...materialOpts };
-    const meshOpts = options.meshOptions || {};
-    this.meshOptions = { ...this.meshOptions, ...meshOpts };
-    const baseTextureOpts = options.baseTextureOptions || {};
-    this.baseTextureOptions = { ...this.baseTextureOptions, ...baseTextureOpts };
-    const displacementTextureOpts = options.displacementTextureOptions || {};
-    this.displacementTextureOptions = {
-        ...this.displacementTextureOptions,
-        ...displacementTextureOpts
-    };
+ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) {
+    let updateInitials = false;
+    let updateMaterial = false;
+    let updateMesh = false;
+    let updateBaseTexture = false;
+    let updateDisplacementTexture = false;
+
+    if (options.textOptions) {
+        this.textOptions = { ...this.textOptions, ...options.textOptions };
+        updateInitials = true;
+    }
+    if (options.materialOptions) {
+        this.materialOptions = { ...this.materialOptions, ...options.materialOptions };
+        updateMaterial = true;
+    }
+    if (options.meshOptions) {
+        this.meshOptions = { ...this.meshOptions, ...options.meshOptions };
+        updateMesh = true;
+    }
+    if (options.baseTextureOptions) {
+        this.baseTextureOptions = { ...this.baseTextureOptions, ...options.baseTextureOptions };
+        updateBaseTexture = true;
+    }
+    if (options.displacementTextureOptions) {
+        this.displacementTextureOptions = {
+            ...this.displacementTextureOptions,
+            ...options.displacementTextureOptions
+        };
+        updateDisplacementTexture = true;
+    }
+
+    // performs the update operations. The order matters
+    if (updateBaseTexture) {
+        await this.setBaseTextureOptions(this.baseTextureOptions);
+    }
+
+    if (updateDisplacementTexture) {
+        await this.setDisplacementTextureOptions(this.displacementTextureOptions);
+        // TODO generate normal map again
+    }
+
+    if (updateMaterial) {
+        ripe.CsrUtils.applyOptions(this.materialOptions);
+        // TODO assign textures
+        this.material.needsUpdate = true;
 };
 
 /**
