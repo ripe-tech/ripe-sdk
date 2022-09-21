@@ -55,7 +55,9 @@ ripe.CsrInitialsRenderer = function(
     this.pixelRatio = pixelRatio;
     this.textureRenderer = null;
     this.material = null;
+    this.currentBaseTexturePath = null;
     this.baseTexture = null;
+    this.currentDisplacementTexturePath = null;
     this.displacementTexture = null;
     this.mapTexture = null;
     this.displacementMapTexture = null;
@@ -197,6 +199,9 @@ ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
  * @param {Object} options Options to apply to the texture.
  */
 ripe.CsrInitialsRenderer.prototype.setBaseTexture = async function(path, options = {}) {
+    if (!path) throw new Error("Invalid texture path");
+
+    this.currentBaseTexturePath = path;
     this.baseTextureOptions = { ...this.baseTextureOptions, ...options };
 
     // loads the initials pattern texture
@@ -207,6 +212,15 @@ ripe.CsrInitialsRenderer.prototype.setBaseTexture = async function(path, options
 
     // assigns the base texture
     this.baseTexture = patternTexture;
+};
+
+/**
+ * Sets the diffuse texture attributes.
+ *
+ * @param {Object} options Options to apply to the texture.
+ */
+ripe.CsrInitialsRenderer.prototype.setBaseTextureOptions = async function(options = {}) {
+    await this.setBaseTexture(this.currentBaseTexturePath, options);
 };
 
 /**
@@ -238,6 +252,9 @@ ripe.CsrInitialsRenderer.prototype.updateOptions = function(options = {}) {
  * @param {Object} options Options to apply to the texture.
  */
 ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path, options = {}) {
+    if (!path) throw new Error("Invalid texture path");
+
+    this.currentDisplacementTexturePath = path;
     this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
 
     // loads the initials height map pattern texture
@@ -248,6 +265,15 @@ ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path,
 
     // assigns the height map texture
     this.displacementTexture = patternTexture;
+};
+
+/**
+ * Sets the height map texture attributes.
+ *
+ * @param {Object} options Options to apply to the texture.
+ */
+ripe.CsrInitialsRenderer.prototype.setDisplacementTextureOptions = async function(options = {}) {
+    await this.setDisplacementTexture(this.currentDisplacementTexturePath, options);
 };
 
 /**
