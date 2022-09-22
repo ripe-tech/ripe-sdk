@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add CSR framerate, world axis and model axis debug tools
 * Add CSR zoom support
 * Add `CsrTextureRenderer`
-* Add `CsrInitialsRenderer`
+* Add `CsrRenderedInitials`
 
 ### Changed
 
