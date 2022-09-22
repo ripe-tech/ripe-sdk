@@ -12,12 +12,13 @@ if (
 }
 
 /**
- * This class encapsulates all logic related to the CSR initials. It provides tools to process and get
- * CSR initials related resources such as textures, materials and 3D objects that can be used to
- * show initials in CSR.
+ * This class encapsulates all logic related to the CSR initials. It provides tools to
+ * process and get * CSR initials related resources such as textures, materials and 3D
+ * objects that can be used to show initials in CSR.
  *
  * @param {Canvas} canvas Canvas uses to process the initials texture.
- * @param {Canvas} canvasDisplacement Canvas uses to process the initials displacement texture.
+ * @param {Canvas} canvasDisplacement Canvas uses to process the initials displacement
+ * texture.
  * @param {Number} width Width of the canvas. It dictates the resolution on the x axis.
  * @param {Number} height Height of the canvas. It dictates the resolution on the x axis.
  */
@@ -166,8 +167,8 @@ ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
 };
 
 /**
- * Gets the initials material. This material can be applied to a mesh in order to obtain the
- * 3D text effect.
+ * Gets the initials material. This material can be applied to a mesh in order to obtain
+ * the 3D text effect.
  *
  * @returns {THREE.Material} Material that makes the 3D text effect.
  */
@@ -189,8 +190,8 @@ ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
 };
 
 /**
- * Sets the diffuse texture. This texture is the diffuse pattern that is applied to the
- * initials characters.
+ * Sets the diffuse texture. This texture is the diffuse pattern that is applied to
+ * the initials characters.
  *
  * @param {String} path Path to the texture.
  * @param {Object} options Options to apply to the texture.
@@ -221,8 +222,8 @@ ripe.CsrInitialsRenderer.prototype.setBaseTextureOptions = async function(option
 };
 
 /**
- * Sets the height map texture. This texture is the height map pattern that is applied to the
- * height map texture of the initials characters.
+ * Sets the height map texture. This texture is the height map pattern that is applied to
+ * the height map texture of the initials characters.
  *
  * @param {String} path Path to the texture.
  * @param {Object} options Options to apply to the texture.
@@ -253,8 +254,8 @@ ripe.CsrInitialsRenderer.prototype.setDisplacementTextureOptions = async functio
 };
 
 /**
- * Sets the initials renderer width and height. It also updates the texture renderer used by
- * this instance.
+ * Sets the initials renderer width and height. It also updates the texture renderer used
+ * by this instance.
  *
  * @param {Number} width Number for the width in pixels.
  * @param {Number} height Number for the height in pixels.
@@ -382,8 +383,7 @@ ripe.CsrInitialsRenderer.prototype._destroyMaterialTextures = function() {
 };
 
 /**
- * Builds the initials mesh 3D object. If a mesh already exists, it will
- * rebuild it.
+ * Builds the initials mesh 3D object. If a mesh already exists, it will rebuild it.
  *
  * @private
  */
