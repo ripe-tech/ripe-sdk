@@ -75,24 +75,24 @@ ripe.CsrUtils.loadTexture = async function(path) {
 /**
  * Applies properties to any type of Three.js object instance.
  *
- * @param {THREE.any} obj Any type of Three.js instance that support properties.
+ * @param {THREE.Any} object Any type of Three.js instance that support properties.
  * @param {Object} options Properties to be applied.
- * @returns {THREE.any} The same instance but with the applied options.
+ * @returns {THREE.Any} The same instance but with the applied options.
  */
-ripe.CsrUtils.applyOptions = function(obj, options = {}) {
-    Object.keys(options).forEach(key => (obj[key] = options[key]));
-    return obj;
+ripe.CsrUtils.applyOptions = function(object, options = {}) {
+    Object.keys(options).forEach(key => (object[key] = options[key]));
+    return object;
 };
 
 /**
  * Converts height map image data to a normal map texture.
  *
- * @param {ImageData} imgData The height map ImageData object.
+ * @param {ImageData} imageData The height map ImageData object.
  * @returns {THREE.Texture} A normal map texture.
  */
-ripe.CsrUtils.heightMapToNormalMap = function(imgData) {
-    const width = imgData.width;
-    const height = imgData.height;
+ripe.CsrUtils.heightMapToNormalMap = function(imageData) {
+    const width = imageData.width;
+    const height = imageData.height;
 
     const size = width * height * 4;
     const pixels = new Uint8Array(size);
@@ -101,25 +101,25 @@ ripe.CsrUtils.heightMapToNormalMap = function(imgData) {
         let x1, x2, y1, y2;
 
         if (i % (width * 4) === 0) {
-            x1 = imgData.data[i];
-            x2 = imgData.data[i + 4];
+            x1 = imageData.data[i];
+            x2 = imageData.data[i + 4];
         } else if (i % (width * 4) === (width - 1) * 4) {
-            x1 = imgData.data[i - 4];
-            x2 = imgData.data[i];
+            x1 = imageData.data[i - 4];
+            x2 = imageData.data[i];
         } else {
-            x1 = imgData.data[i - 4];
-            x2 = imgData.data[i + 4];
+            x1 = imageData.data[i - 4];
+            x2 = imageData.data[i + 4];
         }
 
         if (i < width * 4) {
-            y1 = imgData.data[i];
-            y2 = imgData.data[i + width * 4];
+            y1 = imageData.data[i];
+            y2 = imageData.data[i + width * 4];
         } else if (i > width * (height - 1) * 4) {
-            y1 = imgData.data[i - width * 4];
-            y2 = imgData.data[i];
+            y1 = imageData.data[i - width * 4];
+            y2 = imageData.data[i];
         } else {
-            y1 = imgData.data[i - width * 4];
-            y2 = imgData.data[i + width * 4];
+            y1 = imageData.data[i - width * 4];
+            y2 = imageData.data[i + width * 4];
         }
 
         pixels[i] = x1 - x2 + 127;
