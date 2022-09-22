@@ -12,16 +12,17 @@ if (
 }
 
 /**
- * This class encapsulates all logic related to the CSR initials. It provides tools to process and get
- * CSR initials related resources such as textures, materials and 3D objects that can be used to
- * show initials in CSR.
+ * This class encapsulates all logic related to the CSR initials. It provides tools to
+ * process and get CSR initials related resources such as textures, materials and 3D
+ * objects that can be used to show initials in CSR.
  *
  * @param {Canvas} canvas Canvas uses to process the initials texture.
- * @param {Canvas} canvasDisplacement Canvas uses to process the initials displacement texture.
+ * @param {Canvas} canvasDisplacement Canvas uses to process the initials displacement
+ * texture.
  * @param {Number} width Width of the canvas. It dictates the resolution on the x axis.
  * @param {Number} height Height of the canvas. It dictates the resolution on the x axis.
  */
-ripe.CsrInitialsRenderer = function(
+ripe.CsrRenderedInitials = function(
     canvas = null,
     canvasDisplacement = null,
     width = null,
@@ -29,13 +30,12 @@ ripe.CsrInitialsRenderer = function(
     pixelRatio = null,
     options = {}
 ) {
-    if (canvas === null) throw new Error("canvas is required");
-    if (canvasDisplacement === null) throw new Error("canvasDisplacement is required");
-    if (width === null) throw new Error("width is required");
-    if (height === null) throw new Error("height is required");
-    if (pixelRatio === null) throw new Error("pixelRatio is required");
+    if (canvas === null) throw new Error("Canvas is required");
+    if (canvasDisplacement === null) throw new Error("CanvasDisplacement is required");
+    if (width === null) throw new Error("Width is required");
+    if (height === null) throw new Error("Height is required");
+    if (pixelRatio === null) throw new Error("PixelRatio is required");
 
-    // variables
     this.canvas = canvas;
     this.canvasDisplacement = canvasDisplacement;
     this.width = width;
@@ -117,14 +117,14 @@ ripe.CsrInitialsRenderer = function(
         ...this.materialOptions
     });
 };
-ripe.CsrInitialsRenderer.prototype.constructor = ripe.CsrInitialsRenderer;
+ripe.CsrRenderedInitials.prototype.constructor = ripe.CsrRenderedInitials;
 
 /**
  * Sets the initials text.
  *
  * @param {String} text Initials text.
  */
-ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
+ripe.CsrRenderedInitials.prototype.setInitials = function(text) {
     this.currentText = text;
 
     // cleans up textures that are going to be replaced
@@ -167,12 +167,12 @@ ripe.CsrInitialsRenderer.prototype.setInitials = function(text) {
 };
 
 /**
- * Gets the initials material. This material can be applied to a mesh in order to obtain the
- * 3D text effect.
+ * Gets the initials material. This material can be applied to a mesh in order to obtain
+ * the 3D text effect.
  *
  * @returns {THREE.Material} Material that makes the 3D text effect.
  */
-ripe.CsrInitialsRenderer.prototype.getMaterial = async function() {
+ripe.CsrRenderedInitials.prototype.getMaterial = async function() {
     if (!this.material) throw new Error("The material doesn't exist");
     return this.material;
 };
@@ -182,7 +182,7 @@ ripe.CsrInitialsRenderer.prototype.getMaterial = async function() {
  *
  * @returns {THREE.Object3D} Mesh that will have the initials text.
  */
-ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
+ripe.CsrRenderedInitials.prototype.getMesh = async function() {
     // ensures mesh exists
     if (!this.mesh) this._buildInitialsMesh();
 
@@ -190,13 +190,13 @@ ripe.CsrInitialsRenderer.prototype.getMesh = async function() {
 };
 
 /**
- * Sets the diffuse texture. This texture is the diffuse pattern that is applied to the
- * initials characters.
+ * Sets the diffuse texture. This texture is the diffuse pattern that is applied to
+ * the initials characters.
  *
  * @param {String} path Path to the texture.
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrInitialsRenderer.prototype.setBaseTexture = async function(path, options = {}) {
+ripe.CsrRenderedInitials.prototype.setBaseTexture = async function(path, options = {}) {
     if (!path) throw new Error("Invalid texture path");
 
     this.currentBaseTexturePath = path;
@@ -217,18 +217,18 @@ ripe.CsrInitialsRenderer.prototype.setBaseTexture = async function(path, options
  *
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrInitialsRenderer.prototype.setBaseTextureOptions = async function(options = {}) {
+ripe.CsrRenderedInitials.prototype.setBaseTextureOptions = async function(options = {}) {
     await this.setBaseTexture(this.currentBaseTexturePath, options);
 };
 
 /**
- * Sets the height map texture. This texture is the height map pattern that is applied to the
- * height map texture of the initials characters.
+ * Sets the height map texture. This texture is the height map pattern that is applied to
+ * the height map texture of the initials characters.
  *
  * @param {String} path Path to the texture.
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path, options = {}) {
+ripe.CsrRenderedInitials.prototype.setDisplacementTexture = async function(path, options = {}) {
     if (!path) throw new Error("Invalid texture path");
 
     this.currentDisplacementTexturePath = path;
@@ -249,20 +249,20 @@ ripe.CsrInitialsRenderer.prototype.setDisplacementTexture = async function(path,
  *
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrInitialsRenderer.prototype.setDisplacementTextureOptions = async function(options = {}) {
+ripe.CsrRenderedInitials.prototype.setDisplacementTextureOptions = async function(options = {}) {
     await this.setDisplacementTexture(this.currentDisplacementTexturePath, options);
 };
 
 /**
- * Sets the initials renderer width and height. It also updates the texture renderer used by
- * this instance.
+ * Sets the initials renderer width and height. It also updates the texture renderer used
+ * by this instance.
  *
  * @param {Number} width Number for the width in pixels.
  * @param {Number} height Number for the height in pixels.
  */
-ripe.CsrInitialsRenderer.prototype.setSize = function(width = null, height = null) {
-    if (width === null) throw new Error("width is required");
-    if (height === null) throw new Error("height is required");
+ripe.CsrRenderedInitials.prototype.setSize = function(width = null, height = null) {
+    if (width === null) throw new Error("Width is required");
+    if (height === null) throw new Error("Height is required");
 
     this.width = width;
     this.height = height;
@@ -281,7 +281,7 @@ ripe.CsrInitialsRenderer.prototype.setSize = function(width = null, height = nul
  *
  * @param {Object} options Set of optional parameters to adjust the initials renderer.
  */
-ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) {
+ripe.CsrRenderedInitials.prototype.updateOptions = async function(options = {}) {
     let updateInitials = false;
     let updateMaterial = false;
     let updateMesh = false;
@@ -329,9 +329,9 @@ ripe.CsrInitialsRenderer.prototype.updateOptions = async function(options = {}) 
 };
 
 /**
- * Cleanups the `CsrInitialsRenderer` instance thus avoiding memory leak issues.
+ * Cleanups the `CsrRenderedInitials` instance thus avoiding memory leak issues.
  */
-ripe.CsrInitialsRenderer.prototype.destroy = function() {
+ripe.CsrRenderedInitials.prototype.destroy = function() {
     // cleans up the texture renderer
     this.textureRenderer.destroy();
 
@@ -352,7 +352,7 @@ ripe.CsrInitialsRenderer.prototype.destroy = function() {
  *
  * @private
  */
-ripe.CsrInitialsRenderer.prototype._destroyMesh = function() {
+ripe.CsrRenderedInitials.prototype._destroyMesh = function() {
     if (!this.mesh) return;
 
     if (this.geometry) this.geometry.dispose();
@@ -365,7 +365,7 @@ ripe.CsrInitialsRenderer.prototype._destroyMesh = function() {
  *
  * @private
  */
-ripe.CsrInitialsRenderer.prototype._destroyMaterialTextures = function() {
+ripe.CsrRenderedInitials.prototype._destroyMaterialTextures = function() {
     if (this.mapTexture) {
         this.mapTexture.dispose();
         this.mapTexture = null;
@@ -383,12 +383,11 @@ ripe.CsrInitialsRenderer.prototype._destroyMaterialTextures = function() {
 };
 
 /**
- * Builds the initials mesh 3D object. If a mesh already exists, it will
- * rebuild it.
+ * Builds the initials mesh 3D object. If a mesh already exists, it will rebuild it.
  *
  * @private
  */
-ripe.CsrInitialsRenderer.prototype._buildInitialsMesh = function() {
+ripe.CsrRenderedInitials.prototype._buildInitialsMesh = function() {
     // cleans current mesh
     if (this.mesh) this._destroyMesh();
 
@@ -459,7 +458,7 @@ ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
  *
  * @private
  */
-ripe.CsrInitialsRenderer.prototype._textToTexture = function(text) {
+ripe.CsrRenderedInitials.prototype._textToTexture = function(text) {
     const width = this.width;
     const height = this.height;
     const font = this.textOptions.font;
@@ -503,7 +502,7 @@ ripe.CsrInitialsRenderer.prototype._textToTexture = function(text) {
  *
  * @private
  */
-ripe.CsrInitialsRenderer.prototype._textToDisplacementTexture = function(text) {
+ripe.CsrRenderedInitials.prototype._textToDisplacementTexture = function(text) {
     const width = this.width;
     const height = this.height;
     const font = this.textOptions.font;
@@ -549,7 +548,7 @@ ripe.CsrInitialsRenderer.prototype._textToDisplacementTexture = function(text) {
  *
  * @private
  */
-ripe.CsrInitialsRenderer.prototype._preCookTexture = function(texture, options) {
+ripe.CsrRenderedInitials.prototype._preCookTexture = function(texture, options) {
     texture = ripe.CsrUtils.applyOptions(texture, options);
 
     // generates a texture with the updated options
@@ -569,7 +568,7 @@ ripe.CsrInitialsRenderer.prototype._preCookTexture = function(texture, options) 
  * @param {Number} blurIntensity Intensity of blur filter that is going to be applied.
  * @returns {THREE.Texture} The blurred texture.
  */
-ripe.CsrInitialsRenderer.prototype._blurTexture = function(texture, blurIntensity = 1) {
+ripe.CsrRenderedInitials.prototype._blurTexture = function(texture, blurIntensity = 1) {
     // creates a material to run a shader that blurs the texture
     const material = new window.THREE.ShaderMaterial({
         uniforms: window.THREE.UniformsUtils.merge([
@@ -588,36 +587,8 @@ ripe.CsrInitialsRenderer.prototype._blurTexture = function(texture, blurIntensit
                 }
             }
         ]),
-        vertexShader: `
-                varying vec2 vUv;
-
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-        fragmentShader: `
-            uniform sampler2D baseTexture;
-            uniform float h;
-            uniform float v;
-            varying vec2 vUv;
-
-            void main() {
-                vec4 sum = vec4(0.0);
-                
-                sum += texture2D(baseTexture, vec2(vUv.x - 4.0 * h,  vUv.y - 4.0 * v)) * 0.051;
-                sum += texture2D(baseTexture, vec2(vUv.x - 3.0 * h,  vUv.y - 3.0 * v)) * 0.0918;
-                sum += texture2D(baseTexture, vec2(vUv.x - 2.0 * h,  vUv.y - 2.0 * v)) * 0.12245;
-                sum += texture2D(baseTexture, vec2(vUv.x - 1.0 * h,  vUv.y - 1.0 * v)) * 0.1531;
-                sum += texture2D(baseTexture, vec2(vUv.x, vUv.y)) * 0.1633;
-                sum += texture2D(baseTexture, vec2(vUv.x + 1.0 * h, vUv.y + 1.0 * v)) * 0.1531;
-                sum += texture2D(baseTexture, vec2(vUv.x + 2.0 * h, vUv.y + 2.0 * v)) * 0.12245;
-                sum += texture2D(baseTexture, vec2(vUv.x + 3.0 * h, vUv.y + 3.0 * v)) * 0.0918;
-                sum += texture2D(baseTexture, vec2(vUv.x + 4.0 * h, vUv.y + 4.0 * v)) * 0.051;
-
-                gl_FragColor = sum;
-            }
-        `
+        vertexShader: ripe.CsrUtils.BlurShader.vertexShader,
+        fragmentShader: ripe.CsrUtils.BlurShader.fragmentShader
     });
 
     // generates a blurred texture
@@ -638,7 +609,7 @@ ripe.CsrInitialsRenderer.prototype._blurTexture = function(texture, blurIntensit
  *
  * @private
  */
-ripe.CsrInitialsRenderer.prototype._mixPatternWithTexture = function(texture, patternTexture) {
+ripe.CsrRenderedInitials.prototype._mixPatternWithTexture = function(texture, patternTexture) {
     // returns the original texture if no pattern texture is provided
     if (!patternTexture) return texture;
 
@@ -656,29 +627,8 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithTexture = function(texture, pa
                 }
             }
         ]),
-        vertexShader: `
-                    precision highp float;
-                    precision highp int;
-
-                    varying vec2 vUv;
-
-                    void main() {
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-        fragmentShader: `
-                    precision mediump float;
-                    uniform sampler2D baseTexture;
-                    uniform sampler2D patternTexture;
-                    varying vec2 vUv;
-
-                    void main() {
-                        vec4 t1 = texture2D(patternTexture, vUv);
-                        vec4 t2 = texture2D(baseTexture, vUv);
-                        gl_FragColor = vec4(mix(t2.rgb, t1.rgb, t2.a), t2.a);
-                    }
-                `
+        vertexShader: ripe.CsrUtils.PatternMixerShader.vertexShader,
+        fragmentShader: ripe.CsrUtils.PatternMixerShader.fragmentShader
     });
 
     // generates a texture with the textures mixed
@@ -703,7 +653,7 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithTexture = function(texture, pa
  *
  * @private
  */
-ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function(
+ripe.CsrRenderedInitials.prototype._mixPatternWithDisplacementTexture = function(
     texture,
     patternTexture,
     patternIntensity = 1
@@ -729,32 +679,8 @@ ripe.CsrInitialsRenderer.prototype._mixPatternWithDisplacementTexture = function
                 }
             }
         ]),
-        vertexShader: `
-                precision highp float;
-                precision highp int;
-
-                varying vec2 vUv;
-
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-        fragmentShader: `
-                precision mediump float;
-                uniform sampler2D baseTexture;
-                uniform sampler2D patternTexture;
-                uniform float patternIntensity;
-                varying vec2 vUv;
-                float grayScale;
-
-                void main() {
-                    vec4 t1 = texture2D(patternTexture, vUv);
-                    vec4 t2 = texture2D(baseTexture, vUv);
-                    grayScale = t2.r * patternIntensity;
-                    gl_FragColor = vec4(mix(t2.rgb, t1.rgb, grayScale), grayScale);
-                }
-            `
+        vertexShader: ripe.CsrUtils.HeightmapPatternMixerShader.vertexShader,
+        fragmentShader: ripe.CsrUtils.HeightmapPatternMixerShader.fragmentShader
     });
 
     // generates a texture with the textures mixed
