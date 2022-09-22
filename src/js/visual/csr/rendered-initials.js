@@ -401,7 +401,7 @@ ripe.CsrRenderedInitials.prototype._buildInitialsMesh = function() {
     this.mesh = new window.THREE.Mesh(this.geometry, material);
 };
 
-ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
+ripe.CsrRenderedInitials.prototype._testGeometry = function() {
     this.meshOptions.widthSegments = 300;
     this.meshOptions.heightSegments = 5;
 

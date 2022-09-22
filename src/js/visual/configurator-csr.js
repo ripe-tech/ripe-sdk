@@ -922,7 +922,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     const initialsCanvas = initialsContainer.querySelector(".canvas");
     const initialsDisplacementCanvas = initialsContainer.querySelector(".displacement");
 
-    const initialsRenderer = new ripe.CsrInitialsRenderer(
+    const initialsRenderer = new ripe.CsrRenderedInitials(
         initialsCanvas,
         initialsDisplacementCanvas,
         500,
