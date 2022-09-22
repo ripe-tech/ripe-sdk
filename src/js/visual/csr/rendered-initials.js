@@ -50,6 +50,7 @@ ripe.CsrRenderedInitials = function(
     this.mapTexture = null;
     this.displacementMapTexture = null;
     this.displacementNormalMapTexture = null;
+    this.points = [];
     this.geometry = null;
     this.mesh = null;
     this.currentText = "";
@@ -164,6 +165,20 @@ ripe.CsrRenderedInitials.prototype.setInitials = function(text) {
 
     // marks material to do a internal update
     this.material.needsUpdate = true;
+};
+
+/**
+ * Sets the reference points that are used when generating the curve that bends the initials mesh.
+ *
+ * @param {Array} points Array with THREE.Vector3 reference points for the mesh.
+ */
+ripe.CsrRenderedInitials.prototype.setPoints = function(points) {
+    this.points = points;
+
+    // updates the existing mesh geometry if the mesh already exists
+    if (this.mesh) {
+        this.geometry = this._buildGeometry();
+    }
 };
 
 /**
@@ -392,7 +407,7 @@ ripe.CsrRenderedInitials.prototype._buildInitialsMesh = function() {
     if (this.mesh) this._destroyMesh();
 
     // generates the initials plane geometry
-    this.geometry = this._testGeometry();
+    this.geometry = this._buildGeometry();
 
     // creates the initials mesh
     // this.mesh = new window.THREE.Mesh(this.geometry, this.material);
@@ -401,10 +416,12 @@ ripe.CsrRenderedInitials.prototype._buildInitialsMesh = function() {
     this.mesh = new window.THREE.Mesh(this.geometry, material);
 };
 
-ripe.CsrRenderedInitials.prototype._testGeometry = function() {
-    this.meshOptions.widthSegments = 300;
-    this.meshOptions.heightSegments = 5;
-
+/**
+ * Builds the mesh geometry. If points were set, it will bend the geometry accordingly.
+ *
+ * @returns {THREE.BufferGeometry} Returns a BufferGeometry instance.
+ */
+ripe.CsrRenderedInitials.prototype._buildGeometry = function() {
     const geometry = new window.THREE.PlaneBufferGeometry(
         this.width,
         this.height,
@@ -412,23 +429,26 @@ ripe.CsrRenderedInitials.prototype._testGeometry = function() {
         this.meshOptions.heightSegments
     );
 
-    const points = [
-        // new window.THREE.Vector3(-100, 0, 0),
-        new window.THREE.Vector3(-250, 0, 0),
-        new window.THREE.Vector3(0, 0, 0),
-        new window.THREE.Vector3(250, 0, 0)
-        // new window.THREE.Vector3(500, 0, 0)
-    ];
-    const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
+    // no points to generate a curve so returns the flat geometry
+    if (this.points.length < 2) return geometry;
 
+    // creates a curve based on the reference points
+    const curve = new window.THREE.CatmullRomCurve3(this.points, false, "centripetal");
+
+    // calculates the curve with
     const curveWidth = Math.round(curve.getLength());
+
+    // get the curve points
     const curvePoints = curve.getSpacedPoints(curveWidth);
 
+    // calculate offsets needed to iterate the geometry vertexes
     const segments = curveWidth >= this.width ? this.width : curveWidth;
     const curvePointStep = segments / this.meshOptions.widthSegments;
     const curvePointOffset =
         curveWidth > this.width ? Math.floor(curveWidth / 2 - this.width / 2) : 0;
 
+    // iterates the geometry vertexes and updates their position to follow the
+    // curve
     const geoPos = geometry.attributes.position;
     for (let i = 0; i <= this.meshOptions.heightSegments; i++) {
         for (
