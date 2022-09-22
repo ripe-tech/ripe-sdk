@@ -423,28 +423,28 @@ ripe.CsrInitialsRenderer.prototype._testGeometry = function() {
     const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
 
     const curveWidth = Math.round(curve.getLength());
-    const pointsNum = curveWidth;
-    const curveSegments = this.width;
-    const curvePoints = curve.getSpacedPoints(pointsNum);
+    const curvePoints = curve.getSpacedPoints(curveWidth);
 
-    const pointStep =
-        curveWidth >= this.width
-            ? curveSegments / this.meshOptions.widthSegments
-            : curveWidth / this.meshOptions.widthSegments;
-
+    const segments = curveWidth >= this.width ? this.width : curveWidth;
+    const curvePointStep = segments / this.meshOptions.widthSegments;
     const curvePointOffset =
         curveWidth > this.width ? Math.floor(curveWidth / 2 - this.width / 2) : 0;
 
     const geoPos = geometry.attributes.position;
     for (let i = 0; i <= this.meshOptions.heightSegments; i++) {
         for (
-            let j = 0, cPointIdx = curvePointOffset;
+            let j = 0, curvePointIdx = curvePointOffset;
             j <= this.meshOptions.widthSegments;
-            j++, cPointIdx += pointStep
+            j++, curvePointIdx += curvePointStep
         ) {
-            const vIdx = j + i + this.meshOptions.widthSegments * i;
-            const curvePoint = curvePoints[Math.round(cPointIdx)];
-            geoPos.setXYZ(vIdx, curvePoint.x, geoPos.getY(vIdx) + curvePoint.y, curvePoint.z);
+            const vertexIdx = j + i + this.meshOptions.widthSegments * i;
+            const curvePoint = curvePoints[Math.round(curvePointIdx)];
+            geoPos.setXYZ(
+                vertexIdx,
+                curvePoint.x,
+                geoPos.getY(vertexIdx) + curvePoint.y,
+                curvePoint.z
+            );
         }
     }
 
