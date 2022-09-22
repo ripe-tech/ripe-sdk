@@ -177,7 +177,8 @@ ripe.CsrRenderedInitials.prototype.setPoints = function(points) {
 
     // updates the existing mesh geometry if the mesh already exists
     if (this.mesh) {
-        this.geometry = this._buildGeometry();
+        console.log("update geometry");
+        this.geometry = this._buildGeometry(this.geometry);
         this.geometry.attributes.position.needsUpdate = true;
     }
 };
