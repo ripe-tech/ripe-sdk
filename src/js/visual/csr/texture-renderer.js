@@ -17,9 +17,9 @@ ripe.CsrTextureRenderer = function(
     pixelRatio = null,
     rendererOptions = {}
 ) {
-    if (width === null) throw new Error("width is required");
-    if (height === null) throw new Error("height is required");
-    if (pixelRatio === null) throw new Error("pixelRatio is required");
+    if (width === null) throw new Error("Width is required");
+    if (height === null) throw new Error("Height is required");
+    if (pixelRatio === null) throw new Error("PixelRatio is required");
 
     this.width = width;
     this.height = height;

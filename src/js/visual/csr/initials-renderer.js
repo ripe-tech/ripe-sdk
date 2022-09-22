@@ -11,8 +11,6 @@ if (
     var ripe = base.ripe;
 }
 
-// TODO support curve points
-
 /**
  * This class encapsulates all logic related to the CSR initials. It provides tools to process and get
  * CSR initials related resources such as textures, materials and 3D objects that can be used to
@@ -31,13 +29,12 @@ ripe.CsrInitialsRenderer = function(
     pixelRatio = null,
     options = {}
 ) {
-    if (canvas === null) throw new Error("canvas is required");
-    if (canvasDisplacement === null) throw new Error("canvasDisplacement is required");
-    if (width === null) throw new Error("width is required");
-    if (height === null) throw new Error("height is required");
-    if (pixelRatio === null) throw new Error("pixelRatio is required");
+    if (canvas === null) throw new Error("Canvas is required");
+    if (canvasDisplacement === null) throw new Error("CanvasDisplacement is required");
+    if (width === null) throw new Error("Width is required");
+    if (height === null) throw new Error("Height is required");
+    if (pixelRatio === null) throw new Error("PixelRatio is required");
 
-    // variables
     this.canvas = canvas;
     this.canvasDisplacement = canvasDisplacement;
     this.width = width;
@@ -263,8 +260,8 @@ ripe.CsrInitialsRenderer.prototype.setDisplacementTextureOptions = async functio
  * @param {Number} height Number for the height in pixels.
  */
 ripe.CsrInitialsRenderer.prototype.setSize = function(width = null, height = null) {
-    if (width === null) throw new Error("width is required");
-    if (height === null) throw new Error("height is required");
+    if (width === null) throw new Error("Width is required");
+    if (height === null) throw new Error("Height is required");
 
     this.width = width;
     this.height = height;
