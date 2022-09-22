@@ -540,36 +540,8 @@ ripe.CsrRenderedInitials.prototype._blurTexture = function(texture, blurIntensit
                 }
             }
         ]),
-        vertexShader: `
-                varying vec2 vUv;
-
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-        fragmentShader: `
-            uniform sampler2D baseTexture;
-            uniform float h;
-            uniform float v;
-            varying vec2 vUv;
-
-            void main() {
-                vec4 sum = vec4(0.0);
-                
-                sum += texture2D(baseTexture, vec2(vUv.x - 4.0 * h,  vUv.y - 4.0 * v)) * 0.051;
-                sum += texture2D(baseTexture, vec2(vUv.x - 3.0 * h,  vUv.y - 3.0 * v)) * 0.0918;
-                sum += texture2D(baseTexture, vec2(vUv.x - 2.0 * h,  vUv.y - 2.0 * v)) * 0.12245;
-                sum += texture2D(baseTexture, vec2(vUv.x - 1.0 * h,  vUv.y - 1.0 * v)) * 0.1531;
-                sum += texture2D(baseTexture, vec2(vUv.x, vUv.y)) * 0.1633;
-                sum += texture2D(baseTexture, vec2(vUv.x + 1.0 * h, vUv.y + 1.0 * v)) * 0.1531;
-                sum += texture2D(baseTexture, vec2(vUv.x + 2.0 * h, vUv.y + 2.0 * v)) * 0.12245;
-                sum += texture2D(baseTexture, vec2(vUv.x + 3.0 * h, vUv.y + 3.0 * v)) * 0.0918;
-                sum += texture2D(baseTexture, vec2(vUv.x + 4.0 * h, vUv.y + 4.0 * v)) * 0.051;
-
-                gl_FragColor = sum;
-            }
-        `
+        vertexShader: ripe.CsrUtils.BlurShader.vertexShader,
+        fragmentShader: ripe.CsrUtils.BlurShader.fragmentShader
     });
 
     // generates a blurred texture
@@ -608,29 +580,8 @@ ripe.CsrRenderedInitials.prototype._mixPatternWithTexture = function(texture, pa
                 }
             }
         ]),
-        vertexShader: `
-                    precision highp float;
-                    precision highp int;
-
-                    varying vec2 vUv;
-
-                    void main() {
-                        vUv = uv;
-                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                    }
-                `,
-        fragmentShader: `
-                    precision mediump float;
-                    uniform sampler2D baseTexture;
-                    uniform sampler2D patternTexture;
-                    varying vec2 vUv;
-
-                    void main() {
-                        vec4 t1 = texture2D(patternTexture, vUv);
-                        vec4 t2 = texture2D(baseTexture, vUv);
-                        gl_FragColor = vec4(mix(t2.rgb, t1.rgb, t2.a), t2.a);
-                    }
-                `
+        vertexShader: ripe.CsrUtils.PatternMixerShader.vertexShader,
+        fragmentShader: ripe.CsrUtils.PatternMixerShader.fragmentShader
     });
 
     // generates a texture with the textures mixed
@@ -681,32 +632,8 @@ ripe.CsrRenderedInitials.prototype._mixPatternWithDisplacementTexture = function
                 }
             }
         ]),
-        vertexShader: `
-                precision highp float;
-                precision highp int;
-
-                varying vec2 vUv;
-
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-        fragmentShader: `
-                precision mediump float;
-                uniform sampler2D baseTexture;
-                uniform sampler2D patternTexture;
-                uniform float patternIntensity;
-                varying vec2 vUv;
-                float grayScale;
-
-                void main() {
-                    vec4 t1 = texture2D(patternTexture, vUv);
-                    vec4 t2 = texture2D(baseTexture, vUv);
-                    grayScale = t2.r * patternIntensity;
-                    gl_FragColor = vec4(mix(t2.rgb, t1.rgb, grayScale), grayScale);
-                }
-            `
+        vertexShader: ripe.CsrUtils.HeightmapPatternMixerShader.vertexShader,
+        fragmentShader: ripe.CsrUtils.HeightmapPatternMixerShader.fragmentShader
     });
 
     // generates a texture with the textures mixed

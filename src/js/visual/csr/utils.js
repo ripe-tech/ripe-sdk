@@ -14,6 +14,105 @@ if (
 ripe.CsrUtils = {};
 
 /**
+ * Shader that blurs a texture by doing a Gaussian blur pass.
+ */
+ripe.CsrUtils.BlurShader = {
+    vertexShader: `
+        varying vec2 vUv;
+
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform sampler2D baseTexture;
+        uniform float h;
+        uniform float v;
+        varying vec2 vUv;
+
+        void main() {
+            vec4 sum = vec4(0.0);
+            
+            sum += texture2D(baseTexture, vec2(vUv.x - 4.0 * h,  vUv.y - 4.0 * v)) * 0.051;
+            sum += texture2D(baseTexture, vec2(vUv.x - 3.0 * h,  vUv.y - 3.0 * v)) * 0.0918;
+            sum += texture2D(baseTexture, vec2(vUv.x - 2.0 * h,  vUv.y - 2.0 * v)) * 0.12245;
+            sum += texture2D(baseTexture, vec2(vUv.x - 1.0 * h,  vUv.y - 1.0 * v)) * 0.1531;
+            sum += texture2D(baseTexture, vec2(vUv.x, vUv.y)) * 0.1633;
+            sum += texture2D(baseTexture, vec2(vUv.x + 1.0 * h, vUv.y + 1.0 * v)) * 0.1531;
+            sum += texture2D(baseTexture, vec2(vUv.x + 2.0 * h, vUv.y + 2.0 * v)) * 0.12245;
+            sum += texture2D(baseTexture, vec2(vUv.x + 3.0 * h, vUv.y + 3.0 * v)) * 0.0918;
+            sum += texture2D(baseTexture, vec2(vUv.x + 4.0 * h, vUv.y + 4.0 * v)) * 0.051;
+
+            gl_FragColor = sum;
+        }
+    `
+};
+
+/**
+ * Shader that mixes a texture with another texture. Useful to apply a pattern to a
+ * mask texture.
+ */
+ripe.CsrUtils.PatternMixerShader = {
+    vertexShader: `
+        precision highp float;
+        precision highp int;
+
+        varying vec2 vUv;
+
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        precision mediump float;
+        uniform sampler2D baseTexture;
+        uniform sampler2D patternTexture;
+        varying vec2 vUv;
+
+        void main() {
+            vec4 t1 = texture2D(patternTexture, vUv);
+            vec4 t2 = texture2D(baseTexture, vUv);
+            gl_FragColor = vec4(mix(t2.rgb, t1.rgb, t2.a), t2.a);
+        }
+    `
+};
+
+/**
+ * Shader that mixes two height map textures. Useful to apply a height map pattern
+ * to a normal height map.
+ */
+ripe.CsrUtils.HeightmapPatternMixerShader = {
+    vertexShader: `
+        precision highp float;
+        precision highp int;
+
+        varying vec2 vUv;
+
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        precision mediump float;
+        uniform sampler2D baseTexture;
+        uniform sampler2D patternTexture;
+        uniform float patternIntensity;
+        varying vec2 vUv;
+        float grayScale;
+
+        void main() {
+            vec4 t1 = texture2D(patternTexture, vUv);
+            vec4 t2 = texture2D(baseTexture, vUv);
+            grayScale = t2.r * patternIntensity;
+            gl_FragColor = vec4(mix(t2.rgb, t1.rgb, grayScale), grayScale);
+        }
+    `
+};
+
+/**
  * Returns a value with a specific precision. Default is precision 6.
  *
  * @param {Number} value Number to be formatted.
