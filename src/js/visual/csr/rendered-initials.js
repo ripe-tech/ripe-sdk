@@ -68,7 +68,7 @@ ripe.CsrRenderedInitials = function(
     const textOpts = options.textOptions || {};
     this.textOptions = {
         font: textOpts.font !== undefined ? textOpts.font : "Arial",
-        fontSize: textOpts.fontSize !== undefined ? textOpts.fontSize : 200,
+        fontSize: textOpts.fontSize !== undefined ? textOpts.fontSize : 280,
         xOffset: textOpts.xOffset !== undefined ? textOpts.xOffset : 0,
         yOffset: textOpts.yOffset !== undefined ? textOpts.yOffset : 0,
         lineWidth: textOpts.lineWidth !== undefined ? textOpts.lineWidth : 5,
@@ -100,8 +100,8 @@ ripe.CsrRenderedInitials = function(
     };
     const meshOpts = options.meshOptions || {};
     this.meshOptions = {
-        widthSegments: meshOpts.widthSegments !== undefined ? meshOpts.widthSegments : 500,
-        heightSegments: meshOpts.heightSegments !== undefined ? meshOpts.heightSegments : 500
+        widthSegments: meshOpts.widthSegments !== undefined ? meshOpts.widthSegments : 1000,
+        heightSegments: meshOpts.heightSegments !== undefined ? meshOpts.heightSegments : 100
     };
     const baseTextureOpts = options.baseTextureOptions || {};
     this.baseTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...baseTextureOpts };
