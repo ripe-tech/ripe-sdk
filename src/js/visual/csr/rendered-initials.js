@@ -85,7 +85,7 @@ ripe.CsrRenderedInitials = function(
                 ? new window.THREE.Color(materialOpts.color)
                 : new window.THREE.Color("#ffffff"),
         displacementScale:
-            materialOpts.displacementScale !== undefined ? materialOpts.displacementScale : 50,
+            materialOpts.displacementScale !== undefined ? materialOpts.displacementScale : 25,
         displacementBias:
             materialOpts.displacementBias !== undefined ? materialOpts.displacementBias : 0,
         emissive:
