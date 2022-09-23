@@ -476,7 +476,13 @@ ripe.CsrRenderedInitials.prototype._morphPlaneGeometry = function(geometry, poin
         }
     }
 
+    // recalculates normals and tangents
+    geometry.computeVertexNormals();
+    geometry.computeTangents();
+
+    // marks geometry to do a internal update
     geometry.attributes.position.needsUpdate = true;
+
     return geometry;
 };
 
