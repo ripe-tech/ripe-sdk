@@ -178,8 +178,11 @@ ripe.CsrRenderedInitials.prototype.setPoints = function(points) {
     // updates the existing mesh geometry if the mesh already exists
     if (this.mesh) {
         console.log("update geometry");
-        this.geometry = this._buildGeometry(this.geometry);
-        this.geometry.attributes.position.needsUpdate = true;
+        // TODO free memory
+        const start = Date.now();
+        this._morphPlaneGeometry(this.geometry, this.points);
+        const end = Date.now();
+        console.log("#aaaaa", end - start);
     }
 };
 
@@ -423,16 +426,33 @@ ripe.CsrRenderedInitials.prototype._buildInitialsMesh = function() {
  *
  * @returns {THREE.BufferGeometry} Returns a BufferGeometry instance.
  */
-ripe.CsrRenderedInitials.prototype._buildGeometry = function(geometry = null) {
-    const geo = geometry !== null
-    ? geometry
-    : new window.THREE.PlaneBufferGeometry(this.width, this.height, this.meshOptions.widthSegments, this.meshOptions.heightSegments);
+ripe.CsrRenderedInitials.prototype._buildGeometry = function() {
+    const geometry = new window.THREE.PlaneBufferGeometry(
+        this.width,
+        this.height,
+        this.meshOptions.widthSegments,
+        this.meshOptions.heightSegments
+    );
 
     // no points to generate a curve so returns the flat geometry
-    if (this.points.length < 2) return geo;
+    if (this.points.length < 2) return geometry;
 
+    // morphs the plane geometry using the points as reference
+    this._morphPlaneGeometry(geometry, this.points);
+
+    return geometry;
+};
+
+/**
+ * Morhps a plane geometry by following a curve as reference.
+ *
+ * @param {BufferGeometry} geometry The plane geometry to be morphed.
+ * @param {Array} points Array with THREE.Vector3 reference points for the morphing curve.
+ * @returns {THREE.BufferGeometry} The morphed geometry.
+ */
+ripe.CsrRenderedInitials.prototype._morphPlaneGeometry = function(geometry, points) {
     // creates a curve based on the reference points
-    const curve = new window.THREE.CatmullRomCurve3(this.points, false, "centripetal");
+    const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
 
     // calculates the curve with
     const curveWidth = Math.round(curve.getLength());
@@ -448,7 +468,7 @@ ripe.CsrRenderedInitials.prototype._buildGeometry = function(geometry = null) {
 
     // iterates the geometry vertexes and updates their position to follow the
     // curve
-    const geoPos = geo.attributes.position;
+    const geoPos = geometry.attributes.position;
     for (let i = 0; i <= this.meshOptions.heightSegments; i++) {
         for (
             let j = 0, curvePointIdx = curvePointOffset;
@@ -466,7 +486,8 @@ ripe.CsrRenderedInitials.prototype._buildGeometry = function(geometry = null) {
         }
     }
 
-    return geo;
+    geometry.attributes.position.needsUpdate = true;
+    return geometry;
 };
 
 /**
