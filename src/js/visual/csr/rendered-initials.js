@@ -176,14 +176,7 @@ ripe.CsrRenderedInitials.prototype.setPoints = function(points) {
     this.points = points;
 
     // updates the existing mesh geometry if the mesh already exists
-    if (this.mesh) {
-        console.log("update geometry");
-        // TODO free memory
-        const start = Date.now();
-        this._morphPlaneGeometry(this.geometry, this.points);
-        const end = Date.now();
-        console.log("#aaaaa", end - start);
-    }
+    if (this.mesh) this._morphPlaneGeometry(this.geometry, this.points);
 };
 
 /**
