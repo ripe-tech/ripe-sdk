@@ -824,6 +824,20 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
 };
 
 /**
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
+    this._registerInitialsHandlers();
+};
+
+/**
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._deinitCsrRenderedInitials = function() {
+    this._unregisterInitialsHandlers();
+};
+
+/**
  * Initiates the debug tools.
  *
  * @private
@@ -912,6 +926,9 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     // init scene
     await this._initScene();
 
+    // init the CSR initials
+    this._initCsrRenderedInitials();
+
     // init debug tools
     this._initDebug();
 
@@ -925,6 +942,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
  */
 ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     this._deinitDebug();
+    this._deinitCsrRenderedInitials();
 
     if (this.environmentTexture) {
         this.environmentTexture.dispose();
@@ -1086,10 +1104,44 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
 /**
  * @ignore
  */
+ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engraving, params) {
+    console.log("TODO", "initials trigger!", initials, engraving, params);
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsExtra, params) {
+    console.log("TODO", "initials_extra trigger!", initialsExtra, params);
+};
+
+/**
+ * @ignore
+ */
 ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
     this._addElementHandler("mousedown", event => this._onMouseDown(this, event));
     this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
     this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
     this._addElementHandler("mousemove", event => this._onMouseMove(this, event));
     this._addElementHandler("wheel", event => this._onWheel(this, event));
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
+    this.owner.bind("initials", (initials, engraving, params) =>
+        this._onInitialsEvent(this, initials, engraving, params)
+    );
+    this.owner.bind("initials_extra", (initialsExtra, params) =>
+        this._onInitialsExtraEvent(this, initialsExtra, params)
+    );
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
+    this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraEvent);
+    this.owner && this.owner.unbind("initials", this._onInitialsEvent);
 };
