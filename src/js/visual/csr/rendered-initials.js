@@ -170,7 +170,8 @@ ripe.CsrRenderedInitials.prototype.setInitials = function(text) {
 /**
  * Sets the reference points that are used when generating the curve that bends the initials mesh.
  *
- * @param {Array} points Array with THREE.Vector3 reference points for the mesh.
+ * @param {Array} points Array with THREE.Vector3 reference points for the curve used to bend
+ * the mesh.
  */
 ripe.CsrRenderedInitials.prototype.setPoints = function(points) {
     this.points = points;
@@ -444,10 +445,10 @@ ripe.CsrRenderedInitials.prototype._morphPlaneGeometry = function(geometry, poin
     // creates a curve based on the reference points
     const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
 
-    // calculates the curve with
+    // calculates the curve width
     const curveWidth = Math.round(curve.getLength());
 
-    // get the curve points
+    // get the curve discrete points
     const curvePoints = curve.getSpacedPoints(curveWidth);
 
     // calculate offsets needed to iterate the geometry vertexes
@@ -456,8 +457,7 @@ ripe.CsrRenderedInitials.prototype._morphPlaneGeometry = function(geometry, poin
     const curvePointOffset =
         curveWidth > this.width ? Math.floor(curveWidth / 2 - this.width / 2) : 0;
 
-    // iterates the geometry vertexes and updates their position to follow the
-    // curve
+    // iterates the geometry vertexes and updates their position to follow the curve
     const geoPos = geometry.attributes.position;
     for (let i = 0; i <= this.meshOptions.heightSegments; i++) {
         for (
