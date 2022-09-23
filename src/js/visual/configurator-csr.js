@@ -925,7 +925,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     const initialsRenderer = new ripe.CsrRenderedInitials(
         initialsCanvas,
         initialsDisplacementCanvas,
-        500,
+        1000,
         250,
         this.pixelRatio
     );
@@ -941,21 +941,10 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     initialsRenderer.setInitials("Example");
 
     initialsRenderer.setPoints([
-        new window.THREE.Vector3(-100, 0, 0),
-        new window.THREE.Vector3(0, 0, -100),
-        new window.THREE.Vector3(100, 0, 0)
+        new window.THREE.Vector3(-500, 0, 0),
+        new window.THREE.Vector3(0, 0, -250),
+        new window.THREE.Vector3(500, 0, 0)
     ]);
-
-    setTimeout(() => {
-        console.log("setting points");
-        initialsRenderer.setPoints([
-            new window.THREE.Vector3(-100, 0, 0),
-            new window.THREE.Vector3(-50, 0, -50),
-            new window.THREE.Vector3(0, 0, 0),
-            new window.THREE.Vector3(50, 0, 50),
-            new window.THREE.Vector3(100, 0, 0)
-        ]);
-    }, 5000);
 
     const mesh = await initialsRenderer.getMesh();
     mesh.scale.set(0.1, 0.1, 0.1);

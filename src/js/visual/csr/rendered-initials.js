@@ -408,10 +408,7 @@ ripe.CsrRenderedInitials.prototype._buildInitialsMesh = function() {
     this.geometry = this._buildGeometry();
 
     // creates the initials mesh
-    // this.mesh = new window.THREE.Mesh(this.geometry, this.material);
-
-    const material = new window.THREE.MeshNormalMaterial({ wireframe: true });
-    this.mesh = new window.THREE.Mesh(this.geometry, material);
+    this.mesh = new window.THREE.Mesh(this.geometry, this.material);
 };
 
 /**
