@@ -108,9 +108,9 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     const zoomOpts = this.options.zoomOptions || {};
     this.zoomOptions = {
         enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
-        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
+        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 10,
         min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
-        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
+        max: zoomOpts.max !== undefined ? zoomOpts.max : 200
     };
 
     // general state variables
@@ -128,6 +128,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.environmentTexture = null;
     this.modelGroup = null;
     this.mesh = null;
+    this.renderedInitials = null;
     this.debugRefs = {
         framerate: null,
         worldAxis: null,
@@ -702,7 +703,8 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
     this._initCamera();
 
     // loads scene resources
-    const meshPath = this.owner.getMeshUrl();
+    const meshPath = "https://www.dl.dropboxusercontent.com/s/g0fni9u6tikurkr/vyner.glb";
+    // const meshPath = this.owner.getMeshUrl();
     [this.environmentTexture, this.mesh] = await Promise.all([
         this._loadEnvironment(this.sceneEnvironmentPath),
         this._loadMesh(meshPath)
@@ -826,8 +828,104 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
 /**
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
+ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
     this._registerInitialsHandlers();
+
+    const initialsContainer = this.element.querySelector(".initials-container");
+    if (!initialsContainer) {
+        throw new Error("Initials container not initialized, can't initiate CSR initials");
+    }
+
+    const canvas = initialsContainer.querySelector(".canvas");
+    const displacementCanvas = initialsContainer.querySelector(".displacement");
+
+    // TODO
+    const initialsWidth = 3000;
+    const initialsHeight = 300;
+    const scaleMultiplier = 0.01;
+
+    this.renderedInitials = new ripe.CsrRenderedInitials(
+        canvas,
+        displacementCanvas,
+        initialsWidth,
+        initialsHeight,
+        this.pixelRatio,
+        {
+            materialOptions: {
+                color: "#ff00ff"
+                // wireframe: true
+            }
+        }
+    );
+
+    // const PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
+    // const DISPLACEMENT_PATTERN_URL =
+    //     "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
+    // await Promise.all([
+    //     this.renderedInitials.setBaseTexture(PATTERN_URL),
+    //     this.renderedInitials.setDisplacementTexture(DISPLACEMENT_PATTERN_URL)
+    // ]);
+
+    const points = [
+        new window.THREE.Vector3(-500, 0, -1500),
+        new window.THREE.Vector3(-725, 0, -500),
+        new window.THREE.Vector3(-625, 0, -250),
+        new window.THREE.Vector3(-500, 0, -100),
+        new window.THREE.Vector3(-250, 0, 0),
+        new window.THREE.Vector3(0, 0, 0),
+        new window.THREE.Vector3(250, 0, -25),
+        new window.THREE.Vector3(485, 0, -200),
+        new window.THREE.Vector3(575, 0, -400),
+        new window.THREE.Vector3(600, 0, -675),
+        new window.THREE.Vector3(500, 0, -1500)
+    ];
+
+    const debugGroup = new window.THREE.Group();
+
+    // debug line
+    const loadLine = curve => {
+        const pointsNum = 25;
+        const points = curve.getPoints(pointsNum);
+        const line = new window.THREE.Line(
+            new window.THREE.BufferGeometry().setFromPoints(points),
+            new window.THREE.LineBasicMaterial({ color: 0x0000ff })
+        );
+        return line;
+    };
+    const loadLineHandles = points => {
+        const boxGeometry = new window.THREE.BoxGeometry(50, 50, 50);
+        const boxMaterial = new window.THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+        const handles = [];
+        for (const handlePos of points) {
+            const handle = new window.THREE.Mesh(boxGeometry, boxMaterial);
+            handle.position.copy(handlePos);
+            handles.push(handle);
+        }
+
+        return handles;
+    };
+    const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
+    const line = loadLine(curve);
+    debugGroup.add(line);
+    const handles = loadLineHandles(points);
+    for (const handle of handles) {
+        debugGroup.add(handle);
+    }
+    debugGroup.position.set(-26.25, 3, 3.65);
+    debugGroup.scale.set(1 * scaleMultiplier, 1 * scaleMultiplier, 1 * scaleMultiplier);
+    debugGroup.rotation.y = window.THREE.MathUtils.degToRad(-90);
+    this.modelGroup.add(debugGroup);
+
+    this.renderedInitials.setPoints(points);
+    this.renderedInitials.setInitials("Example Text");
+
+    const mesh = await this.renderedInitials.getMesh();
+    mesh.position.set(-26.25, 3, 3.65);
+    mesh.scale.set(1 * scaleMultiplier, 1 * scaleMultiplier, 1 * scaleMultiplier);
+    mesh.rotation.y = window.THREE.MathUtils.degToRad(-90);
+
+    this.modelGroup.add(mesh);
 };
 
 /**
@@ -927,7 +1025,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     await this._initScene();
 
     // init the CSR initials
-    this._initCsrRenderedInitials();
+    await this._initCsrRenderedInitials();
 
     // init debug tools
     this._initDebug();
