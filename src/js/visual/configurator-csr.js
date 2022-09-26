@@ -122,13 +122,19 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.initialsOptions = {
         width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
         height: initialsOpts.height !== undefined ? initialsOpts.height : 300,
+        options: initialsOpts.options !== undefined ? initialsOpts.options : {},
         points: initialsOpts.points !== undefined ? initialsOpts.points : [],
         position:
             initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
         rotation:
             initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
         scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 },
-        options: initialsOpts.options !== undefined ? initialsOpts.options : {}
+        baseTexturePath:
+            initialsOpts.baseTexturePath !== undefined ? initialsOpts.baseTexturePath : null,
+        displacementTexturePath:
+            initialsOpts.displacementTexturePath !== undefined
+                ? initialsOpts.displacementTexturePath
+                : null
     };
 
     // general state variables
@@ -902,13 +908,14 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
     this.initialsOptions.scale = { x: 1, y: 1, z: 1 };
     this.initialsOptions.rotation = { x: 0, y: -90, z: 0 };
 
-    // const PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
-    // const DISPLACEMENT_PATTERN_URL =
-    //     "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
-    // await Promise.all([
-    //     this.renderedInitials.setBaseTexture(PATTERN_URL),
-    //     this.renderedInitials.setDisplacementTexture(DISPLACEMENT_PATTERN_URL)
-    // ]);
+    this.initialsOptions.baseTexturePath =
+        "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
+    this.initialsOptions.displacementTexturePath =
+        "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
+    await Promise.all([
+        this.renderedInitials.setBaseTexture(this.initialsOptions.baseTexturePath),
+        this.renderedInitials.setDisplacementTexture(this.initialsOptions.displacementTexturePath)
+    ]);
 
     this.renderedInitials.setPoints(this.initialsOptions.points);
     this.renderedInitials.setInitials("Example Text");
@@ -924,9 +931,9 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         this.initialsOptions.scale.y * scaleMultiplier,
         this.initialsOptions.scale.z * scaleMultiplier
     );
-    mesh.rotation.y = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.x);
+    mesh.rotation.x = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.x);
     mesh.rotation.y = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.y);
-    mesh.rotation.y = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.z);
+    mesh.rotation.z = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.z);
 
     this.modelGroup.add(mesh);
 };
