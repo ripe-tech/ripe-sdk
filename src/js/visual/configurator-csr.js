@@ -156,6 +156,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.modelGroup = null;
     this.mesh = null;
     this.renderedInitials = null;
+    this.initialsMesh = null;
     this.debugRefs = {
         framerate: null,
         worldAxis: null,
@@ -922,9 +923,9 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
     this.renderedInitials.setPoints(this.initialsOptions.points);
     this.renderedInitials.setInitials("Example Text");
 
-    const mesh = await this.renderedInitials.getMesh();
+    this.initialsMesh = await this.renderedInitials.getMesh();
     ripe.CsrUtils.applyTransform(
-        mesh,
+        this.initialsMesh,
         this.initialsOptions.position,
         this.initialsOptions.rotation,
         {
@@ -934,7 +935,7 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         }
     );
 
-    this.modelGroup.add(mesh);
+    this.modelGroup.add(this.initialsMesh);
 };
 
 /**
