@@ -861,6 +861,43 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
     this.camera.updateProjectionMatrix();
 };
 
+ripe.ConfiguratorCsr.prototype._updateCsrRenderedInitials = async function(options = {}) {
+    if (!this.renderedInitials) throw new Error("CSR initials not initialized, can't run update");
+
+    if (options.width || options.height) {
+        const width = options.width || this.initialsOptions.width;
+        const height = options.height || this.initialsOptions.height;
+        this.renderedInitials.setSize(width, height);
+    }
+
+    if (options.options) {
+        await this.renderedInitials.updateOptions(options.options);
+    }
+
+    if (options.points && options.points.length > 0) {
+        this.renderedInitials.setPoints(options.points);
+    }
+
+    if (options.position || options.rotation || options.scale) {
+        const position = { ...options.position };
+        const rotation = { ...options.rotation };
+        const scale = { ...options.scale };
+        if (scale.x !== undefined) scale.x = scale.x * this.INITIALS_SCALE_MULTIPLIER;
+        if (scale.y !== undefined) scale.y = scale.y * this.INITIALS_SCALE_MULTIPLIER;
+        if (scale.z !== undefined) scale.z = scale.z * this.INITIALS_SCALE_MULTIPLIER;
+        ripe.CsrUtils.applyTransform(this.initialsMesh, position, rotation, scale);
+    }
+
+    const texturesUpdatesPromises = [];
+    if (options.baseTexturePath) {
+        texturesUpdatesPromises.push(this.renderedInitials.setBaseTexture(options.baseTexturePath));
+    }
+    if (options.displacementTexturePath) {
+        texturesUpdatesPromises.push(this.renderedInitials.setDisplacementTexture(options.displacementTexturePath));
+    }
+    await Promise.all(texturesUpdatesPromises);
+};
+
 /**
  * @private
  */
@@ -875,29 +912,6 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
     const canvas = initialsContainer.querySelector(".canvas");
     const displacementCanvas = initialsContainer.querySelector(".displacement");
 
-    // TODO
-    this.initialsOptions.points = [
-        new window.THREE.Vector3(-500, 0, -1500),
-        new window.THREE.Vector3(-725, 0, -500),
-        new window.THREE.Vector3(-625, 0, -250),
-        new window.THREE.Vector3(-500, 0, -100),
-        new window.THREE.Vector3(-250, 0, 0),
-        new window.THREE.Vector3(0, 0, 0),
-        new window.THREE.Vector3(250, 0, -25),
-        new window.THREE.Vector3(485, 0, -200),
-        new window.THREE.Vector3(575, 0, -400),
-        new window.THREE.Vector3(600, 0, -675),
-        new window.THREE.Vector3(500, 0, -1500)
-    ];
-    this.initialsOptions.options = {
-        materialOptions: {
-            color: "#00f7f7",
-            metalness: 1,
-            roughness: 0.1
-            // wireframe: true
-        }
-    };
-
     this.renderedInitials = new ripe.CsrRenderedInitials(
         canvas,
         displacementCanvas,
@@ -907,35 +921,24 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         this.initialsOptions.options
     );
 
-    this.initialsOptions.position = { x: -26.25, y: 3, z: 3.65 };
-    this.initialsOptions.scale = { x: 1, y: 1, z: 1 };
-    this.initialsOptions.rotation = { x: 0, y: -90, z: 0 };
-
-    this.initialsOptions.baseTexturePath =
-        "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
-    this.initialsOptions.displacementTexturePath =
-        "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
-    await Promise.all([
-        this.renderedInitials.setBaseTexture(this.initialsOptions.baseTexturePath),
-        this.renderedInitials.setDisplacementTexture(this.initialsOptions.displacementTexturePath)
-    ]);
-
-    this.renderedInitials.setPoints(this.initialsOptions.points);
-    this.renderedInitials.setInitials("Example Text");
-
+    // uses rendered initials mesh
     this.initialsMesh = await this.renderedInitials.getMesh();
-    ripe.CsrUtils.applyTransform(
-        this.initialsMesh,
-        this.initialsOptions.position,
-        this.initialsOptions.rotation,
-        {
-            x: this.initialsOptions.scale.x * this.INITIALS_SCALE_MULTIPLIER,
-            y: this.initialsOptions.scale.y * this.INITIALS_SCALE_MULTIPLIER,
-            z: this.initialsOptions.scale.z * this.INITIALS_SCALE_MULTIPLIER
-        }
-    );
-
     this.modelGroup.add(this.initialsMesh);
+
+    this.renderedInitials.setInitials("Examplesss Text");
+
+    console.log("baseTexturePath", this.initialsOptions.baseTexturePath);
+    console.log("displacementTexturePath", this.initialsOptions.displacementTexturePath);
+
+    // apply initials options
+    await this._updateCsrRenderedInitials({
+        position: this.initialsOptions.position,
+        rotation: this.initialsOptions.rotation,
+        scale: this.initialsOptions.scale,
+        points: this.initialsOptions.points,
+        baseTexturePath: this.initialsOptions.baseTexturePath,
+        displacementTexturePath: this.initialsOptions.displacementTexturePath
+    });
 };
 
 /**
@@ -1136,6 +1139,36 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
 
     // init scene
     await this._initScene();
+
+    // TODO
+    this.initialsOptions.points = [
+        new window.THREE.Vector3(-500, 0, -1500),
+        new window.THREE.Vector3(-725, 0, -500),
+        new window.THREE.Vector3(-625, 0, -250),
+        new window.THREE.Vector3(-500, 0, -100),
+        new window.THREE.Vector3(-250, 0, 0),
+        new window.THREE.Vector3(0, 0, 0),
+        new window.THREE.Vector3(250, 0, -25),
+        new window.THREE.Vector3(485, 0, -200),
+        new window.THREE.Vector3(575, 0, -400),
+        new window.THREE.Vector3(600, 0, -675),
+        new window.THREE.Vector3(500, 0, -1500)
+    ];
+    this.initialsOptions.options = {
+        materialOptions: {
+            color: "#00f7f7",
+            metalness: 1,
+            roughness: 0.1
+            // wireframe: true
+        }
+    };
+    this.initialsOptions.position = { x: -26.25, y: 3, z: 3.65 };
+    this.initialsOptions.scale = { x: 1, y: 1, z: 1 };
+    this.initialsOptions.rotation = { x: 0, y: -90, z: 0 };
+    this.initialsOptions.baseTexturePath =
+        "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
+    this.initialsOptions.displacementTexturePath =
+        "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
 
     // init the CSR initials
     await this._initCsrRenderedInitials();
