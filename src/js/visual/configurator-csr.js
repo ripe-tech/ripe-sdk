@@ -864,7 +864,9 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         this.pixelRatio,
         {
             materialOptions: {
-                color: "#ff00ff"
+                color: "#00f7f7",
+                metalness: 1,
+                roughness: 0.1
                 // wireframe: true
             }
         }
