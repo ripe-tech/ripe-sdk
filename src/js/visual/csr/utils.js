@@ -248,3 +248,28 @@ ripe.CsrUtils.normalMapFromCanvas = function(canvas) {
     const displacementTextureData = ctx.getImageData(0, 0, width, height);
     return this.heightMapToNormalMap(displacementTextureData);
 };
+
+/**
+ * Applies position, rotation and scale to a THREE.Object3D object instance.
+ *
+ * @param {THREE.Object3D} object An instance of a THREE.Object3D.
+ */
+ripe.CsrUtils.applyTransform = function(object, position = {}, rotation = {}, scale = {}) {
+    const positionX = position.x || object.position.x;
+    const positionY = position.y || object.position.y;
+    const positionZ = position.z || object.position.z;
+
+    const rotationX = window.THREE.MathUtils.degToRad(rotation.x) || object.rotation.x;
+    const rotationY = window.THREE.MathUtils.degToRad(rotation.y) || object.rotation.y;
+    const rotationZ = window.THREE.MathUtils.degToRad(rotation.z) || object.rotation.z;
+
+    const scaleX = scale.x || object.scale.x;
+    const scaleY = scale.y || object.scale.y;
+    const scaleZ = scale.z || object.scale.z;
+
+    object.position.set(positionX, positionY, positionZ);
+    object.scale.set(scaleX, scaleY, scaleZ);
+    object.rotation.x = rotationX;
+    object.rotation.y = rotationY;
+    object.rotation.z = rotationZ;
+};
