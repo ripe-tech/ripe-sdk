@@ -955,7 +955,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         }
         if (!this.renderedInitials) {
             throw new Error(
-                "Rendered initials instance not initialized, can't load rendered initials debug tool"
+                "CSR initials not initialized, can't load rendered initials debug tool"
             );
         }
 
