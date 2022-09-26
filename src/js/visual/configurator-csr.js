@@ -137,6 +137,9 @@ ripe.ConfiguratorCsr.prototype.init = function() {
                 : null
     };
 
+    // multiplier to adjust the CSR initials mesh scale
+    this.INITIALS_SCALE_MULTIPLIER = 0.01;
+
     // general state variables
     this.loading = true;
     this.noDrag = false;
@@ -894,7 +897,6 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         }
     };
 
-    const scaleMultiplier = 0.01;
     this.renderedInitials = new ripe.CsrRenderedInitials(
         canvas,
         displacementCanvas,
@@ -921,19 +923,16 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
     this.renderedInitials.setInitials("Example Text");
 
     const mesh = await this.renderedInitials.getMesh();
-    mesh.position.set(
-        this.initialsOptions.position.x,
-        this.initialsOptions.position.y,
-        this.initialsOptions.position.z
+    ripe.CsrUtils.applyTransform(
+        mesh,
+        this.initialsOptions.position,
+        this.initialsOptions.rotation,
+        {
+            x: this.initialsOptions.scale.x * this.INITIALS_SCALE_MULTIPLIER,
+            y: this.initialsOptions.scale.y * this.INITIALS_SCALE_MULTIPLIER,
+            z: this.initialsOptions.scale.z * this.INITIALS_SCALE_MULTIPLIER
+        }
     );
-    mesh.scale.set(
-        this.initialsOptions.scale.x * scaleMultiplier,
-        this.initialsOptions.scale.y * scaleMultiplier,
-        this.initialsOptions.scale.z * scaleMultiplier
-    );
-    mesh.rotation.x = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.x);
-    mesh.rotation.y = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.y);
-    mesh.rotation.z = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.z);
 
     this.modelGroup.add(mesh);
 };
@@ -1032,15 +1031,17 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
             }
         }
 
-        // TODO
-        const scaleMultiplier = 0.01;
-        this.debugRefs.renderedInitials.group.position.set(-26.25, 3, 3.65);
-        this.debugRefs.renderedInitials.group.scale.set(
-            1 * scaleMultiplier,
-            1 * scaleMultiplier,
-            1 * scaleMultiplier
+        // adjust object transforms
+        ripe.CsrUtils.applyTransform(
+            this.debugRefs.renderedInitials.group,
+            this.initialsOptions.position,
+            this.initialsOptions.rotation,
+            {
+                x: this.initialsOptions.scale.x * this.INITIALS_SCALE_MULTIPLIER,
+                y: this.initialsOptions.scale.y * this.INITIALS_SCALE_MULTIPLIER,
+                z: this.initialsOptions.scale.z * this.INITIALS_SCALE_MULTIPLIER
+            }
         );
-        this.debugRefs.renderedInitials.group.rotation.y = window.THREE.MathUtils.degToRad(-90);
 
         this.modelGroup.add(this.debugRefs.renderedInitials.group);
     }
