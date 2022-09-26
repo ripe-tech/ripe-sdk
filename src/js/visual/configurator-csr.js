@@ -118,6 +118,18 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
         max: zoomOpts.max !== undefined ? zoomOpts.max : 200
     };
+    const initialsOpts = this.options.initialsOptions || {};
+    this.initialsOptions = {
+        width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
+        height: initialsOpts.height !== undefined ? initialsOpts.height : 300,
+        points: initialsOpts.points !== undefined ? initialsOpts.points : [],
+        position:
+            initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
+        rotation:
+            initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
+        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 },
+        options: initialsOpts.options !== undefined ? initialsOpts.options : {}
+    };
 
     // general state variables
     this.loading = true;
@@ -225,6 +237,8 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.cameraOptions = { ...this.cameraOptions, ...cameraOpts };
     const zoomOpts = options.zoomOptions || {};
     this.zoomOptions = { ...this.zoomOptions, ...zoomOpts };
+    const initialsOpts = this.options.initialsOptions || {};
+    this.initialsOptions = { ...this.initialsOptions, ...initialsOpts };
 
     if (update) await this.update();
 };
@@ -852,35 +866,7 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
     const displacementCanvas = initialsContainer.querySelector(".displacement");
 
     // TODO
-    const initialsWidth = 3000;
-    const initialsHeight = 300;
-    const scaleMultiplier = 0.01;
-
-    this.renderedInitials = new ripe.CsrRenderedInitials(
-        canvas,
-        displacementCanvas,
-        initialsWidth,
-        initialsHeight,
-        this.pixelRatio,
-        {
-            materialOptions: {
-                color: "#00f7f7",
-                metalness: 1,
-                roughness: 0.1
-                // wireframe: true
-            }
-        }
-    );
-
-    // const PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
-    // const DISPLACEMENT_PATTERN_URL =
-    //     "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
-    // await Promise.all([
-    //     this.renderedInitials.setBaseTexture(PATTERN_URL),
-    //     this.renderedInitials.setDisplacementTexture(DISPLACEMENT_PATTERN_URL)
-    // ]);
-
-    const points = [
+    this.initialsOptions.points = [
         new window.THREE.Vector3(-500, 0, -1500),
         new window.THREE.Vector3(-725, 0, -500),
         new window.THREE.Vector3(-625, 0, -250),
@@ -893,14 +879,54 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         new window.THREE.Vector3(600, 0, -675),
         new window.THREE.Vector3(500, 0, -1500)
     ];
+    this.initialsOptions.options = {
+        materialOptions: {
+            color: "#00f7f7",
+            metalness: 1,
+            roughness: 0.1
+            // wireframe: true
+        }
+    };
 
-    this.renderedInitials.setPoints(points);
+    const scaleMultiplier = 0.01;
+    this.renderedInitials = new ripe.CsrRenderedInitials(
+        canvas,
+        displacementCanvas,
+        this.initialsOptions.width,
+        this.initialsOptions.height,
+        this.pixelRatio,
+        this.initialsOptions.options
+    );
+
+    this.initialsOptions.position = { x: -26.25, y: 3, z: 3.65 };
+    this.initialsOptions.scale = { x: 1, y: 1, z: 1 };
+    this.initialsOptions.rotation = { x: 0, y: -90, z: 0 };
+
+    // const PATTERN_URL = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
+    // const DISPLACEMENT_PATTERN_URL =
+    //     "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
+    // await Promise.all([
+    //     this.renderedInitials.setBaseTexture(PATTERN_URL),
+    //     this.renderedInitials.setDisplacementTexture(DISPLACEMENT_PATTERN_URL)
+    // ]);
+
+    this.renderedInitials.setPoints(this.initialsOptions.points);
     this.renderedInitials.setInitials("Example Text");
 
     const mesh = await this.renderedInitials.getMesh();
-    mesh.position.set(-26.25, 3, 3.65);
-    mesh.scale.set(1 * scaleMultiplier, 1 * scaleMultiplier, 1 * scaleMultiplier);
-    mesh.rotation.y = window.THREE.MathUtils.degToRad(-90);
+    mesh.position.set(
+        this.initialsOptions.position.x,
+        this.initialsOptions.position.y,
+        this.initialsOptions.position.z
+    );
+    mesh.scale.set(
+        this.initialsOptions.scale.x * scaleMultiplier,
+        this.initialsOptions.scale.y * scaleMultiplier,
+        this.initialsOptions.scale.z * scaleMultiplier
+    );
+    mesh.rotation.y = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.x);
+    mesh.rotation.y = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.y);
+    mesh.rotation.y = window.THREE.MathUtils.degToRad(this.initialsOptions.rotation.z);
 
     this.modelGroup.add(mesh);
 };
