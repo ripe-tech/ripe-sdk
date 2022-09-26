@@ -68,10 +68,16 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.duration = this.options.duration || 500;
     this.debug = this.options.debug || false;
     const debugOpts = this.options.debugOptions || {};
+    const renderedInitialsOpts = debugOpts.renderedInitials || {};
     this.debugOptions = {
         framerate: debugOpts.framerate !== undefined ? debugOpts.framerate : true,
         worldAxis: debugOpts.worldAxis !== undefined ? debugOpts.worldAxis : true,
-        modelAxis: debugOpts.modelAxis !== undefined ? debugOpts.modelAxis : true
+        modelAxis: debugOpts.modelAxis !== undefined ? debugOpts.modelAxis : true,
+        renderedInitials: {
+            axis: renderedInitialsOpts.axis !== undefined ? renderedInitialsOpts.axis : true,
+            line: renderedInitialsOpts.line !== undefined ? renderedInitialsOpts.line : true,
+            points: renderedInitialsOpts.points !== undefined ? renderedInitialsOpts.points : true
+        }
     };
     const rendererOpts = this.options.rendererOptions || {};
     this.rendererOptions = {
@@ -132,7 +138,13 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.debugRefs = {
         framerate: null,
         worldAxis: null,
-        modelAxis: null
+        modelAxis: null,
+        renderedInitials: {
+            group: null,
+            axis: null,
+            line: null,
+            points: []
+        }
     };
 
     // handlers variables
@@ -880,43 +892,6 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         new window.THREE.Vector3(500, 0, -1500)
     ];
 
-    const debugGroup = new window.THREE.Group();
-
-    // debug line
-    const loadLine = curve => {
-        const pointsNum = 25;
-        const points = curve.getPoints(pointsNum);
-        const line = new window.THREE.Line(
-            new window.THREE.BufferGeometry().setFromPoints(points),
-            new window.THREE.LineBasicMaterial({ color: 0x0000ff })
-        );
-        return line;
-    };
-    const loadLineHandles = points => {
-        const boxGeometry = new window.THREE.BoxGeometry(50, 50, 50);
-        const boxMaterial = new window.THREE.MeshBasicMaterial({ color: 0xff0000 });
-
-        const handles = [];
-        for (const handlePos of points) {
-            const handle = new window.THREE.Mesh(boxGeometry, boxMaterial);
-            handle.position.copy(handlePos);
-            handles.push(handle);
-        }
-
-        return handles;
-    };
-    const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
-    const line = loadLine(curve);
-    debugGroup.add(line);
-    const handles = loadLineHandles(points);
-    for (const handle of handles) {
-        debugGroup.add(handle);
-    }
-    debugGroup.position.set(-26.25, 3, 3.65);
-    debugGroup.scale.set(1 * scaleMultiplier, 1 * scaleMultiplier, 1 * scaleMultiplier);
-    debugGroup.rotation.y = window.THREE.MathUtils.degToRad(-90);
-    this.modelGroup.add(debugGroup);
-
     this.renderedInitials.setPoints(points);
     this.renderedInitials.setInitials("Example Text");
 
@@ -970,6 +945,70 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         this.debugRefs.modelAxis = new window.THREE.AxesHelper(50);
         this.modelGroup.add(this.debugRefs.modelAxis);
     }
+
+    // inits rendered initials debug tools
+    if (this.debugOptions.renderedInitials) {
+        if (!this.modelGroup) {
+            throw new Error("Model group not initialized, can't load rendered initials debug tool");
+        }
+        if (!this.renderedInitials) {
+            throw new Error(
+                "Rendered initials instance not initialized, can't load rendered initials debug tool"
+            );
+        }
+
+        // creates group that will contain all rendered initials debug tools
+        this.debugRefs.renderedInitials.group = new window.THREE.Group();
+
+        // inits axis
+        if (this.debugOptions.renderedInitials.axis) {
+            this.debugRefs.renderedInitials.axis = new window.THREE.AxesHelper(750);
+            this.debugRefs.renderedInitials.group.add(this.debugRefs.renderedInitials.axis);
+        }
+
+        // inits reference points curve
+        if (this.debugOptions.renderedInitials.line) {
+            const curve = new window.THREE.CatmullRomCurve3(
+                this.renderedInitials.points,
+                false,
+                "centripetal"
+            );
+            const pointsNum = 50;
+            const linePoints = curve.getPoints(pointsNum);
+            this.debugRefs.renderedInitials.line = new window.THREE.Line(
+                new window.THREE.BufferGeometry().setFromPoints(linePoints),
+                new window.THREE.LineBasicMaterial({ color: 0x0000ff })
+            );
+
+            this.debugRefs.renderedInitials.group.add(this.debugRefs.renderedInitials.line);
+        }
+
+        // inits reference points
+        if (this.debugOptions.renderedInitials.points) {
+            const boxGeometry = new window.THREE.BoxGeometry(50, 50, 50);
+            const boxMaterial = new window.THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+            for (const pos of this.renderedInitials.points) {
+                const pointBox = new window.THREE.Mesh(boxGeometry, boxMaterial);
+                pointBox.position.copy(pos);
+
+                this.debugRefs.renderedInitials.points.push(pointBox);
+                this.debugRefs.renderedInitials.group.add(pointBox);
+            }
+        }
+
+        // TODO
+        const scaleMultiplier = 0.01;
+        this.debugRefs.renderedInitials.group.position.set(-26.25, 3, 3.65);
+        this.debugRefs.renderedInitials.group.scale.set(
+            1 * scaleMultiplier,
+            1 * scaleMultiplier,
+            1 * scaleMultiplier
+        );
+        this.debugRefs.renderedInitials.group.rotation.y = window.THREE.MathUtils.degToRad(-90);
+
+        this.modelGroup.add(this.debugRefs.renderedInitials.group);
+    }
 };
 
 /**
@@ -978,6 +1017,43 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._deinitDebug = function() {
+    if (this.debugRefs.renderedInitials) {
+        // cleanup reference points boxes
+        this.debugRefs.renderedInitials.points.forEach(point => {
+            if (point.geometry) point.geometry.dispose();
+            if (point.material) point.material.dispose();
+            if (this.debugRefs.renderedInitials.group) {
+                this.debugRefs.renderedInitials.group.remove(point);
+            }
+        });
+        this.debugRefs.renderedInitials.points = [];
+
+        // cleanup line
+        if (this.debugRefs.renderedInitials.line) {
+            if (this.debugRefs.renderedInitials.line.geometry) {
+                this.debugRefs.renderedInitials.line.geometry.dispose();
+            }
+            if (this.debugRefs.renderedInitials.line.material) {
+                this.debugRefs.renderedInitials.line.material.dispose();
+            }
+            if (this.debugRefs.renderedInitials.group) {
+                this.debugRefs.renderedInitials.group.remove(this.debugRefs.renderedInitials.line);
+            }
+            this.debugRefs.renderedInitials.line = null;
+        }
+
+        // cleanup axis
+        if (this.debugRefs.renderedInitials.axis) {
+            if (this.debugRefs.renderedInitials.group) {
+                this.debugRefs.renderedInitials.group.remove(this.debugRefs.renderedInitials.line);
+            }
+            this.debugRefs.renderedInitials.axis = null;
+        }
+
+        // cleanup group
+        this.debugRefs.renderedInitials.group = null;
+    }
+
     if (this.debugRefs.modelAxis) {
         this.debugRefs.modelAxis.dispose();
         this.modelGroup.remove(this.debugRefs.modelAxis);
