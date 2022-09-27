@@ -935,8 +935,8 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         scale
     );
 
-    // TODO delete me
-    this.initialsRefs.renderedInitials.setInitials("Examplesss Text");
+    // trigger rerender to clear the initials
+    this.initialsRefs.renderedInitials.rerenderInitials();
 };
 
 /**
