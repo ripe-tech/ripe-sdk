@@ -838,19 +838,13 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
         this.cameraOptions.far
     );
     if (this.cameraOptions.filmGauge) this.camera.filmGauge = this.cameraOptions.filmGauge;
-    this.camera.position.set(
-        this.cameraOptions.position.x,
-        this.cameraOptions.position.y,
-        this.cameraOptions.position.z
+
+    ripe.CsrUtils.applyTransform(
+        this.camera,
+        this.cameraOptions.position,
+        this.cameraOptions.rotation,
+        this.cameraOptions.scale
     );
-    this.camera.scale.set(
-        this.cameraOptions.scale.x,
-        this.cameraOptions.scale.y,
-        this.cameraOptions.scale.z
-    );
-    this.camera.rotation.x = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.x);
-    this.camera.rotation.y = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.y);
-    this.camera.rotation.z = window.THREE.MathUtils.degToRad(this.cameraOptions.rotation.z);
 
     if (this.cameraOptions.lookAt) {
         this.camera.lookAt(
