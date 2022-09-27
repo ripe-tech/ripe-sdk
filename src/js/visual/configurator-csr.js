@@ -874,39 +874,6 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
 };
 
 /**
- * Updates the CSR initials state by applying and updating a set of new options.
- *
- * @param {Object} options Set of initials options to use for the update.
- */
-ripe.ConfiguratorCsr.prototype._updateCsrInitials = function(options = {}) {
-    if (!this.initialsRefs.renderedInitials) {
-        throw new Error("CSR initials not initialized, can't run update");
-    }
-
-    if (options.width || options.height) {
-        const width = options.width || this.initialsOptions.width;
-        const height = options.height || this.initialsOptions.height;
-        this.initialsRefs.renderedInitials.setSize(width, height);
-    }
-
-    if (options.options) this.initialsRefs.renderedInitials.updateOptions(options.options);
-
-    if (options.points && options.points.length > 0) {
-        this.initialsRefs.renderedInitials.setPoints(options.points);
-    }
-
-    if (options.position || options.rotation || options.scale) {
-        const position = { ...options.position };
-        const rotation = { ...options.rotation };
-        const scale = { ...options.scale };
-        if (scale.x !== undefined) scale.x = scale.x * this.INITIALS_SCALE_MULTIPLIER;
-        if (scale.y !== undefined) scale.y = scale.y * this.INITIALS_SCALE_MULTIPLIER;
-        if (scale.z !== undefined) scale.z = scale.z * this.INITIALS_SCALE_MULTIPLIER;
-        ripe.CsrUtils.applyTransform(this.initialsRefs.mesh, position, rotation, scale);
-    }
-};
-
-/**
  * @private
  */
 ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
@@ -957,14 +924,24 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
     this.initialsRefs.mesh = this.initialsRefs.renderedInitials.getMesh();
     this.modelGroup.add(this.initialsRefs.mesh);
 
-    // apply remaining initials options
-    await this._updateCsrInitials({
-        position: this.initialsOptions.position,
-        rotation: this.initialsOptions.rotation,
-        scale: this.initialsOptions.scale,
-        points: this.initialsOptions.points
-    });
+    // applies the mesh reference points if available
+    if (this.initialsOptions.points && this.initialsOptions.points.length > 0) {
+        this.initialsRefs.renderedInitials.setPoints(this.initialsOptions.points);
+    }
 
+    // applies the mesh transformations
+    const scale = { ...this.initialsOptions.scale };
+    if (scale.x !== undefined) scale.x = scale.x * this.INITIALS_SCALE_MULTIPLIER;
+    if (scale.y !== undefined) scale.y = scale.y * this.INITIALS_SCALE_MULTIPLIER;
+    if (scale.z !== undefined) scale.z = scale.z * this.INITIALS_SCALE_MULTIPLIER;
+    ripe.CsrUtils.applyTransform(
+        this.initialsRefs.mesh,
+        this.initialsOptions.position,
+        this.initialsOptions.rotation,
+        scale
+    );
+
+    // TODO delete me
     this.initialsRefs.renderedInitials.setInitials("Examplesss Text");
 };
 
