@@ -1340,7 +1340,6 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engraving, params) {
-    console.log("TODO", "initials trigger!", initials, engraving, params);
     if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
 
     this.initialsRefs.renderedInitials.setInitials(initials);
@@ -1350,7 +1349,9 @@ ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engra
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsExtra, params) {
-    console.log("TODO", "initials_extra trigger!", initialsExtra, params);
+    if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
+
+    throw new Error("Not implemented");
 };
 
 /**
