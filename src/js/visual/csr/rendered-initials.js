@@ -216,14 +216,14 @@ ripe.CsrRenderedInitials.prototype.setBaseTexture = async function(path, options
     this.currentBaseTexturePath = path;
     this.baseTextureOptions = { ...this.baseTextureOptions, ...options };
 
+    // cleans up resources
+    if (this.baseTexture) this.baseTexture.dispose();
+
     // loads the initials pattern texture
-    let patternTexture = await ripe.CsrUtils.loadTexture(path);
+    const patternTexture = await ripe.CsrUtils.loadTexture(path);
 
     // applies texture options by precooking the texture
-    patternTexture = this._preCookTexture(patternTexture, this.baseTextureOptions);
-
-    // assigns the base texture
-    this.baseTexture = patternTexture;
+    this.baseTexture = this._preCookTexture(patternTexture, this.baseTextureOptions);
 };
 
 /**
@@ -248,14 +248,14 @@ ripe.CsrRenderedInitials.prototype.setDisplacementTexture = async function(path,
     this.currentDisplacementTexturePath = path;
     this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
 
+    // cleans up resources
+    if (this.displacementTexture) this.displacementTexture.dispose();
+
     // loads the initials height map pattern texture
-    let patternTexture = await ripe.CsrUtils.loadTexture(path);
+    const patternTexture = await ripe.CsrUtils.loadTexture(path);
 
     // applies texture options by precooking the texture
-    patternTexture = this._preCookTexture(patternTexture, this.displacementTextureOptions);
-
-    // assigns the height map texture
-    this.displacementTexture = patternTexture;
+    this.displacementTexture = this._preCookTexture(patternTexture, this.displacementTextureOptions);
 };
 
 /**
