@@ -865,25 +865,25 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
     this.camera.updateProjectionMatrix();
 };
 
-ripe.ConfiguratorCsr.prototype._updateCsrRenderedInitials = function(options = {}) {
+ripe.ConfiguratorCsr.prototype._updateCsrRenderedInitials = function(state = {}) {
     if (!this.renderedInitials) throw new Error("CSR initials not initialized, can't run update");
 
-    if (options.width || options.height) {
-        const width = options.width || this.initialsOptions.width;
-        const height = options.height || this.initialsOptions.height;
+    if (state.width || state.height) {
+        const width = state.width || this.initialsOptions.width;
+        const height = state.height || this.initialsOptions.height;
         this.renderedInitials.setSize(width, height);
     }
 
-    if (options.options) this.renderedInitials.updateOptions(options.options);
+    if (state.options) this.renderedInitials.updateOptions(state.options);
 
-    if (options.points && options.points.length > 0) {
-        this.renderedInitials.setPoints(options.points);
+    if (state.points && state.points.length > 0) {
+        this.renderedInitials.setPoints(state.points);
     }
 
-    if (options.position || options.rotation || options.scale) {
-        const position = { ...options.position };
-        const rotation = { ...options.rotation };
-        const scale = { ...options.scale };
+    if (state.position || state.rotation || state.scale) {
+        const position = { ...state.position };
+        const rotation = { ...state.rotation };
+        const scale = { ...state.scale };
         if (scale.x !== undefined) scale.x = scale.x * this.INITIALS_SCALE_MULTIPLIER;
         if (scale.y !== undefined) scale.y = scale.y * this.INITIALS_SCALE_MULTIPLIER;
         if (scale.z !== undefined) scale.z = scale.z * this.INITIALS_SCALE_MULTIPLIER;
