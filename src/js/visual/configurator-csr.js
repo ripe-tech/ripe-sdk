@@ -873,7 +873,12 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
     this.camera.updateProjectionMatrix();
 };
 
-ripe.ConfiguratorCsr.prototype._updateCsrRenderedInitials = function(options = {}) {
+/**
+ * Updates the CSR initials state by applying and updating a set of new options.
+ *
+ * @param {Object} options Set of initials options to use for the update.
+ */
+ripe.ConfiguratorCsr.prototype._updateCsrInitials = function(options = {}) {
     if (!this.initialsRefs.renderedInitials) {
         throw new Error("CSR initials not initialized, can't run update");
     }
@@ -953,7 +958,7 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
     this.modelGroup.add(this.initialsRefs.mesh);
 
     // apply remaining initials options
-    await this._updateCsrRenderedInitials({
+    await this._updateCsrInitials({
         position: this.initialsOptions.position,
         rotation: this.initialsOptions.rotation,
         scale: this.initialsOptions.scale,
