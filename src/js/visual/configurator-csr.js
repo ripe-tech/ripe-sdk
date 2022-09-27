@@ -130,11 +130,8 @@ ripe.ConfiguratorCsr.prototype.init = function() {
             initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
         scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
     };
-    const initialsTexturesOpts = this.options.initialsTexturesOptions || {};
-    this.initialsTexturesOptions = {
-        baseTexturePath: initialsTexturesOpts.baseTexturePath !== undefined ? initialsTexturesOpts.baseTexturePath : null,
-        displacementTexturePath: initialsTexturesOpts.displacementTexturePath !== undefined ? initialsTexturesOpts.displacementTexturePath : null
-    };
+    this.initialsBaseTexturePath = this.options.initialsBaseTexturePath || null;
+    this.initialsDisplacementTexturePath = this.options.initialsDisplacementTexturePath || null;
 
     // multiplier to adjust the CSR initials mesh scale
     this.INITIALS_SCALE_MULTIPLIER = 0.01;
@@ -248,6 +245,14 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.zoomOptions = { ...this.zoomOptions, ...zoomOpts };
     const initialsOpts = this.options.initialsOptions || {};
     this.initialsOptions = { ...this.initialsOptions, ...initialsOpts };
+    this.initialsBaseTexturePath =
+        options.initialsBaseTexturePath === undefined
+            ? this.initialsBaseTexturePath
+            : options.initialsBaseTexturePath;
+    this.initialsDisplacementTexturePath =
+        options.initialsDisplacementTexturePath === undefined
+            ? this.initialsDisplacementTexturePath
+            : options.initialsDisplacementTexturePath;
 
     if (update) await this.update();
 };
@@ -860,7 +865,7 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
     this.camera.updateProjectionMatrix();
 };
 
-ripe.ConfiguratorCsr.prototype._updateCsrRenderedInitials = async function(options = {}) {
+ripe.ConfiguratorCsr.prototype._updateCsrRenderedInitials = function(options = {}) {
     if (!this.renderedInitials) throw new Error("CSR initials not initialized, can't run update");
 
     if (options.width || options.height) {
@@ -869,9 +874,7 @@ ripe.ConfiguratorCsr.prototype._updateCsrRenderedInitials = async function(optio
         this.renderedInitials.setSize(width, height);
     }
 
-    if (options.options) {
-        await this.renderedInitials.updateOptions(options.options);
-    }
+    if (options.options) this.renderedInitials.updateOptions(options.options);
 
     if (options.points && options.points.length > 0) {
         this.renderedInitials.setPoints(options.points);
@@ -911,24 +914,41 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         this.initialsOptions.options
     );
 
+    // loads textures
+    const [baseTexture, displacementTexture] = await Promise.all([
+        this.initialsBaseTexturePath
+            ? ripe.CsrUtils.loadTexture(this.initialsBaseTexturePath)
+            : null,
+        this.initialsDisplacementTexturePath
+            ? ripe.CsrUtils.loadTexture(this.initialsDisplacementTexturePath)
+            : null
+    ]);
+
+    // apply textures to initials
+    if (baseTexture) {
+        this.renderedInitials.setBaseTexture(
+            baseTexture,
+            this.initialsOptions.options.baseTextureOptions
+        );
+    }
+    if (displacementTexture) {
+        this.renderedInitials.setDisplacementTexture(
+            baseTexture,
+            this.initialsOptions.options.displacementTextureOptions
+        );
+    }
+
     // uses rendered initials mesh
-    this.initialsMesh = await this.renderedInitials.getMesh();
+    this.initialsMesh = this.renderedInitials.getMesh();
     this.modelGroup.add(this.initialsMesh);
 
-    console.log("baseTexturePath", this.initialsOptions.baseTexturePath);
-    console.log("displacementTexturePath", this.initialsOptions.displacementTexturePath);
-
-    // apply initials options
+    // apply remaining initials options
     await this._updateCsrRenderedInitials({
         position: this.initialsOptions.position,
         rotation: this.initialsOptions.rotation,
         scale: this.initialsOptions.scale,
-        points: this.initialsOptions.points,
-        baseTexturePath: this.initialsOptions.baseTexturePath,
-        displacementTexturePath: this.initialsOptions.displacementTexturePath
+        points: this.initialsOptions.points
     });
-
-    if ()
 
     this.renderedInitials.setInitials("Examplesss Text");
 };
@@ -1157,10 +1177,8 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     this.initialsOptions.position = { x: -26.25, y: 3, z: 3.65 };
     this.initialsOptions.scale = { x: 1, y: 1, z: 1 };
     this.initialsOptions.rotation = { x: 0, y: -90, z: 0 };
-    this.initialsOptions.baseTexturePath =
-        "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
-    this.initialsOptions.displacementTexturePath =
-        "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
+    // this.initialsBaseTexturePath = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
+    // this.initialsDisplacementTexturePath = "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
 
     // init the CSR initials
     await this._initCsrRenderedInitials();
