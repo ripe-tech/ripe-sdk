@@ -1156,34 +1156,6 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     // init scene
     await this._initScene();
 
-    // TODO
-    this.initialsOptions.points = [
-        new window.THREE.Vector3(-500, 0, -1500),
-        new window.THREE.Vector3(-725, 0, -500),
-        new window.THREE.Vector3(-625, 0, -250),
-        new window.THREE.Vector3(-500, 0, -100),
-        new window.THREE.Vector3(-250, 0, 0),
-        new window.THREE.Vector3(0, 0, 0),
-        new window.THREE.Vector3(250, 0, -25),
-        new window.THREE.Vector3(485, 0, -200),
-        new window.THREE.Vector3(575, 0, -400),
-        new window.THREE.Vector3(600, 0, -675),
-        new window.THREE.Vector3(500, 0, -1500)
-    ];
-    this.initialsOptions.options = {
-        materialOptions: {
-            color: "#00f7f7",
-            metalness: 1,
-            roughness: 0.1
-            // wireframe: true
-        }
-    };
-    this.initialsOptions.position = { x: -26.25, y: 3, z: 3.65 };
-    this.initialsOptions.scale = { x: 1, y: 1, z: 1 };
-    this.initialsOptions.rotation = { x: 0, y: -90, z: 0 };
-    // this.initialsBaseTexturePath = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
-    // this.initialsDisplacementTexturePath = "https://www.dl.dropboxusercontent.com/s/8mj4l97veu9urmc/height_map_pattern.jpg";
-
     // init the CSR initials
     await this._initCsrRenderedInitials();
 
