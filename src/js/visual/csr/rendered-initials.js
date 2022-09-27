@@ -197,7 +197,7 @@ ripe.CsrRenderedInitials.prototype.setPoints = function(points) {
  *
  * @returns {THREE.Material} Material that makes the 3D text effect.
  */
-ripe.CsrRenderedInitials.prototype.getMaterial = async function() {
+ripe.CsrRenderedInitials.prototype.getMaterial = function() {
     if (!this.material) throw new Error("The material doesn't exist");
     return this.material;
 };
@@ -207,7 +207,7 @@ ripe.CsrRenderedInitials.prototype.getMaterial = async function() {
  *
  * @returns {THREE.Object3D} Mesh that will have the initials text.
  */
-ripe.CsrRenderedInitials.prototype.getMesh = async function() {
+ripe.CsrRenderedInitials.prototype.getMesh = function() {
     // ensures mesh exists
     if (!this.mesh) this._buildInitialsMesh();
 
@@ -334,7 +334,7 @@ ripe.CsrRenderedInitials.prototype.setSize = function(width = null, height = nul
  *
  * @param {Object} options Set of optional parameters to adjust the initials renderer.
  */
-ripe.CsrRenderedInitials.prototype.updateOptions = async function(options = {}) {
+ripe.CsrRenderedInitials.prototype.updateOptions = function(options = {}) {
     let updateInitials = false;
     let updateMaterial = false;
     let updateMesh = false;
@@ -369,9 +369,9 @@ ripe.CsrRenderedInitials.prototype.updateOptions = async function(options = {}) 
     }
 
     // performs update operations. The order is important
-    if (updateBaseTexture) await this.setBaseTextureOptions(this.baseTextureOptions);
+    if (updateBaseTexture) this.setBaseTextureOptions(this.baseTextureOptions);
     if (updateDisplacementTexture) {
-        await this.setDisplacementTextureOptions(this.displacementTextureOptions);
+        this.setDisplacementTextureOptions(this.displacementTextureOptions);
     }
     if (updateMaterial) {
         ripe.CsrUtils.applyOptions(this.materialOptions);
@@ -393,8 +393,8 @@ ripe.CsrRenderedInitials.prototype.destroy = function() {
     this.textureRenderer.destroy();
 
     // cleans up textures
-    if (this.baseTexture) this.baseTexture.dispose();
-    if (this.displacementTexture) this.displacementTexture.dispose();
+    this._destroyRawTextures();
+    this._destroyCookedTextures();
     this._destroyMaterialTextures();
 
     // cleans up the material
@@ -418,25 +418,49 @@ ripe.CsrRenderedInitials.prototype._destroyMesh = function() {
 };
 
 /**
+ * Cleanups raw textured.
+ *
+ * @private
+ */
+ripe.CsrRenderedInitials.prototype._destroyRawTextures = function() {
+    if (this.rawTexturesRefs.base) this.rawTexturesRefs.base.dispose();
+    if (this.rawTexturesRefs.displacement) this.rawTexturesRefs.displacement.dispose();
+    this.rawTexturesRefs = {
+        base: null,
+        displacement: null
+    };
+};
+
+/**
+ * Cleanups cooked textures.
+ *
+ * @private
+ */
+ripe.CsrRenderedInitials.prototype._destroyCookedTextures = function() {
+    if (this.cookedTexturesRefs.base) this.cookedTexturesRefs.base.dispose();
+    if (this.cookedTexturesRefs.displacement) this.cookedTexturesRefs.displacement.dispose();
+    this.cookedTexturesRefs = {
+        base: null,
+        displacement: null
+    };
+};
+
+/**
  * Cleanups textures mapped to the material.
  *
  * @private
  */
 ripe.CsrRenderedInitials.prototype._destroyMaterialTextures = function() {
-    if (this.mapTexture) {
-        this.mapTexture.dispose();
-        this.mapTexture = null;
+    if (this.materialTexturesRefs.map) this.materialTexturesRefs.map.dispose();
+    if (this.materialTexturesRefs.displacementMap) {
+        this.materialTexturesRefs.displacementMap.dispose();
     }
-
-    if (this.displacementMapTexture) {
-        this.displacementMapTexture.dispose();
-        this.displacementMapTexture = null;
-    }
-
-    if (this.displacementNormalMapTexture) {
-        this.displacementNormalMapTexture.dispose();
-        this.displacementNormalMapTexture = null;
-    }
+    if (this.materialTexturesRefs.normalMap) this.materialTexturesRefs.normalMap.dispose();
+    this.materialTexturesRefs = {
+        map: null,
+        displacementMap: null,
+        normalMap: null
+    };
 };
 
 /**
