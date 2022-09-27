@@ -43,17 +43,26 @@ ripe.CsrRenderedInitials = function(
     this.pixelRatio = pixelRatio;
     this.textureRenderer = null;
     this.material = null;
-    this.currentBaseTexturePath = null;
-    this.baseTexture = null;
-    this.currentDisplacementTexturePath = null;
-    this.displacementTexture = null;
-    this.mapTexture = null;
-    this.displacementMapTexture = null;
-    this.displacementNormalMapTexture = null;
     this.points = [];
     this.geometry = null;
     this.mesh = null;
     this.currentText = "";
+
+    this.materialTexturesRefs = {
+        map: null,
+        displacementMap: null,
+        normalMap: null
+    };
+
+    this.rawTexturesRefs = {
+        base: null,
+        displacement: null
+    };
+
+    this.cookedTexturesRefs = {
+        base: null,
+        displacement: null
+    };
 
     const DEFAULT_TEXTURE_SETTINGS = {
         wrapS: window.THREE.RepeatWrapping,
@@ -126,6 +135,8 @@ ripe.CsrRenderedInitials.prototype.constructor = ripe.CsrRenderedInitials;
  * @param {String} text Initials text.
  */
 ripe.CsrRenderedInitials.prototype.setInitials = function(text) {
+    // TODO
+
     this.currentText = text;
 
     // cleans up textures that are going to be replaced
@@ -207,23 +218,25 @@ ripe.CsrRenderedInitials.prototype.getMesh = async function() {
  * Sets the diffuse texture. This texture is the diffuse pattern that is applied to
  * the initials characters.
  *
- * @param {String} path Path to the texture.
+ * @param {THREE.Texture} texture The texture to set as the diffuse pattern.
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrRenderedInitials.prototype.setBaseTexture = async function(path, options = {}) {
-    if (!path) throw new Error("Invalid texture path");
-
-    this.currentBaseTexturePath = path;
+ripe.CsrRenderedInitials.prototype.setBaseTexture = function(texture, options = {}) {
     this.baseTextureOptions = { ...this.baseTextureOptions, ...options };
 
-    // cleans up resources
-    if (this.baseTexture) this.baseTexture.dispose();
+    // cleanups resources
+    if (this.rawTexturesRefs.base) this.rawTexturesRefs.base.dispose();
+    if (this.cookedTexturesRefs.base) this.cookedTexturesRefs.base.dispose();
 
-    // loads the initials pattern texture
-    const patternTexture = await ripe.CsrUtils.loadTexture(path);
+    // saves raw texture clone so it can be reused
+    this.rawTexturesRefs.base = texture.clone();
+    this.rawTexturesRefs.base.needsUpdate = true;
 
     // applies texture options by precooking the texture
-    this.baseTexture = this._preCookTexture(patternTexture, this.baseTextureOptions);
+    this.cookedTexturesRefs.base = this._preCookTexture(
+        this.rawTexturesRefs.base,
+        this.baseTextureOptions
+    );
 };
 
 /**
@@ -231,31 +244,45 @@ ripe.CsrRenderedInitials.prototype.setBaseTexture = async function(path, options
  *
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrRenderedInitials.prototype.setBaseTextureOptions = async function(options = {}) {
-    await this.setBaseTexture(this.currentBaseTexturePath, options);
+ripe.CsrRenderedInitials.prototype.setBaseTextureOptions = function(options = {}) {
+    if (!this.rawTexturesRefs.base) {
+        throw new Error("Can't apply base texture options, the texture is not set");
+    }
+
+    // update texture options
+    this.baseTextureOptions = { ...this.baseTextureOptions, ...options };
+
+    // cleanups resources then applies the texture options by precooking the texture
+    if (this.cookedTexturesRefs.base) this.cookedTexturesRefs.base.dispose();
+    this.cookedTexturesRefs.base = this._preCookTexture(
+        this.rawTexturesRefs.base,
+        this.baseTextureOptions
+    );
 };
 
 /**
  * Sets the height map texture. This texture is the height map pattern that is applied to
  * the height map texture of the initials characters.
  *
- * @param {String} path Path to the texture.
+ * @param {THREE.Texture} texture The texture to set as the height map pattern.
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrRenderedInitials.prototype.setDisplacementTexture = async function(path, options = {}) {
-    if (!path) throw new Error("Invalid texture path");
-
-    this.currentDisplacementTexturePath = path;
+ripe.CsrRenderedInitials.prototype.setDisplacementTexture = function(texture, options = {}) {
     this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
 
     // cleans up resources
-    if (this.displacementTexture) this.displacementTexture.dispose();
+    if (this.rawTexturesRefs.displacement) this.rawTexturesRefs.displacement.dispose();
+    if (this.cookedTexturesRefs.displacement) this.cookedTexturesRefs.displacement.dispose();
 
-    // loads the initials height map pattern texture
-    const patternTexture = await ripe.CsrUtils.loadTexture(path);
+    // saves raw texture clone so it can be reused
+    this.rawTexturesRefs.displacement = texture.clone();
+    this.rawTexturesRefs.displacement.needsUpdate = true;
 
     // applies texture options by precooking the texture
-    this.displacementTexture = this._preCookTexture(patternTexture, this.displacementTextureOptions);
+    this.cookedTexturesRefs.displacement = this._preCookTexture(
+        this.rawTexturesRefs.displacement,
+        this.displacementTextureOptions
+    );
 };
 
 /**
@@ -263,8 +290,20 @@ ripe.CsrRenderedInitials.prototype.setDisplacementTexture = async function(path,
  *
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrRenderedInitials.prototype.setDisplacementTextureOptions = async function(options = {}) {
-    await this.setDisplacementTexture(this.currentDisplacementTexturePath, options);
+ripe.CsrRenderedInitials.prototype.setDisplacementTextureOptions = function(options = {}) {
+    if (!this.rawTexturesRefs.displacement) {
+        throw new Error("Can't apply displacement texture options, the texture is not set");
+    }
+
+    // update texture options
+    this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
+
+    // cleanups resources then applies the texture options by precooking the texture
+    if (this.cookedTexturesRefs.displacement) this.cookedTexturesRefs.displacement.dispose();
+    this.cookedTexturesRefs.displacement = this._preCookTexture(
+        this.rawTexturesRefs.displacement,
+        this.displacementTextureOptions
+    );
 };
 
 /**
