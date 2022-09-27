@@ -135,8 +135,6 @@ ripe.CsrRenderedInitials.prototype.constructor = ripe.CsrRenderedInitials;
  * @param {String} text Initials text.
  */
 ripe.CsrRenderedInitials.prototype.setInitials = function(text) {
-    // TODO
-
     this.currentText = text;
 
     // cleans up textures that are going to be replaced
@@ -147,22 +145,26 @@ ripe.CsrRenderedInitials.prototype.setInitials = function(text) {
     const displacementTexture = this._textToDisplacementTexture(text);
 
     // generates a normal map for the text displacement map texture
-    this.displacementNormalMapTexture = ripe.CsrUtils.normalMapFromCanvas(this.canvasDisplacement);
+    this.materialTexturesRefs.normalMap = ripe.CsrUtils.normalMapFromCanvas(
+        this.canvasDisplacement
+    );
 
     // blurs normal map texture to avoid normal map color banding
     const blurIntensity = this.textOptions.normalMapBlurIntensity;
     if (blurIntensity > 0) {
-        this.displacementNormalMapTexture = this._blurTexture(
-            this.displacementNormalMapTexture,
-            blurIntensity
-        );
+        const tempRef = this._blurTexture(this.materialTexturesRefs.normalMap, blurIntensity);
+        this.materialTexturesRefs.normalMap.dispose();
+        this.materialTexturesRefs.normalMap = tempRef;
     }
 
     // applies the patterns to the text textures
-    this.mapTexture = this._mixPatternWithTexture(textTexture, this.baseTexture);
-    this.displacementMapTexture = this._mixPatternWithDisplacementTexture(
+    this.materialTexturesRefs.map = this._mixPatternWithTexture(
+        textTexture,
+        this.cookedTexturesRefs.base
+    );
+    this.materialTexturesRefs.displacementMap = this._mixPatternWithDisplacementTexture(
         displacementTexture,
-        this.displacementTexture
+        this.cookedTexturesRefs.displacement
     );
 
     // cleans up temporary textures
@@ -170,9 +172,9 @@ ripe.CsrRenderedInitials.prototype.setInitials = function(text) {
     displacementTexture.dispose();
 
     // updates the initials material
-    this.material.map = this.mapTexture;
-    this.material.displacementMap = this.displacementMapTexture;
-    this.material.normalMap = this.displacementNormalMapTexture;
+    this.material.map = this.materialTexturesRefs.map;
+    this.material.displacementMap = this.materialTexturesRefs.displacementMap;
+    this.material.normalMap = this.materialTexturesRefs.normalMap;
 
     // marks material to do a internal update
     this.material.needsUpdate = true;
