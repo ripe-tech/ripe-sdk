@@ -338,8 +338,12 @@ ripe.CsrRenderedInitials.prototype.updateOptions = async function(options = {}) 
         ripe.CsrUtils.applyOptions(this.materialOptions);
         this.material.needsUpdate = true;
     }
-    if (updateInitials) this.setInitials(this.currentText);
+    if (updateInitials) this.rerenderInitials();
     if (updateMesh) this._buildInitialsMesh();
+};
+
+ripe.CsrRenderedInitials.prototype.rerenderInitials = function() {
+    this.setInitials(this.currentText);
 };
 
 /**
