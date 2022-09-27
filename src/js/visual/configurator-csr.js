@@ -128,13 +128,12 @@ ripe.ConfiguratorCsr.prototype.init = function() {
             initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
         rotation:
             initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
-        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 },
-        baseTexturePath:
-            initialsOpts.baseTexturePath !== undefined ? initialsOpts.baseTexturePath : null,
-        displacementTexturePath:
-            initialsOpts.displacementTexturePath !== undefined
-                ? initialsOpts.displacementTexturePath
-                : null
+        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
+    };
+    const initialsTexturesOpts = this.options.initialsTexturesOptions || {};
+    this.initialsTexturesOptions = {
+        baseTexturePath: initialsTexturesOpts.baseTexturePath !== undefined ? initialsTexturesOpts.baseTexturePath : null,
+        displacementTexturePath: initialsTexturesOpts.displacementTexturePath !== undefined ? initialsTexturesOpts.displacementTexturePath : null
     };
 
     // multiplier to adjust the CSR initials mesh scale
@@ -887,15 +886,6 @@ ripe.ConfiguratorCsr.prototype._updateCsrRenderedInitials = async function(optio
         if (scale.z !== undefined) scale.z = scale.z * this.INITIALS_SCALE_MULTIPLIER;
         ripe.CsrUtils.applyTransform(this.initialsMesh, position, rotation, scale);
     }
-
-    const texturesUpdatesPromises = [];
-    if (options.baseTexturePath) {
-        texturesUpdatesPromises.push(this.renderedInitials.setBaseTexture(options.baseTexturePath));
-    }
-    if (options.displacementTexturePath) {
-        texturesUpdatesPromises.push(this.renderedInitials.setDisplacementTexture(options.displacementTexturePath));
-    }
-    await Promise.all(texturesUpdatesPromises);
 };
 
 /**
@@ -925,8 +915,6 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
     this.initialsMesh = await this.renderedInitials.getMesh();
     this.modelGroup.add(this.initialsMesh);
 
-    this.renderedInitials.setInitials("Examplesss Text");
-
     console.log("baseTexturePath", this.initialsOptions.baseTexturePath);
     console.log("displacementTexturePath", this.initialsOptions.displacementTexturePath);
 
@@ -939,6 +927,10 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         baseTexturePath: this.initialsOptions.baseTexturePath,
         displacementTexturePath: this.initialsOptions.displacementTexturePath
     });
+
+    if ()
+
+    this.renderedInitials.setInitials("Examplesss Text");
 };
 
 /**
