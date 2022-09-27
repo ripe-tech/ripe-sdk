@@ -114,9 +114,9 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     const zoomOpts = this.options.zoomOptions || {};
     this.zoomOptions = {
         enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
-        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 10,
+        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
         min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
-        max: zoomOpts.max !== undefined ? zoomOpts.max : 200
+        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
     };
     this.enableInitials = this.options.enableInitials || false;
     const initialsOpts = this.options.initialsOptions || {};
@@ -252,7 +252,8 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.cameraOptions = { ...this.cameraOptions, ...cameraOpts };
     const zoomOpts = options.zoomOptions || {};
     this.zoomOptions = { ...this.zoomOptions, ...zoomOpts };
-    this.enableInitials = options.enableInitials === undefined ? this.enableInitials : options.enableInitials;
+    this.enableInitials =
+        options.enableInitials === undefined ? this.enableInitials : options.enableInitials;
     const initialsOpts = this.options.initialsOptions || {};
     this.initialsOptions = { ...this.initialsOptions, ...initialsOpts };
     this.initialsBaseTexturePath =
@@ -753,8 +754,7 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
     this._initCamera();
 
     // loads scene resources
-    const meshPath = "https://www.dl.dropboxusercontent.com/s/g0fni9u6tikurkr/vyner.glb";
-    // const meshPath = this.owner.getMeshUrl();
+    const meshPath = this.owner.getMeshUrl();
     [this.environmentTexture, this.mesh] = await Promise.all([
         this._loadEnvironment(this.sceneEnvironmentPath),
         this._loadMesh(meshPath)
@@ -870,6 +870,9 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
 };
 
 /**
+ * Initializes the CSR initials. This means initializing an instance of `CsrRenderedInitials`,
+ * and doing it's setup.
+ *
  * @private
  */
 ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
@@ -944,6 +947,8 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
 };
 
 /**
+ * Cleanups everything related to the CSR initials.
+ *
  * @private
  */
 ripe.ConfiguratorCsr.prototype._deinitCsrRenderedInitials = function() {
