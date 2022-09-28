@@ -100,9 +100,9 @@ ripe.ConfiguratorCsr.prototype.init = function() {
             cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
         near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
         far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
-        position: { x: 0, y: 0, z: 207 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 },
+        position: cameraOpts.position !== undefined ? cameraOpts.position : { x: 0, y: 0, z: 207 },
+        rotation: cameraOpts.rotation !== undefined ? cameraOpts.rotation : { x: 0, y: 0, z: 0 },
+        scale: cameraOpts.scale !== undefined ? cameraOpts.scale : { x: 1, y: 1, z: 1 },
         lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
     };
     const zoomOpts = this.options.zoomOptions || {};
