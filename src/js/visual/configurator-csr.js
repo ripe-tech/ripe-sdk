@@ -118,7 +118,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
         max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
     };
-    this.enableInitials = this.options.enableInitials || false;
+    this.enabledInitials = this.options.enabledInitials || false;
     const initialsOpts = this.options.initialsOptions || {};
     this.initialsOptions = {
         width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
@@ -252,8 +252,8 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.cameraOptions = { ...this.cameraOptions, ...cameraOpts };
     const zoomOpts = options.zoomOptions || {};
     this.zoomOptions = { ...this.zoomOptions, ...zoomOpts };
-    this.enableInitials =
-        options.enableInitials === undefined ? this.enableInitials : options.enableInitials;
+    this.enabledInitials =
+        options.enabledInitials === undefined ? this.enabledInitials : options.enabledInitials;
     const initialsOpts = this.options.initialsOptions || {};
     this.initialsOptions = { ...this.initialsOptions, ...initialsOpts };
     this.initialsBaseTexturePath =
@@ -876,7 +876,7 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
-    if (!this.enableInitials) return;
+    if (!this.enabledInitials) return;
 
     this._registerInitialsHandlers();
 
