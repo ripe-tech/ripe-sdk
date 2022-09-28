@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add CSR zoom support
 * Add `CsrTextureRenderer`
 * Add `CsrRenderedInitials`
+* Support `CsrRenderedInitials` mesh morphing
 
 ### Changed
 

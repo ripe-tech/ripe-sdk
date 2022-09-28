@@ -50,6 +50,7 @@ ripe.CsrRenderedInitials = function(
     this.mapTexture = null;
     this.displacementMapTexture = null;
     this.displacementNormalMapTexture = null;
+    this.points = [];
     this.geometry = null;
     this.mesh = null;
     this.currentText = "";
@@ -164,6 +165,19 @@ ripe.CsrRenderedInitials.prototype.setInitials = function(text) {
 
     // marks material to do a internal update
     this.material.needsUpdate = true;
+};
+
+/**
+ * Sets the reference points that are used when generating the curve that bends the initials mesh.
+ *
+ * @param {Array} points Array with THREE.Vector3 reference points for the curve used to bend
+ * the mesh.
+ */
+ripe.CsrRenderedInitials.prototype.setPoints = function(points) {
+    this.points = points;
+
+    // updates the existing mesh geometry if the mesh already exists
+    if (this.mesh) this._morphPlaneGeometry(this.geometry, this.points);
 };
 
 /**
@@ -392,15 +406,84 @@ ripe.CsrRenderedInitials.prototype._buildInitialsMesh = function() {
     if (this.mesh) this._destroyMesh();
 
     // generates the initials plane geometry
-    this.geometry = new window.THREE.PlaneBufferGeometry(
+    this.geometry = this._buildGeometry();
+
+    // creates the initials mesh
+    this.mesh = new window.THREE.Mesh(this.geometry, this.material);
+};
+
+/**
+ * Builds the mesh geometry. If points were set, it will bend the geometry accordingly.
+ *
+ * @returns {THREE.BufferGeometry} Returns a BufferGeometry instance.
+ */
+ripe.CsrRenderedInitials.prototype._buildGeometry = function() {
+    const geometry = new window.THREE.PlaneBufferGeometry(
         this.width,
         this.height,
         this.meshOptions.widthSegments,
         this.meshOptions.heightSegments
     );
 
-    // creates the initials mesh
-    this.mesh = new window.THREE.Mesh(this.geometry, this.material);
+    // no points to generate a curve so returns the flat geometry
+    if (this.points.length < 2) return geometry;
+
+    // morphs the plane geometry using the points as reference
+    this._morphPlaneGeometry(geometry, this.points);
+
+    return geometry;
+};
+
+/**
+ * Morhps a plane geometry by following a curve as reference.
+ *
+ * @param {BufferGeometry} geometry The plane geometry to be morphed.
+ * @param {Array} points Array with THREE.Vector3 reference points for the morphing curve.
+ * @returns {THREE.BufferGeometry} The morphed geometry.
+ */
+ripe.CsrRenderedInitials.prototype._morphPlaneGeometry = function(geometry, points) {
+    // creates a curve based on the reference points
+    const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
+
+    // calculates the curve width
+    const curveWidth = Math.round(curve.getLength());
+
+    // get the curve discrete points
+    const curvePoints = curve.getSpacedPoints(curveWidth);
+
+    // calculate offsets needed to iterate the geometry vertexes
+    const segments = curveWidth >= this.width ? this.width : curveWidth;
+    const curvePointStep = segments / this.meshOptions.widthSegments;
+    const curvePointOffset =
+        curveWidth > this.width ? Math.floor(curveWidth / 2 - this.width / 2) : 0;
+
+    // iterates the geometry vertexes and updates their position to follow the curve
+    const geoPos = geometry.attributes.position;
+    for (let i = 0; i <= this.meshOptions.heightSegments; i++) {
+        for (
+            let j = 0, curvePointIdx = curvePointOffset;
+            j <= this.meshOptions.widthSegments;
+            j++, curvePointIdx += curvePointStep
+        ) {
+            const vertexIdx = j + i + this.meshOptions.widthSegments * i;
+            const curvePoint = curvePoints[Math.round(curvePointIdx)];
+            geoPos.setXYZ(
+                vertexIdx,
+                curvePoint.x,
+                geoPos.getY(vertexIdx) + curvePoint.y,
+                curvePoint.z
+            );
+        }
+    }
+
+    // recalculates normals and tangents
+    geometry.computeVertexNormals();
+    geometry.computeTangents();
+
+    // marks geometry to do a internal update
+    geometry.attributes.position.needsUpdate = true;
+
+    return geometry;
 };
 
 /**
