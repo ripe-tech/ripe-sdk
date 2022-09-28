@@ -477,6 +477,9 @@ ripe.ConfiguratorCsr.prototype.syncFromPRC = async function(prcConfigurator) {
     // sets the CSR configurator visuals so it matches the PRC frame
     const frame = ripe.getFrameKey(prcConfigurator.view, prcConfigurator.position);
     await this.changeFrame(frame, { duration: 0 });
+
+    // resets camera zoom to starting value
+    this._setZoom(1);
 };
 
 ripe.ConfiguratorCsr.prototype.prcFrame = async function() {
