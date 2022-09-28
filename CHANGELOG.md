@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `contents` to params of import order only if filled with some value
 * Fix `ConfiguratorCsr` sizes and `resize()` logic
 * Fix CSR configurator no being hidden at the demo start
+* Fix not being able to override camera transforms on CSR configurator initialization
 
 ## [2.31.2] - 2022-06-08
 
