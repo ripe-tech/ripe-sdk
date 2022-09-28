@@ -184,6 +184,12 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // creates the necessary DOM elements and runs the
     // CSR initializer
     this._initLayout();
+    if (this.owner.brand && this.owner.model) {
+        console.log("start check");
+    }
+
+    this._registerConfigHandlers();
+
     this._initCsr().then(async () => {
         this.loading = false;
         await this.flushPending(true);
@@ -1357,6 +1363,20 @@ ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsEx
 /**
  * @ignore
  */
+ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
+    console.log("pre_config");
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._onPostConfig = function(self, config) {
+    console.log("post_config");
+};
+
+/**
+ * @ignore
+ */
 ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
     this._addElementHandler("mousedown", event => this._onMouseDown(this, event));
     this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
@@ -1383,4 +1403,20 @@ ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
 ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
     this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraEvent);
     this.owner && this.owner.unbind("initials", this._onInitialsEvent);
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
+    this.owner.bind("pre_config", () => this._onPreConfig(this));
+    this.owner.bind("post_config", config => this._onPostConfig(this, config));
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
+    this.owner && this.owner.unbind("pre_config", this._onPreConfig);
+    this.owner && this.owner.unbind("post_config", this._onPostConfig);
 };
