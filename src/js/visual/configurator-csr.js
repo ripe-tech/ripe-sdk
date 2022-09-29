@@ -1370,8 +1370,8 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._onPostConfig = function(self, config) {
-    console.log("post_config");
+ripe.ConfiguratorCsr.prototype._onPostConfigAsync = function(self, config) {
+    console.log("post_config_async");
 };
 
 /**
@@ -1410,7 +1410,7 @@ ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
  */
 ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
     this.owner.bind("pre_config", () => this._onPreConfig(this));
-    this.owner.bind("post_config", config => this._onPostConfig(this, config));
+    this.owner.bind("post_config_async", config => this._onPostConfigAsync(this, config));
 };
 
 /**
@@ -1418,5 +1418,5 @@ ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
  */
 ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
     this.owner && this.owner.unbind("pre_config", this._onPreConfig);
-    this.owner && this.owner.unbind("post_config", this._onPostConfig);
+    this.owner && this.owner.unbind("post_config_async", this._onPostConfigAsync);
 };
