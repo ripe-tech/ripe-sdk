@@ -437,7 +437,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
 
     // triggers the 'pre_config' event so that the listeners
     // can cleanup if needed, from the previous configuration
-    this.trigger("pre_config", brand, model, options);
+    await this.trigger("pre_config", brand, model, options);
 
     try {
         // retrieves the configuration for the currently loaded model so
@@ -505,7 +505,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
     // triggers the config event notifying any listener that the (base)
     // configuration for this main Ripe Instance has changed and waits
     // for the listeners to conclude their operations
-    this.trigger("config", this.loadedConfig, options);
+    await this.trigger("config", this.loadedConfig, options);
 
     // determines if the ready flag is already set for the current instance
     // and if that's not the case updates it and triggers the ready event
@@ -516,7 +516,7 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
 
     // notifies that the config has changed and waits for listeners before
     // concluding the config operation
-    this.trigger("post_config", this.loadedConfig, options);
+    await this.trigger("post_config", this.loadedConfig, options);
 
     // sets the configured flag as valid, meaning that any configuration
     // related operation is considered safe from now on
