@@ -138,7 +138,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.INITIALS_SCALE_MULTIPLIER = 0.01;
 
     // general state variables
-    this.ready = false;
+    this.loading = true;
     this.noDrag = false;
     this.clock = null;
     this.animations = [];
