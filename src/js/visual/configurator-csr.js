@@ -184,16 +184,9 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // creates the necessary DOM elements and runs the
     // CSR initializer
     this._initLayout();
-    if (this.owner.brand && this.owner.model) {
-        console.log("start check");
-    }
+    this._initCsr();
 
     this._registerConfigHandlers();
-
-    this._initCsr().then(async () => {
-        this.ready = true;
-        await this.flushPending(true);
-    });
 };
 
 /**
@@ -743,8 +736,13 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
     // creates empty scene
     this.scene = new window.THREE.Scene();
 
-    // inits the scene clock
-    this.clock = new window.THREE.Clock();
+    // gets configurator size information
+    const size = this._configuratorSize();
+
+    // calculates the camera aspect ratio
+    if (this.cameraOptions.aspect === null) {
+        this.cameraOptions.aspect = size.width / size.height;
+    }
 
     // loads maya scene information
     if (this.mayaScenePath) {
@@ -1143,7 +1141,7 @@ ripe.ConfiguratorCsr.prototype._deinitDebug = function() {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initCsr = async function() {
+ripe.ConfiguratorCsr.prototype._initCsr = function() {
     if (!this.element) throw new Error("CSR layout elements are not initiated");
 
     // gets configurator size information
@@ -1159,21 +1157,8 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     const renderer = this.element.querySelector(".renderer");
     renderer.appendChild(this.renderer.domElement);
 
-    // calculates the camera aspect ratio
-    if (this.cameraOptions.aspect === null) {
-        this.cameraOptions.aspect = size.width / size.height;
-    }
-
-    // init scene
-    await this._initScene();
-
-    // init the CSR initials
-    await this._initCsrRenderedInitials();
-
-    // init debug tools
-    this._initDebug();
-
-    this._render();
+    // inits the clock
+    this.clock = new window.THREE.Clock();
 };
 
 /**
@@ -1184,7 +1169,15 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
 ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     this._deinitDebug();
     this._deinitCsrRenderedInitials();
+    this._deinitScene();
 
+    if (this.renderer) {
+        this.renderer.dispose();
+        this.renderer = null;
+    }
+};
+
+ripe.ConfiguratorCsr.prototype._deinitScene = function() {
     if (this.environmentTexture) {
         this.environmentTexture.dispose();
         this.environmentTexture = null;
@@ -1201,11 +1194,6 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     }
 
     if (this.scene) this.scene = null;
-
-    if (this.renderer) {
-        this.renderer.dispose();
-        this.renderer = null;
-    }
 
     if (this.camera) this.camera = null;
 };
@@ -1230,6 +1218,26 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
     // creates a new camera respecting the new renderer size
     this._initCamera();
 };
+
+// TODO better name and documentation
+ripe.ConfiguratorCsr.prototype._loadBuildScene = async function() {
+     // init scene
+     await this._initScene();
+
+     // init the CSR initials
+     await this._initCsrRenderedInitials();
+
+     // init debug tools
+     this._initDebug();
+
+     this._render();
+};
+
+ripe.ConfiguratorCsr.prototype._unloadBuildScene = async function() {
+    this._deinitDebug();
+    this._deinitCsrRenderedInitials();
+    this._deinitScene();
+}
 
 /**
  * Animation loop tick.
@@ -1365,13 +1373,17 @@ ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsEx
  */
 ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
     console.log("pre_config");
+    self.loading = true;
+    self._unloadBuildScene();
 };
 
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._onPostConfigAsync = function(self, config) {
+ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config) {
     console.log("post_config_async");
+    await self._loadBuildScene();
+    self.loading = false;
 };
 
 /**
