@@ -43,17 +43,26 @@ ripe.CsrRenderedInitials = function(
     this.pixelRatio = pixelRatio;
     this.textureRenderer = null;
     this.material = null;
-    this.currentBaseTexturePath = null;
-    this.baseTexture = null;
-    this.currentDisplacementTexturePath = null;
-    this.displacementTexture = null;
-    this.mapTexture = null;
-    this.displacementMapTexture = null;
-    this.displacementNormalMapTexture = null;
     this.points = [];
     this.geometry = null;
     this.mesh = null;
     this.currentText = "";
+
+    this.materialTexturesRefs = {
+        map: null,
+        displacementMap: null,
+        normalMap: null
+    };
+
+    this.rawTexturesRefs = {
+        base: null,
+        displacement: null
+    };
+
+    this.cookedTexturesRefs = {
+        base: null,
+        displacement: null
+    };
 
     const DEFAULT_TEXTURE_SETTINGS = {
         wrapS: window.THREE.RepeatWrapping,
@@ -69,7 +78,7 @@ ripe.CsrRenderedInitials = function(
     const textOpts = options.textOptions || {};
     this.textOptions = {
         font: textOpts.font !== undefined ? textOpts.font : "Arial",
-        fontSize: textOpts.fontSize !== undefined ? textOpts.fontSize : 200,
+        fontSize: textOpts.fontSize !== undefined ? textOpts.fontSize : 280,
         xOffset: textOpts.xOffset !== undefined ? textOpts.xOffset : 0,
         yOffset: textOpts.yOffset !== undefined ? textOpts.yOffset : 0,
         lineWidth: textOpts.lineWidth !== undefined ? textOpts.lineWidth : 5,
@@ -85,7 +94,7 @@ ripe.CsrRenderedInitials = function(
                 ? new window.THREE.Color(materialOpts.color)
                 : new window.THREE.Color("#ffffff"),
         displacementScale:
-            materialOpts.displacementScale !== undefined ? materialOpts.displacementScale : 50,
+            materialOpts.displacementScale !== undefined ? materialOpts.displacementScale : 25,
         displacementBias:
             materialOpts.displacementBias !== undefined ? materialOpts.displacementBias : 0,
         emissive:
@@ -101,8 +110,8 @@ ripe.CsrRenderedInitials = function(
     };
     const meshOpts = options.meshOptions || {};
     this.meshOptions = {
-        widthSegments: meshOpts.widthSegments !== undefined ? meshOpts.widthSegments : 500,
-        heightSegments: meshOpts.heightSegments !== undefined ? meshOpts.heightSegments : 500
+        widthSegments: meshOpts.widthSegments !== undefined ? meshOpts.widthSegments : 1000,
+        heightSegments: meshOpts.heightSegments !== undefined ? meshOpts.heightSegments : 100
     };
     const baseTextureOpts = options.baseTextureOptions || {};
     this.baseTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...baseTextureOpts };
@@ -136,22 +145,26 @@ ripe.CsrRenderedInitials.prototype.setInitials = function(text) {
     const displacementTexture = this._textToDisplacementTexture(text);
 
     // generates a normal map for the text displacement map texture
-    this.displacementNormalMapTexture = ripe.CsrUtils.normalMapFromCanvas(this.canvasDisplacement);
+    this.materialTexturesRefs.normalMap = ripe.CsrUtils.normalMapFromCanvas(
+        this.canvasDisplacement
+    );
 
     // blurs normal map texture to avoid normal map color banding
     const blurIntensity = this.textOptions.normalMapBlurIntensity;
     if (blurIntensity > 0) {
-        this.displacementNormalMapTexture = this._blurTexture(
-            this.displacementNormalMapTexture,
-            blurIntensity
-        );
+        const tempRef = this._blurTexture(this.materialTexturesRefs.normalMap, blurIntensity);
+        this.materialTexturesRefs.normalMap.dispose();
+        this.materialTexturesRefs.normalMap = tempRef;
     }
 
     // applies the patterns to the text textures
-    this.mapTexture = this._mixPatternWithTexture(textTexture, this.baseTexture);
-    this.displacementMapTexture = this._mixPatternWithDisplacementTexture(
+    this.materialTexturesRefs.map = this._mixPatternWithTexture(
+        textTexture,
+        this.cookedTexturesRefs.base
+    );
+    this.materialTexturesRefs.displacementMap = this._mixPatternWithDisplacementTexture(
         displacementTexture,
-        this.displacementTexture
+        this.cookedTexturesRefs.displacement
     );
 
     // cleans up temporary textures
@@ -159,9 +172,9 @@ ripe.CsrRenderedInitials.prototype.setInitials = function(text) {
     displacementTexture.dispose();
 
     // updates the initials material
-    this.material.map = this.mapTexture;
-    this.material.displacementMap = this.displacementMapTexture;
-    this.material.normalMap = this.displacementNormalMapTexture;
+    this.material.map = this.materialTexturesRefs.map;
+    this.material.displacementMap = this.materialTexturesRefs.displacementMap;
+    this.material.normalMap = this.materialTexturesRefs.normalMap;
 
     // marks material to do a internal update
     this.material.needsUpdate = true;
@@ -186,7 +199,7 @@ ripe.CsrRenderedInitials.prototype.setPoints = function(points) {
  *
  * @returns {THREE.Material} Material that makes the 3D text effect.
  */
-ripe.CsrRenderedInitials.prototype.getMaterial = async function() {
+ripe.CsrRenderedInitials.prototype.getMaterial = function() {
     if (!this.material) throw new Error("The material doesn't exist");
     return this.material;
 };
@@ -196,7 +209,7 @@ ripe.CsrRenderedInitials.prototype.getMaterial = async function() {
  *
  * @returns {THREE.Object3D} Mesh that will have the initials text.
  */
-ripe.CsrRenderedInitials.prototype.getMesh = async function() {
+ripe.CsrRenderedInitials.prototype.getMesh = function() {
     // ensures mesh exists
     if (!this.mesh) this._buildInitialsMesh();
 
@@ -207,23 +220,25 @@ ripe.CsrRenderedInitials.prototype.getMesh = async function() {
  * Sets the diffuse texture. This texture is the diffuse pattern that is applied to
  * the initials characters.
  *
- * @param {String} path Path to the texture.
+ * @param {THREE.Texture} texture The texture to set as the diffuse pattern.
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrRenderedInitials.prototype.setBaseTexture = async function(path, options = {}) {
-    if (!path) throw new Error("Invalid texture path");
-
-    this.currentBaseTexturePath = path;
+ripe.CsrRenderedInitials.prototype.setBaseTexture = function(texture, options = {}) {
     this.baseTextureOptions = { ...this.baseTextureOptions, ...options };
 
-    // loads the initials pattern texture
-    let patternTexture = await ripe.CsrUtils.loadTexture(path);
+    // cleanups resources
+    if (this.rawTexturesRefs.base) this.rawTexturesRefs.base.dispose();
+    if (this.cookedTexturesRefs.base) this.cookedTexturesRefs.base.dispose();
+
+    // saves raw texture clone so it can be reused
+    this.rawTexturesRefs.base = texture.clone();
+    this.rawTexturesRefs.base.needsUpdate = true;
 
     // applies texture options by precooking the texture
-    patternTexture = this._preCookTexture(patternTexture, this.baseTextureOptions);
-
-    // assigns the base texture
-    this.baseTexture = patternTexture;
+    this.cookedTexturesRefs.base = this._preCookTexture(
+        this.rawTexturesRefs.base,
+        this.baseTextureOptions
+    );
 };
 
 /**
@@ -231,31 +246,45 @@ ripe.CsrRenderedInitials.prototype.setBaseTexture = async function(path, options
  *
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrRenderedInitials.prototype.setBaseTextureOptions = async function(options = {}) {
-    await this.setBaseTexture(this.currentBaseTexturePath, options);
+ripe.CsrRenderedInitials.prototype.setBaseTextureOptions = function(options = {}) {
+    if (!this.rawTexturesRefs.base) {
+        throw new Error("Can't apply base texture options, the texture is not set");
+    }
+
+    // update texture options
+    this.baseTextureOptions = { ...this.baseTextureOptions, ...options };
+
+    // cleanups resources then applies the texture options by precooking the texture
+    if (this.cookedTexturesRefs.base) this.cookedTexturesRefs.base.dispose();
+    this.cookedTexturesRefs.base = this._preCookTexture(
+        this.rawTexturesRefs.base,
+        this.baseTextureOptions
+    );
 };
 
 /**
  * Sets the height map texture. This texture is the height map pattern that is applied to
  * the height map texture of the initials characters.
  *
- * @param {String} path Path to the texture.
+ * @param {THREE.Texture} texture The texture to set as the height map pattern.
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrRenderedInitials.prototype.setDisplacementTexture = async function(path, options = {}) {
-    if (!path) throw new Error("Invalid texture path");
-
-    this.currentDisplacementTexturePath = path;
+ripe.CsrRenderedInitials.prototype.setDisplacementTexture = function(texture, options = {}) {
     this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
 
-    // loads the initials height map pattern texture
-    let patternTexture = await ripe.CsrUtils.loadTexture(path);
+    // cleans up resources
+    if (this.rawTexturesRefs.displacement) this.rawTexturesRefs.displacement.dispose();
+    if (this.cookedTexturesRefs.displacement) this.cookedTexturesRefs.displacement.dispose();
+
+    // saves raw texture clone so it can be reused
+    this.rawTexturesRefs.displacement = texture.clone();
+    this.rawTexturesRefs.displacement.needsUpdate = true;
 
     // applies texture options by precooking the texture
-    patternTexture = this._preCookTexture(patternTexture, this.displacementTextureOptions);
-
-    // assigns the height map texture
-    this.displacementTexture = patternTexture;
+    this.cookedTexturesRefs.displacement = this._preCookTexture(
+        this.rawTexturesRefs.displacement,
+        this.displacementTextureOptions
+    );
 };
 
 /**
@@ -263,8 +292,20 @@ ripe.CsrRenderedInitials.prototype.setDisplacementTexture = async function(path,
  *
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrRenderedInitials.prototype.setDisplacementTextureOptions = async function(options = {}) {
-    await this.setDisplacementTexture(this.currentDisplacementTexturePath, options);
+ripe.CsrRenderedInitials.prototype.setDisplacementTextureOptions = function(options = {}) {
+    if (!this.rawTexturesRefs.displacement) {
+        throw new Error("Can't apply displacement texture options, the texture is not set");
+    }
+
+    // update texture options
+    this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
+
+    // cleanups resources then applies the texture options by precooking the texture
+    if (this.cookedTexturesRefs.displacement) this.cookedTexturesRefs.displacement.dispose();
+    this.cookedTexturesRefs.displacement = this._preCookTexture(
+        this.rawTexturesRefs.displacement,
+        this.displacementTextureOptions
+    );
 };
 
 /**
@@ -295,7 +336,7 @@ ripe.CsrRenderedInitials.prototype.setSize = function(width = null, height = nul
  *
  * @param {Object} options Set of optional parameters to adjust the initials renderer.
  */
-ripe.CsrRenderedInitials.prototype.updateOptions = async function(options = {}) {
+ripe.CsrRenderedInitials.prototype.updateOptions = function(options = {}) {
     let updateInitials = false;
     let updateMaterial = false;
     let updateMesh = false;
@@ -330,16 +371,20 @@ ripe.CsrRenderedInitials.prototype.updateOptions = async function(options = {}) 
     }
 
     // performs update operations. The order is important
-    if (updateBaseTexture) await this.setBaseTextureOptions(this.baseTextureOptions);
+    if (updateBaseTexture) this.setBaseTextureOptions(this.baseTextureOptions);
     if (updateDisplacementTexture) {
-        await this.setDisplacementTextureOptions(this.displacementTextureOptions);
+        this.setDisplacementTextureOptions(this.displacementTextureOptions);
     }
     if (updateMaterial) {
         ripe.CsrUtils.applyOptions(this.materialOptions);
         this.material.needsUpdate = true;
     }
-    if (updateInitials) this.setInitials(this.currentText);
+    if (updateInitials) this.rerenderInitials();
     if (updateMesh) this._buildInitialsMesh();
+};
+
+ripe.CsrRenderedInitials.prototype.rerenderInitials = function() {
+    this.setInitials(this.currentText);
 };
 
 /**
@@ -350,8 +395,8 @@ ripe.CsrRenderedInitials.prototype.destroy = function() {
     this.textureRenderer.destroy();
 
     // cleans up textures
-    if (this.baseTexture) this.baseTexture.dispose();
-    if (this.displacementTexture) this.displacementTexture.dispose();
+    this._destroyRawTextures();
+    this._destroyCookedTextures();
     this._destroyMaterialTextures();
 
     // cleans up the material
@@ -375,25 +420,49 @@ ripe.CsrRenderedInitials.prototype._destroyMesh = function() {
 };
 
 /**
+ * Cleanups raw textured.
+ *
+ * @private
+ */
+ripe.CsrRenderedInitials.prototype._destroyRawTextures = function() {
+    if (this.rawTexturesRefs.base) this.rawTexturesRefs.base.dispose();
+    if (this.rawTexturesRefs.displacement) this.rawTexturesRefs.displacement.dispose();
+    this.rawTexturesRefs = {
+        base: null,
+        displacement: null
+    };
+};
+
+/**
+ * Cleanups cooked textures.
+ *
+ * @private
+ */
+ripe.CsrRenderedInitials.prototype._destroyCookedTextures = function() {
+    if (this.cookedTexturesRefs.base) this.cookedTexturesRefs.base.dispose();
+    if (this.cookedTexturesRefs.displacement) this.cookedTexturesRefs.displacement.dispose();
+    this.cookedTexturesRefs = {
+        base: null,
+        displacement: null
+    };
+};
+
+/**
  * Cleanups textures mapped to the material.
  *
  * @private
  */
 ripe.CsrRenderedInitials.prototype._destroyMaterialTextures = function() {
-    if (this.mapTexture) {
-        this.mapTexture.dispose();
-        this.mapTexture = null;
+    if (this.materialTexturesRefs.map) this.materialTexturesRefs.map.dispose();
+    if (this.materialTexturesRefs.displacementMap) {
+        this.materialTexturesRefs.displacementMap.dispose();
     }
-
-    if (this.displacementMapTexture) {
-        this.displacementMapTexture.dispose();
-        this.displacementMapTexture = null;
-    }
-
-    if (this.displacementNormalMapTexture) {
-        this.displacementNormalMapTexture.dispose();
-        this.displacementNormalMapTexture = null;
-    }
+    if (this.materialTexturesRefs.normalMap) this.materialTexturesRefs.normalMap.dispose();
+    this.materialTexturesRefs = {
+        map: null,
+        displacementMap: null,
+        normalMap: null
+    };
 };
 
 /**
