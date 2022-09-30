@@ -1297,27 +1297,30 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
         meshes: {
             high_poly: {
                 file: "cube.glb",
-                format: "glb"
+                format: "glb",
+                url: "https://www.dl.dropboxusercontent.com/s/19dejw4whxyliid/dummyCube.glb"
             }
         },
         scenes: [
-            // contem of ficheiros para as scenes. Estes ficheiros vao ditar como a scene é construida. (para agora so camera settings e camera look at)
             {
                 name: "mayaScene",
                 file: "mayaScene.fbx",
-                format: "fbx"
+                format: "fbx",
+                url: "https://www.dl.dropboxusercontent.com/s/etyt4mo4j4mlggi/dummyCube_scene.fbx"
             },
             {
                 name: "customScene1",
                 file: "customScene1.json",
-                format: "json"
+                format: "json",
+                url: "https://www.dl.dropboxusercontent.com/s/o539exljg64u18a/mayaScene.json"
             }
         ],
         environments: [
             {
                 name: "studio2",
                 file: "studio2.hdr",
-                format: "hdr"
+                format: "hdr",
+                url: "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr"
             }
         ],
         textures: {
@@ -1344,28 +1347,30 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
     // 1
     // -----------------------------------
 
-    // should load high_poly mesh url
-    const meshPath = this.owner.getMeshUrl(); // is required
-    const meshFormat = assets.meshes.high_poly.format;
+    // loads high poly mesh information
+    const meshInfo = config.assets.meshes.high_poly;
+    const meshPath = meshInfo.url; // const meshPath = this.owner.getMeshUrl();
+    const meshFormat = meshInfo.format;
 
-    // if environment is set, it should load the environment url
+    // if a environment is set, marks to load the environment
     let envPath = null;
     let envFormat = null;
     if (config.scene.environment) {
-        envPath = "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr"; // should it have a default env map? probably not??
-        const match = config.assets.environments.find(s => s.name === config.scene.environment);
-        envFormat = match.format;
+        const environment = config.assets.environments.find(s => s.name === config.scene.environment);
+        envPath = environment.url;
+        envFormat = environment.format;
     }
 
-    // if scene name is set, it should load the scene url
+    // if scene name is set, marks to load it's information
     let scenePath = null;
     let sceneFormat = null;
     if (config.scene.name) {
-        scenePath = "https://www.dl.dropboxusercontent.com/s/etyt4mo4j4mlggi/dummyCube_scene.fbx";
-        const match = config.assets.scenes.find(s => s.name === config.scene.name);
-        sceneFormat = match.format;
+        const scene = config.assets.scenes.find(s => s.name === config.scene.name);
+        scenePath = scene.url;
+        sceneFormat = scene.format;
     }
 
+    // loads assets
     let mayaScene = null;
     [this.mesh, this.environmentTexture, mayaScene] = await Promise.all([
         this._loadMesh(meshPath, meshFormat),
@@ -1404,7 +1409,9 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
     // 3
     // -----------------------------------
 
+    // builds the scene
     await self._buildScene();
+
     self.loading = false;
 };
 
