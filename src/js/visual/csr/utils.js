@@ -172,6 +172,19 @@ ripe.CsrUtils.loadTexture = async function(path) {
 };
 
 /**
+ * Loads a FBX file.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @returns {THREE.Object3D} The loaded fbx.
+ */
+ripe.CsrUtils.loadFBX = async function(path) {
+    const loader = new window.THREE.FBXLoader();
+    return new Promise((resolve, reject) => {
+        loader.load(path, fbx => resolve(fbx));
+    });
+};
+
+/**
  * Applies properties to any type of Three.js object instance.
  *
  * @param {THREE.Any} object Any type of Three.js instance that support properties.
