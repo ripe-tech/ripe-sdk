@@ -57,82 +57,7 @@ ripe.ConfiguratorCsr.prototype.constructor = ripe.ConfiguratorCsr;
 ripe.ConfiguratorCsr.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
-    // options variables
-    this.width = this.options.width || null;
-    this.height = this.options.height || null;
-    this.size = this.options.size || null;
-    this.pixelRatio =
-        this.options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
-    this.sensitivity = this.options.sensitivity || 40;
-    this.verticalThreshold = this.options.verticalThreshold || 15;
-    this.duration = this.options.duration || 500;
-    this.debug = this.options.debug || false;
-    const debugOpts = this.options.debugOptions || {};
-    const renderedInitialsOpts = debugOpts.renderedInitials || {};
-    this.debugOptions = {
-        framerate: debugOpts.framerate !== undefined ? debugOpts.framerate : true,
-        worldAxis: debugOpts.worldAxis !== undefined ? debugOpts.worldAxis : true,
-        modelAxis: debugOpts.modelAxis !== undefined ? debugOpts.modelAxis : true,
-        renderedInitials: {
-            axis: renderedInitialsOpts.axis !== undefined ? renderedInitialsOpts.axis : true,
-            line: renderedInitialsOpts.line !== undefined ? renderedInitialsOpts.line : true,
-            points: renderedInitialsOpts.points !== undefined ? renderedInitialsOpts.points : true
-        }
-    };
-    const rendererOpts = this.options.rendererOptions || {};
-    this.rendererOptions = {
-        outputEncoding:
-            rendererOpts.outputEncoding !== undefined
-                ? rendererOpts.outputEncoding
-                : window.THREE.sRGBEncoding
-    };
-    this.mayaScenePath = this.options.mayaScenePath || null;
-    this.useDracoLoader =
-        this.options.useDracoLoader !== undefined ? this.options.useDracoLoader : true;
-    this.dracoLoaderDecoderPath =
-        this.options.dracoLoaderDecoderPath || "https://www.gstatic.com/draco/v1/decoders/";
-    this.dracoLoaderDecoderFallbackPath =
-        this.options.dracoLoaderDecoderFallbackPath ||
-        "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
-    this.sceneEnvironmentPath =
-        this.options.sceneEnvironmentPath ||
-        "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
-    const cameraOpts = this.options.cameraOptions || {};
-    this.cameraOptions = {
-        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 24.678,
-        filmGauge: cameraOpts.filmGauge !== undefined ? cameraOpts.filmGauge : null,
-        aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
-        updateAspectOnResize:
-            cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
-        near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
-        far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
-        position: cameraOpts.position !== undefined ? cameraOpts.position : { x: 0, y: 0, z: 207 },
-        rotation: cameraOpts.rotation !== undefined ? cameraOpts.rotation : { x: 0, y: 0, z: 0 },
-        scale: cameraOpts.scale !== undefined ? cameraOpts.scale : { x: 1, y: 1, z: 1 },
-        lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
-    };
-    const zoomOpts = this.options.zoomOptions || {};
-    this.zoomOptions = {
-        enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
-        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
-        min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
-        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
-    };
-    this.enabledInitials = this.options.enabledInitials || false;
-    const initialsOpts = this.options.initialsOptions || {};
-    this.initialsOptions = {
-        width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
-        height: initialsOpts.height !== undefined ? initialsOpts.height : 300,
-        options: initialsOpts.options !== undefined ? initialsOpts.options : {},
-        points: initialsOpts.points !== undefined ? initialsOpts.points : [],
-        position:
-            initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
-        rotation:
-            initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
-        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
-    };
-    this.initialsBaseTexturePath = this.options.initialsBaseTexturePath || null;
-    this.initialsDisplacementTexturePath = this.options.initialsDisplacementTexturePath || null;
+    this._initDefaults(this.options);
 
     // multiplier to adjust the CSR initials mesh scale
     this.INITIALS_SCALE_MULTIPLIER = 0.01;
@@ -732,7 +657,7 @@ ripe.ConfiguratorCsr.prototype._loadEnvironment = async function(path) {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initScene = async function() {
+ripe.ConfiguratorCsr.prototype._initScene = function() {
     // creates empty scene
     this.scene = new window.THREE.Scene();
 
@@ -744,29 +669,14 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
         this.cameraOptions.aspect = size.width / size.height;
     }
 
-    // loads maya scene information
-    if (this.mayaScenePath) {
-        const mayaScene = await this._loadMayaScene(this.mayaScenePath);
-        this.cameraOptions = {
-            ...this.cameraOptions,
-            ...mayaScene.camera,
-            lookAt: mayaScene.cameraLookAt
-        };
-    }
-
     // inits camera thats going to be used to view the scene
     this._initCamera();
 
-    // loads scene resources
-    const meshPath = this.owner.getMeshUrl();
-    [this.environmentTexture, this.mesh] = await Promise.all([
-        this._loadEnvironment(this.sceneEnvironmentPath),
-        this._loadMesh(meshPath)
-    ]);
-
     // sets the scene environment
-    this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
-    this.scene.environment = this.environmentTexture;
+    if (this.environmentTexture) {
+        this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
+        this.scene.environment = this.environmentTexture;
+    }
 
     // inits the scene model group
     this.modelGroup = new window.THREE.Group();
@@ -1220,24 +1130,24 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
 };
 
 // TODO better name and documentation
-ripe.ConfiguratorCsr.prototype._loadBuildScene = async function() {
-     // init scene
-     await this._initScene();
+ripe.ConfiguratorCsr.prototype._buildScene = async function() {
+    // init scene
+    this._initScene();
 
-     // init the CSR initials
-     await this._initCsrRenderedInitials();
+    // init the CSR initials
+    await this._initCsrRenderedInitials();
 
-     // init debug tools
-     this._initDebug();
+    // init debug tools
+    this._initDebug();
 
-     this._render();
+    this._render();
 };
 
 ripe.ConfiguratorCsr.prototype._unloadBuildScene = async function() {
     this._deinitDebug();
     this._deinitCsrRenderedInitials();
     this._deinitScene();
-}
+};
 
 /**
  * Animation loop tick.
@@ -1381,8 +1291,119 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config) {
-    console.log("post_config_async");
-    await self._loadBuildScene();
+    // TODO remove test
+    const assets = {
+        meshes: {
+            high_poly: {
+                file: "cube.glb",
+                format: "glb"
+            }
+        },
+
+        scenes: [
+            // contem of ficheiros para as scenes. Estes ficheiros vao ditar como a scene é construida. (para agora so camera settings e camera look at)
+            {
+                name: "mayaScene",
+                file: "mayaScene.fbx",
+                format: "fbx"
+            },
+            {
+                name: "customScene1",
+                file: "customScene1.json",
+                format: "json"
+            }
+        ],
+
+        textures: {
+            environments: [
+                {
+                    name: "studio2",
+                    file: "studio2.hdr",
+                    format: "hdr"
+                }
+            ],
+            initials: [
+                // Só usar se no spec tem cenas especificadas?
+            ],
+            model: [
+                // TODO later
+            ]
+        }
+    };
+
+    const scene = {
+        name: null, // if set will use the scne instead of the settings
+        environment: null,
+        camera: {},
+        cameraLookAt: {}
+        // ...
+    };
+
+    config.assets = assets;
+    config.scene = scene;
+
+    // TODO
+    // 1- load all assets
+    // 2- load scene settings (can depend on loaded assets)
+    // 3- build actual scene
+    // -----------------------------------
+    // 1
+    // -----------------------------------
+
+    // should load high_poly mesh url
+    const meshPath = this.owner.getMeshUrl(); // is required
+
+    // if environment is set, it should load the environment url
+    let envPath = null;
+    if (true || config.scene.environment) {
+        envPath = "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr"; // should it have a default env map? probably not??
+    }
+
+    // if scene name is set, it should load the scene url
+    let scenePath = null;
+    if (config.scene.name) {
+        scenePath = "TODO"; // https://www.dl.dropboxusercontent.com/s/etyt4mo4j4mlggi/dummyCube_scene.fbx
+    }
+
+    let mayaScene = null;
+    [this.mesh, this.environmentTexture, mayaScene] = await Promise.all([
+        this._loadMesh(meshPath),
+        envPath ? this._loadEnvironment(envPath) : null,
+        scenePath ? this._loadMayaScene(scenePath) : null
+    ]);
+
+    // -----------------------------------
+    // 2
+    // -----------------------------------
+
+    // if it's using a scene, it should load it's scene values
+    let cameraOptions = {};
+    if (mayaScene) {
+        cameraOptions = {
+            camera: mayaScene.camera,
+            lookAt: mayaScene.cameraLookAt
+        };
+
+        // override values with config values
+        if (config.scene.camera) {
+            cameraOptions.camera = { ...cameraOptions.camera, ...config.scene.camera };
+        }
+        if (config.scene.cameraLookAt) {
+            cameraOptions.cameraLookAt = {
+                ...cameraOptions.cameraLookAt,
+                ...config.scene.cameraLookAt
+            };
+        }
+    }
+    this._initDefaults({
+        cameraOptions: cameraOptions
+    });
+
+    // -----------------------------------
+    // 3
+    // -----------------------------------
+
+    await self._buildScene();
     self.loading = false;
 };
 
@@ -1431,4 +1452,103 @@ ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
 ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
     this.owner && this.owner.unbind("pre_config", this._onPreConfig);
     this.owner && this.owner.unbind("post_config_async", this._onPostConfigAsync);
+};
+
+/*
+// TODO better name and documentation
+ripe.ConfiguratorCsr.prototype._loadAssets = async function (modelMeshUrl, optional = {}) {
+    // if personalization is enabled, it should load it's assets
+    if (this.owner.hasPersonalization()) {
+        const baseTexturePath = "";
+        const displacementTexturePath = "";
+    }
+
+    [this.environmentTexture, this.mesh] = await Promise.all([
+        this._loadEnvironment(this.sceneEnvironmentPath),
+        this._loadMesh(meshPath)
+    ]);
+};
+*/
+
+/**
+ * TODO delete me
+ */
+ripe.ConfiguratorCsr.prototype._testGetAssetUrl = function(assetsObj) {};
+
+ripe.ConfiguratorCsr.prototype._initDefaults = function(options) {
+    // options variables
+    this.width = options.width || null;
+    this.height = options.height || null;
+    this.size = options.size || null;
+    this.pixelRatio =
+        options.pixelRatio || (typeof window !== "undefined" && window.devicePixelRatio) || 2;
+    this.sensitivity = options.sensitivity || 40;
+    this.verticalThreshold = options.verticalThreshold || 15;
+    this.duration = options.duration || 500;
+    this.debug = options.debug || false;
+    const debugOpts = options.debugOptions || {};
+    const renderedInitialsOpts = debugOpts.renderedInitials || {};
+    this.debugOptions = {
+        framerate: debugOpts.framerate !== undefined ? debugOpts.framerate : true,
+        worldAxis: debugOpts.worldAxis !== undefined ? debugOpts.worldAxis : true,
+        modelAxis: debugOpts.modelAxis !== undefined ? debugOpts.modelAxis : true,
+        renderedInitials: {
+            axis: renderedInitialsOpts.axis !== undefined ? renderedInitialsOpts.axis : true,
+            line: renderedInitialsOpts.line !== undefined ? renderedInitialsOpts.line : true,
+            points: renderedInitialsOpts.points !== undefined ? renderedInitialsOpts.points : true
+        }
+    };
+    const rendererOpts = options.rendererOptions || {};
+    this.rendererOptions = {
+        outputEncoding:
+            rendererOpts.outputEncoding !== undefined
+                ? rendererOpts.outputEncoding
+                : window.THREE.sRGBEncoding
+    };
+    this.mayaScenePath = options.mayaScenePath || null;
+    this.useDracoLoader = options.useDracoLoader !== undefined ? options.useDracoLoader : true;
+    this.dracoLoaderDecoderPath =
+        options.dracoLoaderDecoderPath || "https://www.gstatic.com/draco/v1/decoders/";
+    this.dracoLoaderDecoderFallbackPath =
+        options.dracoLoaderDecoderFallbackPath ||
+        "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
+    this.sceneEnvironmentPath =
+        options.sceneEnvironmentPath ||
+        "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
+    const cameraOpts = options.cameraOptions || {};
+    this.cameraOptions = {
+        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 24.678,
+        filmGauge: cameraOpts.filmGauge !== undefined ? cameraOpts.filmGauge : null,
+        aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
+        updateAspectOnResize:
+            cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
+        near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
+        far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
+        position: cameraOpts.position !== undefined ? cameraOpts.position : { x: 0, y: 0, z: 207 },
+        rotation: cameraOpts.rotation !== undefined ? cameraOpts.rotation : { x: 0, y: 0, z: 0 },
+        scale: cameraOpts.scale !== undefined ? cameraOpts.scale : { x: 1, y: 1, z: 1 },
+        lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
+    };
+    const zoomOpts = options.zoomOptions || {};
+    this.zoomOptions = {
+        enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
+        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
+        min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
+        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
+    };
+    this.enabledInitials = options.enabledInitials || false;
+    const initialsOpts = options.initialsOptions || {};
+    this.initialsOptions = {
+        width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
+        height: initialsOpts.height !== undefined ? initialsOpts.height : 300,
+        options: initialsOpts.options !== undefined ? initialsOpts.options : {},
+        points: initialsOpts.points !== undefined ? initialsOpts.points : [],
+        position:
+            initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
+        rotation:
+            initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
+        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
+    };
+    this.initialsBaseTexturePath = options.initialsBaseTexturePath || null;
+    this.initialsDisplacementTexturePath = options.initialsDisplacementTexturePath || null;
 };
