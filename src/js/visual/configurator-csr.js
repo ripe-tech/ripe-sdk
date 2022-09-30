@@ -1469,6 +1469,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
     self._buildScene();
 
     self.loading = false;
+    this.trigger("ready");
 };
 
 /**
