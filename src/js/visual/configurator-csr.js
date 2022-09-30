@@ -620,22 +620,6 @@ ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
 };
 
 /**
- * Loads a FBX file.
- *
- * @param {String} path Path to the file. Can be local path or an URL.
- * @param {String} format Mesh file format.
- * @returns {THREE.Mesh} The loaded model.
- *
- * @private
- */
-ripe.ConfiguratorCsr.prototype._loadMeshFBX = async function(path) {
-    const loader = new window.THREE.FBXLoader();
-    return new Promise((resolve, reject) => {
-        loader.load(path, obj => resolve(obj));
-    });
-};
-
-/**
  * Loads a mesh.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
@@ -649,7 +633,7 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
         case "gltf":
             return await this._loadMeshGLTF(path);
         case "fbx":
-            return await this._loadMeshFBX(path);
+            return await ripe.CsrUtils.loadFBX(path);
         default:
             throw new Error(`Can't load 3D model, format "${format}" is not supported`);
     }
@@ -670,7 +654,7 @@ ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "f
     };
     switch (format) {
         case "fbx": {
-            const fbxObj = await this._loadMeshFBX(path);
+            const fbxObj = await ripe.CsrUtils.loadFBX(path);
 
             // gets information about the side camera
             const sideCamera = fbxObj.getObjectByName("sideCam");
@@ -710,79 +694,6 @@ ripe.ConfiguratorCsr.prototype._loadMayaScene = async function(path, format = "f
     }
 
     return scene;
-};
-
-/**
- * Loads a environment file, which are normally hdr files.
- *
- * @param {String} path Path to the file. Can be local path or an URL.
- * @returns {THREE.Texture} The environment texture.
- *
- * @private
- */
-ripe.ConfiguratorCsr.prototype._loadEnvironment = async function(path) {
-    const rgbeLoader = new window.THREE.RGBELoader();
-    return new Promise((resolve, reject) => {
-        rgbeLoader.load(path, texture => resolve(texture));
-    });
-};
-
-/**
- * Loads the build scene by setting it's environment and adding it's model to
- * the renderer scene.
- *
- * @private
- */
-ripe.ConfiguratorCsr.prototype._initScene = async function() {
-    // creates empty scene
-    this.scene = new window.THREE.Scene();
-
-    // inits the scene clock
-    this.clock = new window.THREE.Clock();
-
-    // loads maya scene information
-    if (this.mayaScenePath) {
-        const mayaScene = await this._loadMayaScene(this.mayaScenePath);
-        this.cameraOptions = {
-            ...this.cameraOptions,
-            ...mayaScene.camera,
-            lookAt: mayaScene.cameraLookAt
-        };
-    }
-
-    // inits camera thats going to be used to view the scene
-    this._initCamera();
-
-    // loads scene resources
-    const meshPath = this.owner.getMeshUrl();
-    [this.environmentTexture, this.mesh] = await Promise.all([
-        this._loadEnvironment(this.sceneEnvironmentPath),
-        this._loadMesh(meshPath)
-    ]);
-
-    // sets the scene environment
-    this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
-    this.scene.environment = this.environmentTexture;
-
-    // inits the scene model group
-    this.modelGroup = new window.THREE.Group();
-
-    // sets the model mesh
-    this.modelGroup.add(this.mesh);
-
-    // adds model group to the scene
-    this.scene.add(this.modelGroup);
-};
-
-/**
- * Renders frame.
- *
- * @private
- */
-ripe.ConfiguratorCsr.prototype._render = function() {
-    if (!this.scene) throw new Error("Scene not initiated");
-    if (!this.camera) throw new Error("Camera not initiated");
-    this.renderer.render(this.scene, this.camera);
 };
 
 /**
@@ -858,15 +769,50 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
 };
 
 /**
- * Sets the camera zoom, will trigger the update of the
- * projection matrix in conformance.
+ * Loads the build scene by setting it's environment and adding it's model to
+ * the renderer scene.
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
-    if (!this.camera) throw new Error("Camera not initialized");
-    this.camera.zoom = zoom;
-    this.camera.updateProjectionMatrix();
+ripe.ConfiguratorCsr.prototype._initScene = async function() {
+    // creates empty scene
+    this.scene = new window.THREE.Scene();
+
+    // inits the scene clock
+    this.clock = new window.THREE.Clock();
+
+    // loads maya scene information
+    if (this.mayaScenePath) {
+        const mayaScene = await this._loadMayaScene(this.mayaScenePath);
+        this.cameraOptions = {
+            ...this.cameraOptions,
+            ...mayaScene.camera,
+            lookAt: mayaScene.cameraLookAt
+        };
+    }
+
+    // inits camera thats going to be used to view the scene
+    this._initCamera();
+
+    // loads scene resources
+    const meshPath = this.owner.getMeshUrl();
+    [this.environmentTexture, this.mesh] = await Promise.all([
+        ripe.CsrUtils.loadTexture(this.sceneEnvironmentPath),
+        this._loadMesh(meshPath)
+    ]);
+
+    // sets the scene environment
+    this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
+    this.scene.environment = this.environmentTexture;
+
+    // inits the scene model group
+    this.modelGroup = new window.THREE.Group();
+
+    // sets the model mesh
+    this.modelGroup.add(this.mesh);
+
+    // adds model group to the scene
+    this.scene.add(this.modelGroup);
 };
 
 /**
@@ -1202,6 +1148,29 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     }
 
     if (this.camera) this.camera = null;
+};
+
+/**
+ * Renders frame.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._render = function() {
+    if (!this.scene) throw new Error("Scene not initiated");
+    if (!this.camera) throw new Error("Camera not initiated");
+    this.renderer.render(this.scene, this.camera);
+};
+
+/**
+ * Sets the camera zoom, will trigger the update of the
+ * projection matrix in conformance.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
+    if (!this.camera) throw new Error("Camera not initialized");
+    this.camera.zoom = zoom;
+    this.camera.updateProjectionMatrix();
 };
 
 /**
