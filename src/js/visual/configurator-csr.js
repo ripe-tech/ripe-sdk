@@ -797,7 +797,7 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
     // loads scene resources
     const meshPath = this.owner.getMeshUrl();
     [this.environmentTexture, this.mesh] = await Promise.all([
-        ripe.CsrUtils.loadTexture(this.sceneEnvironmentPath),
+        ripe.CsrUtils.loadEnvironment(this.sceneEnvironmentPath),
         this._loadMesh(meshPath)
     ]);
 
