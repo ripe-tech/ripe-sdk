@@ -100,8 +100,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.zoomOptions = null;
     this.enabledInitials = null;
     this.initialsOptions = null;
-    this.initialsBaseTexturePath = null;
-    this.initialsDisplacementTexturePath = null;
 
     this.renderer = null;
     this.camera = null;
@@ -788,7 +786,7 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
+ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
     if (!this.enabledInitials) return;
 
     this._registerInitialsHandlers();
@@ -809,16 +807,6 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         this.pixelRatio,
         this.initialsOptions.options
     );
-
-    // loads textures
-    [this.initialsRefs.baseTexture, this.initialsRefs.displacementTexture] = await Promise.all([
-        this.initialsBaseTexturePath
-            ? ripe.CsrUtils.loadTexture(this.initialsBaseTexturePath)
-            : null,
-        this.initialsDisplacementTexturePath
-            ? ripe.CsrUtils.loadTexture(this.initialsDisplacementTexturePath)
-            : null
-    ]);
 
     // apply textures to initials
     if (this.initialsRefs.baseTexture) {
@@ -1129,12 +1117,12 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
 };
 
 // TODO better name and documentation
-ripe.ConfiguratorCsr.prototype._buildScene = async function() {
+ripe.ConfiguratorCsr.prototype._buildScene = function() {
     // init scene
     this._initScene();
 
     // init the CSR initials
-    await this._initCsrRenderedInitials();
+    this._initCsrRenderedInitials();
 
     // init debug tools
     this._initDebug();
@@ -1322,7 +1310,33 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
             }
         ],
         textures: {
-            // personalization: ..., // TODO: should have info about textures that are used in the personalization
+            // TODO this personalization field should be a temporary solution and should be expanded
+            // when CSR supports more complex personalization. For now it will work fine for the test case
+            // being currently worked on
+            personalization: {
+                base: {
+                    high_quality: {
+                        file: "base.png",
+                        format: "png",
+                        size: 1024,
+                        url: "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg"
+                    },
+                    low_quality: {
+                        file: "base.png",
+                        format: "png",
+                        size: 128,
+                        url: "..."
+                    }
+                },
+                displacement: {
+                    high_quality: {
+                        file: "displacement.jpg",
+                        format: "jpg",
+                        size: 1024,
+                        url: "https://www.dl.dropboxusercontent.com/s/wf8d1nzuizku3dm/height_map_test.jpg"
+                    }
+                }
+            }
         }
     };
 
@@ -1345,15 +1359,13 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
         personalization: {
             enabled: true
             /*
-            width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
-            height: initialsOpts.height !== undefined ? initialsOpts.height : 300,
-            options: initialsOpts.options !== undefined ? initialsOpts.options : {},
-            points: initialsOpts.points !== undefined ? initialsOpts.points : [],
-            position:
-                initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
-            rotation:
-                initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
-            scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
+            width: ...,
+            height: ...,
+            options: ...,
+            points: ...,
+            position: ...,
+            rotation: ...,
+            scale: ...
             */
         }
     };
@@ -1395,12 +1407,30 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
         sceneFormat = scene.format;
     }
 
+    // checks if it should load personalization assets
+    let baseTexturePath = null;
+    let displacementTexturePath = null;
+    const useInitials = this.owner.hasPersonalization() && config.csr.personalization.enabled;
+    if (useInitials) {
+        baseTexturePath = config.assets.textures.personalization.base.high_quality.url;
+        displacementTexturePath =
+            config.assets.textures.personalization.displacement.high_quality.url;
+    }
+
     // loads assets
     let mayaScene = null;
-    [this.mesh, this.environmentTexture, mayaScene] = await Promise.all([
+    [
+        this.mesh,
+        this.environmentTexture,
+        mayaScene,
+        this.initialsRefs.baseTexture,
+        this.initialsRefs.displacementTexture
+    ] = await Promise.all([
         this._loadMesh(meshPath, meshFormat),
         envPath ? this._loadEnvironment(envPath, envFormat) : null,
-        scenePath ? this._loadMayaScene(scenePath, sceneFormat) : null
+        scenePath ? this._loadMayaScene(scenePath, sceneFormat) : null,
+        baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
+        displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null
     ]);
 
     // -----------------------------------
@@ -1427,7 +1457,8 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
         }
     }
     this._initDefaults({
-        cameraOptions: cameraOptions
+        cameraOptions: cameraOptions,
+        enabledInitials: true
     });
 
     // -----------------------------------
@@ -1435,7 +1466,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
     // -----------------------------------
 
     // builds the scene
-    await self._buildScene();
+    self._buildScene();
 
     self.loading = false;
 };
@@ -1487,17 +1518,6 @@ ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
     this.owner && this.owner.unbind("post_config_async", this._onPostConfigAsync);
 };
 
-/*
-// TODO better name and documentation
-ripe.ConfiguratorCsr.prototype._loadAssets = async function (modelMeshUrl, optional = {}) {
-    // if personalization is enabled, it should load it's assets
-    if (this.owner.hasPersonalization()) {
-        const baseTexturePath = "";
-        const displacementTexturePath = "";
-    }
-};
-*/
-
 ripe.ConfiguratorCsr.prototype._initDefaults = function(options) {
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = {
@@ -1546,6 +1566,4 @@ ripe.ConfiguratorCsr.prototype._initDefaults = function(options) {
             initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
         scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
     };
-    this.initialsBaseTexturePath = options.initialsBaseTexturePath || null;
-    this.initialsDisplacementTexturePath = options.initialsDisplacementTexturePath || null;
 };
