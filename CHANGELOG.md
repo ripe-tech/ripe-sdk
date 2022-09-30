@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `CsrRenderedInitials`
 * Support `CsrRenderedInitials` mesh morphing
 * Setup `CsrRenderedInitials`
+* Add `loadFBX` and `loadEnvironment` methods to utils
 
 ### Changed
 
@@ -37,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Improve animation loop so it can tick animations
 * Greatly improve CSR scene loading time
 * Removed unused `format` variable from `ConfiguratorCsr`
+* Reorder `ConfiguratorCsr` methods
 
 ### Fixed
 
