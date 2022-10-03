@@ -514,9 +514,6 @@ ripe.Ripe.prototype.config = async function(brand, model, options = {}) {
         this.trigger("ready");
     }
 
-    // notifies that the config has changed without waiting for listeners
-    this.trigger("post_config_async", this.loadedConfig, options);
-
     // notifies that the config has changed and waits for listeners before
     // concluding the config operation
     await this.trigger("post_config", this.loadedConfig, options);
