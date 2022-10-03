@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `CsrRenderedInitials`
 * Support `CsrRenderedInitials` mesh morphing
 * Setup `CsrRenderedInitials`
+* Add import order simple methods
 
 ### Changed
 
