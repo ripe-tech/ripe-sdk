@@ -643,6 +643,7 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
  * Loads a Maya exported fbx scene.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
+ * @param {String} format File format for the scene file.
  * @returns {Object} Information about the scene.
  *
  * @private
@@ -1164,6 +1165,8 @@ ripe.ConfiguratorCsr.prototype._render = function() {
 /**
  * Sets the camera zoom, will trigger the update of the
  * projection matrix in conformance.
+ *
+ * @param {Number} zoom The zoom number value.
  *
  * @private
  */

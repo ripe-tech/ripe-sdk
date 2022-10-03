@@ -175,6 +175,7 @@ ripe.CsrUtils.loadTexture = async function(path) {
  * Loads a environment map from a file.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
+ * @param {String} format File format for the environment map file.
  * @returns {THREE.Texture} The loaded environment map texture.
  */
 ripe.CsrUtils.loadEnvironment = async function(path, format = "hdr") {
