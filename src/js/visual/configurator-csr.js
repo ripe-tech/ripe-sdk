@@ -171,6 +171,8 @@ ripe.ConfiguratorCsr.prototype.deinit = async function() {
 ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
+    console.log("update options");
+
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
     this.size = options.size === undefined ? this.size : options.size;
@@ -1286,237 +1288,242 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
-    await new Promise(resolve => setTimeout(resolve, 3000));
-
-    // TODO remove test
-    const assets = {
-        meshes: {
-            high_poly: {
-                file: "cube.glb",
-                format: "glb",
-                url: "https://www.dl.dropboxusercontent.com/s/19dejw4whxyliid/dummyCube.glb"
-            }
-        },
-        scenes: [
-            {
-                name: "mayaScene",
-                file: "mayaScene.fbx",
-                format: "fbx",
-                url: "https://www.dl.dropboxusercontent.com/s/etyt4mo4j4mlggi/dummyCube_scene.fbx"
+    const _postConfig = async () => {
+        // TODO remove test
+        const assets = {
+            meshes: {
+                high_poly: {
+                    file: "cube.glb",
+                    format: "glb",
+                    url: "https://www.dl.dropboxusercontent.com/s/19dejw4whxyliid/dummyCube.glb"
+                }
             },
-            {
-                name: "customScene1",
-                file: "customScene1.json",
-                format: "json",
-                url: "https://www.dl.dropboxusercontent.com/s/o539exljg64u18a/mayaScene.json"
-            }
-        ],
-        environments: [
-            {
-                name: "studio2",
-                file: "studio2.hdr",
-                format: "hdr",
-                url: "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr"
-            }
-        ],
-        textures: {
-            // TODO this personalization field should be a temporary solution and should be expanded
-            // when CSR supports more complex personalization. For now it will work fine for the test case
-            // being currently worked on
-            personalization: {
-                base: {
-                    high_quality: {
-                        file: "base.png",
-                        format: "png",
-                        size: 1024,
-                        url: "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg"
-                    },
-                    low_quality: {
-                        file: "base.png",
-                        format: "png",
-                        size: 128,
-                        url: "..."
-                    }
+            scenes: [
+                {
+                    name: "mayaScene",
+                    file: "mayaScene.fbx",
+                    format: "fbx",
+                    url: "https://www.dl.dropboxusercontent.com/s/etyt4mo4j4mlggi/dummyCube_scene.fbx"
                 },
-                displacement: {
-                    high_quality: {
-                        file: "displacement.jpg",
-                        format: "jpg",
-                        size: 1024,
-                        url: "https://www.dl.dropboxusercontent.com/s/wf8d1nzuizku3dm/height_map_test.jpg"
+                {
+                    name: "customScene1",
+                    file: "customScene1.json",
+                    format: "json",
+                    url: "https://www.dl.dropboxusercontent.com/s/o539exljg64u18a/mayaScene.json"
+                }
+            ],
+            environments: [
+                {
+                    name: "studio2",
+                    file: "studio2.hdr",
+                    format: "hdr",
+                    url: "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr"
+                }
+            ],
+            textures: {
+                // TODO this personalization field should be a temporary solution and should be expanded
+                // when CSR supports more complex personalization. For now it will work fine for the test case
+                // being currently worked on
+                personalization: {
+                    base: {
+                        high_quality: {
+                            file: "base.png",
+                            format: "png",
+                            size: 1024,
+                            url: "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg"
+                        },
+                        low_quality: {
+                            file: "base.png",
+                            format: "png",
+                            size: 128,
+                            url: "..."
+                        }
+                    },
+                    displacement: {
+                        high_quality: {
+                            file: "displacement.jpg",
+                            format: "jpg",
+                            size: 1024,
+                            url: "https://www.dl.dropboxusercontent.com/s/wf8d1nzuizku3dm/height_map_test.jpg"
+                        }
                     }
                 }
             }
-        }
-    };
-
-    const scene = {
-        name: "mayaScene",
-        environment: "studio2",
-        camera: {},
-        cameraLookAt: {},
-        zoom: {}
-        // ...
-    };
-
-    const csr = {
-        renderer: {
-            outputEncoding: null
-        },
-        useDracoLoader: true,
-        dracoLoaderDecoderPath: "",
-        dracoLoaderDecoderFallbackPath: "",
-        personalization: {
-            enabled: true
-            /*
-            width: ...,
-            height: ...,
-            options: ...,
-            points: ...,
-            position: ...,
-            rotation: ...,
-            scale: ...
-            */
-        }
-    };
-
-    config.assets = assets;
-    config.scene = scene;
-    config.csr = csr;
-
-    // checks if initials are enabled
-    const csrInitialsEnabled = Boolean(
-        config.csr && config.csr.personalization && config.csr.personalization.enabled
-    );
-    const initialsEnabled = this.owner.hasPersonalization() && csrInitialsEnabled;
-
-    // loads high poly mesh information by default
-    const meshInfo = config.assets.meshes.high_poly;
-    const meshPath = this.owner.getMeshUrl();
-    const meshFormat = meshInfo.format;
-
-    let envPath = null;
-    let envFormat = null;
-    let scenePath = null;
-    let sceneFormat = null;
-    if (config.scene) {
-        // if a environment is set, marks to load the environment
-        if (config.scene.environment) {
-            const environments = config.assets.environments || [];
-            const match = environments.find(s => s.name === config.scene.environment);
-            const environment = match || {};
-            envPath = environment.url;
-            envFormat = environment.format;
-        }
-
-        // if scene name is set, marks to load it's information
-        if (config.scene.name) {
-            const scenes = config.assets.scenes || [];
-            const match = scenes.find(s => s.name === config.scene.name);
-            const scene = match || {};
-            scenePath = scene.url;
-            sceneFormat = scene.format;
-        }
-    }
-
-    // checks if it should load personalization assets
-    let baseTexturePath = null;
-    let displacementTexturePath = null;
-    if (initialsEnabled) {
-        baseTexturePath = config.assets.textures.personalization.base.high_quality.url;
-        displacementTexturePath =
-            config.assets.textures.personalization.displacement.high_quality.url;
-    }
-
-    // loads assets
-    let mayaScene = null;
-    [
-        this.mesh,
-        this.environmentTexture,
-        mayaScene,
-        this.initialsRefs.baseTexture,
-        this.initialsRefs.displacementTexture
-    ] = await Promise.all([
-        this._loadMesh(meshPath, meshFormat),
-        envPath ? this._loadEnvironment(envPath, envFormat) : null,
-        scenePath ? this._loadMayaScene(scenePath, sceneFormat) : null,
-        baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
-        displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null
-    ]);
-
-    // if it's using a scene, it should load it's scene values
-    let cameraOptions = {};
-    if (mayaScene) {
-        // load maya scene camera values
-        cameraOptions = {
-            camera: mayaScene.camera,
-            lookAt: mayaScene.cameraLookAt
         };
-    }
 
-    // unpacks config scene options
-    let zoomOptions;
-    if (config.scene) {
-        if (config.scene.zoom) {
-            zoomOptions = { ...config.scene.zoom };
+        const scene = {
+            name: "mayaScene",
+            environment: "studio2",
+            camera: {},
+            cameraLookAt: {},
+            zoom: {}
+            // ...
+        };
+
+        const csr = {
+            renderer: {
+                outputEncoding: null
+            },
+            useDracoLoader: true,
+            dracoLoaderDecoderPath: "",
+            dracoLoaderDecoderFallbackPath: "",
+            personalization: {
+                enabled: true
+                /*
+                width: ...,
+                height: ...,
+                options: ...,
+                points: ...,
+                position: ...,
+                rotation: ...,
+                scale: ...
+                */
+            }
+        };
+
+        config.assets = assets;
+        config.scene = scene;
+        config.csr = csr;
+
+        // checks if initials are enabled
+        const csrInitialsEnabled = Boolean(
+            config.csr && config.csr.personalization && config.csr.personalization.enabled
+        );
+        const initialsEnabled = this.owner.hasPersonalization() && csrInitialsEnabled;
+
+        // loads high poly mesh information by default
+        const meshInfo = config.assets.meshes.high_poly;
+        const meshPath = this.owner.getMeshUrl();
+        const meshFormat = meshInfo.format;
+
+        let envPath = null;
+        let envFormat = null;
+        let scenePath = null;
+        let sceneFormat = null;
+        if (config.scene) {
+            // if a environment is set, marks to load the environment
+            if (config.scene.environment) {
+                const environments = config.assets.environments || [];
+                const match = environments.find(s => s.name === config.scene.environment);
+                const environment = match || {};
+                envPath = environment.url;
+                envFormat = environment.format;
+            }
+
+            // if scene name is set, marks to load it's information
+            if (config.scene.name) {
+                const scenes = config.assets.scenes || [];
+                const match = scenes.find(s => s.name === config.scene.name);
+                const scene = match || {};
+                scenePath = scene.url;
+                sceneFormat = scene.format;
+            }
         }
 
-        // unpacks config scene camera options. It overrides the loaded scene values
-        if (config.scene.camera) {
-            cameraOptions.camera = { ...cameraOptions.camera, ...config.scene.camera };
+        // checks if it should load personalization assets
+        let baseTexturePath = null;
+        let displacementTexturePath = null;
+        if (initialsEnabled) {
+            baseTexturePath = config.assets.textures.personalization.base.high_quality.url;
+            displacementTexturePath =
+                config.assets.textures.personalization.displacement.high_quality.url;
         }
-        if (config.scene.cameraLookAt) {
-            cameraOptions.cameraLookAt = {
-                ...cameraOptions.cameraLookAt,
-                ...config.scene.cameraLookAt
+
+        // loads assets
+        let mayaScene = null;
+        [
+            this.mesh,
+            this.environmentTexture,
+            mayaScene,
+            this.initialsRefs.baseTexture,
+            this.initialsRefs.displacementTexture
+        ] = await Promise.all([
+            this._loadMesh(meshPath, meshFormat),
+            envPath ? this._loadEnvironment(envPath, envFormat) : null,
+            scenePath ? this._loadMayaScene(scenePath, sceneFormat) : null,
+            baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
+            displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null
+        ]);
+
+        // if it's using a scene, it should load it's scene values
+        let cameraOptions = {};
+        if (mayaScene) {
+            // load maya scene camera values
+            cameraOptions = {
+                camera: mayaScene.camera,
+                lookAt: mayaScene.cameraLookAt
             };
         }
-    }
 
-    // unpacks config csr options
-    let rendererOptions;
-    const initialsOptions = {};
-    if (config.csr) {
-        if (config.csr.renderer) {
-            rendererOptions = { ...config.csr.renderer };
+        // unpacks config scene options
+        let zoomOptions;
+        if (config.scene) {
+            if (config.scene.zoom) {
+                zoomOptions = { ...config.scene.zoom };
+            }
+
+            // unpacks config scene camera options. It overrides the loaded scene values
+            if (config.scene.camera) {
+                cameraOptions.camera = { ...cameraOptions.camera, ...config.scene.camera };
+            }
+            if (config.scene.cameraLookAt) {
+                cameraOptions.cameraLookAt = {
+                    ...cameraOptions.cameraLookAt,
+                    ...config.scene.cameraLookAt
+                };
+            }
         }
 
-        if (config.csr.personalization) {
-            initialsOptions.width = config.csr.personalization.width;
-            initialsOptions.height = config.csr.personalization.height;
-            initialsOptions.points = config.csr.personalization.points;
-            initialsOptions.position = config.csr.personalization.position;
-            initialsOptions.rotation = config.csr.personalization.rotation;
-            initialsOptions.scale = config.csr.personalization.scale;
-            initialsOptions.options = {}; // TODO support options
+        // unpacks config csr options
+        let rendererOptions;
+        const initialsOptions = {};
+        if (config.csr) {
+            if (config.csr.renderer) {
+                rendererOptions = { ...config.csr.renderer };
+            }
+
+            if (config.csr.personalization) {
+                initialsOptions.width = config.csr.personalization.width;
+                initialsOptions.height = config.csr.personalization.height;
+                initialsOptions.points = config.csr.personalization.points;
+                initialsOptions.position = config.csr.personalization.position;
+                initialsOptions.rotation = config.csr.personalization.rotation;
+                initialsOptions.scale = config.csr.personalization.scale;
+                initialsOptions.options = {}; // TODO support options
+            }
         }
-    }
 
-    this._initConfigDefaults({
-        rendererOptions: rendererOptions,
-        useDracoLoader: config.csr.useDracoLoader,
-        dracoLoaderDecoderPath: config.csr.dracoLoaderDecoderPath,
-        dracoLoaderDecoderFallbackPath: config.csr.dracoLoaderDecoderFallbackPath,
-        cameraOptions: cameraOptions,
-        zoomOptions: zoomOptions,
-        enabledInitials: initialsEnabled,
-        initialsOptions: initialsOptions
-    });
+        this._initConfigDefaults({
+            rendererOptions: rendererOptions,
+            useDracoLoader: config.csr.useDracoLoader,
+            dracoLoaderDecoderPath: config.csr.dracoLoaderDecoderPath,
+            dracoLoaderDecoderFallbackPath: config.csr.dracoLoaderDecoderFallbackPath,
+            cameraOptions: cameraOptions,
+            zoomOptions: zoomOptions,
+            enabledInitials: initialsEnabled,
+            initialsOptions: initialsOptions
+        });
 
-    // init scene
-    this._initScene();
+        // init scene
+        this._initScene();
 
-    // init the CSR initials
-    this._initCsrRenderedInitials();
+        // init the CSR initials
+        this._initCsrRenderedInitials();
 
-    // init debug tools
-    this._initDebug();
+        // init debug tools
+        this._initDebug();
 
-    // renders newly build scene
-    this._render();
+        // renders newly build scene
+        this._render();
 
-    self.loading = false;
-    this.trigger("ready");
+        self.loading = false;
+        this.trigger("ready");
+    };
+
+    // runs asynchronously to not block the thread
+    _postConfig();
+
+    // this.updateOptions({});
 };
 
 /**
