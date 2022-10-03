@@ -203,12 +203,34 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
  * update operation.
  */
 ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
-    const result = true;
-    this.trigger("loaded");
+    const updateScene = Boolean(options.updateScene);
+    const updateRenderedInitials = Boolean(options.updateRenderedInitials);
+    const updateDebug = Boolean(options.updateDebug);
 
-    // returns the final result of the underlying update execution
-    // to the caller method (may contain the canceled field)
-    return result;
+    this.loading = true;
+
+    console.log("updateScene", updateScene);
+    console.log("updateRenderedInitials", updateRenderedInitials);
+    console.log("updateDebug", updateDebug);
+
+    if (updateScene) {
+        this._deinitScene();
+        this._initScene();
+    }
+
+    if (updateRenderedInitials) {
+        this._deinitCsrRenderedInitials();
+        this._initCsrRenderedInitials();
+    }
+
+    if (updateDebug) {
+        this._deinitDebug();
+        this._initDebug();
+    }
+
+    this.loading = false;
+    this.trigger("ready");
+    return true;
 };
 
 /**
@@ -1116,20 +1138,6 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
     this._initCamera();
 };
 
-// TODO better name and documentation
-ripe.ConfiguratorCsr.prototype._buildScene = function() {
-    // init scene
-    this._initScene();
-
-    // init the CSR initials
-    this._initCsrRenderedInitials();
-
-    // init debug tools
-    this._initDebug();
-
-    this._render();
-};
-
 ripe.ConfiguratorCsr.prototype._unloadBuildScene = async function() {
     this._deinitDebug();
     this._deinitCsrRenderedInitials();
@@ -1508,8 +1516,17 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
     // 3
     // -----------------------------------
 
-    // builds the scene
-    self._buildScene();
+    // init scene
+    this._initScene();
+
+    // init the CSR initials
+    this._initCsrRenderedInitials();
+
+    // init debug tools
+    this._initDebug();
+
+    // renders newly build scene
+    this._render();
 
     self.loading = false;
     this.trigger("ready");
