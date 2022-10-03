@@ -1382,18 +1382,11 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
     config.scene = scene;
     config.csr = csr;
 
+    // checks if initials are enabled
     const csrInitialsEnabled = Boolean(
         config.csr && config.csr.personalization && config.csr.personalization.enabled
     );
     const initialsEnabled = this.owner.hasPersonalization() && csrInitialsEnabled;
-
-    // TODO
-    // 1- load all assets
-    // 2- load scene settings (can depend on loaded assets)
-    // 3- build actual scene
-    // -----------------------------------
-    // 1
-    // -----------------------------------
 
     // loads high poly mesh information by default
     const meshInfo = config.assets.meshes.high_poly;
@@ -1448,10 +1441,6 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
         baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
         displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null
     ]);
-
-    // -----------------------------------
-    // 2
-    // -----------------------------------
 
     // if it's using a scene, it should load it's scene values
     let cameraOptions = {};
@@ -1511,10 +1500,6 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
         enabledInitials: initialsEnabled,
         initialsOptions: initialsOptions
     });
-
-    // -----------------------------------
-    // 3
-    // -----------------------------------
 
     // init scene
     this._initScene();
