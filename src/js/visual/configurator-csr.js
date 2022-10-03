@@ -907,7 +907,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
     }
 
     // inits rendered initials debug tools
-    if (this.debugOptions.renderedInitials) {
+    if (this.enabledInitials && this.debugOptions.renderedInitials) {
         if (!this.modelGroup) {
             throw new Error("Model group not initialized, can't load rendered initials debug tool");
         }
