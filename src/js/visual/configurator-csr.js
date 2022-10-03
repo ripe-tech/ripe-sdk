@@ -1493,7 +1493,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
         }
     }
 
-    this._initDefaults({
+    this._initConfigDefaults({
         rendererOptions: rendererOptions,
         useDracoLoader: config.csr.useDracoLoader,
         dracoLoaderDecoderPath: config.csr.dracoLoaderDecoderPath,
@@ -1562,7 +1562,7 @@ ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
     this.owner && this.owner.unbind("post_config_async", this._onPostConfigAsync);
 };
 
-ripe.ConfiguratorCsr.prototype._initDefaults = function(options) {
+ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = {
         outputEncoding:
