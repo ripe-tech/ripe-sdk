@@ -1894,9 +1894,48 @@ ripe.Ripe.prototype.importOrder = function(ffOrderId, options, callback) {
  *  - 'meta' - Complementary information to be added, as a key:value list (ie: '['key1:value1', 'key2:value2']).
  * @returns {Promise} The production order's data.
  */
-ripe.Ripe.prototype.importOrderP = function(ffOrderId, options, callback) {
+ripe.Ripe.prototype.importOrderP = function(ffOrderId, options) {
     return new Promise((resolve, reject) => {
         this.importOrder(ffOrderId, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Imports a production order to RIPE Core.
+ * Simplified version accepting JSON payload and resolving defaults.
+ *
+ * @param {Object} order The order payload.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.importOrderSimple = function(order, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/import_simple`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true,
+        dataJ: order
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Imports a production order to RIPE Core.
+ * Simplified version accepting JSON payload and resolving defaults.
+ *
+ * @param {Object} order The order payload.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The imported order.
+ */
+ripe.Ripe.prototype.importOrderSimpleP = function(order, options) {
+    return new Promise((resolve, reject) => {
+        this.importOrderSimple(order, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
