@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `CsrTextureRenderer`
 * Add `CsrRenderedInitials`
 * Support `CsrRenderedInitials` mesh morphing
+* Setup `CsrRenderedInitials`
 * Reset CSR configurator zoom when syncing from PRC
 
 ### Changed
