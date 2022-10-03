@@ -1387,29 +1387,33 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
     // 1
     // -----------------------------------
 
-    // loads high poly mesh information
+    // loads high poly mesh information by default
     const meshInfo = config.assets.meshes.high_poly;
-    const meshPath = meshInfo.url; // const meshPath = this.owner.getMeshUrl();
+    const meshPath = this.owner.getMeshUrl();
     const meshFormat = meshInfo.format;
 
-    // if a environment is set, marks to load the environment
     let envPath = null;
     let envFormat = null;
-    if (config.scene.environment) {
-        const environment = config.assets.environments.find(
-            s => s.name === config.scene.environment
-        );
-        envPath = environment.url;
-        envFormat = environment.format;
-    }
-
-    // if scene name is set, marks to load it's information
     let scenePath = null;
     let sceneFormat = null;
-    if (config.scene.name) {
-        const scene = config.assets.scenes.find(s => s.name === config.scene.name);
-        scenePath = scene.url;
-        sceneFormat = scene.format;
+    if (config.scene) {
+        // if a environment is set, marks to load the environment
+        if (config.scene.environment) {
+            const environments = config.assets.environments || [];
+            const match = environments.find(s => s.name === config.scene.environment);
+            const environment = match || {};
+            envPath = environment.url;
+            envFormat = environment.format;
+        }
+
+        // if scene name is set, marks to load it's information
+        if (config.scene.name) {
+            const scenes = config.assets.scenes || [];
+            const match = scenes.find(s => s.name === config.scene.name);
+            const scene = match || {};
+            scenePath = scene.url;
+            sceneFormat = scene.format;
+        }
     }
 
     // checks if it should load personalization assets
@@ -1449,8 +1453,16 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
             camera: mayaScene.camera,
             lookAt: mayaScene.cameraLookAt
         };
+    }
 
-        // override values with config values
+    // unpacks config scene options
+    let zoomOptions;
+    if (config.scene) {
+        if (config.scene.zoom) {
+            zoomOptions = { ...config.scene.zoom };
+        }
+
+        // unpacks config scene camera options. It overrides the loaded scene values
         if (config.scene.camera) {
             cameraOptions.camera = { ...cameraOptions.camera, ...config.scene.camera };
         }
@@ -1462,25 +1474,23 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
         }
     }
 
+    // unpacks config csr options
     let rendererOptions;
-    if (config.csr.renderer) {
-        rendererOptions = { ...config.csr.renderer };
-    }
-
-    let zoomOptions;
-    if (config.scene.zoom) {
-        zoomOptions = { ...config.scene.zoom };
-    }
-
     const initialsOptions = {};
-    if (config.csr.personalization) {
-        initialsOptions.width = config.csr.personalization.width;
-        initialsOptions.height = config.csr.personalization.height;
-        initialsOptions.points = config.csr.personalization.points;
-        initialsOptions.position = config.csr.personalization.position;
-        initialsOptions.rotation = config.csr.personalization.rotation;
-        initialsOptions.scale = config.csr.personalization.scale;
-        initialsOptions.options = {};
+    if (config.csr) {
+        if (config.csr.renderer) {
+            rendererOptions = { ...config.csr.renderer };
+        }
+
+        if (config.csr.personalization) {
+            initialsOptions.width = config.csr.personalization.width;
+            initialsOptions.height = config.csr.personalization.height;
+            initialsOptions.points = config.csr.personalization.points;
+            initialsOptions.position = config.csr.personalization.position;
+            initialsOptions.rotation = config.csr.personalization.rotation;
+            initialsOptions.scale = config.csr.personalization.scale;
+            initialsOptions.options = {}; // TODO support options
+        }
     }
 
     this._initDefaults({
