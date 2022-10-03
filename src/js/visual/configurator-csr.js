@@ -1159,6 +1159,7 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
 ripe.ConfiguratorCsr.prototype._render = function() {
     if (!this.scene) throw new Error("Scene not initiated");
     if (!this.camera) throw new Error("Camera not initiated");
+    if (!this.renderer) throw new Error("Renderer not initiated");
     this.renderer.render(this.scene, this.camera);
 };
 
