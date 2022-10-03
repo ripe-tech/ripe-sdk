@@ -1374,6 +1374,11 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
     config.scene = scene;
     config.csr = csr;
 
+    const csrInitialsEnabled = Boolean(
+        config.csr && config.csr.personalization && config.csr.personalization.enabled
+    );
+    const initialsEnabled = this.owner.hasPersonalization() && csrInitialsEnabled;
+
     // TODO
     // 1- load all assets
     // 2- load scene settings (can depend on loaded assets)
@@ -1410,8 +1415,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
     // checks if it should load personalization assets
     let baseTexturePath = null;
     let displacementTexturePath = null;
-    const useInitials = this.owner.hasPersonalization() && config.csr.personalization.enabled;
-    if (useInitials) {
+    if (initialsEnabled) {
         baseTexturePath = config.assets.textures.personalization.base.high_quality.url;
         displacementTexturePath =
             config.assets.textures.personalization.displacement.high_quality.url;
@@ -1440,6 +1444,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
     // if it's using a scene, it should load it's scene values
     let cameraOptions = {};
     if (mayaScene) {
+        // load maya scene camera values
         cameraOptions = {
             camera: mayaScene.camera,
             lookAt: mayaScene.cameraLookAt
@@ -1456,9 +1461,37 @@ ripe.ConfiguratorCsr.prototype._onPostConfigAsync = async function(self, config)
             };
         }
     }
+
+    let rendererOptions;
+    if (config.csr.renderer) {
+        rendererOptions = { ...config.csr.renderer };
+    }
+
+    let zoomOptions;
+    if (config.scene.zoom) {
+        zoomOptions = { ...config.scene.zoom };
+    }
+
+    const initialsOptions = {};
+    if (config.csr.personalization) {
+        initialsOptions.width = config.csr.personalization.width;
+        initialsOptions.height = config.csr.personalization.height;
+        initialsOptions.points = config.csr.personalization.points;
+        initialsOptions.position = config.csr.personalization.position;
+        initialsOptions.rotation = config.csr.personalization.rotation;
+        initialsOptions.scale = config.csr.personalization.scale;
+        initialsOptions.options = {};
+    }
+
     this._initDefaults({
+        rendererOptions: rendererOptions,
+        useDracoLoader: config.csr.useDracoLoader,
+        dracoLoaderDecoderPath: config.csr.dracoLoaderDecoderPath,
+        dracoLoaderDecoderFallbackPath: config.csr.dracoLoaderDecoderFallbackPath,
         cameraOptions: cameraOptions,
-        enabledInitials: true
+        zoomOptions: zoomOptions,
+        enabledInitials: initialsEnabled,
+        initialsOptions: initialsOptions
     });
 
     // -----------------------------------
