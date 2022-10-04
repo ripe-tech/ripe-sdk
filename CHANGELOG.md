@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Support `CsrRenderedInitials` mesh morphing - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Setup `CsrRenderedInitials` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Add `loadFBX` and `loadEnvironment` methods to utils - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add import order simple methods
 
 ### Changed
 
