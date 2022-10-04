@@ -1426,7 +1426,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             this.initialsRefs.displacementTexture
         ] = await Promise.all([
             this._loadMesh(meshPath, meshFormat),
-            envPath ? this._loadEnvironment(envPath, envFormat) : null,
+            envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
             scenePath ? this._loadMayaScene(scenePath, sceneFormat) : null,
             baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
             displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null
