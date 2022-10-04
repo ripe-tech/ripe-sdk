@@ -172,6 +172,39 @@ ripe.CsrUtils.loadTexture = async function(path) {
 };
 
 /**
+ * Loads a environment map from a file.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @param {String} format File format for the environment map file.
+ * @returns {THREE.Texture} The loaded environment map texture.
+ */
+ripe.CsrUtils.loadEnvironment = async function(path, format = "hdr") {
+    switch (format) {
+        case "hdr": {
+            const rgbeLoader = new window.THREE.RGBELoader();
+            return new Promise((resolve, reject) => {
+                rgbeLoader.load(path, texture => resolve(texture));
+            });
+        }
+        default:
+            throw new Error(`Can't load environment map, format "${format}" is not supported`);
+    }
+};
+
+/**
+ * Loads a FBX file.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @returns {THREE.Object3D} The loaded fbx.
+ */
+ripe.CsrUtils.loadFBX = async function(path) {
+    const loader = new window.THREE.FBXLoader();
+    return new Promise((resolve, reject) => {
+        loader.load(path, fbx => resolve(fbx));
+    });
+};
+
+/**
  * Applies properties to any type of Three.js object instance.
  *
  * @param {THREE.Any} object Any type of Three.js instance that support properties.
