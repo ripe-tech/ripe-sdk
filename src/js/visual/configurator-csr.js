@@ -172,7 +172,13 @@ ripe.ConfiguratorCsr.prototype.deinit = async function() {
 ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
-    console.log("update options");
+    const updateScene = false;
+    const updateRenderedInitials = false;
+    let updateDebug = false;
+    if (options.debug !== this.debug) {
+        updateDebug = true;
+    }
+    console.log("update options", options);
 
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
@@ -188,7 +194,13 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     const debugOpts = options.debugOptions || {};
     this.debugOptions = { ...this.debugOptions, ...debugOpts };
 
-    if (update) await this.update();
+    if (update) {
+        await this.update(undefined, {
+            updateScene: updateScene,
+            updateRenderedInitials: updateRenderedInitials,
+            updateDebug: updateDebug
+        });
+    }
 };
 
 /**
