@@ -173,13 +173,17 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     ripe.Visual.prototype.updateOptions.call(this, options);
 
     const updateScene = false;
-    const updateRenderedInitials = false;
+    let updateRenderedInitials = false;
     let updateDebug = false;
-    if (options.debug !== this.debug) {
-        updateDebug = true;
-    }
-    console.log("update options", options);
 
+    // checks if it should trigger specific updates
+    updateRenderedInitials ||= updateScene;
+
+    updateDebug ||= updateScene;
+    updateDebug ||= updateRenderedInitials;
+    updateDebug ||= options.debug !== this.debug;
+
+    // update configurator variables
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
     this.size = options.size === undefined ? this.size : options.size;
@@ -194,6 +198,7 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     const debugOpts = options.debugOptions || {};
     this.debugOptions = { ...this.debugOptions, ...debugOpts };
 
+    // update the configurator to use the newly applied values
     if (update) {
         await this.update(undefined, {
             updateScene: updateScene,
