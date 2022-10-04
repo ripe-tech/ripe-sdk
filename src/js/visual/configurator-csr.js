@@ -222,15 +222,11 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
  * update operation.
  */
 ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
+    this.loading = true;
+
     const updateScene = Boolean(options.updateScene);
     const updateRenderedInitials = Boolean(options.updateRenderedInitials);
     const updateDebug = Boolean(options.updateDebug);
-
-    this.loading = true;
-
-    console.log("updateScene", updateScene);
-    console.log("updateRenderedInitials", updateRenderedInitials);
-    console.log("updateDebug", updateDebug);
 
     if (updateScene) {
         this._deinitScene();
