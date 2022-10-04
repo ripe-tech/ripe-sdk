@@ -768,6 +768,11 @@ ripe.ConfiguratorCsr.prototype._initScene = function() {
     this.scene.add(this.modelGroup);
 };
 
+/**
+ * Cleanups everything related to the scene.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._deinitScene = function() {
     if (this.environmentTexture) {
         this.environmentTexture.dispose();
