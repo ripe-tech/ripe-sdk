@@ -1092,6 +1092,62 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
 };
 
 /**
+ * Initializes this CSR configurator instance configuration by applying the default
+ * config values.
+ *
+ * @param {Object} options Set of options to override the defaults.
+ */
+ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
+    const rendererOpts = options.rendererOptions || {};
+    this.rendererOptions = {
+        outputEncoding:
+            rendererOpts.outputEncoding !== undefined
+                ? rendererOpts.outputEncoding
+                : window.THREE.sRGBEncoding
+    };
+    this.useDracoLoader = options.useDracoLoader !== undefined ? options.useDracoLoader : true;
+    this.dracoLoaderDecoderPath =
+        options.dracoLoaderDecoderPath || "https://www.gstatic.com/draco/v1/decoders/";
+    this.dracoLoaderDecoderFallbackPath =
+        options.dracoLoaderDecoderFallbackPath ||
+        "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
+    const cameraOpts = options.cameraOptions || {};
+    this.cameraOptions = {
+        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 24.678,
+        filmGauge: cameraOpts.filmGauge !== undefined ? cameraOpts.filmGauge : null,
+        aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
+        updateAspectOnResize:
+            cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
+        near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
+        far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
+        position: cameraOpts.position !== undefined ? cameraOpts.position : { x: 0, y: 0, z: 207 },
+        rotation: cameraOpts.rotation !== undefined ? cameraOpts.rotation : { x: 0, y: 0, z: 0 },
+        scale: cameraOpts.scale !== undefined ? cameraOpts.scale : { x: 1, y: 1, z: 1 },
+        lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
+    };
+    const zoomOpts = options.zoomOptions || {};
+    this.zoomOptions = {
+        enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
+        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
+        min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
+        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
+    };
+    this.enabledInitials = options.enabledInitials || false;
+    const initialsOpts = options.initialsOptions || {};
+    this.initialsOptions = {
+        width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
+        height: initialsOpts.height !== undefined ? initialsOpts.height : 300,
+        options: initialsOpts.options !== undefined ? initialsOpts.options : {},
+        points: initialsOpts.points !== undefined ? initialsOpts.points : [],
+        position:
+            initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
+        rotation:
+            initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
+        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
+    };
+};
+
+/**
  * Renders frame.
  *
  * @private
@@ -1520,8 +1576,6 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
     // runs synchronously or asynchronously depending on how the CSR configurator was setup
     this.awaitPostConfig ? await _postConfig() : _postConfig();
-
-    // this.updateOptions({});
 };
 
 /**
@@ -1569,54 +1623,4 @@ ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
 ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
     this.owner && this.owner.unbind("pre_config", this._onPreConfig);
     this.owner && this.owner.unbind("post_config", this._onPostConfig);
-};
-
-ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
-    const rendererOpts = options.rendererOptions || {};
-    this.rendererOptions = {
-        outputEncoding:
-            rendererOpts.outputEncoding !== undefined
-                ? rendererOpts.outputEncoding
-                : window.THREE.sRGBEncoding
-    };
-    this.useDracoLoader = options.useDracoLoader !== undefined ? options.useDracoLoader : true;
-    this.dracoLoaderDecoderPath =
-        options.dracoLoaderDecoderPath || "https://www.gstatic.com/draco/v1/decoders/";
-    this.dracoLoaderDecoderFallbackPath =
-        options.dracoLoaderDecoderFallbackPath ||
-        "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
-    const cameraOpts = options.cameraOptions || {};
-    this.cameraOptions = {
-        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 24.678,
-        filmGauge: cameraOpts.filmGauge !== undefined ? cameraOpts.filmGauge : null,
-        aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
-        updateAspectOnResize:
-            cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
-        near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
-        far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
-        position: cameraOpts.position !== undefined ? cameraOpts.position : { x: 0, y: 0, z: 207 },
-        rotation: cameraOpts.rotation !== undefined ? cameraOpts.rotation : { x: 0, y: 0, z: 0 },
-        scale: cameraOpts.scale !== undefined ? cameraOpts.scale : { x: 1, y: 1, z: 1 },
-        lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
-    };
-    const zoomOpts = options.zoomOptions || {};
-    this.zoomOptions = {
-        enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
-        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
-        min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
-        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
-    };
-    this.enabledInitials = options.enabledInitials || false;
-    const initialsOpts = options.initialsOptions || {};
-    this.initialsOptions = {
-        width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
-        height: initialsOpts.height !== undefined ? initialsOpts.height : 300,
-        options: initialsOpts.options !== undefined ? initialsOpts.options : {},
-        points: initialsOpts.points !== undefined ? initialsOpts.points : [],
-        position:
-            initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
-        rotation:
-            initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
-        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
-    };
 };
