@@ -1194,12 +1194,6 @@ ripe.ConfiguratorCsr.prototype._resizeCsr = function(width, height) {
     this._initCamera();
 };
 
-ripe.ConfiguratorCsr.prototype._unloadBuildScene = async function() {
-    this._deinitDebug();
-    this._deinitCsrRenderedInitials();
-    this._deinitScene();
-};
-
 /**
  * Animation loop tick.
  *
@@ -1333,9 +1327,10 @@ ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsEx
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
-    console.log("pre_config");
     self.loading = true;
-    self._unloadBuildScene();
+    this._deinitDebug();
+    this._deinitCsrRenderedInitials();
+    this._deinitScene();
 };
 
 /**
