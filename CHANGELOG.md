@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Support `CsrRenderedInitials` mesh morphing
 * Setup `CsrRenderedInitials`
 * Add import order simple methods
-* Reset CSR configurator zoom when syncing from PRC
+* Reset CSR configurator zoom when syncing from PRC - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
 
