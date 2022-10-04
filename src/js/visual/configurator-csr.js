@@ -66,6 +66,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.duration = this.options.duration || 500;
+    this.awaitPostConfig = this.options.awaitPostConfig || false;
     this.debug = this.options.debug || false;
     const debugOpts = this.options.debugOptions || {};
     const renderedInitialsOpts = debugOpts.renderedInitials || {};
@@ -1523,8 +1524,8 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         this.trigger("ready");
     };
 
-    // runs asynchronously to not block the thread
-    _postConfig();
+    // runs synchronously or asynchronously depending on how the CSR configurator was setup
+    this.awaitPostConfig ? await _postConfig() : _postConfig();
 
     // this.updateOptions({});
 };
