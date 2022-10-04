@@ -721,36 +721,26 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initScene = async function() {
+ripe.ConfiguratorCsr.prototype._initScene = function() {
     // creates empty scene
     this.scene = new window.THREE.Scene();
 
-    // inits the scene clock
-    this.clock = new window.THREE.Clock();
+    // gets configurator size information
+    const size = this._configuratorSize();
 
-    // loads maya scene information
-    if (this.mayaScenePath) {
-        const mayaScene = await this._loadMayaScene(this.mayaScenePath);
-        this.cameraOptions = {
-            ...this.cameraOptions,
-            ...mayaScene.camera,
-            lookAt: mayaScene.cameraLookAt
-        };
+    // calculates the camera aspect ratio
+    if (this.cameraOptions.aspect === null) {
+        this.cameraOptions.aspect = size.width / size.height;
     }
 
     // inits camera thats going to be used to view the scene
     this._initCamera();
 
-    // loads scene resources
-    const meshPath = this.owner.getMeshUrl();
-    [this.environmentTexture, this.mesh] = await Promise.all([
-        ripe.CsrUtils.loadEnvironment(this.sceneEnvironmentPath),
-        this._loadMesh(meshPath)
-    ]);
-
     // sets the scene environment
-    this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
-    this.scene.environment = this.environmentTexture;
+    if (this.environmentTexture) {
+        this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
+        this.scene.environment = this.environmentTexture;
+    }
 
     // inits the scene model group
     this.modelGroup = new window.THREE.Group();
@@ -760,6 +750,27 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
 
     // adds model group to the scene
     this.scene.add(this.modelGroup);
+};
+
+ripe.ConfiguratorCsr.prototype._deinitScene = function() {
+    if (this.environmentTexture) {
+        this.environmentTexture.dispose();
+        this.environmentTexture = null;
+    }
+
+    if (this.modelGroup) {
+        if (this.mesh) {
+            if (this.mesh.geometry) this.mesh.geometry.dispose();
+            if (this.mesh.material) this.mesh.material.dispose();
+            this.modelGroup.remove(this.mesh);
+            this.mesh = null;
+        }
+        this.modelGroup = null;
+    }
+
+    if (this.scene) this.scene = null;
+
+    if (this.camera) this.camera = null;
 };
 
 /**
@@ -1057,27 +1068,6 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
         this.renderer.dispose();
         this.renderer = null;
     }
-};
-
-ripe.ConfiguratorCsr.prototype._deinitScene = function() {
-    if (this.environmentTexture) {
-        this.environmentTexture.dispose();
-        this.environmentTexture = null;
-    }
-
-    if (this.modelGroup) {
-        if (this.mesh) {
-            if (this.mesh.geometry) this.mesh.geometry.dispose();
-            if (this.mesh.material) this.mesh.material.dispose();
-            this.modelGroup.remove(this.mesh);
-            this.mesh = null;
-        }
-        this.modelGroup = null;
-    }
-
-    if (this.scene) this.scene = null;
-
-    if (this.camera) this.camera = null;
 };
 
 /**
