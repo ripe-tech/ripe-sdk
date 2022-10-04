@@ -178,7 +178,6 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
 
     // checks if it should trigger specific updates
     updateRenderedInitials ||= updateScene;
-
     updateDebug ||= updateScene;
     updateDebug ||= updateRenderedInitials;
     updateDebug ||= options.debug !== this.debug;
