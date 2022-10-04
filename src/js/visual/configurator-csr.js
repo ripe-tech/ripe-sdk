@@ -1026,7 +1026,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         }
 
         // ensures it has the minimum number of points
-        if (this.initialsRefs.renderedInitials.points > 1) {
+        if (this.initialsRefs.renderedInitials.points.length > 1) {
             // inits reference points curve
             if (this.debugOptions.renderedInitials.line) {
                 const curve = new window.THREE.CatmullRomCurve3(
