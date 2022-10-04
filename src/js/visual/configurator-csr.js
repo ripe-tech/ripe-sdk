@@ -950,34 +950,37 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
             this.debugRefs.renderedInitials.group.add(this.debugRefs.renderedInitials.axis);
         }
 
-        // inits reference points curve
-        if (this.debugOptions.renderedInitials.line) {
-            const curve = new window.THREE.CatmullRomCurve3(
-                this.initialsRefs.renderedInitials.points,
-                false,
-                "centripetal"
-            );
-            const pointsNum = 50;
-            const linePoints = curve.getPoints(pointsNum);
-            this.debugRefs.renderedInitials.line = new window.THREE.Line(
-                new window.THREE.BufferGeometry().setFromPoints(linePoints),
-                new window.THREE.LineBasicMaterial({ color: 0x0000ff })
-            );
+        // ensures it has the minimum number of points
+        if (this.initialsRefs.renderedInitials.points > 1) {
+            // inits reference points curve
+            if (this.debugOptions.renderedInitials.line) {
+                const curve = new window.THREE.CatmullRomCurve3(
+                    this.initialsRefs.renderedInitials.points,
+                    false,
+                    "centripetal"
+                );
+                const pointsNum = 50;
+                const linePoints = curve.getPoints(pointsNum);
+                this.debugRefs.renderedInitials.line = new window.THREE.Line(
+                    new window.THREE.BufferGeometry().setFromPoints(linePoints),
+                    new window.THREE.LineBasicMaterial({ color: 0x0000ff })
+                );
 
-            this.debugRefs.renderedInitials.group.add(this.debugRefs.renderedInitials.line);
-        }
+                this.debugRefs.renderedInitials.group.add(this.debugRefs.renderedInitials.line);
+            }
 
-        // inits reference points
-        if (this.debugOptions.renderedInitials.points) {
-            const boxGeometry = new window.THREE.BoxGeometry(50, 50, 50);
-            const boxMaterial = new window.THREE.MeshBasicMaterial({ color: 0xff0000 });
+            // inits reference points
+            if (this.debugOptions.renderedInitials.points) {
+                const boxGeometry = new window.THREE.BoxGeometry(50, 50, 50);
+                const boxMaterial = new window.THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-            for (const pos of this.initialsRefs.renderedInitials.points) {
-                const pointBox = new window.THREE.Mesh(boxGeometry, boxMaterial);
-                pointBox.position.copy(pos);
+                for (const pos of this.initialsRefs.renderedInitials.points) {
+                    const pointBox = new window.THREE.Mesh(boxGeometry, boxMaterial);
+                    pointBox.position.copy(pos);
 
-                this.debugRefs.renderedInitials.points.push(pointBox);
-                this.debugRefs.renderedInitials.group.add(pointBox);
+                    this.debugRefs.renderedInitials.points.push(pointBox);
+                    this.debugRefs.renderedInitials.group.add(pointBox);
+                }
             }
         }
 

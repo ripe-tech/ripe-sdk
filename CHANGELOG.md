@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix `ConfiguratorCsr` sizes and `resize()` logic
 * Fix CSR configurator no being hidden at the demo start
 * Fix not being able to override camera transforms on CSR configurator initialization
+* Fix errors when trying to initialize CSR debug mode when no CSR initials points are set - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ## [2.31.2] - 2022-06-08
 
