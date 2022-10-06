@@ -1439,11 +1439,11 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
                 initialsOptions.rotation = config.csr.personalization.rotation;
                 initialsOptions.scale = config.csr.personalization.scale;
                 initialsOptions.options = {
-                    text: config.csr.personalization.text,
-                    material: config.csr.personalization.material,
-                    mesh: config.csr.personalization.mesh,
-                    baseTexture: config.csr.personalization.baseTexture,
-                    displacementTexture: config.csr.personalization.displacementTexture
+                    textOptions: config.csr.personalization.text,
+                    materialOptions: config.csr.personalization.material,
+                    meshOptions: config.csr.personalization.mesh,
+                    baseTextureOptions: config.csr.personalization.baseTexture,
+                    displacementTextureOptions: config.csr.personalization.displacementTexture
                 };
             }
         }
