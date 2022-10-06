@@ -485,6 +485,9 @@ ripe.ConfiguratorCsr.prototype.syncFromPRC = async function(prcConfigurator) {
     // sets the CSR configurator visuals so it matches the PRC frame
     const frame = ripe.getFrameKey(prcConfigurator.view, prcConfigurator.position);
     await this.changeFrame(frame, { duration: 0 });
+
+    // resets camera zoom to starting value
+    this._setZoom(1);
 };
 
 ripe.ConfiguratorCsr.prototype.prcFrame = async function() {
@@ -956,7 +959,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         }
 
         // ensures it has the minimum number of points
-        if (this.initialsRefs.renderedInitials.points > 1) {
+        if (this.initialsRefs.renderedInitials.points.length > 1) {
             // inits reference points curve
             if (this.debugOptions.renderedInitials.line) {
                 const curve = new window.THREE.CatmullRomCurve3(
