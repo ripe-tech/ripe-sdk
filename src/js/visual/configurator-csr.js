@@ -101,7 +101,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.zoomOptions = null;
     this.enabledInitials = null;
     this.initialsOptions = null;
-
     this.renderer = null;
     this.camera = null;
     this.scene = null;
@@ -765,29 +764,39 @@ ripe.ConfiguratorCsr.prototype._initScene = function() {
 };
 
 /**
- * Cleanups everything related to the scene.
+ * Cleanups scene.
  *
  * @private
  */
 ripe.ConfiguratorCsr.prototype._deinitScene = function() {
+    if (this.modelGroup) this.modelGroup = null;
+    if (this.scene) this.scene = null;
+    if (this.camera) this.camera = null;
+};
+
+/**
+ * Free resources used by the scene.
+ */
+ripe.ConfiguratorCsr.prototype._unloadSceneResources = function() {
     if (this.environmentTexture) {
         this.environmentTexture.dispose();
         this.environmentTexture = null;
     }
 
-    if (this.modelGroup) {
-        if (this.mesh) {
-            if (this.mesh.geometry) this.mesh.geometry.dispose();
-            if (this.mesh.material) this.mesh.material.dispose();
-            this.modelGroup.remove(this.mesh);
-            this.mesh = null;
-        }
-        this.modelGroup = null;
+    if (this.mesh) {
+        if (this.mesh.geometry) this.mesh.geometry.dispose();
+        if (this.mesh.material) this.mesh.material.dispose();
+        if (this.modelGroup) this.modelGroup.remove(this.mesh);
+        this.mesh = null;
     }
+};
 
-    if (this.scene) this.scene = null;
-
-    if (this.camera) this.camera = null;
+/**
+ * Completely cleanup and destroy the scene.
+ */
+ripe.ConfiguratorCsr.prototype._destroyScene = function() {
+    this._unloadSceneResources();
+    this._deinitScene();
 };
 
 /**
@@ -858,14 +867,19 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
 };
 
 /**
- * Cleanups everything related to the CSR initials.
+ * Cleanups CSR initials.
  *
  * @private
  */
 ripe.ConfiguratorCsr.prototype._deinitCsrRenderedInitials = function() {
     // cleanup handlers
     this._unregisterInitialsHandlers();
+};
 
+/**
+ * Free resources used by the csr initials.
+ */
+ripe.ConfiguratorCsr.prototype._unloadCsrRenderedInitialsResources = function() {
     // cleanup loaded textures
     if (this.initialsRefs.baseTexture) this.initialsRefs.baseTexture.dispose();
     if (this.initialsRefs.displacementTexture) this.initialsRefs.displacementTexture.dispose();
@@ -881,15 +895,20 @@ ripe.ConfiguratorCsr.prototype._deinitCsrRenderedInitials = function() {
 };
 
 /**
+ * Completely cleanup and destroy CSR initials.
+ */
+ripe.ConfiguratorCsr.prototype._destroyInitialsResources = function() {
+    this._unloadCsrRenderedInitialsResources();
+    this._deinitCsrRenderedInitials();
+};
+
+/**
  * Initiates the debug tools.
  *
  * @private
  */
 ripe.ConfiguratorCsr.prototype._initDebug = function() {
     if (!this.debug) return;
-
-    // ensures a clean state
-    this._deinitDebug();
 
     // inits framerate panel
     if (this.debugOptions.framerate) {
@@ -1046,6 +1065,19 @@ ripe.ConfiguratorCsr.prototype._deinitDebug = function() {
 };
 
 /**
+ * Free debug tools resources.
+ */
+ripe.ConfiguratorCsr.prototype._unloadDebugResources = function() {};
+
+/**
+ * Completely cleanup and destroy debug tools.
+ */
+ripe.ConfiguratorCsr.prototype._destroyDebug = function() {
+    this._unloadDebugResources();
+    this._deinitDebug();
+};
+
+/**
  * Initializes and loads everything needed to run the CSR. This means
  * initializing the renderer, it's camera and it's scene.
  *
@@ -1077,9 +1109,9 @@ ripe.ConfiguratorCsr.prototype._initCsr = function() {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
-    this._deinitDebug();
-    this._deinitCsrRenderedInitials();
-    this._deinitScene();
+    this._destroyDebug();
+    this._destroyInitialsResources();
+    this._destroyScene();
 
     if (this.renderer) {
         this.renderer.dispose();
@@ -1324,9 +1356,9 @@ ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsEx
  */
 ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
     self.loading = true;
-    this._deinitDebug();
-    this._deinitCsrRenderedInitials();
-    this._deinitScene();
+    this._destroyDebug();
+    this._destroyInitialsResources();
+    this._destroyScene();
 };
 
 /**
