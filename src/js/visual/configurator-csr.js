@@ -176,10 +176,10 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     let updateDebug = false;
 
     // checks if it should trigger specific updates
-    updateRenderedInitials ||= updateScene;
-    updateDebug ||= updateScene;
-    updateDebug ||= updateRenderedInitials;
-    updateDebug ||= options.debug !== this.debug;
+    updateRenderedInitials = updateRenderedInitials || updateScene;
+    updateDebug = updateDebug || updateScene;
+    updateDebug = updateDebug || updateRenderedInitials;
+    updateDebug = updateDebug || options.debug !== this.debug;
 
     // update configurator variables
     this.width = options.width === undefined ? this.width : options.width;
