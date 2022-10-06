@@ -110,6 +110,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
 
     // CSR initials variables
     this.personalization = {};
+    this.initialsRefs = {};
 
     // CSR debug variables
     this.debugRefs = {
@@ -1483,6 +1484,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             initialsEnabled = initialsEnabled || enabled;
 
             this.personalization[p.name] = p;
+            this.initialsRefs[p.name] = {};
         });
 
         // loads high poly mesh information by default
@@ -1563,6 +1565,11 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             Promise.all(resourcesPromises),
             Promise.all(initialsTexturesPromises)
         ]);
+
+        // register initials textures references
+        initialsTextures.forEach(entry => {
+            this.initialsRefs[entry.group][entry.type] = entry.texture;
+        });
 
         // if it's using a scene, it should load it's scene values
         let cameraOptions = {};
