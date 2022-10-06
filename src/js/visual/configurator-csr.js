@@ -109,12 +109,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.mesh = null;
 
     // CSR initials variables
-    this.initialsRefs = {
-        renderedInitials: null,
-        mesh: null,
-        baseTexture: null,
-        displacementTexture: null
-    };
+    this.personalization = {};
 
     // CSR debug variables
     this.debugRefs = {
@@ -1369,11 +1364,126 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
     const _postConfig = async () => {
-        // checks if initials are enabled
-        const csrInitialsEnabled = Boolean(
-            config.csr && config.csr.personalization && config.csr.personalization.enabled
-        );
-        const initialsEnabled = this.owner.hasPersonalization() && csrInitialsEnabled;
+        // TODO remove test
+        const assets = {
+            meshes: {
+                high_poly: {
+                    file: "cube.glb",
+                    format: "glb",
+                    url: "https://www.dl.dropboxusercontent.com/s/19dejw4whxyliid/dummyCube.glb"
+                }
+            },
+            scenes: [
+                {
+                    name: "mayaScene",
+                    file: "mayaScene.fbx",
+                    format: "fbx",
+                    url: "https://www.dl.dropboxusercontent.com/s/etyt4mo4j4mlggi/dummyCube_scene.fbx"
+                },
+                {
+                    name: "customScene1",
+                    file: "customScene1.json",
+                    format: "json",
+                    url: "https://www.dl.dropboxusercontent.com/s/o539exljg64u18a/mayaScene.json"
+                }
+            ],
+            environments: [
+                {
+                    name: "studio2",
+                    file: "studio2.hdr",
+                    format: "hdr",
+                    url: "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr"
+                }
+            ],
+            textures: {
+                personalization: [
+                    {
+                        name: "left",
+                        textures: {
+                            base: {
+                                high_quality: {
+                                    file: "base.png",
+                                    format: "png",
+                                    size: 1024,
+                                    url: "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg"
+                                },
+                                low_quality: {
+                                    file: "base.png",
+                                    format: "png",
+                                    size: 128,
+                                    url: "..."
+                                }
+                            },
+                            displacement: {
+                                high_quality: {
+                                    file: "displacement.jpg",
+                                    format: "jpg",
+                                    size: 1024,
+                                    url: "https://www.dl.dropboxusercontent.com/s/wf8d1nzuizku3dm/height_map_test.jpg"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        name: "right",
+                        textures: {
+                            base: {
+                                high_quality: {
+                                    file: "floral.jpg",
+                                    format: "jpg",
+                                    size: 1024,
+                                    url: "https://www.dl.dropboxusercontent.com/s/8lymsw99w8strpd/floral.jpg"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        };
+
+        const scene = {
+            name: "mayaScene",
+            environment: "studio2",
+            camera: {},
+            cameraLookAt: {},
+            zoom: {}
+            // ...
+        };
+
+        const csr = {
+            renderer: {
+                outputEncoding: null
+            },
+            useDracoLoader: true,
+            dracoLoaderDecoderPath: "",
+            dracoLoaderDecoderFallbackPath: "",
+            personalization: [
+                {
+                    name: "left",
+                    enabled: true,
+                    material: {
+                        wireframe: true
+                    }
+                },
+                {
+                    name: "right",
+                    enabled: true
+                }
+            ]
+        };
+
+        config.assets = assets;
+        config.scene = scene;
+        config.csr = csr;
+
+        // unpacks personalization information
+        let initialsEnabled = false;
+        config.csr.personalization.forEach(p => {
+            const enabled = p.enabled && this.owner.hasPersonalization();
+            initialsEnabled = initialsEnabled || enabled;
+
+            this.personalization[p.name] = p;
+        });
 
         // loads high poly mesh information by default
         const meshInfo = config.assets.meshes.high_poly;
@@ -1404,29 +1514,54 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             }
         }
 
-        // checks if it should load personalization assets
-        let baseTexturePath = null;
-        let displacementTexturePath = null;
+        const _personalizationTextureLoader = async (group, type, path) => {
+            const texture = await ripe.CsrUtils.loadTexture(path);
+            return {
+                group: group,
+                type: type,
+                texture: texture
+            };
+        };
+
+        // handles initials texture loading
+        const initialsTexturesPromises = [];
         if (initialsEnabled) {
-            baseTexturePath = config.assets.textures.personalization.base.high_quality.url;
-            displacementTexturePath =
-                config.assets.textures.personalization.displacement.high_quality.url;
+            Object.keys(this.personalization).forEach(group => {
+                // checks if it should load personalization assets
+                if (!this.personalization[group].enabled) return;
+
+                const match = config.assets.textures.personalization.find(p => p.name === group);
+                if (!match) return;
+
+                const baseUrl = match.textures.base && match.textures.base.high_quality.url;
+                if (baseUrl) {
+                    initialsTexturesPromises.push(
+                        _personalizationTextureLoader(group, "base", baseUrl)
+                    );
+                }
+
+                const displacementUrl =
+                    match.textures.displacement && match.textures.displacement.high_quality.url;
+                if (displacementUrl) {
+                    initialsTexturesPromises.push(
+                        _personalizationTextureLoader(group, "displacement", displacementUrl)
+                    );
+                }
+            });
         }
+
+        const resourcesPromises = [
+            this._loadMesh(meshPath, meshFormat),
+            envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
+            scenePath ? this._loadMayaScene(scenePath, sceneFormat) : null
+        ];
 
         // loads assets
         let mayaScene = null;
-        [
-            this.mesh,
-            this.environmentTexture,
-            mayaScene,
-            this.initialsRefs.baseTexture,
-            this.initialsRefs.displacementTexture
-        ] = await Promise.all([
-            this._loadMesh(meshPath, meshFormat),
-            envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
-            scenePath ? this._loadMayaScene(scenePath, sceneFormat) : null,
-            baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
-            displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null
+        let initialsTextures = null;
+        [[this.mesh, this.environmentTexture, mayaScene], initialsTextures] = await Promise.all([
+            Promise.all(resourcesPromises),
+            Promise.all(initialsTexturesPromises)
         ]);
 
         // if it's using a scene, it should load it's scene values
@@ -1466,21 +1601,22 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
                 rendererOptions = { ...config.csr.renderer };
             }
 
-            if (config.csr.personalization) {
-                initialsOptions.width = config.csr.personalization.width;
-                initialsOptions.height = config.csr.personalization.height;
-                initialsOptions.points = config.csr.personalization.points;
-                initialsOptions.position = config.csr.personalization.position;
-                initialsOptions.rotation = config.csr.personalization.rotation;
-                initialsOptions.scale = config.csr.personalization.scale;
-                initialsOptions.options = {
-                    textOptions: config.csr.personalization.text,
-                    materialOptions: config.csr.personalization.material,
-                    meshOptions: config.csr.personalization.mesh,
-                    baseTextureOptions: config.csr.personalization.baseTexture,
-                    displacementTextureOptions: config.csr.personalization.displacementTexture
-                };
-            }
+            // TODO
+            // if (config.csr.personalization) {
+            //     initialsOptions.width = config.csr.personalization.width;
+            //     initialsOptions.height = config.csr.personalization.height;
+            //     initialsOptions.points = config.csr.personalization.points;
+            //     initialsOptions.position = config.csr.personalization.position;
+            //     initialsOptions.rotation = config.csr.personalization.rotation;
+            //     initialsOptions.scale = config.csr.personalization.scale;
+            //     initialsOptions.options = {
+            //         textOptions: config.csr.personalization.text,
+            //         materialOptions: config.csr.personalization.material,
+            //         meshOptions: config.csr.personalization.mesh,
+            //         baseTextureOptions: config.csr.personalization.baseTexture,
+            //         displacementTextureOptions: config.csr.personalization.displacementTexture
+            //     };
+            // }
         }
 
         this._initConfigDefaults({
@@ -1498,7 +1634,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         this._initScene();
 
         // init the CSR initials
-        this._initCsrRenderedInitials();
+        // TODO this._initCsrRenderedInitials();
 
         // init debug tools
         this._initDebug();
