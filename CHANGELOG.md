@@ -10,45 +10,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Add new `variant` and `size` params to `_getConfigOptions` method - [ripe-core/#4745](https://github.com/ripe-tech/ripe-core/issues/4745)
-* Add `variant` passing through `onConfig` and `onPart`
+* Add `variant` passing through `onConfig` and `onPart` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Add CSS `link` to `README.md`
-* Add `hasStrategy` method
-* Add `CsrAnimation`, `CsrChangeFrameAnimation` and `CsrUtils`
-* Add `changeFrame` and `flushPending` methods to CSR configurator
-* Add click binds to ripe-sdk-demo that allows to match CSR to the PRC frames
-* Add `syncFromCSR` method to `ConfiguratorPrc`
-* Add `syncFromPRC` and `prcFrame` methods to `ConfiguratorCsr`
-* Add bilateral synchronization between PRC and CSR configurators in ripe-sdk-demo when changing configurator
-* Add CSR debug support
-* Add CSR framerate, world axis and model axis debug tools
-* Add CSR zoom support
-* Add `CsrTextureRenderer`
-* Add `CsrRenderedInitials`
-* Support `CsrRenderedInitials` mesh morphing
-* Setup `CsrRenderedInitials`
+* Add `hasStrategy` method - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add `CsrAnimation`, `CsrChangeFrameAnimation` and `CsrUtils` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add `changeFrame` and `flushPending` methods to CSR configurator - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add click binds to ripe-sdk-demo that allows to match CSR to the PRC frames - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add `syncFromCSR` method to `ConfiguratorPrc` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add `syncFromPRC` and `prcFrame` methods to `ConfiguratorCsr` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add bilateral synchronization between PRC and CSR configurators in ripe-sdk-demo when changing configurator - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add CSR debug support - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add CSR framerate, world axis and model axis debug tools - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add CSR zoom support - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add `CsrTextureRenderer` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add `CsrRenderedInitials` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Support `CsrRenderedInitials` mesh morphing - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Setup `CsrRenderedInitials` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add `loadFBX` and `loadEnvironment` methods to utils - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Add import order simple methods
 
 ### Changed
 
-* Avoid warnings by not using `var` in ripe-sdk-demo .js files
-* Set renderer output encoding to `sRGBEncoding`
-* Set ripe-sdk-demo brand and model to `dummy` `cube`
-* Set CSR camera default values standard
-* Use `THREE.Group` to manipulate positions and rotations instead of directly changing mesh axis
-* Improve animation loop so it can tick animations
-* Greatly improve CSR scene loading time
-* Removed unused `format` variable from `ConfiguratorCsr`
+* Avoid warnings by not using `var` in ripe-sdk-demo .js files - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Set renderer output encoding to `sRGBEncoding` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Set ripe-sdk-demo brand and model to `dummy` `cube` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Set CSR camera default values standard - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Use `THREE.Group` to manipulate positions and rotations instead of directly changing mesh axis - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Improve animation loop so it can tick animations - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Greatly improve CSR scene loading time - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Removed unused `format` variable from `ConfiguratorCsr` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Reorder `ConfiguratorCsr` methods - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Fixed
 
 * Add `dku` to request options for import order
 * Add `contents` to params of import order only if filled with some value
-* Fix `ConfiguratorCsr` sizes and `resize()` logic
-* Fix CSR configurator no being hidden at the demo start
-* Fix not being able to override camera transforms on CSR configurator initialization
+* Fix `ConfiguratorCsr` sizes and `resize()` logic - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Fix CSR configurator no being hidden at the demo start - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Fix not being able to override camera transforms on CSR configurator initialization - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Fix errors when trying to initialize CSR debug mode when no CSR initials points are set - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
-
-## [2.31.2] - 2022-06-08
 
 ### Added
 
