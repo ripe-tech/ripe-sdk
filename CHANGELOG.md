@@ -51,6 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fix not being able to override camera transforms on CSR configurator initialization - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Fix errors when trying to initialize CSR debug mode when no CSR initials points are set - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
+## [2.31.2] - 2022-06-08
+
 ### Added
 
 * Add param `tenant_id` to `updateTagOrder` method - [ripe-robin-revamp/#363](https://github.com/ripe-tech/ripe-robin-revamp/issues/363)
