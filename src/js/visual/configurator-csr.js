@@ -100,7 +100,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.cameraOptions = null;
     this.zoomOptions = null;
     this.enabledInitials = null;
-    this.initialsOptions = null;
     this.renderer = null;
     this.camera = null;
     this.scene = null;
@@ -110,7 +109,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
 
     // CSR initials variables
     this.personalization = {};
-    this.initialsRefs = {};
 
     // CSR debug variables
     this.debugRefs = {
@@ -804,8 +802,15 @@ ripe.ConfiguratorCsr.prototype._destroyScene = function() {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
+ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function(group) {
     if (!this.enabledInitials) return;
+
+    const personalization = this.personalization[group];
+    if (!personalization) throw new Error(`Can't access "${group} personalization group"`);
+    if (!personalization.enabled) return;
+
+    const refs = personalization.refs;
+    if (!refs) throw new Error(`Can't access group "${group}" initials refs`);
 
     this._registerInitialsHandlers();
 
@@ -817,52 +822,55 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
     const canvas = initialsContainer.querySelector(".canvas");
     const displacementCanvas = initialsContainer.querySelector(".displacement");
 
-    this.initialsRefs.renderedInitials = new ripe.CsrRenderedInitials(
+    refs.renderedInitials = new ripe.CsrRenderedInitials(
         canvas,
         displacementCanvas,
-        this.initialsOptions.width,
-        this.initialsOptions.height,
+        personalization.width,
+        personalization.height,
         this.pixelRatio,
-        this.initialsOptions.options
+        {
+            textOptions: personalization.textOptions,
+            materialOptions: personalization.materialOptions,
+            meshOptions: personalization.meshOptions,
+            baseTextureOptions: personalization.baseTextureOptions,
+            displacementTextureOptions: personalization.displacementTextureOptions
+        }
     );
 
     // apply textures to initials
-    if (this.initialsRefs.baseTexture) {
-        this.initialsRefs.renderedInitials.setBaseTexture(
-            this.initialsRefs.baseTexture,
-            this.initialsOptions.options.baseTextureOptions
-        );
+    if (refs.baseTexture) {
+        refs.renderedInitials.setBaseTexture(refs.baseTexture, personalization.baseTextureOptions);
     }
-    if (this.initialsRefs.displacementTexture) {
-        this.initialsRefs.renderedInitials.setDisplacementTexture(
-            this.initialsRefs.displacementTexture,
-            this.initialsOptions.options.displacementTextureOptions
+    if (refs.displacementTexture) {
+        refs.renderedInitials.setDisplacementTexture(
+            refs.displacementTexture,
+            personalization.displacementTextureOptions
         );
     }
 
     // uses rendered initials mesh
-    this.initialsRefs.mesh = this.initialsRefs.renderedInitials.getMesh();
-    this.modelGroup.add(this.initialsRefs.mesh);
+    refs.mesh = refs.renderedInitials.getMesh();
+    this.modelGroup.add(refs.mesh);
 
     // applies the mesh reference points if available
-    if (this.initialsOptions.points && this.initialsOptions.points.length > 0) {
-        this.initialsRefs.renderedInitials.setPoints(this.initialsOptions.points);
+    if (personalization.points.length > 0) {
+        refs.renderedInitials.setPoints(personalization.points);
     }
 
     // applies the mesh transformations
-    const scale = { ...this.initialsOptions.scale };
+    const scale = { ...personalization.scale };
     if (scale.x !== undefined) scale.x = scale.x * this.INITIALS_SCALE_MULTIPLIER;
     if (scale.y !== undefined) scale.y = scale.y * this.INITIALS_SCALE_MULTIPLIER;
     if (scale.z !== undefined) scale.z = scale.z * this.INITIALS_SCALE_MULTIPLIER;
     ripe.CsrUtils.applyTransform(
-        this.initialsRefs.mesh,
-        this.initialsOptions.position,
-        this.initialsOptions.rotation,
+        refs.mesh,
+        personalization.position,
+        personalization.rotation,
         scale
     );
 
     // trigger rerender to clear the initials
-    this.initialsRefs.renderedInitials.rerenderInitials();
+    refs.renderedInitials.rerenderInitials();
 };
 
 /**
@@ -879,18 +887,22 @@ ripe.ConfiguratorCsr.prototype._deinitCsrRenderedInitials = function() {
  * Free resources used by the csr initials.
  */
 ripe.ConfiguratorCsr.prototype._unloadCsrRenderedInitialsResources = function() {
-    // cleanup loaded textures
-    if (this.initialsRefs.baseTexture) this.initialsRefs.baseTexture.dispose();
-    if (this.initialsRefs.displacementTexture) this.initialsRefs.displacementTexture.dispose();
+    Object.keys(this.personalization).forEach(group => {
+        const refs = this.personalization[group].refs;
 
-    // free all resources used
-    if (this.initialsRefs.renderedInitials) this.initialsRefs.renderedInitials.destroy();
-    this.initialsRefs = {
-        renderedInitials: null,
-        mesh: null,
-        baseTexture: null,
-        displacementTexture: null
-    };
+        // cleanup loaded textures
+        if (refs.baseTexture) refs.baseTexture.dispose();
+        if (refs.displacementTexture) refs.displacementTexture.dispose();
+
+        // free all resources used
+        if (refs.renderedInitials) refs.renderedInitials.destroy();
+        this.personalization[group].refs = {
+            renderedInitials: null,
+            mesh: null,
+            baseTexture: null,
+            displacementTexture: null
+        };
+    });
 };
 
 /**
@@ -939,6 +951,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         if (!this.modelGroup) {
             throw new Error("Model group not initialized, can't load rendered initials debug tool");
         }
+        // TODO
         if (!this.initialsRefs.renderedInitials) {
             throw new Error(
                 "CSR initials not initialized, can't load rendered initials debug tool"
@@ -1160,18 +1173,41 @@ ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
         max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
     };
     this.enabledInitials = options.enabledInitials || false;
-    const initialsOpts = options.initialsOptions || {};
-    this.initialsOptions = {
-        width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
-        height: initialsOpts.height !== undefined ? initialsOpts.height : 300,
-        options: initialsOpts.options !== undefined ? initialsOpts.options : {},
-        points: initialsOpts.points !== undefined ? initialsOpts.points : [],
-        position:
-            initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
-        rotation:
-            initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
-        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
-    };
+    Object.keys(this.personalization).forEach(group => {
+        const personalization = this.personalization[group];
+        const initialsOptions = {
+            width: personalization.width !== undefined ? personalization.width : 3000,
+            height: personalization.height !== undefined ? personalization.height : 300,
+            points: personalization.points !== undefined ? personalization.points : [],
+            position:
+                personalization.position !== undefined
+                    ? personalization.position
+                    : { x: 0, y: 0, z: 0 },
+            rotation:
+                personalization.rotation !== undefined
+                    ? personalization.rotation
+                    : { x: 0, y: 0, z: 0 },
+            scale:
+                personalization.scale !== undefined ? personalization.scale : { x: 1, y: 1, z: 1 },
+            textOptions:
+                personalization.textOptions !== undefined ? personalization.textOptions : {},
+            materialOptions:
+                personalization.materialOptions !== undefined
+                    ? personalization.materialOptions
+                    : {},
+            meshOptions:
+                personalization.meshOptions !== undefined ? personalization.meshOptions : {},
+            baseTextureOptions:
+                personalization.baseTextureOptions !== undefined
+                    ? personalization.baseTextureOptions
+                    : {},
+            displacementTextureOptions:
+                personalization.displacementTextureOptions !== undefined
+                    ? personalization.displacementTextureOptions
+                    : {}
+        };
+        this.personalization[group] = { ...personalization, ...initialsOptions };
+    });
 };
 
 /**
@@ -1336,18 +1372,28 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engraving, params) {
-    if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
+    Object.keys(this.personalization).forEach(group => {
+        const personalization = this.personalization[group];
+        if (!personalization.refs.renderedInitials) {
+            throw new Error(`"${group}" CSR initials not initialized`);
+        }
 
-    this.initialsRefs.renderedInitials.setInitials(initials);
+        personalization.refs.renderedInitials.setInitials(initials);
+    });
 };
 
 /**
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsExtra, params) {
-    if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
+    Object.keys(this.personalization).forEach(group => {
+        const personalization = this.personalization[group];
+        if (!personalization.refs.renderedInitials) {
+            throw new Error(`"${group}" CSR initials not initialized`);
+        }
 
-    throw new Error("Not implemented");
+        throw new Error("Not implemented");
+    });
 };
 
 /**
@@ -1463,12 +1509,18 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
                     name: "left",
                     enabled: true,
                     material: {
-                        wireframe: true
-                    }
+                        wireframe: true,
+                        color: "#ff0000"
+                    },
+                    position: { x: -10, y: -7, z: 0 }
                 },
                 {
                     name: "right",
-                    enabled: true
+                    enabled: true,
+                    material: {
+                        color: "#0000ff"
+                    },
+                    position: { x: 10, y: -10, z: 0 }
                 }
             ]
         };
@@ -1483,8 +1535,26 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             const enabled = p.enabled && this.owner.hasPersonalization();
             initialsEnabled = initialsEnabled || enabled;
 
-            this.personalization[p.name] = p;
-            this.initialsRefs[p.name] = {};
+            this.personalization[p.name] = {
+                enabled: p.enabled,
+                width: p.width,
+                height: p.height,
+                points: p.points,
+                position: p.position,
+                rotation: p.rotation,
+                scale: p.scale,
+                textOptions: p.text,
+                materialOptions: p.material,
+                meshOptions: p.mesh,
+                baseTextureOptions: p.baseTexture,
+                displacementTextureOptions: p.displacementTexture,
+                refs: {
+                    renderedInitials: null,
+                    mesh: null,
+                    baseTexture: null,
+                    displacementTexture: null
+                }
+            };
         });
 
         // loads high poly mesh information by default
@@ -1568,7 +1638,8 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
         // register initials textures references
         initialsTextures.forEach(entry => {
-            this.initialsRefs[entry.group][entry.type] = entry.texture;
+            const personalization = this.personalization[entry.group];
+            personalization.refs[entry.type] = entry.texture;
         });
 
         // if it's using a scene, it should load it's scene values
@@ -1600,30 +1671,12 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             }
         }
 
+        console.log("this.personalization bbb", this.personalization);
+
         // unpacks config csr options
         let rendererOptions;
-        const initialsOptions = {};
-        if (config.csr) {
-            if (config.csr.renderer) {
-                rendererOptions = { ...config.csr.renderer };
-            }
-
-            // TODO
-            // if (config.csr.personalization) {
-            //     initialsOptions.width = config.csr.personalization.width;
-            //     initialsOptions.height = config.csr.personalization.height;
-            //     initialsOptions.points = config.csr.personalization.points;
-            //     initialsOptions.position = config.csr.personalization.position;
-            //     initialsOptions.rotation = config.csr.personalization.rotation;
-            //     initialsOptions.scale = config.csr.personalization.scale;
-            //     initialsOptions.options = {
-            //         textOptions: config.csr.personalization.text,
-            //         materialOptions: config.csr.personalization.material,
-            //         meshOptions: config.csr.personalization.mesh,
-            //         baseTextureOptions: config.csr.personalization.baseTexture,
-            //         displacementTextureOptions: config.csr.personalization.displacementTexture
-            //     };
-            // }
+        if (config.csr && config.csr.renderer) {
+            rendererOptions = { ...config.csr.renderer };
         }
 
         this._initConfigDefaults({
@@ -1633,15 +1686,18 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             dracoLoaderDecoderFallbackPath: config.csr.dracoLoaderDecoderFallbackPath,
             cameraOptions: cameraOptions,
             zoomOptions: zoomOptions,
-            enabledInitials: initialsEnabled,
-            initialsOptions: initialsOptions
+            enabledInitials: initialsEnabled
         });
+
+        console.log("this.personalization", this.personalization);
 
         // init scene
         this._initScene();
 
         // init the CSR initials
-        // TODO this._initCsrRenderedInitials();
+        Object.keys(this.personalization).forEach(group => {
+            this._initCsrRenderedInitials(group);
+        });
 
         // init debug tools
         this._initDebug();
