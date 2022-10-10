@@ -1624,7 +1624,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
                 const baseUrl = match.textures.base && match.textures.base.high_quality.url;
                 if (baseUrl) {
                     initialsTexturesPromises.push(
-                        _personalizationTextureLoader(group, "base", baseUrl)
+                        _personalizationTextureLoader(group, "baseTexture", baseUrl)
                     );
                 }
 
@@ -1632,7 +1632,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
                     match.textures.displacement && match.textures.displacement.high_quality.url;
                 if (displacementUrl) {
                     initialsTexturesPromises.push(
-                        _personalizationTextureLoader(group, "displacement", displacementUrl)
+                        _personalizationTextureLoader(group, "displacementTexture", displacementUrl)
                     );
                 }
             });
