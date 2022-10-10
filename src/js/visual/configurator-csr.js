@@ -1687,8 +1687,6 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             }
         }
 
-        console.log("this.personalization bbb", this.personalization);
-
         // unpacks config csr options
         let rendererOptions;
         if (config.csr && config.csr.renderer) {
@@ -1704,8 +1702,6 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             zoomOptions: zoomOptions,
             enabledInitials: initialsEnabled
         });
-
-        console.log("this.personalization", this.personalization);
 
         // init scene
         this._initScene();
