@@ -1553,7 +1553,7 @@ ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
-    this.owner.bind("pre_config", () => this._onPreConfig(this));
+    this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
     this.owner.bind("post_config", config => this._onPostConfig(this, config));
 };
 
