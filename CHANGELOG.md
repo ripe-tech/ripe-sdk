@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add `loadFBX` and `loadEnvironment` methods to utils - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Add import order simple methods
 * Reset CSR configurator zoom when syncing from PRC - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Setup `ConfiguratorCsr` bases on the config - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
 
