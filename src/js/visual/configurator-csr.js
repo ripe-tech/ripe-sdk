@@ -1717,6 +1717,10 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // renders newly build scene
         this._render();
 
+        // flushes the complete set of operations that were waiting
+        // for the end of the pre-loading operation, notice that this
+        await this.flushPending(true);
+
         self.loading = false;
         this.trigger("ready");
     };
@@ -1760,7 +1764,7 @@ ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
-    this.owner.bind("pre_config", () => this._onPreConfig(this));
+    this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
     this.owner.bind("post_config", config => this._onPostConfig(this, config));
 };
 
