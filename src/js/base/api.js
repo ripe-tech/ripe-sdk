@@ -59,6 +59,41 @@ ripe.Ripe.prototype.pingP = function(options) {
 };
 
 /**
+ * Retrieves summary information about the Core server-side
+ * (such as version, description and others).
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ ripe.Ripe.prototype.info = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}info`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET"
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Retrieves summary information about the Core server-side
+ * (such as version, description and others).
+ *
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} Summary information of the RIPE server.
+ */
+ripe.Ripe.prototype.infoP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.info(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Runs the GeoIP resolution process so that it's possible to uncover
  * more geographical information about the current user.
  *
