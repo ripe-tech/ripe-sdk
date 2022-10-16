@@ -1369,125 +1369,136 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
     const _postConfig = async () => {
+        const csr = {
+            // renderer - Set of options related to the renderer
+            // use_draco_loader - Dictates if it should use draco loader when loading GLTF type files.
+
+            // Contains specific config about the personalization groups
+            personalization: [
+                {
+                    name: "main", // name of the personalization group
+                    enabled: true // dictates if this personalization group is enabled or not
+
+                    // It supports the following fields that can be used to override various aspects of the
+                    // personalization in the 3D scene:
+                    // width - Width of the canvas. It dictates the resolution on the x axis.
+                    // height - Width of the canvas. It dictates the resolution on the x axis.
+                    // points - List of points that define the initials plane.
+                    // position - Initials position in the scene.
+                    // rotation - Initials rotation in the scene.
+                    // scale - Initials scale in the scene.
+                    // text - Set of options related to the initials text.
+                    // material - Set of options related to the initials material.
+                    // mesh - Set of options related to the initials mesh.
+                    // base_texture - Set of options related to the initials base texture.
+                    // displacement_texture - Set of options related to the initials displacement texture.
+                    // ...
+                }
+            ]
+        };
+        const scene = {
+            // - camera - Set of options related to the camera.
+            // - camera_look_at - Set of options for the camera look at.
+            // - zoom  - Set of options for zoom
+            // ...
+        };
+        config["3d"] = {
+            csr: csr,
+            scene: scene
+        };
+
+        // gets 3D config information
+        const config3d = config["3d"] || {
+            csr: {},
+            scene: {}
+        };
+
+        // gets personalization config (as for now only one personalization group is supported, it will only
+        // try to find the main group)
+        const groupMatch = config3d.csr.personalization
+            ? config3d.csr.personalization.find(p => p.name === "main")
+            : null;
+        const personalization = groupMatch || {};
+
         // checks if initials are enabled
-        const csrInitialsEnabled = Boolean(
-            config.csr && config.csr.personalization && config.csr.personalization.enabled
-        );
+        const csrInitialsEnabled = Boolean(personalization.enabled);
         const initialsEnabled = this.owner.hasPersonalization() && csrInitialsEnabled;
 
         // loads high poly mesh information by default
-        const meshInfo = config.assets.meshes.high_poly;
         const meshPath = this.owner.getMeshUrl();
-        const meshFormat = meshInfo.format;
+        const meshFormat = "glb";
 
-        let envPath = null;
-        let envFormat = null;
-        let scenePath = null;
-        let sceneFormat = null;
-        if (config.scene) {
-            // if a environment is set, marks to load the environment
-            if (config.scene.environment) {
-                const environments = config.assets.environments || [];
-                const match = environments.find(s => s.name === config.scene.environment);
-                const environment = match || {};
-                envPath = environment.url;
-                envFormat = environment.format;
-            }
-
-            // if scene name is set, marks to load it's information
-            if (config.scene.name) {
-                const scenes = config.assets.scenes || [];
-                const match = scenes.find(s => s.name === config.scene.name);
-                const scene = match || {};
-                scenePath = scene.url;
-                sceneFormat = scene.format;
-            }
-        }
+        // loads default environment map
+        const envPath = "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
+        const envFormat = "hdr";
 
         // checks if it should load personalization assets
         let baseTexturePath = null;
         let displacementTexturePath = null;
         if (initialsEnabled) {
-            baseTexturePath = config.assets.textures.personalization.base.high_quality.url;
+            baseTexturePath = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
             displacementTexturePath =
-                config.assets.textures.personalization.displacement.high_quality.url;
+                "https://www.dl.dropboxusercontent.com/s/wf8d1nzuizku3dm/height_map_test.jpg";
         }
 
         // loads assets
-        let mayaScene = null;
         [
             this.mesh,
             this.environmentTexture,
-            mayaScene,
             this.initialsRefs.baseTexture,
             this.initialsRefs.displacementTexture
         ] = await Promise.all([
             this._loadMesh(meshPath, meshFormat),
             envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
-            scenePath ? this._loadMayaScene(scenePath, sceneFormat) : null,
             baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
             displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null
         ]);
 
-        // if it's using a scene, it should load it's scene values
-        let cameraOptions = {};
-        if (mayaScene) {
-            // load maya scene camera values
-            cameraOptions = {
-                camera: mayaScene.camera,
-                lookAt: mayaScene.cameraLookAt
-            };
-        }
-
         // unpacks config scene options
         let zoomOptions;
-        if (config.scene) {
-            if (config.scene.zoom) {
-                zoomOptions = { ...config.scene.zoom };
+        const cameraOptions = {};
+        if (config3d.scene) {
+            if (config3d.scene.zoom) {
+                zoomOptions = { ...config3d.scene.zoom };
             }
 
             // unpacks config scene camera options. It overrides the loaded scene values
-            if (config.scene.camera) {
-                cameraOptions.camera = { ...cameraOptions.camera, ...config.scene.camera };
+            if (config3d.scene.camera) {
+                cameraOptions.camera = { ...config3d.scene.camera };
             }
-            if (config.scene.cameraLookAt) {
-                cameraOptions.cameraLookAt = {
-                    ...cameraOptions.cameraLookAt,
-                    ...config.scene.cameraLookAt
-                };
+            if (config3d.scene.cameraLookAt) {
+                cameraOptions.cameraLookAt = { ...config3d.scene.camera_look_at };
             }
         }
 
         // unpacks config csr options
         let rendererOptions;
         const initialsOptions = {};
-        if (config.csr) {
-            if (config.csr.renderer) {
-                rendererOptions = { ...config.csr.renderer };
+        if (config3d.csr) {
+            if (config3d.csr.renderer) {
+                rendererOptions = { ...config3d.csr.renderer };
             }
 
-            if (config.csr.personalization) {
-                initialsOptions.width = config.csr.personalization.width;
-                initialsOptions.height = config.csr.personalization.height;
-                initialsOptions.points = config.csr.personalization.points;
-                initialsOptions.position = config.csr.personalization.position;
-                initialsOptions.rotation = config.csr.personalization.rotation;
-                initialsOptions.scale = config.csr.personalization.scale;
+            if (personalization) {
+                initialsOptions.width = personalization.width;
+                initialsOptions.height = personalization.height;
+                initialsOptions.points = personalization.points;
+                initialsOptions.position = personalization.position;
+                initialsOptions.rotation = personalization.rotation;
+                initialsOptions.scale = personalization.scale;
                 initialsOptions.options = {
-                    textOptions: config.csr.personalization.text,
-                    materialOptions: config.csr.personalization.material,
-                    meshOptions: config.csr.personalization.mesh,
-                    baseTextureOptions: config.csr.personalization.baseTexture,
-                    displacementTextureOptions: config.csr.personalization.displacementTexture
+                    textOptions: personalization.text,
+                    materialOptions: personalization.material,
+                    meshOptions: personalization.mesh,
+                    baseTextureOptions: personalization.base_texture,
+                    displacementTextureOptions: personalization.displacement_texture
                 };
             }
         }
 
         this._initConfigDefaults({
             rendererOptions: rendererOptions,
-            useDracoLoader: config.csr.useDracoLoader,
-            dracoLoaderDecoderPath: config.csr.dracoLoaderDecoderPath,
-            dracoLoaderDecoderFallbackPath: config.csr.dracoLoaderDecoderFallbackPath,
+            useDracoLoader: config3d.csr.use_draco_loader,
             cameraOptions: cameraOptions,
             zoomOptions: zoomOptions,
             enabledInitials: initialsEnabled,
