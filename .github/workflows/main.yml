@@ -25,6 +25,13 @@ jobs:
           TEST_KEY: ${{ secrets.TEST_KEY }}
           MAX_SOCKETS: ${{ secrets.MAX_SOCKETS }}
           SKIP_TEST_NOTIFY: 1
+      - run: npm test-coverage
+        env:
+          TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          TEST_KEY: ${{ secrets.TEST_KEY }}
+          MAX_SOCKETS: ${{ secrets.MAX_SOCKETS }}
+          SKIP_TEST_NOTIFY: 1
   build-hosted:
     name: Build Hosted
     timeout-minutes: 10
@@ -45,6 +52,13 @@ jobs:
       - run: npm run build
       - run: npm run lint
       - run: npm test
+        env:
+          TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          TEST_KEY: ${{ secrets.TEST_KEY }}
+          MAX_SOCKETS: ${{ secrets.MAX_SOCKETS }}
+          SKIP_TEST_NOTIFY: 1
+      - run: npm test-coverage
         env:
           TEST_USERNAME: ${{ secrets.TEST_USERNAME }}
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}

@@ -243,7 +243,10 @@ gulp.task("test", () => {
     );
 });
 
-gulp.task("test-coverage", shell.task(["nyc gulp test"]));
+gulp.task(
+    "test-coverage",
+    shell.task(["nyc --reporter=lcov --reporter=text --include=src/js gulp test"])
+);
 
 gulp.task("docs", cb => {
     const config = require("./jsdoc.json");
