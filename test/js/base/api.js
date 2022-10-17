@@ -5,6 +5,32 @@ const ripe = require("../../../src/js");
 describe("RipeAPI", function() {
     this.timeout(config.TEST_TIMEOUT);
 
+    describe("#ping", function() {
+        it("should be able to ping the Core server", async () => {
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
+            const result = await remote.pingP();
+            assert.notStrictEqual(result.timestamp, undefined);
+        });
+    });
+
+    describe("#info", function() {
+        it("should be able to retrieve summary info from the Core server", async () => {
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
+            const result = await remote.infoP();
+            assert.notStrictEqual(result.version, undefined);
+            assert.notStrictEqual(result.description, undefined);
+            assert.notStrictEqual(result.observations, undefined);
+        });
+    });
+
+    describe("#geoResolve", function() {
+        it("should be able to resolve geographical data of the request's origin", async () => {
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
+            const result = await remote.geoResolveP();
+            assert.notStrictEqual(result, null);
+        });
+    });
+
     describe("#_authCallback", function() {
         it("should be able to retry operations", async () => {
             const remote = ripe.RipeAPI({ url: config.TEST_URL });
