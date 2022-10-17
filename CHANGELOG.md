@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add import order simple methods
 * Reset CSR configurator zoom when syncing from PRC - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Added method for the `GET /api/info` endpoint
+* Added `test-coverage` npm script
 
 ### Changed
 
