@@ -34,7 +34,8 @@ const paths = {
         "node_modules/three/examples/js/loaders/GLTFLoader.js",
         "node_modules/three/examples/js/loaders/FBXLoader.js",
         "node_modules/three/examples/js/loaders/RGBELoader.js",
-        "node_modules/three/examples/js/libs/fflate.min.js"
+        "node_modules/three/examples/js/libs/fflate.min.js",
+        "node_modules/three/examples/js/libs/draco/draco_decoder.js"
     ],
     basefiles: [
         "src/js/locales/base.js",

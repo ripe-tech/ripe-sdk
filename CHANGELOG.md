@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Reset CSR configurator zoom when syncing from PRC - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Added method for the `GET /api/info` endpoint
 * Added `test-coverage` npm script
+* Add `loadMesh` method to utils - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
 
@@ -43,6 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Greatly improve CSR scene loading time - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Removed unused `format` variable from `ConfiguratorCsr` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Reorder `ConfiguratorCsr` methods - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Remove `dracoLoaderDecoderPath` and `dracoLoaderDecoderFallbackPath` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Remove dependency on external draco loader files - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Fixed
 
