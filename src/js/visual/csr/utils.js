@@ -205,6 +205,26 @@ ripe.CsrUtils.loadFBX = async function(path) {
 };
 
 /**
+ * Loads a GLTF/GLB file.
+ *
+ * @param {String} path Path to the file. Can be local path or an URL.
+ * @param {Boolean} useDracoLoader Dictates if it should use draco loader to decode the file.
+ * @returns {THREE.Object3D} The loaded GLTF/GLB file.
+ */
+ripe.CsrUtils.loadGLTF = async function(path, useDracoLoader = true) {
+    const loader = new window.THREE.GLTFLoader();
+
+    if (useDracoLoader) {
+        const dracoDecoderModule = new window.DracoDecoderModule();
+        loader.setDRACOLoader(dracoDecoderModule);
+    }
+
+    return new Promise((resolve, reject) => {
+        loader.load(path, gltf => resolve(gltf.scene));
+    });
+};
+
+/**
  * Applies properties to any type of Three.js object instance.
  *
  * @param {THREE.Any} object Any type of Three.js instance that support properties.

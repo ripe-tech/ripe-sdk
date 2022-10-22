@@ -89,11 +89,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.mayaScenePath = this.options.mayaScenePath || null;
     this.useDracoLoader =
         this.options.useDracoLoader !== undefined ? this.options.useDracoLoader : true;
-    this.dracoLoaderDecoderPath =
-        this.options.dracoLoaderDecoderPath || "https://www.gstatic.com/draco/v1/decoders/";
-    this.dracoLoaderDecoderFallbackPath =
-        this.options.dracoLoaderDecoderFallbackPath ||
-        "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
     this.sceneEnvironmentPath =
         this.options.sceneEnvironmentPath ||
         "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
@@ -236,14 +231,6 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
         options.mayaScenePath === undefined ? this.mayaScenePath : options.mayaScenePath;
     this.useDracoLoader =
         options.useDracoLoader === undefined ? this.useDracoLoader : options.useDracoLoader;
-    this.dracoLoaderDecoderPath =
-        options.dracoLoaderDecoderPath === undefined
-            ? this.dracoLoaderDecoderPath
-            : options.dracoLoaderDecoderPath;
-    this.dracoLoaderDecoderFallbackPath =
-        options.dracoLoaderDecoderFallbackPath === undefined
-            ? this.dracoLoaderDecoderFallbackPath
-            : options.dracoLoaderDecoderFallbackPath;
     this.sceneEnvironmentPath =
         options.sceneEnvironmentPath === undefined
             ? this.sceneEnvironmentPath
@@ -594,35 +581,6 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
 };
 
 /**
- * Loads a GLTF file.
- *
- * @param {String} path Path to the file. Can be local path or an URL.
- * @returns {THREE.Mesh} The loaded model.
- *
- * @private
- */
-ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
-    const loader = new window.THREE.GLTFLoader();
-
-    if (this.useDracoLoader) {
-        const dracoLoader = new window.THREE.DRACOLoader();
-        try {
-            dracoLoader.setDecoderPath(this.dracoLoaderDecoderPath);
-            dracoLoader.preload();
-        } catch (error) {
-            // loader fallback
-            dracoLoader.setDecoderPath(this.dracoLoaderDecoderFallbackPath);
-            dracoLoader.preload();
-        }
-        loader.setDRACOLoader(dracoLoader);
-    }
-
-    return new Promise((resolve, reject) => {
-        loader.load(path, gltf => resolve(gltf.scene));
-    });
-};
-
-/**
  * Loads a mesh.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
@@ -634,7 +592,7 @@ ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
 ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf") {
     switch (format) {
         case "gltf":
-            return await this._loadMeshGLTF(path);
+            return await ripe.CsrUtils.loadGLTF(path, this.useDracoLoader);
         case "fbx":
             return await ripe.CsrUtils.loadFBX(path);
         default:
