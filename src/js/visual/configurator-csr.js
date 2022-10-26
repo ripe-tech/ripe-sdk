@@ -1450,13 +1450,13 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             // unpacks scene camera options
             if (config3d.scene.camera) {
                 cameraOptions.camera = {
-                    position: ripe.CsrUtils.toXYZObject(cameraOptions.camera.position),
-                    rotation: ripe.CsrUtils.toXYZObject(cameraOptions.camera.rotation),
-                    fov: cameraOptions.camera.fov,
-                    filmGauge: cameraOptions.camera.film_gauge,
-                    aspect: cameraOptions.camera.aspect,
-                    near: cameraOptions.camera.near,
-                    far: cameraOptions.camera.far
+                    position: ripe.CsrUtils.toXYZObject(config3d.scene.camera.position),
+                    rotation: ripe.CsrUtils.toXYZObject(config3d.scene.camera.rotation),
+                    fov: config3d.scene.camera.fov,
+                    filmGauge: config3d.scene.camera.film_gauge,
+                    aspect: config3d.scene.camera.aspect,
+                    near: config3d.scene.camera.near,
+                    far: config3d.scene.camera.far
                 };
             }
             if (config3d.scene.camera_look_at) {
