@@ -1369,70 +1369,72 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
     const _postConfig = async () => {
-        const csr = {
-            // renderer - Set of options related to the renderer
-            // use_draco_loader - Dictates if it should use draco loader when loading GLTF type files.
-
-            // Contains specific config about the personalization groups
-            personalization: [
-                {
-                    name: "main", // name of the personalization group
-                    enabled: true // dictates if this personalization group is enabled or not
-
-                    // It supports the following fields that can be used to override various aspects of the
-                    // personalization in the 3D scene:
-                    // width - Width of the canvas. It dictates the resolution on the x axis.
-                    // height - Width of the canvas. It dictates the resolution on the x axis.
-                    // points - List of points that define the initials plane.
-                    // position - Initials position in the scene.
-                    // rotation - Initials rotation in the scene.
-                    // scale - Initials scale in the scene.
-                    // text - Set of options related to the initials text.
-                    // material - Set of options related to the initials material.
-                    // mesh - Set of options related to the initials mesh.
-                    // base_texture - Set of options related to the initials base texture.
-                    // displacement_texture - Set of options related to the initials displacement texture.
-                    // ...
+        // TODO delete me
+        const specInitials = {
+            "3d": {
+                width: 3000,
+                height: 300,
+                font_size: 280,
+                stoke_width: 5,
+                text_displacement_blur: 1.5,
+                text_normal_map_blur: 1,
+                points: [
+                    [-1, 0, 0],
+                    [0, 0, -1],
+                    [1, 0, 0]
+                ],
+                position: [0, 0, 0],
+                rotation: [0, 0, 0],
+                scale: 1,
+                material_color: "ffffff",
+                material_metalness: 0,
+                material_roughness: 1,
+                material_emissive_color: "000000",
+                material_emissive_intensity: 1,
+                material_displacement_scale: 25,
+                material_displacement_bias: 0,
+                mesh_width_segments: 1000,
+                mesh_height_segments: 100
+            }
+        };
+        const spec3d = {
+            scene: {
+                environment: "studio_small_2",
+                tone_mapping: "aces_filmic",
+                tone_mapping_exposure: 0.8,
+                camera: {
+                    position: [0, 0, 207],
+                    rotation: [0, 0, 0],
+                    fov: 24.678,
+                    film_gauge: 35,
+                    aspect: 1,
+                    near: 0.1,
+                    far: 10000
+                },
+                camera_look_at: [0, 0, 0],
+                zoom: {
+                    enabled: true,
+                    min: 0.75,
+                    max: 1.5,
+                    sensitivity: 1
                 }
-            ]
+            }
         };
-        const scene = {
-            // - camera - Set of options related to the camera.
-            // - camera_look_at - Set of options for the camera look at.
-            // - zoom  - Set of options for zoom
-            // ...
-        };
-        config["3d"] = {
-            csr: csr,
-            scene: scene
-        };
+        config.initials = { ...config.initials, ...specInitials };
+        config["3d"] = spec3d;
 
-        // gets 3D config information
-        const config3d = config["3d"] || {
-            csr: {},
-            scene: {}
-        };
-
-        // gets personalization config (as for now only one personalization group is supported, it will only
-        // try to find the main group)
-        const groupMatch = config3d.csr.personalization
-            ? config3d.csr.personalization.find(p => p.name === "main")
-            : null;
-        const personalization = groupMatch || {};
-
-        // checks if initials are enabled
-        const csrInitialsEnabled = Boolean(personalization.enabled);
-        const initialsEnabled = this.owner.hasPersonalization() && csrInitialsEnabled;
-
-        // loads high poly mesh information by default
+        // loads high poly mesh information by default // TODO improve
         const meshPath = this.owner.getMeshUrl();
         const meshFormat = "glb";
 
-        // loads default environment map
+        // loads default environment map // TODO improve
         const envPath = "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
         const envFormat = "hdr";
 
-        // checks if it should load personalization assets
+        // checks if initials are enabled
+        const initialsEnabled = this.owner.hasPersonalization();
+
+        // checks if it should load assets used by the initials // TODO improve
         let baseTexturePath = null;
         let displacementTexturePath = null;
         if (initialsEnabled) {
@@ -1454,51 +1456,90 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null
         ]);
 
-        // unpacks config scene options
-        let zoomOptions;
+        // gets the 3d set from the config
+        const config3d = config["3d"] || {};
+
+        // unpacks scene options
+        const rendererOptions = {};
         const cameraOptions = {};
+        const zoomOptions = {};
         if (config3d.scene) {
+            // unpacks renderer options
+            rendererOptions.toneMapping = config3d.scene.tone_mapping;
+            rendererOptions.toneMappingExposure = config3d.scene.tone_mapping;
+
+            // unpacks scene zoom options
             if (config3d.scene.zoom) {
-                zoomOptions = { ...config3d.scene.zoom };
+                zoomOptions.enabled = config3d.scene.zoom.enabled;
+                zoomOptions.min = config3d.scene.zoom.min;
+                zoomOptions.max = config3d.scene.zoom.max;
+                zoomOptions.sensitivity = config3d.scene.zoom.sensitivity;
             }
 
-            // unpacks config scene camera options. It overrides the loaded scene values
+            // unpacks scene camera options
             if (config3d.scene.camera) {
-                cameraOptions.camera = { ...config3d.scene.camera };
-            }
-            if (config3d.scene.cameraLookAt) {
-                cameraOptions.cameraLookAt = { ...config3d.scene.camera_look_at };
-            }
-        }
-
-        // unpacks config csr options
-        let rendererOptions;
-        const initialsOptions = {};
-        if (config3d.csr) {
-            if (config3d.csr.renderer) {
-                rendererOptions = { ...config3d.csr.renderer };
-            }
-
-            if (personalization) {
-                initialsOptions.width = personalization.width;
-                initialsOptions.height = personalization.height;
-                initialsOptions.points = personalization.points;
-                initialsOptions.position = personalization.position;
-                initialsOptions.rotation = personalization.rotation;
-                initialsOptions.scale = personalization.scale;
-                initialsOptions.options = {
-                    textOptions: personalization.text,
-                    materialOptions: personalization.material,
-                    meshOptions: personalization.mesh,
-                    baseTextureOptions: personalization.base_texture,
-                    displacementTextureOptions: personalization.displacement_texture
+                cameraOptions.camera = {
+                    position: ripe.CsrUtils.toXYZObject(cameraOptions.camera.position),
+                    rotation: ripe.CsrUtils.toXYZObject(cameraOptions.camera.rotation),
+                    fov: cameraOptions.camera.fov,
+                    filmGauge: cameraOptions.camera.film_gauge,
+                    aspect: cameraOptions.camera.aspect,
+                    near: cameraOptions.camera.near,
+                    far: cameraOptions.camera.far
                 };
             }
+            if (config3d.scene.camera_look_at) {
+                cameraOptions.cameraLookAt = ripe.CsrUtils.toXYZObject(
+                    config3d.scene.camera_look_at
+                );
+            }
         }
+
+        // gets the initials and initials.3d set from the config
+        const initials = config.initials || {};
+        const initials3d = initials["3d"] || {};
+
+        // unpacks initials options
+        const initialsOptions = {};
+        initialsOptions.width = initials3d.width;
+        initialsOptions.height = initials3d.height;
+        const points = initials3d.points || [];
+        initialsOptions.points = points.map(p => ripe.CsrUtils.toXYZObject(p));
+        initialsOptions.position = ripe.CsrUtils.toXYZObject(initials3d.position);
+        initialsOptions.rotation = ripe.CsrUtils.toXYZObject(initials3d.rotation);
+        initialsOptions.scale = initials3d.scale;
+
+        const textOptions = {};
+        textOptions.font = initials.font_family;
+        textOptions.fontSize = initials3d.font_size;
+        textOptions.lineWidth = initials3d.stoke_width;
+        textOptions.displacementMapTextBlur = initials3d.text_displacement_blur;
+        textOptions.normalMapBlurIntensity = initials3d.text_normal_map_blur;
+
+        const materialOptions = {};
+        materialOptions.color = initials3d.material_color ? `#${initials3d.material_color}` : null;
+        materialOptions.displacementScale = materialOptions.material_displacement_scale;
+        materialOptions.displacementBias = materialOptions.material_displacement_bias;
+        materialOptions.emissive = initials3d.material_emissive_color
+            ? `#${initials3d.material_emissive_color}`
+            : null;
+        materialOptions.emissiveIntensity = initials3d.material_emissive_intensity;
+        materialOptions.metalness = initials3d.material_metalness;
+        materialOptions.roughness = initials3d.material_roughness;
+
+        const meshOptions = {};
+        meshOptions.widthSegments = initials3d.mesh_width_segments;
+        meshOptions.heightSegments = initials3d.mesh_height_segments;
+
+        initialsOptions.options = {
+            textOptions: textOptions,
+            materialOptions: materialOptions,
+            meshOptions: meshOptions
+        };
 
         this._initConfigDefaults({
             rendererOptions: rendererOptions,
-            useDracoLoader: config3d.csr.use_draco_loader,
+            useDracoLoader: true,
             cameraOptions: cameraOptions,
             zoomOptions: zoomOptions,
             enabledInitials: initialsEnabled,
