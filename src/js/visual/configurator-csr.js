@@ -550,35 +550,6 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
 };
 
 /**
- * Loads a GLTF file.
- *
- * @param {String} path Path to the file. Can be local path or an URL.
- * @returns {THREE.Mesh} The loaded model.
- *
- * @private
- */
-ripe.ConfiguratorCsr.prototype._loadMeshGLTF = async function(path) {
-    const loader = new window.THREE.GLTFLoader();
-
-    if (this.useDracoLoader) {
-        const dracoLoader = new window.THREE.DRACOLoader();
-        try {
-            dracoLoader.setDecoderPath(this.dracoLoaderDecoderPath);
-            dracoLoader.preload();
-        } catch (error) {
-            // loader fallback
-            dracoLoader.setDecoderPath(this.dracoLoaderDecoderFallbackPath);
-            dracoLoader.preload();
-        }
-        loader.setDRACOLoader(dracoLoader);
-    }
-
-    return new Promise((resolve, reject) => {
-        loader.load(path, gltf => resolve(gltf.scene));
-    });
-};
-
-/**
  * Loads a mesh.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
@@ -591,7 +562,7 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
     switch (format) {
         case "gltf":
         case "glb":
-            return await this._loadMeshGLTF(path);
+            return await ripe.CsrUtils.loadGLTF(path, this.useDracoLoader);
         case "fbx":
             return await ripe.CsrUtils.loadFBX(path);
         default:

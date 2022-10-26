@@ -5,6 +5,7 @@ const size = require("gulp-size");
 const babel = require("gulp-babel");
 const count = require("gulp-count");
 const mocha = require("gulp-mocha");
+const shell = require("gulp-shell");
 const jsdoc = require("gulp-jsdoc3");
 const concat = require("gulp-concat");
 const eslint = require("gulp-eslint7");
@@ -33,7 +34,8 @@ const paths = {
         "node_modules/three/examples/js/loaders/GLTFLoader.js",
         "node_modules/three/examples/js/loaders/FBXLoader.js",
         "node_modules/three/examples/js/loaders/RGBELoader.js",
-        "node_modules/three/examples/js/libs/fflate.min.js"
+        "node_modules/three/examples/js/libs/fflate.min.js",
+        "node_modules/three/examples/js/libs/draco/draco_decoder.js"
     ],
     basefiles: [
         "src/js/locales/base.js",
@@ -241,6 +243,11 @@ gulp.task("test", () => {
         })
     );
 });
+
+gulp.task(
+    "test-coverage",
+    shell.task(["nyc --reporter=lcov --reporter=text --include=src/js gulp test"])
+);
 
 gulp.task("docs", cb => {
     const config = require("./jsdoc.json");
