@@ -113,6 +113,21 @@ ripe.CsrUtils.HeightmapPatternMixerShader = {
 };
 
 /**
+ * Returns the array provided coordinates to an {x, y, z} object.
+ *
+ * @param {Array} array Array with the point coordinates.
+ * @returns {Object} The converted object in the {x, y, z} format.
+ */
+ripe.CsrUtils.toXYZObject = function(array) {
+    const coordinates = {};
+    if (!array) return coordinates;
+    if (array[0]) coordinates.x = array[0];
+    if (array[1]) coordinates.x = array[1];
+    if (array[2]) coordinates.x = array[2];
+    return coordinates;
+};
+
+/**
  * Returns a value with a specific precision. Default is precision 6.
  *
  * @param {Number} value Number to be formatted.
