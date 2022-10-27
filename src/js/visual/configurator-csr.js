@@ -1109,9 +1109,16 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
 ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = {
-        outputEncoding: rendererOpts.outputEncoding !== undefined ? rendererOpts.outputEncoding : window.THREE.sRGBEncoding,
-        toneMapping: rendererOpts.toneMapping !== undefined ? rendererOpts.toneMapping : window.THREE.ACESFilmicToneMapping,
-        toneMappingExposure: rendererOpts.toneMappingExposure !== undefined ? rendererOpts.toneMappingExposure : 1
+        outputEncoding:
+            rendererOpts.outputEncoding !== undefined
+                ? rendererOpts.outputEncoding
+                : window.THREE.sRGBEncoding,
+        toneMapping:
+            rendererOpts.toneMapping !== undefined
+                ? rendererOpts.toneMapping
+                : window.THREE.ACESFilmicToneMapping,
+        toneMappingExposure:
+            rendererOpts.toneMappingExposure !== undefined ? rendererOpts.toneMappingExposure : 1
     };
     this.useDracoLoader = options.useDracoLoader !== undefined ? options.useDracoLoader : true;
     const cameraOpts = options.cameraOptions || {};
@@ -1452,15 +1459,17 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
             // unpacks scene camera options
             if (config3d.scene.camera) {
-                cameraOptions.camera = {
-                    position: ripe.CsrUtils.toXYZObject(config3d.scene.camera.position),
-                    rotation: ripe.CsrUtils.toXYZObject(config3d.scene.camera.rotation),
-                    fov: config3d.scene.camera.fov,
-                    filmGauge: config3d.scene.camera.film_gauge,
-                    aspect: config3d.scene.camera.aspect,
-                    near: config3d.scene.camera.near,
-                    far: config3d.scene.camera.far
-                };
+                cameraOptions.position = config3d.scene.camera.position
+                    ? ripe.CsrUtils.toXYZObject(config3d.scene.camera.position)
+                    : undefined;
+                cameraOptions.rotation = config3d.scene.camera.rotation
+                    ? ripe.CsrUtils.toXYZObject(config3d.scene.camera.rotation)
+                    : undefined;
+                cameraOptions.fov = config3d.scene.camera.fov;
+                cameraOptions.filmGauge = config3d.scene.camera.film_gauge;
+                cameraOptions.aspect = config3d.scene.camera.aspect;
+                cameraOptions.near = config3d.scene.camera.near;
+                cameraOptions.far = config3d.scene.camera.far;
             }
             if (config3d.scene.camera_look_at) {
                 cameraOptions.lookAt = ripe.CsrUtils.toXYZObject(config3d.scene.camera_look_at);
