@@ -95,8 +95,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // CSR variables
     this.rendererOptions = null;
     this.useDracoLoader = null;
-    this.dracoLoaderDecoderPath = null;
-    this.dracoLoaderDecoderFallbackPath = null;
     this.cameraOptions = null;
     this.zoomOptions = null;
     this.enabledInitials = null;
@@ -1116,11 +1114,6 @@ ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
         toneMappingExposure: rendererOpts.toneMappingExposure !== undefined ? rendererOpts.toneMappingExposure : 1
     };
     this.useDracoLoader = options.useDracoLoader !== undefined ? options.useDracoLoader : true;
-    this.dracoLoaderDecoderPath =
-        options.dracoLoaderDecoderPath || "https://www.gstatic.com/draco/v1/decoders/";
-    this.dracoLoaderDecoderFallbackPath =
-        options.dracoLoaderDecoderFallbackPath ||
-        "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
     const cameraOpts = options.cameraOptions || {};
     this.cameraOptions = {
         fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 24.678,
