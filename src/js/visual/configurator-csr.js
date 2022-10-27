@@ -707,6 +707,10 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._initScene = function() {
+    // updates renderer options
+    this.renderer.toneMapping = this.rendererOptions.toneMapping;
+    this.renderer.toneMappingExposure = this.rendererOptions.toneMappingExposure;
+
     // creates empty scene
     this.scene = new window.THREE.Scene();
 
@@ -1107,10 +1111,9 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
 ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
     const rendererOpts = options.rendererOptions || {};
     this.rendererOptions = {
-        outputEncoding:
-            rendererOpts.outputEncoding !== undefined
-                ? rendererOpts.outputEncoding
-                : window.THREE.sRGBEncoding
+        outputEncoding: rendererOpts.outputEncoding !== undefined ? rendererOpts.outputEncoding : window.THREE.sRGBEncoding,
+        toneMapping: rendererOpts.toneMapping !== undefined ? rendererOpts.toneMapping : window.THREE.ACESFilmicToneMapping,
+        toneMappingExposure: rendererOpts.toneMappingExposure !== undefined ? rendererOpts.toneMappingExposure : 1
     };
     this.useDracoLoader = options.useDracoLoader !== undefined ? options.useDracoLoader : true;
     this.dracoLoaderDecoderPath =
