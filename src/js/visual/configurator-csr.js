@@ -1494,6 +1494,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             : undefined;
         initialsOptions.scale = initials3d.scale;
 
+        // unpacks initials text options
         const textOptions = {};
         textOptions.font = initials.font_family;
         textOptions.fontSize = initials3d.font_size;
@@ -1501,6 +1502,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         textOptions.displacementMapTextBlur = initials3d.text_displacement_blur;
         textOptions.normalMapBlurIntensity = initials3d.text_normal_map_blur;
 
+        // unpacks initials material options
         const materialOptions = {};
         materialOptions.color = initials3d.material_color
             ? `#${initials3d.material_color}`
@@ -1514,6 +1516,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         materialOptions.metalness = initials3d.material_metalness;
         materialOptions.roughness = initials3d.material_roughness;
 
+        // unpacks initials mesh options
         const meshOptions = {};
         meshOptions.widthSegments = initials3d.mesh_width_segments;
         meshOptions.heightSegments = initials3d.mesh_height_segments;
