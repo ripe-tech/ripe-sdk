@@ -128,6 +128,29 @@ ripe.CsrUtils.toXYZObject = function(array) {
 };
 
 /**
+ * Converts a tone mapping key to the respective tone mapping value.
+ *
+ * @param {String} key Key that will match a tone mapping value.
+ * @returns {Number} The THREE Tone Mapping value for the specified tone mapping type.
+ */
+ripe.CsrUtils.toToneMappingValue = function(key) {
+    switch (key) {
+        case "none":
+            return window.THREE.NoToneMapping;
+        case "aces_filmic":
+            return window.THREE.ACESFilmicToneMapping;
+        case "linear":
+            return window.THREE.LinearToneMapping;
+        case "reinhard":
+            return window.THREE.ReinhardToneMapping;
+        case "cineon":
+            return window.THREE.CineonToneMapping;
+        default:
+            throw new Error(`Invalid tone mapping key: "${key}"`);
+    }
+};
+
+/**
  * Returns a value with a specific precision. Default is precision 6.
  *
  * @param {Number} value Number to be formatted.
