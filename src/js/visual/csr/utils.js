@@ -128,6 +128,17 @@ ripe.CsrUtils.toXYZObject = function(array) {
 };
 
 /**
+ * Converts an {x, y, z} object or [x, y, z] array to a THREE.Vector3 vector.
+ *
+ * @param {Object|Array} value The coordinates to be converted.
+ * @returns {THREE.Vector3} The converted THREE.Vector3 coordinate.
+ */
+ripe.CsrUtils.toVector3 = function(value) {
+    const coordinates = Array.isArray(value) ? this.toXYZObject(value) : value;
+    return new window.THREE.Vector3(coordinates.x, coordinates.y, coordinates.z);
+};
+
+/**
  * Converts a tone mapping key to the respective tone mapping value.
  *
  * @param {String} key Key that will match a tone mapping value.
