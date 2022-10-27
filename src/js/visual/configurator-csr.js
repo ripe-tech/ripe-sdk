@@ -828,15 +828,12 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
     }
 
     // applies the mesh transformations
-    const scale = { ...this.initialsOptions.scale };
-    if (scale.x !== undefined) scale.x = scale.x * this.INITIALS_SCALE_MULTIPLIER;
-    if (scale.y !== undefined) scale.y = scale.y * this.INITIALS_SCALE_MULTIPLIER;
-    if (scale.z !== undefined) scale.z = scale.z * this.INITIALS_SCALE_MULTIPLIER;
+    const scale = this.initialsOptions.scale * this.INITIALS_SCALE_MULTIPLIER;
     ripe.CsrUtils.applyTransform(
         this.initialsRefs.mesh,
         this.initialsOptions.position,
         this.initialsOptions.rotation,
-        scale
+        { x: scale, y: scale, z: scale }
     );
 
     // trigger rerender to clear the initials
@@ -1153,7 +1150,7 @@ ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
             initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
         rotation:
             initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
-        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
+        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : 1
     };
 };
 
