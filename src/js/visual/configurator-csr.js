@@ -1441,7 +1441,9 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         const zoomOptions = {};
         if (config3d.scene) {
             // unpacks renderer options
-            rendererOptions.toneMapping = config3d.scene.tone_mapping;
+            rendererOptions.toneMapping = ripe.CsrUtils.toToneMappingValue(
+                config3d.scene.tone_mapping
+            );
             rendererOptions.toneMappingExposure = config3d.scene.tone_mapping_exposure;
 
             // unpacks scene zoom options
@@ -1465,9 +1467,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
                 };
             }
             if (config3d.scene.camera_look_at) {
-                cameraOptions.cameraLookAt = ripe.CsrUtils.toXYZObject(
-                    config3d.scene.camera_look_at
-                );
+                cameraOptions.lookAt = ripe.CsrUtils.toXYZObject(config3d.scene.camera_look_at);
             }
         }
 
@@ -1481,8 +1481,12 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         initialsOptions.height = initials3d.height;
         const points = initials3d.points || [];
         initialsOptions.points = points.map(p => ripe.CsrUtils.toXYZObject(p));
-        initialsOptions.position = ripe.CsrUtils.toXYZObject(initials3d.position);
-        initialsOptions.rotation = ripe.CsrUtils.toXYZObject(initials3d.rotation);
+        initialsOptions.position = initials3d.position
+            ? ripe.CsrUtils.toXYZObject(initials3d.position)
+            : undefined;
+        initialsOptions.rotation = initials3d.rotation
+            ? ripe.CsrUtils.toXYZObject(initials3d.rotation)
+            : undefined;
         initialsOptions.scale = initials3d.scale;
 
         const textOptions = {};
@@ -1493,12 +1497,14 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         textOptions.normalMapBlurIntensity = initials3d.text_normal_map_blur;
 
         const materialOptions = {};
-        materialOptions.color = initials3d.material_color ? `#${initials3d.material_color}` : null;
+        materialOptions.color = initials3d.material_color
+            ? `#${initials3d.material_color}`
+            : undefined;
         materialOptions.displacementScale = initials3d.material_displacement_scale;
         materialOptions.displacementBias = initials3d.material_displacement_bias;
         materialOptions.emissive = initials3d.material_emissive_color
             ? `#${initials3d.material_emissive_color}`
-            : null;
+            : undefined;
         materialOptions.emissiveIntensity = initials3d.material_emissive_intensity;
         materialOptions.metalness = initials3d.material_metalness;
         materialOptions.roughness = initials3d.material_roughness;
