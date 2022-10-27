@@ -1441,7 +1441,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         if (config3d.scene) {
             // unpacks renderer options
             rendererOptions.toneMapping = config3d.scene.tone_mapping;
-            rendererOptions.toneMappingExposure = config3d.scene.tone_mapping;
+            rendererOptions.toneMappingExposure = config3d.scene.tone_mapping_exposure;
 
             // unpacks scene zoom options
             if (config3d.scene.zoom) {
@@ -1493,8 +1493,8 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
         const materialOptions = {};
         materialOptions.color = initials3d.material_color ? `#${initials3d.material_color}` : null;
-        materialOptions.displacementScale = materialOptions.material_displacement_scale;
-        materialOptions.displacementBias = materialOptions.material_displacement_bias;
+        materialOptions.displacementScale = initials3d.material_displacement_scale;
+        materialOptions.displacementBias = initials3d.material_displacement_bias;
         materialOptions.emissive = initials3d.material_emissive_color
             ? `#${initials3d.material_emissive_color}`
             : null;

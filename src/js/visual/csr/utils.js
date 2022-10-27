@@ -122,8 +122,8 @@ ripe.CsrUtils.toXYZObject = function(array) {
     const coordinates = {};
     if (!array) return coordinates;
     if (array[0]) coordinates.x = array[0];
-    if (array[1]) coordinates.x = array[1];
-    if (array[2]) coordinates.x = array[2];
+    if (array[1]) coordinates.y = array[1];
+    if (array[2]) coordinates.z = array[2];
     return coordinates;
 };
 
