@@ -1070,6 +1070,10 @@ ripe.ConfiguratorCsr.prototype._initCsr = function() {
     this.renderer.setSize(size.width, size.height);
     this.renderer.setAnimationLoop(() => this._onAnimationLoop(this));
 
+    // applies tone mapping
+    this.renderer.toneMapping = window.THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1;
+
     const renderer = this.element.querySelector(".renderer");
     renderer.appendChild(this.renderer.domElement);
 
