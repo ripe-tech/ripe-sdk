@@ -821,7 +821,8 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
 
     // applies the mesh reference points if available
     if (this.initialsOptions.points && this.initialsOptions.points.length > 0) {
-        this.initialsRefs.renderedInitials.setPoints(this.initialsOptions.points);
+        const vec3Points = this.initialsOptions.points.map(p => ripe.CsrUtils.toVector3(p));
+        this.initialsRefs.renderedInitials.setPoints(vec3Points);
     }
 
     // applies the mesh transformations
