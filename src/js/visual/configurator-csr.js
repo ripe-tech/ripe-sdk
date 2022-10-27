@@ -823,7 +823,13 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
 
     // applies the mesh reference points if available
     if (this.initialsOptions.points && this.initialsOptions.points.length > 0) {
-        const vec3Points = this.initialsOptions.points.map(p => ripe.CsrUtils.toVector3(p));
+        const vec3Points = this.initialsOptions.points.map(point =>
+            ripe.CsrUtils.toVector3({
+                x: point.x / this.INITIALS_SCALE_MULTIPLIER,
+                y: point.y / this.INITIALS_SCALE_MULTIPLIER,
+                z: point.z / this.INITIALS_SCALE_MULTIPLIER
+            })
+        );
         this.initialsRefs.renderedInitials.setPoints(vec3Points);
     }
 
@@ -964,15 +970,12 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         }
 
         // adjust object transforms
+        const scale = this.initialsOptions.scale * this.INITIALS_SCALE_MULTIPLIER;
         ripe.CsrUtils.applyTransform(
             this.debugRefs.renderedInitials.group,
             this.initialsOptions.position,
             this.initialsOptions.rotation,
-            {
-                x: this.initialsOptions.scale.x * this.INITIALS_SCALE_MULTIPLIER,
-                y: this.initialsOptions.scale.y * this.INITIALS_SCALE_MULTIPLIER,
-                z: this.initialsOptions.scale.z * this.INITIALS_SCALE_MULTIPLIER
-            }
+            { x: scale, y: scale, z: scale }
         );
 
         this.modelGroup.add(this.debugRefs.renderedInitials.group);
