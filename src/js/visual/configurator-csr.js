@@ -592,6 +592,7 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
 ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf") {
     switch (format) {
         case "gltf":
+        case "glb":
             return await ripe.CsrUtils.loadGLTF(path, this.useDracoLoader);
         case "fbx":
             return await ripe.CsrUtils.loadFBX(path);
