@@ -173,6 +173,55 @@ ripe.CsrUtils.toPrecision = function(value, precision = 6) {
 };
 
 /**
+ * Returns the array provided coordinates to an {x, y, z} object.
+ *
+ * @param {Array} array Array with the point coordinates.
+ * @returns {Object} The converted object in the {x, y, z} format.
+ */
+ripe.CsrUtils.toXYZObject = function(array) {
+    const coordinates = {};
+    if (!array) return coordinates;
+    if (array[0] !== undefined) coordinates.x = array[0];
+    if (array[1] !== undefined) coordinates.y = array[1];
+    if (array[2] !== undefined) coordinates.z = array[2];
+    return coordinates;
+};
+
+/**
+ * Converts an {x, y, z} object or [x, y, z] array to a THREE.Vector3 vector.
+ *
+ * @param {Object|Array} value The coordinates to be converted.
+ * @returns {THREE.Vector3} The converted THREE.Vector3 coordinate.
+ */
+ripe.CsrUtils.toVector3 = function(value) {
+    const coordinates = Array.isArray(value) ? this.toXYZObject(value) : value;
+    return new window.THREE.Vector3(coordinates.x, coordinates.y, coordinates.z);
+};
+
+/**
+ * Converts a tone mapping key to the respective tone mapping value.
+ *
+ * @param {String} key Key that will match a tone mapping value.
+ * @returns {Number} The THREE Tone Mapping value for the specified tone mapping type.
+ */
+ripe.CsrUtils.toToneMappingValue = function(key) {
+    switch (key) {
+        case "none":
+            return window.THREE.NoToneMapping;
+        case "aces_filmic":
+            return window.THREE.ACESFilmicToneMapping;
+        case "linear":
+            return window.THREE.LinearToneMapping;
+        case "reinhard":
+            return window.THREE.ReinhardToneMapping;
+        case "cineon":
+            return window.THREE.CineonToneMapping;
+        default:
+            throw new Error(`Invalid tone mapping key: "${key}"`);
+    }
+};
+
+/**
  * Normalizes a THREE.Object3D rotation by setting its axis only with positive
  * values ranging from 0 to 2*PI.
  *
