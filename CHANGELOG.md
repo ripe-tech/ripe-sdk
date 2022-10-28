@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `test-coverage` npm script
 * Add `loadMesh` method to utils - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Add tone mapping support to CSR - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add support for `.glb` in `_loadMesh` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Setup `ConfiguratorCsr` based on the config - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
