@@ -1080,7 +1080,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = function() {
     const renderer = this.element.querySelector(".renderer");
     renderer.appendChild(this.renderer.domElement);
 
-    // inits the clock
+    // internal clock initialization
     this.clock = new window.THREE.Clock();
 };
 
