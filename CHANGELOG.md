@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add tone mapping support to CSR - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Add support for `.glb` in `_loadMesh` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Add `toXYZObject`, `toVector3` and `toToneMappingValue` utils - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Increase number of curve types supported by `CsrRenderedInitials` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
 
