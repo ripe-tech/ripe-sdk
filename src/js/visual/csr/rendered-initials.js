@@ -75,6 +75,11 @@ ripe.CsrRenderedInitials = function(
     };
 
     // unpacks the CSR Initials Renderer options
+    const curveOpts = options.curveOptions || {};
+    this.curveOptions = {
+        type: curveOpts.type !== undefined ? curveOpts.type : "centripetal",
+        tension: curveOpts.tension !== undefined ? curveOpts.tension : 0.5
+    };
     const textOpts = options.textOptions || {};
     this.textOptions = {
         font: textOpts.font !== undefined ? textOpts.font : "Arial",
@@ -512,7 +517,12 @@ ripe.CsrRenderedInitials.prototype._buildGeometry = function() {
  */
 ripe.CsrRenderedInitials.prototype._morphPlaneGeometry = function(geometry, points) {
     // creates a curve based on the reference points
-    const curve = new window.THREE.CatmullRomCurve3(points, false, "centripetal");
+    const curve = new window.THREE.CatmullRomCurve3(
+        points,
+        false,
+        this.curveOptions.type,
+        this.curveOptions.tension
+    );
 
     // calculates the curve width
     const curveWidth = Math.round(curve.getLength());
