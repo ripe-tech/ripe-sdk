@@ -941,7 +941,8 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
                 const curve = new window.THREE.CatmullRomCurve3(
                     this.initialsRefs.renderedInitials.points,
                     false,
-                    "centripetal"
+                    this.initialsRefs.renderedInitials.curveOptions.type,
+                    this.initialsRefs.renderedInitials.curveOptions.tension
                 );
                 const pointsNum = 50;
                 const linePoints = curve.getPoints(pointsNum);
