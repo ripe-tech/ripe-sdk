@@ -1069,18 +1069,20 @@ ripe.ConfiguratorPrc.prototype._populateBuffers = function() {
     // nature of execution) returns the control flow immediately
     if (!this.element) return;
 
-    const framesBuffer = this.element.getElementsByClassName("frames-buffer");
-    const masksBuffer = this.element.getElementsByClassName("masks-buffer");
     let buffer = null;
-
+    
+    const framesBuffer = this.element.getElementsByClassName("frames-buffer");
     for (let index = 0; index < framesBuffer.length; index++) {
         buffer = framesBuffer[index];
         this._populateBuffer(buffer);
     }
-
-    for (let index = 0; index < masksBuffer.length; index++) {
-        buffer = masksBuffer[index];
-        this._populateBuffer(buffer);
+    
+    if (this.useMasks) {
+        const masksBuffer = this.element.getElementsByClassName("masks-buffer");
+        for (let index = 0; index < masksBuffer.length; index++) {
+            buffer = masksBuffer[index];
+            this._populateBuffer(buffer);
+        }
     }
 };
 
@@ -1230,23 +1232,25 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     const animate = options.animate;
     const duration = options.duration;
     const framesBuffer = this.element.querySelector(".frames-buffer");
-    const masksBuffer = this.element.querySelector(".masks-buffer");
     const area = this.element.querySelector(".area");
     let image = framesBuffer.querySelector(`img[data-frame='${String(frame)}']`);
     const front = area.querySelector(`img[data-frame='${String(frame)}']`);
-    const maskImage = masksBuffer.querySelector(`img[data-frame='${String(frame)}']`);
     image = image || front;
+    
+    // triggers the async loading of the "master" mask for the current
+    // frame, this should imply some level of cache usage
+    if (this.useMasks) {
+        const masksBuffer = this.element.querySelector(".masks-buffer");
+        const maskImage = masksBuffer.querySelector(`img[data-frame='${String(frame)}']`);
+        this._loadMask(maskImage, view, position, options);
+    }
 
     // in case there's no images for the frames that are meant
     // to be loaded, then throws an error indicating that it's
     // not possible to load the requested frame
-    if (image === null || maskImage === null) {
+    if (image === null) {
         throw new RangeError("Frame " + frame + " is not supported");
     }
-
-    // triggers the async loading of the "master" mask for the current
-    // frame, this should imply some level of cache usage
-    this._loadMask(maskImage, view, position, options);
 
     // apply pixel ratio to image dimensions so that the image obtained
     // reflects the target pixel density
