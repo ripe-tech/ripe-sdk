@@ -399,30 +399,35 @@ ripe.ConfiguratorPrc.prototype.resize = async function(size, width, height) {
     }
 
     const area = this.element.querySelector(".area");
-    const frontMask = this.element.querySelector(".front-mask");
     const back = this.element.querySelector(".back");
-    const mask = this.element.querySelector(".mask");
     area.width = width * this.pixelRatio;
     area.height = height * this.pixelRatio;
     area.style.width = width + "px";
     area.style.height = height + "px";
-    frontMask.width = width;
-    frontMask.height = height;
-    frontMask.style.width = width + "px";
-    frontMask.style.height = height + "px";
-    frontMask.style.marginLeft = `-${String(width)}px`;
     back.width = width * this.pixelRatio;
     back.height = height * this.pixelRatio;
     back.style.width = width + "px";
     back.style.height = height + "px";
     back.style.marginLeft = `-${String(width)}px`;
-    mask.width = width;
-    mask.height = height;
-    mask.style.width = width + "px";
-    mask.style.height = height + "px";
     this.currentSize = size;
     this.currentWidth = width;
     this.currentHeight = height;
+
+    if (this.useMasks) {
+        const frontMask = this.element.querySelector(".front-mask");
+        frontMask.width = width;
+        frontMask.height = height;
+        frontMask.style.width = width + "px";
+        frontMask.style.height = height + "px";
+        frontMask.style.marginLeft = `-${String(width)}px`;
+
+        const mask = this.element.querySelector(".mask");
+        mask.width = width;
+        mask.height = height;
+        mask.style.width = width + "px";
+        mask.style.height = height + "px";
+    }
+
     await this.update(
         {},
         {
@@ -997,11 +1002,6 @@ ripe.ConfiguratorPrc.prototype._initLayout = function() {
     context.globalCompositeOperation = "multiply";
     this.element.appendChild(area);
 
-    // adds the front mask element to the element,
-    // this will be used to highlight parts
-    const frontMask = ripe.createElement("img", "front-mask");
-    this.element.appendChild(frontMask);
-
     // creates the back canvas and adds it to the element,
     // placing it on top of the area canvas
     const back = ripe.createElement("canvas", "back");
@@ -1018,15 +1018,21 @@ ripe.ConfiguratorPrc.prototype._initLayout = function() {
     // temporarily store the images of the product's frames
     const framesBuffer = ripe.createElement("div", "frames-buffer");
 
-    // creates a masksBuffer element that will be used to store the continuous
-    // mask images to be used during highlight and select operation
-    const masksBuffer = ripe.createElement("div", "masks-buffer");
+    if (this.useMasks) {
+        // adds the front mask element to the element,
+        // this will be used to highlight parts
+        const frontMask = ripe.createElement("img", "front-mask");
+        this.element.appendChild(frontMask);
 
-    // adds both buffer elements (frames and masks) to the base elements
-    // they are going to be used as placeholders for the "img" elements
-    // that are going to be loaded with the images
+        // creates a masksBuffer element that will be used to store the continuous
+        // mask images to be used during highlight and select operation
+        const masksBuffer = ripe.createElement("div", "masks-buffer");
+        this.element.appendChild(masksBuffer);
+    }
+
+    // adds the frames buffer to the base elements to be used as placeholders 
+    // for the "img" elements that are going to be loaded with the images
     this.element.appendChild(framesBuffer);
-    this.element.appendChild(masksBuffer);
 
     // set the size of area, frontMask, back and mask
     this.resize();
