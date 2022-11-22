@@ -17,7 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Fixed creation and usage of mask buffers according to the use mask option
+
 ## [2.32.0] - 2022-11-10
 
 ### Added
