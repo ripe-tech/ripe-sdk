@@ -1030,7 +1030,7 @@ ripe.ConfiguratorPrc.prototype._initLayout = function() {
         this.element.appendChild(masksBuffer);
     }
 
-    // adds the frames buffer to the base elements to be used as placeholders 
+    // adds the frames buffer to the base elements to be used as placeholders
     // for the "img" elements that are going to be loaded with the images
     this.element.appendChild(framesBuffer);
 
@@ -1070,13 +1070,13 @@ ripe.ConfiguratorPrc.prototype._populateBuffers = function() {
     if (!this.element) return;
 
     let buffer = null;
-    
+
     const framesBuffer = this.element.getElementsByClassName("frames-buffer");
     for (let index = 0; index < framesBuffer.length; index++) {
         buffer = framesBuffer[index];
         this._populateBuffer(buffer);
     }
-    
+
     if (this.useMasks) {
         const masksBuffer = this.element.getElementsByClassName("masks-buffer");
         for (let index = 0; index < masksBuffer.length; index++) {
@@ -1236,7 +1236,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
     let image = framesBuffer.querySelector(`img[data-frame='${String(frame)}']`);
     const front = area.querySelector(`img[data-frame='${String(frame)}']`);
     image = image || front;
-    
+
     // triggers the async loading of the "master" mask for the current
     // frame, this should imply some level of cache usage
     if (this.useMasks) {
