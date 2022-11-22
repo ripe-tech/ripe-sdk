@@ -855,7 +855,7 @@ ripe.ConfiguratorPrc.prototype.lowlight = function(options) {
     // "no_masks" tag that indicates mask presence, otherwise
     // the usage of masks is controlled by 'useMasks' (defaulting
     // to 'true')
-    const useMasks = this.seMasks === undefined ? !this.owner.hasTag("no_masks") : this.useMasks;
+    const useMasks = this.useMasks === undefined ? !this.owner.hasTag("no_masks") : this.useMasks;
 
     // verifies if masks are meant to be used for the current model
     // and if that's not the case returns immediately
