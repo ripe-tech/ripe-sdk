@@ -1240,7 +1240,7 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
 
     // triggers the async loading of the "master" mask for the current
     // frame, this should imply some level of cache usage
-    this._loadMask(maskImage, view, position, options);
+    if (this.useMasks) this._loadMask(maskImage, view, position, options);
 
     // apply pixel ratio to image dimensions so that the image obtained
     // reflects the target pixel density

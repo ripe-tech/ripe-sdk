@@ -17,7 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* If no masks are to be used, create the mask buffers but don't load them, avoiding network requests - [#446](https://github.com/ripe-tech/ripe-sdk/issues/446)
+
 ## [2.32.0] - 2022-11-10
 
 ### Added
