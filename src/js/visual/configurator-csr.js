@@ -1352,6 +1352,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // TODO delete me
         const specInitials = {
             "3d": {
+                ...(config.initials["3d"] || {}),
                 width: 3000,
                 height: 300,
                 font_size: 280,
