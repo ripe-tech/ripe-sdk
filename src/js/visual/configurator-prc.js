@@ -1238,8 +1238,9 @@ ripe.ConfiguratorPrc.prototype._loadFrame = async function(view, position, optio
         throw new RangeError("Frame " + frame + " is not supported");
     }
 
-    // triggers the async loading of the "master" mask for the current
-    // frame, this should imply some level of cache usage
+    // in case masks are set to be used, triggers the async loading of 
+    // the "master" mask for the current frame, this should imply some level
+    // of cache usage
     if (this.useMasks) this._loadMask(maskImage, view, position, options);
 
     // apply pixel ratio to image dimensions so that the image obtained
