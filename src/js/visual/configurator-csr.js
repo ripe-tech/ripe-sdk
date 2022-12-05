@@ -1445,7 +1445,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         const textOptions = {};
         textOptions.font = initials.font_family;
         textOptions.fontSize = initials3d.font_size;
-        textOptions.lineWidth = initials3d.stoke_width;
+        textOptions.lineWidth = initials3d.stroke_width;
         textOptions.displacementMapTextBlur = initials3d.text_displacement_blur;
         textOptions.normalMapBlurIntensity = initials3d.text_normal_map_blur;
 
