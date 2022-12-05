@@ -1349,61 +1349,6 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
     const _postConfig = async () => {
-        // TODO delete me
-        const specInitials = {
-            "3d": {
-                ...(config.initials["3d"] || {}),
-                width: 3000,
-                height: 300,
-                font_size: 280,
-                stoke_width: 5,
-                text_displacement_blur: 1.5,
-                text_normal_map_blur: 1,
-                points: [
-                    [-1, 0, 0],
-                    [0, 0, -1],
-                    [1, 0, 0]
-                ],
-                position: [0, 0, 0],
-                rotation: [0, 0, 0],
-                scale: 1,
-                material_color: "ffffff",
-                material_metalness: 0,
-                material_roughness: 1,
-                material_emissive_color: "000000",
-                material_emissive_intensity: 1,
-                material_displacement_scale: 25,
-                material_displacement_bias: 0,
-                mesh_width_segments: 1000,
-                mesh_height_segments: 100
-            }
-        };
-        const spec3d = {
-            scene: {
-                environment: "studio_small_2",
-                tone_mapping: "aces_filmic",
-                tone_mapping_exposure: 0.8,
-                camera: {
-                    position: [0, 0, 207],
-                    rotation: [0, 0, 0],
-                    fov: 24.678,
-                    film_gauge: 35,
-                    aspect: 1,
-                    near: 0.1,
-                    far: 10000
-                },
-                camera_look_at: [0, 0, 0],
-                zoom: {
-                    enabled: true,
-                    min: 0.75,
-                    max: 1.5,
-                    sensitivity: 1
-                }
-            }
-        };
-        config.initials = { ...config.initials, ...specInitials };
-        config["3d"] = spec3d;
-
         // loads high poly mesh information by default // TODO improve
         const meshPath = this.owner.getMeshUrl();
         const meshFormat = "glb";
