@@ -2377,6 +2377,7 @@ ripe.Ripe.prototype._getOrderImageURL = function(number, key, options) {
 ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const dku = options.dku === undefined ? null : options.dku;
     const type = options.type === undefined ? null : options.type;
+    const quantity = options.quantity === undefined ? null : options.quantity;
     const brand = options.brand === undefined ? this.brand : options.brand;
     const factory = options.factory === undefined ? null : options.factory;
     const model = options.model === undefined ? this.model : options.model;
@@ -2437,6 +2438,7 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (Object.keys(contents).length > 0) params.contents = JSON.stringify(contents);
     if (dku) params.dku = dku;
     if (type) params.type = type;
+    if (quantity) params.quantity = quantity;
     if (country) params.country = country;
     if (currency) params.currency = currency;
     if (meta) params.meta = meta;
