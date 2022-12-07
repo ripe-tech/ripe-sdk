@@ -1,5 +1,5 @@
 const TEST_TIMEOUT = process.env.TEST_TIMEOUT ? parseInt(process.env.TEST_TIMEOUT) : 60000;
-const TEST_URL = process.env.TEST_URL || "https://sandbox.platforme.com/api/";
+const TEST_URL = process.env.TEST_URL || "https://ripe-core-now.platforme.com/api/";
 const TEST_USERNAME = process.env.TEST_USERNAME || null;
 const TEST_PASSWORD = process.env.TEST_PASSWORD || null;
 const TEST_KEY = process.env.TEST_KEY || null;
