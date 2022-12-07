@@ -1391,9 +1391,9 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         const zoomOptions = {};
         if (config3d.scene) {
             // unpacks renderer options
-            rendererOptions.toneMapping = ripe.CsrUtils.toToneMappingValue(
-                config3d.scene.tone_mapping
-            );
+            rendererOptions.toneMapping = config3d.scene.tone_mapping
+                ? ripe.CsrUtils.toToneMappingValue(config3d.scene.tone_mapping)
+                : undefined;
             rendererOptions.toneMappingExposure = config3d.scene.tone_mapping_exposure;
 
             // unpacks scene zoom options
