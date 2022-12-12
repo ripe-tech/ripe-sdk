@@ -1349,18 +1349,18 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
     const _postConfig = async () => {
-        // loads high poly mesh information by default // TODO improve
+        // loads high poly mesh information by default
         const meshPath = this.owner.getMeshUrl();
         const meshFormat = "glb";
 
-        // loads default environment map // TODO improve
+        // loads default environment map
         const envPath = "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
         const envFormat = "hdr";
 
         // checks if initials are enabled
         const initialsEnabled = this.owner.hasPersonalization();
 
-        // checks if it should load assets used by the initials // TODO improve
+        // checks if it should load assets used by the initials
         let baseTexturePath = null;
         let displacementTexturePath = null;
         if (initialsEnabled) {
