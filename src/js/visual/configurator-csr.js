@@ -1441,6 +1441,11 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             : undefined;
         initialsOptions.scale = initials3d.scale;
 
+        // unpacks initials curve options
+        const curveOptions = {};
+        curveOptions.type = initials3d.curve_type;
+        curveOptions.tension = initials3d.curve_tension;
+
         // unpacks initials text options
         const textOptions = {};
         textOptions.font = initials.font_family;
@@ -1469,6 +1474,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         meshOptions.heightSegments = initials3d.mesh_height_segments;
 
         initialsOptions.options = {
+            curveOptions: curveOptions,
             textOptions: textOptions,
             materialOptions: materialOptions,
             meshOptions: meshOptions
