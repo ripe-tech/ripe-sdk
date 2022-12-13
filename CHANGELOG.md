@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Add `quantity` param to `_importOrder` method - [ripe-pulse/#271](https://github.com/ripe-tech/ripe-pulse/issues/271)
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * If no masks are to be used, create the mask buffers but don't load them, avoiding network requests - [#446](https://github.com/ripe-tech/ripe-sdk/issues/446)
+
+## [2.33.0] - 2022-12-13
+
+### Added
+
+* Add `quantity` param to `_importOrder` method - [ripe-pulse/#271](https://github.com/ripe-tech/ripe-pulse/issues/271)
 
 ## [2.32.0] - 2022-11-10
 
