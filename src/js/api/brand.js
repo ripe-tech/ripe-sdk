@@ -124,6 +124,48 @@ ripe.Ripe.prototype.getMeshUrl = function(options) {
 };
 
 /**
+ * Returns the URL for the environment file of the 3D scene.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ * @returns {String} The URL of the environment for the 3D scene.
+ */
+ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
+    options = this._getMeshOptions(options);
+    return null;
+};
+
+/**
+ * Returns the URL for the base texture for the initials mesh.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ * @returns {String} The URL of the initials base texture.
+ */
+ripe.Ripe.prototype.getInitials3dBaseTextureUrl = function(options) {
+    options = this._getMeshOptions(options);
+    return null;
+};
+
+/**
+ * Returns the URL for the displacement texture for the initials mesh.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ * @returns {String} The URL of the initials displacement texture.
+ */
+ripe.Ripe.prototype.getInitials3dDisplacementTextureUrl = function(options) {
+    options = this._getMeshOptions(options);
+    return null;
+};
+
+/**
  * Returns the configuration information of a specific brand and model.
  * If no model is provided then returns the information of the owner's current model.
  *
