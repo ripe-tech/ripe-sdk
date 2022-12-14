@@ -1350,7 +1350,8 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
     const _postConfig = async () => {
         // loads high poly mesh information by default
-        const meshPath = this.owner.getMeshUrl();
+        const variant = this.owner.variant || "$base";
+        const meshPath = this.owner.getMeshUrl({ variant: variant });
         const meshFormat = "glb";
 
         // loads default environment map
