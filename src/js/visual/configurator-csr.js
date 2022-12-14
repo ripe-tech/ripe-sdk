@@ -66,6 +66,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.sensitivity = this.options.sensitivity || 40;
     this.verticalThreshold = this.options.verticalThreshold || 15;
     this.duration = this.options.duration || 500;
+    this.awaitPostConfig = this.options.awaitPostConfig || false;
     this.debug = this.options.debug || false;
     const debugOpts = this.options.debugOptions || {};
     const renderedInitialsOpts = debugOpts.renderedInitials || {};
@@ -79,55 +80,6 @@ ripe.ConfiguratorCsr.prototype.init = function() {
             points: renderedInitialsOpts.points !== undefined ? renderedInitialsOpts.points : true
         }
     };
-    const rendererOpts = this.options.rendererOptions || {};
-    this.rendererOptions = {
-        outputEncoding:
-            rendererOpts.outputEncoding !== undefined
-                ? rendererOpts.outputEncoding
-                : window.THREE.sRGBEncoding
-    };
-    this.mayaScenePath = this.options.mayaScenePath || null;
-    this.useDracoLoader =
-        this.options.useDracoLoader !== undefined ? this.options.useDracoLoader : true;
-    this.sceneEnvironmentPath =
-        this.options.sceneEnvironmentPath ||
-        "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
-    const cameraOpts = this.options.cameraOptions || {};
-    this.cameraOptions = {
-        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 24.678,
-        filmGauge: cameraOpts.filmGauge !== undefined ? cameraOpts.filmGauge : null,
-        aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
-        updateAspectOnResize:
-            cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
-        near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
-        far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
-        position: cameraOpts.position !== undefined ? cameraOpts.position : { x: 0, y: 0, z: 207 },
-        rotation: cameraOpts.rotation !== undefined ? cameraOpts.rotation : { x: 0, y: 0, z: 0 },
-        scale: cameraOpts.scale !== undefined ? cameraOpts.scale : { x: 1, y: 1, z: 1 },
-        lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
-    };
-    const zoomOpts = this.options.zoomOptions || {};
-    this.zoomOptions = {
-        enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
-        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
-        min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
-        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
-    };
-    this.enabledInitials = this.options.enabledInitials || false;
-    const initialsOpts = this.options.initialsOptions || {};
-    this.initialsOptions = {
-        width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
-        height: initialsOpts.height !== undefined ? initialsOpts.height : 300,
-        options: initialsOpts.options !== undefined ? initialsOpts.options : {},
-        points: initialsOpts.points !== undefined ? initialsOpts.points : [],
-        position:
-            initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
-        rotation:
-            initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
-        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : { x: 1, y: 1, z: 1 }
-    };
-    this.initialsBaseTexturePath = this.options.initialsBaseTexturePath || null;
-    this.initialsDisplacementTexturePath = this.options.initialsDisplacementTexturePath || null;
 
     // multiplier to adjust the CSR initials mesh scale
     this.INITIALS_SCALE_MULTIPLIER = 0.01;
@@ -141,6 +93,12 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this._pendingOps = [];
 
     // CSR variables
+    this.rendererOptions = null;
+    this.useDracoLoader = null;
+    this.cameraOptions = null;
+    this.zoomOptions = null;
+    this.enabledInitials = null;
+    this.initialsOptions = null;
     this.renderer = null;
     this.camera = null;
     this.scene = null;
@@ -179,10 +137,9 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     // creates the necessary DOM elements and runs the
     // CSR initializer
     this._initLayout();
-    this._initCsr().then(async () => {
-        this.loading = false;
-        await this.flushPending(true);
-    });
+    this._initCsr();
+
+    this._registerConfigHandlers();
 };
 
 /**
@@ -212,6 +169,17 @@ ripe.ConfiguratorCsr.prototype.deinit = async function() {
 ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = true) {
     ripe.Visual.prototype.updateOptions.call(this, options);
 
+    const updateScene = false;
+    let updateRenderedInitials = false;
+    let updateDebug = false;
+
+    // checks if it should trigger specific updates
+    updateRenderedInitials = updateRenderedInitials || updateScene;
+    updateDebug = updateDebug || updateScene;
+    updateDebug = updateDebug || updateRenderedInitials;
+    updateDebug = updateDebug || options.debug !== this.debug;
+
+    // update configurator variables
     this.width = options.width === undefined ? this.width : options.width;
     this.height = options.height === undefined ? this.height : options.height;
     this.size = options.size === undefined ? this.size : options.size;
@@ -225,34 +193,15 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
     this.debug = options.debug === undefined ? this.debug : options.debug;
     const debugOpts = options.debugOptions || {};
     this.debugOptions = { ...this.debugOptions, ...debugOpts };
-    const rendererOpts = options.rendererOptions || {};
-    this.rendererOptions = { ...this.rendererOptions, ...rendererOpts };
-    this.mayaScenePath =
-        options.mayaScenePath === undefined ? this.mayaScenePath : options.mayaScenePath;
-    this.useDracoLoader =
-        options.useDracoLoader === undefined ? this.useDracoLoader : options.useDracoLoader;
-    this.sceneEnvironmentPath =
-        options.sceneEnvironmentPath === undefined
-            ? this.sceneEnvironmentPath
-            : options.sceneEnvironmentPath;
-    const cameraOpts = options.cameraOptions || {};
-    this.cameraOptions = { ...this.cameraOptions, ...cameraOpts };
-    const zoomOpts = options.zoomOptions || {};
-    this.zoomOptions = { ...this.zoomOptions, ...zoomOpts };
-    this.enabledInitials =
-        options.enabledInitials === undefined ? this.enabledInitials : options.enabledInitials;
-    const initialsOpts = this.options.initialsOptions || {};
-    this.initialsOptions = { ...this.initialsOptions, ...initialsOpts };
-    this.initialsBaseTexturePath =
-        options.initialsBaseTexturePath === undefined
-            ? this.initialsBaseTexturePath
-            : options.initialsBaseTexturePath;
-    this.initialsDisplacementTexturePath =
-        options.initialsDisplacementTexturePath === undefined
-            ? this.initialsDisplacementTexturePath
-            : options.initialsDisplacementTexturePath;
 
-    if (update) await this.update();
+    // update the configurator to use the newly applied values
+    if (update) {
+        await this.update(undefined, {
+            updateScene: updateScene,
+            updateRenderedInitials: updateRenderedInitials,
+            updateDebug: updateDebug
+        });
+    }
 };
 
 /**
@@ -270,12 +219,30 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
  * update operation.
  */
 ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
-    const result = true;
-    this.trigger("loaded");
+    this.loading = true;
 
-    // returns the final result of the underlying update execution
-    // to the caller method (may contain the canceled field)
-    return result;
+    const updateScene = Boolean(options.updateScene);
+    const updateRenderedInitials = Boolean(options.updateRenderedInitials);
+    const updateDebug = Boolean(options.updateDebug);
+
+    if (updateScene) {
+        this._deinitScene();
+        this._initScene();
+    }
+
+    if (updateRenderedInitials) {
+        this._deinitCsrRenderedInitials();
+        this._initCsrRenderedInitials();
+    }
+
+    if (updateDebug) {
+        this._deinitDebug();
+        this._initDebug();
+    }
+
+    this.loading = false;
+    this.trigger("ready");
+    return true;
 };
 
 /**
@@ -737,36 +704,30 @@ ripe.ConfiguratorCsr.prototype._initCamera = function() {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initScene = async function() {
+ripe.ConfiguratorCsr.prototype._initScene = function() {
+    // updates renderer options
+    this.renderer.toneMapping = this.rendererOptions.toneMapping;
+    this.renderer.toneMappingExposure = this.rendererOptions.toneMappingExposure;
+
     // creates empty scene
     this.scene = new window.THREE.Scene();
 
-    // inits the scene clock
-    this.clock = new window.THREE.Clock();
+    // gets configurator size information
+    const size = this._configuratorSize();
 
-    // loads maya scene information
-    if (this.mayaScenePath) {
-        const mayaScene = await this._loadMayaScene(this.mayaScenePath);
-        this.cameraOptions = {
-            ...this.cameraOptions,
-            ...mayaScene.camera,
-            lookAt: mayaScene.cameraLookAt
-        };
+    // calculates the camera aspect ratio
+    if (this.cameraOptions.aspect === null) {
+        this.cameraOptions.aspect = size.width / size.height;
     }
 
     // inits camera thats going to be used to view the scene
     this._initCamera();
 
-    // loads scene resources
-    const meshPath = this.owner.getMeshUrl();
-    [this.environmentTexture, this.mesh] = await Promise.all([
-        ripe.CsrUtils.loadEnvironment(this.sceneEnvironmentPath),
-        this._loadMesh(meshPath)
-    ]);
-
     // sets the scene environment
-    this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
-    this.scene.environment = this.environmentTexture;
+    if (this.environmentTexture) {
+        this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
+        this.scene.environment = this.environmentTexture;
+    }
 
     // inits the scene model group
     this.modelGroup = new window.THREE.Group();
@@ -779,12 +740,48 @@ ripe.ConfiguratorCsr.prototype._initScene = async function() {
 };
 
 /**
+ * Cleanups scene.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._deinitScene = function() {
+    if (this.modelGroup) this.modelGroup = null;
+    if (this.scene) this.scene = null;
+    if (this.camera) this.camera = null;
+};
+
+/**
+ * Free resources used by the scene.
+ */
+ripe.ConfiguratorCsr.prototype._unloadSceneResources = function() {
+    if (this.environmentTexture) {
+        this.environmentTexture.dispose();
+        this.environmentTexture = null;
+    }
+
+    if (this.mesh) {
+        if (this.mesh.geometry) this.mesh.geometry.dispose();
+        if (this.mesh.material) this.mesh.material.dispose();
+        if (this.modelGroup) this.modelGroup.remove(this.mesh);
+        this.mesh = null;
+    }
+};
+
+/**
+ * Completely cleanup and destroy the scene.
+ */
+ripe.ConfiguratorCsr.prototype._destroyScene = function() {
+    this._unloadSceneResources();
+    this._deinitScene();
+};
+
+/**
  * Initializes the CSR initials. This means initializing an instance of `CsrRenderedInitials`,
  * and doing it's setup.
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
+ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
     if (!this.enabledInitials) return;
 
     this._registerInitialsHandlers();
@@ -806,16 +803,6 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
         this.initialsOptions.options
     );
 
-    // loads textures
-    [this.initialsRefs.baseTexture, this.initialsRefs.displacementTexture] = await Promise.all([
-        this.initialsBaseTexturePath
-            ? ripe.CsrUtils.loadTexture(this.initialsBaseTexturePath)
-            : null,
-        this.initialsDisplacementTexturePath
-            ? ripe.CsrUtils.loadTexture(this.initialsDisplacementTexturePath)
-            : null
-    ]);
-
     // apply textures to initials
     if (this.initialsRefs.baseTexture) {
         this.initialsRefs.renderedInitials.setBaseTexture(
@@ -836,19 +823,23 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
 
     // applies the mesh reference points if available
     if (this.initialsOptions.points && this.initialsOptions.points.length > 0) {
-        this.initialsRefs.renderedInitials.setPoints(this.initialsOptions.points);
+        const vec3Points = this.initialsOptions.points.map(point =>
+            ripe.CsrUtils.toVector3({
+                x: point.x / this.INITIALS_SCALE_MULTIPLIER,
+                y: point.y / this.INITIALS_SCALE_MULTIPLIER,
+                z: point.z / this.INITIALS_SCALE_MULTIPLIER
+            })
+        );
+        this.initialsRefs.renderedInitials.setPoints(vec3Points);
     }
 
     // applies the mesh transformations
-    const scale = { ...this.initialsOptions.scale };
-    if (scale.x !== undefined) scale.x = scale.x * this.INITIALS_SCALE_MULTIPLIER;
-    if (scale.y !== undefined) scale.y = scale.y * this.INITIALS_SCALE_MULTIPLIER;
-    if (scale.z !== undefined) scale.z = scale.z * this.INITIALS_SCALE_MULTIPLIER;
+    const scale = this.initialsOptions.scale * this.INITIALS_SCALE_MULTIPLIER;
     ripe.CsrUtils.applyTransform(
         this.initialsRefs.mesh,
         this.initialsOptions.position,
         this.initialsOptions.rotation,
-        scale
+        { x: scale, y: scale, z: scale }
     );
 
     // trigger rerender to clear the initials
@@ -856,14 +847,19 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = async function() {
 };
 
 /**
- * Cleanups everything related to the CSR initials.
+ * Cleanups CSR initials.
  *
  * @private
  */
 ripe.ConfiguratorCsr.prototype._deinitCsrRenderedInitials = function() {
     // cleanup handlers
     this._unregisterInitialsHandlers();
+};
 
+/**
+ * Free resources used by the csr initials.
+ */
+ripe.ConfiguratorCsr.prototype._unloadCsrRenderedInitialsResources = function() {
     // cleanup loaded textures
     if (this.initialsRefs.baseTexture) this.initialsRefs.baseTexture.dispose();
     if (this.initialsRefs.displacementTexture) this.initialsRefs.displacementTexture.dispose();
@@ -879,15 +875,20 @@ ripe.ConfiguratorCsr.prototype._deinitCsrRenderedInitials = function() {
 };
 
 /**
+ * Completely cleanup and destroy CSR initials.
+ */
+ripe.ConfiguratorCsr.prototype._destroyInitialsResources = function() {
+    this._unloadCsrRenderedInitialsResources();
+    this._deinitCsrRenderedInitials();
+};
+
+/**
  * Initiates the debug tools.
  *
  * @private
  */
 ripe.ConfiguratorCsr.prototype._initDebug = function() {
     if (!this.debug) return;
-
-    // ensures a clean state
-    this._deinitDebug();
 
     // inits framerate panel
     if (this.debugOptions.framerate) {
@@ -970,15 +971,12 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         }
 
         // adjust object transforms
+        const scale = this.initialsOptions.scale * this.INITIALS_SCALE_MULTIPLIER;
         ripe.CsrUtils.applyTransform(
             this.debugRefs.renderedInitials.group,
             this.initialsOptions.position,
             this.initialsOptions.rotation,
-            {
-                x: this.initialsOptions.scale.x * this.INITIALS_SCALE_MULTIPLIER,
-                y: this.initialsOptions.scale.y * this.INITIALS_SCALE_MULTIPLIER,
-                z: this.initialsOptions.scale.z * this.INITIALS_SCALE_MULTIPLIER
-            }
+            { x: scale, y: scale, z: scale }
         );
 
         this.modelGroup.add(this.debugRefs.renderedInitials.group);
@@ -1045,12 +1043,25 @@ ripe.ConfiguratorCsr.prototype._deinitDebug = function() {
 };
 
 /**
+ * Free debug tools resources.
+ */
+ripe.ConfiguratorCsr.prototype._unloadDebugResources = function() {};
+
+/**
+ * Completely cleanup and destroy debug tools.
+ */
+ripe.ConfiguratorCsr.prototype._destroyDebug = function() {
+    this._unloadDebugResources();
+    this._deinitDebug();
+};
+
+/**
  * Initializes and loads everything needed to run the CSR. This means
  * initializing the renderer, it's camera and it's scene.
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._initCsr = async function() {
+ripe.ConfiguratorCsr.prototype._initCsr = function() {
     if (!this.element) throw new Error("CSR layout elements are not initiated");
 
     // gets configurator size information
@@ -1070,21 +1081,8 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
     const renderer = this.element.querySelector(".renderer");
     renderer.appendChild(this.renderer.domElement);
 
-    // calculates the camera aspect ratio
-    if (this.cameraOptions.aspect === null) {
-        this.cameraOptions.aspect = size.width / size.height;
-    }
-
-    // init scene
-    await this._initScene();
-
-    // init the CSR initials
-    await this._initCsrRenderedInitials();
-
-    // init debug tools
-    this._initDebug();
-
-    this._render();
+    // internal clock initialization
+    this.clock = new window.THREE.Clock();
 };
 
 /**
@@ -1093,32 +1091,71 @@ ripe.ConfiguratorCsr.prototype._initCsr = async function() {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
-    this._deinitDebug();
-    this._deinitCsrRenderedInitials();
-
-    if (this.environmentTexture) {
-        this.environmentTexture.dispose();
-        this.environmentTexture = null;
-    }
-
-    if (this.modelGroup) {
-        if (this.mesh) {
-            if (this.mesh.geometry) this.mesh.geometry.dispose();
-            if (this.mesh.material) this.mesh.material.dispose();
-            this.modelGroup.remove(this.mesh);
-            this.mesh = null;
-        }
-        this.modelGroup = null;
-    }
-
-    if (this.scene) this.scene = null;
+    this._destroyDebug();
+    this._destroyInitialsResources();
+    this._destroyScene();
 
     if (this.renderer) {
         this.renderer.dispose();
         this.renderer = null;
     }
+};
 
-    if (this.camera) this.camera = null;
+/**
+ * Initializes this CSR configurator instance configuration by applying the default
+ * config values.
+ *
+ * @param {Object} options Set of options to override the defaults.
+ */
+ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
+    const rendererOpts = options.rendererOptions || {};
+    this.rendererOptions = {
+        outputEncoding:
+            rendererOpts.outputEncoding !== undefined
+                ? rendererOpts.outputEncoding
+                : window.THREE.sRGBEncoding,
+        toneMapping:
+            rendererOpts.toneMapping !== undefined
+                ? rendererOpts.toneMapping
+                : window.THREE.ACESFilmicToneMapping,
+        toneMappingExposure:
+            rendererOpts.toneMappingExposure !== undefined ? rendererOpts.toneMappingExposure : 1
+    };
+    this.useDracoLoader = options.useDracoLoader !== undefined ? options.useDracoLoader : true;
+    const cameraOpts = options.cameraOptions || {};
+    this.cameraOptions = {
+        fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 24.678,
+        filmGauge: cameraOpts.filmGauge !== undefined ? cameraOpts.filmGauge : null,
+        aspect: cameraOpts.aspect !== undefined ? cameraOpts.aspect : null,
+        updateAspectOnResize:
+            cameraOpts.updateAspectOnResize !== undefined ? cameraOpts.updateAspectOnResize : true,
+        near: cameraOpts.near !== undefined ? cameraOpts.near : 0.1,
+        far: cameraOpts.far !== undefined ? cameraOpts.far : 10000,
+        position: cameraOpts.position !== undefined ? cameraOpts.position : { x: 0, y: 0, z: 207 },
+        rotation: cameraOpts.rotation !== undefined ? cameraOpts.rotation : { x: 0, y: 0, z: 0 },
+        scale: cameraOpts.scale !== undefined ? cameraOpts.scale : { x: 1, y: 1, z: 1 },
+        lookAt: cameraOpts.lookAt !== undefined ? cameraOpts.lookAt : null
+    };
+    const zoomOpts = options.zoomOptions || {};
+    this.zoomOptions = {
+        enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
+        sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
+        min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
+        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
+    };
+    this.enabledInitials = options.enabledInitials || false;
+    const initialsOpts = options.initialsOptions || {};
+    this.initialsOptions = {
+        width: initialsOpts.width !== undefined ? initialsOpts.width : 3000,
+        height: initialsOpts.height !== undefined ? initialsOpts.height : 300,
+        options: initialsOpts.options !== undefined ? initialsOpts.options : {},
+        points: initialsOpts.points !== undefined ? initialsOpts.points : [],
+        position:
+            initialsOpts.position !== undefined ? initialsOpts.position : { x: 0, y: 0, z: 0 },
+        rotation:
+            initialsOpts.rotation !== undefined ? initialsOpts.rotation : { x: 0, y: 0, z: 0 },
+        scale: initialsOpts.scale !== undefined ? initialsOpts.scale : 1
+    };
 };
 
 /**
@@ -1300,6 +1337,184 @@ ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsEx
 /**
  * @ignore
  */
+ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
+    self.loading = true;
+    this._destroyDebug();
+    this._destroyInitialsResources();
+    this._destroyScene();
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
+    const _postConfig = async () => {
+        // loads high poly mesh information by default
+        const meshPath = this.owner.getMeshUrl();
+        const meshFormat = "glb";
+
+        // loads default environment map
+        const envPath = this.owner.get3dSceneEnvironmentUrl();
+        const envFormat = "hdr";
+
+        // checks if initials are enabled
+        const initialsEnabled = this.owner.hasPersonalization();
+
+        // checks if it should load assets used by the initials
+        let baseTexturePath = null;
+        let displacementTexturePath = null;
+        if (initialsEnabled) {
+            baseTexturePath = this.owner.getInitials3dBaseTextureUrl();
+            displacementTexturePath = this.owner.getInitials3dDisplacementTextureUrl();
+        }
+
+        // loads assets
+        [
+            this.mesh,
+            this.environmentTexture,
+            this.initialsRefs.baseTexture,
+            this.initialsRefs.displacementTexture
+        ] = await Promise.all([
+            this._loadMesh(meshPath, meshFormat),
+            envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
+            baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
+            displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null
+        ]);
+
+        // gets the 3d set from the config
+        const config3d = config["3d"] || {};
+
+        // unpacks scene options
+        const rendererOptions = {};
+        const cameraOptions = {};
+        const zoomOptions = {};
+        if (config3d.scene) {
+            // unpacks renderer options
+            rendererOptions.toneMapping = config3d.scene.tone_mapping
+                ? ripe.CsrUtils.toToneMappingValue(config3d.scene.tone_mapping)
+                : undefined;
+            rendererOptions.toneMappingExposure = config3d.scene.tone_mapping_exposure;
+
+            // unpacks scene zoom options
+            if (config3d.scene.zoom) {
+                zoomOptions.enabled = config3d.scene.zoom.enabled;
+                zoomOptions.min = config3d.scene.zoom.min;
+                zoomOptions.max = config3d.scene.zoom.max;
+                zoomOptions.sensitivity = config3d.scene.zoom.sensitivity;
+            }
+
+            // unpacks scene camera options
+            if (config3d.scene.camera) {
+                cameraOptions.position = config3d.scene.camera.position
+                    ? ripe.CsrUtils.toXYZObject(config3d.scene.camera.position)
+                    : undefined;
+                cameraOptions.rotation = config3d.scene.camera.rotation
+                    ? ripe.CsrUtils.toXYZObject(config3d.scene.camera.rotation)
+                    : undefined;
+                cameraOptions.fov = config3d.scene.camera.fov;
+                cameraOptions.filmGauge = config3d.scene.camera.film_gauge;
+                cameraOptions.aspect = config3d.scene.camera.aspect;
+                cameraOptions.near = config3d.scene.camera.near;
+                cameraOptions.far = config3d.scene.camera.far;
+            }
+            if (config3d.scene.camera_look_at) {
+                cameraOptions.lookAt = ripe.CsrUtils.toXYZObject(config3d.scene.camera_look_at);
+            }
+        }
+
+        // gets the initials and initials.3d set from the config
+        const initials = config.initials || {};
+        const initials3d = initials["3d"] || {};
+
+        // unpacks initials options
+        const initialsOptions = {};
+        initialsOptions.width = initials3d.width;
+        initialsOptions.height = initials3d.height;
+        const points = initials3d.points || [];
+        initialsOptions.points = points.map(p => ripe.CsrUtils.toXYZObject(p));
+        initialsOptions.position = initials3d.position
+            ? ripe.CsrUtils.toXYZObject(initials3d.position)
+            : undefined;
+        initialsOptions.rotation = initials3d.rotation
+            ? ripe.CsrUtils.toXYZObject(initials3d.rotation)
+            : undefined;
+        initialsOptions.scale = initials3d.scale;
+
+        // unpacks initials curve options
+        const curveOptions = {};
+        curveOptions.type = initials3d.curve_type;
+        curveOptions.tension = initials3d.curve_tension;
+
+        // unpacks initials text options
+        const textOptions = {};
+        textOptions.font = initials.font_family;
+        textOptions.fontSize = initials3d.font_size;
+        textOptions.lineWidth = initials3d.stroke_width;
+        textOptions.displacementMapTextBlur = initials3d.text_displacement_blur;
+        textOptions.normalMapBlurIntensity = initials3d.text_normal_map_blur;
+
+        // unpacks initials material options
+        const materialOptions = {};
+        materialOptions.color = initials3d.material_color
+            ? `#${initials3d.material_color}`
+            : undefined;
+        materialOptions.displacementScale = initials3d.material_displacement_scale;
+        materialOptions.displacementBias = initials3d.material_displacement_bias;
+        materialOptions.emissive = initials3d.material_emissive_color
+            ? `#${initials3d.material_emissive_color}`
+            : undefined;
+        materialOptions.emissiveIntensity = initials3d.material_emissive_intensity;
+        materialOptions.metalness = initials3d.material_metalness;
+        materialOptions.roughness = initials3d.material_roughness;
+
+        // unpacks initials mesh options
+        const meshOptions = {};
+        meshOptions.widthSegments = initials3d.mesh_width_segments;
+        meshOptions.heightSegments = initials3d.mesh_height_segments;
+
+        initialsOptions.options = {
+            curveOptions: curveOptions,
+            textOptions: textOptions,
+            materialOptions: materialOptions,
+            meshOptions: meshOptions
+        };
+
+        this._initConfigDefaults({
+            rendererOptions: rendererOptions,
+            useDracoLoader: true,
+            cameraOptions: cameraOptions,
+            zoomOptions: zoomOptions,
+            enabledInitials: initialsEnabled,
+            initialsOptions: initialsOptions
+        });
+
+        // init scene
+        this._initScene();
+
+        // init the CSR initials
+        this._initCsrRenderedInitials();
+
+        // init debug tools
+        this._initDebug();
+
+        // renders newly build scene
+        this._render();
+
+        // flushes the complete set of operations that were waiting
+        // for the end of the pre-loading operation, notice that this
+        await this.flushPending(true);
+
+        self.loading = false;
+        this.trigger("ready");
+    };
+
+    // runs synchronously or asynchronously depending on how the CSR configurator was setup
+    this.awaitPostConfig ? await _postConfig() : _postConfig();
+};
+
+/**
+ * @ignore
+ */
 ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
     this._addElementHandler("mousedown", event => this._onMouseDown(this, event));
     this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
@@ -1326,4 +1541,20 @@ ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
 ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
     this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraEvent);
     this.owner && this.owner.unbind("initials", this._onInitialsEvent);
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
+    this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
+    this.owner.bind("post_config", config => this._onPostConfig(this, config));
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
+    this.owner && this.owner.unbind("pre_config", this._onPreConfig);
+    this.owner && this.owner.unbind("post_config", this._onPostConfig);
 };
