@@ -134,7 +134,7 @@ ripe.Ripe.prototype.getMeshUrl = function(options) {
  */
 ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
     options = this._getMeshOptions(options);
-    return null;
+    return "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
 };
 
 /**
