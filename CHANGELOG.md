@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Add `quantity` param to `_importOrder` method - [ripe-pulse/#271](https://github.com/ripe-tech/ripe-pulse/issues/271)
+* Support `curve_type` and `curve_tension` config values - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
 
