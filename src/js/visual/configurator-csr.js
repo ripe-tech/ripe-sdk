@@ -1354,7 +1354,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         const meshFormat = "glb";
 
         // loads default environment map
-        const envPath = "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
+        const envPath = this.owner.get3dSceneEnvironmentUrl();
         const envFormat = "hdr";
 
         // checks if initials are enabled
@@ -1364,9 +1364,8 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         let baseTexturePath = null;
         let displacementTexturePath = null;
         if (initialsEnabled) {
-            baseTexturePath = "https://www.dl.dropboxusercontent.com/s/ycrvwenyfqyo2j9/pattern.jpg";
-            displacementTexturePath =
-                "https://www.dl.dropboxusercontent.com/s/wf8d1nzuizku3dm/height_map_test.jpg";
+            baseTexturePath = this.owner.getInitials3dBaseTextureUrl();
+            displacementTexturePath = this.owner.getInitials3dDisplacementTextureUrl();
         }
 
         // loads assets
