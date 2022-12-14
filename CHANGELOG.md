@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Set CSR mesh url default variant value to `"$base"` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Support `curve_type` and `curve_tension` config values - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Add `get3dSceneEnvironmentUrl`, `getInitials3dBaseTextureUrl` and `getInitials3dDisplacementTextureUrl` methods - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Set CSR mesh url default variant value to `"$base"` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
 
