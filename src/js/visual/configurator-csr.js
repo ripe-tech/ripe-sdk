@@ -111,7 +111,10 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         renderedInitials: null,
         mesh: null,
         baseTexture: null,
-        displacementTexture: null
+        displacementTexture: null,
+        metallicTexture: null,
+        normalTexture: null,
+        roughnessTexture: null
     };
 
     // CSR debug variables
@@ -816,6 +819,24 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
             this.initialsOptions.options.displacementTextureOptions
         );
     }
+    if (this.initialsRefs.metallicTexture) {
+        this.initialsRefs.renderedInitials.setMetallicTexture(
+            this.initialsRefs.metallicTexture,
+            this.initialsOptions.options.metallicTextureOptions
+        );
+    }
+    if (this.initialsRefs.normalTexture) {
+        this.initialsRefs.renderedInitials.setNormalTexture(
+            this.initialsRefs.normalTexture,
+            this.initialsOptions.options.normalTextureOptions
+        );
+    }
+    if (this.initialsRefs.roughnessTexture) {
+        this.initialsRefs.renderedInitials.setRoughnessTexture(
+            this.initialsRefs.roughnessTexture,
+            this.initialsOptions.options.roughnessTextureOptions
+        );
+    }
 
     // uses rendered initials mesh
     this.initialsRefs.mesh = this.initialsRefs.renderedInitials.getMesh();
@@ -863,6 +884,9 @@ ripe.ConfiguratorCsr.prototype._unloadCsrRenderedInitialsResources = function() 
     // cleanup loaded textures
     if (this.initialsRefs.baseTexture) this.initialsRefs.baseTexture.dispose();
     if (this.initialsRefs.displacementTexture) this.initialsRefs.displacementTexture.dispose();
+    if (this.initialsRefs.metallicTexture) this.initialsRefs.metallicTexture.dispose();
+    if (this.initialsRefs.normalTexture) this.initialsRefs.normalTexture.dispose();
+    if (this.initialsRefs.roughnessTexture) this.initialsRefs.roughnessTexture.dispose();
 
     // free all resources used
     if (this.initialsRefs.renderedInitials) this.initialsRefs.renderedInitials.destroy();
@@ -870,7 +894,10 @@ ripe.ConfiguratorCsr.prototype._unloadCsrRenderedInitialsResources = function() 
         renderedInitials: null,
         mesh: null,
         baseTexture: null,
-        displacementTexture: null
+        displacementTexture: null,
+        metallicTexture: null,
+        normalTexture: null,
+        roughnessTexture: null
     };
 };
 
@@ -1364,9 +1391,15 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // checks if it should load assets used by the initials
         let baseTexturePath = null;
         let displacementTexturePath = null;
+        let metallicTexturePath = null;
+        let normalTexturePath = null;
+        let roughnessTexturePath = null;
         if (initialsEnabled) {
             baseTexturePath = this.owner.getInitials3dBaseTextureUrl();
             displacementTexturePath = this.owner.getInitials3dDisplacementTextureUrl();
+            metallicTexturePath = this.owner.getInitials3dMettalicTextureUrl();
+            normalTexturePath = this.owner.getInitials3dNormalTextureUrl();
+            roughnessTexturePath = this.owner.getInitials3dRoughnessTextureUrl();
         }
 
         // loads assets
@@ -1374,12 +1407,18 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             this.mesh,
             this.environmentTexture,
             this.initialsRefs.baseTexture,
-            this.initialsRefs.displacementTexture
+            this.initialsRefs.displacementTexture,
+            this.initialsRefs.metallicTexture,
+            this.initialsRefs.normalTexture,
+            this.initialsRefs.roughnessTexture
         ] = await Promise.all([
             this._loadMesh(meshPath, meshFormat),
             envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
             baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
-            displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null
+            displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null,
+            metallicTexturePath  ? ripe.CsrUtils.loadTexture(metallicTexturePath) : null,
+            normalTexturePath  ? ripe.CsrUtils.loadTexture(normalTexturePath) : null,
+            roughnessTexturePath  ? ripe.CsrUtils.loadTexture(roughnessTexturePath) : null
         ]);
 
         // gets the 3d set from the config
