@@ -808,31 +808,36 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
 
     // apply textures to initials
     if (this.initialsRefs.baseTexture) {
-        this.initialsRefs.renderedInitials.setBaseTexture(
+        this.initialsRefs.renderedInitials.setTexture(
+            "base",
             this.initialsRefs.baseTexture,
             this.initialsOptions.options.baseTextureOptions
         );
     }
     if (this.initialsRefs.displacementTexture) {
-        this.initialsRefs.renderedInitials.setDisplacementTexture(
+        this.initialsRefs.renderedInitials.setTexture(
+            "displacement",
             this.initialsRefs.displacementTexture,
             this.initialsOptions.options.displacementTextureOptions
         );
     }
     if (this.initialsRefs.metallicTexture) {
-        this.initialsRefs.renderedInitials.setMetallicTexture(
+        this.initialsRefs.renderedInitials.setTexture(
+            "metallic",
             this.initialsRefs.metallicTexture,
             this.initialsOptions.options.metallicTextureOptions
         );
     }
     if (this.initialsRefs.normalTexture) {
-        this.initialsRefs.renderedInitials.setNormalTexture(
+        this.initialsRefs.renderedInitials.setTexture(
+            "normal",
             this.initialsRefs.normalTexture,
             this.initialsOptions.options.normalTextureOptions
         );
     }
     if (this.initialsRefs.roughnessTexture) {
-        this.initialsRefs.renderedInitials.setRoughnessTexture(
+        this.initialsRefs.renderedInitials.setTexture(
+            "roughness",
             this.initialsRefs.roughnessTexture,
             this.initialsOptions.options.roughnessTextureOptions
         );
@@ -1397,7 +1402,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         if (initialsEnabled) {
             baseTexturePath = this.owner.getInitials3dBaseTextureUrl();
             displacementTexturePath = this.owner.getInitials3dDisplacementTextureUrl();
-            metallicTexturePath = this.owner.getInitials3dMettalicTextureUrl();
+            metallicTexturePath = this.owner.getInitials3dMetallicTextureUrl();
             normalTexturePath = this.owner.getInitials3dNormalTextureUrl();
             roughnessTexturePath = this.owner.getInitials3dRoughnessTextureUrl();
         }
@@ -1416,9 +1421,9 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
             baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
             displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null,
-            metallicTexturePath  ? ripe.CsrUtils.loadTexture(metallicTexturePath) : null,
-            normalTexturePath  ? ripe.CsrUtils.loadTexture(normalTexturePath) : null,
-            roughnessTexturePath  ? ripe.CsrUtils.loadTexture(roughnessTexturePath) : null
+            metallicTexturePath ? ripe.CsrUtils.loadTexture(metallicTexturePath) : null,
+            normalTexturePath ? ripe.CsrUtils.loadTexture(normalTexturePath) : null,
+            roughnessTexturePath ? ripe.CsrUtils.loadTexture(roughnessTexturePath) : null
         ]);
 
         // gets the 3d set from the config

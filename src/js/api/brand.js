@@ -166,6 +166,48 @@ ripe.Ripe.prototype.getInitials3dDisplacementTextureUrl = function(options) {
 };
 
 /**
+ * Returns the URL for the metallic texture for the initials mesh.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ * @returns {String} The URL of the initials metallic texture.
+ */
+ripe.Ripe.prototype.getInitials3dMetallicTextureUrl = function(options) {
+    options = this._getMeshOptions(options);
+    return null;
+};
+
+/**
+ * Returns the URL for the normal texture for the initials mesh.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ * @returns {String} The URL of the initials normal texture.
+ */
+ripe.Ripe.prototype.getInitials3dNormalTextureUrl = function(options) {
+    options = this._getMeshOptions(options);
+    return null;
+};
+
+/**
+ * Returns the URL for the roughness texture for the initials mesh.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ * @returns {String} The URL of the initials roughness texture.
+ */
+ripe.Ripe.prototype.getInitials3dRoughnessTextureUrl = function(options) {
+    options = this._getMeshOptions(options);
+    return null;
+};
+
+/**
  * Returns the configuration information of a specific brand and model.
  * If no model is provided then returns the information of the owner's current model.
  *
