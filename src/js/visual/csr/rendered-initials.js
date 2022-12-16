@@ -133,7 +133,6 @@ ripe.CsrRenderedInitials = function(
         const key = this._textureOptionsKey(type);
         const textureTypeOptions = options[key] || {};
         this[key] = { ...DEFAULT_TEXTURE_SETTINGS, ...textureTypeOptions };
-        console.log("type", type, "___", "key", key);
     });
 
     // sets the CSR Initials Renderer size
