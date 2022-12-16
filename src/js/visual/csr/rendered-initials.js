@@ -129,13 +129,12 @@ ripe.CsrRenderedInitials = function(
         widthSegments: meshOpts.widthSegments !== undefined ? meshOpts.widthSegments : 1000,
         heightSegments: meshOpts.heightSegments !== undefined ? meshOpts.heightSegments : 100
     };
-    const baseTextureOpts = options.baseTextureOptions || {};
-    this[this._textureOptionsKey("base")] = { ...DEFAULT_TEXTURE_SETTINGS, ...baseTextureOpts };
-    const displacementTextureOpts = options.displacementTextureOptions || {};
-    this[this._textureOptionsKey("displacement")] = {
-        ...DEFAULT_TEXTURE_SETTINGS,
-        ...displacementTextureOpts
-    };
+    SUPPORTED_TEXTURE_TYPES.forEach(type => {
+        const key = this._textureOptionsKey(type);
+        const textureTypeOptions = options[key] || {};
+        this[key] = { ...DEFAULT_TEXTURE_SETTINGS, ...textureTypeOptions };
+        console.log("type", type, "___", "key", key);
+    });
 
     // sets the CSR Initials Renderer size
     this.setSize(width, height);
