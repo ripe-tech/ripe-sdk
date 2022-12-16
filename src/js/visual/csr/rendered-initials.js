@@ -12,6 +12,11 @@ if (
 }
 
 /**
+ * The list of supported texture types.
+ */
+const SUPPORTED_TEXTURE_TYPES = ["base", "displacement", "metallic", "normal", "roughness"];
+
+/**
  * This class encapsulates all logic related to the CSR initials. It provides tools to
  * process and get CSR initials related resources such as textures, materials and 3D
  * objects that can be used to show initials in CSR.
@@ -56,12 +61,18 @@ ripe.CsrRenderedInitials = function(
 
     this.rawTexturesRefs = {
         base: null,
-        displacement: null
+        displacement: null,
+        metallic: null,
+        normal: null,
+        roughness: null
     };
 
     this.cookedTexturesRefs = {
         base: null,
-        displacement: null
+        displacement: null,
+        metallic: null,
+        normal: null,
+        roughness: null
     };
 
     const DEFAULT_TEXTURE_SETTINGS = {
@@ -119,9 +130,12 @@ ripe.CsrRenderedInitials = function(
         heightSegments: meshOpts.heightSegments !== undefined ? meshOpts.heightSegments : 100
     };
     const baseTextureOpts = options.baseTextureOptions || {};
-    this.baseTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...baseTextureOpts };
+    this[this._textureOptionsKey("base")] = { ...DEFAULT_TEXTURE_SETTINGS, ...baseTextureOpts };
     const displacementTextureOpts = options.displacementTextureOptions || {};
-    this.displacementTextureOptions = { ...DEFAULT_TEXTURE_SETTINGS, ...displacementTextureOpts };
+    this[this._textureOptionsKey("displacement")] = {
+        ...DEFAULT_TEXTURE_SETTINGS,
+        ...displacementTextureOpts
+    };
 
     // sets the CSR Initials Renderer size
     this.setSize(width, height);
@@ -222,94 +236,56 @@ ripe.CsrRenderedInitials.prototype.getMesh = function() {
 };
 
 /**
- * Sets the diffuse texture. This texture is the diffuse pattern that is applied to
+ * Sets the texture specified by it's type. The supported types are the following:
+ * - base: This texture is the diffuse pattern that is applied to
  * the initials characters.
- *
- * @param {THREE.Texture} texture The texture to set as the diffuse pattern.
- * @param {Object} options Options to apply to the texture.
- */
-ripe.CsrRenderedInitials.prototype.setBaseTexture = function(texture, options = {}) {
-    this.baseTextureOptions = { ...this.baseTextureOptions, ...options };
-
-    // cleanups resources
-    if (this.rawTexturesRefs.base) this.rawTexturesRefs.base.dispose();
-    if (this.cookedTexturesRefs.base) this.cookedTexturesRefs.base.dispose();
-
-    // saves raw texture clone so it can be reused
-    this.rawTexturesRefs.base = texture.clone();
-    this.rawTexturesRefs.base.needsUpdate = true;
-
-    // applies texture options by precooking the texture
-    this.cookedTexturesRefs.base = this._preCookTexture(
-        this.rawTexturesRefs.base,
-        this.baseTextureOptions
-    );
-};
-
-/**
- * Sets the diffuse texture attributes.
- *
- * @param {Object} options Options to apply to the texture.
- */
-ripe.CsrRenderedInitials.prototype.setBaseTextureOptions = function(options = {}) {
-    if (!this.rawTexturesRefs.base) {
-        throw new Error("Can't apply base texture options, the texture is not set");
-    }
-
-    // update texture options
-    this.baseTextureOptions = { ...this.baseTextureOptions, ...options };
-
-    // cleanups resources then applies the texture options by precooking the texture
-    if (this.cookedTexturesRefs.base) this.cookedTexturesRefs.base.dispose();
-    this.cookedTexturesRefs.base = this._preCookTexture(
-        this.rawTexturesRefs.base,
-        this.baseTextureOptions
-    );
-};
-
-/**
- * Sets the height map texture. This texture is the height map pattern that is applied to
+ * - displacement: This texture is the height map pattern that is applied to
  * the height map texture of the initials characters.
  *
- * @param {THREE.Texture} texture The texture to set as the height map pattern.
+ * @param {String} type The texture type name.
+ * @param {THREE.Texture} texture The texture to set for the specified type.
  * @param {Object} options Options to apply to the texture.
  */
-ripe.CsrRenderedInitials.prototype.setDisplacementTexture = function(texture, options = {}) {
-    this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
+ripe.CsrRenderedInitials.prototype.setTexture = function(type, texture, options = {}) {
+    this._verifyTextureType(type);
 
-    // cleans up resources
-    if (this.rawTexturesRefs.displacement) this.rawTexturesRefs.displacement.dispose();
-    if (this.cookedTexturesRefs.displacement) this.cookedTexturesRefs.displacement.dispose();
+    this[this._textureOptionsKey(type)] = { ...this[this._textureOptionsKey(type)], ...options };
+
+    // cleanups resources
+    if (this.rawTexturesRefs[type]) this.rawTexturesRefs[type].dispose();
+    if (this.cookedTexturesRefs[type]) this.cookedTexturesRefs[type].dispose();
 
     // saves raw texture clone so it can be reused
-    this.rawTexturesRefs.displacement = texture.clone();
-    this.rawTexturesRefs.displacement.needsUpdate = true;
+    this.rawTexturesRefs[type] = texture.clone();
+    this.rawTexturesRefs[type].needsUpdate = true;
 
     // applies texture options by precooking the texture
-    this.cookedTexturesRefs.displacement = this._preCookTexture(
-        this.rawTexturesRefs.displacement,
-        this.displacementTextureOptions
+    this.cookedTexturesRefs[type] = this._preCookTexture(
+        this.rawTexturesRefs[type],
+        this[this._textureOptionsKey(type)]
     );
 };
 
 /**
- * Sets the height map texture attributes.
+ * Sets the texture attributes.
  *
  * @param {Object} options Options to apply to the texture.
+ * @param {String} type The texture type name.
  */
-ripe.CsrRenderedInitials.prototype.setDisplacementTextureOptions = function(options = {}) {
-    if (!this.rawTexturesRefs.displacement) {
-        throw new Error("Can't apply displacement texture options, the texture is not set");
+ripe.CsrRenderedInitials.prototype.setTextureOptions = function(type, options = {}) {
+    this._verifyTextureType(type);
+    if (!this.rawTexturesRefs[type]) {
+        throw new Error(`Can't apply ${type} texture options, the texture is not set`);
     }
 
     // update texture options
-    this.displacementTextureOptions = { ...this.displacementTextureOptions, ...options };
+    this[this._textureOptionsKey(type)] = { ...this[this._textureOptionsKey(type)], ...options };
 
     // cleanups resources then applies the texture options by precooking the texture
-    if (this.cookedTexturesRefs.displacement) this.cookedTexturesRefs.displacement.dispose();
-    this.cookedTexturesRefs.displacement = this._preCookTexture(
-        this.rawTexturesRefs.displacement,
-        this.displacementTextureOptions
+    if (this.cookedTexturesRefs[type]) this.cookedTexturesRefs[type].dispose();
+    this.cookedTexturesRefs[type] = this._preCookTexture(
+        this.rawTexturesRefs[type],
+        this[this._textureOptionsKey(type)]
     );
 };
 
@@ -345,8 +321,7 @@ ripe.CsrRenderedInitials.prototype.updateOptions = function(options = {}) {
     let updateInitials = false;
     let updateMaterial = false;
     let updateMesh = false;
-    let updateBaseTexture = false;
-    let updateDisplacementTexture = false;
+    const updateTextures = [];
 
     if (options.textOptions) {
         this.textOptions = { ...this.textOptions, ...options.textOptions };
@@ -361,25 +336,20 @@ ripe.CsrRenderedInitials.prototype.updateOptions = function(options = {}) {
         this.meshOptions = { ...this.meshOptions, ...options.meshOptions };
         updateMesh = true;
     }
-    if (options.baseTextureOptions) {
-        this.baseTextureOptions = { ...this.baseTextureOptions, ...options.baseTextureOptions };
-        updateBaseTexture = true;
-        updateInitials = true;
-    }
-    if (options.displacementTextureOptions) {
-        this.displacementTextureOptions = {
-            ...this.displacementTextureOptions,
-            ...options.displacementTextureOptions
-        };
-        updateDisplacementTexture = true;
-        updateInitials = true;
-    }
+
+    SUPPORTED_TEXTURE_TYPES.forEach(type => {
+        const key = this._textureOptionsKey(type);
+        if (options[key]) {
+            this[key] = { ...this[key], ...options[key] };
+            updateTextures.push(key);
+            updateInitials = true;
+        }
+    });
 
     // performs update operations. The order is important
-    if (updateBaseTexture) this.setBaseTextureOptions(this.baseTextureOptions);
-    if (updateDisplacementTexture) {
-        this.setDisplacementTextureOptions(this.displacementTextureOptions);
-    }
+    updateTextures.forEach(type => {
+        this.setTextureOptions(type, this[this._textureOptionsKey(type)]);
+    });
     if (updateMaterial) {
         ripe.CsrUtils.applyOptions(this.materialOptions);
         this.material.needsUpdate = true;
@@ -409,6 +379,24 @@ ripe.CsrRenderedInitials.prototype.destroy = function() {
 
     // cleans up the initials mesh
     this._destroyMesh();
+};
+
+/**
+ * Verifies if the type of texture is supported.
+ *
+ * @param {String} type The type of texture.
+ */
+ripe.CsrRenderedInitials.prototype._verifyTextureType = function(type) {
+    const isValid = SUPPORTED_TEXTURE_TYPES.includes(type);
+    if (!isValid) throw new Error(`The texture type "${type}" is not supported`);
+};
+
+/**
+ * Builds the texture options key for the provided texture type.
+ */
+ripe.CsrRenderedInitials.prototype._textureOptionsKey = function(type) {
+    this._verifyTextureType(type);
+    return `${type}TextureOptions`;
 };
 
 /**
