@@ -12,12 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Support `curve_type` and `curve_tension` config values - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Add `get3dSceneEnvironmentUrl`, `getInitials3dBaseTextureUrl` and `getInitials3dDisplacementTextureUrl` methods - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Set CSR mesh url default variant value to `"$base"` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add `getInitials3dMetallicTextureUrl `, `getInitials3dNormalTextureUrl` and `getInitials3dRoughnessTextureUrl` methods - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Support metallic, normal and roughness textures - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
 
 * Use config in CSR - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Change default test timeout to 60 seconds
 * Revert ripe-sdk-demo variant value to `""` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Generalize `CsrRenderedInitials` textures logic - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Fixed
 
