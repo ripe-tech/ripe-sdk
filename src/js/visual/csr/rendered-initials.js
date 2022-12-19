@@ -336,7 +336,6 @@ ripe.CsrRenderedInitials.prototype.updateOptions = function(options = {}) {
         this.meshOptions = { ...this.meshOptions, ...options.meshOptions };
         updateMesh = true;
     }
-
     SUPPORTED_TEXTURE_TYPES.forEach(type => {
         const key = this._textureOptionsKey(type);
         if (options[key]) {
