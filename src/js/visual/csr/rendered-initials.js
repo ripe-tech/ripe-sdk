@@ -235,10 +235,12 @@ ripe.CsrRenderedInitials.prototype.getMesh = function() {
 
 /**
  * Sets the texture specified by it's type. The supported types are the following:
- * - base: This texture is the diffuse pattern that is applied to
- * the initials characters.
- * - displacement: This texture is the height map pattern that is applied to
- * the height map texture of the initials characters.
+ * - base: This texture is the diffuse pattern that is applied to the initials characters.
+ * - displacement: This texture is the height map pattern that is applied to the initials
+ * characters.
+ * - metallic: This texture is the metallic texture that is applied to the initials characters.
+ * - normal: This texture is the normal map pattern that is applied to the initials characters.
+ * - roughness: This texture is the roughness texture that is applied to the initials characters.
  *
  * @param {String} type The texture type name.
  * @param {THREE.Texture} texture The texture to set for the specified type.
