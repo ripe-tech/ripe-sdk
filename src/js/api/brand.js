@@ -133,7 +133,6 @@ ripe.Ripe.prototype.getMeshUrl = function(options) {
  * @returns {String} The URL of the environment for the 3D scene.
  */
 ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
-    options = this._getMeshOptions(options);
     return "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
 };
 
@@ -147,7 +146,6 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
  * @returns {String} The URL of the initials base texture.
  */
 ripe.Ripe.prototype.getInitials3dBaseTextureUrl = function(options) {
-    options = this._getMeshOptions(options);
     return null;
 };
 
@@ -161,7 +159,6 @@ ripe.Ripe.prototype.getInitials3dBaseTextureUrl = function(options) {
  * @returns {String} The URL of the initials displacement texture.
  */
 ripe.Ripe.prototype.getInitials3dDisplacementTextureUrl = function(options) {
-    options = this._getMeshOptions(options);
     return null;
 };
 
@@ -175,7 +172,6 @@ ripe.Ripe.prototype.getInitials3dDisplacementTextureUrl = function(options) {
  * @returns {String} The URL of the initials metallic texture.
  */
 ripe.Ripe.prototype.getInitials3dMetallicTextureUrl = function(options) {
-    options = this._getMeshOptions(options);
     return null;
 };
 
@@ -189,7 +185,6 @@ ripe.Ripe.prototype.getInitials3dMetallicTextureUrl = function(options) {
  * @returns {String} The URL of the initials normal texture.
  */
 ripe.Ripe.prototype.getInitials3dNormalTextureUrl = function(options) {
-    options = this._getMeshOptions(options);
     return null;
 };
 
@@ -203,7 +198,6 @@ ripe.Ripe.prototype.getInitials3dNormalTextureUrl = function(options) {
  * @returns {String} The URL of the initials roughness texture.
  */
 ripe.Ripe.prototype.getInitials3dRoughnessTextureUrl = function(options) {
-    options = this._getMeshOptions(options);
     return null;
 };
 
