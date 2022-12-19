@@ -146,6 +146,7 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
  * @returns {String} The URL of the initials base texture.
  */
 ripe.Ripe.prototype.getInitials3dBaseTextureUrl = function(options) {
+    options = this._getInitials3dOptions(options);
     return null;
 };
 
@@ -159,6 +160,7 @@ ripe.Ripe.prototype.getInitials3dBaseTextureUrl = function(options) {
  * @returns {String} The URL of the initials displacement texture.
  */
 ripe.Ripe.prototype.getInitials3dDisplacementTextureUrl = function(options) {
+    options = this._getInitials3dOptions(options);
     return null;
 };
 
@@ -172,6 +174,7 @@ ripe.Ripe.prototype.getInitials3dDisplacementTextureUrl = function(options) {
  * @returns {String} The URL of the initials metallic texture.
  */
 ripe.Ripe.prototype.getInitials3dMetallicTextureUrl = function(options) {
+    options = this._getInitials3dOptions(options);
     return null;
 };
 
@@ -185,6 +188,7 @@ ripe.Ripe.prototype.getInitials3dMetallicTextureUrl = function(options) {
  * @returns {String} The URL of the initials normal texture.
  */
 ripe.Ripe.prototype.getInitials3dNormalTextureUrl = function(options) {
+    options = this._getInitials3dOptions(options);
     return null;
 };
 
@@ -198,6 +202,7 @@ ripe.Ripe.prototype.getInitials3dNormalTextureUrl = function(options) {
  * @returns {String} The URL of the initials roughness texture.
  */
 ripe.Ripe.prototype.getInitials3dRoughnessTextureUrl = function(options) {
+    options = this._getInitials3dOptions(options);
     return null;
 };
 
@@ -758,6 +763,54 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
         params: params
     });
 };
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getInitials3dOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const url = `${this.url}brands/${brand}/models/${model}`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
+    }
+
+    let baseTexture = null; 
+    let displacementTexture = null;
+    let metallicTexture = null;
+    let normalTexture = null;
+    let roughnessTexture = null;  
+    const config = this.loadedConfig || {};
+    const profiles = config.initials && config.initials.profiles || [];
+    const $profiles = config.initials && config.initials.$profiles || {}; 
+    profiles.forEach(profile => {
+        const values = $profiles[profile] || {};
+        const _3d = values["3d"] || {};
+        baseTexture =  _3d.base_texture;
+        displacementTexture = _3d.displacement_texture;
+        metallicTexture = _3d.metallic_texture;
+        normalTexture = _3d.normal_texture;
+        roughnessTexture = _3d.roughness_texture;
+    });
+    options.baseTexture = options.baseTexture === undefined ? baseTexture : options.baseTexture;
+    options.displacementTexture = options.displacementTexture === undefined ? displacementTexture : options.displacementTexture;
+    options.metallicTexture = options.metallicTexture === undefined ? metallicTexture : options.metallicTexture;
+    options.normalTexture = options.normalTexture === undefined ? normalTexture : options.normalTexture;
+    options.roughnessTexture = options.roughnessTexture === undefined ? roughnessTexture : options.roughnessTexture;    
+
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+}
+
 
 /**
  * @see {link https://docs.platforme.com/#brand-endpoints-config-and-spec}
