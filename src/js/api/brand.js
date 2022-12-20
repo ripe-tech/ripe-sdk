@@ -785,36 +785,41 @@ ripe.Ripe.prototype._getInitials3dOptions = function(options = {}) {
         params.variant = variant;
     }
 
-    let baseTexture = null; 
+    let baseTexture = null;
     let displacementTexture = null;
     let metallicTexture = null;
     let normalTexture = null;
-    let roughnessTexture = null;  
+    let roughnessTexture = null;
     const config = this.loadedConfig || {};
-    const profiles = config.initials && config.initials.profiles || [];
-    const $profiles = config.initials && config.initials.$profiles || {}; 
+    const profiles = (config.initials && config.initials.profiles) || [];
+    const $profiles = (config.initials && config.initials.$profiles) || {};
     profiles.forEach(profile => {
         const values = $profiles[profile] || {};
         const _3d = values["3d"] || {};
-        baseTexture =  _3d.base_texture;
+        baseTexture = _3d.base_texture;
         displacementTexture = _3d.displacement_texture;
         metallicTexture = _3d.metallic_texture;
         normalTexture = _3d.normal_texture;
         roughnessTexture = _3d.roughness_texture;
     });
     options.baseTexture = options.baseTexture === undefined ? baseTexture : options.baseTexture;
-    options.displacementTexture = options.displacementTexture === undefined ? displacementTexture : options.displacementTexture;
-    options.metallicTexture = options.metallicTexture === undefined ? metallicTexture : options.metallicTexture;
-    options.normalTexture = options.normalTexture === undefined ? normalTexture : options.normalTexture;
-    options.roughnessTexture = options.roughnessTexture === undefined ? roughnessTexture : options.roughnessTexture;    
+    options.displacementTexture =
+        options.displacementTexture === undefined
+            ? displacementTexture
+            : options.displacementTexture;
+    options.metallicTexture =
+        options.metallicTexture === undefined ? metallicTexture : options.metallicTexture;
+    options.normalTexture =
+        options.normalTexture === undefined ? normalTexture : options.normalTexture;
+    options.roughnessTexture =
+        options.roughnessTexture === undefined ? roughnessTexture : options.roughnessTexture;
 
     return Object.assign(options, {
         url: url,
         method: "GET",
         params: params
     });
-}
-
+};
 
 /**
  * @see {link https://docs.platforme.com/#brand-endpoints-config-and-spec}
