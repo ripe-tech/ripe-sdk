@@ -147,7 +147,8 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
  */
 ripe.Ripe.prototype.getInitials3dBaseTextureUrl = function(options) {
     options = this._getInitials3dOptions(options);
-    return null;
+    const url = options.url + `/patterns/${options.baseTexture}.png`;
+    return url + "?" + this._buildQuery(options.params);
 };
 
 /**
@@ -161,7 +162,8 @@ ripe.Ripe.prototype.getInitials3dBaseTextureUrl = function(options) {
  */
 ripe.Ripe.prototype.getInitials3dDisplacementTextureUrl = function(options) {
     options = this._getInitials3dOptions(options);
-    return null;
+    const url = options.url + `/displacement/${options.displacementTexture}.png`;
+    return url + "?" + this._buildQuery(options.params);
 };
 
 /**
@@ -175,7 +177,8 @@ ripe.Ripe.prototype.getInitials3dDisplacementTextureUrl = function(options) {
  */
 ripe.Ripe.prototype.getInitials3dMetallicTextureUrl = function(options) {
     options = this._getInitials3dOptions(options);
-    return null;
+    const url = options.url + `/metallic/${options.metallicTexture}.png`;
+    return url + "?" + this._buildQuery(options.params);
 };
 
 /**
@@ -189,7 +192,8 @@ ripe.Ripe.prototype.getInitials3dMetallicTextureUrl = function(options) {
  */
 ripe.Ripe.prototype.getInitials3dNormalTextureUrl = function(options) {
     options = this._getInitials3dOptions(options);
-    return null;
+    const url = options.url + `/normal/${options.normalTexture}.png`;
+    return url + "?" + this._buildQuery(options.params);
 };
 
 /**
@@ -203,7 +207,8 @@ ripe.Ripe.prototype.getInitials3dNormalTextureUrl = function(options) {
  */
 ripe.Ripe.prototype.getInitials3dRoughnessTextureUrl = function(options) {
     options = this._getInitials3dOptions(options);
-    return null;
+    const url = options.url + `/roughness/${options.roughnessTexture}.png`;
+    return url + "?" + this._buildQuery(options.params);
 };
 
 /**
