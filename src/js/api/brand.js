@@ -817,21 +817,26 @@ ripe.Ripe.prototype._getInitials3dOptions = function(options = {}) {
         params.variant = variant;
     }
 
+    const config = this.loadedConfig || {};
+    const initials3dValues = (config.initials && config.initials["3d"]) || {};
+
     let baseTexture = null;
     let displacementTexture = null;
     let metallicTexture = null;
     let normalTexture = null;
     let roughnessTexture = null;
-    const config = this.loadedConfig || {};
     const profiles = (config.initials && config.initials.profiles) || [];
     profiles.forEach(profile => {
-        const values = _getProfileValues(profile, config);
-        const _3d = values["3d"] || {};
-        baseTexture = _3d.base_texture;
-        displacementTexture = _3d.displacement_texture;
-        metallicTexture = _3d.metallic_texture;
-        normalTexture = _3d.normal_texture;
-        roughnessTexture = _3d.roughness_texture;
+        const profileValues = _getProfileValues(profile, config);
+        const profileValues3d = profileValues["3d"] || {};
+
+        const values3d = { ...initials3dValues, ...profileValues3d };
+
+        baseTexture = values3d.base_texture;
+        displacementTexture = values3d.displacement_texture;
+        metallicTexture = values3d.metallic_texture;
+        normalTexture = values3d.normal_texture;
+        roughnessTexture = values3d.roughness_texture;
     });
     options.baseTexture = options.baseTexture === undefined ? baseTexture : options.baseTexture;
     options.displacementTexture =
