@@ -769,6 +769,9 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
     });
 };
 
+/**
+ * @ignore
+ */
 const _getProfileValues = (profile, config) => {
     const $profiles = (config.initials && config.initials.$profiles) || {};
 
