@@ -769,6 +769,35 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
     });
 };
 
+const _getProfileValues = (profile, config) => {
+    const $profiles = (config.initials && config.initials.$profiles) || {};
+
+    // obtains the alias corresponding values
+    const aliases = (config.initials && config.initials.$alias) || {};
+    const aliasProfiles = aliases[profile];
+    if (aliasProfiles) {
+        const aliasProfilesArray = Array.isArray(aliasProfiles) ? aliasProfiles : [aliasProfiles];
+        const aliasValues = aliasProfilesArray.reduce((acc, aliasProfile) => {
+            const profileValues = $profiles[aliasProfile] || {};
+            return {
+                ...acc,
+                ...profileValues,
+                "3d": {
+                    ...(acc["3d"] ? acc["3d"] : {}),
+                    ...(profileValues["3d"] ? profileValues["3d"] : {})
+                }
+            };
+        }, {});
+
+        return aliasValues;
+    }
+
+    // obtains the specified profile values
+    const values = $profiles[profile] || {};
+
+    return values;
+};
+
 /**
  * @ignore
  */
@@ -792,9 +821,8 @@ ripe.Ripe.prototype._getInitials3dOptions = function(options = {}) {
     let roughnessTexture = null;
     const config = this.loadedConfig || {};
     const profiles = (config.initials && config.initials.profiles) || [];
-    const $profiles = (config.initials && config.initials.$profiles) || {};
     profiles.forEach(profile => {
-        const values = $profiles[profile] || {};
+        const values = _getProfileValues(profile, config);
         const _3d = values["3d"] || {};
         baseTexture = _3d.base_texture;
         displacementTexture = _3d.displacement_texture;
