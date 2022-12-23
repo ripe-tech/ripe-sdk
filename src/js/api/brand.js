@@ -780,13 +780,13 @@ const _getProfileValues = (profile, config) => {
     const aliasProfiles = aliases[profile];
     if (aliasProfiles) {
         const aliasProfilesArray = Array.isArray(aliasProfiles) ? aliasProfiles : [aliasProfiles];
-        const aliasValues = aliasProfilesArray.reduce((acc, aliasProfile) => {
+        const aliasValues = aliasProfilesArray.reduce((mergedValues, aliasProfile) => {
             const profileValues = $profiles[aliasProfile] || {};
             return {
-                ...acc,
+                ...mergedValues,
                 ...profileValues,
                 "3d": {
-                    ...(acc["3d"] ? acc["3d"] : {}),
+                    ...(mergedValues["3d"] ? mergedValues["3d"] : {}),
                     ...(profileValues["3d"] ? profileValues["3d"] : {})
                 }
             };
