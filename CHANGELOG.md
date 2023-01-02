@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * If no masks are to be used, create the mask buffers but don't load them, avoiding network requests - [#446](https://github.com/ripe-tech/ripe-sdk/issues/446)
+* Fix CSR initials control points debug boxes being too small - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ## [2.33.0] - 2022-12-13
 
