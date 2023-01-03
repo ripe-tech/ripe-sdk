@@ -957,7 +957,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
 
             // inits reference points
             if (this.debugOptions.renderedInitials.points) {
-                const boxGeometry = new window.THREE.BoxGeometry(50, 50, 50);
+                const boxGeometry = new window.THREE.BoxGeometry(30, 30, 30);
                 const boxMaterial = new window.THREE.MeshBasicMaterial({ color: 0xff0000 });
 
                 for (const pos of this.initialsRefs.renderedInitials.points) {
