@@ -1404,7 +1404,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
         // checks if it should load assets used by the initials
         const fontName = "Test Font"; // TODO Should be equal to the font_family from build
-        const fontUrl = ""; // TODO handle the font issue
+        const fontUrl = "https://www.dl.dropboxusercontent.com/s/5s6gt2wbg2ic1km/DINCondensed-Ripple.ttf"; // TODO handle the font issue
         let baseTexturePath = null;
         let displacementTexturePath = null;
         let metallicTexturePath = null;
