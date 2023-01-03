@@ -550,6 +550,15 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
     };
 };
 
+ripe.ConfiguratorCsr.prototype._loadExternalFont = async function(name, url) {
+    if (!name) throw new Error("Name is required");
+    if (!url) throw new Error("URL is required");
+
+    const font = new FontFace(name, `url(${url})`);
+    await font.load();
+    document.fonts.add(font);
+};
+
 /**
  * Loads a mesh.
  *
@@ -1394,6 +1403,8 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         const initialsEnabled = this.owner.hasPersonalization();
 
         // checks if it should load assets used by the initials
+        const fontName = "Test Font"; // TODO Should be equal to the font_family from build
+        const fontUrl = ""; // TODO handle the font issue
         let baseTexturePath = null;
         let displacementTexturePath = null;
         let metallicTexturePath = null;
@@ -1410,6 +1421,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // loads assets
         [
             this.mesh,
+            ,
             this.environmentTexture,
             this.initialsRefs.baseTexture,
             this.initialsRefs.displacementTexture,
@@ -1418,6 +1430,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             this.initialsRefs.roughnessTexture
         ] = await Promise.all([
             this._loadMesh(meshPath, meshFormat),
+            fontUrl ? this._loadExternalFont(fontName, fontUrl) : null,
             envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
             baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
             displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null,
