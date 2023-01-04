@@ -366,7 +366,7 @@ ripe.Ripe.prototype.createIssueOrder = function(number, issue, options, callback
  * @param {Number} number The number of the order to associate an issue.
  * @param {String} issue The issue name, containing the context of issue.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The contents of the note instance that was created.
+ * @returns {Promise} The contents of the issue instance that was created.
  */
 ripe.Ripe.prototype.createIssueOrderP = function(number, issue, options) {
     return new Promise((resolve, reject) => {
