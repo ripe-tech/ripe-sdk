@@ -548,6 +548,59 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
 };
 
 /**
+ * Obtains the values for the initials in the spec for the given profile. It supports
+ * both profile and alias.
+ *
+ * @param {string} profile The name of the profile.
+ * @param {Object} config The model config object.
+ */
+ripe.ConfiguratorCsr.prototype._profileInitialsValues = (profile, config) => {
+    const $profiles = (config.initials && config.initials.$profiles) || {};
+
+    // obtains the alias corresponding values
+    const aliases = (config.initials && config.initials.$alias) || {};
+    const aliasProfiles = aliases[profile];
+    if (aliasProfiles) {
+        const aliasProfilesArray = Array.isArray(aliasProfiles) ? aliasProfiles : [aliasProfiles];
+        const aliasValues = aliasProfilesArray.reduce((mergedValues, aliasProfile) => {
+            const profileValues = $profiles[aliasProfile] || {};
+            return {
+                ...mergedValues,
+                ...profileValues,
+                "3d": {
+                    ...(mergedValues["3d"] ? mergedValues["3d"] : {}),
+                    ...(profileValues["3d"] ? profileValues["3d"] : {})
+                }
+            };
+        }, {});
+
+        return aliasValues;
+    }
+
+    // obtains the specified profile values
+    const values = $profiles[profile] || {};
+
+    return values;
+};
+
+/**
+ * Obtains the values for the initials in the spec.
+ *
+ * @param {Object} config The model config object.
+ */
+ripe.ConfiguratorCsr.prototype._profilesInitialsConfig = function(config) {
+    let values = config.initials || {};
+
+    const profiles = (config.initials && config.initials.profiles) || [];
+    profiles.forEach(profile => {
+        const profileValues = this._profileInitialsValues(profile, config);
+        values = { ...values, ...profileValues };
+    });
+
+    return values;
+};
+
+/**
  * Loads a mesh.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
@@ -1424,7 +1477,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         }
 
         // gets the initials and initials.3d set from the config
-        const initials = config.initials || {};
+        const initials = this._profilesInitialsConfig(config);
         const initials3d = initials["3d"] || {};
 
         // unpacks initials options
