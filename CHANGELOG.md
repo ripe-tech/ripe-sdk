@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added SDK methods for orders' issue API endpoints - [ripe-pulse/#312](https://github.com/ripe-tech/ripe-pulse/issues/312)
+* Added SDK methods for orders' issue API endpoints - [ripe-core/#4700](https://github.com/ripe-tech/ripe-core/issues/4700)
 
 ### Changed
 
