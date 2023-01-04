@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added SDK methods for orders' issue API endpoints - [ripe-core/#4700](https://github.com/ripe-tech/ripe-core/issues/4700)
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [2.35.0] - 2023-01-04
+
+### Added
+
+* Added SDK methods for orders' issue API endpoints - [ripe-core/#4700](https://github.com/ripe-tech/ripe-core/issues/4700)
 
 ## [2.34.0] - 2023-01-02
 
