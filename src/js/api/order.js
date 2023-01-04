@@ -332,6 +332,51 @@ ripe.Ripe.prototype.createNoteOrderP = function(number, text, options) {
 };
 
 /**
+ * Creates an order issue with the provided description, error log and severity
+ * and associates it with the order with the provided number.
+ *
+ * @param {Number} number The number of the order to associate an issue.
+ * @param {String} issue The issue name, containing the context of issue.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.createIssueOrder = function(number, issue, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/issues`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options.params = options.params || {};
+    options.params.issue = issue;
+    if (options.description !== undefined) options.params.description = options.description;
+    if (options.severity !== undefined) options.params.severity = options.severity;
+    if (options.log !== undefined) options.params.log = options.log;
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Creates an order issue with the provided description, error log and severity
+ * and associates it with the order with the provided number.
+ *
+ * @param {Number} number The number of the order to associate an issue.
+ * @param {String} issue The issue name, containing the context of issue.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The contents of the issue instance that was created.
+ */
+ripe.Ripe.prototype.createIssueOrderP = function(number, issue, options) {
+    return new Promise((resolve, reject) => {
+        this.createIssueOrder(number, issue, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Creates a shipping waybill for the order with the provided number.
  *
  * @param {Number} number The number of the order to create the waybill for.
@@ -2010,7 +2055,9 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
     });
     options.params = options.params || {};
     if (options.justification !== undefined) options.params.justification = options.justification;
+    if (options.strict !== undefined) options.params.strict = options.strict;
     if (options.notify !== undefined) options.params.notify = options.notify ? "1" : "0";
+    if (options.transitions !== undefined) options.params.transitions = options.transitions;
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
