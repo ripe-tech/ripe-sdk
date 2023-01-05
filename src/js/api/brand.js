@@ -145,69 +145,20 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
  *  - 'version' - The version of the build, defaults to latest.
  * @returns {String} The URL of the initials base texture.
  */
-ripe.Ripe.prototype.getInitials3dBaseTextureUrl = function(options) {
+ripe.Ripe.prototype.getTextureMapUrl = function(map, options) {
     options = this._getInitials3dOptions(options);
-    const url = options.url + `/patterns/${options.baseTexture}.png`;
-    return url + "?" + this._buildQuery(options.params);
-};
 
-/**
- * Returns the URL for the displacement texture for the initials mesh.
- *
- * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model.
- *  - 'model' - The name of the model.
- *  - 'version' - The version of the build, defaults to latest.
- * @returns {String} The URL of the initials displacement texture.
- */
-ripe.Ripe.prototype.getInitials3dDisplacementTextureUrl = function(options) {
-    options = this._getInitials3dOptions(options);
-    const url = options.url + `/displacement/${options.displacementTexture}.png`;
-    return url + "?" + this._buildQuery(options.params);
-};
+    const textureMap = new Map([
+        ["pattern", options.baseTexture],
+        ["displacement", options.displacementTexture],
+        ["metallic", options.metallicTexture],
+        ["normal", options.normalTexture],
+        ["roughness", options.roughnessTexture]
+    ]);
+    const texture = textureMap.get(map);
+    if (!texture) throw new Error(`Invalid texture map "${map}"`);
 
-/**
- * Returns the URL for the metallic texture for the initials mesh.
- *
- * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model.
- *  - 'model' - The name of the model.
- *  - 'version' - The version of the build, defaults to latest.
- * @returns {String} The URL of the initials metallic texture.
- */
-ripe.Ripe.prototype.getInitials3dMetallicTextureUrl = function(options) {
-    options = this._getInitials3dOptions(options);
-    const url = options.url + `/metallic/${options.metallicTexture}.png`;
-    return url + "?" + this._buildQuery(options.params);
-};
-
-/**
- * Returns the URL for the normal texture for the initials mesh.
- *
- * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model.
- *  - 'model' - The name of the model.
- *  - 'version' - The version of the build, defaults to latest.
- * @returns {String} The URL of the initials normal texture.
- */
-ripe.Ripe.prototype.getInitials3dNormalTextureUrl = function(options) {
-    options = this._getInitials3dOptions(options);
-    const url = options.url + `/normal/${options.normalTexture}.png`;
-    return url + "?" + this._buildQuery(options.params);
-};
-
-/**
- * Returns the URL for the roughness texture for the initials mesh.
- *
- * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model.
- *  - 'model' - The name of the model.
- *  - 'version' - The version of the build, defaults to latest.
- * @returns {String} The URL of the initials roughness texture.
- */
-ripe.Ripe.prototype.getInitials3dRoughnessTextureUrl = function(options) {
-    options = this._getInitials3dOptions(options);
-    const url = options.url + `/roughness/${options.roughnessTexture}.png`;
+    const url = options.url + `/texture_maps/${map}/${texture}.png`;
     return url + "?" + this._buildQuery(options.params);
 };
 
