@@ -1400,11 +1400,11 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         let normalTexturePath = null;
         let roughnessTexturePath = null;
         if (initialsEnabled) {
-            baseTexturePath = this.owner.getInitials3dBaseTextureUrl();
-            displacementTexturePath = this.owner.getInitials3dDisplacementTextureUrl();
-            metallicTexturePath = this.owner.getInitials3dMetallicTextureUrl();
-            normalTexturePath = this.owner.getInitials3dNormalTextureUrl();
-            roughnessTexturePath = this.owner.getInitials3dRoughnessTextureUrl();
+            baseTexturePath = this.owner.getTextureMapUrl("pattern");
+            displacementTexturePath = this.owner.getTextureMapUrl("displacement");
+            metallicTexturePath = this.owner.getTextureMapUrl("metallic");
+            normalTexturePath = this.owner.getTextureMapUrl("normal");
+            roughnessTexturePath = this.owner.getTextureMapUrl("roughness");
         }
 
         // loads assets
