@@ -138,7 +138,7 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
 
 
 /**
- * Returns the URL for the specified texture map type.
+ * Returns the URL for the texture of the specified texture map type.
  *
  * @param {String} map The texture map type that the should be url should point to.
  * @param {Object} options A map with options, such as:
