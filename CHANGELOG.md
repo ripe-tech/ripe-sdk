@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Change default test timeout to 60 seconds
 * Revert ripe-sdk-demo variant value to `""` - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Generalize `CsrRenderedInitials` textures logic - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
-* Improve `getInitials3dBaseTextureUrl`, `getInitials3dDisplacementTextureUrl`, `getInitials3dMetallicTextureUrl `, `getInitials3dNormalTextureUrl` and `getInitials3dRoughnessTextureUrl` methods - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Improve `getTextureMapUrl` method - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Fixed
 
