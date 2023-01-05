@@ -137,13 +137,14 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
 };
 
 /**
- * Returns the URL for the base texture for the initials mesh.
+ * Returns the URL for the texture of the specified texture map type.
  *
+ * @param {String} map The texture map type that the should be url should point to.
  * @param {Object} options A map with options, such as:
  *  - 'brand' - The brand of the model.
  *  - 'model' - The name of the model.
  *  - 'version' - The version of the build, defaults to latest.
- * @returns {String} The URL of the initials base texture.
+ * @returns {String} The URL of the specified initials texture.
  */
 ripe.Ripe.prototype.getTextureMapUrl = function(map, options) {
     options = this._getInitials3dOptions(options);
