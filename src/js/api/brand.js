@@ -136,7 +136,6 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
     return "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
 };
 
-
 /**
  * Returns the URL for the texture of the specified texture map type.
  *
