@@ -145,7 +145,7 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
  *  - 'brand' - The brand of the model.
  *  - 'model' - The name of the model.
  *  - 'version' - The version of the build, defaults to latest.
- * @returns {String} The URL of the initials base texture.
+ * @returns {String} The URL of the specified initials texture.
  */
 ripe.Ripe.prototype.getTextureMapUrl = function(map, options) {
     return null;
