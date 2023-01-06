@@ -149,14 +149,13 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
 ripe.Ripe.prototype.getTextureMapUrl = function(map, options) {
     options = this._getInitials3dOptions(options);
 
-    const textureMap = new Map([
-        ["pattern", options.baseTexture],
-        ["displacement", options.displacementTexture],
-        ["metallic", options.metallicTexture],
-        ["normal", options.normalTexture],
-        ["roughness", options.roughnessTexture]
-    ]);
-    const texture = textureMap.get(map);
+    const texture = {
+        pattern: options.baseTexture,
+        displacement: options.displacementTexture,
+        metallic: options.metallicTexture,
+        normal: options.normalTexture,
+        roughness: options.roughnessTexture
+    }[map];
     if (!texture) throw new Error(`Invalid texture map "${map}"`);
 
     const url = options.url + `/texture_maps/${map}/${texture}.png`;
