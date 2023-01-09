@@ -855,7 +855,7 @@ ripe.Ripe.prototype.stateChatLinesOrder = function(number, stateId, options, cal
  */
 ripe.Ripe.prototype.stateChatLinesOrderP = function(number, stateId, options) {
     return new Promise((resolve, reject) => {
-        this.stateChatOrder(number, stateId, options, (result, isValid, request) => {
+        this.stateChatLinesOrder(number, stateId, options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
