@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Fix `stateChatLinesOrderP` reference method - [ripe-robin-revamp/#340](https://github.com/ripe-tech/ripe-robin-revamp/issues/340)
 
 ## [2.34.0] - 2023-01-02
 
