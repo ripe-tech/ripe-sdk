@@ -1402,15 +1402,20 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // checks if initials are enabled
         const initialsEnabled = this.owner.hasPersonalization();
 
+        // gets the initials set from the config
+        const initials = config.initials || {};
+
         // checks if it should load assets used by the initials
-        const fontName = "Test Font"; // TODO Should be equal to the font_family from build
-        const fontUrl = this.owner.getFontUrl(fontName, "ttf");
+        let fontUrl = null;
         let baseTexturePath = null;
         let displacementTexturePath = null;
         let metallicTexturePath = null;
         let normalTexturePath = null;
         let roughnessTexturePath = null;
         if (initialsEnabled) {
+            fontUrl = this.owner.getFontUrl(initials.font_family, "ttf", {
+                weight: initials.font_weight
+            });
             baseTexturePath = this.owner.getTextureMapUrl("pattern");
             displacementTexturePath = this.owner.getTextureMapUrl("displacement");
             metallicTexturePath = this.owner.getTextureMapUrl("metallic");
@@ -1430,7 +1435,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             this.initialsRefs.roughnessTexture
         ] = await Promise.all([
             this._loadMesh(meshPath, meshFormat),
-            fontUrl ? this._loadExternalFont(fontName, fontUrl) : null,
+            fontUrl ? this._loadExternalFont(initials.font_family, fontUrl) : null,
             envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
             baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
             displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null,
@@ -1480,8 +1485,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             }
         }
 
-        // gets the initials and initials.3d set from the config
-        const initials = config.initials || {};
+        // gets the initials.3d set from the config
         const initials3d = initials["3d"] || {};
 
         // unpacks initials options
