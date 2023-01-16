@@ -752,6 +752,9 @@ ripe.Ripe.prototype._getFontOptions = function(options = {}) {
     if (variant !== undefined && variant !== null) {
         params.variant = variant;
     }
+    if (options.weight !== undefined && options.weight !== null) {
+        params.weight = options.weight;
+    }
     return Object.assign(options, {
         url: url,
         method: "GET",
