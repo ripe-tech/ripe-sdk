@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Support loading of external fonts - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
 
