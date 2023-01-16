@@ -135,7 +135,7 @@ ripe.Ripe.prototype.getMeshUrl = function(options) {
 ripe.Ripe.prototype.getFontUrl = function(name, format, options) {
     options = this._getFontOptions(options);
     format = format || "ttf";
-    const url = options.url + `/${name}.${format}`
+    const url = options.url + `/${name}.${format}`;
     return url + "?" + this._buildQuery(options.params);
 };
 
