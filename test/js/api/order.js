@@ -199,7 +199,8 @@ describe("OrderAPI", function() {
                 brand: "dummy",
                 model: "dummy",
                 price: 30,
-                size: 17
+                size: 17,
+                imagesDefault: false
             });
             assert.strictEqual(result.ff_order_id, ffOrderId);
             assert.strictEqual(result.type, "buildless");
@@ -225,7 +226,8 @@ describe("OrderAPI", function() {
                 type: "buildless",
                 brand: "dummy",
                 model: "dummy",
-                quantity: 22
+                quantity: 22,
+                imagesDefault: false
             });
             assert.strictEqual(result.ff_order_id, ffOrderId);
             assert.strictEqual(result.type, "buildless");
