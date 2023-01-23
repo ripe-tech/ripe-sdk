@@ -1413,9 +1413,11 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         let normalTexturePath = null;
         let roughnessTexturePath = null;
         if (initialsEnabled) {
-            fontUrl = this.owner.getFontUrl(initials.font_family, "ttf", {
-                weight: initials.font_weight
-            });
+            fontUrl = initials.font_family
+                ? this.owner.getFontUrl(initials.font_family, "ttf", {
+                      weight: initials.font_weight
+                  })
+                : null;
             baseTexturePath = this.owner.getTextureMapUrl("pattern");
             displacementTexturePath = this.owner.getTextureMapUrl("displacement");
             metallicTexturePath = this.owner.getTextureMapUrl("metallic");
