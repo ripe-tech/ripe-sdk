@@ -147,6 +147,10 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
  * @returns {String} The URL of the specified initials texture.
  */
 ripe.Ripe.prototype.getTextureMapUrl = function(map, options) {
+    if (!["pattern", "displacement", "metallic", "normal", "roughness"].includes(map)) {
+        throw new Error(`Invalid texture map "${map}"`);
+    }
+
     options = this._getInitials3dOptions(options);
 
     const textureMap = {
@@ -157,7 +161,8 @@ ripe.Ripe.prototype.getTextureMapUrl = function(map, options) {
         roughness: options.roughnessTexture
     };
     const texture = textureMap[map];
-    if (!texture) throw new Error(`Invalid texture map "${map}"`);
+
+    if (!texture) return null;
 
     const url = options.url + `/texture_maps/${map}/${texture}.png`;
     return url + "?" + this._buildQuery(options.params);
