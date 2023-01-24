@@ -690,6 +690,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
             ? true
             : this.options.useInitialsBuilderLogic;
     this.composeLogic = this.options.composeLogic === undefined ? false : this.options.composeLogic;
+    this.authCallback = this.options.authCallback === undefined ? null : this.options.authCallback;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account

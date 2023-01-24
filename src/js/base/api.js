@@ -1351,6 +1351,8 @@ ripe.Ripe.prototype._build = function(options) {
         (this.sid === undefined || this.sid === null) &&
         (this.key === undefined || this.key === null)
     ) {
+        const authCallback = options.authCallback || this.authCallback;
+        if (authCallback) authCallback();
         throw new Error("Authorization requested but none is available");
     }
     options.url = url;
