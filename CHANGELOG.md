@@ -9,11 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Add support for param `imagesDefault` - [ripe-core/#4778](https://github.com/ripe-tech/ripe-core/issues/4778)
 
 ### Changed
 
 *
+
+### Fixed
+
+* Fix failing tests by using `imagesDefault` set to false - [ripe-core/#4778](https://github.com/ripe-tech/ripe-core/issues/4778)
+
+## [2.35.1] - 2023-01-10
 
 ### Fixed
 
