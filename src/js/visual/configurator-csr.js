@@ -91,6 +91,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.animations = [];
     this.isChangeFrameAnimationRunning = false;
     this._pendingOps = [];
+    this._postRenderCallback = null;
 
     // CSR variables
     this.rendererOptions = null;
