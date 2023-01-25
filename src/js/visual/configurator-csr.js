@@ -529,10 +529,21 @@ ripe.ConfiguratorCsr.prototype.prcFrame = async function() {
     return `side-${positionRounded}`;
 };
 
+/**
+ * Sets the callback function for the post render call.
+ *
+ * @param {Function} callback The function to be called.
+ */
 ripe.ConfiguratorCsr.prototype.subscribePostRender = function(callback) {
     this._postRenderCallback = callback;
 };
 
+
+/**
+ * Unsets the callback function for the post render call.
+ *
+ * @param {Function} callback The function to be called.
+ */
 ripe.ConfiguratorCsr.prototype.unsubscribePostRender = function() {
     this._postRenderCallback = null;
 };
