@@ -540,9 +540,7 @@ ripe.ConfiguratorCsr.prototype.setPostRender = function(callback) {
 
 
 /**
- * Unsets the callback function for the post render call.
- *
- * @param {Function} callback The function to be called.
+ * Clears the the post render callback registry.
  */
 ripe.ConfiguratorCsr.prototype.unsetPostRender = function() {
     this._postRenderCallback = null;
