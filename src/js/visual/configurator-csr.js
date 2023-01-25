@@ -538,7 +538,6 @@ ripe.ConfiguratorCsr.prototype.setPostRender = function(callback) {
     this._postRenderCallback = callback;
 };
 
-
 /**
  * Clears the the post render callback registry.
  */
@@ -1296,8 +1295,8 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onPostRender = function() {
-    if(this._postRenderCallback) this._postRenderCallback();
-}
+    if (this._postRenderCallback) this._postRenderCallback();
+};
 
 /**
  * @ignore
