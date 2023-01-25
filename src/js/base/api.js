@@ -419,11 +419,11 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
         // authentication one and there are retries left then tries
         // the authentication callback and retries the request
         if (isAuthError && retries > 0) {
-            authCallback(() => {
+            return authCallback(extraParams => {
                 options.retries = retries - 1;
-                this._cacheURL(url, options, callback);
+                options.params = { ...options.params, ...extraParams };
+                return this._cacheURL(url, options, callback);
             });
-            return;
         }
 
         // in case the result of the request is valid and caching
