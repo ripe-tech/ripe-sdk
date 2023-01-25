@@ -1209,6 +1209,7 @@ ripe.ConfiguratorCsr.prototype._render = function() {
     if (!this.camera) throw new Error("Camera not initiated");
     if (!this.renderer) throw new Error("Renderer not initiated");
     this.renderer.render(this.scene, this.camera);
+    this._onPostRender();
 };
 
 /**
@@ -1280,9 +1281,6 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
 
     // renders a frame
     self._render();
-
-    // immediately calls post render after the render has finished
-    self._onPostRender();
 };
 
 /**
