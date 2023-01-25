@@ -384,7 +384,7 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     // determines the correct callback to be called once an auth
     // related problem occurs, defaulting to the base one in case
     // none is passed via options object
-    const authCallback = options.authCallback || this._authCallback;
+    const authCallback = options.authCallback || this.authCallback || this._authCallback;
 
     // determines if the cache entry should be invalidated before
     // making the request, it should only be invalidate in case the
