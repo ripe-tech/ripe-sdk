@@ -91,6 +91,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.animations = [];
     this.isChangeFrameAnimationRunning = false;
     this._pendingOps = [];
+    this._postRenderCallback = null;
 
     // CSR variables
     this.rendererOptions = null;
@@ -526,6 +527,22 @@ ripe.ConfiguratorCsr.prototype.prcFrame = async function() {
     const positionRounded = Math.round(position);
 
     return `side-${positionRounded}`;
+};
+
+/**
+ * Sets the callback function for the post render call.
+ *
+ * @param {Function} callback The function to be called.
+ */
+ripe.ConfiguratorCsr.prototype.setPostRender = function(callback) {
+    this._postRenderCallback = callback;
+};
+
+/**
+ * Clears the post render callback registry.
+ */
+ripe.ConfiguratorCsr.prototype.unsetPostRender = function() {
+    this._postRenderCallback = null;
 };
 
 /**
@@ -1200,6 +1217,7 @@ ripe.ConfiguratorCsr.prototype._render = function() {
     if (!this.camera) throw new Error("Camera not initiated");
     if (!this.renderer) throw new Error("Renderer not initiated");
     this.renderer.render(this.scene, this.camera);
+    this._onPostRender();
 };
 
 /**
@@ -1271,6 +1289,13 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
 
     // renders a frame
     self._render();
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._onPostRender = function() {
+    if (this._postRenderCallback) this._postRenderCallback();
 };
 
 /**
