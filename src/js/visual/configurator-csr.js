@@ -539,7 +539,7 @@ ripe.ConfiguratorCsr.prototype.setPostRender = function(callback) {
 };
 
 /**
- * Clears the the post render callback registry.
+ * Clears the post render callback registry.
  */
 ripe.ConfiguratorCsr.prototype.unsetPostRender = function() {
     this._postRenderCallback = null;
