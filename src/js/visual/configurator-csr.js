@@ -534,7 +534,7 @@ ripe.ConfiguratorCsr.prototype.prcFrame = async function() {
  *
  * @param {Function} callback The function to be called.
  */
-ripe.ConfiguratorCsr.prototype.subscribePostRender = function(callback) {
+ripe.ConfiguratorCsr.prototype.setPostRender = function(callback) {
     this._postRenderCallback = callback;
 };
 
@@ -544,7 +544,7 @@ ripe.ConfiguratorCsr.prototype.subscribePostRender = function(callback) {
  *
  * @param {Function} callback The function to be called.
  */
-ripe.ConfiguratorCsr.prototype.unsubscribePostRender = function() {
+ripe.ConfiguratorCsr.prototype.unsetPostRender = function() {
     this._postRenderCallback = null;
 };
 
