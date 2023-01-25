@@ -528,6 +528,14 @@ ripe.ConfiguratorCsr.prototype.prcFrame = async function() {
     return `side-${positionRounded}`;
 };
 
+ripe.ConfiguratorCsr.prototype.subscribePostRender = function(callback) {
+    this._postRenderCallback = callback;
+};
+
+ripe.ConfiguratorCsr.prototype.unsubscribePostRender = function() {
+    this._postRenderCallback = null;
+};
+
 /**
  * Tries to obtain the best possible size for the configurator
  * defaulting to the client with of the element as fallback.
@@ -1271,7 +1279,17 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
 
     // renders a frame
     self._render();
+
+    // immediately calls post render after the render has finished
+    self._onPostRender();
 };
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._onPostRender = function() {
+    if(this._postRenderCallback) this._postRenderCallback();
+}
 
 /**
  * @ignore
