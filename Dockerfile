@@ -17,7 +17,7 @@ ADD package.json /
 ADD gulpfile.js /
 ADD src /src
 
-RUN apk update && apk add nodejs npm
+RUN apk update && apk add --no-cache nodejs npm
 RUN pip3 install --upgrade netius
 RUN npm install
 RUN npm run build
