@@ -133,35 +133,20 @@ ripe.Ripe.prototype.getMeshUrl = function(options) {
  * @returns {String} The URL of the environment for the 3D scene.
  */
 ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
-    options = this._getMeshOptions(options);
     return "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
 };
 
 /**
- * Returns the URL for the base texture for the initials mesh.
+ * Returns the URL for the texture of the specified texture map type.
  *
+ * @param {String} map The texture map type that the should be url should point to.
  * @param {Object} options A map with options, such as:
  *  - 'brand' - The brand of the model.
  *  - 'model' - The name of the model.
  *  - 'version' - The version of the build, defaults to latest.
- * @returns {String} The URL of the initials base texture.
+ * @returns {String} The URL of the specified initials texture.
  */
-ripe.Ripe.prototype.getInitials3dBaseTextureUrl = function(options) {
-    options = this._getMeshOptions(options);
-    return null;
-};
-
-/**
- * Returns the URL for the displacement texture for the initials mesh.
- *
- * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model.
- *  - 'model' - The name of the model.
- *  - 'version' - The version of the build, defaults to latest.
- * @returns {String} The URL of the initials displacement texture.
- */
-ripe.Ripe.prototype.getInitials3dDisplacementTextureUrl = function(options) {
-    options = this._getMeshOptions(options);
+ripe.Ripe.prototype.getTextureMapUrl = function(map, options) {
     return null;
 };
 
