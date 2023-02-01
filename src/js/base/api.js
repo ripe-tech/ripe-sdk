@@ -382,8 +382,9 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     cached = cached && !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
 
     // determines the correct callback to be called once an auth
-    // related problem occurs, defaulting to the base one in case
-    // none is passed via options object
+    // related problem occurs, fallsback to global `authCallback`
+    // and finally to the base one in case none is passed
+    // via options object or global SDK options
     const authCallback = options.authCallback || this.authCallback || this._authCallback;
 
     // determines if the cache entry should be invalidated before
@@ -419,6 +420,9 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
         // authentication one and there are retries left then tries
         // the authentication callback and retries the request
         if (isAuthError && retries > 0) {
+            // returns `authCallback` allowing the authentication
+            // to be done inside the callback and to return the
+            // request result after a successful auth
             return authCallback(extraParams => {
                 options.retries = retries - 1;
                 options.params = { ...options.params, ...extraParams };
