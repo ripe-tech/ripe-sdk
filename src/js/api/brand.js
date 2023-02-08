@@ -162,21 +162,13 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
  *  - 'version' - The version of the build, defaults to latest.
  * @returns {String} The URL of the specified initials texture.
  */
-ripe.Ripe.prototype.getTextureMapUrl = function(map, options) {
-    options = this._getInitials3dOptions(options);
-
-    const textureMap = {
-        pattern: options.baseTexture,
-        displacement: options.displacementTexture,
-        metallic: options.metallicTexture,
-        normal: options.normalTexture,
-        roughness: options.roughnessTexture
-    };
-    const texture = textureMap[map];
-    if (!texture) throw new Error(`Invalid texture map "${map}"`);
-
-    const url = options.url + `/texture_maps/${map}/${texture}.png`;
-    return url + "?" + this._buildQuery(options.params);
+ripe.Ripe.prototype.getTextureMapUrl = function(map, texture, options) {
+    if (!["pattern", "displacement", "metallic", "normal", "roughness"].includes(map)) {
+        throw new Error(`Invalid texture map "${map}"`);
+    }
+    if (!texture) throw new Error("Missing texture");
+    options = this._getTextureMapOptions(map, texture, options);
+    return options.url + "?" + this._buildQuery(options.params);
 };
 
 /**
@@ -217,6 +209,45 @@ ripe.Ripe.prototype.getConfig = function(options, callback) {
 ripe.Ripe.prototype.getConfigP = function(options) {
     return new Promise((resolve, reject) => {
         this.getConfig(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the initials configuration information of a specific brand and model.
+ * If no model is provided then returns the information of the owner's current model.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'profiles' - The list of initials profiles.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The model's initials configuration data.
+ */
+ripe.Ripe.prototype.getInitialsConfig = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getInitialsConfigOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the initials configuration information of a specific brand and model.
+ * If no model is provided then returns the information of the owner's current model.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'profiles' - The list of initials profiles.
+ * @returns {Promise} The model's configuration data.
+ */
+ripe.Ripe.prototype.getInitialsConfigP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getInitialsConfig(options, (result, isValid, request) => {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
@@ -765,43 +796,11 @@ ripe.Ripe.prototype._getFontOptions = function(options = {}) {
 /**
  * @ignore
  */
-const _getProfileValues = (profile, config) => {
-    const $profiles = (config.initials && config.initials.$profiles) || {};
-
-    // obtains the alias corresponding values
-    const aliases = (config.initials && config.initials.$alias) || {};
-    const aliasProfiles = aliases[profile];
-    if (aliasProfiles) {
-        const aliasProfilesArray = Array.isArray(aliasProfiles) ? aliasProfiles : [aliasProfiles];
-        const aliasValues = aliasProfilesArray.reduce((mergedValues, aliasProfile) => {
-            const profileValues = $profiles[aliasProfile] || {};
-            return {
-                ...mergedValues,
-                ...profileValues,
-                "3d": {
-                    ...(mergedValues["3d"] ? mergedValues["3d"] : {}),
-                    ...(profileValues["3d"] ? profileValues["3d"] : {})
-                }
-            };
-        }, {});
-
-        return aliasValues;
-    }
-
-    // obtains the specified profile values
-    const values = $profiles[profile] || {};
-
-    return values;
-};
-
-/**
- * @ignore
- */
-ripe.Ripe.prototype._getInitials3dOptions = function(options = {}) {
+ripe.Ripe.prototype._getTextureMapOptions = function(map, texture, options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const version = options.version === undefined ? this.version : options.version;
     const variant = options.variant === undefined ? this.variant : options.variant;
-    const url = `${this.url}brands/${brand}`;
+    const url = `${this.url}brands/${brand}/texture_maps/${map}/${texture}.png`;
     const params = {};
     if (version !== undefined && version !== null) {
         params.version = version;
@@ -809,40 +808,6 @@ ripe.Ripe.prototype._getInitials3dOptions = function(options = {}) {
     if (variant !== undefined && variant !== null) {
         params.variant = variant;
     }
-
-    const config = this.loadedConfig || {};
-    const initials3dValues = (config.initials && config.initials["3d"]) || {};
-
-    let baseTexture = null;
-    let displacementTexture = null;
-    let metallicTexture = null;
-    let normalTexture = null;
-    let roughnessTexture = null;
-    const profiles = (config.initials && config.initials.profiles) || [];
-    profiles.forEach(profile => {
-        const profileValues = _getProfileValues(profile, config);
-        const profileValues3d = profileValues["3d"] || {};
-
-        const values3d = { ...initials3dValues, ...profileValues3d };
-
-        baseTexture = values3d.base_texture;
-        displacementTexture = values3d.displacement_texture;
-        metallicTexture = values3d.metallic_texture;
-        normalTexture = values3d.normal_texture;
-        roughnessTexture = values3d.roughness_texture;
-    });
-    options.baseTexture = options.baseTexture === undefined ? baseTexture : options.baseTexture;
-    options.displacementTexture =
-        options.displacementTexture === undefined
-            ? displacementTexture
-            : options.displacementTexture;
-    options.metallicTexture =
-        options.metallicTexture === undefined ? metallicTexture : options.metallicTexture;
-    options.normalTexture =
-        options.normalTexture === undefined ? normalTexture : options.normalTexture;
-    options.roughnessTexture =
-        options.roughnessTexture === undefined ? roughnessTexture : options.roughnessTexture;
-
     return Object.assign(options, {
         url: url,
         method: "GET",
@@ -881,6 +846,29 @@ ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
     }
     if (options.filter !== undefined && options.filter !== null) {
         params.filter = options.filter ? "1" : "0";
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getInitialsConfigOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const profiles = options.profiles === undefined ? [] : options.profiles;
+    const url = `${this.url}brands/${brand}/models/${model}/config/initials`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (profiles !== undefined && profiles !== null) {
+        params.profiles = profiles;
     }
     return Object.assign(options, {
         url: url,

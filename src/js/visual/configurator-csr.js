@@ -91,6 +91,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.animations = [];
     this.isChangeFrameAnimationRunning = false;
     this._pendingOps = [];
+    this._postRenderCallback = null;
 
     // CSR variables
     this.rendererOptions = null;
@@ -526,6 +527,22 @@ ripe.ConfiguratorCsr.prototype.prcFrame = async function() {
     const positionRounded = Math.round(position);
 
     return `side-${positionRounded}`;
+};
+
+/**
+ * Sets the callback function for the post render call.
+ *
+ * @param {Function} callback The function to be called.
+ */
+ripe.ConfiguratorCsr.prototype.setPostRender = function(callback) {
+    this._postRenderCallback = callback;
+};
+
+/**
+ * Clears the post render callback registry.
+ */
+ripe.ConfiguratorCsr.prototype.unsetPostRender = function() {
+    this._postRenderCallback = null;
 };
 
 /**
@@ -1209,6 +1226,7 @@ ripe.ConfiguratorCsr.prototype._render = function() {
     if (!this.camera) throw new Error("Camera not initiated");
     if (!this.renderer) throw new Error("Renderer not initiated");
     this.renderer.render(this.scene, this.camera);
+    this._onPostRender();
 };
 
 /**
@@ -1280,6 +1298,13 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
 
     // renders a frame
     self._render();
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._onPostRender = function() {
+    if (this._postRenderCallback) this._postRenderCallback();
 };
 
 /**
@@ -1402,8 +1427,9 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // checks if initials are enabled
         const initialsEnabled = this.owner.hasPersonalization();
 
-        // gets the initials set from the config
-        const initials = config.initials || {};
+        // gets the initials and initials.3d set from the config
+        const initials = await this.owner.getInitialsConfigP();
+        const initials3d = initials["3d"] || {};
 
         // checks if it should load assets used by the initials
         let fontUrl = null;
@@ -1414,15 +1440,24 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         let roughnessTexturePath = null;
         if (initialsEnabled) {
             fontUrl = initials.font_family
-                ? this.owner.getFontUrl(initials.font_family, "ttf", {
-                      weight: initials.font_weight
-                  })
-                : null;
-            baseTexturePath = this.owner.getTextureMapUrl("pattern");
-            displacementTexturePath = this.owner.getTextureMapUrl("displacement");
-            metallicTexturePath = this.owner.getTextureMapUrl("metallic");
-            normalTexturePath = this.owner.getTextureMapUrl("normal");
-            roughnessTexturePath = this.owner.getTextureMapUrl("roughness");
+            ? this.owner.getFontUrl(initials.font_family, "ttf", {
+                  weight: initials.font_weight
+              })
+            : null;
+            baseTexturePath = this.owner.getTextureMapUrl("pattern", initials3d.base_texture);
+            displacementTexturePath = this.owner.getTextureMapUrl(
+                "displacement",
+                initials3d.displacement_texture
+            );
+            metallicTexturePath = this.owner.getTextureMapUrl(
+                "metallic",
+                initials3d.metallic_texture
+            );
+            normalTexturePath = this.owner.getTextureMapUrl("normal", initials3d.normal_texture);
+            roughnessTexturePath = this.owner.getTextureMapUrl(
+                "roughness",
+                initials3d.roughness_texture
+            );
         }
 
         // loads assets
@@ -1486,9 +1521,6 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
                 cameraOptions.lookAt = ripe.CsrUtils.toXYZObject(config3d.scene.camera_look_at);
             }
         }
-
-        // gets the initials.3d set from the config
-        const initials3d = initials["3d"] || {};
 
         // unpacks initials options
         const initialsOptions = {};

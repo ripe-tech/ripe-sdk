@@ -16,7 +16,7 @@ if (
  * The version of the RIPE SDK currently in load, should
  * be in sync with the package information.
  */
-ripe.VERSION = "2.35.0";
+ripe.VERSION = "2.35.1";
 
 /**
  * Object that contains global (static) information to be used by
@@ -690,6 +690,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
             ? true
             : this.options.useInitialsBuilderLogic;
     this.composeLogic = this.options.composeLogic === undefined ? false : this.options.composeLogic;
+    this.authCallback = this.options.authCallback === undefined ? null : this.options.authCallback;
 
     // in case the requested format is the "dynamic" lossless one
     // tries to find the best lossless image format taking into account
