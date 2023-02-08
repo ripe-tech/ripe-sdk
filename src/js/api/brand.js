@@ -146,26 +146,13 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
  *  - 'version' - The version of the build, defaults to latest.
  * @returns {String} The URL of the specified initials texture.
  */
-ripe.Ripe.prototype.getTextureMapUrl = function(map, options) {
+ripe.Ripe.prototype.getTextureMapUrl = function(map, texture, options) {
     if (!["pattern", "displacement", "metallic", "normal", "roughness"].includes(map)) {
         throw new Error(`Invalid texture map "${map}"`);
     }
-
-    options = this._getInitials3dOptions(options);
-
-    const textureMap = {
-        pattern: options.baseTexture,
-        displacement: options.displacementTexture,
-        metallic: options.metallicTexture,
-        normal: options.normalTexture,
-        roughness: options.roughnessTexture
-    };
-    const texture = textureMap[map];
-
-    if (!texture) return null;
-
-    const url = options.url + `/texture_maps/${map}/${texture}.png`;
-    return url + "?" + this._buildQuery(options.params);
+    if (!texture) throw new Error("Missing texture");
+    options = this._getTextureMapOptions(map, texture, options);
+    return options.url + "?" + this._buildQuery(options.params);
 };
 
 /**
@@ -768,43 +755,11 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
 /**
  * @ignore
  */
-const _getProfileValues = (profile, config) => {
-    const $profiles = (config.initials && config.initials.$profiles) || {};
-
-    // obtains the alias corresponding values
-    const aliases = (config.initials && config.initials.$alias) || {};
-    const aliasProfiles = aliases[profile];
-    if (aliasProfiles) {
-        const aliasProfilesArray = Array.isArray(aliasProfiles) ? aliasProfiles : [aliasProfiles];
-        const aliasValues = aliasProfilesArray.reduce((mergedValues, aliasProfile) => {
-            const profileValues = $profiles[aliasProfile] || {};
-            return {
-                ...mergedValues,
-                ...profileValues,
-                "3d": {
-                    ...(mergedValues["3d"] ? mergedValues["3d"] : {}),
-                    ...(profileValues["3d"] ? profileValues["3d"] : {})
-                }
-            };
-        }, {});
-
-        return aliasValues;
-    }
-
-    // obtains the specified profile values
-    const values = $profiles[profile] || {};
-
-    return values;
-};
-
-/**
- * @ignore
- */
-ripe.Ripe.prototype._getInitials3dOptions = function(options = {}) {
+ripe.Ripe.prototype._getTextureMapOptions = function(map, texture, options = {}) {
     const brand = options.brand === undefined ? this.brand : options.brand;
     const version = options.version === undefined ? this.version : options.version;
     const variant = options.variant === undefined ? this.variant : options.variant;
-    const url = `${this.url}brands/${brand}`;
+    const url = `${this.url}brands/${brand}/texture_maps/${map}/${texture}.png`;
     const params = {};
     if (version !== undefined && version !== null) {
         params.version = version;
@@ -812,40 +767,6 @@ ripe.Ripe.prototype._getInitials3dOptions = function(options = {}) {
     if (variant !== undefined && variant !== null) {
         params.variant = variant;
     }
-
-    const config = this.loadedConfig || {};
-    const initials3dValues = (config.initials && config.initials["3d"]) || {};
-
-    let baseTexture = null;
-    let displacementTexture = null;
-    let metallicTexture = null;
-    let normalTexture = null;
-    let roughnessTexture = null;
-    const profiles = (config.initials && config.initials.profiles) || [];
-    profiles.forEach(profile => {
-        const profileValues = _getProfileValues(profile, config);
-        const profileValues3d = profileValues["3d"] || {};
-
-        const values3d = { ...initials3dValues, ...profileValues3d };
-
-        baseTexture = values3d.base_texture;
-        displacementTexture = values3d.displacement_texture;
-        metallicTexture = values3d.metallic_texture;
-        normalTexture = values3d.normal_texture;
-        roughnessTexture = values3d.roughness_texture;
-    });
-    options.baseTexture = options.baseTexture === undefined ? baseTexture : options.baseTexture;
-    options.displacementTexture =
-        options.displacementTexture === undefined
-            ? displacementTexture
-            : options.displacementTexture;
-    options.metallicTexture =
-        options.metallicTexture === undefined ? metallicTexture : options.metallicTexture;
-    options.normalTexture =
-        options.normalTexture === undefined ? normalTexture : options.normalTexture;
-    options.roughnessTexture =
-        options.roughnessTexture === undefined ? roughnessTexture : options.roughnessTexture;
-
     return Object.assign(options, {
         url: url,
         method: "GET",
