@@ -567,6 +567,14 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
     };
 };
 
+/**
+ * Loads a font from a URL and adds it to the document font set.
+ *
+ * @param {Number} name The name to give to the font.
+ * @param {Number} url The URL for the font file.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._loadExternalFont = async function(name, url) {
     if (!name) throw new Error("Name is required");
     if (!url) throw new Error("URL is required");
