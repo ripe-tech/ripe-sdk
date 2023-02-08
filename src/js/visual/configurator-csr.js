@@ -1418,6 +1418,9 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // checks if initials are enabled
         const initialsEnabled = this.owner.hasPersonalization();
 
+        // gets the initials config
+        const initials = await this.owner.getInitialsConfigP();
+
         // checks if it should load assets used by the initials
         let baseTexturePath = null;
         let displacementTexturePath = null;
@@ -1492,8 +1495,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             }
         }
 
-        // gets the initials and initials.3d set from the config
-        const initials = config.initials || {};
+        // gets the initials.3d set from the config
         const initials3d = initials["3d"] || {};
 
         // unpacks initials options
