@@ -146,8 +146,13 @@ ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
  *  - 'version' - The version of the build, defaults to latest.
  * @returns {String} The URL of the specified initials texture.
  */
-ripe.Ripe.prototype.getTextureMapUrl = function(map, options) {
-    return null;
+ripe.Ripe.prototype.getTextureMapUrl = function(map, texture, options) {
+    if (!["pattern", "displacement", "metallic", "normal", "roughness"].includes(map)) {
+        throw new Error(`Invalid texture map "${map}"`);
+    }
+    if (!texture) throw new Error("Missing texture");
+    options = this._getTextureMapOptions(map, texture, options);
+    return options.url + "?" + this._buildQuery(options.params);
 };
 
 /**
@@ -733,6 +738,28 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
     const version = options.version === undefined ? this.version : options.version;
     const variant = options.variant === undefined ? this.variant : options.variant;
     const url = `${this.url}brands/${brand}/models/${model}/mesh`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getTextureMapOptions = function(map, texture, options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const url = `${this.url}brands/${brand}/texture_maps/${map}/${texture}.png`;
     const params = {};
     if (version !== undefined && version !== null) {
         params.version = version;

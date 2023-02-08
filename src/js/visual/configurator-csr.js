@@ -1418,8 +1418,9 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // checks if initials are enabled
         const initialsEnabled = this.owner.hasPersonalization();
 
-        // gets the initials config
+        // gets the initials and initials.3d set from the config
         const initials = await this.owner.getInitialsConfigP();
+        const initials3d = initials["3d"] || {};
 
         // checks if it should load assets used by the initials
         let baseTexturePath = null;
@@ -1428,11 +1429,20 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         let normalTexturePath = null;
         let roughnessTexturePath = null;
         if (initialsEnabled) {
-            baseTexturePath = this.owner.getTextureMapUrl("pattern");
-            displacementTexturePath = this.owner.getTextureMapUrl("displacement");
-            metallicTexturePath = this.owner.getTextureMapUrl("metallic");
-            normalTexturePath = this.owner.getTextureMapUrl("normal");
-            roughnessTexturePath = this.owner.getTextureMapUrl("roughness");
+            baseTexturePath = this.owner.getTextureMapUrl("pattern", initials3d.base_texture);
+            displacementTexturePath = this.owner.getTextureMapUrl(
+                "displacement",
+                initials3d.displacement_texture
+            );
+            metallicTexturePath = this.owner.getTextureMapUrl(
+                "metallic",
+                initials3d.metallic_texture
+            );
+            normalTexturePath = this.owner.getTextureMapUrl("normal", initials3d.normal_texture);
+            roughnessTexturePath = this.owner.getTextureMapUrl(
+                "roughness",
+                initials3d.roughness_texture
+            );
         }
 
         // loads assets
@@ -1494,9 +1504,6 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
                 cameraOptions.lookAt = ripe.CsrUtils.toXYZObject(config3d.scene.camera_look_at);
             }
         }
-
-        // gets the initials.3d set from the config
-        const initials3d = initials["3d"] || {};
 
         // unpacks initials options
         const initialsOptions = {};
