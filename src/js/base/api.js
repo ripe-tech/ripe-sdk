@@ -382,9 +382,10 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
     cached = cached && !options.force && ["GET"].indexOf(options.method || "GET") !== -1;
 
     // determines the correct callback to be called once an auth
-    // related problem occurs, defaulting to the base one in case
-    // none is passed via options object
-    const authCallback = options.authCallback || this._authCallback;
+    // related problem occurs, fallsback to global `authCallback`
+    // and finally to the base one in case none is passed
+    // via options object or global SDK options
+    const authCallback = options.authCallback || this.authCallback || this._authCallback;
 
     // determines if the cache entry should be invalidated before
     // making the request, it should only be invalidate in case the
@@ -419,11 +420,14 @@ ripe.Ripe.prototype._cacheURL = function(url, options, callback) {
         // authentication one and there are retries left then tries
         // the authentication callback and retries the request
         if (isAuthError && retries > 0) {
-            authCallback(() => {
+            // returns `authCallback` allowing the authentication
+            // to be done inside the callback and to return the
+            // request result after a successful auth
+            return authCallback(extraParams => {
                 options.retries = retries - 1;
-                this._cacheURL(url, options, callback);
+                options.params = { ...options.params, ...extraParams };
+                return this._cacheURL(url, options, callback);
             });
-            return;
         }
 
         // in case the result of the request is valid and caching
@@ -1349,7 +1353,9 @@ ripe.Ripe.prototype._build = function(options) {
     if (
         auth &&
         (this.sid === undefined || this.sid === null) &&
-        (this.key === undefined || this.key === null)
+        (this.key === undefined || this.key === null) &&
+        (options.authCallback === undefined || options.authCallback === null) &&
+        (this.authCallback === undefined || this.authCallback === null)
     ) {
         throw new Error("Authorization requested but none is available");
     }

@@ -212,6 +212,45 @@ ripe.Ripe.prototype.getConfigP = function(options) {
 };
 
 /**
+ * Returns the initials configuration information of a specific brand and model.
+ * If no model is provided then returns the information of the owner's current model.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'profiles' - The list of initials profiles.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The model's initials configuration data.
+ */
+ripe.Ripe.prototype.getInitialsConfig = function(options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    options = this._getInitialsConfigOptions(options);
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the initials configuration information of a specific brand and model.
+ * If no model is provided then returns the information of the owner's current model.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ *  - 'profiles' - The list of initials profiles.
+ * @returns {Promise} The model's configuration data.
+ */
+ripe.Ripe.prototype.getInitialsConfigP = function(options) {
+    return new Promise((resolve, reject) => {
+        this.getInitialsConfig(options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns the default customization of a specific brand or model. If no model is provided
  * then returns the defaults of the owner's current model.
  *
@@ -845,6 +884,29 @@ ripe.Ripe.prototype._getConfigOptions = function(options = {}) {
     }
     if (options.filter !== undefined && options.filter !== null) {
         params.filter = options.filter ? "1" : "0";
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getInitialsConfigOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const model = options.model === undefined ? this.model : options.model;
+    const version = options.version === undefined ? this.version : options.version;
+    const profiles = options.profiles === undefined ? [] : options.profiles;
+    const url = `${this.url}brands/${brand}/models/${model}/config/initials`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (profiles !== undefined && profiles !== null) {
+        params.profiles = profiles;
     }
     return Object.assign(options, {
         url: url,

@@ -9,11 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Add support for post render callback - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Add support for param `imagesDefault` - [ripe-core/#4778](https://github.com/ripe-tech/ripe-core/issues/4778)
+* Add support for global option `authCallback` and improve overall behavior, allowing one request authentication - [ripe-robin-revamp/#416](https://github.com/ripe-tech/ripe-robin-revamp/issues/416)
 
 ### Changed
 
-*
+* Returning `authCallback` when requests fails authentication to allow one auth call. - [ripe-robin-revamp/#416](https://github.com/ripe-tech/ripe-robin-revamp/issues/416)
+
+### Fixed
+
+* Fix failing tests by using `imagesDefault` set to false - [ripe-core/#4778](https://github.com/ripe-tech/ripe-core/issues/4778)
+
+## [2.35.1] - 2023-01-10
 
 ### Fixed
 
