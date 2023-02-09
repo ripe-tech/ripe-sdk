@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add support for global option `authCallback` and improve overall behavior, allowing one request authentication - [ripe-robin-revamp/#416](https://github.com/ripe-tech/ripe-robin-revamp/issues/416)
 * Add `getInitialsConfig` , `getInitialsConfigP` and `_getInitialsConfigOptions` methods - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Load enriched initials config in CSR - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Support loading of external fonts - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
 

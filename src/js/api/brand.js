@@ -124,6 +124,22 @@ ripe.Ripe.prototype.getMeshUrl = function(options) {
 };
 
 /**
+ * Returns the URL where the font can be retrieved.
+ *
+ * @param {Object} options A map with options, such as:
+ *  - 'brand' - The brand of the model.
+ *  - 'model' - The name of the model.
+ *  - 'version' - The version of the build, defaults to latest.
+ * @returns {String} The URL of the specified initials texture.
+ */
+ripe.Ripe.prototype.getFontUrl = function(name, format, options) {
+    options = this._getFontOptions(options);
+    format = format || "ttf";
+    const url = options.url + `/${name}.${format}`;
+    return url + "?" + this._buildQuery(options.params);
+};
+
+/**
  * Returns the URL for the environment file of the 3D scene.
  *
  * @param {Object} options A map with options, such as:
@@ -744,6 +760,31 @@ ripe.Ripe.prototype._getMeshOptions = function(options = {}) {
     }
     if (variant !== undefined && variant !== null) {
         params.variant = variant;
+    }
+    return Object.assign(options, {
+        url: url,
+        method: "GET",
+        params: params
+    });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype._getFontOptions = function(options = {}) {
+    const brand = options.brand === undefined ? this.brand : options.brand;
+    const version = options.version === undefined ? this.version : options.version;
+    const variant = options.variant === undefined ? this.variant : options.variant;
+    const url = `${this.url}brands/${brand}/fonts`;
+    const params = {};
+    if (version !== undefined && version !== null) {
+        params.version = version;
+    }
+    if (variant !== undefined && variant !== null) {
+        params.variant = variant;
+    }
+    if (options.weight !== undefined && options.weight !== null) {
+        params.weight = options.weight;
     }
     return Object.assign(options, {
         url: url,

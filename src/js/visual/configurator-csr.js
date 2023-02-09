@@ -568,6 +568,23 @@ ripe.ConfiguratorCsr.prototype._configuratorSize = function(size, width, height)
 };
 
 /**
+ * Loads a font from a URL and adds it to the document font set.
+ *
+ * @param {Number} name The name to give to the font.
+ * @param {Number} url The URL for the font file.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._loadExternalFont = async function(name, url) {
+    if (!name) throw new Error("Name is required");
+    if (!url) throw new Error("URL is required");
+
+    const font = new FontFace(name, `url(${url})`);
+    await font.load();
+    document.fonts.add(font);
+};
+
+/**
  * Loads a mesh.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
@@ -1423,12 +1440,18 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         const initials3d = initials["3d"] || {};
 
         // checks if it should load assets used by the initials
+        let fontUrl = null;
         let baseTexturePath = null;
         let displacementTexturePath = null;
         let metallicTexturePath = null;
         let normalTexturePath = null;
         let roughnessTexturePath = null;
         if (initialsEnabled) {
+            fontUrl = initials.font_family
+            ? this.owner.getFontUrl(initials.font_family, "ttf", {
+                  weight: initials.font_weight
+              })
+            : null;
             baseTexturePath = this.owner.getTextureMapUrl("pattern", initials3d.base_texture);
             displacementTexturePath = this.owner.getTextureMapUrl(
                 "displacement",
@@ -1448,6 +1471,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // loads assets
         [
             this.mesh,
+            ,
             this.environmentTexture,
             this.initialsRefs.baseTexture,
             this.initialsRefs.displacementTexture,
@@ -1456,6 +1480,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             this.initialsRefs.roughnessTexture
         ] = await Promise.all([
             this._loadMesh(meshPath, meshFormat),
+            fontUrl ? this._loadExternalFont(initials.font_family, fontUrl) : null,
             envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
             baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
             displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null,
