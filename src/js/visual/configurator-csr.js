@@ -1449,22 +1449,28 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         const fontFamily = initials.text ? initials.text.font_family : null; // TODO review this
         const fontWeight = initials.text ? initials.text.font_weight : null; // TODO review this
         if (initialsEnabled) {
+            const textures = {
+                baseTexture: initialsCsr.base_texture ? initialsCsr.base_texture.name : null,
+                displacementTexture: initialsCsr.displacement_texture
+                    ? initialsCsr.displacement_texture.name
+                    : null,
+                metallicTexture: initialsCsr.metallic_texture
+                    ? initialsCsr.metallic_texture.name
+                    : null,
+                normalTexture: initialsCsr.normal_texture ? initialsCsr.normal_texture.name : null,
+                roughnessTexture: initialsCsr.roughness_texture
+                    ? initialsCsr.roughness_texture.name
+                    : null
+            };
             fontUrl = fontFamily
                 ? this.owner.getFontUrl(fontFamily, "ttf", { weight: fontWeight })
                 : null;
-            baseTexturePath = this.owner.getTextureMapUrl("pattern", initialsCsr.base_texture);
             displacementTexturePath = this.owner.getTextureMapUrl(
                 "displacement",
-                initialsCsr.displacement_texture
             );
-            metallicTexturePath = this.owner.getTextureMapUrl(
-                "metallic",
-                initialsCsr.metallic_texture
-            );
-            normalTexturePath = this.owner.getTextureMapUrl("normal", initialsCsr.normal_texture);
+            metallicTexturePath = this.owner.getTextureMapUrl("metallic", textures.metallicTexture);
             roughnessTexturePath = this.owner.getTextureMapUrl(
                 "roughness",
-                initialsCsr.roughness_texture
             );
         }
 
