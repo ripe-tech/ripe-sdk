@@ -1446,12 +1446,12 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         let metallicTexturePath = null;
         let normalTexturePath = null;
         let roughnessTexturePath = null;
+        const fontFamily = initials.text ? initials.text.font_family : null; // TODO review this
+        const fontWeight = initials.text ? initials.text.font_weight : null; // TODO review this
         if (initialsEnabled) {
-            fontUrl = initials.font_family
-            ? this.owner.getFontUrl(initials.font_family, "ttf", {
-                  weight: initials.font_weight
-              })
-            : null;
+            fontUrl = fontFamily
+                ? this.owner.getFontUrl(fontFamily, "ttf", { weight: fontWeight })
+                : null;
             baseTexturePath = this.owner.getTextureMapUrl("pattern", initialsCsr.base_texture);
             displacementTexturePath = this.owner.getTextureMapUrl(
                 "displacement",
@@ -1480,7 +1480,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             this.initialsRefs.roughnessTexture
         ] = await Promise.all([
             this._loadMesh(meshPath, meshFormat),
-            fontUrl ? this._loadExternalFont(initials.font_family, fontUrl) : null,
+            fontUrl ? this._loadExternalFont(fontFamily, fontUrl) : null,
             envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
             baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
             displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null,
@@ -1551,11 +1551,14 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
         // unpacks initials text options
         const textOptions = {};
-        textOptions.font = initials.font_family;
-        textOptions.fontSize = initialsCsr.font_size;
-        textOptions.lineWidth = initialsCsr.stroke_width;
-        textOptions.displacementMapTextBlur = initialsCsr.text_displacement_blur;
-        textOptions.normalMapBlurIntensity = initialsCsr.text_normal_map_blur;
+        if (initialsCsr.text) {
+            textOptions.fontSize = initialsCsr.text.font_size;
+            textOptions.font = initialsCsr.text.font_family; // TODO review this font option
+            // TODO textOptions.fontWeight = initialsCsr.text.font_weight;
+            textOptions.lineWidth = initialsCsr.text.stroke_width;
+            textOptions.displacementMapTextBlur = initialsCsr.text.displacement_blur;
+            textOptions.normalMapBlurIntensity = initialsCsr.text.normal_map_blur;
+        }
 
         // unpacks initials material options
         const materialOptions = {};
