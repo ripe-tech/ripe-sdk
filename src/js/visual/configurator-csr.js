@@ -1465,12 +1465,16 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             fontUrl = fontFamily
                 ? this.owner.getFontUrl(fontFamily, "ttf", { weight: fontWeight })
                 : null;
+            baseTexturePath = this.owner.getTextureMapUrl("pattern", textures.baseTexture);
             displacementTexturePath = this.owner.getTextureMapUrl(
                 "displacement",
+                textures.displacementTexture
             );
             metallicTexturePath = this.owner.getTextureMapUrl("metallic", textures.metallicTexture);
+            normalTexturePath = this.owner.getTextureMapUrl("normal", textures.normalTexture);
             roughnessTexturePath = this.owner.getTextureMapUrl(
                 "roughness",
+                textures.roughnessTexture
             );
         }
 
