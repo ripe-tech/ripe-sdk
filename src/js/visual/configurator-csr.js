@@ -1562,17 +1562,16 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
         // unpacks initials material options
         const materialOptions = {};
-        materialOptions.color = initialsCsr.material_color
-            ? `#${initialsCsr.material_color}`
-            : undefined;
-        materialOptions.displacementScale = initialsCsr.material_displacement_scale;
-        materialOptions.displacementBias = initialsCsr.material_displacement_bias;
-        materialOptions.emissive = initialsCsr.material_emissive_color
-            ? `#${initialsCsr.material_emissive_color}`
-            : undefined;
-        materialOptions.emissiveIntensity = initialsCsr.material_emissive_intensity;
-        materialOptions.metalness = initialsCsr.material_metalness;
-        materialOptions.roughness = initialsCsr.material_roughness;
+        if (initialsCsr.material) {
+            const materialOpts = initialsCsr.material;
+            materialOptions.color = materialOpts.color  ? `#${materialOpts.color}` : undefined;
+            materialOptions.metalness = materialOpts.metalness;
+            materialOptions.roughness = materialOpts.roughness;
+            materialOptions.emissive = materialOpts.emissive_color ? `#${materialOpts.emissive_color}` : undefined;
+            materialOptions.emissiveIntensity = materialOpts.emissive_intensity;
+            materialOptions.displacementScale = materialOpts.displacement_scale;
+            materialOptions.displacementBias = materialOpts.displacement_bias;
+        }
 
         // unpacks initials mesh options
         const meshOptions = {};
