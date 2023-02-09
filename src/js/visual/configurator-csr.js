@@ -1575,8 +1575,11 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
         // unpacks initials mesh options
         const meshOptions = {};
-        meshOptions.widthSegments = initialsCsr.mesh_width_segments;
-        meshOptions.heightSegments = initialsCsr.mesh_height_segments;
+        if (initialsCsr.mesh) {
+            const meshOpts = initialsCsr.mesh;
+            meshOptions.widthSegments = meshOpts.width_segments;
+            meshOptions.heightSegments = meshOpts.height_segments;
+        }
 
         initialsOptions.options = {
             curveOptions: curveOptions,
