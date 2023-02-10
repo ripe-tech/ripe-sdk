@@ -1181,7 +1181,7 @@ ripe.ConfiguratorCsr.prototype._unpackTextureOptions = function(options) {
 
 ripe.ConfiguratorCsr.prototype._unpackInitialsOptions = function(initialsConfig) {
     const unpacked = {};
-    
+
     // gets CSR specific options
     const csrOptions = initialsConfig.csr || {};
 
@@ -1190,8 +1190,12 @@ ripe.ConfiguratorCsr.prototype._unpackInitialsOptions = function(initialsConfig)
     unpacked.height = csrOptions.height;
     const points = csrOptions.points || [];
     unpacked.points = points.map(p => ripe.CsrUtils.toXYZObject(p));
-    unpacked.position = csrOptions.position ? ripe.CsrUtils.toXYZObject(csrOptions.position) : undefined;
-    unpacked.rotation = csrOptions.rotation ? ripe.CsrUtils.toXYZObject(csrOptions.rotation): undefined;
+    unpacked.position = csrOptions.position
+        ? ripe.CsrUtils.toXYZObject(csrOptions.position)
+        : undefined;
+    unpacked.rotation = csrOptions.rotation
+        ? ripe.CsrUtils.toXYZObject(csrOptions.rotation)
+        : undefined;
     unpacked.scale = csrOptions.scale;
 
     // unpacks curve options
@@ -1236,11 +1240,21 @@ ripe.ConfiguratorCsr.prototype._unpackInitialsOptions = function(initialsConfig)
     }
 
     // unpacks textures options
-    const baseTextureOptions = csrOptions.base_texture ? this._unpackTextureOptions(csrOptions.base_texture) : {};
-    const displacementTextureOptions = csrOptions.displacement_texture ? this._unpackTextureOptions(csrOptions.displacement_texture) : {};
-    const metallicTextureOptions = csrOptions.metallic_texture ? this._unpackTextureOptions(csrOptions.metallic_texture) : {};
-    const normalTextureOptions = csrOptions.normal_texture ? this._unpackTextureOptions(csrOptions.normal_texture) : {};
-    const roughnessTextureOptions = csrOptions.roughness_texture ? this._unpackTextureOptions(csrOptions.roughness_texture) : {};
+    const baseTextureOptions = csrOptions.base_texture
+        ? this._unpackTextureOptions(csrOptions.base_texture)
+        : {};
+    const displacementTextureOptions = csrOptions.displacement_texture
+        ? this._unpackTextureOptions(csrOptions.displacement_texture)
+        : {};
+    const metallicTextureOptions = csrOptions.metallic_texture
+        ? this._unpackTextureOptions(csrOptions.metallic_texture)
+        : {};
+    const normalTextureOptions = csrOptions.normal_texture
+        ? this._unpackTextureOptions(csrOptions.normal_texture)
+        : {};
+    const roughnessTextureOptions = csrOptions.roughness_texture
+        ? this._unpackTextureOptions(csrOptions.roughness_texture)
+        : {};
 
     // builds options params
     unpacked.options = {
@@ -1636,81 +1650,8 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
     const _postConfig = async () => {
-        // loads high poly mesh information by default
-        const variant = this.owner.variant || "$base";
-        const meshPath = this.owner.getMeshUrl({ variant: variant });
-        const meshFormat = "glb";
-
-        // loads default environment map
-        const envPath = this.owner.get3dSceneEnvironmentUrl();
-        const envFormat = "hdr";
-
-        // checks if initials are enabled
-        const initialsEnabled = this.owner.hasPersonalization();
-
         // gets the initials and initials.csr set from the config
         const initialsConfig = await this.owner.getInitialsConfigP();
-        const initialsCsr = initialsConfig.csr || {};
-
-        // checks if it should load assets used by the initials
-        let fontUrl = null;
-        let baseTexturePath = null;
-        let displacementTexturePath = null;
-        let metallicTexturePath = null;
-        let normalTexturePath = null;
-        let roughnessTexturePath = null;
-        const fontFamily = initialsCsr.text ? initialsCsr.text.font_family : null; // TODO review this
-        const fontWeight = initialsCsr.text ? initialsCsr.text.font_weight : null; // TODO review this
-        if (initialsEnabled) {
-            const textures = {
-                baseTexture: initialsCsr.base_texture ? initialsCsr.base_texture.name : null,
-                displacementTexture: initialsCsr.displacement_texture
-                    ? initialsCsr.displacement_texture.name
-                    : null,
-                metallicTexture: initialsCsr.metallic_texture
-                    ? initialsCsr.metallic_texture.name
-                    : null,
-                normalTexture: initialsCsr.normal_texture ? initialsCsr.normal_texture.name : null,
-                roughnessTexture: initialsCsr.roughness_texture
-                    ? initialsCsr.roughness_texture.name
-                    : null
-            };
-            fontUrl = fontFamily
-                ? this.owner.getFontUrl(fontFamily, "ttf", { weight: fontWeight })
-                : null;
-            baseTexturePath = this.owner.getTextureMapUrl("pattern", textures.baseTexture);
-            displacementTexturePath = this.owner.getTextureMapUrl(
-                "displacement",
-                textures.displacementTexture
-            );
-            metallicTexturePath = this.owner.getTextureMapUrl("metallic", textures.metallicTexture);
-            normalTexturePath = this.owner.getTextureMapUrl("normal", textures.normalTexture);
-            roughnessTexturePath = this.owner.getTextureMapUrl(
-                "roughness",
-                textures.roughnessTexture
-            );
-        }
-
-        // loads assets
-        [
-            this.mesh,
-            ,
-            this.environmentTexture,
-            this.initialsRefs.baseTexture,
-            this.initialsRefs.displacementTexture,
-            this.initialsRefs.metallicTexture,
-            this.initialsRefs.normalTexture,
-            this.initialsRefs.roughnessTexture
-        ] = await Promise.all([
-            this._loadMesh(meshPath, meshFormat),
-            fontUrl ? this._loadExternalFont(fontFamily, fontUrl) : null,
-            envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
-            baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
-            displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null,
-            metallicTexturePath ? ripe.CsrUtils.loadTexture(metallicTexturePath) : null,
-            normalTexturePath ? ripe.CsrUtils.loadTexture(normalTexturePath) : null,
-            roughnessTexturePath ? ripe.CsrUtils.loadTexture(roughnessTexturePath) : null
-        ]);
 
         // gets the 3d set from the config
         const config3d = config["3d"] || {};
