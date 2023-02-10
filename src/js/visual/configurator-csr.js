@@ -1167,6 +1167,18 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     }
 };
 
+ripe.ConfiguratorCsr.prototype._unpackTextureOptions = function(options) {
+    const unpacked = {};
+    if (options.name) unpacked.name = options.name;
+    if (options.wrap_s) unpacked.wrapS = ripe.CsrUtils.toWrappingModeValue(options.wrap_s);
+    if (options.wrap_t) unpacked.wrapT = ripe.CsrUtils.toWrappingModeValue(options.wrap_t);
+    if (options.offset) unpacked.offset = ripe.CsrUtils.toXYZObject(options.offset);
+    if (options.repeat) unpacked.repeat = ripe.CsrUtils.toXYZObject(options.repeat);
+    if (options.rotation) unpacked.rotation = window.THREE.MathUtils.degToRad(options.rotation);
+    if (options.center) unpacked.center = ripe.CsrUtils.toXYZObject(options.center);
+    return unpacked;
+};
+
 /**
  * Initializes this CSR configurator instance configuration by applying the default
  * config values.
@@ -1595,11 +1607,33 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             meshOptions.heightSegments = meshOpts.height_segments;
         }
 
+        // unpacks initials textures options
+        const baseTextureOptions = initialsCsr.base_texture
+            ? this._unpackTextureOptions(initialsCsr.base_texture)
+            : {};
+        const displacementTextureOptions = initialsCsr.displacement_texture
+            ? this._unpackTextureOptions(initialsCsr.displacement_texture)
+            : {};
+        const metallicTextureOptions = initialsCsr.metallic_texture
+            ? this._unpackTextureOptions(initialsCsr.metallic_texture)
+            : {};
+        const normalTextureOptions = initialsCsr.normal_texture
+            ? this._unpackTextureOptions(initialsCsr.normal_texture)
+            : {};
+        const roughnessTextureOptions = initialsCsr.roughness_texture
+            ? this._unpackTextureOptions(initialsCsr.roughness_texture)
+            : {};
+
         initialsOptions.options = {
             curveOptions: curveOptions,
             textOptions: textOptions,
             materialOptions: materialOptions,
-            meshOptions: meshOptions
+            meshOptions: meshOptions,
+            baseTextureOptions: baseTextureOptions,
+            displacementTextureOptions: displacementTextureOptions,
+            metallicTextureOptions: metallicTextureOptions,
+            normalTextureOptions: normalTextureOptions,
+            roughnessTextureOptions: roughnessTextureOptions
         };
 
         this._initConfigDefaults({
