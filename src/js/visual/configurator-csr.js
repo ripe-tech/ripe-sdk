@@ -1179,6 +1179,129 @@ ripe.ConfiguratorCsr.prototype._unpackTextureOptions = function(options) {
     return unpacked;
 };
 
+ripe.ConfiguratorCsr.prototype._unpackInitialsOptions = function(initialsConfig) {
+    const unpacked = {};
+    
+    // gets CSR specific options
+    const csrOptions = initialsConfig.csr || {};
+
+    // unpacks root options
+    unpacked.width = csrOptions.width;
+    unpacked.height = csrOptions.height;
+    const points = csrOptions.points || [];
+    unpacked.points = points.map(p => ripe.CsrUtils.toXYZObject(p));
+    unpacked.position = csrOptions.position ? ripe.CsrUtils.toXYZObject(csrOptions.position) : undefined;
+    unpacked.rotation = csrOptions.rotation ? ripe.CsrUtils.toXYZObject(csrOptions.rotation): undefined;
+    unpacked.scale = csrOptions.scale;
+
+    // unpacks curve options
+    const curveOptions = {};
+    curveOptions.type = csrOptions.curve_type;
+    curveOptions.tension = csrOptions.curve_tension;
+
+    // unpacks text options
+    const textOptions = {};
+    if (csrOptions.text) {
+        textOptions.fontSize = csrOptions.text.font_size;
+        textOptions.font = csrOptions.text.font_family; // TODO review this font option
+        // TODO textOptions.fontWeight = csrOptions.text.font_weight;
+        textOptions.xOffset = csrOptions.text.x_offset;
+        textOptions.yOffset = csrOptions.text.y_offset;
+        textOptions.lineWidth = csrOptions.text.stroke_width;
+        textOptions.displacementMapTextBlur = csrOptions.text.displacement_blur;
+        textOptions.normalMapBlurIntensity = csrOptions.text.normal_map_blur;
+    }
+
+    // unpacks material options
+    const materialOptions = {};
+    if (csrOptions.material) {
+        const materialOpts = csrOptions.material;
+        materialOptions.color = materialOpts.color ? `#${materialOpts.color}` : undefined;
+        materialOptions.metalness = materialOpts.metalness;
+        materialOptions.roughness = materialOpts.roughness;
+        materialOptions.emissive = materialOpts.emissive_color
+            ? `#${materialOpts.emissive_color}`
+            : undefined;
+        materialOptions.emissiveIntensity = materialOpts.emissive_intensity;
+        materialOptions.displacementScale = materialOpts.displacement_scale;
+        materialOptions.displacementBias = materialOpts.displacement_bias;
+    }
+
+    // unpacks mesh options
+    const meshOptions = {};
+    if (csrOptions.mesh) {
+        const meshOpts = csrOptions.mesh;
+        meshOptions.widthSegments = meshOpts.width_segments;
+        meshOptions.heightSegments = meshOpts.height_segments;
+    }
+
+    // unpacks textures options
+    const baseTextureOptions = csrOptions.base_texture ? this._unpackTextureOptions(csrOptions.base_texture) : {};
+    const displacementTextureOptions = csrOptions.displacement_texture ? this._unpackTextureOptions(csrOptions.displacement_texture) : {};
+    const metallicTextureOptions = csrOptions.metallic_texture ? this._unpackTextureOptions(csrOptions.metallic_texture) : {};
+    const normalTextureOptions = csrOptions.normal_texture ? this._unpackTextureOptions(csrOptions.normal_texture) : {};
+    const roughnessTextureOptions = csrOptions.roughness_texture ? this._unpackTextureOptions(csrOptions.roughness_texture) : {};
+
+    // builds options params
+    unpacked.options = {
+        curveOptions: curveOptions,
+        textOptions: textOptions,
+        materialOptions: materialOptions,
+        meshOptions: meshOptions,
+        baseTextureOptions: baseTextureOptions,
+        displacementTextureOptions: displacementTextureOptions,
+        metallicTextureOptions: metallicTextureOptions,
+        normalTextureOptions: normalTextureOptions,
+        roughnessTextureOptions: roughnessTextureOptions
+    };
+
+    return unpacked;
+};
+
+ripe.ConfiguratorCsr.prototype._unpackSceneOptions = function(options) {
+    const rendererOptions = {};
+    const cameraOptions = {};
+    const zoomOptions = {};
+
+    // unpacks renderer options
+    rendererOptions.toneMapping = options.tone_mapping
+        ? ripe.CsrUtils.toToneMappingValue(options.tone_mapping)
+        : undefined;
+    rendererOptions.toneMappingExposure = options.tone_mapping_exposure;
+
+    // unpacks scene zoom options
+    if (options.zoom) {
+        zoomOptions.enabled = options.zoom.enabled;
+        zoomOptions.min = options.zoom.min;
+        zoomOptions.max = options.zoom.max;
+        zoomOptions.sensitivity = options.zoom.sensitivity;
+    }
+
+    // unpacks scene camera options
+    if (options.camera) {
+        cameraOptions.position = options.camera.position
+            ? ripe.CsrUtils.toXYZObject(options.camera.position)
+            : undefined;
+        cameraOptions.rotation = options.camera.rotation
+            ? ripe.CsrUtils.toXYZObject(options.camera.rotation)
+            : undefined;
+        cameraOptions.fov = options.camera.fov;
+        cameraOptions.filmGauge = options.camera.film_gauge;
+        cameraOptions.aspect = options.camera.aspect;
+        cameraOptions.near = options.camera.near;
+        cameraOptions.far = options.camera.far;
+    }
+    if (options.camera_look_at) {
+        cameraOptions.lookAt = ripe.CsrUtils.toXYZObject(options.camera_look_at);
+    }
+
+    return {
+        rendererOptions: rendererOptions,
+        cameraOptions: cameraOptions,
+        zoomOptions: zoomOptions
+    };
+};
+
 /**
  * Initializes this CSR configurator instance configuration by applying the default
  * config values.
@@ -1515,132 +1638,17 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         const config3d = config["3d"] || {};
 
         // unpacks scene options
-        const rendererOptions = {};
-        const cameraOptions = {};
-        const zoomOptions = {};
-        if (config3d.scene) {
-            // unpacks renderer options
-            rendererOptions.toneMapping = config3d.scene.tone_mapping
-                ? ripe.CsrUtils.toToneMappingValue(config3d.scene.tone_mapping)
-                : undefined;
-            rendererOptions.toneMappingExposure = config3d.scene.tone_mapping_exposure;
-
-            // unpacks scene zoom options
-            if (config3d.scene.zoom) {
-                zoomOptions.enabled = config3d.scene.zoom.enabled;
-                zoomOptions.min = config3d.scene.zoom.min;
-                zoomOptions.max = config3d.scene.zoom.max;
-                zoomOptions.sensitivity = config3d.scene.zoom.sensitivity;
-            }
-
-            // unpacks scene camera options
-            if (config3d.scene.camera) {
-                cameraOptions.position = config3d.scene.camera.position
-                    ? ripe.CsrUtils.toXYZObject(config3d.scene.camera.position)
-                    : undefined;
-                cameraOptions.rotation = config3d.scene.camera.rotation
-                    ? ripe.CsrUtils.toXYZObject(config3d.scene.camera.rotation)
-                    : undefined;
-                cameraOptions.fov = config3d.scene.camera.fov;
-                cameraOptions.filmGauge = config3d.scene.camera.film_gauge;
-                cameraOptions.aspect = config3d.scene.camera.aspect;
-                cameraOptions.near = config3d.scene.camera.near;
-                cameraOptions.far = config3d.scene.camera.far;
-            }
-            if (config3d.scene.camera_look_at) {
-                cameraOptions.lookAt = ripe.CsrUtils.toXYZObject(config3d.scene.camera_look_at);
-            }
-        }
+        const sceneOptions = config3d.scene ? this._unpackSceneOptions(config3d.scene) : {};
 
         // unpacks initials options
-        const initialsOptions = {};
-        initialsOptions.width = initialsCsr.width;
-        initialsOptions.height = initialsCsr.height;
-        const points = initialsCsr.points || [];
-        initialsOptions.points = points.map(p => ripe.CsrUtils.toXYZObject(p));
-        initialsOptions.position = initialsCsr.position
-            ? ripe.CsrUtils.toXYZObject(initialsCsr.position)
-            : undefined;
-        initialsOptions.rotation = initialsCsr.rotation
-            ? ripe.CsrUtils.toXYZObject(initialsCsr.rotation)
-            : undefined;
-        initialsOptions.scale = initialsCsr.scale;
+        const initialsOptions = initialsConfig ? this._unpackInitialsOptions(initialsConfig) : {};
 
-        // unpacks initials curve options
-        const curveOptions = {};
-        curveOptions.type = initialsCsr.curve_type;
-        curveOptions.tension = initialsCsr.curve_tension;
-
-        // unpacks initials text options
-        const textOptions = {};
-        if (initialsCsr.text) {
-            textOptions.fontSize = initialsCsr.text.font_size;
-            textOptions.font = initialsCsr.text.font_family; // TODO review this font option
-            // TODO textOptions.fontWeight = initialsCsr.text.font_weight;
-            textOptions.xOffset = initialsCsr.text.x_offset;
-            textOptions.yOffset = initialsCsr.text.y_offset;
-            textOptions.lineWidth = initialsCsr.text.stroke_width;
-            textOptions.displacementMapTextBlur = initialsCsr.text.displacement_blur;
-            textOptions.normalMapBlurIntensity = initialsCsr.text.normal_map_blur;
-        }
-
-        // unpacks initials material options
-        const materialOptions = {};
-        if (initialsCsr.material) {
-            const materialOpts = initialsCsr.material;
-            materialOptions.color = materialOpts.color ? `#${materialOpts.color}` : undefined;
-            materialOptions.metalness = materialOpts.metalness;
-            materialOptions.roughness = materialOpts.roughness;
-            materialOptions.emissive = materialOpts.emissive_color
-                ? `#${materialOpts.emissive_color}`
-                : undefined;
-            materialOptions.emissiveIntensity = materialOpts.emissive_intensity;
-            materialOptions.displacementScale = materialOpts.displacement_scale;
-            materialOptions.displacementBias = materialOpts.displacement_bias;
-        }
-
-        // unpacks initials mesh options
-        const meshOptions = {};
-        if (initialsCsr.mesh) {
-            const meshOpts = initialsCsr.mesh;
-            meshOptions.widthSegments = meshOpts.width_segments;
-            meshOptions.heightSegments = meshOpts.height_segments;
-        }
-
-        // unpacks initials textures options
-        const baseTextureOptions = initialsCsr.base_texture
-            ? this._unpackTextureOptions(initialsCsr.base_texture)
-            : {};
-        const displacementTextureOptions = initialsCsr.displacement_texture
-            ? this._unpackTextureOptions(initialsCsr.displacement_texture)
-            : {};
-        const metallicTextureOptions = initialsCsr.metallic_texture
-            ? this._unpackTextureOptions(initialsCsr.metallic_texture)
-            : {};
-        const normalTextureOptions = initialsCsr.normal_texture
-            ? this._unpackTextureOptions(initialsCsr.normal_texture)
-            : {};
-        const roughnessTextureOptions = initialsCsr.roughness_texture
-            ? this._unpackTextureOptions(initialsCsr.roughness_texture)
-            : {};
-
-        initialsOptions.options = {
-            curveOptions: curveOptions,
-            textOptions: textOptions,
-            materialOptions: materialOptions,
-            meshOptions: meshOptions,
-            baseTextureOptions: baseTextureOptions,
-            displacementTextureOptions: displacementTextureOptions,
-            metallicTextureOptions: metallicTextureOptions,
-            normalTextureOptions: normalTextureOptions,
-            roughnessTextureOptions: roughnessTextureOptions
-        };
-
+        // runs the process of applying the configuration defaults
         this._initConfigDefaults({
-            rendererOptions: rendererOptions,
+            rendererOptions: sceneOptions.rendererOptions || {},
             useDracoLoader: true,
-            cameraOptions: cameraOptions,
-            zoomOptions: zoomOptions,
+            cameraOptions: sceneOptions.cameraOptions || {},
+            zoomOptions: sceneOptions.zoomOptions || {},
             enabledInitials: initialsEnabled,
             initialsOptions: initialsOptions
         });
