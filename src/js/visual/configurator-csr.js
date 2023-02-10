@@ -1447,9 +1447,9 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // checks if initials are enabled
         const initialsEnabled = this.owner.hasPersonalization();
 
-        // gets the initials and initials.3d set from the config
-        const initials = await this.owner.getInitialsConfigP();
-        const initialsCsr = initials.csr || {};
+        // gets the initials and initials.csr set from the config
+        const initialsConfig = await this.owner.getInitialsConfigP();
+        const initialsCsr = initialsConfig.csr || {};
 
         // checks if it should load assets used by the initials
         let fontUrl = null;
