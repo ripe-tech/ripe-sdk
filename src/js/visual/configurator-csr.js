@@ -1662,7 +1662,14 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // unpacks initials options
         const initialsOptions = initialsConfig ? this._unpackInitialsOptions(initialsConfig) : {};
 
-        // runs the process of applying the configuration defaults
+        // checks if initials are enabled
+        const initialsEnabled = this.owner.hasPersonalization();
+
+        // loads all the assets needed for this config
+        await this._loadCsrAssets(sceneOptions, initialsOptions);
+
+        // runs the process of applying the configuration defaults so everything
+        // can properly be built
         this._initConfigDefaults({
             rendererOptions: sceneOptions.rendererOptions || {},
             useDracoLoader: true,
