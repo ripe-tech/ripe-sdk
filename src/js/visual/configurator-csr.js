@@ -1203,8 +1203,8 @@ ripe.ConfiguratorCsr.prototype._unpackInitialsOptions = function(initialsConfig)
     const textOptions = {};
     if (csrOptions.text) {
         textOptions.fontSize = csrOptions.text.font_size;
-        textOptions.font = csrOptions.text.font_family; // TODO review this font option
-        // TODO textOptions.fontWeight = csrOptions.text.font_weight;
+        textOptions.font = csrOptions.text.font_family;
+        textOptions.fontWeight = csrOptions.text.font_weight;
         textOptions.xOffset = csrOptions.text.x_offset;
         textOptions.yOffset = csrOptions.text.y_offset;
         textOptions.lineWidth = csrOptions.text.stroke_width;
@@ -1300,6 +1300,84 @@ ripe.ConfiguratorCsr.prototype._unpackSceneOptions = function(options) {
         cameraOptions: cameraOptions,
         zoomOptions: zoomOptions
     };
+};
+
+ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(sceneOptions, initialsOptions) {
+    // computes mesh URL
+    const variant = this.owner.variant || "$base";
+    const meshUrl = this.owner.getMeshUrl({ variant: variant });
+    const meshFormat = "glb";
+
+    // computes environment file URL
+    const envUrl = this.owner.get3dSceneEnvironmentUrl();
+    const envFormat = "hdr";
+
+    const optionsParams = initialsOptions.options || {};
+    console.log(optionsParams);
+
+    // computes initials font URL
+    const fontFamily = optionsParams.textOptions ? optionsParams.textOptions.font : null;
+    const fontWeight = optionsParams.textOptions ? optionsParams.textOptions.fontWeight : null;
+    const fontFormat = optionsParams.textOptions ? optionsParams.textOptions.fontFormat : "ttf";
+    const fontUrl = fontFamily
+        ? this.owner.getFontUrl(fontFamily, fontFormat, { weight: fontWeight })
+        : null;
+    console.log("initialsOptions", initialsOptions);
+    console.log("fontFamily", fontFamily);
+    console.log("fontWeight", fontWeight);
+
+    // computes initials textures URLs
+    const baseTextureName = optionsParams.baseTextureOptions
+        ? optionsParams.baseTextureOptions.name
+        : null;
+    const baseTextureUrl = baseTextureName
+        ? this.owner.getTextureMapUrl("pattern", baseTextureName)
+        : null;
+    const displacementTextureName = optionsParams.displacementTextureOptions
+        ? optionsParams.displacementTextureOptions.name
+        : null;
+    const displacementTextureUrl = displacementTextureName
+        ? this.owner.getTextureMapUrl("displacement", displacementTextureName)
+        : null;
+    const metallicTextureName = optionsParams.metallicTextureOptions
+        ? optionsParams.metallicTextureOptions.name
+        : null;
+    const metallicTextureUrl = metallicTextureName
+        ? this.owner.getTextureMapUrl("metallic", metallicTextureName)
+        : null;
+    const normalTextureName = optionsParams.normalTextureOptions
+        ? optionsParams.normalTextureOptions.name
+        : null;
+    const normalTextureUrl = normalTextureName
+        ? this.owner.getTextureMapUrl("normal", normalTextureName)
+        : null;
+    const roughnessTextureName = optionsParams.roughnessTextureOptions
+        ? optionsParams.roughnessTextureOptions.name
+        : null;
+    const roughnessTextureUrl = roughnessTextureName
+        ? this.owner.getTextureMapUrl("roughness", roughnessTextureName)
+        : null;
+
+    // loads assets
+    [
+        this.mesh,
+        ,
+        this.environmentTexture,
+        this.initialsRefs.baseTexture,
+        this.initialsRefs.displacementTexture,
+        this.initialsRefs.metallicTexture,
+        this.initialsRefs.normalTexture,
+        this.initialsRefs.roughnessTexture
+    ] = await Promise.all([
+        this._loadMesh(meshUrl, meshFormat),
+        fontUrl ? this._loadExternalFont(fontFamily, fontUrl) : null,
+        envUrl ? ripe.CsrUtils.loadEnvironment(envUrl, envFormat) : null,
+        baseTextureUrl ? ripe.CsrUtils.loadTexture(baseTextureUrl) : null,
+        displacementTextureUrl ? ripe.CsrUtils.loadTexture(displacementTextureUrl) : null,
+        metallicTextureUrl ? ripe.CsrUtils.loadTexture(metallicTextureUrl) : null,
+        normalTextureUrl ? ripe.CsrUtils.loadTexture(normalTextureUrl) : null,
+        roughnessTextureUrl ? ripe.CsrUtils.loadTexture(roughnessTextureUrl) : null
+    ]);
 };
 
 /**
