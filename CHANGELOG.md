@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 * Returning `authCallback` when requests fails authentication to allow one auth call. - [ripe-robin-revamp/#416](https://github.com/ripe-tech/ripe-robin-revamp/issues/416)
+* Updated CSR strategy to follow the changes of the updated config - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Fixed
 
