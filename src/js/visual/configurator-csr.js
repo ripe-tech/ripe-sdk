@@ -1352,11 +1352,14 @@ ripe.ConfiguratorCsr.prototype._unpackSceneOptions = function(options) {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(sceneOptions, initialsOptions) {
-    // computes mesh URL
+ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(config, sceneOptions, initialsOptions) {
     const variant = this.owner.variant || "$base";
+    
+    // computes mesh URL
+    const meshesConfig = config.meshes || {};
+    const meshInfo = meshesConfig[variant] || {};
     const meshUrl = this.owner.getMeshUrl({ variant: variant });
-    const meshFormat = "glb";
+    const meshFormat = meshInfo.format || "glb";
 
     // computes environment file URL
     const envUrl = this.owner.get3dSceneEnvironmentUrl();
@@ -1702,7 +1705,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         const initialsEnabled = this.owner.hasPersonalization();
 
         // loads all the assets needed for this config
-        await this._loadCsrAssets(sceneOptions, initialsOptions);
+        await this._loadCsrAssets(config, sceneOptions, initialsOptions);
 
         // runs the process of applying the configuration defaults so everything
         // can properly be built
