@@ -1355,9 +1355,13 @@ ripe.ConfiguratorCsr.prototype._unpackSceneOptions = function(options) {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(config, sceneOptions, initialsOptions) {
+ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(
+    config,
+    sceneOptions,
+    initialsOptions
+) {
     const variant = this.owner.variant || "$base";
-    
+
     // computes mesh URL
     const meshesConfig = config.meshes || {};
     const meshInfo = meshesConfig[variant] || {};
@@ -1369,7 +1373,6 @@ ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(config, sceneOpti
     const envFormat = "hdr";
 
     const optionsParams = initialsOptions.options || {};
-    console.log(optionsParams);
 
     // computes initials font URL
     const font = optionsParams.textOptions ? optionsParams.textOptions.font : null;
@@ -1379,9 +1382,6 @@ ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(config, sceneOpti
     const fontUrl = fontFamily
         ? this.owner.getFontUrl(fontFamily, fontFormat, { weight: fontWeight })
         : null;
-    console.log("initialsOptions", initialsOptions);
-    console.log("fontFamily", fontFamily);
-    console.log("fontWeight", fontWeight);
 
     // computes initials textures URLs
     const baseTextureName = optionsParams.baseTextureOptions
