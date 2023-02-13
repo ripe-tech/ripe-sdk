@@ -1167,6 +1167,15 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     }
 };
 
+/**
+ * Unpacks a set of texture options originated from the config so it can be used by the
+ * CSR configurator.
+ *
+ * @param {Object} options Set of texture options originated from the config.
+ * @returns {Object} The unpacked texture set of options.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._unpackTextureOptions = function(options) {
     const unpacked = {};
     if (options.name) unpacked.name = options.name;
