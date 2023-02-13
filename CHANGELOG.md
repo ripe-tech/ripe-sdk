@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Support font format in CSR strategy - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Changed
 
-*
+* Improve CSR loading methodology - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 
 ### Fixed
 
