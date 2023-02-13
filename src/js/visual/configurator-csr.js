@@ -1225,7 +1225,10 @@ ripe.ConfiguratorCsr.prototype._unpackInitialsOptions = function(initialsConfig)
     const textOptions = {};
     if (csrOptions.text) {
         textOptions.fontSize = csrOptions.text.font_size;
-        textOptions.font = csrOptions.text.font_family;
+        textOptions.font = csrOptions.text.font_weight
+            ? `${csrOptions.text.font_family}-${csrOptions.text.font_weight}`
+            : csrOptions.text.font_family;
+        textOptions.fontFamily = csrOptions.text.font_family;
         textOptions.fontWeight = csrOptions.text.font_weight;
         textOptions.fontFormat = csrOptions.text.font_format;
         textOptions.xOffset = csrOptions.text.x_offset;
@@ -1369,7 +1372,8 @@ ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(config, sceneOpti
     console.log(optionsParams);
 
     // computes initials font URL
-    const fontFamily = optionsParams.textOptions ? optionsParams.textOptions.font : null;
+    const font = optionsParams.textOptions ? optionsParams.textOptions.font : null;
+    const fontFamily = optionsParams.textOptions ? optionsParams.textOptions.fontFamily : null;
     const fontWeight = optionsParams.textOptions ? optionsParams.textOptions.fontWeight : null;
     const fontFormat = optionsParams.textOptions ? optionsParams.textOptions.fontFormat : "ttf";
     const fontUrl = fontFamily
@@ -1423,7 +1427,7 @@ ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(config, sceneOpti
         this.initialsRefs.roughnessTexture
     ] = await Promise.all([
         this._loadMesh(meshUrl, meshFormat),
-        fontUrl ? this._loadExternalFont(fontFamily, fontUrl) : null,
+        fontUrl ? this._loadExternalFont(font, fontUrl) : null,
         envUrl ? ripe.CsrUtils.loadEnvironment(envUrl, envFormat) : null,
         baseTextureUrl ? ripe.CsrUtils.loadTexture(baseTextureUrl) : null,
         displacementTextureUrl ? ripe.CsrUtils.loadTexture(displacementTextureUrl) : null,
