@@ -1188,6 +1188,15 @@ ripe.ConfiguratorCsr.prototype._unpackTextureOptions = function(options) {
     return unpacked;
 };
 
+/**
+ * Unpacks a set of initials options originated from the config so it can be used by the
+ * CSR configurator.
+ *
+ * @param {Object} options Set of initials options originated from the config.
+ * @returns {Object} The unpacked initials set of options.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._unpackInitialsOptions = function(initialsConfig) {
     const unpacked = {};
 
@@ -1281,6 +1290,15 @@ ripe.ConfiguratorCsr.prototype._unpackInitialsOptions = function(initialsConfig)
     return unpacked;
 };
 
+/**
+ * Unpacks a set of scene options originated from the config so it can be used by the
+ * CSR configurator.
+ *
+ * @param {Object} options Set of scene options originated from the config.
+ * @returns {Object} The unpacked scene set of options.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._unpackSceneOptions = function(options) {
     const rendererOptions = {};
     const cameraOptions = {};
@@ -1325,6 +1343,14 @@ ripe.ConfiguratorCsr.prototype._unpackSceneOptions = function(options) {
     };
 };
 
+/**
+ * Loads all the assets needed for the CSR to work.
+ *
+ * @param {Object} options Set of scene options.
+ * @param {Object} options Set of initials options.
+ *
+ * @private
+ */
 ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(sceneOptions, initialsOptions) {
     // computes mesh URL
     const variant = this.owner.variant || "$base";
