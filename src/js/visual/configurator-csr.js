@@ -1458,8 +1458,8 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         let metallicTexturePath = null;
         let normalTexturePath = null;
         let roughnessTexturePath = null;
-        const fontFamily = initialsCsr.text ? initialsCsr.text.font_family : null; // TODO review this
-        const fontWeight = initialsCsr.text ? initialsCsr.text.font_weight : null; // TODO review this
+        const fontFamily = initialsCsr.text ? initialsCsr.text.font_family : null;
+        const fontWeight = initialsCsr.text ? initialsCsr.text.font_weight : null;
         if (initialsEnabled) {
             const textures = {
                 baseTexture: initialsCsr.base_texture ? initialsCsr.base_texture.name : null,
@@ -1575,8 +1575,8 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         const textOptions = {};
         if (initialsCsr.text) {
             textOptions.fontSize = initialsCsr.text.font_size;
-            textOptions.font = initialsCsr.text.font_family; // TODO review this font option
-            // TODO textOptions.fontWeight = initialsCsr.text.font_weight;
+            textOptions.font = initialsCsr.text.font_family;
+            textOptions.fontWeight = initialsCsr.text.font_weight;
             textOptions.xOffset = initialsCsr.text.x_offset;
             textOptions.yOffset = initialsCsr.text.y_offset;
             textOptions.lineWidth = initialsCsr.text.stroke_width;
