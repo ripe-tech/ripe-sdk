@@ -1227,6 +1227,7 @@ ripe.ConfiguratorCsr.prototype._unpackInitialsOptions = function(initialsConfig)
         textOptions.fontSize = csrOptions.text.font_size;
         textOptions.font = csrOptions.text.font_family;
         textOptions.fontWeight = csrOptions.text.font_weight;
+        textOptions.fontFormat = csrOptions.text.font_format;
         textOptions.xOffset = csrOptions.text.x_offset;
         textOptions.yOffset = csrOptions.text.y_offset;
         textOptions.lineWidth = csrOptions.text.stroke_width;
