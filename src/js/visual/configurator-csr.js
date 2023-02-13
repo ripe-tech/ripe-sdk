@@ -1168,6 +1168,27 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
 };
 
 /**
+ * Unpacks a set of texture options originated from the config so it can be used by the
+ * CSR configurator.
+ *
+ * @param {Object} options Set of texture options originated from the config.
+ * @returns {Object} The unpacked texture set of options.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._unpackTextureOptions = function(options) {
+    const unpacked = {};
+    if (options.name) unpacked.name = options.name;
+    if (options.wrap_s) unpacked.wrapS = ripe.CsrUtils.toWrappingModeValue(options.wrap_s);
+    if (options.wrap_t) unpacked.wrapT = ripe.CsrUtils.toWrappingModeValue(options.wrap_t);
+    if (options.offset) unpacked.offset = ripe.CsrUtils.toXYZObject(options.offset);
+    if (options.repeat) unpacked.repeat = ripe.CsrUtils.toXYZObject(options.repeat);
+    if (options.rotation) unpacked.rotation = window.THREE.MathUtils.degToRad(options.rotation);
+    if (options.center) unpacked.center = ripe.CsrUtils.toXYZObject(options.center);
+    return unpacked;
+};
+
+/**
  * Initializes this CSR configurator instance configuration by applying the default
  * config values.
  *
@@ -1435,9 +1456,9 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // checks if initials are enabled
         const initialsEnabled = this.owner.hasPersonalization();
 
-        // gets the initials and initials.3d set from the config
-        const initials = await this.owner.getInitialsConfigP();
-        const initials3d = initials["3d"] || {};
+        // gets the initials and initials.csr set from the config
+        const initialsConfig = await this.owner.getInitialsConfigP();
+        const initialsCsr = initialsConfig.csr || {};
 
         // checks if it should load assets used by the initials
         let fontUrl = null;
@@ -1446,25 +1467,35 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         let metallicTexturePath = null;
         let normalTexturePath = null;
         let roughnessTexturePath = null;
+        const fontFamily = initialsCsr.text ? initialsCsr.text.font_family : null;
+        const fontWeight = initialsCsr.text ? initialsCsr.text.font_weight : null;
         if (initialsEnabled) {
-            fontUrl = initials.font_family
-            ? this.owner.getFontUrl(initials.font_family, "ttf", {
-                  weight: initials.font_weight
-              })
-            : null;
-            baseTexturePath = this.owner.getTextureMapUrl("pattern", initials3d.base_texture);
+            const textures = {
+                baseTexture: initialsCsr.base_texture ? initialsCsr.base_texture.name : null,
+                displacementTexture: initialsCsr.displacement_texture
+                    ? initialsCsr.displacement_texture.name
+                    : null,
+                metallicTexture: initialsCsr.metallic_texture
+                    ? initialsCsr.metallic_texture.name
+                    : null,
+                normalTexture: initialsCsr.normal_texture ? initialsCsr.normal_texture.name : null,
+                roughnessTexture: initialsCsr.roughness_texture
+                    ? initialsCsr.roughness_texture.name
+                    : null
+            };
+            fontUrl = fontFamily
+                ? this.owner.getFontUrl(fontFamily, "ttf", { weight: fontWeight })
+                : null;
+            baseTexturePath = this.owner.getTextureMapUrl("pattern", textures.baseTexture);
             displacementTexturePath = this.owner.getTextureMapUrl(
                 "displacement",
-                initials3d.displacement_texture
+                textures.displacementTexture
             );
-            metallicTexturePath = this.owner.getTextureMapUrl(
-                "metallic",
-                initials3d.metallic_texture
-            );
-            normalTexturePath = this.owner.getTextureMapUrl("normal", initials3d.normal_texture);
+            metallicTexturePath = this.owner.getTextureMapUrl("metallic", textures.metallicTexture);
+            normalTexturePath = this.owner.getTextureMapUrl("normal", textures.normalTexture);
             roughnessTexturePath = this.owner.getTextureMapUrl(
                 "roughness",
-                initials3d.roughness_texture
+                textures.roughnessTexture
             );
         }
 
@@ -1480,7 +1511,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
             this.initialsRefs.roughnessTexture
         ] = await Promise.all([
             this._loadMesh(meshPath, meshFormat),
-            fontUrl ? this._loadExternalFont(initials.font_family, fontUrl) : null,
+            fontUrl ? this._loadExternalFont(fontFamily, fontUrl) : null,
             envPath ? ripe.CsrUtils.loadEnvironment(envPath, envFormat) : null,
             baseTexturePath ? ripe.CsrUtils.loadTexture(baseTexturePath) : null,
             displacementTexturePath ? ripe.CsrUtils.loadTexture(displacementTexturePath) : null,
@@ -1532,55 +1563,86 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
         // unpacks initials options
         const initialsOptions = {};
-        initialsOptions.width = initials3d.width;
-        initialsOptions.height = initials3d.height;
-        const points = initials3d.points || [];
+        initialsOptions.width = initialsCsr.width;
+        initialsOptions.height = initialsCsr.height;
+        const points = initialsCsr.points || [];
         initialsOptions.points = points.map(p => ripe.CsrUtils.toXYZObject(p));
-        initialsOptions.position = initials3d.position
-            ? ripe.CsrUtils.toXYZObject(initials3d.position)
+        initialsOptions.position = initialsCsr.position
+            ? ripe.CsrUtils.toXYZObject(initialsCsr.position)
             : undefined;
-        initialsOptions.rotation = initials3d.rotation
-            ? ripe.CsrUtils.toXYZObject(initials3d.rotation)
+        initialsOptions.rotation = initialsCsr.rotation
+            ? ripe.CsrUtils.toXYZObject(initialsCsr.rotation)
             : undefined;
-        initialsOptions.scale = initials3d.scale;
+        initialsOptions.scale = initialsCsr.scale;
 
         // unpacks initials curve options
         const curveOptions = {};
-        curveOptions.type = initials3d.curve_type;
-        curveOptions.tension = initials3d.curve_tension;
+        curveOptions.type = initialsCsr.curve_type;
+        curveOptions.tension = initialsCsr.curve_tension;
 
         // unpacks initials text options
         const textOptions = {};
-        textOptions.font = initials.font_family;
-        textOptions.fontSize = initials3d.font_size;
-        textOptions.lineWidth = initials3d.stroke_width;
-        textOptions.displacementMapTextBlur = initials3d.text_displacement_blur;
-        textOptions.normalMapBlurIntensity = initials3d.text_normal_map_blur;
+        if (initialsCsr.text) {
+            textOptions.fontSize = initialsCsr.text.font_size;
+            textOptions.font = initialsCsr.text.font_family;
+            textOptions.fontWeight = initialsCsr.text.font_weight;
+            textOptions.xOffset = initialsCsr.text.x_offset;
+            textOptions.yOffset = initialsCsr.text.y_offset;
+            textOptions.lineWidth = initialsCsr.text.stroke_width;
+            textOptions.displacementMapTextBlur = initialsCsr.text.displacement_blur;
+            textOptions.normalMapBlurIntensity = initialsCsr.text.normal_map_blur;
+        }
 
         // unpacks initials material options
         const materialOptions = {};
-        materialOptions.color = initials3d.material_color
-            ? `#${initials3d.material_color}`
-            : undefined;
-        materialOptions.displacementScale = initials3d.material_displacement_scale;
-        materialOptions.displacementBias = initials3d.material_displacement_bias;
-        materialOptions.emissive = initials3d.material_emissive_color
-            ? `#${initials3d.material_emissive_color}`
-            : undefined;
-        materialOptions.emissiveIntensity = initials3d.material_emissive_intensity;
-        materialOptions.metalness = initials3d.material_metalness;
-        materialOptions.roughness = initials3d.material_roughness;
+        if (initialsCsr.material) {
+            const materialOpts = initialsCsr.material;
+            materialOptions.color = materialOpts.color ? `#${materialOpts.color}` : undefined;
+            materialOptions.metalness = materialOpts.metalness;
+            materialOptions.roughness = materialOpts.roughness;
+            materialOptions.emissive = materialOpts.emissive_color
+                ? `#${materialOpts.emissive_color}`
+                : undefined;
+            materialOptions.emissiveIntensity = materialOpts.emissive_intensity;
+            materialOptions.displacementScale = materialOpts.displacement_scale;
+            materialOptions.displacementBias = materialOpts.displacement_bias;
+        }
 
         // unpacks initials mesh options
         const meshOptions = {};
-        meshOptions.widthSegments = initials3d.mesh_width_segments;
-        meshOptions.heightSegments = initials3d.mesh_height_segments;
+        if (initialsCsr.mesh) {
+            const meshOpts = initialsCsr.mesh;
+            meshOptions.widthSegments = meshOpts.width_segments;
+            meshOptions.heightSegments = meshOpts.height_segments;
+        }
+
+        // unpacks initials textures options
+        const baseTextureOptions = initialsCsr.base_texture
+            ? this._unpackTextureOptions(initialsCsr.base_texture)
+            : {};
+        const displacementTextureOptions = initialsCsr.displacement_texture
+            ? this._unpackTextureOptions(initialsCsr.displacement_texture)
+            : {};
+        const metallicTextureOptions = initialsCsr.metallic_texture
+            ? this._unpackTextureOptions(initialsCsr.metallic_texture)
+            : {};
+        const normalTextureOptions = initialsCsr.normal_texture
+            ? this._unpackTextureOptions(initialsCsr.normal_texture)
+            : {};
+        const roughnessTextureOptions = initialsCsr.roughness_texture
+            ? this._unpackTextureOptions(initialsCsr.roughness_texture)
+            : {};
 
         initialsOptions.options = {
             curveOptions: curveOptions,
             textOptions: textOptions,
             materialOptions: materialOptions,
-            meshOptions: meshOptions
+            meshOptions: meshOptions,
+            baseTextureOptions: baseTextureOptions,
+            displacementTextureOptions: displacementTextureOptions,
+            metallicTextureOptions: metallicTextureOptions,
+            normalTextureOptions: normalTextureOptions,
+            roughnessTextureOptions: roughnessTextureOptions
         };
 
         this._initConfigDefaults({

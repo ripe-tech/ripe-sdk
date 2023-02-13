@@ -173,6 +173,25 @@ ripe.CsrUtils.toToneMappingValue = function(key) {
 };
 
 /**
+ * Converts a texture wrapping mode key to the respective texture wrapping mode value.
+ *
+ * @param {String} key Key that will match a wrapping mode value.
+ * @returns {Number} The THREE Wrapping Mode value for the specified wrapping mode type.
+ */
+ripe.CsrUtils.toWrappingModeValue = function(key) {
+    switch (key) {
+        case "repeat":
+            return window.THREE.RepeatWrapping;
+        case "clamp_to_edge":
+            return window.THREE.ClampToEdgeWrapping;
+        case "mirrored_repeat":
+            return window.THREE.MirroredRepeatWrapping;
+        default:
+            throw new Error(`Invalid wrapping mode key: "${key}"`);
+    }
+};
+
+/**
  * Normalizes a THREE.Object3D rotation by setting its axis only with positive
  * values ranging from 0 to 2*PI.
  *
