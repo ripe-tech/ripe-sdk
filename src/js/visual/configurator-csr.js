@@ -1375,14 +1375,10 @@ ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(
     const optionsParams = initialsOptions.options || {};
 
     // computes initials font URL
-    const [font, fontFamily, fontWeight, fontFormat] = optionsParams.textOptions
-        ? [
-              optionsParams.textOptions.font,
-              optionsParams.textOptions.fontFamily,
-              optionsParams.textOptions.fontWeight,
-              optionsParams.textOptions.fontFormat
-          ]
-        : [null, null, null, "ttf"];
+    const font = optionsParams.textOptions ? optionsParams.textOptions.font : null;
+    const fontFamily = optionsParams.textOptions ? optionsParams.textOptions.fontFamily : null;
+    const fontWeight = optionsParams.textOptions ? optionsParams.textOptions.fontWeight : null;
+    const fontFormat = optionsParams.textOptions ? optionsParams.textOptions.fontFormat : "ttf";
     const fontUrl = fontFamily
         ? this.owner.getFontUrl(fontFamily, fontFormat, { weight: fontWeight })
         : null;
