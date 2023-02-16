@@ -13,11 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-*
+* Reuse Draco loader instance - [#481](https://github.com/ripe-tech/ripe-sdk/issues/481)
+* Removed `draco_decoder.js` dependency - [#481](https://github.com/ripe-tech/ripe-sdk/issues/481)
 
 ### Fixed
 
-*
+* Fix meshes compressed with Draco not loading properly - [#481](https://github.com/ripe-tech/ripe-sdk/issues/481)
 
 ## [2.37.0] - 2023-02-14
 

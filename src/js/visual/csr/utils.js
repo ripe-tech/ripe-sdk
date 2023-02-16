@@ -227,6 +227,27 @@ ripe.CsrUtils.shortestRotationRad = function(start, end) {
 };
 
 /**
+ * Loads a Draco Loader instance.
+ *
+ * @returns {THREE.DRACOLoader} The loaded instance of a Draco Loader.
+ */
+ripe.CsrUtils.loadDracoLoader = function() {
+    const dracoLoader = new window.THREE.DRACOLoader();
+    try {
+        dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
+        dracoLoader.preload();
+    } catch (error) {
+        // loader fallback
+        dracoLoader.setDecoderPath(
+            "https://raw.githubusercontent.com/google/draco/master/javascript/"
+        );
+        dracoLoader.preload();
+    }
+
+    return dracoLoader;
+};
+
+/**
  * Loads a texture from a file.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
@@ -276,16 +297,12 @@ ripe.CsrUtils.loadFBX = async function(path) {
  * Loads a GLTF/GLB file.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
- * @param {Boolean} useDracoLoader Dictates if it should use draco loader to decode the file.
+ * @param {THREE.DRACOLoader} dracoLoader A Draco loader instance.
  * @returns {THREE.Object3D} The loaded GLTF/GLB file.
  */
-ripe.CsrUtils.loadGLTF = async function(path, useDracoLoader = true) {
+ripe.CsrUtils.loadGLTF = async function(path, dracoLoader = null) {
     const loader = new window.THREE.GLTFLoader();
-
-    if (useDracoLoader) {
-        const dracoDecoderModule = new window.DracoDecoderModule();
-        loader.setDRACOLoader(dracoDecoderModule);
-    }
+    if (dracoLoader) loader.setDRACOLoader(dracoLoader);
 
     return new Promise((resolve, reject) => {
         loader.load(path, gltf => resolve(gltf.scene));
