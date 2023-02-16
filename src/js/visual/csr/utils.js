@@ -238,9 +238,9 @@ ripe.CsrUtils.loadDracoLoader = function() {
         dracoLoader.preload();
     } catch (error) {
         // loader fallback
-        const fallbackURL =
-            "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/jsm/libs/draco/";
-        dracoLoader.setDecoderPath(fallbackURL);
+        dracoLoader.setDecoderPath(
+            "https://raw.githubusercontent.com/google/draco/master/javascript/"
+        );
         dracoLoader.preload();
     }
 
