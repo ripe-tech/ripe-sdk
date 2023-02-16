@@ -297,7 +297,7 @@ ripe.CsrUtils.loadFBX = async function(path) {
  * Loads a GLTF/GLB file.
  *
  * @param {String} path Path to the file. Can be local path or an URL.
- * @param {Boolean} useDracoLoader Dictates if it should use draco loader to decode the file.
+ * @param {THREE.DRACOLoader} dracoLoader A Draco loader instance.
  * @returns {THREE.Object3D} The loaded GLTF/GLB file.
  */
 ripe.CsrUtils.loadGLTF = async function(path, dracoLoader = null) {
