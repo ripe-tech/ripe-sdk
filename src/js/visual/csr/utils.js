@@ -227,6 +227,26 @@ ripe.CsrUtils.shortestRotationRad = function(start, end) {
 };
 
 /**
+ * Loads a Draco Loader instance.
+ *
+ * @returns {THREE.DRACOLoader} The loaded instance of a Draco Loader.
+ */
+ripe.CsrUtils.loadDracoLoader = function() {
+    const dracoLoader = new window.THREE.DRACOLoader();
+    try {
+        dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
+        dracoLoader.preload();
+    } catch (error) {
+        // loader fallback
+        const fallbackURL = "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
+        dracoLoader.setDecoderPath(fallbackURL);
+        dracoLoader.preload();
+    }
+
+    return dracoLoader;
+};
+
+/**
  * Loads a texture from a file.
  *
  * @param {String} path Path to the file. Can be local path or an URL.

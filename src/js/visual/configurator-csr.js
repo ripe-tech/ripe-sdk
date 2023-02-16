@@ -95,11 +95,11 @@ ripe.ConfiguratorCsr.prototype.init = function() {
 
     // CSR variables
     this.rendererOptions = null;
-    this.useDracoLoader = null;
     this.cameraOptions = null;
     this.zoomOptions = null;
     this.enabledInitials = null;
     this.initialsOptions = null;
+    this.dracoLoader = null;
     this.renderer = null;
     this.camera = null;
     this.scene = null;
@@ -597,7 +597,7 @@ ripe.ConfiguratorCsr.prototype._loadMesh = async function(path, format = "gltf")
     switch (format) {
         case "gltf":
         case "glb":
-            return await ripe.CsrUtils.loadGLTF(path, this.useDracoLoader);
+            return await ripe.CsrUtils.loadGLTF(path, this.dracoLoader);
         case "fbx":
             return await ripe.CsrUtils.loadFBX(path);
         default:
@@ -1362,11 +1362,14 @@ ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(
 ) {
     const variant = this.owner.variant || "$base";
 
-    // computes mesh URL
+    // loads mesh info
     const meshesConfig = config.meshes || {};
     const meshInfo = meshesConfig[variant] || {};
     const meshUrl = this.owner.getMeshUrl({ variant: variant });
     const meshFormat = meshInfo.format || "glb";
+    
+    // loads needed loaders for the meshes
+    this.dracoLoader = ripe.CsrUtils.loadDracoLoader();
 
     // computes environment file URL
     const envUrl = this.owner.get3dSceneEnvironmentUrl();
@@ -1457,7 +1460,6 @@ ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
         toneMappingExposure:
             rendererOpts.toneMappingExposure !== undefined ? rendererOpts.toneMappingExposure : 1
     };
-    this.useDracoLoader = options.useDracoLoader !== undefined ? options.useDracoLoader : true;
     const cameraOpts = options.cameraOptions || {};
     this.cameraOptions = {
         fov: cameraOpts.fov !== undefined ? cameraOpts.fov : 24.678,
@@ -1715,7 +1717,6 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         // can properly be built
         this._initConfigDefaults({
             rendererOptions: sceneOptions.rendererOptions || {},
-            useDracoLoader: true,
             cameraOptions: sceneOptions.cameraOptions || {},
             zoomOptions: sceneOptions.zoomOptions || {},
             enabledInitials: initialsEnabled,
