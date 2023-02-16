@@ -238,7 +238,8 @@ ripe.CsrUtils.loadDracoLoader = function() {
         dracoLoader.preload();
     } catch (error) {
         // loader fallback
-        const fallbackURL = "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
+        const fallbackURL =
+            "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/";
         dracoLoader.setDecoderPath(fallbackURL);
         dracoLoader.preload();
     }
@@ -301,8 +302,8 @@ ripe.CsrUtils.loadFBX = async function(path) {
  */
 ripe.CsrUtils.loadGLTF = async function(path, dracoLoader = null) {
     const loader = new window.THREE.GLTFLoader();
-    if(dracoLoader) loader.setDRACOLoader(dracoLoader);
-    
+    if (dracoLoader) loader.setDRACOLoader(dracoLoader);
+
     return new Promise((resolve, reject) => {
         loader.load(path, gltf => resolve(gltf.scene));
     });

@@ -1367,7 +1367,7 @@ ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(
     const meshInfo = meshesConfig[variant] || {};
     const meshUrl = this.owner.getMeshUrl({ variant: variant });
     const meshFormat = meshInfo.format || "glb";
-    
+
     // loads needed loaders for the meshes
     this.dracoLoader = ripe.CsrUtils.loadDracoLoader();
 
