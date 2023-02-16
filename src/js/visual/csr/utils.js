@@ -279,14 +279,10 @@ ripe.CsrUtils.loadFBX = async function(path) {
  * @param {Boolean} useDracoLoader Dictates if it should use draco loader to decode the file.
  * @returns {THREE.Object3D} The loaded GLTF/GLB file.
  */
-ripe.CsrUtils.loadGLTF = async function(path, useDracoLoader = true) {
+ripe.CsrUtils.loadGLTF = async function(path, dracoLoader = null) {
     const loader = new window.THREE.GLTFLoader();
-
-    if (useDracoLoader) {
-        const dracoDecoderModule = new window.DracoDecoderModule();
-        loader.setDRACOLoader(dracoDecoderModule);
-    }
-
+    if(dracoLoader) loader.setDRACOLoader(dracoLoader);
+    
     return new Promise((resolve, reject) => {
         loader.load(path, gltf => resolve(gltf.scene));
     });
