@@ -58,6 +58,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
     // options variables
+    this.id = this.options.id || null;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
     this.size = this.options.size || null;
@@ -1740,7 +1741,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         await this.flushPending(true);
 
         self.loading = false;
-        this.trigger("ready", { id: "configurator_csr" });
+        this.trigger("ready", { id: this.id, origin: "configurator-csr" });
     };
 
     // runs synchronously or asynchronously depending on how the CSR configurator was setup

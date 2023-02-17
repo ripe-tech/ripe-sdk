@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Add id to `ready` event after configurator `_postConfig` to allow the use of a loader - [ripe-white/#1098](https://github.com/ripe-tech/ripe-white/issues/1098)
+* Add id to `init` to better distinguish configurator `ready` events - [ripe-white/#1098](https://github.com/ripe-tech/ripe-white/issues/1098)
 
 ### Changed
 
