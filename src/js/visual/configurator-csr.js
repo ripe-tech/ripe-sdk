@@ -1741,6 +1741,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
         self.loading = false;
         this.trigger("ready");
+        this.trigger("post_config", config);
     };
 
     // runs synchronously or asynchronously depending on how the CSR configurator was setup
