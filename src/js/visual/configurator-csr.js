@@ -58,7 +58,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
     // options variables
-    this.id = this.options.id ?? 0;
+    this.id = this.options.id || 0;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
     this.size = this.options.size || null;

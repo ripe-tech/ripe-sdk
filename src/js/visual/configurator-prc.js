@@ -57,7 +57,7 @@ ripe.ConfiguratorPrc.prototype.constructor = ripe.ConfiguratorPrc;
 ripe.ConfiguratorPrc.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
-    this.id = this.options.id ?? 0;
+    this.id = this.options.id || 0;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
     this.format = this.options.format || null;
