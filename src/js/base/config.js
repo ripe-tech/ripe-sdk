@@ -46,3 +46,36 @@ ripe.Ripe.prototype.hasStrategy = function(strategy) {
     const strategies = (this.loadedConfig && this.loadedConfig.strategies) || ["prc"];
     return strategies.includes(strategy);
 };
+
+ripe.Ripe.prototype.initialsConfig = function(config) {
+    let initials = config.initials || {};
+
+    const baseProfile = initials.profile || null;
+    const baseProfiles = initials.profiles || [];
+    if (baseProfile && !baseProfiles.includes(baseProfile)) {
+        baseProfiles.push(baseProfile);
+    }
+
+    const profiles = initials.$profiles || {};
+    const alias =  initials.$alias || {};
+
+    const profilesFinal = [];
+    baseProfiles.reverse().forEach(profile => {
+        const aliasProfiles = alias[profile] || [];
+        aliasProfiles.push(profile);
+        aliasProfiles.forEach(p => {
+            const values = profiles[p];
+            if (!values) return;
+
+            initials = { ...initials, ...values }
+            profilesFinal.push(p);
+        });
+    });
+
+    const initialsRoot = initials.$root || {};
+    initials = {...initials, ...initialsRoot };
+
+    initials.profiles = profilesFinal;
+
+    return initials;
+};
