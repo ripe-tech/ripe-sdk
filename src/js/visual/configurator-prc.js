@@ -57,6 +57,7 @@ ripe.ConfiguratorPrc.prototype.constructor = ripe.ConfiguratorPrc;
 ripe.ConfiguratorPrc.prototype.init = function() {
     ripe.Visual.prototype.init.call(this);
 
+    this.id = this.options.id || 0;
     this.width = this.options.width || null;
     this.height = this.options.height || null;
     this.format = this.options.format || null;
@@ -1172,7 +1173,7 @@ ripe.ConfiguratorPrc.prototype._updateConfig = async function(animate) {
     // marks the current configurator as ready and triggers
     // the associated ready event to any event listener
     this.ready = true;
-    this.trigger("ready");
+    this.trigger("ready", { id: this.id, origin: "configurator-prc" });
 
     // adds the config visual class indicating that
     // a configuration already exists for the current
