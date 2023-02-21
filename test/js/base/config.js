@@ -67,79 +67,94 @@ describe("Config", function() {
 
     describe("#initialsConfig()", function() {
         it("should be able to retrieve the initials config with the applied profiles", () => {
-            const config =  {
-                "initials": {
-                    "$profiles": {
-                        "base": {
-                            "frame": "top",
-                            "align": "center",
-                            "image_rotation": 270,
-                            "font_family": "Gold",
-                            "font_spacing": -10,
-                            "rotation": 0,
+            const config = {
+                initials: {
+                    $profiles: {
+                        base: {
+                            frame: "top",
+                            align: "center",
+                            image_rotation: 270,
+                            font_family: "Gold",
+                            font_spacing: -10,
+                            rotation: 0
                         },
-                        "metal_copper": {"font_family": "Copper"},
-                        "metal_gold": {"font_family": "Gold"},
-                        "metal_silver": {"font_family": "Silver"},
-                        "viewport::large": {"viewport": [324, 283, 250, 250]},
-                        "viewport::medium": {"viewport": [349, 308, 200, 200]},
+                        metal_copper: { font_family: "Copper" },
+                        metal_gold: { font_family: "Gold" },
+                        metal_silver: { font_family: "Silver" },
+                        "viewport::large": { viewport: [324, 283, 250, 250] },
+                        "viewport::medium": { viewport: [349, 308, 200, 200] }
                     },
-                    "$alias": {
+                    $alias: {
                         "step::personalization": ["viewport::large"],
-                        "custom_alias_1": ["base", "viewport::medium"],
-                        "custom_alias_2": ["base", "metal_gold", "metal_silver"],
+                        custom_alias_1: ["base", "viewport::medium"],
+                        custom_alias_2: ["base", "metal_gold", "metal_silver"]
                     }
                 }
-            }
-            const instance = new ripe.Ripe("swear", "vyner", { noBundles: true, remoteCalls: false });
+            };
+            const instance = new ripe.Ripe("swear", "vyner", {
+                noBundles: true,
+                remoteCalls: false
+            });
 
             let initialsConfig = instance.initialsConfig(config);
-            assert.strictEqual(initialsConfig["frame"],  undefined);
-            assert.strictEqual(initialsConfig["align"],  undefined);
-            assert.strictEqual(initialsConfig["image_rotation"],  undefined);
-            assert.strictEqual(initialsConfig["font_family"],  undefined);
-            assert.strictEqual(initialsConfig["font_spacing"],  undefined);
-            assert.strictEqual(initialsConfig["rotation"],  undefined);
+            assert.strictEqual(initialsConfig.frame, undefined);
+            assert.strictEqual(initialsConfig.align, undefined);
+            assert.strictEqual(initialsConfig.image_rotation, undefined);
+            assert.strictEqual(initialsConfig.font_family, undefined);
+            assert.strictEqual(initialsConfig.font_spacing, undefined);
+            assert.strictEqual(initialsConfig.rotation, undefined);
 
             initialsConfig = instance.initialsConfig(config, ["base"]);
-            assert.strictEqual(initialsConfig["frame"], "top")
-            assert.strictEqual(initialsConfig["align"], "center")
-            assert.strictEqual(initialsConfig["image_rotation"], 270)
-            assert.strictEqual(initialsConfig["font_family"], "Gold")
-            assert.strictEqual(initialsConfig["font_spacing"], -10)
-            assert.strictEqual(initialsConfig["rotation"], 0)
+            assert.strictEqual(initialsConfig.frame, "top");
+            assert.strictEqual(initialsConfig.align, "center");
+            assert.strictEqual(initialsConfig.image_rotation, 270);
+            assert.strictEqual(initialsConfig.font_family, "Gold");
+            assert.strictEqual(initialsConfig.font_spacing, -10);
+            assert.strictEqual(initialsConfig.rotation, 0);
 
             initialsConfig = instance.initialsConfig(config, ["step::personalization"]);
-            assert.strictEqual(initialsConfig["frame"],  undefined);
-            assert.strictEqual(initialsConfig["align"],  undefined);
-            assert.strictEqual(initialsConfig["image_rotation"],  undefined);
-            assert.strictEqual(initialsConfig["font_family"],  undefined);
-            assert.strictEqual(initialsConfig["font_spacing"],  undefined);
-            assert.strictEqual(initialsConfig["rotation"],  undefined);
-            assert.deepEqual(initialsConfig["viewport"], [324, 283, 250, 250])
-            
-            initialsConfig = instance.initialsConfig(config, ["custom_alias_1", "step::personalization"]);
-            assert.strictEqual(initialsConfig["frame"], "top")
-            assert.strictEqual(initialsConfig["align"], "center")
-            assert.strictEqual(initialsConfig["image_rotation"], 270)
-            assert.strictEqual(initialsConfig["font_family"], "Gold")
-            assert.strictEqual(initialsConfig["font_spacing"], -10)
-            assert.strictEqual(initialsConfig["rotation"], 0)
-            assert.deepEqual(initialsConfig["viewport"], [349, 308, 200, 200])
+            assert.strictEqual(initialsConfig.frame, undefined);
+            assert.strictEqual(initialsConfig.align, undefined);
+            assert.strictEqual(initialsConfig.image_rotation, undefined);
+            assert.strictEqual(initialsConfig.font_family, undefined);
+            assert.strictEqual(initialsConfig.font_spacing, undefined);
+            assert.strictEqual(initialsConfig.rotation, undefined);
+            assert.deepEqual(initialsConfig.viewport, [324, 283, 250, 250]);
+
+            initialsConfig = instance.initialsConfig(config, [
+                "custom_alias_1",
+                "step::personalization"
+            ]);
+            assert.strictEqual(initialsConfig.frame, "top");
+            assert.strictEqual(initialsConfig.align, "center");
+            assert.strictEqual(initialsConfig.image_rotation, 270);
+            assert.strictEqual(initialsConfig.font_family, "Gold");
+            assert.strictEqual(initialsConfig.font_spacing, -10);
+            assert.strictEqual(initialsConfig.rotation, 0);
+            assert.deepEqual(initialsConfig.viewport, [349, 308, 200, 200]);
 
             initialsConfig = instance.initialsConfig(config, ["custom_alias_2"]);
-            assert.strictEqual(initialsConfig["frame"], "top")
-            assert.strictEqual(initialsConfig["align"], "center")
-            assert.strictEqual(initialsConfig["image_rotation"], 270)
-            assert.strictEqual(initialsConfig["font_family"], "Silver")
-            assert.strictEqual(initialsConfig["font_spacing"], -10)
-            assert.strictEqual(initialsConfig["rotation"], 0)
+            assert.strictEqual(initialsConfig.frame, "top");
+            assert.strictEqual(initialsConfig.align, "center");
+            assert.strictEqual(initialsConfig.image_rotation, 270);
+            assert.strictEqual(initialsConfig.font_family, "Silver");
+            assert.strictEqual(initialsConfig.font_spacing, -10);
+            assert.strictEqual(initialsConfig.rotation, 0);
 
-            initialsConfig = instance.initialsConfig(config, ["metal_copper", "metal_silver", "metal_gold"]);            
-            assert.strictEqual(initialsConfig["font_family"], "Copper")    
-    
-            initialsConfig = instance.initialsConfig(config, ["custom_alias_2", "metal_copper", "metal_silver", "metal_gold"]);
-            assert.strictEqual(initialsConfig["font_family"], "Silver")
+            initialsConfig = instance.initialsConfig(config, [
+                "metal_copper",
+                "metal_silver",
+                "metal_gold"
+            ]);
+            assert.strictEqual(initialsConfig.font_family, "Copper");
+
+            initialsConfig = instance.initialsConfig(config, [
+                "custom_alias_2",
+                "metal_copper",
+                "metal_silver",
+                "metal_gold"
+            ]);
+            assert.strictEqual(initialsConfig.font_family, "Silver");
         });
     });
 });

@@ -57,7 +57,7 @@ ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
     }
 
     const profilesValues = initials.$profiles || {};
-    const alias =  initials.$alias || {};
+    const alias = initials.$alias || {};
 
     const profilesFinal = [];
     baseProfiles.reverse().forEach(profile => {
@@ -67,13 +67,13 @@ ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
             const values = profilesValues[p];
             if (!values) return;
 
-            initials = { ...initials, ...values }
+            initials = { ...initials, ...values };
             profilesFinal.push(p);
         });
     });
 
     const initialsRoot = initials.$root || {};
-    initials = {...initials, ...initialsRoot };
+    initials = { ...initials, ...initialsRoot };
 
     initials.profiles = profilesFinal;
 
