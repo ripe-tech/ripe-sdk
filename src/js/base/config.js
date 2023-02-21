@@ -97,7 +97,7 @@ ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
  * @param {Object} initials The base initials config values.
  * @param {Object} values The initials config values to be applied.
  * @returns {Object} The update initials config.
- * 
+ *
  * @private
  */
 ripe.Ripe.prototype._initialsUpdate = function(initials, values) {
