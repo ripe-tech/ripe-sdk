@@ -77,15 +77,29 @@ ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
             const values = profilesValues[p];
             if (!values) return;
 
-            initials = { ...initials, ...values };
+            initials = this._initialsUpdate(initials, values);
             profilesFinal.push(p);
         });
     });
 
     const initialsRoot = initials.$root || {};
-    initials = { ...initials, ...initialsRoot };
+    initials = this._initialsUpdate(initials, initialsRoot);
 
     initials.profiles = profilesFinal;
 
     return initials;
+};
+
+/**
+ * Retrieves the updated initials config by merging the initials config values
+ * with other initials config values.
+ *
+ * @param {Object} initials The base initials config values.
+ * @param {Object} values The initials config values to be applied.
+ * @returns {Object} The update initials config.
+ * 
+ * @private
+ */
+ripe.Ripe.prototype._initialsUpdate = function(initials, values) {
+    return { ...initials, ...values };
 };
