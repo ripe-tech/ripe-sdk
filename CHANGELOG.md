@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Add `initialsConfig` method - [#479](https://github.com/ripe-tech/ripe-sdk/issues/479)
+* Add `#initialsConfig()` tests - [#479](https://github.com/ripe-tech/ripe-sdk/issues/479)
 
 ### Changed
 
