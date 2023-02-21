@@ -61,31 +61,31 @@ ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
     let initials = config.initials || {};
 
     const baseProfile = initials.profile || null;
-    const baseProfiles = profiles || initials.profiles || [];
+    const baseProfiles = profiles.length > 0 ? profiles : initials.profiles || [];
     if (baseProfile && !baseProfiles.includes(baseProfile)) {
         baseProfiles.push(baseProfile);
     }
 
-    const profilesValues = initials.$profiles || {};
-    const alias = initials.$alias || {};
+    const $profiles = initials.$profiles || {};
+    const $alias = initials.$alias || {};
 
-    const profilesFinal = [];
+    const finalProfiles = [];
     baseProfiles.reverse().forEach(profile => {
-        const aliasProfiles = alias[profile] || [];
+        const aliasProfiles = $alias[profile] || [];
         aliasProfiles.push(profile);
-        aliasProfiles.forEach(p => {
-            const values = profilesValues[p];
+        aliasProfiles.forEach(aliasProfile => {
+            const values = $profiles[aliasProfile];
             if (!values) return;
 
             initials = this._initialsUpdate(initials, values);
-            profilesFinal.push(p);
+            finalProfiles.push(aliasProfile);
         });
     });
 
     const initialsRoot = initials.$root || {};
     initials = this._initialsUpdate(initials, initialsRoot);
 
-    initials.profiles = profilesFinal;
+    initials.profiles = finalProfiles;
 
     return initials;
 };
