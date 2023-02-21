@@ -47,16 +47,16 @@ ripe.Ripe.prototype.hasStrategy = function(strategy) {
     return strategies.includes(strategy);
 };
 
-ripe.Ripe.prototype.initialsConfig = function(config) {
+ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
     let initials = config.initials || {};
 
     const baseProfile = initials.profile || null;
-    const baseProfiles = initials.profiles || [];
+    const baseProfiles = profiles || initials.profiles || [];
     if (baseProfile && !baseProfiles.includes(baseProfile)) {
         baseProfiles.push(baseProfile);
     }
 
-    const profiles = initials.$profiles || {};
+    const profilesValues = initials.$profiles || {};
     const alias =  initials.$alias || {};
 
     const profilesFinal = [];
@@ -64,7 +64,7 @@ ripe.Ripe.prototype.initialsConfig = function(config) {
         const aliasProfiles = alias[profile] || [];
         aliasProfiles.push(profile);
         aliasProfiles.forEach(p => {
-            const values = profiles[p];
+            const values = profilesValues[p];
             if (!values) return;
 
             initials = { ...initials, ...values }
