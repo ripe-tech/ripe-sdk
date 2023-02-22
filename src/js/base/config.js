@@ -59,18 +59,19 @@ ripe.Ripe.prototype.hasStrategy = function(strategy) {
  */
 ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
     let initials = config.initials || {};
+    const baseProfiles = config.initials && config.initials.profiles ? config.initials.profiles : [];
 
     const baseProfile = initials.profile || null;
-    const baseProfiles = profiles.length > 0 ? profiles : initials.profiles || [];
     if (baseProfile && !baseProfiles.includes(baseProfile)) {
         baseProfiles.push(baseProfile);
     }
+    profiles = profiles.concat(baseProfiles); 
 
     const $profiles = initials.$profiles || {};
     const $alias = initials.$alias || {};
 
     const finalProfiles = [];
-    baseProfiles.reverse().forEach(profile => {
+    profiles.reverse().forEach(profile => {
         const aliasProfiles = $alias[profile] || [];
         aliasProfiles.push(profile);
         aliasProfiles.forEach(aliasProfile => {
