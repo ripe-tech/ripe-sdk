@@ -52,6 +52,9 @@ ripe.Ripe.prototype.hasStrategy = function(strategy) {
  * `profiles` argument is provided those profiles will be also used to compute the
  * initials config.
  *
+ * This method is implements the same logic as `initials_config` in the composition
+ * engine this should be kept in sync with that implementation.
+ *
  * @param {Object} config The model's config.
  * @param {Array} profiles The list of profiles to use.
  * @returns {Object} The computed initials config based on the config profiles and
