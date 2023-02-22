@@ -178,8 +178,7 @@ describe("Config", function() {
             assert.strictEqual(remote.font_spacing, local.font_spacing);
             assert.strictEqual(remote.rotation, local.rotation);
 
-
-            remote = await instance.getInitialsConfigP( { profiles: ["step::personalization"] });
+            remote = await instance.getInitialsConfigP({ profiles: ["step::personalization"] });
             local = instance.initialsConfig(instance.loadedConfig, ["step::personalization"]);
             assert.deepEqual(remote.profiles, ["base", "viewport::large"]);
             assert.strictEqual(remote.frame, "top");
