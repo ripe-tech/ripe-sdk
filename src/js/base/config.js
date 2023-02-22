@@ -46,3 +46,65 @@ ripe.Ripe.prototype.hasStrategy = function(strategy) {
     const strategies = (this.loadedConfig && this.loadedConfig.strategies) || ["prc"];
     return strategies.includes(strategy);
 };
+
+/**
+ * Retrieves the initials config with the specified profiles in the config. If the
+ * `profiles` argument is provided those profiles will be also used to compute the
+ * initials config.
+ *
+ * This method implements the same logic as `initials_config` in the composition
+ * engine and should be kept in sync with that implementation.
+ *
+ * @param {Object} config The model's config.
+ * @param {Array} profiles The list of profiles to use.
+ * @returns {Object} The computed initials config based on the config profiles and
+ * specified profiles.
+ */
+ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
+    let initials = config.initials || {};
+    const baseProfiles =
+        config.initials && config.initials.profiles ? config.initials.profiles : [];
+
+    const baseProfile = initials.profile || null;
+    if (baseProfile && !baseProfiles.includes(baseProfile)) {
+        baseProfiles.push(baseProfile);
+    }
+    profiles = profiles.concat(baseProfiles);
+
+    const $profiles = initials.$profiles || {};
+    const $alias = initials.$alias || {};
+
+    const finalProfiles = [];
+    profiles.reverse().forEach(profile => {
+        const aliasProfiles = $alias[profile] || [];
+        aliasProfiles.push(profile);
+        aliasProfiles.forEach(aliasProfile => {
+            const values = $profiles[aliasProfile];
+            if (!values) return;
+
+            initials = this._initialsUpdate(initials, values);
+            finalProfiles.push(aliasProfile);
+        });
+    });
+
+    const initialsRoot = initials.$root || {};
+    initials = this._initialsUpdate(initials, initialsRoot);
+
+    initials.profiles = finalProfiles;
+
+    return initials;
+};
+
+/**
+ * Retrieves the updated initials config by merging the initials config values
+ * with other initials config values.
+ *
+ * @param {Object} initials The base initials config values.
+ * @param {Object} values The initials config values to be applied.
+ * @returns {Object} The update initials config.
+ *
+ * @private
+ */
+ripe.Ripe.prototype._initialsUpdate = function(initials, values) {
+    return { ...initials, ...values };
+};
