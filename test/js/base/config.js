@@ -161,8 +161,8 @@ describe("Config", function() {
             const instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
             await instance.isReady();
 
-            const remote = await instance.getInitialsConfigP();
-            const local = instance.initialsConfig(instance.loadedConfig);
+            let remote = await instance.getInitialsConfigP();
+            let local = instance.initialsConfig(instance.loadedConfig);
             assert.deepEqual(remote.profiles, ["base"]);
             assert.strictEqual(remote.frame, "top");
             assert.strictEqual(remote.align, "center");
@@ -177,6 +177,26 @@ describe("Config", function() {
             assert.strictEqual(remote.font_family, local.font_family);
             assert.strictEqual(remote.font_spacing, local.font_spacing);
             assert.strictEqual(remote.rotation, local.rotation);
+
+
+            remote = await instance.getInitialsConfigP( { profiles: ["step::personalization"] });
+            local = instance.initialsConfig(instance.loadedConfig, ["step::personalization"]);
+            assert.deepEqual(remote.profiles, ["base", "viewport::large"]);
+            assert.strictEqual(remote.frame, "top");
+            assert.strictEqual(remote.align, "center");
+            assert.strictEqual(remote.image_rotation, 270);
+            assert.strictEqual(remote.font_family, "SwearGold");
+            assert.strictEqual(remote.font_spacing, -10);
+            assert.strictEqual(remote.rotation, 0);
+            assert.deepEqual(remote.viewport, [324, 283, 250, 250]);
+            assert.deepEqual(remote.profiles, local.profiles);
+            assert.strictEqual(remote.frame, local.frame);
+            assert.strictEqual(remote.align, local.align);
+            assert.strictEqual(remote.image_rotation, local.image_rotation);
+            assert.strictEqual(remote.font_family, local.font_family);
+            assert.strictEqual(remote.font_spacing, local.font_spacing);
+            assert.strictEqual(remote.rotation, local.rotation);
+            assert.deepEqual(remote.viewport, local.viewport);
         });
     });
 });
