@@ -1675,7 +1675,7 @@ ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engra
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsExtra = {}, params) {
+ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsExtra, params) {
     if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
 
     const hasEmptyInitials = Object.values(initialsExtra).length === 0;
