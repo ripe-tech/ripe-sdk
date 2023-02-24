@@ -1704,8 +1704,8 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
     const _postConfig = async () => {
-        // gets the initials and initials.csr set from the config
-        const initialsConfig = await this.owner.getInitialsConfigP();
+        // gets the initials configuration from the config
+        const initialsConfig = this.owner.initialsConfig(config);
 
         // gets the 3d set from the config
         const config3d = config["3d"] || {};

@@ -9,13 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [2.38.0]
+
+### Added
+
 * Add `id` and `origin` to `ready` event params to distinguish events from configurator prc and csr - [ripe-white/#1098](https://github.com/ripe-tech/ripe-white/issues/1098)
+* Add `initialsConfig` method - [#479](https://github.com/ripe-tech/ripe-sdk/issues/479)
+* Add `#initialsConfig()` tests - [#479](https://github.com/ripe-tech/ripe-sdk/issues/479)
 * Allowing set initials extra of empty or single group initials in configurator csr - [ripe-white/#1098](https://github.com/ripe-tech/ripe-white/issues/1098)
 
 ### Changed
 
 * Reuse Draco loader instance - [#481](https://github.com/ripe-tech/ripe-sdk/issues/481)
 * Removed `draco_decoder.js` dependency - [#481](https://github.com/ripe-tech/ripe-sdk/issues/481)
+* Use `initialsConfig()` in CSR - [#479](https://github.com/ripe-tech/ripe-sdk/issues/479)
 
 ### Fixed
 
