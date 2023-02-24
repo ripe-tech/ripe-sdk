@@ -1685,7 +1685,7 @@ ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsEx
     if (!isSingleGroup && !hasEmptyInitials) throw new Error("Not implemented");
 
     this.initialsRefs.renderedInitials.setInitials(
-        (initialsGroups && initialsGroups[0]?.initials) || ""
+        hasEmptyInitials ? "" : initialsGroups[0].initials || ""
     );
 };
 
