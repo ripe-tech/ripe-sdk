@@ -19,12 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
-## [2.39.0]
+## [2.39.0] - 2023-02-24
 
 ### Added
 
 * Allowing set initials extra of empty or single group initials in configurator csr - [ripe-white/#1098](https://github.com/ripe-tech/ripe-white/issues/1098)
-## [2.38.0]
+## [2.38.0] - 2023-02-24
 
 ### Added
 
