@@ -82,13 +82,13 @@ ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
             const values = $profiles[aliasProfile];
             if (!values) return;
 
-            initials = this._initialsUpdate(initials, values);
+            initials = this._initialsMerge(initials, values);
             finalProfiles.push(aliasProfile);
         });
     });
 
     const initialsRoot = initials.$root || {};
-    initials = this._initialsUpdate(initials, initialsRoot);
+    initials = this._initialsMerge(initials, initialsRoot);
 
     initials.profiles = finalProfiles;
 
@@ -105,6 +105,18 @@ ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
  *
  * @private
  */
-ripe.Ripe.prototype._initialsUpdate = function(initials, values) {
-    return { ...initials, ...values };
+ripe.Ripe.prototype._initialsMerge = function(initials, values) {
+    Object.keys(values).forEach(key => {
+        const value = values[key];
+        if (ripe.typeof(value) === "object") {
+            let existingValue = initials[key] || {};
+            existingValue = ripe.typeof(existingValue) === "object" ? existingValue : {};
+            const valueUpdated = this._initialsMerge(existingValue, value);
+            initials[key] = valueUpdated; 
+        } else {
+            initials[key] = value;
+        }
+    });
+
+    return initials;
 };
