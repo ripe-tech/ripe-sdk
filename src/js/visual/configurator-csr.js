@@ -884,7 +884,6 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
 
     // applies the mesh reference points if available
     if (this.initialsOptions.points && this.initialsOptions.points.length > 0) {
-        console.log("calculating points start");
         const vec3Points = this.initialsOptions.points.map(point =>
             ripe.CsrUtils.toVector3({
                 x: point.x / this.INITIALS_SCALE_MULTIPLIER,
@@ -892,10 +891,7 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
                 z: point.z / this.INITIALS_SCALE_MULTIPLIER
             })
         );
-        console.log("calculating points end");
-        console.log("setPoints start");
         this.initialsRefs.renderedInitials.setPoints(vec3Points);
-        console.log("setPoints end");
     }
 
     // applies the mesh transformations
@@ -1735,22 +1731,16 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         });
 
         // init scene
-        console.log("_initScene start");
         this._initScene();
-        console.log("_initScene end");
 
         // init the CSR initials
-        console.log("_initCsrRenderedInitials start");
         this._initCsrRenderedInitials();
-        console.log("_initCsrRenderedInitials end");
 
         // init debug tools
         this._initDebug();
 
         // renders newly build scene
-        console.log("_render start");
         this._render();
-        console.log("_render end");
 
         // flushes the complete set of operations that were waiting
         // for the end of the pre-loading operation, notice that this
