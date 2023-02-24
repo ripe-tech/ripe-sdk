@@ -1678,11 +1678,11 @@ ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engra
 ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsExtra = {}, params) {
     if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
 
-    const initialsGroups = Object.values(initialsExtra);
     const hasEmptyInitials = Object.values(initialsExtra).length === 0;
+    const initialsGroups = Object.values(initialsExtra);
     const isSingleGroup = initialsGroups.length === 1;
 
-    if (!isSingleGroup && !hasEmptyInitials) throw new Error("Not implemented");
+    if (!hasEmptyInitials && !isSingleGroup) throw new Error("Not implemented");
 
     this.initialsRefs.renderedInitials.setInitials(
         hasEmptyInitials ? "" : initialsGroups[0].initials || ""
