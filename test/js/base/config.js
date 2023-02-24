@@ -66,6 +66,123 @@ describe("Config", function() {
     });
 
     describe("#initialsConfig()", function() {
+        it("should be able to merge two the initials configurations", () => {
+            const instance = new ripe.Ripe("swear", "vyner", {
+                noBundles: true,
+                remoteCalls: false
+            });
+
+
+            let result = instance._initialsMerge({}, {});
+            assert.deepEqual(result, {});
+
+            result = instance._initialsMerge({"a": 1, "b": 2}, {})
+            assert.deepEqual(result, {"a": 1, "b": 2})
+
+            result = instance._initialsMerge({"a": 1, "b": 2}, {"c": 3})
+            assert.deepEqual(result, {"a": 1, "b": 2, "c": 3})
+
+            result = instance._initialsMerge({"a": 1, "b": 2}, {"a": 3})
+            assert.deepEqual(result, {"a": 3, "b": 2})
+
+            result = instance._initialsMerge({"a": 1, "b": 2}, {"a": 3})
+            assert.deepEqual(result, {"a": 3, "b": 2})
+
+            result = instance._initialsMerge(
+                {"a": 1, "b": 2}, {"c": {"c1": 1, "c2": 2}}
+            )
+            assert.deepEqual(result, {"a": 1, "b": 2, "c": {"c1": 1, "c2": 2}})
+
+            result = instance._initialsMerge(
+                {"a": 1, "b": 2, "c": {"c1": 1, "c2": 2}}, {"c": {"c3": 3}}
+            )
+            assert.deepEqual(result, {"a": 1, "b": 2, "c": {"c1": 1, "c2": 2, "c3": 3}})
+
+            result = instance._initialsMerge(
+                {"a": 1, "b": 2, "c": {"c1": 1, "c2": 2}}, {"c": {"c1": 123, "c3": 3}}
+            )
+            assert.deepEqual(result, {"a": 1, "b": 2, "c": {"c1": 123, "c2": 2, "c3": 3}})
+
+            result = instance._initialsMerge(
+                {"a": 1, "b": {"b1": 1, "b2": {"b21": 11, "b22": 22}}},
+                {"c": {"c1": 1, "c2": 2}},
+            )
+            assert.deepEqual(
+                result,
+                {
+                    "a": 1,
+                    "b": {"b1": 1, "b2": {"b21": 11, "b22": 22}},
+                    "c": {"c1": 1, "c2": 2},
+                },
+            )
+
+            result = instance._initialsMerge(
+                {"a": 1, "b": {"b1": 1, "b2": {"b21": 11, "b22": 22}}},
+                {"b": {"b1": 1, "b2": {"b22": 2222}}, "c": {"c1": 1, "c2": 2}},
+            )
+            assert.deepEqual(
+                result,
+                {
+                    "a": 1,
+                    "b": {"b1": 1, "b2": {"b21": 11, "b22": 2222}},
+                    "c": {"c1": 1, "c2": 2},
+                },
+            )
+
+            result = instance._initialsMerge(
+                {"a": 1, "b": {"b1": 1, "b2": {"b21": 11, "b22": 22}}},
+                {
+                    "a": 111,
+                    "d": 5,
+                    "b": {"b1": 1, "b2": {"b22": 2222}, "b3": 3},
+                    "c": {"c1": 1, "c2": 2, "c3": {"c31": {"c311": {"c3111": "submarine"}}}},
+                },
+            )
+            assert.deepEqual(
+                result,
+                {
+                    "a": 111,
+                    "b": {"b1": 1, "b2": {"b21": 11, "b22": 2222}, "b3": 3},
+                    "c": {"c1": 1, "c2": 2, "c3": {"c31": {"c311": {"c3111": "submarine"}}}},
+                    "d": 5,
+                },
+            )
+
+            result = instance._initialsMerge(
+                {"a": [1, 2]}, {"a": [11, 22, 33]}
+            )
+            assert.deepEqual(result, {"a": [11, 22, 33]})
+
+            result = instance._initialsMerge(
+                {"a": 1, "b": 2}, {"a": [1, 2, 3]}
+            )
+            assert.deepEqual(result, {"a": [1, 2, 3], "b": 2})
+
+            result = instance._initialsMerge(
+                {"a": 1, "b": [1, 2, 3]}, {"c": {"c1": [4, 5, 6], "c2": 2}}
+            )
+            assert.deepEqual(
+                result, {"a": 1, "b": [1, 2, 3], "c": {"c1": [4, 5, 6], "c2": 2}}
+            )
+
+            result = instance._initialsMerge(
+                {"a": "example a"}, {"a": "override a"}
+            )
+            assert.deepEqual(result, {"a": "override a"})
+
+            result = instance._initialsMerge(
+                {"a": 1, "b": 2}, {"a": "example 1"}
+            )
+            assert.deepEqual(result, {"a": "example 1", "b": 2})
+
+            result = instance._initialsMerge(
+                {"a": "1", "b": [1, 2, 3]}, {"c": {"c1": "example text", "c2": 2}}
+            )
+            assert.deepEqual(
+                result, {"a": "1", "b": [1, 2, 3], "c": {"c1": "example text", "c2": 2}}
+            )
+        });
+
         it("should be able to retrieve the initials config with the applied profiles", () => {
             const config = {
                 initials: {
