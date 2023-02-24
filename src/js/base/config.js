@@ -106,15 +106,15 @@ ripe.Ripe.prototype.initialsConfig = function(config, profiles = []) {
  * @private
  */
 ripe.Ripe.prototype._initialsMerge = function(initials, values) {
-    initials = {...initials};
-    values = {...values};
+    initials = { ...initials };
+    values = { ...values };
     Object.keys(values).forEach(key => {
         const value = values[key];
         if (ripe.typeof(value) === "object") {
             let existingValue = initials[key] || {};
             existingValue = ripe.typeof(existingValue) === "object" ? existingValue : {};
             const valueUpdated = this._initialsMerge(existingValue, value);
-            initials[key] = valueUpdated; 
+            initials[key] = valueUpdated;
         } else {
             initials[key] = value;
         }
