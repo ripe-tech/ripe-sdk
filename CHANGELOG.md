@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Add `id` and `origin` to `ready` event params to distinguish events from configurator prc and csr - [ripe-white/#1098](https://github.com/ripe-tech/ripe-white/issues/1098)
-* Allowing set initials extra of empty or single group initials in configurator csr - [ripe-white/#1098](https://github.com/ripe-tech/ripe-sdk/pull/488)
+* Allowing set initials extra of empty or single group initials in configurator csr - [ripe-white/#1098](https://github.com/ripe-tech/ripe-white/issues/1098)
 
 ### Changed
 
