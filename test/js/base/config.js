@@ -66,7 +66,7 @@ describe("Config", function() {
     });
 
     describe("#initialsConfig()", function() {
-        it("should be able to merge two the initials configurations", () => {
+        it("should be able to merge two initials configurations", () => {
             const instance = new ripe.Ripe("swear", "vyner", {
                 noBundles: true,
                 remoteCalls: false
