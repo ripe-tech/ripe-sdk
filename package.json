@@ -56,7 +56,7 @@
     },
     "dependencies": {
         "node-fetch": "^2.6.1",
-        "three": "^0.143.0",
+        "three": "^0.150.1",
         "xmlhttprequest": "^1.8.0"
     },
     "devDependencies": {
