@@ -155,7 +155,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
 ripe.ConfiguratorCsr.prototype.deinit = async function() {
     this._deinitCsr();
 
-    while (this.element.firstChild) {
+    while (this.element && this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
     }
 
@@ -224,6 +224,7 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
  * update operation.
  */
 ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
+    console.log("update");
     this.loading = true;
 
     const updateScene = Boolean(options.updateScene);
@@ -237,6 +238,7 @@ ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
 
     if (updateRenderedInitials) {
         this._deinitCsrRenderedInitials();
+        console.log("_initCsrRenderedInitials from update()");
         this._initCsrRenderedInitials();
     }
 
@@ -950,6 +952,13 @@ ripe.ConfiguratorCsr.prototype._destroyInitialsResources = function() {
 };
 
 /**
+ * Completely cleanup and destroy CSR initials.
+ */
+ripe.ConfiguratorCsr.prototype._destroyConfig = function() {
+    this._unregisterConfigHandlers();
+};
+
+/**
  * Initiates the debug tools.
  *
  * @private
@@ -1160,6 +1169,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = function() {
 ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     this._destroyDebug();
     this._destroyInitialsResources();
+    this._destroyConfig();
     this._destroyScene();
 
     if (this.renderer) {
@@ -1703,6 +1713,7 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
+    console.log("_onPostConfig");
     const _postConfig = async () => {
         // gets the initials configuration from the config
         const initialsConfig = this.owner.initialsConfig(config);
@@ -1736,6 +1747,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         this._initScene();
 
         // init the CSR initials
+        console.log("_initCsrRenderedInitials from _onPostConfig");
         this._initCsrRenderedInitials();
 
         // init debug tools
@@ -1771,10 +1783,13 @@ ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
-    this.owner.bind("initials", (initials, engraving, params) =>
+    console.log("_registerInitialsHandlers");
+    // this is calling several times and one of the callbacks will not deinit
+    console.info("this.owner", this?.owner);
+    this._onInitialsEventCallback = this.owner.bind("initials", (initials, engraving, params) =>
         this._onInitialsEvent(this, initials, engraving, params)
     );
-    this.owner.bind("initials_extra", (initialsExtra, params) =>
+    this._onInitialsExtraEventCallback = this.owner.bind("initials_extra", (initialsExtra, params) =>
         this._onInitialsExtraEvent(this, initialsExtra, params)
     );
 };
@@ -1783,22 +1798,22 @@ ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
-    this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraEvent);
-    this.owner && this.owner.unbind("initials", this._onInitialsEvent);
+    this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraEventCallback);
+    this.owner && this.owner.unbind("initials", this._onInitialsEventCallback);
 };
 
 /**
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
-    this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
-    this.owner.bind("post_config", config => this._onPostConfig(this, config));
+    this._onPreConfigEventCallback = this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
+    this._onPostConfigEventCallback = this.owner.bind("post_config", config => this._onPostConfig(this, config));
 };
 
 /**
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
-    this.owner && this.owner.unbind("pre_config", this._onPreConfig);
-    this.owner && this.owner.unbind("post_config", this._onPostConfig);
+    this.owner && this.owner.unbind("post_config", this._onPostConfigEventCallback);
+    this.owner && this.owner.unbind("pre_config", this._onPreConfigEventCallback);
 };
