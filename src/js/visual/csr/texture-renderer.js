@@ -11,6 +11,8 @@ if (
     var ripe = base.ripe;
 }
 
+import * as THREE from 'three';
+
 ripe.CsrTextureRenderer = function(
     width = null,
     height = null,
@@ -30,13 +32,13 @@ ripe.CsrTextureRenderer = function(
     this.plane = null;
 
     // creates the renderer that is used to extract pixels data
-    this.renderer = new window.THREE.WebGLRenderer({ antialias: true, ...rendererOptions });
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, ...rendererOptions });
     this.renderer.setPixelRatio(pixelRatio);
     this.renderer.setSize(this.width, this.height);
 
     // creates the scene that fills the renderer viewport
-    this.scene = new window.THREE.Scene();
-    this.camera = new window.THREE.OrthographicCamera(
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.OrthographicCamera(
         this.width / -2,
         this.width / 2,
         this.height / 2,
@@ -44,12 +46,12 @@ ripe.CsrTextureRenderer = function(
         -10,
         10
     );
-    const geometry = new window.THREE.PlaneBufferGeometry(this.width, this.height);
-    this.plane = new window.THREE.Mesh(geometry);
+    const geometry = new THREE.PlaneBufferGeometry(this.width, this.height);
+    this.plane = new THREE.Mesh(geometry);
     this.scene.add(this.plane);
 
     // creates and sets the renderer target
-    this.rendererTarget = new window.THREE.WebGLRenderTarget(this.width, this.height);
+    this.rendererTarget = new THREE.WebGLRenderTarget(this.width, this.height);
     this.renderer.setRenderTarget(this.rendererTarget);
 };
 ripe.CsrTextureRenderer.prototype.constructor = ripe.CsrTextureRenderer;
@@ -103,7 +105,7 @@ ripe.CsrTextureRenderer.prototype.textureFromMaterial = function(material) {
     );
 
     // creates a texture from the pixels data
-    const texture = new window.THREE.DataTexture(pixels, this.width, this.height);
+    const texture = new THREE.DataTexture(pixels, this.width, this.height);
     texture.needsUpdate = true;
 
     return texture;

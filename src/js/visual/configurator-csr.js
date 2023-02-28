@@ -12,6 +12,8 @@ if (
     var ripe = base.ripe;
 }
 
+import * as THREE from 'three';
+
 /**
  * Binds an PRC Configurator to this Ripe instance.
  *
@@ -503,7 +505,7 @@ ripe.ConfiguratorCsr.prototype.prcFrame = async function() {
     ripe.CsrUtils.normalizeRotations(this.modelGroup);
 
     // converts the model group x axis rotation value to degrees
-    const verticalDeg = window.THREE.MathUtils.radToDeg(this.modelGroup.rotation.x);
+    const verticalDeg = THREE.MathUtils.radToDeg(this.modelGroup.rotation.x);
 
     // checks if CSR state is equivalent to PRC top frame
     const topDegMin = 90 - this.verticalThreshold;
@@ -712,7 +714,7 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._initCamera = function() {
-    this.camera = new window.THREE.PerspectiveCamera(
+    this.camera = new THREE.PerspectiveCamera(
         this.cameraOptions.fov,
         this.cameraOptions.aspect,
         this.cameraOptions.near,
@@ -748,7 +750,7 @@ ripe.ConfiguratorCsr.prototype._initScene = function() {
     this.renderer.toneMappingExposure = this.rendererOptions.toneMappingExposure;
 
     // creates empty scene
-    this.scene = new window.THREE.Scene();
+    this.scene = new THREE.Scene();
 
     // gets configurator size information
     const size = this._configuratorSize();
@@ -763,12 +765,12 @@ ripe.ConfiguratorCsr.prototype._initScene = function() {
 
     // sets the scene environment
     if (this.environmentTexture) {
-        this.environmentTexture.mapping = window.THREE.EquirectangularReflectionMapping;
+        this.environmentTexture.mapping = THREE.EquirectangularReflectionMapping;
         this.scene.environment = this.environmentTexture;
     }
 
     // inits the scene model group
-    this.modelGroup = new window.THREE.Group();
+    this.modelGroup = new THREE.Group();
 
     // sets the model mesh
     this.modelGroup.add(this.mesh);
@@ -971,14 +973,14 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
     // inits world axis
     if (this.debugOptions.worldAxis) {
         if (!this.scene) throw new Error("Scene not initialized, can't load debug axis");
-        this.debugRefs.worldAxis = new window.THREE.AxesHelper(100);
+        this.debugRefs.worldAxis = new THREE.AxesHelper(100);
         this.scene.add(this.debugRefs.worldAxis);
     }
 
     // inits model group axis
     if (this.debugOptions.modelAxis) {
         if (!this.modelGroup) throw new Error("Model group not initialized, can't load debug axis");
-        this.debugRefs.modelAxis = new window.THREE.AxesHelper(50);
+        this.debugRefs.modelAxis = new THREE.AxesHelper(50);
         this.modelGroup.add(this.debugRefs.modelAxis);
     }
 
@@ -994,11 +996,11 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         }
 
         // creates group that will contain all rendered initials debug tools
-        this.debugRefs.renderedInitials.group = new window.THREE.Group();
+        this.debugRefs.renderedInitials.group = new THREE.Group();
 
         // inits axis
         if (this.debugOptions.renderedInitials.axis) {
-            this.debugRefs.renderedInitials.axis = new window.THREE.AxesHelper(750);
+            this.debugRefs.renderedInitials.axis = new THREE.AxesHelper(750);
             this.debugRefs.renderedInitials.group.add(this.debugRefs.renderedInitials.axis);
         }
 
@@ -1006,7 +1008,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         if (this.initialsRefs.renderedInitials.points.length > 1) {
             // inits reference points curve
             if (this.debugOptions.renderedInitials.line) {
-                const curve = new window.THREE.CatmullRomCurve3(
+                const curve = new THREE.CatmullRomCurve3(
                     this.initialsRefs.renderedInitials.points,
                     false,
                     this.initialsRefs.renderedInitials.curveOptions.type,
@@ -1014,9 +1016,9 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
                 );
                 const pointsNum = 50;
                 const linePoints = curve.getPoints(pointsNum);
-                this.debugRefs.renderedInitials.line = new window.THREE.Line(
-                    new window.THREE.BufferGeometry().setFromPoints(linePoints),
-                    new window.THREE.LineBasicMaterial({ color: 0x0000ff })
+                this.debugRefs.renderedInitials.line = new THREE.Line(
+                    new THREE.BufferGeometry().setFromPoints(linePoints),
+                    new THREE.LineBasicMaterial({ color: 0x0000ff })
                 );
 
                 this.debugRefs.renderedInitials.group.add(this.debugRefs.renderedInitials.line);
@@ -1024,11 +1026,11 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
 
             // inits reference points
             if (this.debugOptions.renderedInitials.points) {
-                const boxGeometry = new window.THREE.BoxGeometry(30, 30, 30);
-                const boxMaterial = new window.THREE.MeshBasicMaterial({ color: 0xff0000 });
+                const boxGeometry = new THREE.BoxGeometry(30, 30, 30);
+                const boxMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
                 for (const pos of this.initialsRefs.renderedInitials.points) {
-                    const pointBox = new window.THREE.Mesh(boxGeometry, boxMaterial);
+                    const pointBox = new THREE.Mesh(boxGeometry, boxMaterial);
                     pointBox.position.copy(pos);
 
                     this.debugRefs.renderedInitials.points.push(pointBox);
@@ -1135,21 +1137,21 @@ ripe.ConfiguratorCsr.prototype._initCsr = function() {
     const size = this._configuratorSize();
 
     // init renderer
-    this.renderer = new window.THREE.WebGLRenderer({ antialias: true, alpha: true });
-    this.renderer.outputEncoding = window.THREE.sRGBEncoding;
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.setSize(size.width, size.height);
     this.renderer.setAnimationLoop(() => this._onAnimationLoop(this));
 
     // applies tone mapping
-    this.renderer.toneMapping = window.THREE.ACESFilmicToneMapping;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1;
 
     const renderer = this.element.querySelector(".renderer");
     renderer.appendChild(this.renderer.domElement);
 
     // internal clock initialization
-    this.clock = new window.THREE.Clock();
+    this.clock = new THREE.Clock();
 };
 
 /**
@@ -1184,7 +1186,7 @@ ripe.ConfiguratorCsr.prototype._unpackTextureOptions = function(options) {
     if (options.wrap_t) unpacked.wrapT = ripe.CsrUtils.toWrappingModeValue(options.wrap_t);
     if (options.offset) unpacked.offset = ripe.CsrUtils.toXYZObject(options.offset);
     if (options.repeat) unpacked.repeat = ripe.CsrUtils.toXYZObject(options.repeat);
-    if (options.rotation) unpacked.rotation = window.THREE.MathUtils.degToRad(options.rotation);
+    if (options.rotation) unpacked.rotation = THREE.MathUtils.degToRad(options.rotation);
     if (options.center) unpacked.center = ripe.CsrUtils.toXYZObject(options.center);
     return unpacked;
 };
@@ -1453,11 +1455,11 @@ ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
         outputEncoding:
             rendererOpts.outputEncoding !== undefined
                 ? rendererOpts.outputEncoding
-                : window.THREE.sRGBEncoding,
+                : THREE.sRGBEncoding,
         toneMapping:
             rendererOpts.toneMapping !== undefined
                 ? rendererOpts.toneMapping
-                : window.THREE.ACESFilmicToneMapping,
+                : THREE.ACESFilmicToneMapping,
         toneMappingExposure:
             rendererOpts.toneMappingExposure !== undefined ? rendererOpts.toneMappingExposure : 1
     };
