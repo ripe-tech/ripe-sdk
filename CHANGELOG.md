@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-*
+* Improve CSR de initialization logic - [#493](https://github.com/ripe-tech/ripe-sdk/issues/493)
 
 ### Fixed
 
