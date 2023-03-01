@@ -14,9 +14,14 @@ const replace = require("gulp-replace");
 const sourcemaps = require("gulp-sourcemaps");
 const _package = require("./package.json");
 
+const babelify = require("babelify");
+const browserify = require("browserify");
+const source = require("vinyl-source-stream");
+const buffer = require("vinyl-buffer");
+
 const paths = {
-    mainjs: "dist/ripe.three.min.js",
-    mainmap: "dist/ripe.three.min.js.map",
+    mainjs: "dist/ripe.three.js",
+    mainmap: "dist/ripe.three.js.map",
     maincss: "src/css/ripe.css",
     mainpython: "src/python/**/main.js",
     scripts: "src/js/**/*.js",
@@ -37,38 +42,50 @@ const paths = {
         "node_modules/three/examples/js/libs/fflate.min.js"
     ],
     basefiles: [
-        "src/js/locales/base.js",
-        "src/js/base/base.js",
-        "src/js/base/compat.js",
-        "src/js/base/errors.js",
-        "src/js/base/observable.js",
-        "src/js/base/interactable.js",
-        "src/js/base/itertools.js",
-        "src/js/base/mobile.js",
-        "src/js/base/ripe.js",
-        "src/js/base/logic.js",
-        "src/js/base/config.js",
-        "src/js/base/struct.js",
-        "src/js/base/utils.js",
-        "src/js/base/api.js",
-        "src/js/base/auth.js",
         "src/js/api/account.js",
+        // attachament
+        // availabnility-rule
         "src/js/api/brand.js",
         "src/js/api/build.js",
+        // bulk order
         "src/js/api/config.js",
         "src/js/api/country-group.js",
+        // invoice rule
         "src/js/api/justification.js",
+        // letter-rule
         "src/js/api/locale.js",
+        // niotify ingo
         "src/js/api/oauth.js",
         "src/js/api/order.js",
         "src/js/api/price-rule.js",
+        // profile
+        // shipment
         "src/js/api/size.js",
         "src/js/api/sku.js",
+        // transport rules
+        // ------------------------------------
+        "src/js/base/api.js",
+        "src/js/base/auth.js",
+        "src/js/base/base.js",
+        "src/js/base/compat.js",
+        "src/js/base/config.js",
+        "src/js/base/errors.js",
+        "src/js/base/interactable.js",
+        "src/js/base/itertools.js",
+        "src/js/base/logic.js",
+        "src/js/base/mobile.js",
+        "src/js/base/observable.js",
+        "src/js/base/ripe.js",
+        "src/js/base/struct.js",
+        "src/js/base/utils.js",
+        // ------------------------------------
+        "src/js/locales/base.js",
+        // ------------------------------------
         "src/js/plugins/base.js",
         "src/js/plugins/diag.js",
         "src/js/plugins/restrictions.js",
         "src/js/plugins/sync.js",
-        "src/js/visual/visual.js",
+        // ------------------------------------
         "src/js/visual/csr/animation-base.js",
         "src/js/visual/csr/rendered-initials.js",
         "src/js/visual/csr/texture-renderer.js",
@@ -76,7 +93,8 @@ const paths = {
         "src/js/visual/csr/utils.js",
         "src/js/visual/configurator-csr.js",
         "src/js/visual/configurator-prc.js",
-        "src/js/visual/image.js"
+        "src/js/visual/image.js",
+        "src/js/visual/visual.js"
     ]
 };
 
@@ -134,18 +152,15 @@ gulp.task("build-package-js", () => {
 });
 
 gulp.task("build-package-js-three", () => {
-    return gulp
-        .src([paths.polyfill, ...paths.three, ...paths.basefiles])
-        .pipe(sourcemaps.init())
-        .pipe(sourcemaps.identityMap())
-        .pipe(replace("__VERSION__", _package.version))
-        .pipe(
-            babel({
-                presets: [["@babel/preset-env"]]
-            })
-        )
-        .pipe(concat("ripe.three.js"))
-        .pipe(sourcemaps.write("."))
+    return browserify({
+        debug: true,
+        entries: [...paths.basefiles],
+        transform: [babelify.configure({ presets: ["@babel/preset-env"] })],
+        plugin: [[require("esmify"), {}]]
+    })
+        .bundle()
+        .pipe(source("ripe.three.js"))
+        .pipe(buffer())
         .pipe(gulp.dest("dist"));
 });
 
@@ -259,11 +274,11 @@ gulp.task("watch-js", () => {
     gulp.watch(
         paths.scripts,
         gulp.series(
-            "build-js",
-            "build-package-js",
+            // "build-js",
+            // "build-package-js",
             "build-package-js-three",
-            "build-package-min",
-            "build-package-min-three",
+            // "build-package-min",
+            // "build-package-min-three",
             "move-js",
             "compress"
         )
@@ -277,12 +292,12 @@ gulp.task("watch-css", () => {
 gulp.task(
     "build",
     gulp.series(
-        "build-js",
+        // "build-js",
         "build-css",
-        "build-package-js",
+        // "build-package-js",
         "build-package-js-three",
-        "build-package-min",
-        "build-package-min-three",
+        // "build-package-min",
+        // "build-package-min-three",
         "move-js",
         "move-css",
         "compress"
