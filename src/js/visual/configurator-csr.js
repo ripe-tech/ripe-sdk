@@ -1779,6 +1779,8 @@ ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
+    // unregister previous config handlers to avoid duplicate handlers
+    this._unregisterInitialsHandlers();
     this._onInitialsEventCallback = this.owner.bind("initials", (initials, engraving, params) =>
         this._onInitialsEvent(this, initials, engraving, params)
     );
@@ -1799,6 +1801,8 @@ ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
+    // unregister previous config handlers to avoid duplicate handlers
+    this._unregisterConfigHandlers();
     this._onPreConfigEventCallback = this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
     this._onPostConfigEventCallback = this.owner.bind("post_config", config => this._onPostConfig(this, config));
 };
