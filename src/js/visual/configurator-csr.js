@@ -1658,7 +1658,12 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engraving, params = {}) {
+ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(
+    self,
+    initials,
+    engraving,
+    params = {}
+) {
     if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
 
     this.initialsRefs.renderedInitials.setInitials(initials);
