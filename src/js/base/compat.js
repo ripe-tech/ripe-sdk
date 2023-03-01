@@ -87,7 +87,7 @@ if (typeof window !== "undefined" && typeof window.XMLHttpRequest !== "undefined
     var xmlhttprequest = ripe.requireSafe("xmlhttprequest");
     XMLHttpRequest = xmlhttprequest ? xmlhttprequest.XMLHttpRequest : undefined;
 }
-window.XMLHttpRequest = XMLHttpRequest;
+if(typeof window !== "undefined") window.XMLHttpRequest = XMLHttpRequest;
 
 // eslint-disable-next-line no-var
 var fetch = null;
@@ -110,7 +110,7 @@ if (typeof window !== "undefined" && typeof window.fetch !== "undefined") {
     fetch = require("node-fetch").default;
     nodeFetch = fetch;
 }
-window.fetch = fetch;
+if(typeof window !== "undefined") window.fetch = fetch;
 
 if (nodeFetch) {
     const http = ripe.requireSafe("http");

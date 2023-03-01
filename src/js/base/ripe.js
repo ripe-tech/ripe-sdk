@@ -2197,4 +2197,4 @@ ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context = nul
 
 // eslint-disable-next-line no-unused-vars,no-var
 var Ripe = ripe.Ripe;
-window.Ripe = ripe.Ripe;
+if (typeof window !== "undefined") window.Ripe = ripe.Ripe;
