@@ -1,7 +1,8 @@
+import * as THREE from "three";
+
 const base = require("../base");
 require("./visual");
 const ripe = base.ripe;
-const THREE = require("three");
 
 /**
  * Binds an PRC Configurator to this Ripe instance.

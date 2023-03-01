@@ -1,6 +1,7 @@
+import * as THREE from "three";
+
 const base = require("../../base");
 const ripe = base.ripe;
-const THREE = require("three");
 
 ripe.CsrTextureRenderer = function(
     width = null,

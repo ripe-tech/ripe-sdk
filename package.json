@@ -21,6 +21,7 @@
         "url": "https://www.platforme.com"
     },
     "main": "src/js/index.js",
+    "module": "dist/ripe.js",
     "unpkg": "dist/ripe.js",
     "types": "types/index.d.ts",
     "typings": "types/index.d.ts",
@@ -55,7 +56,6 @@
         "watch": "gulp watch"
     },
     "dependencies": {
-        "fix-esm": "^1.0.1",
         "node-fetch": "^2.6.1",
         "three": "^0.150.1",
         "xmlhttprequest": "^1.8.0"
