@@ -1,0 +1,6 @@
+{
+    "installCommand": "npm install",
+    "buildCommand": "npm run vercel-build",
+    "outputDirectory": "src/.vuepress/dist",
+    "framework": null
+}
