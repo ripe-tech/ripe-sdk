@@ -153,12 +153,14 @@ gulp.task("build-package-js", () => {
 
 gulp.task("build-package-js-three", () => {
     return browserify({
-        debug: true,
+        // debug: true,
         // entries: [...paths.basefiles],
-        entries: ["src/js/index.js"],
+        // entries: ["src/js/index.js"],
         // entries: ["src/js/test.js"],
+        entries: ["src/js/index.mjs"],
         transform: [babelify.configure({ presets: ["@babel/preset-env"] })],
-        plugin: [[require("esmify"), {}]]
+        plugin: [[require("esmify"), {}]],
+        standalone: "default"
     })
         .bundle()
         .pipe(source("ripe.three.js"))

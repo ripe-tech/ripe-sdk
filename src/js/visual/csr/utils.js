@@ -1,9 +1,3 @@
-import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
-
 const base = require("../../base");
 const ripe = base.ripe;
 

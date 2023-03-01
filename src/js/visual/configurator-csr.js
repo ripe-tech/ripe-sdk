@@ -1,5 +1,3 @@
-import * as THREE from "three";
-
 const base = require("../base");
 require("./visual");
 const ripe = base.ripe;
