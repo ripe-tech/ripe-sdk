@@ -55,6 +55,7 @@
         "watch": "gulp watch"
     },
     "dependencies": {
+        "fix-esm": "^1.0.1",
         "node-fetch": "^2.6.1",
         "three": "^0.150.1",
         "xmlhttprequest": "^1.8.0"

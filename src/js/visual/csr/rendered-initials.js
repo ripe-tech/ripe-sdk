@@ -1,7 +1,6 @@
-import * as THREE from "three";
-
 const base = require("../../base");
 const ripe = base.ripe;
+const THREE = require("three");
 
 /**
  * The list of supported texture types.

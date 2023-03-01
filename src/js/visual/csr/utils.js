@@ -1,11 +1,18 @@
-import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
-
 const base = require("../../base");
 const ripe = base.ripe;
+const THREE = require("three");
+
+if (typeof window === "undefined") {
+    var GLTFLoader = require("fix-esm").require("three/examples/jsm/loaders/GLTFLoader.js").GLTFLoader;
+    var DRACOLoader = require("fix-esm").require("three/examples/jsm/loaders/DRACOLoader.js").DRACOLoader;
+    var FBXLoader = require("fix-esm").require("three/examples/jsm/loaders/FBXLoader.js").FBXLoader;
+    var RGBELoader = require("fix-esm").require("three/examples/jsm/loaders/RGBELoader.js").RGBELoader;
+} else {
+    var GLTFLoader = require("three/examples/jsm/loaders/GLTFLoader.js").GLTFLoader;
+    var DRACOLoader = require("three/examples/jsm/loaders/DRACOLoader.js").DRACOLoader;
+    var FBXLoader = require("three/examples/jsm/loaders/FBXLoader.js").FBXLoader;
+    var RGBELoader = require("three/examples/jsm/loaders/RGBELoader.js").RGBELoader;
+}
 
 ripe.CsrUtils = {};
 
