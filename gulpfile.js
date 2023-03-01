@@ -154,7 +154,9 @@ gulp.task("build-package-js", () => {
 gulp.task("build-package-js-three", () => {
     return browserify({
         debug: true,
-        entries: [...paths.basefiles],
+        // entries: [...paths.basefiles],
+        entries: ["src/js/index.js"],
+        // entries: ["src/js/test.js"],
         transform: [babelify.configure({ presets: ["@babel/preset-env"] })],
         plugin: [[require("esmify"), {}]]
     })
