@@ -1,17 +1,7 @@
-if (
-    typeof require !== "undefined" &&
-    (typeof window === "undefined" ||
-        // eslint-disable-next-line camelcase
-        typeof __webpack_require__ !== "undefined" ||
-        (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
-) {
-    // eslint-disable-next-line no-redeclare,no-var
-    var base = require("../../base");
-    // eslint-disable-next-line no-redeclare,no-var
-    var ripe = base.ripe;
-}
+import * as THREE from "three";
 
-import * as THREE from 'three';
+const base = require("../../base");
+const ripe = base.ripe;
 
 /**
  * The list of supported texture types.

@@ -1,16 +1,6 @@
-if (
-    typeof require !== "undefined" &&
-    (typeof window === "undefined" ||
-        // eslint-disable-next-line camelcase
-        typeof __webpack_require__ !== "undefined" ||
-        (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
-) {
-    // eslint-disable-next-line no-redeclare,no-var
-    var base = require("./base");
-    require("./observable");
-    // eslint-disable-next-line no-redeclare,no-var
-    var ripe = base.ripe;
-}
+const base = require("./base");
+require("./observable");
+const ripe = base.ripe;
 
 /**
  * The version of the RIPE SDK currently in load, should
@@ -2207,3 +2197,4 @@ ripe.Ripe.prototype._buildProfiles = function(engraving, profiles, context = nul
 
 // eslint-disable-next-line no-unused-vars,no-var
 var Ripe = ripe.Ripe;
+window.Ripe = ripe.Ripe;
