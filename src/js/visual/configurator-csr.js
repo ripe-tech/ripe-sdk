@@ -224,7 +224,6 @@ ripe.ConfiguratorCsr.prototype.updateOptions = async function(options, update = 
  * update operation.
  */
 ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
-    console.log("update");
     this.loading = true;
 
     const updateScene = Boolean(options.updateScene);
@@ -238,7 +237,6 @@ ripe.ConfiguratorCsr.prototype.update = async function(state, options = {}) {
 
     if (updateRenderedInitials) {
         this._deinitCsrRenderedInitials();
-        console.log("_initCsrRenderedInitials from update()");
         this._initCsrRenderedInitials();
     }
 
@@ -1713,7 +1711,6 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
-    console.log("_onPostConfig");
     const _postConfig = async () => {
         // gets the initials configuration from the config
         const initialsConfig = this.owner.initialsConfig(config);
@@ -1747,7 +1744,6 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
         this._initScene();
 
         // init the CSR initials
-        console.log("_initCsrRenderedInitials from _onPostConfig");
         this._initCsrRenderedInitials();
 
         // init debug tools
@@ -1783,9 +1779,6 @@ ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
-    console.log("_registerInitialsHandlers");
-    // this is calling several times and one of the callbacks will not deinit
-    console.info("this.owner", this?.owner);
     this._onInitialsEventCallback = this.owner.bind("initials", (initials, engraving, params) =>
         this._onInitialsEvent(this, initials, engraving, params)
     );

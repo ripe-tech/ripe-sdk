@@ -43,7 +43,6 @@ ripe.Observable.prototype.deinit = async function() {
  * @returns {Function} Returns the provided callback, to be used when unbinding from the event.
  */
 ripe.Observable.prototype.addCallback = function(event, callback) {
-    if (event === "initials_extra") console.log("addCallback", event, callback);
     const callbacks = this.callbacks[event] || [];
     callbacks.push(callback);
     this.callbacks[event] = callbacks;
@@ -58,7 +57,6 @@ ripe.Observable.prototype.addCallback = function(event, callback) {
  */
 ripe.Observable.prototype.removeCallback = function(event, callback) {
     const callbacks = this.callbacks[event] || [];
-    if (event === "initials_extra") console.log("removeCallback", event, callback, callbacks.length, callbacks.indexOf(callback));
     if (!callback) {
         delete this.callbacks[event];
         return;
@@ -82,7 +80,6 @@ ripe.Observable.prototype.removeCallback = function(event, callback) {
  * when all of the callbacks have finished processing the triggered event.
  */
 ripe.Observable.prototype.runCallbacks = async function(event, wait = true, ...args) {
-    console.debug("runCallbacks", event, this.callbacks[event]);
     if (!this.callbacks) {
         const result = await Promise.all([null]);
         return result;
