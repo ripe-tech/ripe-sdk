@@ -643,8 +643,8 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.variant = this.options.variant || null;
     this.version = this.options.version || null;
     this.dku = this.options.dku || null;
-    this.url = this.options.url || "http://localhost:8080/api/";
-    this.webUrl = this.options.webUrl || "http://localhost:8080/";
+    this.url = this.options.url || "https://sandbox.platforme.com/api/";
+    this.webUrl = this.options.webUrl || "https://sandbox.platforme.com/";
     this.params = this.options.params || {};
     this.headers = this.options.headers || {};
     this.parts = this.options.parts || {};
