@@ -3,6 +3,7 @@ const LOCALES_BASE = {
         "hello.world": "hello world"
     }
 };
+if (typeof window !== "undefined") window.LOCALES_BASE = LOCALES_BASE;
 
 if (typeof module !== "undefined") {
     module.exports = {
