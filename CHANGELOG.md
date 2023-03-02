@@ -10,11 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Add CSR base documentation - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
+* Add CSR documentation `Dockerfile` - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 
 ### Changed
 
 * Update `initialsConfig()` to match remote logic - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
 * Update `.gitignore` to ignore CSR documentation compilation files - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
+* Update CSR documentation with proper configuration with title and logo - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 
 ### Fixed
 
