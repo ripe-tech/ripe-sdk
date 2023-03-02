@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [2.39.0] - 2023-02-24
+
+### Added
+
+* Allowing set initials extra of empty or single group initials in configurator csr - [ripe-white/#1098](https://github.com/ripe-tech/ripe-white/issues/1098)
+## [2.38.0] - 2023-02-24
+
+### Added
+
 * Add `id` and `origin` to `ready` event params to distinguish events from configurator prc and csr - [ripe-white/#1098](https://github.com/ripe-tech/ripe-white/issues/1098)
 * Add `initialsConfig` method - [#479](https://github.com/ripe-tech/ripe-sdk/issues/479)
 * Add `#initialsConfig()` tests - [#479](https://github.com/ripe-tech/ripe-sdk/issues/479)

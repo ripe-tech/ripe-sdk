@@ -1666,7 +1666,7 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engraving, params) {
+ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engraving, params = {}) {
     if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
 
     this.initialsRefs.renderedInitials.setInitials(initials);
@@ -1675,10 +1675,18 @@ ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engra
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsExtra, params) {
+ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsExtra, params = {}) {
     if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
 
-    throw new Error("Not implemented");
+    const hasEmptyInitials = Object.values(initialsExtra).length === 0;
+    const initialsGroups = Object.values(initialsExtra);
+    const isSingleGroup = initialsGroups.length === 1;
+
+    if (!hasEmptyInitials && !isSingleGroup) throw new Error("Not implemented");
+
+    this.initialsRefs.renderedInitials.setInitials(
+        hasEmptyInitials ? "" : initialsGroups[0].initials || ""
+    );
 };
 
 /**
