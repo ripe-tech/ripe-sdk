@@ -249,10 +249,133 @@ describe("Config", function() {
                 "metal_gold"
             ]);
             assert.strictEqual(initialsConfig.font_family, "Silver");
+
+            const config2 = {
+                initials: {
+                    $profiles: {
+                        base: {
+                            example_a: 1000,
+                            example_b: 50000,
+                            more_detail: {
+                                value_a: 1,
+                                value_b: 3.14,
+                                value_c: [1, 2, 3],
+                                value_d: "text example",
+                                value_e: true,
+                                value_f: {
+                                    a: 42,
+                                    b: 2.71,
+                                    c: [1, 2],
+                                    d: "lorim epsum",
+                                    e: false,
+                                    f: { val_a: "submarine", val_b: 7 }
+                                }
+                            }
+                        },
+                        complex_1: {
+                            example_b: 100,
+                            more_detail: {
+                                value_a: 20,
+                                value_b: 6.8,
+                                value_c: [3],
+                                value_d: false,
+                                value_e: "random text",
+                                value_f: {
+                                    a: 42.5,
+                                    d: "lorim epsum",
+                                    e: [4.1, 6.5],
+                                    f: { val_b: 57 }
+                                },
+                                value_g: { a: 10, b: "https://www.platforme.com/" }
+                            }
+                        },
+                        simple_1: { example_a: 10.0, value_a: 37 },
+                        simple_2: { more_detail: ["a", "b", 42] }
+                    },
+                    $alias: {
+                        alias_1: ["base", "complex_1"],
+                        alias_2: ["base", "complex_1", "base"],
+                        alias_3: ["base", "complex_1", "simple_2", "simple_1"]
+                    }
+                }
+            };
+            initialsConfig = instance.initialsConfig(config2, ["base"]);
+            assert.strictEqual(initialsConfig.example_a, 1000);
+            assert.strictEqual(initialsConfig.example_b, 50000);
+            let moreDetail = initialsConfig.more_detail;
+            assert.strictEqual(moreDetail.value_a, 1);
+            assert.strictEqual(moreDetail.value_b, 3.14);
+            assert.deepEqual(moreDetail.value_c, [1, 2, 3]);
+            assert.strictEqual(moreDetail.value_d, "text example");
+            assert.strictEqual(moreDetail.value_e, true);
+            let valueF = moreDetail.value_f;
+            assert.strictEqual(valueF.a, 42);
+            assert.strictEqual(valueF.b, 2.71);
+            assert.deepEqual(valueF.c, [1, 2]);
+            assert.strictEqual(valueF.d, "lorim epsum");
+            assert.strictEqual(valueF.e, false);
+            assert.strictEqual(valueF.f.val_a, "submarine");
+            assert.strictEqual(valueF.f.val_b, 7);
+
+            initialsConfig = instance.initialsConfig(config2, ["base", "complex_1"]);
+            assert.strictEqual(initialsConfig.example_a, 1000);
+            assert.strictEqual(initialsConfig.example_b, 50000);
+            moreDetail = initialsConfig.more_detail;
+            assert.strictEqual(moreDetail.value_a, 1);
+            assert.strictEqual(moreDetail.value_b, 3.14);
+            assert.deepEqual(moreDetail.value_c, [1, 2, 3]);
+            assert.strictEqual(moreDetail.value_d, "text example");
+            assert.strictEqual(moreDetail.value_e, true);
+            valueF = moreDetail.value_f;
+            assert.strictEqual(valueF.a, 42);
+            assert.strictEqual(valueF.b, 2.71);
+            assert.deepEqual(valueF.c, [1, 2]);
+            assert.strictEqual(valueF.d, "lorim epsum");
+            assert.strictEqual(valueF.e, false);
+            assert.strictEqual(valueF.f.val_a, "submarine");
+            assert.strictEqual(valueF.f.val_b, 7);
+
+            initialsConfig = instance.initialsConfig(config2, ["complex_1", "base"]);
+            assert.strictEqual(initialsConfig.example_a, 1000);
+            assert.strictEqual(initialsConfig.example_b, 100);
+            moreDetail = initialsConfig.more_detail;
+            assert.strictEqual(moreDetail.value_a, 20);
+            assert.strictEqual(moreDetail.value_b, 6.8);
+            assert.deepEqual(moreDetail.value_c, [3]);
+            assert.strictEqual(moreDetail.value_d, false);
+            assert.strictEqual(moreDetail.value_e, "random text");
+            valueF = moreDetail.value_f;
+            assert.strictEqual(valueF.a, 42.5);
+            assert.strictEqual(valueF.b, 2.71);
+            assert.deepEqual(valueF.c, [1, 2]);
+            assert.strictEqual(valueF.d, "lorim epsum");
+            assert.deepEqual(valueF.e, [4.1, 6.5]);
+            assert.strictEqual(valueF.f.val_a, "submarine");
+            assert.strictEqual(valueF.f.val_b, 57);
+            const valueG = moreDetail.value_g;
+            assert.strictEqual(valueG.a, 10);
+            assert.strictEqual(valueG.b, "https://www.platforme.com/");
+
+            initialsConfig = instance.initialsConfig(config2, [
+                "simple_1",
+                "simple_2",
+                "complex_1",
+                "base"
+            ]);
+            assert.strictEqual(initialsConfig.example_a, 10.0);
+            assert.strictEqual(initialsConfig.example_b, 100);
+            assert.strictEqual(initialsConfig.value_a, 37);
+            assert.deepEqual(initialsConfig.more_detail, ["a", "b", 42]);
+
+            initialsConfig = instance.initialsConfig(config2, ["alias_3"]);
+            assert.strictEqual(initialsConfig.example_a, 10.0);
+            assert.strictEqual(initialsConfig.example_b, 100);
+            assert.strictEqual(initialsConfig.value_a, 37);
+            assert.deepEqual(initialsConfig.more_detail, ["a", "b", 42]);
         });
 
         it("should be able to match the config of the remote initials config call", async () => {
-            const instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
+            let instance = await new ripe.Ripe("swear", "vyner", { noBundles: true });
             await instance.isReady();
 
             let remote = await instance.getInitialsConfigP();
@@ -290,6 +413,43 @@ describe("Config", function() {
             assert.strictEqual(remote.font_spacing, local.font_spacing);
             assert.strictEqual(remote.rotation, local.rotation);
             assert.deepEqual(remote.viewport, local.viewport);
+
+            instance = await new ripe.Ripe("dummy", "cube", { noBundles: true });
+            await instance.isReady();
+
+            remote = await instance.getInitialsConfigP({ profiles: ["style::black"] });
+            local = instance.initialsConfig(instance.loadedConfig, ["style::black"]);
+            assert.deepEqual(remote.profiles, ["base", "style::black"]);
+            assert.deepEqual(remote.position, [500, 500]);
+            assert.strictEqual(remote.frame, "0");
+            assert.strictEqual(remote.image_rotation, 0);
+            assert.strictEqual(remote.color, "000000");
+            assert.strictEqual(remote.font_size, 80);
+            assert.strictEqual(remote.font_spacing, 6);
+            assert.strictEqual(remote.shadow, true);
+            assert.strictEqual(remote.csr.width, 4550);
+            assert.strictEqual(remote.csr.height, 500);
+            assert.strictEqual(remote.csr.curve_type, "catmullrom");
+            assert.strictEqual(remote.csr.curve_tension, 0);
+            assert.strictEqual(remote.csr.text.font_size, 315);
+            assert.strictEqual(remote.csr.material.displacement_scale, 20);
+            assert.deepEqual(remote.profiles, local.profiles);
+            assert.deepEqual(remote.position, local.position);
+            assert.strictEqual(remote.frame, local.frame);
+            assert.strictEqual(remote.image_rotation, local.image_rotation);
+            assert.strictEqual(remote.color, local.color);
+            assert.strictEqual(remote.font_size, local.font_size);
+            assert.strictEqual(remote.font_spacing, local.font_spacing);
+            assert.strictEqual(remote.shadow, local.shadow);
+            assert.strictEqual(remote.csr.width, local.csr.width);
+            assert.strictEqual(remote.csr.height, local.csr.height);
+            assert.strictEqual(remote.csr.curve_type, local.csr.curve_type);
+            assert.strictEqual(remote.csr.curve_tension, local.csr.curve_tension);
+            assert.strictEqual(remote.csr.text.font_size, local.csr.text.font_size);
+            assert.strictEqual(
+                remote.csr.material.displacement_scale,
+                local.csr.material.displacement_scale
+            );
         });
     });
 });
