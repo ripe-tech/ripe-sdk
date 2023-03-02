@@ -165,6 +165,8 @@ gulp.task("build-package-js-three", () => {
         .bundle()
         .pipe(source("ripe.three.js"))
         .pipe(buffer())
+        .pipe(sourcemaps.init())
+        .pipe(sourcemaps.write("."))
         .pipe(gulp.dest("dist"));
 });
 
