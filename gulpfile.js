@@ -63,7 +63,6 @@ const paths = {
         "src/js/api/size.js",
         "src/js/api/sku.js",
         "src/js/api/transport-rule.js",
-        // ------------------------------------
         "src/js/base/api.js",
         "src/js/base/auth.js",
         "src/js/base/base.js",
@@ -78,14 +77,11 @@ const paths = {
         "src/js/base/ripe.js",
         "src/js/base/struct.js",
         "src/js/base/utils.js",
-        // ------------------------------------
         "src/js/locales/base.js",
-        // ------------------------------------
         "src/js/plugins/base.js",
         "src/js/plugins/diag.js",
         "src/js/plugins/restrictions.js",
         "src/js/plugins/sync.js",
-        // ------------------------------------
         "src/js/visual/csr/animation-base.js",
         "src/js/visual/csr/rendered-initials.js",
         "src/js/visual/csr/texture-renderer.js",
