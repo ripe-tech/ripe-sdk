@@ -34,7 +34,7 @@ window.ripeInstance = new Ripe({
 
 ## Binding a configurator
 
-To provide an interactive product visualization you simply need to pass a <div> element to the method bindConfigurator. Subscribe to the event loaded and you will know when your configurator is loaded.
+To provide an interactive product visualization you simply need to pass a `<div>` element to the method bindConfigurator. Subscribe to the event loaded and you will know when your configurator is loaded.
 
 ```js
 window.ripeInstance.bindConfigurator(
