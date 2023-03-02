@@ -43,26 +43,26 @@ const paths = {
     ],
     basefiles: [
         "src/js/api/account.js",
-        // attachament
-        // availabnility-rule
+        "src/js/api/attachment.js",
+        "src/js/api/availability-rule.js",
         "src/js/api/brand.js",
         "src/js/api/build.js",
-        // bulk order
+        "src/js/api/bulk-order.js",
         "src/js/api/config.js",
         "src/js/api/country-group.js",
-        // invoice rule
+        "src/js/api/invoice-rule.js",
         "src/js/api/justification.js",
-        // letter-rule
+        "src/js/api/letter-rule.js",
         "src/js/api/locale.js",
-        // niotify ingo
+        "src/js/api/notify-info.js",
         "src/js/api/oauth.js",
         "src/js/api/order.js",
         "src/js/api/price-rule.js",
-        // profile
-        // shipment
+        "src/js/api/profile.js",
+        "src/js/api/shipment.js",
         "src/js/api/size.js",
         "src/js/api/sku.js",
-        // transport rules
+        "src/js/api/transport-rule.js",
         // ------------------------------------
         "src/js/base/api.js",
         "src/js/base/auth.js",
