@@ -93,6 +93,10 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.isChangeFrameAnimationRunning = false;
     this._pendingOps = [];
     this._postRenderCallback = null;
+    this._onInitialsBind = null;
+    this._onInitialsExtraBind = null;
+    this._onPreConfigBind = null;
+    this._onPostConfigBind = null;
 
     // CSR variables
     this.rendererOptions = null;
@@ -950,7 +954,7 @@ ripe.ConfiguratorCsr.prototype._destroyInitialsResources = function() {
 };
 
 /**
- * Completely cleanup and destroy CSR initials.
+ * Completely cleanup and destroy CSR config handlers.
  */
 ripe.ConfiguratorCsr.prototype._destroyConfig = function() {
     this._unregisterConfigHandlers();
@@ -1167,7 +1171,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = function() {
 ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     this._destroyDebug();
     this._destroyInitialsResources();
-    this._destroyConfig();
+    this._destroyConfig(); // omit this as it should be called from configurator `deinit()`
     this._destroyScene();
 
     if (this.renderer) {
@@ -1674,7 +1678,7 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engraving, params = {}) {
+ripe.ConfiguratorCsr.prototype._onInitials = function(self, initials, engraving, params = {}) {
     if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
 
     this.initialsRefs.renderedInitials.setInitials(initials);
@@ -1683,7 +1687,7 @@ ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engra
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsExtra, params = {}) {
+ripe.ConfiguratorCsr.prototype._onInitialsExtra = function(self, initialsExtra, params = {}) {
     if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
 
     const hasEmptyInitials = Object.values(initialsExtra).length === 0;
@@ -1781,11 +1785,11 @@ ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
 ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
     // unregister previous config handlers to avoid duplicate handlers
     this._unregisterInitialsHandlers();
-    this._onInitialsEventCallback = this.owner.bind("initials", (initials, engraving, params) =>
-        this._onInitialsEvent(this, initials, engraving, params)
+    this._onInitialsBind = this.owner.bind("initials", (initials, engraving, params) =>
+        this._onInitials(this, initials, engraving, params)
     );
-    this._onInitialsExtraEventCallback = this.owner.bind("initials_extra", (initialsExtra, params) =>
-        this._onInitialsExtraEvent(this, initialsExtra, params)
+    this._onInitialsExtraBind = this.owner.bind("initials_extra", (initialsExtra, params) =>
+        this._onInitialsExtra(this, initialsExtra, params)
     );
 };
 
@@ -1793,8 +1797,8 @@ ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
-    this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraEventCallback);
-    this.owner && this.owner.unbind("initials", this._onInitialsEventCallback);
+    this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraBind);
+    this.owner && this.owner.unbind("initials", this._onInitialsBind);
 };
 
 /**
@@ -1803,14 +1807,14 @@ ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
 ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
     // unregister previous config handlers to avoid duplicate handlers
     this._unregisterConfigHandlers();
-    this._onPreConfigEventCallback = this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
-    this._onPostConfigEventCallback = this.owner.bind("post_config", config => this._onPostConfig(this, config));
+    this._onPreConfigBind = this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
+    this._onPostConfigBind = this.owner.bind("post_config", config => this._onPostConfig(this, config));
 };
 
 /**
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
-    this.owner && this.owner.unbind("post_config", this._onPostConfigEventCallback);
-    this.owner && this.owner.unbind("pre_config", this._onPreConfigEventCallback);
+    this.owner && this.owner.unbind("post_config", this._onPostConfigBind);
+    this.owner && this.owner.unbind("pre_config", this._onPreConfigBind);
 };
