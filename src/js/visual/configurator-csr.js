@@ -1715,6 +1715,7 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
+    if (!this.owner.hasStrategy("csr")) return;
     const _postConfig = async () => {
         // gets the initials configuration from the config
         const initialsConfig = this.owner.initialsConfig(config);
@@ -1797,8 +1798,8 @@ ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
-    this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraBind);
-    this.owner && this.owner.unbind("initials", this._onInitialsBind);
+    if (this._onInitialsExtraBind) this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraBind);
+    if (this._onInitialsBind) this.owner && this.owner.unbind("initials", this._onInitialsBind);
 };
 
 /**
@@ -1815,6 +1816,6 @@ ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
-    this.owner && this.owner.unbind("post_config", this._onPostConfigBind);
-    this.owner && this.owner.unbind("pre_config", this._onPreConfigBind);
+    if (this._onPostConfigBind) this.owner && this.owner.unbind("post_config", this._onPostConfigBind);
+    if (this._onPreConfigBind) this.owner && this.owner.unbind("pre_config", this._onPreConfigBind);
 };
