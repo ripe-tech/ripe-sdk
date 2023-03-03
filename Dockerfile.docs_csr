@@ -16,9 +16,10 @@ ENV BASE_PATH /src/.vuepress/dist
 
 ADD documentation /
 
-RUN apk update && apk add --no-cache nodejs npm
-RUN pip3 install --upgrade netius
-RUN npm install
-RUN npm run build
+RUN apk update &&\
+    apk add --no-cache nodejs npm &&\
+    pip3 install --upgrade netius
+
+RUN npm install && npm run build
 
 CMD ["/usr/bin/python3", "-m", "netius.extra.filea"]
