@@ -1,3 +1,5 @@
+/* global THREE */
+
 const base = require("../base");
 require("./visual");
 const ripe = base.ripe;

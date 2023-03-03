@@ -1,3 +1,5 @@
+/* global THREE, DRACOLoader, RGBELoader, FBXLoader, GLTFLoader */
+
 const base = require("../../base");
 const ripe = base.ripe;
 
