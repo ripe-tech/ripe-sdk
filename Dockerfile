@@ -17,10 +17,13 @@ ADD package.json /
 ADD gulpfile.js /
 ADD src /src
 
-RUN apk update && apk add --no-cache nodejs npm
-RUN pip3 install --upgrade netius
-RUN npm install
-RUN npm run build
+RUN apk update &&\
+    apk add --no-cache nodejs npm &&\
+    pip3 install --upgrade netius
+
+RUN npm install &&\
+    npm run build
+
 RUN ln -s . dist/js && ln -s . dist/css
 
 CMD ["/usr/bin/python3", "-m", "netius.extra.filea"]
