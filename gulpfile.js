@@ -2,22 +2,17 @@ const log = require("fancy-log");
 const gulp = require("gulp");
 const zip = require("gulp-zip");
 const size = require("gulp-size");
-const babel = require("gulp-babel");
-const count = require("gulp-count");
-const mocha = require("gulp-mocha");
-const shell = require("gulp-shell");
-const jsdoc = require("gulp-jsdoc3");
-const concat = require("gulp-concat");
-const eslint = require("gulp-eslint7");
-const terser = require("gulp-terser");
-const replace = require("gulp-replace");
-const sourcemaps = require("gulp-sourcemaps");
-const _package = require("./package.json");
-
 const babelify = require("babelify");
 const browserify = require("browserify");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
+const count = require("gulp-count");
+const mocha = require("gulp-mocha");
+const shell = require("gulp-shell");
+const jsdoc = require("gulp-jsdoc3");
+const eslint = require("gulp-eslint7");
+const terser = require("gulp-terser");
+const sourcemaps = require("gulp-sourcemaps");
 
 const paths = {
     mainjs: "dist/ripe.js",
