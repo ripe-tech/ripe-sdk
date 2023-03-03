@@ -97,7 +97,6 @@ const paths = {
 gulp.task("build-js", () => {
     return gulp
         .src(paths.scripts)
-        .pipe(replace("__VERSION__", _package.version))
         .pipe(size())
         .pipe(
             size({
@@ -183,13 +182,6 @@ gulp.task(
         return gulp.src(paths.dist).pipe(zip("dist.zip")).pipe(gulp.dest("build"));
     })
 );
-
-gulp.task("mark", () => {
-    return gulp
-        .src(paths.scripts)
-        .pipe(replace("__VERSION__", _package.version))
-        .pipe(gulp.dest("src/js"));
-});
 
 gulp.task("lint", () => {
     return gulp

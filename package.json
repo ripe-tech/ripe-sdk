@@ -47,7 +47,6 @@
         "gulp": "gulp",
         "lint": "gulp lint",
         "lint-fix": "gulp lint-fix",
-        "mark": "gulp mark",
         "prettier": "prettier \"./*.{js,ts,json}\" \"./src/js/**/*.{js,ts,json}\" \"./{test,types}/**/*.{js,ts,json}\" --write",
         "pretty": "npm run prettier && npm run lint-fix",
         "test": "gulp test",
