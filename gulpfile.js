@@ -163,13 +163,7 @@ gulp.task("docs", cb => {
 gulp.task("watch-js", () => {
     gulp.watch(
         paths.scripts,
-        gulp.series(
-            "build-js",
-            "build-package-js",
-            "build-package-min",
-            "move-js",
-            "compress"
-        )
+        gulp.series("build-js", "build-package-js", "build-package-min", "move-js", "compress")
     );
 });
 
