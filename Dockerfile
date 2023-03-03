@@ -21,8 +21,7 @@ RUN apk update &&\
     apk add --no-cache nodejs npm &&\
     pip3 install --upgrade netius
 
-RUN npm install &&\
-    npm run build
+RUN npm install && npm run build
 
 RUN ln -s . dist/js && ln -s . dist/css
 
