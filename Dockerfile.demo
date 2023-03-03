@@ -1,4 +1,4 @@
-FROM hivesolutions/python:latest
+FROM platforme/python:latest
 
 LABEL version="1.0"
 LABEL maintainer="Platforme <development@platforme.com>"
