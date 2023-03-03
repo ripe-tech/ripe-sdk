@@ -2,8 +2,9 @@ const log = require("fancy-log");
 const gulp = require("gulp");
 const zip = require("gulp-zip");
 const size = require("gulp-size");
-const babelify = require("babelify");
 const browserify = require("browserify");
+const babelify = require("babelify");
+const esmify = require("esmify");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 const count = require("gulp-count");
@@ -68,7 +69,7 @@ gulp.task("build-package-js", () => {
     return browserify({
         entries: ["src/js/index.mjs"],
         transform: [babelify.configure({ presets: ["@babel/preset-env"] })],
-        plugin: [[require("esmify"), {}]],
+        plugin: [[esmify, {}]],
         standalone: "default"
     })
         .bundle()
@@ -83,7 +84,7 @@ gulp.task("build-package-min", () => {
     return browserify({
         entries: ["src/js/index.mjs"],
         transform: [babelify.configure({ presets: ["@babel/preset-env"] })],
-        plugin: [[require("esmify"), {}]],
+        plugin: [[esmify, {}]],
         standalone: "default"
     })
         .bundle()
