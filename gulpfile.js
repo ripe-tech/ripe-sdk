@@ -20,8 +20,8 @@ const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
 
 const paths = {
-    mainjs: "dist/ripe.three.js",
-    mainmap: "dist/ripe.three.js.map",
+    mainjs: "dist/ripe.js",
+    mainmap: "dist/ripe.js.map",
     maincss: "src/css/ripe.css",
     mainpython: "src/python/**/main.js",
     scripts: "src/js/**/*.js",
@@ -132,34 +132,14 @@ gulp.task("build-css", () => {
 });
 
 gulp.task("build-package-js", () => {
-    return gulp
-        .src([paths.polyfill, ...paths.basefiles])
-        .pipe(sourcemaps.init())
-        .pipe(sourcemaps.identityMap())
-        .pipe(replace("__VERSION__", _package.version))
-        .pipe(
-            babel({
-                presets: [["@babel/preset-env"]]
-            })
-        )
-        .pipe(concat("ripe.js"))
-        .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("dist"));
-});
-
-gulp.task("build-package-js-three", () => {
     return browserify({
-        // debug: true,
-        // entries: [...paths.basefiles],
-        // entries: ["src/js/index.js"],
-        // entries: ["src/js/test.js"],
         entries: ["src/js/index.mjs"],
         transform: [babelify.configure({ presets: ["@babel/preset-env"] })],
         plugin: [[require("esmify"), {}]],
         standalone: "default"
     })
         .bundle()
-        .pipe(source("ripe.three.js"))
+        .pipe(source("ripe.js"))
         .pipe(buffer())
         .pipe(sourcemaps.init())
         .pipe(sourcemaps.write("."))
@@ -167,39 +147,16 @@ gulp.task("build-package-js-three", () => {
 });
 
 gulp.task("build-package-min", () => {
-    return gulp
-        .src([paths.polyfill, ...paths.basefiles])
+    return browserify({
+        entries: ["src/js/index.mjs"],
+        transform: [babelify.configure({ presets: ["@babel/preset-env"] })],
+        plugin: [[require("esmify"), {}]],
+        standalone: "default"
+    })
+        .bundle()
+        .pipe(source("ripe.min.js"))
+        .pipe(buffer())
         .pipe(sourcemaps.init())
-        .pipe(sourcemaps.identityMap())
-        .pipe(replace("__VERSION__", _package.version))
-        .pipe(
-            babel({
-                presets: [["@babel/preset-env"]]
-            })
-        )
-        .pipe(concat("ripe.min.js"))
-        .pipe(
-            terser({
-                mangle: false,
-                ecma: 5
-            })
-        )
-        .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("dist"));
-});
-
-gulp.task("build-package-min-three", () => {
-    return gulp
-        .src([paths.polyfill, ...paths.three, ...paths.basefiles])
-        .pipe(sourcemaps.init())
-        .pipe(sourcemaps.identityMap())
-        .pipe(replace("__VERSION__", _package.version))
-        .pipe(
-            babel({
-                presets: [["@babel/preset-env"]]
-            })
-        )
-        .pipe(concat("ripe.three.min.js"))
         .pipe(
             terser({
                 mangle: false,
@@ -276,11 +233,9 @@ gulp.task("watch-js", () => {
     gulp.watch(
         paths.scripts,
         gulp.series(
-            // "build-js",
-            // "build-package-js",
-            "build-package-js-three",
-            // "build-package-min",
-            // "build-package-min-three",
+            "build-js",
+            "build-package-js",
+            "build-package-min",
             "move-js",
             "compress"
         )
@@ -294,12 +249,10 @@ gulp.task("watch-css", () => {
 gulp.task(
     "build",
     gulp.series(
-        // "build-js",
+        "build-js",
         "build-css",
-        // "build-package-js",
-        "build-package-js-three",
-        // "build-package-min",
-        // "build-package-min-three",
+        "build-package-js",
+        "build-package-min",
         "move-js",
         "move-css",
         "compress"
