@@ -148,7 +148,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this._initLayout();
     this._initCsr();
 
-    this._registerConfigHandlers();
+    this._registerConfigGlobalHandlers();
 };
 
 /**
@@ -707,7 +707,7 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
     this.element.appendChild(initialsContainer);
 
     // register for all the necessary DOM events
-    this._registerHandlers();
+    this._registerGlobalHandlers();
 };
 
 /**
@@ -826,7 +826,7 @@ ripe.ConfiguratorCsr.prototype._destroyScene = function() {
 ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
     if (!this.enabledInitials) return;
 
-    this._registerInitialsHandlers();
+    this._registerInitialsGlobalHandlers();
 
     const initialsContainer = this.element.querySelector(".initials-container");
     if (!initialsContainer) {
@@ -918,7 +918,7 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
  */
 ripe.ConfiguratorCsr.prototype._deinitCsrRenderedInitials = function() {
     // cleanup handlers
-    this._unregisterInitialsHandlers();
+    this._unregisterInitialsGlobalHandlers();
 };
 
 /**
@@ -957,7 +957,7 @@ ripe.ConfiguratorCsr.prototype._destroyInitialsResources = function() {
  * Completely cleanup and destroy CSR config handlers.
  */
 ripe.ConfiguratorCsr.prototype._destroyConfig = function() {
-    this._unregisterConfigHandlers();
+    this._unregisterConfigGlobalHandlers();
 };
 
 /**
@@ -1772,7 +1772,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
+ripe.ConfiguratorCsr.prototype._registerGlobalHandlers = function() {
     this._addElementHandler("mousedown", event => this._onMouseDown(this, event));
     this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
     this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
@@ -1783,9 +1783,9 @@ ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
+ripe.ConfiguratorCsr.prototype._registerInitialsGlobalHandlers = function() {
     // unregister previous config handlers to avoid duplicate handlers
-    this._unregisterInitialsHandlers();
+    this._unregisterInitialsGlobalHandlers();
     this._onInitialsBind = this.owner.bind("initials", (initials, engraving, params) =>
         this._onInitials(this, initials, engraving, params)
     );
@@ -1797,7 +1797,7 @@ ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
+ripe.ConfiguratorCsr.prototype._unregisterInitialsGlobalHandlers = function() {
     if (this._onInitialsExtraBind) this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraBind);
     if (this._onInitialsBind) this.owner && this.owner.unbind("initials", this._onInitialsBind);
 };
@@ -1805,9 +1805,9 @@ ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
+ripe.ConfiguratorCsr.prototype._registerConfigGlobalHandlers = function() {
     // unregister previous config handlers to avoid duplicate handlers
-    this._unregisterConfigHandlers();
+    this._unregisterConfigGlobalHandlers();
     this._onPreConfigBind = this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
     this._onPostConfigBind = this.owner.bind("post_config", config => this._onPostConfig(this, config));
 };
@@ -1815,7 +1815,7 @@ ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
+ripe.ConfiguratorCsr.prototype._unregisterConfigGlobalHandlers = function() {
     if (this._onPostConfigBind) this.owner && this.owner.unbind("post_config", this._onPostConfigBind);
     if (this._onPreConfigBind) this.owner && this.owner.unbind("pre_config", this._onPreConfigBind);
 };
