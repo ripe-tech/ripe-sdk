@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Add CSR base documentation - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 * Add CSR documentation `Dockerfile` - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
-* Add `browserify`, `esmify`, `babelify`, `vinyl-buffer` and `vinyl-source-stream` dev dependencies
+* Add `browserify`, `esmify`, `babelify`, `vinyl-buffer` and `vinyl-source-stream` dev dependencies - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 * Support ES Modules - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 
 ### Changed
