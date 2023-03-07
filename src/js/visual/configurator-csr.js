@@ -1173,7 +1173,6 @@ ripe.ConfiguratorCsr.prototype._initCsr = function() {
 ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     this._destroyDebug();
     this._destroyInitialsResources();
-    this._destroyConfig(); // omit this as it should be called from configurator `deinit()`
     this._destroyScene();
 
     if (this.renderer) {
