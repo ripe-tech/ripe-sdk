@@ -142,14 +142,15 @@ ripe.Ripe.prototype.getFontUrl = function(name, format, options) {
 /**
  * Returns the URL for the environment file of the 3D scene.
  *
- * @param {Object} options A map with options, such as:
- *  - 'brand' - The brand of the model.
- *  - 'model' - The name of the model.
- *  - 'version' - The version of the build, defaults to latest.
+ * @param {String} name The name of the environment map.
+ * @param {String} format The file format of the environment map.
+ * @param {Object} options A map with options.
  * @returns {String} The URL of the environment for the 3D scene.
  */
-ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(options) {
-    return "https://www.dl.dropboxusercontent.com/s/o0v07nn5egjrjl5/studio2.hdr";
+ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(name, format, options) {
+    name = name || "studio2";
+    format = format || "hdr";
+    return `https://cdn.platforme.com/3d/environment/${name}.${format}`
 };
 
 /**
