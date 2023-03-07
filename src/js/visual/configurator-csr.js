@@ -956,13 +956,6 @@ ripe.ConfiguratorCsr.prototype._destroyInitialsResources = function() {
 };
 
 /**
- * Completely cleanup and destroy CSR config handlers.
- */
-ripe.ConfiguratorCsr.prototype._destroyConfig = function() {
-    this._unregisterConfigGlobalHandlers();
-};
-
-/**
  * Initiates the debug tools.
  *
  * @private
@@ -1174,6 +1167,8 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     this._destroyDebug();
     this._destroyInitialsResources();
     this._destroyScene();
+
+    this._unregisterConfigGlobalHandlers();
 
     if (this.renderer) {
         this.renderer.dispose();
