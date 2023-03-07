@@ -1786,7 +1786,6 @@ ripe.ConfiguratorCsr.prototype._registerGlobalHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerInitialsGlobalHandlers = function() {
-    // unregister global initials handlers
     this._onInitialsBind = this.owner.bind("initials", (initials, engraving, params) =>
         this._onInitials(this, initials, engraving, params)
     );
@@ -1799,25 +1798,28 @@ ripe.ConfiguratorCsr.prototype._registerInitialsGlobalHandlers = function() {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._unregisterInitialsGlobalHandlers = function() {
-    // register global config handlers
-    if (this._onInitialsExtraBind) this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraBind);
-    if (this._onInitialsBind) this.owner && this.owner.unbind("initials", this._onInitialsBind);
+    if (!this.owner) return;
+    if (this._onInitialsExtraBind) this.owner.unbind("initials_extra", this._onInitialsExtraBind);
+    if (this._onInitialsBind) this.owner.unbind("initials", this._onInitialsBind);
 };
 
 /**
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._registerConfigGlobalHandlers = function() {
-    // unregister global config handlers
-    this._onPreConfigBind = this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
-    this._onPostConfigBind = this.owner.bind("post_config", config => this._onPostConfig(this, config));
+    this._onPreConfigBind = this.owner.bind("pre_config", (brand, model, options) =>
+        this._onPreConfig(this)
+    );
+    this._onPostConfigBind = this.owner.bind("post_config", config =>
+        this._onPostConfig(this, config)
+    );
 };
 
 /**
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._unregisterConfigGlobalHandlers = function() {
-    // unregister global config handlers
-    if (this._onPostConfigBind) this.owner && this.owner.unbind("post_config", this._onPostConfigBind);
+    if (!this.owner) return;
+    if (this._onPostConfigBind) this.owner.unbind("post_config", this._onPostConfigBind);
     if (this._onPreConfigBind) this.owner && this.owner.unbind("pre_config", this._onPreConfigBind);
 };
