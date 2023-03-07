@@ -708,7 +708,7 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
     this.element.appendChild(initialsContainer);
 
     // register for all the necessary DOM events
-    this._registerGlobalHandlers();
+    this._registerElementHandlers();
 };
 
 /**
@@ -1768,7 +1768,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._registerGlobalHandlers = function() {
+ripe.ConfiguratorCsr.prototype._registerElementHandlers = function() {
     this._addElementHandler("mousedown", event => this._onMouseDown(this, event));
     this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
     this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
