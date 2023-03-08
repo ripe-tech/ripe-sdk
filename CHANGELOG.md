@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [2.40.0] - 2023-03-08
+
+### Added
+
 * Add CSR base documentation - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 * Add CSR documentation `Dockerfile` - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 
