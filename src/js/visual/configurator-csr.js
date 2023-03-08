@@ -1711,7 +1711,6 @@ ripe.ConfiguratorCsr.prototype._onPreConfig = function(self) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
-    if (!this.owner.hasStrategy("csr")) return;
     const _postConfig = async () => {
         // gets the initials configuration from the config
         const initialsConfig = this.owner.initialsConfig(config);
