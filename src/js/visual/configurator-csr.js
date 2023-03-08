@@ -160,6 +160,8 @@ ripe.ConfiguratorCsr.prototype.init = function() {
 ripe.ConfiguratorCsr.prototype.deinit = async function() {
     this._deinitCsr();
 
+    this._unregisterConfigGlobalHandlers();
+
     while (this.element && this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
     }
@@ -1167,8 +1169,6 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     this._destroyDebug();
     this._destroyInitialsResources();
     this._destroyScene();
-
-    this._unregisterConfigGlobalHandlers();
 
     if (this.renderer) {
         this.renderer.dispose();
