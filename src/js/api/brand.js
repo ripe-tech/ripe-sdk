@@ -150,7 +150,7 @@ ripe.Ripe.prototype.getFontUrl = function(name, format, options) {
 ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(name, format, options) {
     name = name || "studio2";
     format = format || "hdr";
-    return `https://cdn.platforme.com/3d/environment/${name}.${format}`
+    return `https://cdn.platforme.com/3d/environment/${name}.${format}`;
 };
 
 /**
