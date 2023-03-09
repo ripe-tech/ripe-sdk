@@ -105,6 +105,8 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.enabledInitials = null;
     this.initialsOptions = null;
     this.dracoLoader = null;
+    this.pointer = null;
+    this.raycaster = null;
     this.renderer = null;
     this.camera = null;
     this.scene = null;
@@ -1059,6 +1061,23 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
 };
 
 /**
+ * Initiates the pointer tools.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._initPointer = function() {
+    // if (!this.pointerRaytracing) return;
+    if (!this.scene) throw new Error("Scene not initialized");
+    if (!this.camera) throw new Error("Camera not initialized");
+
+    // creates empty vector
+    this.pointer = new window.THREE.Vector2();
+
+    // creates empty raycaster
+    this.raycaster = new window.THREE.Raycaster();
+};
+
+/**
  * Cleanups everything related to the debug tools.
  *
  * @private
@@ -1514,6 +1533,9 @@ ripe.ConfiguratorCsr.prototype._render = function() {
     if (!this.scene) throw new Error("Scene not initiated");
     if (!this.camera) throw new Error("Camera not initiated");
     if (!this.renderer) throw new Error("Renderer not initiated");
+
+    this._onPreRender();
+
     this.renderer.render(this.scene, this.camera);
     this._onPostRender();
 };
@@ -1592,6 +1614,27 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
 /**
  * @ignore
  */
+ripe.ConfiguratorCsr.prototype._onPreRender = function() {
+    // update the picking ray with the camera and pointer position
+    this.raycaster.setFromCamera(this.pointer, this.camera);
+
+    // calculate objects intersecting the picking ray
+    const intersects = this.raycaster.intersectObjects(this.scene.children);
+
+    // hack to reset all material colors
+    // and set those that are being selected by the pointer
+    // maybe use scene.traverse instead
+    this.scene.children[0].children[0].children[0].children.forEach(i => i.material.color.set(0xffffff));
+    intersects?.[0]?.object?.material?.color?.set(0xff0000);
+
+    // for (let i = 0; i < intersects.length; i++) {
+    //     intersects[i].object.material.color.set(0xff0000);
+    // }
+};
+
+/**
+ * @ignore
+ */
 ripe.ConfiguratorCsr.prototype._onPostRender = function() {
     if (this._postRenderCallback) this._postRenderCallback();
 };
@@ -1629,6 +1672,12 @@ ripe.ConfiguratorCsr.prototype._onMouseLeave = function(self, event) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
+    // Set mouse hover position
+    const rect = event.target.getBoundingClientRect();
+    this.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    this.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    // Set mouse drag position
     if (!self.isMouseDown) return;
     if (!self.modelGroup) return;
     if (self.noDrag) return;
@@ -1748,6 +1797,9 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 
         // init debug tools
         this._initDebug();
+
+        // init pointer raytracing
+        this._initPointer();
 
         // renders newly build scene
         this._render();
