@@ -147,9 +147,7 @@ ripe.Ripe.prototype.getFontUrl = function(name, format, options) {
  * @param {Object} options A map with options.
  * @returns {String} The URL of the environment for the 3D scene.
  */
-ripe.Ripe.prototype.get3dSceneEnvironmentUrl = function(name, format, options) {
-    name = name || "studio2";
-    format = format || "hdr";
+ripe.Ripe.prototype.getSceneEnvironmentUrl = function(name, format, options) {
     return `https://cdn.platforme.com/3d/environment/${name}.${format}`;
 };
 

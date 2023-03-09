@@ -1385,9 +1385,9 @@ ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(
     this.dracoLoader = ripe.CsrUtils.loadDracoLoader();
 
     // computes environment file URL
-    const environment = sceneOptions.environment;
+    const environment = sceneOptions.environment || "studio2";
     const environmentFormat = "hdr";
-    const environmentUrl = this.owner.get3dSceneEnvironmentUrl(environment, environmentFormat);
+    const environmentUrl = this.owner.getSceneEnvironmentUrl(environment, environmentFormat);
 
     const optionsParams = initialsOptions.options || {};
 
