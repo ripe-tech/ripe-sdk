@@ -93,6 +93,10 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.isChangeFrameAnimationRunning = false;
     this._pendingOps = [];
     this._postRenderCallback = null;
+    this._onInitialsBind = null;
+    this._onInitialsExtraBind = null;
+    this._onPreConfigBind = null;
+    this._onPostConfigBind = null;
 
     // CSR variables
     this.rendererOptions = null;
@@ -144,7 +148,8 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this._initLayout();
     this._initCsr();
 
-    this._registerConfigHandlers();
+    this._unregisterConfigGlobalHandlers();
+    this._registerConfigGlobalHandlers();
 };
 
 /**
@@ -155,7 +160,9 @@ ripe.ConfiguratorCsr.prototype.init = function() {
 ripe.ConfiguratorCsr.prototype.deinit = async function() {
     this._deinitCsr();
 
-    while (this.element.firstChild) {
+    this._unregisterConfigGlobalHandlers();
+
+    while (this.element && this.element.firstChild) {
         this.element.removeChild(this.element.firstChild);
     }
 
@@ -703,7 +710,7 @@ ripe.ConfiguratorCsr.prototype._initLayout = function() {
     this.element.appendChild(initialsContainer);
 
     // register for all the necessary DOM events
-    this._registerHandlers();
+    this._registerElementHandlers();
 };
 
 /**
@@ -822,7 +829,8 @@ ripe.ConfiguratorCsr.prototype._destroyScene = function() {
 ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
     if (!this.enabledInitials) return;
 
-    this._registerInitialsHandlers();
+    this._unregisterInitialsGlobalHandlers();
+    this._registerInitialsGlobalHandlers();
 
     const initialsContainer = this.element.querySelector(".initials-container");
     if (!initialsContainer) {
@@ -914,7 +922,7 @@ ripe.ConfiguratorCsr.prototype._initCsrRenderedInitials = function() {
  */
 ripe.ConfiguratorCsr.prototype._deinitCsrRenderedInitials = function() {
     // cleanup handlers
-    this._unregisterInitialsHandlers();
+    this._unregisterInitialsGlobalHandlers();
 };
 
 /**
@@ -1671,7 +1679,7 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engraving, params = {}) {
+ripe.ConfiguratorCsr.prototype._onInitials = function(self, initials, engraving, params = {}) {
     if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
 
     this.initialsRefs.renderedInitials.setInitials(initials);
@@ -1680,7 +1688,7 @@ ripe.ConfiguratorCsr.prototype._onInitialsEvent = function(self, initials, engra
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._onInitialsExtraEvent = function(self, initialsExtra, params = {}) {
+ripe.ConfiguratorCsr.prototype._onInitialsExtra = function(self, initialsExtra, params = {}) {
     if (!this.initialsRefs.renderedInitials) throw new Error("CSR initials not initialized");
 
     const hasEmptyInitials = Object.values(initialsExtra).length === 0;
@@ -1764,7 +1772,7 @@ ripe.ConfiguratorCsr.prototype._onPostConfig = async function(self, config) {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
+ripe.ConfiguratorCsr.prototype._registerElementHandlers = function() {
     this._addElementHandler("mousedown", event => this._onMouseDown(this, event));
     this._addElementHandler("mouseup", event => this._onMouseUp(this, event));
     this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
@@ -1775,35 +1783,41 @@ ripe.ConfiguratorCsr.prototype._registerHandlers = function() {
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._registerInitialsHandlers = function() {
-    this.owner.bind("initials", (initials, engraving, params) =>
-        this._onInitialsEvent(this, initials, engraving, params)
+ripe.ConfiguratorCsr.prototype._registerInitialsGlobalHandlers = function() {
+    this._onInitialsBind = this.owner.bind("initials", (initials, engraving, params) =>
+        this._onInitials(this, initials, engraving, params)
     );
-    this.owner.bind("initials_extra", (initialsExtra, params) =>
-        this._onInitialsExtraEvent(this, initialsExtra, params)
+    this._onInitialsExtraBind = this.owner.bind("initials_extra", (initialsExtra, params) =>
+        this._onInitialsExtra(this, initialsExtra, params)
     );
 };
 
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._unregisterInitialsHandlers = function() {
-    this.owner && this.owner.unbind("initials_extra", this._onInitialsExtraEvent);
-    this.owner && this.owner.unbind("initials", this._onInitialsEvent);
+ripe.ConfiguratorCsr.prototype._unregisterInitialsGlobalHandlers = function() {
+    if (!this.owner) return;
+    if (this._onInitialsExtraBind) this.owner.unbind("initials_extra", this._onInitialsExtraBind);
+    if (this._onInitialsBind) this.owner.unbind("initials", this._onInitialsBind);
 };
 
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._registerConfigHandlers = function() {
-    this.owner.bind("pre_config", (brand, model, options) => this._onPreConfig(this));
-    this.owner.bind("post_config", config => this._onPostConfig(this, config));
+ripe.ConfiguratorCsr.prototype._registerConfigGlobalHandlers = function() {
+    this._onPreConfigBind = this.owner.bind("pre_config", (brand, model, options) =>
+        this._onPreConfig(this)
+    );
+    this._onPostConfigBind = this.owner.bind("post_config", config =>
+        this._onPostConfig(this, config)
+    );
 };
 
 /**
  * @ignore
  */
-ripe.ConfiguratorCsr.prototype._unregisterConfigHandlers = function() {
-    this.owner && this.owner.unbind("pre_config", this._onPreConfig);
-    this.owner && this.owner.unbind("post_config", this._onPostConfig);
+ripe.ConfiguratorCsr.prototype._unregisterConfigGlobalHandlers = function() {
+    if (!this.owner) return;
+    if (this._onPostConfigBind) this.owner.unbind("post_config", this._onPostConfigBind);
+    if (this._onPreConfigBind) this.owner && this.owner.unbind("pre_config", this._onPreConfigBind);
 };
