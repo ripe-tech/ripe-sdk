@@ -1075,6 +1075,14 @@ ripe.ConfiguratorCsr.prototype._initPointer = function() {
 
     // creates empty raycaster
     this.raycaster = new window.THREE.Raycaster();
+
+    // create reference sphere
+    this.sphereIndicator = new window.THREE.Mesh(
+        new window.THREE.SphereGeometry(1, 32, 16),
+        new window.THREE.MeshNormalMaterial({ color: 0xff00ff })
+    );
+
+    this.scene.add(this.sphereIndicator);
 };
 
 /**
@@ -1507,7 +1515,7 @@ ripe.ConfiguratorCsr.prototype._initConfigDefaults = function(options) {
         enabled: zoomOpts.enabled !== undefined ? zoomOpts.enabled : true,
         sensitivity: zoomOpts.sensitivity !== undefined ? zoomOpts.sensitivity : 1,
         min: zoomOpts.min !== undefined ? zoomOpts.min : 0.75,
-        max: zoomOpts.max !== undefined ? zoomOpts.max : 1.5
+        max: 100
     };
     this.enabledInitials = options.enabledInitials || false;
     const initialsOpts = options.initialsOptions || {};
@@ -1618,18 +1626,19 @@ ripe.ConfiguratorCsr.prototype._onPreRender = function() {
     // update the picking ray with the camera and pointer position
     this.raycaster.setFromCamera(this.pointer, this.camera);
 
-    // calculate objects intersecting the picking ray
-    const intersects = this.raycaster.intersectObjects(this.scene.children);
+    // get important objects
+    const importantObjects = [];
+    this.scene.traverse(o => o?.children?.length === 0 && o?.name && importantObjects.push(o));
 
-    // hack to reset all material colors
-    // and set those that are being selected by the pointer
-    // maybe use scene.traverse instead
-    this.scene.children[0].children[0].children[0].children.forEach(i => i.material.color.set(0xffffff));
-    intersects?.[0]?.object?.material?.color?.set(0xff0000);
+    // calculate objects intersection from the array
+    const intersects = this.raycaster.intersectObjects(importantObjects, false);
 
-    // for (let i = 0; i < intersects.length; i++) {
-    //     intersects[i].object.material.color.set(0xff0000);
-    // }
+    if (intersects.length > 0) {
+        this.sphereIndicator.position.copy(intersects[0]?.point);
+    }
+
+    this.scene.traverse(o => o?.material?.emissive?.set(0x000000));
+    intersects?.[0]?.object?.material?.emissive?.set(0x0000ff);
 };
 
 /**
@@ -1718,6 +1727,13 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
     // updates camera zoom, this will trigger
     // the update of the projection matrix
     self._setZoom(zoom);
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._onClick = function(self, event) {
+    this.modelGroup.add(this.sphereIndicator.clone());
 };
 
 /**
@@ -1825,6 +1841,7 @@ ripe.ConfiguratorCsr.prototype._registerElementHandlers = function() {
     this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
     this._addElementHandler("mousemove", event => this._onMouseMove(this, event));
     this._addElementHandler("wheel", event => this._onWheel(this, event));
+    this._addElementHandler("click", event => this._onClick(this, event));
 };
 
 /**
