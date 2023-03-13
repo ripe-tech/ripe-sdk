@@ -1015,6 +1015,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         // ensures it has the minimum number of points
         if (this.initialsRefs.renderedInitials.points.length > 1) {
             // inits reference points curve
+            console.log("original spec.json points:", this.initialsRefs.renderedInitials.points);
             if (this.debugOptions.renderedInitials.line) {
                 const curve = new window.THREE.CatmullRomCurve3(
                     this.initialsRefs.renderedInitials.points,
