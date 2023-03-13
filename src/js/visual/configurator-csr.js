@@ -1024,6 +1024,7 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
                 );
                 const pointsNum = 50;
                 const linePoints = curve.getPoints(pointsNum);
+                console.log("setting debug geometry points from", linePoints);
                 this.debugRefs.renderedInitials.line = new window.THREE.Line(
                     new window.THREE.BufferGeometry().setFromPoints(linePoints),
                     new window.THREE.LineBasicMaterial({ color: 0x0000ff })
@@ -1078,7 +1079,7 @@ ripe.ConfiguratorCsr.prototype._initPointer = function() {
 
     // create reference sphere
     this.sphereIndicator = new window.THREE.Mesh(
-        new window.THREE.SphereGeometry(1, 32, 16),
+        new window.THREE.SphereGeometry(0.2, 32, 16),
         new window.THREE.MeshNormalMaterial({ color: 0xff00ff })
     );
 
@@ -1638,7 +1639,7 @@ ripe.ConfiguratorCsr.prototype._onPreRender = function() {
     }
 
     this.scene.traverse(o => o?.material?.emissive?.set(0x000000));
-    intersects?.[0]?.object?.material?.emissive?.set(0x0000ff);
+    intersects?.[0]?.object?.material?.emissive?.set(0x0f0fff);
 };
 
 /**
@@ -1663,6 +1664,10 @@ ripe.ConfiguratorCsr.prototype._onMouseDown = function(self, event) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
+    if (self.prevPercentX === 0 && self.prevPercentY === 0) {
+        console.log("click position", self.sphereIndicator.position.x, self.sphereIndicator.position.y, self.sphereIndicator.position.z);
+        self.modelGroup.attach(self.sphereIndicator.clone());
+    }
     self.isMouseDown = false;
     self.prevPercentX = 0;
     self.prevPercentY = 0;
@@ -1727,13 +1732,6 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
     // updates camera zoom, this will trigger
     // the update of the projection matrix
     self._setZoom(zoom);
-};
-
-/**
- * @ignore
- */
-ripe.ConfiguratorCsr.prototype._onClick = function(self, event) {
-    this.modelGroup.add(this.sphereIndicator.clone());
 };
 
 /**
@@ -1841,7 +1839,6 @@ ripe.ConfiguratorCsr.prototype._registerElementHandlers = function() {
     this._addElementHandler("mouseleave", event => this._onMouseLeave(this, event));
     this._addElementHandler("mousemove", event => this._onMouseMove(this, event));
     this._addElementHandler("wheel", event => this._onWheel(this, event));
-    this._addElementHandler("click", event => this._onClick(this, event));
 };
 
 /**
