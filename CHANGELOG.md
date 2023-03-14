@@ -9,16 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Add CSR base documentation - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
-* Add CSR documentation `Dockerfile` - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 * Add `browserify`, `esmify`, `babelify`, `vinyl-buffer` and `vinyl-source-stream` dev dependencies - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 * Support ES Modules - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 
 ### Changed
 
-* Update `initialsConfig()` to match remote logic - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
-* Update `.gitignore` to ignore CSR documentation compilation files - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
-* Update CSR documentation with proper configuration with title and logo - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 * Reduced import hacks - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 * Remove `__VERSION__` references - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 * Remove `mark` script - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
@@ -28,9 +23,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* Fix div tag outside code block in CSR documentation - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 * Fix package not loading Three.js - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 * Fix build not including all code when generating the bundle - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
+
+## [2.40.0] - 2023-03-08
+
+### Added
+
+* Add CSR base documentation - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
+* Add CSR documentation `Dockerfile` - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
+
+### Changed
+
+* Update `initialsConfig()` to match remote logic - [#429](https://github.com/ripe-tech/ripe-sdk/issues/429)
+* Update `.gitignore` to ignore CSR documentation compilation files - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
+* Update CSR documentation with proper configuration with title and logo - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
+* Improve CSR deinitialization logic - [#493](https://github.com/ripe-tech/ripe-sdk/issues/493)
+* Load environment file based on config - [499](https://github.com/ripe-tech/ripe-sdk/issues/499)
+
+### Fixed
+
+* Fix div tag outside code block in CSR documentation - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 
 ## [2.39.0] - 2023-02-24
 
