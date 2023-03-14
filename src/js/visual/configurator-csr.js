@@ -784,6 +784,8 @@ ripe.ConfiguratorCsr.prototype._initScene = function() {
 
     // adds model group to the scene
     this.scene.add(this.modelGroup);
+
+    console.log("modelGroup", this.modelGroup);
 };
 
 /**
@@ -1677,7 +1679,21 @@ ripe.ConfiguratorCsr.prototype._onMouseDown = function(self, event) {
  */
 ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
     if (self.prevPercentX === 0 && self.prevPercentY === 0) {
-        console.log("click position", self.pointerIndicator.position.x, self.pointerIndicator.position.y, self.pointerIndicator.position.z);
+        const cursorPositionWorld = [
+            self.pointerIndicator.position.x.toFixed(1),
+            self.pointerIndicator.position.y.toFixed(1),
+            self.pointerIndicator.position.z.toFixed(1)
+        ];
+        const cursorPositionInitials = Object.values(
+            this.initialsRefs.mesh.worldToLocal(self.pointerIndicator.position.clone())
+        );
+        const cursorPositionModel = Object.values(
+            this.mesh.worldToLocal(self.pointerIndicator.position.clone())
+        );
+
+        console.log("click world coordinates", ...cursorPositionWorld);
+        console.log("click model coordinates", ...cursorPositionModel.map(n => n.toFixed(1)));
+        console.log("click initials coodinates", ...cursorPositionInitials.map(n => n.toFixed(1)));
         self.modelGroup.attach(self.pointerIndicator.clone());
     }
     self.isMouseDown = false;
