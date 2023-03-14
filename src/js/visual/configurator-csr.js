@@ -105,8 +105,8 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.enabledInitials = null;
     this.initialsOptions = null;
     this.dracoLoader = null;
-    this.pointer = null;
     this.raycaster = null;
+    this.raycasterPointer = null;
     this.renderer = null;
     this.camera = null;
     this.scene = null;
@@ -1072,19 +1072,19 @@ ripe.ConfiguratorCsr.prototype._initPointer = function() {
     if (!this.scene) throw new Error("Scene not initialized");
     if (!this.camera) throw new Error("Camera not initialized");
 
-    // creates empty vector
-    this.pointer = new window.THREE.Vector2();
-
     // creates empty raycaster
     this.raycaster = new window.THREE.Raycaster();
 
+    // creates empty vector
+    this.raycasterPointer = new window.THREE.Vector2();
+
     // create reference sphere
-    this.sphereIndicator = new window.THREE.Mesh(
-        new window.THREE.SphereGeometry(0.2, 32, 16),
+    this.pointerIndicator = new window.THREE.Mesh(
+        new window.THREE.SphereGeometry(1, 32, 16),
         new window.THREE.MeshNormalMaterial({ color: 0xff00ff })
     );
 
-    this.scene.add(this.sphereIndicator);
+    this.scene.add(this.pointerIndicator);
 };
 
 /**
@@ -1565,6 +1565,17 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
 };
 
 /**
+ * Sets the pointer indicator size from zoom
+ *
+ * @param {Number} zoom The zoom number value.
+ *
+ * @private
+ */
+ripe.ConfiguratorCsr.prototype._setPointerSizeFromZoom = function(zoom) {
+    this.pointerIndicator.scale.setScalar(1 / zoom);
+};
+
+/**
  * Do the resize operation for every CSR element.
  *
  * @param {Number} width The number of pixels to resize to.
@@ -1626,7 +1637,7 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
  */
 ripe.ConfiguratorCsr.prototype._onPreRender = function() {
     // update the picking ray with the camera and pointer position
-    this.raycaster.setFromCamera(this.pointer, this.camera);
+    this.raycaster.setFromCamera(this.raycasterPointer, this.camera);
 
     // get important objects
     const importantObjects = [];
@@ -1636,7 +1647,7 @@ ripe.ConfiguratorCsr.prototype._onPreRender = function() {
     const intersects = this.raycaster.intersectObjects(importantObjects, false);
 
     if (intersects.length > 0) {
-        this.sphereIndicator.position.copy(intersects[0]?.point);
+        this.pointerIndicator.position.copy(intersects[0]?.point);
     }
 
     this.scene.traverse(o => o?.material?.emissive?.set(0x000000));
@@ -1666,8 +1677,8 @@ ripe.ConfiguratorCsr.prototype._onMouseDown = function(self, event) {
  */
 ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
     if (self.prevPercentX === 0 && self.prevPercentY === 0) {
-        console.log("click position", self.sphereIndicator.position.x, self.sphereIndicator.position.y, self.sphereIndicator.position.z);
-        self.modelGroup.attach(self.sphereIndicator.clone());
+        console.log("click position", self.pointerIndicator.position.x, self.pointerIndicator.position.y, self.pointerIndicator.position.z);
+        self.modelGroup.attach(self.pointerIndicator.clone());
     }
     self.isMouseDown = false;
     self.prevPercentX = 0;
@@ -1689,8 +1700,8 @@ ripe.ConfiguratorCsr.prototype._onMouseLeave = function(self, event) {
 ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
     // Set mouse hover position
     const rect = event.target.getBoundingClientRect();
-    this.pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    this.pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    this.raycasterPointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    this.raycasterPointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
     // Set mouse drag position
     if (!self.isMouseDown) return;
@@ -1732,6 +1743,7 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
 
     // updates camera zoom, this will trigger
     // the update of the projection matrix
+    self._setPointerSizeFromZoom(zoom);
     self._setZoom(zoom);
 };
 
