@@ -107,6 +107,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.dracoLoader = null;
     this.raycaster = null;
     this.raycasterPointer = null;
+    this.raycasterIntersects = null;
     this.renderer = null;
     this.camera = null;
     this.scene = null;
@@ -136,6 +137,12 @@ ripe.ConfiguratorCsr.prototype.init = function() {
             line: null,
             points: []
         }
+    };
+
+    // CSR bubble comments
+    this.bubbleComments = {
+        group: null,
+        points: null
     };
 
     // handlers variables
@@ -1077,16 +1084,141 @@ ripe.ConfiguratorCsr.prototype._initPointer = function() {
     // creates empty raycaster
     this.raycaster = new window.THREE.Raycaster();
 
-    // creates empty vector
+    // creates empty vector to be used as a 2D raycaster pointer
     this.raycasterPointer = new window.THREE.Vector2();
 
-    // create reference sphere
+    // creates group that will contain all saved pointer indicators
+    this.bubbleComments.group = new window.THREE.Group();
+    // creates the array that will contain all saved pointer coordinates
+    this.bubbleComments.points = [];
+
+    // create bubble object
     this.pointerIndicator = new window.THREE.Mesh(
         new window.THREE.SphereGeometry(1, 32, 16),
-        new window.THREE.MeshNormalMaterial({ color: 0xff00ff })
+        new window.THREE.MeshStandardMaterial({ color: 0xf000f0 })
     );
+    this.pointerIndicator.name = "bubble";
 
+    // adds pointer indicator to the scene
     this.scene.add(this.pointerIndicator);
+
+    // add pointer indicator group to the modelGroup
+    this.modelGroup.attach(this.bubbleComments.group);
+
+    ripe.CsrUtils.attachBubbleComments(this.bubbleComments.group, this.pointerIndicator, [
+        {
+          position: [
+            17.503859958570374,
+            13.798088406728237,
+            4.251107924493258
+          ],
+          comment: "1"
+        },
+        {
+          position: [
+            17.981867303561057,
+            -13.233408244219124,
+            6.829330068844742
+          ],
+          comment: "2"
+        },
+        {
+          position: [
+            -17.502347273872754,
+            -13.107312809401098,
+            6.971714436763229
+          ],
+          comment: "3"
+        },
+        {
+          position: [
+            -17.264510941454272,
+            13.795842677955543,
+            4.284106627439945
+          ],
+          comment: "4"
+        },
+        {
+          position: [
+            -17.24191122545031,
+            13.902168731314646,
+            -4.474603329910279
+          ],
+          comment: "5"
+        },
+        {
+          position: [
+            -18.061867399131923,
+            -13.349724362414953,
+            -7.090861050843749
+          ],
+          comment: "6"
+        },
+        {
+          position: [
+            17.733392420649903,
+            -13.440092709805587,
+            -7.209774517228892
+          ],
+          comment: "7"
+        },
+        {
+          position: [
+            4.970839786853961,
+            26.8689133345923,
+            0.9248117416721175
+          ],
+          comment: "8"
+        },
+        {
+          position: [
+            -2.926762269408526,
+            28.353098831153424,
+            0.5724774682526172
+          ],
+          comment: "9"
+        },
+        {
+          position: [
+            1.848006523260599,
+            28.703930484171224,
+            -1.4524569713751134
+          ],
+          comment: "10"
+        },
+        {
+          position: [
+            8.482744238785203,
+            14.264490516502622,
+            -3.2288006123165447
+          ],
+          comment: "11"
+        },
+        {
+          position: [
+            -8.332140072366869,
+            14.30907786772801,
+            -3.284730922161466
+          ],
+          comment: "12"
+        },
+        {
+          position: [
+            0.35001462623690915,
+            13.679364218795595,
+            2.4274915671021455
+          ],
+          comment: "13"
+        },
+        {
+          position: [
+            0.273876964463847,
+            13.809251367192667,
+            -2.446520521851098
+          ],
+          comment: "14"
+        }
+      ]);
 };
 
 /**
@@ -1573,8 +1705,9 @@ ripe.ConfiguratorCsr.prototype._setZoom = function(zoom) {
  *
  * @private
  */
-ripe.ConfiguratorCsr.prototype._setPointerSizeFromZoom = function(zoom) {
-    this.pointerIndicator.scale.setScalar(1 / zoom);
+ripe.ConfiguratorCsr.prototype._setPointerScale = function(value) {
+    this.pointerIndicator.scale.setScalar(value);
+    this.bubbleComments.group.children.forEach(c => c.scale.setScalar(value));
 };
 
 /**
@@ -1642,17 +1775,24 @@ ripe.ConfiguratorCsr.prototype._onPreRender = function() {
     this.raycaster.setFromCamera(this.raycasterPointer, this.camera);
 
     // get important objects
-    const importantObjects = [];
-    this.scene.traverse(o => o?.children?.length === 0 && o?.name && importantObjects.push(o));
+    const importantObjects = [...this.bubbleComments.group.children];
+    this.modelGroup.traverse(o => o?.children?.length === 0 && o?.name && importantObjects.push(o));
 
     // calculate objects intersection from the array
     const intersects = this.raycaster.intersectObjects(importantObjects, false);
 
     if (intersects.length > 0) {
         this.pointerIndicator.position.copy(intersects[0]?.point);
+        this.raycasterIntersects = intersects;
     }
 
-    this.scene.traverse(o => o?.material?.emissive?.set(0x000000));
+    if (intersects.length && intersects[0]?.object.userData.isComment) {
+        this.pointerIndicator.visible = false;
+    } else {
+        this.pointerIndicator.visible = true;
+    }
+
+    this.modelGroup.traverse(o => o?.material?.emissive?.set(0x000000));
     intersects?.[0]?.object?.material?.emissive?.set(0x0f0fff);
 };
 
@@ -1684,17 +1824,32 @@ ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
             self.pointerIndicator.position.y.toFixed(1),
             self.pointerIndicator.position.z.toFixed(1)
         ];
-        const cursorPositionInitials = Object.values(
-            this.initialsRefs.mesh.worldToLocal(self.pointerIndicator.position.clone())
-        );
         const cursorPositionModel = Object.values(
             this.mesh.worldToLocal(self.pointerIndicator.position.clone())
         );
-
-        console.log("click world coordinates", ...cursorPositionWorld);
-        console.log("click model coordinates", ...cursorPositionModel.map(n => n.toFixed(1)));
-        console.log("click initials coodinates", ...cursorPositionInitials.map(n => n.toFixed(1)));
-        self.modelGroup.attach(self.pointerIndicator.clone());
+        const cursorPositionInitials = Object.values(
+            this.initialsRefs.mesh.worldToLocal(self.pointerIndicator.position.clone())
+        );
+        if (this.raycasterIntersects?.length && this.raycasterIntersects[0]?.object?.userData?.isComment) {
+            this.bubbleComments.group.remove(this.raycasterIntersects[0].object);
+            console.log("comment was: ", this.raycasterIntersects[0].object.userData.value);
+        } else {
+            console.log("click world coordinates", ...cursorPositionWorld);
+            console.log("click model coordinates", ...cursorPositionModel.map(n => n.toFixed(1)));
+            console.log("click initials coodinates", ...cursorPositionInitials.map(n => n.toFixed(1)));
+            console.log("adding to the group...");
+            let commentValue = "";
+            if (event.shiftKey) {
+                commentValue = window.prompt("Input your comment");
+            }
+            const bubble = self.pointerIndicator.clone();
+            bubble.material = self.pointerIndicator.material.clone();
+            bubble.userData.isComment = true;
+            bubble.userData.value = commentValue;
+            this.bubbleComments.group.attach(bubble);
+            this.bubbleComments.points.push({ position: cursorPositionModel, comment: commentValue });
+            console.log("added to the group. result:", this.bubbleComments.group, this.bubbleComments.points);
+        }
     }
     self.isMouseDown = false;
     self.prevPercentX = 0;
@@ -1759,8 +1914,10 @@ ripe.ConfiguratorCsr.prototype._onWheel = function(self, event) {
 
     // updates camera zoom, this will trigger
     // the update of the projection matrix
-    self._setPointerSizeFromZoom(zoom);
     self._setZoom(zoom);
+
+    // updates pointer scale size
+    self._setPointerScale(1 / zoom);
 };
 
 /**

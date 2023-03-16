@@ -411,3 +411,22 @@ ripe.CsrUtils.applyTransform = function(object, position = {}, rotation = {}, sc
     object.rotation.y = rotationY;
     object.rotation.z = rotationZ;
 };
+
+/**
+ * Imports to the model a list of comments inside a bubble object
+ *
+ * @param {THREE.Object3D} object An instance of a THREE.Object3D for the model.
+ * @param {THREE.Object3D} bubble An instance of a THREE.Object3D for the bubble comment object.
+ * @param {Array} comments An array of comments.
+ */
+ripe.CsrUtils.attachBubbleComments = function(object, bubble, comments) {
+    comments.forEach(c => {
+        const bubbleComment = bubble.clone();
+        bubbleComment.material = bubbleComment.material.clone();
+        const worldPosition = Object.values(object.localToWorld(new window.THREE.Vector3(...c.position)));
+        bubbleComment.position.set(...worldPosition);
+        bubbleComment.userData.isComment = true;
+        bubbleComment.userData.value = c.comment;
+        object.attach(bubbleComment);
+    });
+};
