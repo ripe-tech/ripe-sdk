@@ -423,7 +423,9 @@ ripe.CsrUtils.attachBubbleComments = function(object, bubble, comments) {
     comments.forEach(c => {
         const bubbleComment = bubble.clone();
         bubbleComment.material = bubbleComment.material.clone();
-        const worldPosition = Object.values(object.localToWorld(new window.THREE.Vector3(...c.position)));
+        const worldPosition = Object.values(
+            object.localToWorld(new window.THREE.Vector3(...c.position))
+        );
         bubbleComment.position.set(...worldPosition);
         bubbleComment.userData.isComment = true;
         bubbleComment.userData.value = c.comment;

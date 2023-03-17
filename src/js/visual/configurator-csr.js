@@ -109,6 +109,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.raycasterPointer = null;
     this.raycasterIntersects = null;
     this.renderer = null;
+    this.labelRenderer = null;
     this.camera = null;
     this.scene = null;
     this.environmentTexture = null;
@@ -1107,118 +1108,74 @@ ripe.ConfiguratorCsr.prototype._initPointer = function() {
 
     ripe.CsrUtils.attachBubbleComments(this.bubbleComments.group, this.pointerIndicator, [
         {
-          position: [
-            17.503859958570374,
-            13.798088406728237,
-            4.251107924493258
-          ],
-          comment: "1"
+            position: [17.503859958570374, 13.798088406728237, 4.251107924493258],
+            comment: "1"
         },
         {
-          position: [
-            17.981867303561057,
-            -13.233408244219124,
-            6.829330068844742
-          ],
-          comment: "2"
+            position: [17.981867303561057, -13.233408244219124, 6.829330068844742],
+            comment: "2"
         },
         {
-          position: [
-            -17.502347273872754,
-            -13.107312809401098,
-            6.971714436763229
-          ],
-          comment: "3"
+            position: [-17.502347273872754, -13.107312809401098, 6.971714436763229],
+            comment: "3"
         },
         {
-          position: [
-            -17.264510941454272,
-            13.795842677955543,
-            4.284106627439945
-          ],
-          comment: "4"
+            position: [-17.264510941454272, 13.795842677955543, 4.284106627439945],
+            comment: "4"
         },
         {
-          position: [
-            -17.24191122545031,
-            13.902168731314646,
-            -4.474603329910279
-          ],
-          comment: "5"
+            position: [-17.24191122545031, 13.902168731314646, -4.474603329910279],
+            comment: "5"
         },
         {
-          position: [
-            -18.061867399131923,
-            -13.349724362414953,
-            -7.090861050843749
-          ],
-          comment: "6"
+            position: [-18.061867399131923, -13.349724362414953, -7.090861050843749],
+            comment: "6"
         },
         {
-          position: [
-            17.733392420649903,
-            -13.440092709805587,
-            -7.209774517228892
-          ],
-          comment: "7"
+            position: [17.733392420649903, -13.440092709805587, -7.209774517228892],
+            comment: "7"
         },
         {
-          position: [
-            4.970839786853961,
-            26.8689133345923,
-            0.9248117416721175
-          ],
-          comment: "8"
+            position: [4.970839786853961, 26.8689133345923, 0.9248117416721175],
+            comment: "8"
         },
         {
-          position: [
-            -2.926762269408526,
-            28.353098831153424,
-            0.5724774682526172
-          ],
-          comment: "9"
+            position: [-2.926762269408526, 28.353098831153424, 0.5724774682526172],
+            comment: "9"
         },
         {
-          position: [
-            1.848006523260599,
-            28.703930484171224,
-            -1.4524569713751134
-          ],
-          comment: "10"
+            position: [1.848006523260599, 28.703930484171224, -1.4524569713751134],
+            comment: "10"
         },
         {
-          position: [
-            8.482744238785203,
-            14.264490516502622,
-            -3.2288006123165447
-          ],
-          comment: "11"
+            position: [8.482744238785203, 14.264490516502622, -3.2288006123165447],
+            comment: "11"
         },
         {
-          position: [
-            -8.332140072366869,
-            14.30907786772801,
-            -3.284730922161466
-          ],
-          comment: "12"
+            position: [-8.332140072366869, 14.30907786772801, -3.284730922161466],
+            comment: "12"
         },
         {
-          position: [
-            0.35001462623690915,
-            13.679364218795595,
-            2.4274915671021455
-          ],
-          comment: "13"
-        },
-        {
-          position: [
-            0.273876964463847,
-            13.809251367192667,
-            -2.446520521851098
-          ],
-          comment: "14"
+            position: [0.35001462623690915, 13.679364218795595, 2.4274915671021455],
+            comment: "13"
         }
-      ]);
+    ]);
+
+    this.infoBoxElement = document.createElement("div");
+    this.infoBoxElement.className = "label";
+    this.infoBoxElement.textContent = "Book Tote";
+    this.infoBoxElement.style =
+        "background-color: #ffffff62; border-radius: 10px; box-shadow: 0 0 10px #00000033; padding: 10px; min-width: 150px; max-width: 500px; margin: 0 auto; white-space: break-spaces; margin-bottom: 0px; text-align: center; font-size: 14px; font-weight: bold; color: #ff00ff; margin-bottom: 0; pointer-events: none;";
+
+    const infoBoxObject = new window.THREE.CSS2DObject(this.infoBoxElement);
+    const worldPosition = Object.values(
+        infoBoxObject.localToWorld(
+            new window.THREE.Vector3(...[0.273876964463847, 13.809251367192667, -2.446520521851098])
+        )
+    );
+    infoBoxObject.position.set(...worldPosition);
+    infoBoxObject.name = "Label";
+    this.modelGroup.attach(infoBoxObject);
 };
 
 /**
@@ -1311,13 +1268,21 @@ ripe.ConfiguratorCsr.prototype._initCsr = function() {
     this.renderer.setPixelRatio(this.pixelRatio);
     this.renderer.setSize(size.width, size.height);
     this.renderer.setAnimationLoop(() => this._onAnimationLoop(this));
+    this.renderer.domElement.style.position = "absolute";
+    this.renderer.domElement.style.top = "0px";
+
+    // init text renderer
+    this.labelRenderer = new window.THREE.CSS2DRenderer();
+    this.labelRenderer.setSize(size.width, size.height);
+    this.labelRenderer.domElement.style.position = "absolute";
+    this.labelRenderer.domElement.style.top = "0px";
 
     // applies tone mapping
     this.renderer.toneMapping = window.THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1;
 
     const renderer = this.element.querySelector(".renderer");
-    renderer.appendChild(this.renderer.domElement);
+    renderer.append(this.renderer.domElement, this.labelRenderer.domElement);
 
     // internal clock initialization
     this.clock = new window.THREE.Clock();
@@ -1336,6 +1301,11 @@ ripe.ConfiguratorCsr.prototype._deinitCsr = function() {
     if (this.renderer) {
         this.renderer.dispose();
         this.renderer = null;
+    }
+
+    if (this.labelRenderer) {
+        this.labelRenderer.dispose();
+        this.labelRenderer = null;
     }
 };
 
@@ -1681,6 +1651,7 @@ ripe.ConfiguratorCsr.prototype._render = function() {
     this._onPreRender();
 
     this.renderer.render(this.scene, this.camera);
+    this.labelRenderer.render(this.scene, this.camera);
     this._onPostRender();
 };
 
@@ -1787,9 +1758,17 @@ ripe.ConfiguratorCsr.prototype._onPreRender = function() {
     }
 
     if (intersects.length && intersects[0]?.object.userData.isComment) {
+        const objectPositionFormatted = Object.values(
+            this.mesh.worldToLocal(intersects[0]?.object.position.clone())
+        ).map(v => v.toFixed(1));
         this.pointerIndicator.visible = false;
+        this.infoBoxElement.textContent = intersects[0]?.object.uuid + " \n " + objectPositionFormatted + " \n " + intersects[0]?.object.userData.value;
     } else {
+        const cursorPositionFormatted = Object.values(
+            this.mesh.worldToLocal(this.pointerIndicator.position.clone())
+        ).map(v => v.toFixed(1));
         this.pointerIndicator.visible = true;
+        this.infoBoxElement.textContent = cursorPositionFormatted;
     }
 
     this.modelGroup.traverse(o => o?.material?.emissive?.set(0x000000));
@@ -1830,14 +1809,18 @@ ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
         const cursorPositionInitials = Object.values(
             this.initialsRefs.mesh.worldToLocal(self.pointerIndicator.position.clone())
         );
-        if (this.raycasterIntersects?.length && this.raycasterIntersects[0]?.object?.userData?.isComment) {
+        if (
+            this.raycasterIntersects?.length &&
+            this.raycasterIntersects[0]?.object?.userData?.isComment
+        ) {
             this.bubbleComments.group.remove(this.raycasterIntersects[0].object);
-            console.log("comment was: ", this.raycasterIntersects[0].object.userData.value);
         } else {
             console.log("click world coordinates", ...cursorPositionWorld);
             console.log("click model coordinates", ...cursorPositionModel.map(n => n.toFixed(1)));
-            console.log("click initials coodinates", ...cursorPositionInitials.map(n => n.toFixed(1)));
-            console.log("adding to the group...");
+            console.log(
+                "click initials coodinates",
+                ...cursorPositionInitials.map(n => n.toFixed(1))
+            );
             let commentValue = "";
             if (event.shiftKey) {
                 commentValue = window.prompt("Input your comment");
@@ -1847,8 +1830,15 @@ ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
             bubble.userData.isComment = true;
             bubble.userData.value = commentValue;
             this.bubbleComments.group.attach(bubble);
-            this.bubbleComments.points.push({ position: cursorPositionModel, comment: commentValue });
-            console.log("added to the group. result:", this.bubbleComments.group, this.bubbleComments.points);
+            this.bubbleComments.points.push({
+                position: cursorPositionModel,
+                comment: commentValue
+            });
+            console.log(
+                "added to the group. result:",
+                this.bubbleComments.group,
+                this.bubbleComments.points
+            );
         }
     }
     self.isMouseDown = false;
