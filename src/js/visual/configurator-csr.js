@@ -1776,9 +1776,7 @@ ripe.ConfiguratorCsr.prototype._onPreRender = function() {
     if (this.raycasterIntersects.length && this.raycasterIntersects[0].object.userData.isComment) {
         this.infoBoxObject.visible = true;
         this.pointerIndicator.visible = false;
-        const objectPositionFormatted = Object.values(
-            this.mesh.worldToLocal(this.raycasterIntersects[0].object.position.clone())
-        ).map(v => v.toFixed(1));
+        const objectPositionFormatted = this.raycasterIntersects[0].object.position.toArray().map(v => v.toFixed(1));
         this.infoBoxElement.textContent =
             this.raycasterIntersects[0].object.uuid +
             " \n " +
