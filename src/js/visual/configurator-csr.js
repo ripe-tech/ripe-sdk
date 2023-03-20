@@ -1170,12 +1170,6 @@ ripe.ConfiguratorCsr.prototype._initPointer = function() {
         "background-color: #ffffff62; border-radius: 10px; box-shadow: 0 0 10px #00000033; padding: 10px; min-width: 150px; max-width: 500px; white-space: break-spaces; text-align: center; font-size: 14px; font-weight: bold; color: #0000ff; margin-top: 30px; pointer-events: none; filter: invert(1);";
 
     this.infoBoxObject = new window.THREE.CSS2DObject(this.infoBoxElement);
-    const worldPosition = Object.values(
-        this.infoBoxObject.localToWorld(
-            new window.THREE.Vector3(...[0.273876964463847, 13.809251367192667, -2.446520521851098])
-        )
-    );
-    this.infoBoxObject.position.set(...worldPosition);
     this.infoBoxObject.name = "Label";
     this.modelGroup.attach(this.infoBoxObject);
 };
