@@ -794,8 +794,6 @@ ripe.ConfiguratorCsr.prototype._initScene = function() {
 
     // adds model group to the scene
     this.scene.add(this.modelGroup);
-
-    console.log("modelGroup", this.modelGroup);
 };
 
 /**
@@ -1027,7 +1025,6 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
         // ensures it has the minimum number of points
         if (this.initialsRefs.renderedInitials.points.length > 1) {
             // inits reference points curve
-            console.log("original spec.json points:", this.initialsRefs.renderedInitials.points);
             if (this.debugOptions.renderedInitials.line) {
                 const curve = new window.THREE.CatmullRomCurve3(
                     this.initialsRefs.renderedInitials.points,
@@ -1806,29 +1803,12 @@ ripe.ConfiguratorCsr.prototype._onMouseDown = function(self, event) {
  */
 ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
     if (self.prevPercentX === 0 && self.prevPercentY === 0) {
-        const cursorPositionWorld = [
-            self.pointerIndicator.position.x.toFixed(1),
-            self.pointerIndicator.position.y.toFixed(1),
-            self.pointerIndicator.position.z.toFixed(1)
-        ];
-        const cursorPositionModel = Object.values(
-            this.mesh.worldToLocal(self.pointerIndicator.position.clone())
-        );
-        const cursorPositionInitials = Object.values(
-            this.initialsRefs.mesh.worldToLocal(self.pointerIndicator.position.clone())
-        );
         if (
             this.raycasterIntersects?.length &&
             this.raycasterIntersects[0]?.object?.userData?.isComment
         ) {
             this.bubbleComments.group.remove(this.raycasterIntersects[0].object);
         } else {
-            console.log("click world coordinates", ...cursorPositionWorld);
-            console.log("click model coordinates", ...cursorPositionModel.map(n => n.toFixed(1)));
-            console.log(
-                "click initials coodinates",
-                ...cursorPositionInitials.map(n => n.toFixed(1))
-            );
             let commentValue = "";
             if (event.shiftKey) {
                 commentValue = window.prompt("Input your comment");
@@ -1839,14 +1819,9 @@ ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
             bubble.userData.value = commentValue;
             this.bubbleComments.group.attach(bubble);
             this.bubbleComments.points.push({
-                position: cursorPositionModel,
+                position: this.mesh.worldToLocal(self.pointerIndicator.position).toArray(),
                 comment: commentValue
             });
-            console.log(
-                "Point added to the group. bubbleComments group:",
-                this.bubbleComments.group,
-                this.bubbleComments.points
-            );
         }
     }
     self.isMouseDown = false;
