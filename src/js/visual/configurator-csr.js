@@ -566,6 +566,25 @@ ripe.ConfiguratorCsr.prototype.unsetPostRender = function() {
 };
 
 /**
+ * Exports current model state
+ */
+ripe.ConfiguratorCsr.prototype.getConfigCsr = function() {
+    // get configured part, material and colors
+    const meshParts = [];
+    this.mesh.traverseVisible(o => o?.children?.length === 0 && o?.name && meshParts.push(o));
+    const modelConfig = meshParts.reduce((p, o, i) => {
+        const [material, color] = o?.material.name.split("_");
+        return { ...p, [o.name || i]: { material: material, color: color } };
+    }, {});
+
+    // get configured comments
+    const modelComments = this.bubbleComments.group.children;
+    const modelCommentsFormatted = modelComments.map((o, i) => ({ comment: o.userData.value, position: o.position.toArray() }));
+
+    return { parts: modelConfig, comments: modelCommentsFormatted };
+};
+
+/**
  * Tries to obtain the best possible size for the configurator
  * defaulting to the client with of the element as fallback.
  *
