@@ -1167,7 +1167,7 @@ ripe.ConfiguratorCsr.prototype._initPointer = function() {
     this.infoBoxElement.className = "label";
     this.infoBoxElement.textContent = "Book Tote";
     this.infoBoxElement.style =
-        "background-color: #ffffff62; border-radius: 10px; box-shadow: 0 0 10px #00000033; padding: 10px; min-width: 150px; max-width: 500px; margin: 0 auto; white-space: break-spaces; margin-bottom: 0px; text-align: center; font-size: 14px; font-weight: bold; color: #ff00ff; margin-bottom: 0; pointer-events: none;";
+        "background-color: #ffffff62; border-radius: 10px; box-shadow: 0 0 10px #00000033; padding: 10px; min-width: 150px; max-width: 500px; white-space: break-spaces; text-align: center; font-size: 14px; font-weight: bold; color: #0000ff; margin-top: 30px; pointer-events: none; filter: invert(1);";
 
     this.infoBoxObject = new window.THREE.CSS2DObject(this.infoBoxElement);
     const worldPosition = Object.values(
@@ -1750,34 +1750,43 @@ ripe.ConfiguratorCsr.prototype._onPreRender = function() {
 
     // important objects
     const importantObjects = [...this.bubbleComments.group.children];
-    this.modelGroup.traverse(o => o?.children?.length === 0 && o?.name && importantObjects.push(o));
+    this.modelGroup.traverse(o => {
+        o?.material?.emissive?.set(0x000000);
+        o?.children?.length === 0 && o?.name && importantObjects.push(o);
+    });
 
     // calculate objects intersection from the array
     this.raycasterIntersects = this.raycaster.intersectObjects(importantObjects, false);
 
-    if (this.raycasterIntersects.length && this.raycasterIntersects[0]?.object.userData.isComment) {
+    if (this.raycasterIntersects.length && this.raycasterIntersects[0].object.userData.isComment) {
         this.infoBoxObject.visible = true;
         this.pointerIndicator.visible = false;
         const objectPositionFormatted = Object.values(
-            this.mesh.worldToLocal(this.raycasterIntersects[0]?.object.position.clone())
+            this.mesh.worldToLocal(this.raycasterIntersects[0].object.position.clone())
         ).map(v => v.toFixed(1));
-        this.infoBoxElement.textContent = this.raycasterIntersects[0]?.object.uuid + " \n " + objectPositionFormatted + " \n " + this.raycasterIntersects[0]?.object.userData.value;
+        this.infoBoxElement.textContent =
+            this.raycasterIntersects[0].object.uuid +
+            " \n " +
+            objectPositionFormatted +
+            " \n " +
+            this.raycasterIntersects[0].object.userData.value;
     } else if (this.raycasterIntersects.length) {
         this.infoBoxObject.visible = true;
         this.pointerIndicator.visible = true;
-        this.infoBoxObject.position.copy(this.mesh.worldToLocal(this.raycasterIntersects[0]?.point.clone()));
-        this.pointerIndicator.position.copy(this.raycasterIntersects[0]?.point.clone());
+        this.pointerIndicator.position.copy(this.raycasterIntersects[0].point.clone());
+        this.infoBoxObject.position.copy(
+            this.mesh.worldToLocal(this.raycasterIntersects[0].point.clone())
+        );
 
         this.infoBoxElement.textContent = Object.values(
             this.mesh.worldToLocal(this.pointerIndicator.position.clone())
         ).map(v => v.toFixed(1));
+
+        this.raycasterIntersects[0].object.material.emissive.set(0x0f0fff);
     } else {
         this.pointerIndicator.visible = false;
         this.infoBoxObject.visible = false;
     }
-
-    this.modelGroup.traverse(o => o?.material?.emissive?.set(0x000000));
-    this.raycasterIntersects?.[0]?.object?.material?.emissive?.set(0x0f0fff);
 };
 
 /**
@@ -1865,9 +1874,11 @@ ripe.ConfiguratorCsr.prototype._onMouseLeave = function(self, event) {
  */
 ripe.ConfiguratorCsr.prototype._onMouseMove = function(self, event) {
     // Set mouse hover position
-    const rect = event.target.getBoundingClientRect();
-    this.raycasterPointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    this.raycasterPointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    if (this.raycasterPointer) {
+        const rect = event.target.getBoundingClientRect();
+        this.raycasterPointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        this.raycasterPointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    }
 
     // Set mouse drag position
     if (!self.isMouseDown) return;
