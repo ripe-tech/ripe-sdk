@@ -37,7 +37,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        node-version: [12, 13, 14, 15, 16]
+        node-version: [14, 16, 18]
     runs-on: self-hosted
     steps:
       - uses: joamag/cleanup-hosted@master
