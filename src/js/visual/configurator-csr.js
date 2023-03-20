@@ -1751,7 +1751,7 @@ ripe.ConfiguratorCsr.prototype._onPreRender = function() {
     // important objects
     const importantObjects = [...this.bubbleComments.group.children];
     this.modelGroup.traverse(o => {
-        o?.material?.emissive?.set(0x000000);
+        o?.material?.emissive?.set(0);
         o?.children?.length === 0 && o?.name && importantObjects.push(o);
     });
 
