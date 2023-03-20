@@ -1463,6 +1463,9 @@ ripe.ConfiguratorCsr.prototype._unpackSceneOptions = function(options) {
     const cameraOptions = {};
     const zoomOptions = {};
 
+    // unpacks root options
+    const environment = options.environment;
+
     // unpacks renderer options
     rendererOptions.toneMapping = options.tone_mapping
         ? ripe.CsrUtils.toToneMappingValue(options.tone_mapping)
@@ -1496,6 +1499,7 @@ ripe.ConfiguratorCsr.prototype._unpackSceneOptions = function(options) {
     }
 
     return {
+        environment: environment,
         rendererOptions: rendererOptions,
         cameraOptions: cameraOptions,
         zoomOptions: zoomOptions
@@ -1527,8 +1531,9 @@ ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(
     this.dracoLoader = ripe.CsrUtils.loadDracoLoader();
 
     // computes environment file URL
-    const envUrl = this.owner.get3dSceneEnvironmentUrl();
-    const envFormat = "hdr";
+    const environment = sceneOptions.environment || "studio2";
+    const environmentFormat = "hdr";
+    const environmentUrl = this.owner.getSceneEnvironmentUrl(environment, environmentFormat);
 
     const optionsParams = initialsOptions.options || {};
 
@@ -1586,7 +1591,7 @@ ripe.ConfiguratorCsr.prototype._loadCsrAssets = async function(
     ] = await Promise.all([
         this._loadMesh(meshUrl, meshFormat),
         fontUrl ? this._loadExternalFont(font, fontUrl) : null,
-        envUrl ? ripe.CsrUtils.loadEnvironment(envUrl, envFormat) : null,
+        environmentUrl ? ripe.CsrUtils.loadEnvironment(environmentUrl, environmentFormat) : null,
         baseTextureUrl ? ripe.CsrUtils.loadTexture(baseTextureUrl) : null,
         displacementTextureUrl ? ripe.CsrUtils.loadTexture(displacementTextureUrl) : null,
         metallicTextureUrl ? ripe.CsrUtils.loadTexture(metallicTextureUrl) : null,

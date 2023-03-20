@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Update `.gitignore` to ignore CSR documentation compilation files - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 * Update CSR documentation with proper configuration with title and logo - [#478](https://github.com/ripe-tech/ripe-sdk/issues/478)
 * Improve CSR deinitialization logic - [#493](https://github.com/ripe-tech/ripe-sdk/issues/493)
+* Load environment file based on config - [499](https://github.com/ripe-tech/ripe-sdk/issues/499)
 
 ### Fixed
 
