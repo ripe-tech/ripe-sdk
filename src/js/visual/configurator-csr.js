@@ -108,6 +108,8 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     this.raycaster = null;
     this.raycasterPointer = null;
     this.raycasterIntersects = null;
+    this.infoBoxElement = null;
+    this.infoBoxObject = null;
     this.renderer = null;
     this.labelRenderer = null;
     this.camera = null;
@@ -140,7 +142,7 @@ ripe.ConfiguratorCsr.prototype.init = function() {
         }
     };
 
-    // CSR bubble comments
+    // CSR bubbles variables
     this.bubbleComments = {
         group: null,
         points: null
@@ -1167,15 +1169,15 @@ ripe.ConfiguratorCsr.prototype._initPointer = function() {
     this.infoBoxElement.style =
         "background-color: #ffffff62; border-radius: 10px; box-shadow: 0 0 10px #00000033; padding: 10px; min-width: 150px; max-width: 500px; margin: 0 auto; white-space: break-spaces; margin-bottom: 0px; text-align: center; font-size: 14px; font-weight: bold; color: #ff00ff; margin-bottom: 0; pointer-events: none;";
 
-    const infoBoxObject = new window.THREE.CSS2DObject(this.infoBoxElement);
+    this.infoBoxObject = new window.THREE.CSS2DObject(this.infoBoxElement);
     const worldPosition = Object.values(
-        infoBoxObject.localToWorld(
+        this.infoBoxObject.localToWorld(
             new window.THREE.Vector3(...[0.273876964463847, 13.809251367192667, -2.446520521851098])
         )
     );
-    infoBoxObject.position.set(...worldPosition);
-    infoBoxObject.name = "Label";
-    this.modelGroup.attach(infoBoxObject);
+    this.infoBoxObject.position.set(...worldPosition);
+    this.infoBoxObject.name = "Label";
+    this.modelGroup.attach(this.infoBoxObject);
 };
 
 /**
@@ -1745,34 +1747,36 @@ ripe.ConfiguratorCsr.prototype._onPreRender = function() {
     // update the picking ray with the camera and pointer position
     this.raycaster.setFromCamera(this.raycasterPointer, this.camera);
 
-    // get important objects
+    // important objects
     const importantObjects = [...this.bubbleComments.group.children];
     this.modelGroup.traverse(o => o?.children?.length === 0 && o?.name && importantObjects.push(o));
 
     // calculate objects intersection from the array
-    const intersects = this.raycaster.intersectObjects(importantObjects, false);
+    this.raycasterIntersects = this.raycaster.intersectObjects(importantObjects, false);
 
-    if (intersects.length > 0) {
-        this.pointerIndicator.position.copy(intersects[0]?.point);
-        this.raycasterIntersects = intersects;
-    }
-
-    if (intersects.length && intersects[0]?.object.userData.isComment) {
-        const objectPositionFormatted = Object.values(
-            this.mesh.worldToLocal(intersects[0]?.object.position.clone())
-        ).map(v => v.toFixed(1));
+    if (this.raycasterIntersects.length && this.raycasterIntersects[0]?.object.userData.isComment) {
+        this.infoBoxObject.visible = true;
         this.pointerIndicator.visible = false;
-        this.infoBoxElement.textContent = intersects[0]?.object.uuid + " \n " + objectPositionFormatted + " \n " + intersects[0]?.object.userData.value;
-    } else {
-        const cursorPositionFormatted = Object.values(
+        const objectPositionFormatted = Object.values(
+            this.mesh.worldToLocal(this.raycasterIntersects[0]?.object.position.clone())
+        ).map(v => v.toFixed(1));
+        this.infoBoxElement.textContent = this.raycasterIntersects[0]?.object.uuid + " \n " + objectPositionFormatted + " \n " + this.raycasterIntersects[0]?.object.userData.value;
+    } else if (this.raycasterIntersects.length) {
+        this.infoBoxObject.visible = true;
+        this.pointerIndicator.visible = true;
+        this.infoBoxObject.position.copy(this.mesh.worldToLocal(this.raycasterIntersects[0]?.point.clone()));
+        this.pointerIndicator.position.copy(this.raycasterIntersects[0]?.point.clone());
+
+        this.infoBoxElement.textContent = Object.values(
             this.mesh.worldToLocal(this.pointerIndicator.position.clone())
         ).map(v => v.toFixed(1));
-        this.pointerIndicator.visible = true;
-        this.infoBoxElement.textContent = cursorPositionFormatted;
+    } else {
+        this.pointerIndicator.visible = false;
+        this.infoBoxObject.visible = false;
     }
 
     this.modelGroup.traverse(o => o?.material?.emissive?.set(0x000000));
-    intersects?.[0]?.object?.material?.emissive?.set(0x0f0fff);
+    this.raycasterIntersects?.[0]?.object?.material?.emissive?.set(0x0f0fff);
 };
 
 /**
@@ -1835,7 +1839,7 @@ ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
                 comment: commentValue
             });
             console.log(
-                "added to the group. result:",
+                "Point added to the group. bubbleComments group:",
                 this.bubbleComments.group,
                 this.bubbleComments.points
             );
