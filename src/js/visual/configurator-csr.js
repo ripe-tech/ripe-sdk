@@ -1284,6 +1284,7 @@ ripe.ConfiguratorCsr.prototype._initCsr = function() {
     this.renderer.toneMappingExposure = 1;
 
     const renderer = this.element.querySelector(".renderer");
+    renderer.style.position = "relative";
     renderer.append(this.renderer.domElement, this.labelRenderer.domElement);
 
     // internal clock initialization
