@@ -72,6 +72,62 @@ ripe.ConfiguratorCsr.prototype.init = function() {
     const debugOpts = this.options.debugOptions || {};
     const renderedInitialsOpts = debugOpts.renderedInitials || {};
     this.debugOptions = {
+        pointerIndicator:
+            debugOpts.pointerIndicator !== undefined ? debugOpts.pointerIndicator : true,
+        bubbleComments: [
+            {
+                position: [17.503859958570374, 13.798088406728237, 4.251107924493258],
+                comment: "1"
+            },
+            {
+                position: [17.981867303561057, -13.233408244219124, 6.829330068844742],
+                comment: "2"
+            },
+            {
+                position: [-17.502347273872754, -13.107312809401098, 6.971714436763229],
+                comment: "3"
+            },
+            {
+                position: [-17.264510941454272, 13.795842677955543, 4.284106627439945],
+                comment: "4"
+            },
+            {
+                position: [-17.24191122545031, 13.902168731314646, -4.474603329910279],
+                comment: "5"
+            },
+            {
+                position: [-18.061867399131923, -13.349724362414953, -7.090861050843749],
+                comment: "6"
+            },
+            {
+                position: [17.733392420649903, -13.440092709805587, -7.209774517228892],
+                comment: "7"
+            },
+            {
+                position: [4.970839786853961, 26.8689133345923, 0.9248117416721175],
+                comment: "8"
+            },
+            {
+                position: [-2.926762269408526, 28.353098831153424, 0.5724774682526172],
+                comment: "9"
+            },
+            {
+                position: [1.848006523260599, 28.703930484171224, -1.4524569713751134],
+                comment: "10"
+            },
+            {
+                position: [8.482744238785203, 14.264490516502622, -3.2288006123165447],
+                comment: "11"
+            },
+            {
+                position: [-8.332140072366869, 14.30907786772801, -3.284730922161466],
+                comment: "12"
+            },
+            {
+                position: [0.35001462623690915, 13.679364218795595, 2.4274915671021455],
+                comment: "13"
+            }
+        ],
         framerate: debugOpts.framerate !== undefined ? debugOpts.framerate : true,
         worldAxis: debugOpts.worldAxis !== undefined ? debugOpts.worldAxis : true,
         modelAxis: debugOpts.modelAxis !== undefined ? debugOpts.modelAxis : true,
@@ -579,7 +635,10 @@ ripe.ConfiguratorCsr.prototype.getConfigCsr = function() {
 
     // get configured comments
     const modelComments = this.bubbleComments.group.children;
-    const modelCommentsFormatted = modelComments.map((o, i) => ({ comment: o.userData.value, position: o.position.toArray() }));
+    const modelCommentsFormatted = modelComments.map((o, i) => ({
+        comment: o.userData.value,
+        position: o.position.toArray()
+    }));
 
     return { parts: modelConfig, comments: modelCommentsFormatted };
 };
@@ -1096,7 +1155,8 @@ ripe.ConfiguratorCsr.prototype._initDebug = function() {
  * @private
  */
 ripe.ConfiguratorCsr.prototype._initPointer = function() {
-    // if (!this.pointerRaytracing) return;
+    if (!this.debugOptions.pointerIndicator) return;
+
     if (!this.scene) throw new Error("Scene not initialized");
     if (!this.camera) throw new Error("Camera not initialized");
 
@@ -1124,60 +1184,11 @@ ripe.ConfiguratorCsr.prototype._initPointer = function() {
     // add pointer indicator group to the modelGroup
     this.modelGroup.attach(this.bubbleComments.group);
 
-    ripe.CsrUtils.attachBubbleComments(this.bubbleComments.group, this.pointerIndicator, [
-        {
-            position: [17.503859958570374, 13.798088406728237, 4.251107924493258],
-            comment: "1"
-        },
-        {
-            position: [17.981867303561057, -13.233408244219124, 6.829330068844742],
-            comment: "2"
-        },
-        {
-            position: [-17.502347273872754, -13.107312809401098, 6.971714436763229],
-            comment: "3"
-        },
-        {
-            position: [-17.264510941454272, 13.795842677955543, 4.284106627439945],
-            comment: "4"
-        },
-        {
-            position: [-17.24191122545031, 13.902168731314646, -4.474603329910279],
-            comment: "5"
-        },
-        {
-            position: [-18.061867399131923, -13.349724362414953, -7.090861050843749],
-            comment: "6"
-        },
-        {
-            position: [17.733392420649903, -13.440092709805587, -7.209774517228892],
-            comment: "7"
-        },
-        {
-            position: [4.970839786853961, 26.8689133345923, 0.9248117416721175],
-            comment: "8"
-        },
-        {
-            position: [-2.926762269408526, 28.353098831153424, 0.5724774682526172],
-            comment: "9"
-        },
-        {
-            position: [1.848006523260599, 28.703930484171224, -1.4524569713751134],
-            comment: "10"
-        },
-        {
-            position: [8.482744238785203, 14.264490516502622, -3.2288006123165447],
-            comment: "11"
-        },
-        {
-            position: [-8.332140072366869, 14.30907786772801, -3.284730922161466],
-            comment: "12"
-        },
-        {
-            position: [0.35001462623690915, 13.679364218795595, 2.4274915671021455],
-            comment: "13"
-        }
-    ]);
+    ripe.CsrUtils.attachBubbleComments(
+        this.bubbleComments.group,
+        this.pointerIndicator,
+        this.debugOptions.bubbleComments
+    );
 
     this.infoBoxElement = document.createElement("div");
     this.infoBoxElement.className = "label";
@@ -1760,6 +1771,15 @@ ripe.ConfiguratorCsr.prototype._onAnimationLoop = function(self) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onPreRender = function() {
+    this._onPreRenderPointerIndicator();
+};
+
+/**
+ * @ignore
+ */
+ripe.ConfiguratorCsr.prototype._onPreRenderPointerIndicator = function() {
+    if (!this.debugOptions.pointerIndicator) return;
+
     // update the picking ray with the camera and pointer position
     this.raycaster.setFromCamera(this.raycasterPointer, this.camera);
 
@@ -1776,7 +1796,9 @@ ripe.ConfiguratorCsr.prototype._onPreRender = function() {
     if (this.raycasterIntersects.length && this.raycasterIntersects[0].object.userData.isComment) {
         this.infoBoxObject.visible = true;
         this.pointerIndicator.visible = false;
-        const objectPositionFormatted = this.raycasterIntersects[0].object.position.toArray().map(v => v.toFixed(1));
+        const objectPositionFormatted = this.raycasterIntersects[0].object.position
+            .toArray()
+            .map(v => v.toFixed(2));
         this.infoBoxElement.textContent =
             this.raycasterIntersects[0].object.uuid +
             " \n " +
@@ -1824,7 +1846,7 @@ ripe.ConfiguratorCsr.prototype._onMouseDown = function(self, event) {
  * @ignore
  */
 ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
-    if (self.prevPercentX === 0 && self.prevPercentY === 0) {
+    if (self.debugOptions.pointerIndicator && self.prevPercentX === 0 && self.prevPercentY === 0) {
         if (
             this.raycasterIntersects?.length &&
             this.raycasterIntersects[0]?.object?.userData?.isComment
