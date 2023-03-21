@@ -272,7 +272,9 @@ ripe.CsrUtils.loadEnvironment = async function(path, format = "hdr") {
         case "hdr": {
             const rgbeLoader = new window.THREE.RGBELoader();
             return new Promise((resolve, reject) => {
-                rgbeLoader.load("https://cdn.platforme.com/3d/environment/studio2.hdr", texture => resolve(texture));
+                rgbeLoader.load("https://cdn.platforme.com/3d/environment/studio2.hdr", texture =>
+                    resolve(texture)
+                );
             });
         }
         default:
