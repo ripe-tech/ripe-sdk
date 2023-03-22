@@ -1857,10 +1857,9 @@ ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
             this.bubbleComments.group.remove(this.raycasterIntersects[0].object);
             this.modelGroup.remove(this.raycasterIntersects[0].object);
         } else if (event.shiftKey && event.ctrlKey) {
-            const decalMaterial = new window.THREE.MeshStandardMaterial({
+            const decalMaterial = new window.THREE.MeshBasicMaterial({
                 map: window.decalTexture,
                 transparent: true,
-                forceSinglePass: true,
                 depthWrite: false,
                 polygonOffset: true,
                 polygonOffsetFactor: -10
