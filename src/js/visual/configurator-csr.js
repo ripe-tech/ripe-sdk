@@ -1803,9 +1803,9 @@ ripe.ConfiguratorCsr.prototype._onPreRenderPointerIndicator = function() {
             .toArray()
             .map(v => v.toFixed(2));
         this.infoBoxElement.textContent =
-            this.raycasterIntersects[0].object.uuid +
-            " \n " +
             objectPositionFormatted +
+            " \n " +
+            this.raycasterIntersects[0].object.name +
             " \n " +
             this.raycasterIntersects[0].object.userData.value;
     } else if (this.raycasterIntersects.length) {
@@ -1818,7 +1818,9 @@ ripe.ConfiguratorCsr.prototype._onPreRenderPointerIndicator = function() {
 
         this.infoBoxElement.textContent = Object.values(
             this.mesh.worldToLocal(this.pointerIndicator.position.clone())
-        ).map(v => v.toFixed(1));
+        ).map(v => v.toFixed(1)) +
+        " \n " +
+        this.raycasterIntersects[0].object.name;
 
         this.raycasterIntersects[0].object.material.emissive.set(0x0f0fff);
     } else {
