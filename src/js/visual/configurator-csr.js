@@ -1855,11 +1855,29 @@ ripe.ConfiguratorCsr.prototype._onMouseUp = function(self, event) {
             this.raycasterIntersects[0]?.object?.userData?.isComment
         ) {
             this.bubbleComments.group.remove(this.raycasterIntersects[0].object);
+            this.modelGroup.remove(this.raycasterIntersects[0].object);
+        } else if (event.shiftKey && event.ctrlKey) {
+            const decalMaterial = new window.THREE.MeshStandardMaterial({
+                map: window.decalTexture,
+                transparent: true,
+                forceSinglePass: true,
+                depthWrite: false,
+                polygonOffset: true,
+                polygonOffsetFactor: -10
+            });
+            const decalGeometry = new window.THREE.DecalGeometry(
+                this.raycasterIntersects[0].object,
+                this.raycasterIntersects[0].point,
+                new window.THREE.Vector3(1, 1, 1),
+                new window.THREE.Vector3(5, 5, 5)
+            );
+            const decalMesh = new window.THREE.Mesh(decalGeometry, decalMaterial);
+            decalMesh.name = "decal";
+            decalMesh.userData.isComment = true;
+            decalMesh.userData.value = "";
+            this.modelGroup.attach(decalMesh);
         } else {
-            let commentValue = "";
-            if (event.shiftKey) {
-                commentValue = window.prompt("Input your comment");
-            }
+            const commentValue = event.shiftKey ? window.prompt("Input your comment") : "";
             const bubble = self.pointerIndicator.clone();
             bubble.material = self.pointerIndicator.material.clone();
             bubble.userData.isComment = true;
