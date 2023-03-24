@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Upgrade workflows's node engine version
 * Reduced import hacks - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 * Remove `__VERSION__` references - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 * Remove `mark` script - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
