@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [3.0.0]
+
+### Added
+
 * Add `browserify`, `esmify`, `babelify`, `vinyl-buffer` and `vinyl-source-stream` dev dependencies - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 * Support ES Modules - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 
