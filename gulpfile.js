@@ -2,21 +2,22 @@ const log = require("fancy-log");
 const gulp = require("gulp");
 const zip = require("gulp-zip");
 const size = require("gulp-size");
-const babel = require("gulp-babel");
+const browserify = require("browserify");
+const babelify = require("babelify");
+const esmify = require("esmify");
+const source = require("vinyl-source-stream");
+const buffer = require("vinyl-buffer");
 const count = require("gulp-count");
 const mocha = require("gulp-mocha");
 const shell = require("gulp-shell");
 const jsdoc = require("gulp-jsdoc3");
-const concat = require("gulp-concat");
 const eslint = require("gulp-eslint7");
 const terser = require("gulp-terser");
-const replace = require("gulp-replace");
 const sourcemaps = require("gulp-sourcemaps");
-const _package = require("./package.json");
 
 const paths = {
-    mainjs: "dist/ripe.three.min.js",
-    mainmap: "dist/ripe.three.min.js.map",
+    mainjs: "dist/ripe.js",
+    mainmap: "dist/ripe.js.map",
     maincss: "src/css/ripe.css",
     mainpython: "src/python/**/main.js",
     scripts: "src/js/**/*.js",
@@ -25,65 +26,12 @@ const paths = {
     docs: "src/js/*/**/*.js",
     test: "test/js/**/*.js",
     testSetup: "test/js/setup.js",
-    dist: "dist/**/*",
-    polyfill: "node_modules/@babel/polyfill/dist/polyfill.js",
-    three: [
-        "node_modules/three/build/three.min.js",
-        "node_modules/three/examples/js/libs/stats.min.js",
-        "node_modules/three/examples/js/loaders/DRACOLoader.js",
-        "node_modules/three/examples/js/loaders/GLTFLoader.js",
-        "node_modules/three/examples/js/loaders/FBXLoader.js",
-        "node_modules/three/examples/js/loaders/RGBELoader.js",
-        "node_modules/three/examples/js/libs/fflate.min.js"
-    ],
-    basefiles: [
-        "src/js/locales/base.js",
-        "src/js/base/base.js",
-        "src/js/base/compat.js",
-        "src/js/base/errors.js",
-        "src/js/base/observable.js",
-        "src/js/base/interactable.js",
-        "src/js/base/itertools.js",
-        "src/js/base/mobile.js",
-        "src/js/base/ripe.js",
-        "src/js/base/logic.js",
-        "src/js/base/config.js",
-        "src/js/base/struct.js",
-        "src/js/base/utils.js",
-        "src/js/base/api.js",
-        "src/js/base/auth.js",
-        "src/js/api/account.js",
-        "src/js/api/brand.js",
-        "src/js/api/build.js",
-        "src/js/api/config.js",
-        "src/js/api/country-group.js",
-        "src/js/api/justification.js",
-        "src/js/api/locale.js",
-        "src/js/api/oauth.js",
-        "src/js/api/order.js",
-        "src/js/api/price-rule.js",
-        "src/js/api/size.js",
-        "src/js/api/sku.js",
-        "src/js/plugins/base.js",
-        "src/js/plugins/diag.js",
-        "src/js/plugins/restrictions.js",
-        "src/js/plugins/sync.js",
-        "src/js/visual/visual.js",
-        "src/js/visual/csr/animation-base.js",
-        "src/js/visual/csr/rendered-initials.js",
-        "src/js/visual/csr/texture-renderer.js",
-        "src/js/visual/csr/animation-change-frame.js",
-        "src/js/visual/csr/utils.js",
-        "src/js/visual/configurator-csr.js",
-        "src/js/visual/configurator-prc.js",
-        "src/js/visual/image.js"
-    ]
+    dist: "dist/**/*"
 };
 
 gulp.task("build-js", () => {
     return gulp
         .src(paths.scripts)
-        .pipe(replace("__VERSION__", _package.version))
         .pipe(size())
         .pipe(
             size({
@@ -118,71 +66,31 @@ gulp.task("build-css", () => {
 });
 
 gulp.task("build-package-js", () => {
-    return gulp
-        .src([paths.polyfill, ...paths.basefiles])
+    return browserify({
+        entries: ["src/js/index.mjs"],
+        transform: [babelify.configure({ presets: ["@babel/preset-env"] })],
+        plugin: [[esmify, {}]],
+        standalone: "default"
+    })
+        .bundle()
+        .pipe(source("ripe.js"))
+        .pipe(buffer())
         .pipe(sourcemaps.init())
-        .pipe(sourcemaps.identityMap())
-        .pipe(replace("__VERSION__", _package.version))
-        .pipe(
-            babel({
-                presets: [["@babel/preset-env"]]
-            })
-        )
-        .pipe(concat("ripe.js"))
-        .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("dist"));
-});
-
-gulp.task("build-package-js-three", () => {
-    return gulp
-        .src([paths.polyfill, ...paths.three, ...paths.basefiles])
-        .pipe(sourcemaps.init())
-        .pipe(sourcemaps.identityMap())
-        .pipe(replace("__VERSION__", _package.version))
-        .pipe(
-            babel({
-                presets: [["@babel/preset-env"]]
-            })
-        )
-        .pipe(concat("ripe.three.js"))
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest("dist"));
 });
 
 gulp.task("build-package-min", () => {
-    return gulp
-        .src([paths.polyfill, ...paths.basefiles])
+    return browserify({
+        entries: ["src/js/index.mjs"],
+        transform: [babelify.configure({ presets: ["@babel/preset-env"] })],
+        plugin: [[esmify, {}]],
+        standalone: "default"
+    })
+        .bundle()
+        .pipe(source("ripe.min.js"))
+        .pipe(buffer())
         .pipe(sourcemaps.init())
-        .pipe(sourcemaps.identityMap())
-        .pipe(replace("__VERSION__", _package.version))
-        .pipe(
-            babel({
-                presets: [["@babel/preset-env"]]
-            })
-        )
-        .pipe(concat("ripe.min.js"))
-        .pipe(
-            terser({
-                mangle: false,
-                ecma: 5
-            })
-        )
-        .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("dist"));
-});
-
-gulp.task("build-package-min-three", () => {
-    return gulp
-        .src([paths.polyfill, ...paths.three, ...paths.basefiles])
-        .pipe(sourcemaps.init())
-        .pipe(sourcemaps.identityMap())
-        .pipe(replace("__VERSION__", _package.version))
-        .pipe(
-            babel({
-                presets: [["@babel/preset-env"]]
-            })
-        )
-        .pipe(concat("ripe.three.min.js"))
         .pipe(
             terser({
                 mangle: false,
@@ -209,13 +117,6 @@ gulp.task(
         return gulp.src(paths.dist).pipe(zip("dist.zip")).pipe(gulp.dest("build"));
     })
 );
-
-gulp.task("mark", () => {
-    return gulp
-        .src(paths.scripts)
-        .pipe(replace("__VERSION__", _package.version))
-        .pipe(gulp.dest("src/js"));
-});
 
 gulp.task("lint", () => {
     return gulp
@@ -258,15 +159,7 @@ gulp.task("docs", cb => {
 gulp.task("watch-js", () => {
     gulp.watch(
         paths.scripts,
-        gulp.series(
-            "build-js",
-            "build-package-js",
-            "build-package-js-three",
-            "build-package-min",
-            "build-package-min-three",
-            "move-js",
-            "compress"
-        )
+        gulp.series("build-js", "build-package-js", "build-package-min", "move-js", "compress")
     );
 });
 
@@ -280,9 +173,7 @@ gulp.task(
         "build-js",
         "build-css",
         "build-package-js",
-        "build-package-js-three",
         "build-package-min",
-        "build-package-min-three",
         "move-js",
         "move-css",
         "compress"

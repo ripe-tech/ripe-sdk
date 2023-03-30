@@ -23,8 +23,6 @@ package-lock.json
 /src/python/ripe_demo/static/assets
 /src/python/ripe_demo/static/js/ripe.js
 /src/python/ripe_demo/static/js/ripe.js.map
-/src/python/ripe_demo/static/js/ripe.three.min.js
-/src/python/ripe_demo/static/js/ripe.three.min.js.map
 /src/python/ripe_demo/static/css/ripe.css
 
 /documentation/src/.vuepress/.cache

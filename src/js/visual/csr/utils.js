@@ -1,15 +1,7 @@
-if (
-    typeof require !== "undefined" &&
-    (typeof window === "undefined" ||
-        // eslint-disable-next-line camelcase
-        typeof __webpack_require__ !== "undefined" ||
-        (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
-) {
-    // eslint-disable-next-line no-redeclare,no-var
-    var base = require("../../base");
-    // eslint-disable-next-line no-redeclare,no-var
-    var ripe = base.ripe;
-}
+/* global THREE, DRACOLoader, RGBELoader, FBXLoader, GLTFLoader */
+
+const base = require("../../base");
+const ripe = base.ripe;
 
 ripe.CsrUtils = {};
 
@@ -146,7 +138,7 @@ ripe.CsrUtils.toXYZObject = function(array) {
  */
 ripe.CsrUtils.toVector3 = function(value) {
     const coordinates = Array.isArray(value) ? this.toXYZObject(value) : value;
-    return new window.THREE.Vector3(coordinates.x, coordinates.y, coordinates.z);
+    return new THREE.Vector3(coordinates.x, coordinates.y, coordinates.z);
 };
 
 /**
@@ -158,15 +150,15 @@ ripe.CsrUtils.toVector3 = function(value) {
 ripe.CsrUtils.toToneMappingValue = function(key) {
     switch (key) {
         case "none":
-            return window.THREE.NoToneMapping;
+            return THREE.NoToneMapping;
         case "aces_filmic":
-            return window.THREE.ACESFilmicToneMapping;
+            return THREE.ACESFilmicToneMapping;
         case "linear":
-            return window.THREE.LinearToneMapping;
+            return THREE.LinearToneMapping;
         case "reinhard":
-            return window.THREE.ReinhardToneMapping;
+            return THREE.ReinhardToneMapping;
         case "cineon":
-            return window.THREE.CineonToneMapping;
+            return THREE.CineonToneMapping;
         default:
             throw new Error(`Invalid tone mapping key: "${key}"`);
     }
@@ -181,11 +173,11 @@ ripe.CsrUtils.toToneMappingValue = function(key) {
 ripe.CsrUtils.toWrappingModeValue = function(key) {
     switch (key) {
         case "repeat":
-            return window.THREE.RepeatWrapping;
+            return THREE.RepeatWrapping;
         case "clamp_to_edge":
-            return window.THREE.ClampToEdgeWrapping;
+            return THREE.ClampToEdgeWrapping;
         case "mirrored_repeat":
-            return window.THREE.MirroredRepeatWrapping;
+            return THREE.MirroredRepeatWrapping;
         default:
             throw new Error(`Invalid wrapping mode key: "${key}"`);
     }
@@ -232,7 +224,7 @@ ripe.CsrUtils.shortestRotationRad = function(start, end) {
  * @returns {THREE.DRACOLoader} The loaded instance of a Draco Loader.
  */
 ripe.CsrUtils.loadDracoLoader = function() {
-    const dracoLoader = new window.THREE.DRACOLoader();
+    const dracoLoader = new DRACOLoader();
     try {
         dracoLoader.setDecoderPath("https://www.gstatic.com/draco/v1/decoders/");
         dracoLoader.preload();
@@ -254,7 +246,7 @@ ripe.CsrUtils.loadDracoLoader = function() {
  * @returns {THREE.Texture} The loaded texture.
  */
 ripe.CsrUtils.loadTexture = async function(path) {
-    const loader = new window.THREE.TextureLoader();
+    const loader = new THREE.TextureLoader();
     return new Promise((resolve, reject) => {
         loader.load(path, texture => resolve(texture));
     });
@@ -270,7 +262,7 @@ ripe.CsrUtils.loadTexture = async function(path) {
 ripe.CsrUtils.loadEnvironment = async function(path, format = "hdr") {
     switch (format) {
         case "hdr": {
-            const rgbeLoader = new window.THREE.RGBELoader();
+            const rgbeLoader = new RGBELoader();
             return new Promise((resolve, reject) => {
                 rgbeLoader.load(path, texture => resolve(texture));
             });
@@ -287,7 +279,7 @@ ripe.CsrUtils.loadEnvironment = async function(path, format = "hdr") {
  * @returns {THREE.Object3D} The loaded fbx.
  */
 ripe.CsrUtils.loadFBX = async function(path) {
-    const loader = new window.THREE.FBXLoader();
+    const loader = new FBXLoader();
     return new Promise((resolve, reject) => {
         loader.load(path, fbx => resolve(fbx));
     });
@@ -301,7 +293,7 @@ ripe.CsrUtils.loadFBX = async function(path) {
  * @returns {THREE.Object3D} The loaded GLTF/GLB file.
  */
 ripe.CsrUtils.loadGLTF = async function(path, dracoLoader = null) {
-    const loader = new window.THREE.GLTFLoader();
+    const loader = new GLTFLoader();
     if (dracoLoader) loader.setDRACOLoader(dracoLoader);
 
     return new Promise((resolve, reject) => {
@@ -365,7 +357,7 @@ ripe.CsrUtils.heightMapToNormalMap = function(imageData) {
         pixels[i + 3] = 255;
     }
 
-    const texture = new window.THREE.DataTexture(pixels, width, height);
+    const texture = new THREE.DataTexture(pixels, width, height);
     texture.flipY = true;
     texture.needsUpdate = true;
 
@@ -397,9 +389,9 @@ ripe.CsrUtils.applyTransform = function(object, position = {}, rotation = {}, sc
     const positionY = position.y || object.position.y;
     const positionZ = position.z || object.position.z;
 
-    const rotationX = window.THREE.MathUtils.degToRad(rotation.x) || object.rotation.x;
-    const rotationY = window.THREE.MathUtils.degToRad(rotation.y) || object.rotation.y;
-    const rotationZ = window.THREE.MathUtils.degToRad(rotation.z) || object.rotation.z;
+    const rotationX = THREE.MathUtils.degToRad(rotation.x) || object.rotation.x;
+    const rotationY = THREE.MathUtils.degToRad(rotation.y) || object.rotation.y;
+    const rotationZ = THREE.MathUtils.degToRad(rotation.z) || object.rotation.z;
 
     const scaleX = scale.x || object.scale.x;
     const scaleY = scale.y || object.scale.y;

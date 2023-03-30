@@ -1,15 +1,5 @@
-if (
-    typeof require !== "undefined" &&
-    (typeof window === "undefined" ||
-        // eslint-disable-next-line camelcase
-        typeof __webpack_require__ !== "undefined" ||
-        (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
-) {
-    // eslint-disable-next-line no-redeclare,no-var
-    var base = require("./base");
-    // eslint-disable-next-line no-redeclare,no-var
-    var ripe = base.ripe;
-}
+const base = require("./base");
+const ripe = base.ripe;
 
 /**
  * Assigns a certain set of values in the provided object to the
@@ -83,58 +73,44 @@ ripe.requireSafe = function(name, raiseE = false) {
     }
 };
 
-if (
-    typeof require !== "undefined" &&
-    (typeof window === "undefined" || typeof __webpack_require__ !== "undefined") && // eslint-disable-line camelcase
-    typeof XMLHttpRequest === "undefined" // eslint-disable-line no-use-before-define
+let XMLHttpRequest = null;
+if (typeof window !== "undefined" && typeof window.XMLHttpRequest !== "undefined") {
+    XMLHttpRequest = window.XMLHttpRequest;
+} else if (typeof global !== "undefined" && typeof global.XMLHttpRequest !== "undefined") {
+    XMLHttpRequest = global.XMLHttpRequest;
+} else if (
+    // eslint-disable-next-line camelcase
+    typeof __webpack_require__ === "undefined" &&
+    (typeof navigator === "undefined" || navigator.product !== "ReactNative")
 ) {
     // eslint-disable-next-line no-var
-    var XMLHttpRequest = null;
-    if (typeof window !== "undefined" && typeof window.XMLHttpRequest !== "undefined") {
-        XMLHttpRequest = window.XMLHttpRequest;
-    } else if (typeof global !== "undefined" && typeof global.XMLHttpRequest !== "undefined") {
-        XMLHttpRequest = global.XMLHttpRequest;
-    } else if (
-        // eslint-disable-next-line camelcase
-        typeof __webpack_require__ === "undefined" &&
-        (typeof navigator === "undefined" || navigator.product !== "ReactNative")
-    ) {
-        // eslint-disable-next-line no-var
-        var xmlhttprequest = ripe.requireSafe("xmlhttprequest");
-        XMLHttpRequest = xmlhttprequest ? xmlhttprequest.XMLHttpRequest : undefined;
-    }
+    var xmlhttprequest = ripe.requireSafe("xmlhttprequest");
+    XMLHttpRequest = xmlhttprequest ? xmlhttprequest.XMLHttpRequest : undefined;
 }
+if (typeof window !== "undefined") window.XMLHttpRequest = XMLHttpRequest;
 
-if (
-    typeof require !== "undefined" &&
-    (typeof window === "undefined" ||
-        // eslint-disable-next-line camelcase
-        typeof __webpack_require__ !== "undefined" ||
-        (typeof navigator !== "undefined" && navigator.product === "ReactNative")) &&
-    typeof fetch === "undefined" // eslint-disable-line no-use-before-define
+// eslint-disable-next-line no-var
+var fetch = null;
+// eslint-disable-next-line no-var
+var nodeFetch = null;
+if (typeof window !== "undefined" && typeof window.fetch !== "undefined") {
+    fetch = window.fetch;
+} else if (typeof global !== "undefined" && typeof global.fetch !== "undefined") {
+    fetch = global.fetch;
+} else if (
+    // eslint-disable-next-line camelcase
+    typeof __webpack_require__ === "undefined" &&
+    (typeof navigator === "undefined" || navigator.product !== "ReactNative")
 ) {
-    // eslint-disable-next-line no-var
-    var fetch = null;
-    // eslint-disable-next-line no-var
-    var nodeFetch = null;
-    if (typeof window !== "undefined" && typeof window.fetch !== "undefined") {
-        fetch = window.fetch;
-    } else if (typeof global !== "undefined" && typeof global.fetch !== "undefined") {
-        fetch = global.fetch;
-    } else if (
-        // eslint-disable-next-line camelcase
-        typeof __webpack_require__ === "undefined" &&
-        (typeof navigator === "undefined" || navigator.product !== "ReactNative")
-    ) {
-        fetch = require("node-fetch").default;
-        nodeFetch = fetch;
-    } else if (typeof global !== "undefined" && typeof global.__VUE_SSR_CONTEXT__ !== "undefined") {
-        // this is a workaround for Nuxt.js SSR built as standalone,
-        // which does not have global.fetch populated
-        fetch = require("node-fetch").default;
-        nodeFetch = fetch;
-    }
+    fetch = require("node-fetch").default;
+    nodeFetch = fetch;
+} else if (typeof global !== "undefined" && typeof global.__VUE_SSR_CONTEXT__ !== "undefined") {
+    // this is a workaround for Nuxt.js SSR built as standalone,
+    // which does not have global.fetch populated
+    fetch = require("node-fetch").default;
+    nodeFetch = fetch;
 }
+if (typeof window !== "undefined") window.fetch = fetch;
 
 if (nodeFetch) {
     const http = ripe.requireSafe("http");

@@ -1,15 +1,7 @@
-if (
-    typeof require !== "undefined" &&
-    (typeof window === "undefined" ||
-        // eslint-disable-next-line camelcase
-        typeof __webpack_require__ !== "undefined" ||
-        (typeof navigator !== "undefined" && navigator.product === "ReactNative"))
-) {
-    // eslint-disable-next-line no-redeclare,no-var
-    var base = require("../../base");
-    // eslint-disable-next-line no-redeclare,no-var
-    var ripe = base.ripe;
-}
+/* global THREE */
+
+const base = require("../../base");
+const ripe = base.ripe;
 
 /**
  * The list of supported texture types.
@@ -76,13 +68,13 @@ ripe.CsrRenderedInitials = function(
     };
 
     const DEFAULT_TEXTURE_SETTINGS = {
-        wrapS: window.THREE.RepeatWrapping,
-        wrapT: window.THREE.RepeatWrapping,
-        offset: new window.THREE.Vector2(0, 0),
-        repeat: new window.THREE.Vector2(1, 1),
+        wrapS: THREE.RepeatWrapping,
+        wrapT: THREE.RepeatWrapping,
+        offset: new THREE.Vector2(0, 0),
+        repeat: new THREE.Vector2(1, 1),
         rotation: 0,
-        center: new window.THREE.Vector2(0, 0),
-        encoding: window.THREE.sRGBEncoding
+        center: new THREE.Vector2(0, 0),
+        encoding: THREE.sRGBEncoding
     };
 
     // unpacks the CSR Initials Renderer options
@@ -107,16 +99,16 @@ ripe.CsrRenderedInitials = function(
     this.materialOptions = {
         color:
             materialOpts.color !== undefined
-                ? new window.THREE.Color(materialOpts.color)
-                : new window.THREE.Color("#ffffff"),
+                ? new THREE.Color(materialOpts.color)
+                : new THREE.Color("#ffffff"),
         displacementScale:
             materialOpts.displacementScale !== undefined ? materialOpts.displacementScale : 25,
         displacementBias:
             materialOpts.displacementBias !== undefined ? materialOpts.displacementBias : 0,
         emissive:
             materialOpts.emissive !== undefined
-                ? new window.THREE.Color(materialOpts.emissive)
-                : new window.THREE.Color("#000000"),
+                ? new THREE.Color(materialOpts.emissive)
+                : new THREE.Color("#000000"),
         emissiveIntensity:
             materialOpts.emissiveIntensity !== undefined ? materialOpts.emissiveIntensity : 1,
         flatShading: materialOpts.flatShading !== undefined ? materialOpts.flatShading : false,
@@ -139,7 +131,7 @@ ripe.CsrRenderedInitials = function(
     this.setSize(width, height);
 
     // inits the CSR Initials Renderer material
-    this.material = new window.THREE.MeshStandardMaterial({
+    this.material = new THREE.MeshStandardMaterial({
         transparent: true,
         ...this.materialOptions
     });
@@ -470,7 +462,7 @@ ripe.CsrRenderedInitials.prototype._buildInitialsMesh = function() {
     this.geometry = this._buildGeometry();
 
     // creates the initials mesh
-    this.mesh = new window.THREE.Mesh(this.geometry, this.material);
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
 };
 
 /**
@@ -479,7 +471,7 @@ ripe.CsrRenderedInitials.prototype._buildInitialsMesh = function() {
  * @returns {THREE.BufferGeometry} Returns a BufferGeometry instance.
  */
 ripe.CsrRenderedInitials.prototype._buildGeometry = function() {
-    const geometry = new window.THREE.PlaneBufferGeometry(
+    const geometry = new THREE.PlaneBufferGeometry(
         this.width,
         this.height,
         this.meshOptions.widthSegments,
@@ -504,7 +496,7 @@ ripe.CsrRenderedInitials.prototype._buildGeometry = function() {
  */
 ripe.CsrRenderedInitials.prototype._morphPlaneGeometry = function(geometry, points) {
     // creates a curve based on the reference points
-    const curve = new window.THREE.CatmullRomCurve3(
+    const curve = new THREE.CatmullRomCurve3(
         points,
         false,
         this.curveOptions.type,
@@ -591,7 +583,7 @@ ripe.CsrRenderedInitials.prototype._textToTexture = function(text) {
     ctx.strokeText(text, posX + xOffset, posY + yOffset);
 
     // creates texture from canvas
-    const texture = new window.THREE.CanvasTexture(this.canvas);
+    const texture = new THREE.CanvasTexture(this.canvas);
 
     return texture;
 };
@@ -634,7 +626,7 @@ ripe.CsrRenderedInitials.prototype._textToDisplacementTexture = function(text) {
     ctx.fillText(text, posX + xOffset, posY + yOffset);
 
     // creates texture from canvas
-    const texture = new window.THREE.CanvasTexture(this.canvasDisplacement);
+    const texture = new THREE.CanvasTexture(this.canvasDisplacement);
 
     return texture;
 };
@@ -654,7 +646,7 @@ ripe.CsrRenderedInitials.prototype._preCookTexture = function(texture, options) 
     texture = ripe.CsrUtils.applyOptions(texture, options);
 
     // generates a texture with the updated options
-    const material = new window.THREE.MeshBasicMaterial({ transparent: true, map: texture });
+    const material = new THREE.MeshBasicMaterial({ transparent: true, map: texture });
     const updatedTexture = this.textureRenderer.textureFromMaterial(material);
 
     // cleans up the temporary material
@@ -672,8 +664,8 @@ ripe.CsrRenderedInitials.prototype._preCookTexture = function(texture, options) 
  */
 ripe.CsrRenderedInitials.prototype._blurTexture = function(texture, blurIntensity = 1) {
     // creates a material to run a shader that blurs the texture
-    const material = new window.THREE.ShaderMaterial({
-        uniforms: window.THREE.UniformsUtils.merge([
+    const material = new THREE.ShaderMaterial({
+        uniforms: THREE.UniformsUtils.merge([
             {
                 baseTexture: {
                     type: "t",
@@ -716,8 +708,8 @@ ripe.CsrRenderedInitials.prototype._mixPatternWithTexture = function(texture, pa
     if (!patternTexture) return texture;
 
     // creates a material to run a shader that applies a pattern to a texture
-    const material = new window.THREE.ShaderMaterial({
-        uniforms: window.THREE.UniformsUtils.merge([
+    const material = new THREE.ShaderMaterial({
+        uniforms: THREE.UniformsUtils.merge([
             {
                 baseTexture: {
                     type: "t",
@@ -764,8 +756,8 @@ ripe.CsrRenderedInitials.prototype._mixPatternWithDisplacementTexture = function
     if (!patternTexture) return texture;
 
     // creates a material to run a shader that applies a pattern to a height map texture
-    const material = new window.THREE.ShaderMaterial({
-        uniforms: window.THREE.UniformsUtils.merge([
+    const material = new THREE.ShaderMaterial({
+        uniforms: THREE.UniformsUtils.merge([
             {
                 baseTexture: {
                     type: "t",

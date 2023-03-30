@@ -9,15 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Add `browserify`, `esmify`, `babelify`, `vinyl-buffer` and `vinyl-source-stream` dev dependencies - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
+* Support ES Modules - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 
 ### Changed
 
 * Upgrade workflows's node engine version
+* Reduced import hacks - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
+* Remove `__VERSION__` references - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
+* Remove `mark` script - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
+* Update Three.js version to `150.1` - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
+* Update `@babel/core` to `7.21.0` - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
+* Removed unused `gulp-babel`, `gulp-concat` and `gulp-replace` dev dependencies - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 
 ### Fixed
 
-*
+* Fix package not loading Three.js - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
+* Fix build not including all code when generating the bundle - [#491](https://github.com/ripe-tech/ripe-sdk/issues/491)
 
 ## [2.40.0] - 2023-03-08
 
