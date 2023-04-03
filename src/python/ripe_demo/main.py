@@ -3,6 +3,7 @@
 
 import appier
 
+
 class RipeDemoApp(appier.WebApp):
     """
     The main app class for the Ripe Demo instance
@@ -10,11 +11,8 @@ class RipeDemoApp(appier.WebApp):
     """
 
     def __init__(self, *args, **kwargs):
-        appier.WebApp.__init__(
-            self,
-            name = "ripe_demo",
-            *args, **kwargs
-        )
+        appier.WebApp.__init__(self, name="ripe_demo", *args, **kwargs)
+
 
 if __name__ == "__main__":
     app = RipeDemoApp()
