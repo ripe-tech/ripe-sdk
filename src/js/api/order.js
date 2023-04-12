@@ -2417,6 +2417,8 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     const quantity = options.quantity === undefined ? null : options.quantity;
     const brand = options.brand === undefined ? this.brand : options.brand;
     const factory = options.factory === undefined ? null : options.factory;
+    const domain = options.domain === undefined ? null : options.domain;
+    const sku = options.sku === undefined ? null : options.sku;
     const model = options.model === undefined ? this.model : options.model;
     const variant = options.variant === undefined ? this.variant : options.variant;
     const parts = options.parts === undefined ? this.parts : options.parts;
@@ -2456,6 +2458,8 @@ ripe.Ripe.prototype._importOrder = function(ffOrderId, options = {}) {
     if (Object.keys(parts).length > 0) contents.parts = parts;
     if (size) contents.size = size;
     if (factory) contents.factory = factory;
+    if (domain) contents.domain = domain;
+    if (sku) contents.sku = sku;
     if (variant) contents.variant = variant;
     if (productId) contents.product_id = productId;
     if (gender) contents.gender = gender;
