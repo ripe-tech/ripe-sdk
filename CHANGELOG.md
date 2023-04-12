@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Added `sku` and `domain` fields to import order - [ripe-core/#4798](https://github.com/ripe-tech/ripe-core/issues/4798)
 
 ### Changed
 
