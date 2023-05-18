@@ -19,9 +19,9 @@ ADD src /src
 
 RUN apk update &&\
     apk add --no-cache nodejs npm &&\
-    pip3 install -r /requirements.txt &&\
-    pip3 install -r /extra.txt &&\
-    pip3 install --upgrade netius
+    pip3 install --no-cache-dir -r /requirements.txt &&\
+    pip3 install --no-cache-dir -r /extra.txt &&\
+    pip3 install --no-cache-dir --upgrade netius
 
 RUN npm install && npm run build
 
