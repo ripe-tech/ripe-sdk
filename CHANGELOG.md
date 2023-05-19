@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Fixed configurator ignoring size even with passing `useDefaultSize` with `false` - [#511](https://github.com/ripe-tech/ripe-sdk/issues/511)
 
 ## [3.0.0] - 2023-03-30
 
