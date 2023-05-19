@@ -43,7 +43,7 @@ describe("RipeAPI", function() {
                 }
             };
             await new Promise((resolve, reject) => {
-                remote._cacheURL("https://httpbin.org/status/403", options, () => resolve());
+                remote._cacheURL("https://postman-echo.com/status/403", options, () => resolve());
             });
             assert.strictEqual(options.retries, 0);
             assert.strictEqual(options.dummy, 1);
@@ -56,7 +56,7 @@ describe("RipeAPI", function() {
                 }
             };
             await new Promise((resolve, reject) => {
-                remote._cacheURL("https://httpbin.org/status/403", options, () => resolve());
+                remote._cacheURL("https://postman-echo.com/status/403", options, () => resolve());
             });
             assert.strictEqual(options.retries, 0);
             assert.strictEqual(options.dummy, 2);
@@ -73,7 +73,7 @@ describe("RipeAPI", function() {
                 }
             };
             await new Promise((resolve, reject) => {
-                remote._cacheURL("https://httpbin.org/status/200", options, () => resolve());
+                remote._cacheURL("https://postman-echo.com/status/200", options, () => resolve());
             });
             assert.strictEqual(options.retries, 2);
             assert.strictEqual(options.dummy, 3);
