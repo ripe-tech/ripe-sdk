@@ -188,6 +188,19 @@ describe("RipeAPI", function() {
                 `${config.TEST_URL}compose?brand=dummy&format=png&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack&size=100`
             );
         });
+
+        it("should be able to convert a query to a image URL with a custom compose url", async () => {
+            const remote = ripe.RipeAPI({ composeUrl: config.TEST_COMPOSE_URL });
+
+            const url = remote._queryToImageUrl(
+                "brand=dummy&model=dummy&p=piping:leather_dmy:black&p=side:leather_dmy:black&p=top0_bottom:leather_dmy:black&p=shadow:default:default&p=overlay:default:default"
+            );
+
+            assert.deepStrictEqual(
+                url,
+                `${config.TEST_COMPOSE_URL}?brand=dummy&model=dummy&p=overlay%3Adefault%3Adefault&p=piping%3Aleather_dmy%3Ablack&p=shadow%3Adefault%3Adefault&p=side%3Aleather_dmy%3Ablack&p=top0_bottom%3Aleather_dmy%3Ablack`
+            );
+        });
     });
 
     describe("#_buildQuery()", function() {
