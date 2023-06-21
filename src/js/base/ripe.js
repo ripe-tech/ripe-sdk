@@ -635,6 +635,7 @@ ripe.Ripe.prototype.setOptions = function(options = {}) {
     this.dku = this.options.dku || null;
     this.url = this.options.url || "https://sandbox.platforme.com/api/";
     this.webUrl = this.options.webUrl || "https://sandbox.platforme.com/";
+    this.composeUrl = this.options.composeUrl || `${this.url}compose`;
     this.params = this.options.params || {};
     this.headers = this.options.headers || {};
     this.parts = this.options.parts || {};
