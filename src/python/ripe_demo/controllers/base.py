@@ -17,6 +17,7 @@ class BaseController(appier.Controller):
         return self.template(
             "simple.html.tpl",
             url=self.field("url"),
+            compose_url=self.field("compose_url"),
             brand=self.field("brand"),
             model=self.field("model"),
             variant=self.field("variant"),

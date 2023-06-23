@@ -12,6 +12,7 @@ window.onload = function() {
     const element = document.getElementById("configurator-prc");
     const _body = document.querySelector("body");
     const url = _body.dataset.url || "https://sandbox.platforme.com/api/";
+    const composeUrl = _body.dataset.compose_url || null;
     const brand = _body.dataset.brand || "dummy";
     const model = _body.dataset.model || "cube";
     const variant = _body.dataset.variant || "";
@@ -35,6 +36,7 @@ window.onload = function() {
         version: version,
         format: format,
         url: url,
+        composeUrl: composeUrl,
         currency: currency,
         country: country,
         guess: guess,
