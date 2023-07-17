@@ -2082,6 +2082,27 @@ ripe.Ripe.prototype.setOrderSize = function(number, size, options, callback) {
 };
 
 /**
+ * Changes the size info of an order.
+ *
+ * @param {Number} number The number of the order to change the size info.
+ * @param {string} size The size.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the order changed.
+ */
+ripe.Ripe.prototype.setOrderSizeP = function(number, size, options) {
+    return new Promise((resolve, reject) => {
+        this.setOrderSize(
+            number,
+            size,
+            options,
+            (result, isValid, request) => {
+                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+            }
+        );
+    });
+};
+
+/**
  * Gets the order subscription status for the session user.
  *
  * @param {Number} number The number of the order to get the subscription status.
