@@ -434,4 +434,34 @@ describe("OrderAPI", function() {
             assert.strictEqual(result.subscribed, false);
         });
     });
+
+    describe("#setOrderSize()", function() {
+        const ctx = {};
+
+        beforeEach(async function() {
+            if (!config.TEST_USERNAME || !config.TEST_PASSWORD) {
+                this.skip();
+            }
+            ctx.order = await mock.buildOrder();
+        });
+
+        it("should change the size attribute in an Order", async () => {
+            let result = null;
+
+            const remote = ripe.RipeAPI({ url: config.TEST_URL });
+
+            result = await remote.authAdminP(config.TEST_USERNAME, config.TEST_PASSWORD);
+
+            assert.strictEqual(result.username, config.TEST_USERNAME);
+            assert.notStrictEqual(typeof result.sid, undefined);
+
+            result = await remote.setOrderSize(ctx.order.number, 18);
+            assert.strictEqual(result.details.size, 18);
+
+            const structure = JSON.parse(result.structure);
+            assert.strictEqual(structure.size, 18);
+
+            await remote.deleteOrderP(result.number);
+        });
+    });
 });

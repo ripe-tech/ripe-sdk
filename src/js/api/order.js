@@ -2053,6 +2053,35 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
 };
 
 /**
+ * Sets the Order size in its details.
+ *
+ * @param {Number} number The number of the order to set the size.
+ * @param {string} size The size.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.setOrderSize = function(number, size, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}orders/${number}/size`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "PUT",
+        params: {
+            size: size
+        }
+    });
+    options.params = options.params || {};
+
+    if (options.justification !== undefined) options.params.justification = options.justification;
+    if (options.strict !== undefined) options.params.strict = options.strict;
+    if (options.notify !== undefined) options.params.notify = options.notify ? "1" : "0";
+    if (options.transitions !== undefined) options.params.transitions = options.transitions;
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
  * Gets the order subscription status for the session user.
  *
  * @param {Number} number The number of the order to get the subscription status.
