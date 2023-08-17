@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added support to set the size of an Order - [ripe-pulse/#391](https://github.com/ripe-tech/ripe-pulse/issues/391)
+* Added support to set the size of an Order - [ripe-pulse/#389](https://github.com/ripe-tech/ripe-pulse/issues/389)
 
 ### Changed
 

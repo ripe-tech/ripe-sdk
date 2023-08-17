@@ -2053,13 +2053,15 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
 };
 
 /**
- * Sets the Order size in its details.
+ * Sets the size of an order.
  *
  * @param {Number} number The number of the order to set the size.
  * @param {string} size The size.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
  * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
  */
-ripe.Ripe.prototype.setOrderSize = function(number, size, options, callback) {
+ripe.Ripe.prototype.setSizeOrder = function(number, size, options, callback) {
     callback = typeof options === "function" ? options : callback;
     options = typeof options === "function" || options === undefined ? {} : options;
     const url = `${this.url}orders/${number}/size`;
@@ -2082,16 +2084,16 @@ ripe.Ripe.prototype.setOrderSize = function(number, size, options, callback) {
 };
 
 /**
- * Changes the size info of an order.
+ * Sets the size of an order.
  *
  * @param {Number} number The number of the order to change the size info.
  * @param {string} size The size.
  * @param {Object} options An object of options to configure the request.
- * @returns {Promise} The result of the order changed.
+ * @returns {Promise} The updated order.
  */
-ripe.Ripe.prototype.setOrderSizeP = function(number, size, options) {
+ripe.Ripe.prototype.setSizeOrderP = function(number, size, options) {
     return new Promise((resolve, reject) => {
-        this.setOrderSize(
+        this.setSizeOrder(
             number,
             size,
             options,
