@@ -192,6 +192,54 @@ ripe.Ripe.prototype.nativeToSizeBP = function(scales, values, genders, options) 
 };
 
 /**
+ * Converts multiple size values to the corresponding native size.
+ * The available scales, genders and sizes can be obtained with the method `getSizes`.
+ *
+ * sample input:
+{
+"scales":
+    {
+        "eu":
+        {
+            "male": [12, 13, 14, 15],
+            "female": [9, 10, 11, 12]
+        }
+        ,
+        "it":
+        {
+            "male": [25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45],
+            "female" : []
+        }
+    }
+ *
+ * @param {Object} scales An object of scales (containing genders and its values nested) to convert from.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.nativeToSizeByScaleB = function(scales, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}sizes/native_to_size_b_by_scale`;
+
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataJ: { scales: scales }
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+ripe.Ripe.prototype.nativeToSizeByScaleBP = function(scales, options) {
+    return new Promise((resolve, reject) => {
+        this.nativeToSizeByScaleB(scales, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Converts a size value in the specified scale to the corresponding localized size.
  * The available scales, genders and sizes can be obtained with the method `getSizes`.
  *

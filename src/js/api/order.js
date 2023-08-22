@@ -2055,7 +2055,7 @@ ripe.Ripe.prototype.setOrderStatus = function(number, status, options, callback)
 /**
  * Sets the size of an order.
  *
- * @param {Number} number The number of the order to set the size.
+ * @param {Number} number The number of the order to update.
  * @param {string} size The size.
  * @param {Object} options An object of options to configure the request.
  * @param {Function} callback Function with the result of the request.
@@ -2073,12 +2073,7 @@ ripe.Ripe.prototype.setSizeOrder = function(number, size, options, callback) {
             size: size
         }
     });
-    options.params = options.params || {};
 
-    if (options.justification !== undefined) options.params.justification = options.justification;
-    if (options.strict !== undefined) options.params.strict = options.strict;
-    if (options.notify !== undefined) options.params.notify = options.notify ? "1" : "0";
-    if (options.transitions !== undefined) options.params.transitions = options.transitions;
     options = this._build(options);
     return this._cacheURL(options.url, options, callback);
 };
@@ -2086,21 +2081,16 @@ ripe.Ripe.prototype.setSizeOrder = function(number, size, options, callback) {
 /**
  * Sets the size of an order.
  *
- * @param {Number} number The number of the order to change the size info.
+ * @param {Number} number The number of the order to update.
  * @param {string} size The size.
  * @param {Object} options An object of options to configure the request.
  * @returns {Promise} The updated order.
  */
 ripe.Ripe.prototype.setSizeOrderP = function(number, size, options) {
     return new Promise((resolve, reject) => {
-        this.setSizeOrder(
-            number,
-            size,
-            options,
-            (result, isValid, request) => {
-                isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
-            }
-        );
+        this.setSizeOrder(number, size, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
     });
 };
 
