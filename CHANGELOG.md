@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Change API testing provider from `httpbin` to `postman-echo`
+*
 
 ### Fixed
 
 *
+
+## [3.0.2] - 2023-08-22
+
+### Added
+
+* Change API testing provider from `httpbin` to `postman-echo`
 
 ## [3.0.1] - 2023-05-19
 
