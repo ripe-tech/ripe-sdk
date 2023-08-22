@@ -19,18 +19,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
-## [3.0.2] - 2023-08-22
+## [3.1.0] - 2023-08-22
 
 ### Added
 
 * Change API testing provider from `httpbin` to `postman-echo`
+* Added `composeUrl` option to allow custom for composition endpoints - [products/#132](https://github.com/ripe-tech/products/issues/132)
 
 ## [3.0.1] - 2023-05-19
 
 ### Added
 
 * Added `sku` and `domain` fields to import order - [ripe-core/#4798](https://github.com/ripe-tech/ripe-core/issues/4798)
-* Added `composeUrl` option to allow custom for composition endpoints - [products/#132](https://github.com/ripe-tech/products/issues/132)
 
 ### Changed
 
