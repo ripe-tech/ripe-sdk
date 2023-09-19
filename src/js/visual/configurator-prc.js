@@ -70,7 +70,8 @@ ripe.ConfiguratorPrc.prototype.init = function() {
                 ? undefined
                 : !this.noMasks
             : this.options.useMasks;
-    this.useDefaultSize = this.options.useDefaultSize === undefined ? true : this.options.useDefaultSize;
+    this.useDefaultSize =
+        this.options.useDefaultSize === undefined ? true : this.options.useDefaultSize;
     this.view = this.options.view || "side";
     this.position = this.options.position || 0;
     this.configAnimate =
