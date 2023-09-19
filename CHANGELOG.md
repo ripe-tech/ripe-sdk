@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Admin Event API module - [ripe-core/#4828](https://github.com/ripe-tech/ripe-core/issues/4828)
 
 ### Changed
 
