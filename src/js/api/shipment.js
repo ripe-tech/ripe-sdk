@@ -307,3 +307,75 @@ ripe.Ripe.prototype.deleteShipmentP = function(number, options) {
         });
     });
 };
+
+/**
+ * Creates a shipping waybill for the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to create the waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.createWaybillShipment = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}/waybill`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Creates a shipping waybill for the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to create the waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The contents of the note instance that was created.
+ */
+ripe.Ripe.prototype.createWaybillShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.createWaybillShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Creates an invoice for the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to create the invoice for.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.createInvoiceShipment = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}/invoice`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Creates an invoice for the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to create the invoice for.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The contents of the note instance that was created.
+ */
+ripe.Ripe.prototype.createInvoiceShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.createInvoiceShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
