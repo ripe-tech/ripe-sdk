@@ -309,6 +309,125 @@ ripe.Ripe.prototype.deleteShipmentP = function(number, options) {
 };
 
 /**
+ * Returns all the attachments of a shipment.
+ *
+ * @param {Number} number The number of the shipment to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.attachmentsShipment = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}/attachments`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns all the attachments of a shipment.
+ *
+ * @param {Number} number The number of the shipment to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} An object containing all the attachments of a shipment.
+ */
+ripe.Ripe.prototype.attachmentsShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.attachmentsShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Adds an attachment to a shipment.
+ *
+ * @param {Number} number The number of the shipment where the attachment will be added.
+ * @param {Object} file The attachment file to be added to the shipment.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.createAttachmentShipment = function(number, file, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}/attachments`;
+    const dataM = { file: file };
+    if (options.name !== undefined) dataM.name = options.name;
+    if (options.meta !== undefined) dataM.meta = JSON.stringify(options.meta);
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        dataM: dataM,
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Adds an attachment to a shipment.
+ *
+ * @param {Number} number The number of the shipment where the attachment will be added.
+ * @param {Object} file The attachment file to be added to the shipment.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The attachment added to the shipment.
+ */
+ripe.Ripe.prototype.createAttachmentShipmentP = function(number, file, options) {
+    return new Promise((resolve, reject) => {
+        this.createAttachmentShipment(number, file, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Returns the attachment of a shipment requested by ID.
+ *
+ * @param {Number} number The number of the shipment to find by.
+ * @param {Number} attachmentId The ID of the attachment of the shipment to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.attachmentShipment = function(number, attachmentId, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}/attachments/${attachmentId}`;
+    options = Object.assign(options, {
+        url: url,
+        method: "GET",
+        auth: true,
+        cached: false
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Returns the attachment of a shipment requested by ID.
+ *
+ * @param {Number} number The number of the shipment to find by.
+ * @param {Number} attachmentId The ID of the attachment of the shipment to find by.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The attachment file of an shipment requested by ID.
+ */
+ripe.Ripe.prototype.attachmentShipmentP = function(number, attachmentId, options) {
+    return new Promise((resolve, reject) => {
+        this.attachmentShipment(number, attachmentId, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Creates a shipping waybill for the shipment with the provided number.
  *
  * @param {Number} number The number of the shipment to create the waybill for.
