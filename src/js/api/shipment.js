@@ -309,6 +309,230 @@ ripe.Ripe.prototype.deleteShipmentP = function(number, options) {
 };
 
 /**
+ * Sets the shipment status to 'created'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.createdShipment = function(number, options, callback) {
+    return this.setShipmentStatus(number, "create", options, callback);
+};
+
+/**
+ * Sets the shipment status to 'created'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The shipment with the updated status.
+ */
+ripe.Ripe.prototype.createdShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.createdShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the shipment status to 'ready'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.readyShipment = function(number, options, callback) {
+    return this.setShipmentStatus(number, "ready", options, callback);
+};
+
+/**
+ * Sets the shipment status to 'ready'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The shipment with the updated status.
+ */
+ripe.Ripe.prototype.readyShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.readyShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the shipment status to 'sent'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.sendShipment = function(number, options, callback) {
+    return this.setShipmentStatus(number, "send", options, callback);
+};
+
+/**
+ * Sets the shipment status to 'sent'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The shipment with the updated status.
+ */
+ripe.Ripe.prototype.sendShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.sendShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the shipment status to 'blocked'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.blockShipment = function(number, options, callback) {
+    return this.setShipmentStatus(number, "block", options, callback);
+};
+
+/**
+ * Sets the shipment status to 'blocked'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The shipment with the updated status.
+ */
+ripe.Ripe.prototype.blockShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.blockShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the shipment status to 'access_point'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.accessPointShipment = function(number, options, callback) {
+    return this.setShipmentStatus(number, "access_point", options, callback);
+};
+
+/**
+ * Sets the shipment status to 'access_point'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The shipment with the updated status.
+ */
+ripe.Ripe.prototype.accessPointShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.accessPointShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the shipment status to 'delivered'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.deliverShipment = function(number, options, callback) {
+    return this.setShipmentStatus(number, "deliver", options, callback);
+};
+
+/**
+ * Sets the shipment status to 'delivered'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The shipment with the updated status.
+ */
+ripe.Ripe.prototype.deliverShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.deliverShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the shipment status to 'returned'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.returnShipment = function(number, options, callback) {
+    return this.setShipmentStatus(number, "return", options, callback);
+};
+
+/**
+ * Sets the shipment status to 'returned'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The shipment with the updated status.
+ */
+ripe.Ripe.prototype.returnShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.returnShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Sets the shipment status to 'canceled'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.cancelShipment = function(number, options, callback) {
+    return this.setShipmentStatus(number, "cancel", options, callback);
+};
+
+/**
+ * Sets the shipment status to 'canceled'.
+ *
+ * @param {Number} number The number of the shipment to update.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {Promise} The shipment with the updated status.
+ */
+ripe.Ripe.prototype.cancelShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.cancelShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Returns all the attachments of a shipment.
  *
  * @param {Number} number The number of the shipment to find by.
@@ -497,4 +721,25 @@ ripe.Ripe.prototype.createInvoiceShipmentP = function(number, options) {
             isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
         });
     });
+};
+
+/**
+ * @ignore
+ */
+ripe.Ripe.prototype.setShipmentStatus = function(number, status, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}/${status}`;
+    options = Object.assign(options, {
+        url: url,
+        auth: true,
+        method: "PUT"
+    });
+    options.params = options.params || {};
+    if (options.justification !== undefined) options.params.justification = options.justification;
+    if (options.strict !== undefined) options.params.strict = options.strict;
+    if (options.notify !== undefined) options.params.notify = options.notify ? "1" : "0";
+    if (options.transitions !== undefined) options.params.transitions = options.transitions;
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
 };
