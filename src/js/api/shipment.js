@@ -652,6 +652,93 @@ ripe.Ripe.prototype.attachmentShipmentP = function(number, attachmentId, options
 };
 
 /**
+ * Creates a note with the provided text and associates it
+ * with the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to associate a note.
+ * @param {String} text The note text, containing the context of the note.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.createNoteShipment = function(number, text, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}/notes`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options.params = options.params || {};
+    options.params.text = text;
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Creates a note with the provided text and associates it
+ * with the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to associate a note.
+ * @param {String} text The note text, containing the context of the note.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The contents of the note instance that was created.
+ */
+ripe.Ripe.prototype.createNoteShipmentP = function(number, text, options) {
+    return new Promise((resolve, reject) => {
+        this.createNoteShipment(number, text, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Creates a shipment issue with the provided description, error log and severity
+ * and associates it with the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to associate an issue.
+ * @param {String} issue The issue name, containing the context of issue.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.createIssueShipment = function(number, issue, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}/issues`;
+    options = Object.assign(options, {
+        url: url,
+        method: "POST",
+        auth: true
+    });
+    options.params = options.params || {};
+    options.params.issue = issue;
+    if (options.description !== undefined) options.params.description = options.description;
+    if (options.severity !== undefined) options.params.severity = options.severity;
+    if (options.log !== undefined) options.params.log = options.log;
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Creates a shipment issue with the provided description, error log and severity
+ * and associates it with the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to associate an issue.
+ * @param {String} issue The issue name, containing the context of issue.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The contents of the issue instance that was created.
+ */
+ripe.Ripe.prototype.createIssueShipmentP = function(number, issue, options) {
+    return new Promise((resolve, reject) => {
+        this.createIssueShipment(number, issue, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Creates a shipping waybill for the shipment with the provided number.
  *
  * @param {Number} number The number of the shipment to create the waybill for.
