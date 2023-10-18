@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added waybill and invoice creation methods to the `ShipmentAPI` - [#4853](https://github.com/ripe-tech/ripe-core/issues/4853)
 * Added shipment attachment methods to the `ShipmentAPI` - [#4853](https://github.com/ripe-tech/ripe-core/issues/4853)
 * Added shipment status change methods to the `ShipmentAPI` - [#4853](https://github.com/ripe-tech/ripe-core/issues/4853)
+* Added shipment notes and issues methods - [ripe-pulse/#396](https://github.com/ripe-tech/ripe-pulse/issues/396)
 
 ### Changed
 
