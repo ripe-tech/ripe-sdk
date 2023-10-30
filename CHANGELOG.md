@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Added create documents for shipping API - [ripe-pulse/#396](https://github.com/ripe-tech/ripe-pulse/issues/396)
 
 ### Changed
 
