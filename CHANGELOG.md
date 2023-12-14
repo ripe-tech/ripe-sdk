@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [3.3.2] - 2023-12-14
+
+### Added
+
+* Shipment API `refreshShippingShipment` and `createReturnWaybillShipment`
+
 ## [3.3.1] - 2023-10-30
 
 ### Added
