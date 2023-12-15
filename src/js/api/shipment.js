@@ -883,6 +883,78 @@ ripe.Ripe.prototype.createInvoiceShipmentP = function(number, options) {
 };
 
 /**
+ * Voids the waybill for the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to void the waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.voidWaybillShipment = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}/waybill`;
+    options = Object.assign(options, {
+        url: url,
+        method: "DELETE",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Voids the waybill for the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to void the waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the waybill deletion.
+ */
+ripe.Ripe.prototype.voidWaybillShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.voidWaybillShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
+ * Voids the return waybill for the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to void the return waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @param {Function} callback Function with the result of the request.
+ * @returns {XMLHttpRequest} The XMLHttpRequest instance of the API request.
+ */
+ripe.Ripe.prototype.voidReturnWaybillShipment = function(number, options, callback) {
+    callback = typeof options === "function" ? options : callback;
+    options = typeof options === "function" || options === undefined ? {} : options;
+    const url = `${this.url}shipments/${number}/return_waybill`;
+    options = Object.assign(options, {
+        url: url,
+        method: "DELETE",
+        auth: true
+    });
+    options = this._build(options);
+    return this._cacheURL(options.url, options, callback);
+};
+
+/**
+ * Voids the return waybill for the shipment with the provided number.
+ *
+ * @param {Number} number The number of the shipment to void the return waybill for.
+ * @param {Object} options An object of options to configure the request.
+ * @returns {Promise} The result of the waybill deletion.
+ */
+ripe.Ripe.prototype.voidReturnWaybillShipmentP = function(number, options) {
+    return new Promise((resolve, reject) => {
+        this.voidReturnWaybillShipment(number, options, (result, isValid, request) => {
+            isValid ? resolve(result) : reject(new ripe.RemoteError(request, null, result));
+        });
+    });
+};
+
+/**
  * Manually trigger a shipment shipping status refresh.
  *
  * @param {Number} number The number of the shipment to refresh the shipping status.
