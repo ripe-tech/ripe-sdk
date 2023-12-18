@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Shipment API `voidWaybillShipment` and `voidReturnWaybillShipment`
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [3.3.3] - 2023-12-18
+
+### Added
+
+* Shipment API `voidWaybillShipment` and `voidReturnWaybillShipment`
 
 ## [3.3.2] - 2023-12-14
 
