@@ -6,7 +6,7 @@ const ripe = base.ripe;
  * The version of the RIPE SDK currently in load, should
  * be in sync with the package information.
  */
-ripe.VERSION = "3.3.2";
+ripe.VERSION = "3.3.3";
 
 /**
  * Object that contains global (static) information to be used by
