@@ -1,0 +1,18 @@
+name: Create stable pull request after tag push
+on:
+  push:
+    tags:
+      - "*"
+jobs:
+  create-pull-request:
+    name: Create stable pull request
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create pull request
+        run: gh pr create -B stable -H master --title "Merge ${GITHUB_REF#refs/*/} into stable :rocket:" --body "Created with github actions." --assignee $ASSIGNEES --reviewer $ASSIGNEES
+        env:
+          GH_TOKEN: ${{ secrets.RIPE_BOT_GITHUB_TOKEN }}
+          ASSIGNEES: ${{ vars.DEVOPS_ASSIGNEES }}
